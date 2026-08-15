@@ -275,6 +275,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
+    /** Lister les utilisateurs plateforme (super-admin) — issue #2269 */
+    getAdminUsers(options = {}) {
+      return request("GET", "/admin/users", options);
+    },
+
+    /** Détail d'un utilisateur plateforme (super-admin) — issue #2269 */
+    getAdminUsersByUser(options = {}) {
+      return request("GET", "/admin/users/{user}", options);
+    },
+
+    /** Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269 */
+    patchAdminUsersByUser(options = {}) {
+      return request("PATCH", "/admin/users/{user}", options);
+    },
+
     /** Couts IA par periode */
     getAiAnalyticsCosts(options = {}) {
       return request("GET", "/ai/analytics/costs", options);

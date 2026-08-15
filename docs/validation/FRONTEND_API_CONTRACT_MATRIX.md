@@ -1,10 +1,13 @@
 # Frontend API Contract Matrix
 
-Derniere mise a jour : 2026-08-14
+Derniere mise a jour : 2026-08-15
 
 Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend Laravel. Toute nouvelle route critique doit avoir un endpoint backend, un role attendu et un test associe.
 
 ## Contrats critiques
+| Admin | Utilisateurs plateforme (liste paginee) | `GET /api/v1/admin/users` | super_admin | `PlatformUsersApiTest` |
+| Admin | Detail utilisateur plateforme | `GET /api/v1/admin/users/{user}` | super_admin | `PlatformUsersApiTest` |
+| Admin | Activer/desactiver utilisateur plateforme | `PATCH /api/v1/admin/users/{user}` | super_admin | `PlatformUsersApiTest` |
 
 | Surface | Parcours | Endpoint | Role attendu | Test de garde |
 |---|---|---|---|---|

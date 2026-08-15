@@ -19,6 +19,8 @@ return [
     'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
     'COMPANY_NOT_FOUND' => 'Company not found.',
     'USER_NOT_FOUND' => 'User not found.',
+
+    'SELF_DISABLE_FORBIDDEN' => 'You cannot disable your own account.',
     'VALIDATION_FAILED' => 'The given data was invalid.',
     'INVALID_STATUS_TRANSITION' => 'This status transition is not allowed.',
     'DUPLICATE_ENTRY' => 'A similar entry already exists.',

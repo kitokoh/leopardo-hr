@@ -240,6 +240,18 @@ class LeopardoClient:
         """Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"""
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
+    def get_admin_users(self, **kwargs):
+        """Lister les utilisateurs plateforme (super-admin) — issue #2269"""
+        return self.request("GET", "/admin/users", **kwargs)
+
+    def get_admin_users_by_user(self, **kwargs):
+        """Détail d'un utilisateur plateforme (super-admin) — issue #2269"""
+        return self.request("GET", "/admin/users/{user}", **kwargs)
+
+    def patch_admin_users_by_user(self, **kwargs):
+        """Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269"""
+        return self.request("PATCH", "/admin/users/{user}", **kwargs)
+
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
         return self.request("GET", "/ai/analytics/costs", **kwargs)

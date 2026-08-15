@@ -74,7 +74,25 @@ trait CreatesMvpSchema
             $table->string('preferred_language')->default('fr');
             $table->string('status')->default('active');
             $table->timestamp('email_verified_at')->nullable();
+            // Colonnes de gestion plateforme (issue #2269) — miroir de la
+            // migration publique 2026_05_02_100001.
+            $table->string('phone')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->integer('failed_login_attempts')->default(0);
+            $table->timestamp('locked_until')->nullable();
             $table->timestamps();
+        });
+
+        Schema::create('user_employee_links', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('employee_id');
+            $table->foreignUuid('company_id')->constrained('companies');
+            $table->string('status')->default('pending');
+            $table->timestamp('linked_at')->nullable();
+            $table->timestamps();
+
+            $table->unique(['user_id', 'company_id']);
         });
 
         Schema::create('partners', function (Blueprint $table) {
@@ -1013,6 +1031,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.sync_logs CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.user_employee_links CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.users CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
         DB::statement('DROP TABLE IF EXISTS shared_tenants.features CASCADE');

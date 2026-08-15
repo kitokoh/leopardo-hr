@@ -19,6 +19,8 @@ return [
     'EMPLOYEE_NOT_FOUND' => 'Calisan bulunamadi.',
     'COMPANY_NOT_FOUND' => 'Sirket bulunamadi.',
     'USER_NOT_FOUND' => 'Kullanici bulunamadi.',
+
+    'SELF_DISABLE_FORBIDDEN' => 'Kendi hesabinizi devre disi birakamazsiniz.',
     'VALIDATION_FAILED' => 'Saglanan veriler gecersiz.',
     'INVALID_STATUS_TRANSITION' => 'Bu durum gecisi izin verilmiyor.',
     'DUPLICATE_ENTRY' => 'Benzer bir kayit zaten mevcut.',

@@ -19,6 +19,8 @@ return [
     'EMPLOYEE_NOT_FOUND' => 'Employe introuvable.',
     'COMPANY_NOT_FOUND' => 'Entreprise introuvable.',
     'USER_NOT_FOUND' => 'Utilisateur introuvable.',
+
+    'SELF_DISABLE_FORBIDDEN' => 'Vous ne pouvez pas desactiver votre propre compte.',
     'VALIDATION_FAILED' => 'Les donnees fournies sont invalides.',
     'INVALID_STATUS_TRANSITION' => 'Cette transition de statut n\'est pas autorisee.',
     'DUPLICATE_ENTRY' => 'Une entree similaire existe deja.',

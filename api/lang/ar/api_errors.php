@@ -19,6 +19,8 @@ return [
     'EMPLOYEE_NOT_FOUND' => 'الموظف غير موجود.',
     'COMPANY_NOT_FOUND' => 'الشركة غير موجودة.',
     'USER_NOT_FOUND' => 'المستخدم غير موجود.',
+
+    'SELF_DISABLE_FORBIDDEN' => 'لا يمكنك تعطيل حسابك الخاص.',
     'VALIDATION_FAILED' => 'البيانات المقدمة غير صالحة.',
     'INVALID_STATUS_TRANSITION' => 'هذا التحويل في الحالة غير مسموح به.',
     'DUPLICATE_ENTRY' => 'يوجد إدخال مشابه بالفعل.',
