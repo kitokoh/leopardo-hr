@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
   return {

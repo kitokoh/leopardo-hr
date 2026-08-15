@@ -7,12 +7,13 @@ const CACHE_NAME = 'leopardo-edge-v1';
 const OFFLINE_URL = '/offline';
 
 // Assets to pre-cache on install
-// Issue #2723 — précache = routes RÉELLES uniquement : /dashboard/attendance
-// etc. n'existent pas (les vraies routes sont /attendance, /absences,
-// /employees) — cache.addAll rejetait et l'installation du SW échouait.
 const PRECACHE_ASSETS = [
   '/',
   '/offline',
+  '/dashboard',
+  '/attendance',
+  '/absences',
+  '/employees',
   '/favicon.ico',
 ];
 

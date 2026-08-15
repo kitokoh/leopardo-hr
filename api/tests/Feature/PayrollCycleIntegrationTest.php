@@ -317,6 +317,37 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertJsonPath('data.compliance.level', 'pilot');
     }
 
+    public function test_rh_manager_can_access_mobile_summary(): void
+    {
+        // Issue #2749 — les écrans paie de l'app RH (leopardo_hr) consomment
+        // /payroll/mobile-summary : le rôle rh était exclu du groupe
+        // principal/comptable → 403. Les lectures paie mobiles acceptent
+        // désormais principal, comptable ET rh.
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($rh);
+
+        $this->getJson('/api/v1/payroll/mobile-summary')
+            ->assertOk()
+            ->assertJsonStructure(['data' => ['totals']]);
+    }
+
+    public function test_rh_manager_cannot_write_salary_structure(): void
+    {
+        // Issue #2749 — seules les LECTURES mobiles sont ouvertes à rh ;
+        // les écritures paie restent strictement principal/comptable.
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($rh);
+
+        $this->postJson('/api/v1/salary-structures', [
+            'name' => 'Structure interdite',
+            'country' => 'DZ',
+        ])->assertStatus(403);
+    }
+
     public function test_manager_mobile_summary_is_tenant_scoped(): void
     {
         $companyA = Company::factory()->create(['currency' => 'DZD']);
