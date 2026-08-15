@@ -276,8 +276,11 @@ class BulletinDeclarationReconciliationTest extends TestCase
         // hors périmètre CSV — déclarations dédiées, décision #2014 §11).
         $declaredPatronal = (float) $row[12];
         $cssCap = min($gross, 63000.0);
+        // Issue #2473/#2486 : CSS famille portée à 7 % (CIPRES/CLEISS) dans
+        // le moteur ET le générateur CSV (#2568) — le calcul manuel du test
+        // doit suivre (il était à 3 %, régression #2590).
         $enginePatronalDeclaredScope = round(
-            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 3.0 / 100,
+            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 7.0 / 100,
             2,
         );
         $this->assertEquals($enginePatronalDeclaredScope, $declaredPatronal);
