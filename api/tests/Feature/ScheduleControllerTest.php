@@ -283,5 +283,71 @@ class ScheduleControllerTest extends TestCase
             'schedule_id' => $schedule->id,
         ]);
     }
-}
 
+    /**
+     * Sécurité #2217 — l'écriture des plannings est réservée aux managers.
+     */
+    public function test_employee_cannot_create_update_or_assign_schedules(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        /** @var Schedule $schedule */
+        $schedule = Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Horaire existant',
+            'start_time' => '09:00',
+            'end_time' => '18:00',
+            'break_minutes' => 60,
+            'work_days' => [1, 2, 3, 4, 5],
+            'late_tolerance_minutes' => 10,
+            'overtime_threshold_daily' => 8,
+            'overtime_threshold_weekly' => 40,
+            'is_default' => true,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->postJson('/api/v1/schedules', [
+            'name' => 'Planning pirate',
+            'start_time' => '07:00',
+            'end_time' => '19:00',
+            'break_minutes' => 0,
+            'work_days' => [1, 2, 3, 4, 5],
+            'late_tolerance_minutes' => 0,
+            'overtime_threshold_daily' => 8,
+            'overtime_threshold_weekly' => 40,
+            'is_default' => true,
+        ])->assertForbidden();
+
+        $this->putJson("/api/v1/schedules/{$schedule->id}", [
+            'name' => 'Horaire modifié par un employé',
+        ])->assertForbidden();
+
+        $this->postJson("/api/v1/schedules/{$schedule->id}/assign-employees", [
+            'employee_ids' => [$employee->id],
+        ])->assertForbidden();
+
+        // Aucune écriture n'a eu lieu.
+        $this->assertDatabaseHas('schedules', [
+            'id' => $schedule->id,
+            'name' => 'Horaire existant',
+        ]);
+        $this->assertDatabaseCount('schedules', 1);
+    }
+
+    public function test_employee_cannot_access_planning_optimization(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/planning/weekly-optimization')->assertForbidden();
+        $this->getJson('/api/v1/planning/shift-rebalancing')->assertForbidden();
+    }
+}
