@@ -23,8 +23,6 @@ import 'package:leopardo_employee/features/evaluations/data/evaluation_repositor
 import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_employee/features/home/data/project_repository.dart';
 import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
-import 'package:leopardo_employee/features/ai_chat/data/ai_chat_repository.dart';
-import 'package:leopardo_employee/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
 
