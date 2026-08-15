@@ -18,6 +18,7 @@ const subjects = [
   'Téléchargement - Kiosque',
   'Téléchargement - Windows',
   'Téléchargement - macOS',
+  'Enterprise',
   'Communauté',
   'Autre',
 ];
@@ -35,6 +36,8 @@ const TOPIC_TO_SUBJECT: Record<string, string> = {
   'download-windows': 'Téléchargement - Windows',
   'download-macos': 'Téléchargement - macOS',
   download: 'Information générale',
+  // #3254 : le CTA Enterprise (pricing/home/checkout) doit préremplir un sujet réel
+  enterprise: 'Enterprise',
 };
 
 const contactCopy: Record<string, {
