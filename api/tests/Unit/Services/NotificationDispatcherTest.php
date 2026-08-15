@@ -1,0 +1,147 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit\Services;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Notification\Domain\Models\DeviceToken;
+use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
+use Tests\TestCase;
+
+class NotificationDispatcherTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Config::set('services.firebase.project_id', 'test-project-id');
+        Cache::put('firebase_access_token', 'mock-access-token', 3600);
+
+        // La table `app_notifications` n'est créée par aucune migration du
+        // repo (dette #1813) : schéma manuel local au test (pattern
+        // TaxSlabValidationWorkflowTest).
+        if (! Schema::hasTable('app_notifications')) {
+            Schema::create('app_notifications', function ($table): void {
+                $table->bigIncrements('id');
+                $table->unsignedBigInteger('user_id')->index();
+                $table->string('type', 80);
+                $table->string('title', 255);
+                $table->text('body')->nullable();
+                $table->jsonb('data')->nullable();
+                $table->boolean('read')->default(false);
+                $table->timestamp('read_at')->nullable();
+                $table->string('action_url', 500)->nullable();
+                $table->timestampsTz();
+            });
+        }
+    }
+
+    private function makeEmployee(): Employee
+    {
+        return Employee::query()->create([
+            'company_id' => '00000000-0000-0000-0000-000000000001',
+            'matricule' => 'DISPATCH-01',
+            'first_name' => 'Push',
+            'last_name' => 'Test',
+            'email' => 'push@test.test',
+            'password_hash' => bcrypt('password'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_dispatch_creates_in_app_notification(): void
+    {
+        $employee = $this->makeEmployee();
+
+        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+
+        $notification = $dispatcher->dispatch(
+            $employee->id,
+            'leave_approved',
+            'Congé approuvé',
+            'Votre demande a été validée.',
+            ['leave_id' => 42],
+            '/leaves/42',
+        );
+
+        $this->assertInstanceOf(AppNotification::class, $notification);
+        $this->assertSame($employee->id, $notification->user_id);
+        $this->assertSame('leave_approved', $notification->type);
+        $this->assertFalse($notification->read);
+
+        $this->assertDatabaseHas('app_notifications', [
+            'user_id' => $employee->id,
+            'type' => 'leave_approved',
+            'title' => 'Congé approuvé',
+        ]);
+    }
+
+    public function test_dispatch_sends_push_to_active_device_token(): void
+    {
+        $employee = $this->makeEmployee();
+        DeviceToken::query()->create([
+            'employee_id' => $employee->id,
+            'token' => 'fcm-token-1',
+            'platform' => 'android',
+            'is_active' => true,
+        ]);
+
+        Http::fake([
+            'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send' => Http::response(['name' => 'messages/1'], 200),
+        ]);
+
+        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+        $dispatcher->dispatch($employee->id, 'payroll_ready', 'Bulletin disponible', 'Votre bulletin est prêt.');
+
+        Http::assertSent(function ($request): bool {
+            return $request->url() === 'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send'
+                && $request['message']['token'] === 'fcm-token-1'
+                && $request['message']['notification']['title'] === 'Bulletin disponible';
+        });
+    }
+
+    public function test_dispatch_without_device_token_still_creates_in_app_notification(): void
+    {
+        $employee = $this->makeEmployee();
+
+        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+
+        $notification = $dispatcher->dispatch($employee->id, 'test_type', 'Titre', 'Corps');
+
+        $this->assertInstanceOf(AppNotification::class, $notification);
+        Http::assertNothingSent();
+    }
+
+    public function test_dispatch_fcm_failure_is_fail_open(): void
+    {
+        $employee = $this->makeEmployee();
+        DeviceToken::query()->create([
+            'employee_id' => $employee->id,
+            'token' => 'fcm-token-bad',
+            'platform' => 'ios',
+            'is_active' => true,
+        ]);
+
+        Http::fake([
+            'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send' => Http::response(['error' => ['status' => 'INVALID_ARGUMENT']], 400),
+        ]);
+
+        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+
+        // La notification in-app est créée malgré l'échec FCM.
+        $notification = $dispatcher->dispatch($employee->id, 'test_type', 'Titre', 'Corps');
+        $this->assertInstanceOf(AppNotification::class, $notification);
+
+        $this->assertDatabaseHas('app_notifications', ['user_id' => $employee->id]);
+    }
+}

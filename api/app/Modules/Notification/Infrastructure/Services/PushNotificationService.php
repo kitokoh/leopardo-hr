@@ -58,6 +58,21 @@ class PushNotificationService
         return $this->sendToTokens($tokens, $title, $body, $data);
     }
 
+    /**
+     * Envoie une notification push à un employé identifié par son id.
+     * Retourne 0 si l'employé n'existe pas ou n'a aucun token actif.
+     */
+    public function sendToUser(int $userId, string $title, string $body, array $data = []): int
+    {
+        $employee = Employee::query()->find($userId);
+
+        if (! $employee instanceof Employee) {
+            return 0;
+        }
+
+        return $this->sendToEmployee($employee, $title, $body, $data);
+    }
+
     public function sendToCompany(string $companyId, string $title, string $body, array $data = []): int
     {
         $tokens = DeviceToken::query()
