@@ -18,7 +18,6 @@ on:
       - "api/routes/console.php"
       - "api/.env.example"
       - "api/database/migrations/**"
-      - "api/app/Modules/**/database/migrations/**"
       - ".github/workflows/onboarding-smoke.yml"
   push:
     branches: [main]
@@ -30,7 +29,6 @@ on:
       - "api/routes/console.php"
       - "api/.env.example"
       - "api/database/migrations/**"
-      - "api/app/Modules/**/database/migrations/**"
       - ".github/workflows/onboarding-smoke.yml"
 
 permissions:
