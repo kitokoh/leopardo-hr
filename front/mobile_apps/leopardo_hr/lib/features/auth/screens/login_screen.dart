@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/demo_user_bottom_sheet.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -30,6 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final authState = ref.watch(authProvider);
     final bg = AppColors.backgroundFor(context);
     final text = AppColors.textPrimaryFor(context);
@@ -287,7 +289,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             }
                           },
                           icon: const Icon(Icons.science_outlined, size: 18),
-                          label: const Text('Tester avec un compte demo'),
+                          label: Text(l10n.authTryDemoAccount),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.rhDark,
                             foregroundColor: Colors.white,
