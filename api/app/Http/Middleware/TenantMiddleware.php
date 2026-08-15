@@ -49,7 +49,19 @@ class TenantMiddleware
 
         if (! $company) {
             if ($employee->role === 'ordinary') {
-                return $next($request);
+                // Issue #3727 — fail-closed : cet employé poursuit SANS compagnie
+                // liée. Le marqueur convertit toute requête BelongsToCompany en
+                // 403 TENANT_CONTEXT_MISSING au lieu d'une requête cross-tenant
+                // silencieuse (scope global sauté). Les endpoints self-service
+                // (/auth/me, profil) n'interrogent pas de modèle scopé et restent
+                // fonctionnels. Le marqueur est relâché en fin de requête.
+                app()->instance('tenant_scope_required', true);
+
+                try {
+                    return $next($request);
+                } finally {
+                    app()->forgetInstance('tenant_scope_required');
+                }
             }
             if ($request->expectsJson() || $request->is('api/*')) {
                 return new JsonResponse(['error' => 'COMPANY_NOT_FOUND'], 403);
