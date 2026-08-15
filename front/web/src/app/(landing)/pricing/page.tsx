@@ -157,15 +157,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'Tous',
       categories: ['Facturation', 'Essai', 'Support', 'Sécurité', 'Technique'],
       items: [
-        { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
+        { id: 'starter-plan', question: 'Que comprend le plan Starter ?', answer: "Le plan Starter à 29 €/mois inclut jusqu'à 20 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.", category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
-        { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'per-employee', question: 'Comment fonctionne la facturation ?', answer: "Chaque plan inclut un prix fixe par mois avec un plafond d'employés inclus (20 pour Starter, 200 pour Business, illimité pour Enterprise). Pas de supplément par employé actif.", category: 'Facturation' },
+        { id: 'free-trial', question: 'L\'essai est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités payantes. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
         { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
-        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Pilot : email sous 48h. Operations : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
+        { id: 'support', question: 'Quel support est disponible ?', answer: "Starter : support email sous 48h. Business : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.", category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
-        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Free et Pilot, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
+        { id: 'api', question: 'L\'API est-elle disponible ?', answer: "L'API REST et les webhooks sont disponibles à partir du plan Business. Sur Starter, vous pouvez exporter vos données en CSV/Excel.", category: 'Technique' },
       ],
     },
     cta: {
@@ -202,7 +202,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'Free plan — no credit card',
+        '14-day free trial — no credit card',
         'Support included from day one',
         'Data hosted in Europe',
         'Cancel anytime',
@@ -267,15 +267,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'All',
       categories: ['Billing', 'Trial', 'Support', 'Security', 'Technical'],
       items: [
-        { id: 'free-plan', question: 'Is the Free plan really free?', answer: 'Yes, 100% free. No credit card ever required. Immediate access for up to 5 employees. Upgrade to a paid plan anytime.', category: 'Trial' },
+        { id: 'starter-plan', question: 'What does the Starter plan include?', answer: "The Starter plan at €29/month includes up to 20 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.", category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
-        { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
-        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 14 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'per-employee', question: 'How does billing work?', answer: "Each plan includes a fixed monthly price with an included employee cap (20 for Starter, 200 for Business, unlimited for Enterprise). No per-active-employee surcharge.", category: 'Billing' },
+        { id: 'free-trial', question: 'Is the trial really free?', answer: 'Yes. 14 full days with all paid features included. No credit card needed to sign up.', category: 'Trial' },
         { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
-        { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
+        { id: 'support', question: 'What support is available?', answer: "Starter: email support within 48h. Business: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.", category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
-        { id: 'api', question: 'Is the API available on the Free plan?', answer: 'REST API and webhooks are available from the Operations plan. On Free / Pilot you can export data as CSV/Excel.', category: 'Technical' },
+        { id: 'api', question: 'Is the API available?', answer: "REST API and webhooks are available from the Business plan. On Starter you can export your data as CSV/Excel.", category: 'Technical' },
       ],
     },
     cta: {
@@ -377,15 +377,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'Tümü',
       categories: ['Faturalama', 'Deneme', 'Destek', 'Güvenlik', 'Teknik'],
       items: [
-        { id: 'free-plan', question: 'Free plan gerçekten ücretsiz mi?', answer: 'Evet, %100 ücretsiz. Hiçbir zaman kredi kartı gerekmez. 5 çalışana kadar anında erişim. İstediğiniz zaman ücretli plana geçin.', category: 'Deneme' },
+        { id: 'starter-plan', question: 'Starter planı neler içerir?', answer: "Ayda 29 €'dan başlayan Starter planı 20 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.", category: 'Deneme' },
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
-        { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
-        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'per-employee', question: 'Faturalama nasıl çalışır?', answer: "Her plan, dahil edilen çalışan sınırıyla (Starter için 20, Business için 200, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.", category: 'Faturalama' },
+        { id: 'free-trial', question: 'Deneme gerçekten ücretsiz mi?', answer: 'Evet. Tüm ücretli özelliklerle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
         { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
-        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Pilot: 48 saatte e-posta. Operations: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
+        { id: 'support', question: 'Hangi destek sağlanır?', answer: "Starter: 48 saat içinde e-posta desteği. Business: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.", category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
         { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
-        { id: 'api', question: 'Free planda API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Operations planından itibaren kullanılabilir. Free ve Pilot\'ta verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
+        { id: 'api', question: 'API kullanılabilir mi?', answer: "REST API ve webhook'lar Business planından itibaren kullanılabilir. Starter'da verilerinizi CSV/Excel olarak dışa aktarabilirsiniz.", category: 'Teknik' },
       ],
     },
     cta: {
@@ -487,15 +487,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'الكل',
       categories: ['الفوترة', 'التجربة', 'الدعم', 'الأمان', 'التقني'],
       items: [
-        { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
+        { id: 'starter-plan', question: 'ماذا تشمل خطة Starter؟', answer: "خطة Starter بسعر 29 يورو/شهر تشمل حتى 20 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.", category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
-        { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'per-employee', question: 'كيف تعمل الفوترة؟', answer: "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (20 لـ Starter، 200 لـ Business، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.", category: 'الفوترة' },
+        { id: 'free-trial', question: 'هل التجربة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع المزايا المدفوعة. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
         { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
-        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Pilot: بريد إلكتروني خلال 48 ساعة. Operations: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
+        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: "Starter: دعم عبر البريد الإلكتروني خلال 48 ساعة. Business: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.", category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
-        { id: 'api', question: 'هل API متاح في خطة Free؟', answer: 'REST API والـ Webhooks متاحة من خطة Operations. في Free وPilot يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
+        { id: 'api', question: 'هل API متاح؟', answer: "REST API والـ Webhooks متاحة من خطة Business. في Starter يمكنك تصدير بياناتك بصيغة CSV/Excel.", category: 'التقني' },
       ],
     },
     cta: {
@@ -622,7 +622,7 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
 export default function PricingPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const [isAnnual, setIsAnnual] = useState(true);
-  const [openFaqId, setOpenFaqId] = useState<string | null>('free-plan');
+  const [openFaqId, setOpenFaqId] = useState<string | null>('starter-plan');
   const [faqCategory, setFaqCategory] = useState<string | null>(null);
   // PA2-MKT-003: let PME prospects in DZ/MA/TN/TR/CA/US see an approximate
   // price in their own currency instead of only EUR. The contractual price
@@ -642,14 +642,14 @@ export default function PricingPage() {
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
-    // Free plan → direct account creation, no payment
+    // Legacy free-plan fallback (aucun plan à 0 € dans pricing.ts — garde défensive)
     if (plan.price === '0') return '/checkout?plan=free';
     // Enterprise → contact
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment
     if (plan.popular) return '/checkout?plan=business';
-    // Pilot → essai guidé 14 jours (aucun paiement à l'inscription) : le
-    // checkout ne doit pas être présenté comme « gratuit » (#2649).
+    // Autres plans payants (Starter) → essai guidé 14 jours (aucun paiement à
+    // l'inscription) : le checkout ne doit pas être présenté comme « gratuit » (#2649).
     return '/signup?source=pricing_pilot';
   }
 
