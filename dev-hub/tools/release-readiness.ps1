@@ -30,7 +30,6 @@ function Count-Files([string]$Path, [string]$Filter) {
 
 $backendTests = Count-Files "api/tests" "*.php"
 $adminE2e = Count-Files "front/admin-dashboard/e2e" "*.spec.js"
-$mobileTests = Count-Files "front/mobile/test" "*_test.dart"
 $mobileAppsTests = Count-Files "front/mobile_apps" "*_test.dart"
 $workflowCount = Count-Files ".github/workflows" "*.yml"
 

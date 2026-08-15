@@ -10,6 +10,7 @@ import 'package:leopardo_core/models/project_task.dart';
 import 'package:leopardo_manager/features/tasks/providers/task_provider.dart';
 import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class TaskListScreen extends ConsumerWidget {
   const TaskListScreen({super.key});
@@ -93,7 +94,7 @@ class _TaskCard extends StatelessWidget {
     final color = _priorityColor(task.priority);
     final due = task.dueDate == null
         ? 'Aujourd hui'
-        : DateFormat('d MMM', 'fr_FR').format(task.dueDate!);
+        : DateFormat('d MMM', deviceIntlDateLocale).format(task.dueDate!);
 
     return MobileListGlassCard(
       icon: task.isDone ? Icons.task_alt_rounded : Icons.radio_button_unchecked,

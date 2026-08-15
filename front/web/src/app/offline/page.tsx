@@ -25,9 +25,7 @@ export default function OfflinePage() {
           <p className="font-medium text-orange-800 mb-2">💡 {labels.edgeModeTitle}</p>
           <p className="text-orange-700">
             {labels.edgeModeBody}{' '}
-            <a href="http://leopardo.local" className="underline font-mono">
-              http://leopardo.local
-            </a>
+            <span className="underline font-mono">leopardo.local</span>
           </p>
         </div>
         <button

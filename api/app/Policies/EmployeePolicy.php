@@ -13,6 +13,12 @@ class EmployeePolicy
 
     public function view(Employee $actor, Employee $employee): bool
     {
+        // #3232 : fail-closed cross-tenant — un acteur ne voit jamais un
+        // employé d'une autre société, même si les IDs coïncident.
+        if ($employee->company_id !== $actor->company_id) {
+            return false;
+        }
+
         if ($actor->id === $employee->id) {
             return true;
         }
@@ -35,6 +41,11 @@ class EmployeePolicy
 
     public function update(Employee $actor, Employee $employee): bool
     {
+        // #3232 : un manager ne peut jamais modifier un employé d'un autre tenant.
+        if ($employee->company_id !== $actor->company_id) {
+            return false;
+        }
+
         if ($actor->id === $employee->id) {
             return true;
         }
@@ -44,6 +55,11 @@ class EmployeePolicy
 
     public function archive(Employee $actor, Employee $employee): bool
     {
+        // #3232 : l'archivage est strictement intra-tenant.
+        if ($employee->company_id !== $actor->company_id) {
+            return false;
+        }
+
         if ($actor->id === $employee->id) {
             return false;
         }

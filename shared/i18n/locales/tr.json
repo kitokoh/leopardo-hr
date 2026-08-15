@@ -74,18 +74,27 @@
     },
     "or": "veya",
     "countries": {
-      "DZ": "Cezayir",
-      "CM": "Kamerun",
-      "CI": "Fildişi Sahili",
-      "SN": "Senegal",
-      "MA": "Fas",
-      "TN": "Tunus",
-      "FR": "Fransa",
-      "TR": "Türkiye",
-      "CG": "Kongo",
-      "GA": "Gabon",
       "BF": "Burkina Faso",
-      "ML": "Mali"
+      "BJ": "Benin",
+      "CA": "Kanada",
+      "CF": "Orta Afrika Cumhuriyeti",
+      "CG": "Kongo",
+      "CI": "Fildişi Sahili",
+      "CM": "Kamerun",
+      "DZ": "Cezayir",
+      "FR": "Fransa",
+      "GA": "Gabon",
+      "GB": "Birleşik Krallık",
+      "GQ": "Ekvator Ginesi",
+      "MA": "Fas",
+      "ML": "Mali",
+      "NE": "Nijer",
+      "SN": "Senegal",
+      "TD": "Çad",
+      "TG": "Togo",
+      "TN": "Tunus",
+      "TR": "Türkiye",
+      "US": "Amerika Birleşik Devletleri"
     }
   },
   "modules": {
@@ -302,8 +311,14 @@
     "recent_activity": "Son Etkinlik",
     "recent_activity_hint": "Ekibinizin son eylemleri",
     "leo_ia_announcement_title": "Tebrikler ekip",
-    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
-    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin."
+    "leo_ia_announcement_body": "Bu haftaki ozveriniz icin tum ekibe tebrikler. Bu ivmeyi surdurun!",
+    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.",
+    "leo_presence_insight": "Bugün {active} aktif çalışandan {today} giriş yaptı. Ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_presence_empty": "Şu anda katılım verisi yok. Yine de ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_announcements_count": "Şirketinizde {count} duyuru yayınlandı.",
+    "presence_today_title": "Bugünkü katılım",
+    "presence_today_summary": "Bugün {active} aktif çalışandan {present} giriş yaptı",
+    "presence_today_empty": "Katılım verisi mevcut değil."
   },
   "marketing": {
     "oauth": {
@@ -692,6 +707,7 @@
     "credsSentByEmail": "Bu bilgiler e-postayla da gönderildi:",
     "credsEmailed": "Giriş bilgileriniz e-postayla gönderildi.",
     "trialNote": "Ücretsiz deneme:",
+    "trialDaysUnit": "gün",
     "trialNoteSuffix": "kredi kartı gerekmez",
     "downloadApp": "Uygulamayı indir",
     "changePasswordNote": "İlk girişte parolanızı değiştirin.",
