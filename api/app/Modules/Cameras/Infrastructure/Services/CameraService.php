@@ -380,6 +380,12 @@ class CameraService
         if (! preg_match('#^rtsp://[^\s\'"]+$#i', $rtspUrl)) {
             return ['ok' => false, 'error' => 'invalid_url', 'skipped' => false];
         }
+        // QA #3147 — SSRF : ffprobe est lancé sur l'URL fournie par l'utilisateur.
+        // Bloquer les cibles internes (loopback, privées, link-local, réservées)
+        // avant tout accès réseau, y compris après résolution DNS.
+        if ($this->isPrivateRtspTarget($rtspUrl)) {
+            return ['ok' => false, 'error' => 'invalid_url', 'skipped' => false];
+        }
 
         $cmd = sprintf(
             '%s -v error -rtsp_transport tcp -stimeout %d -i %s -show_streams -of json 2>&1',
@@ -542,5 +548,100 @@ class CameraService
     {
         return Str::uuid()->toString().':'.$camera->id.':'.$actor->id;
     }
-}
 
+    /**
+     * QA #3147 — anti-SSRF : détermine si une URL RTSP cible une adresse
+     * interne (loopback, RFC1918, link-local, CGNAT, réservée/multicast) ou
+     * un nom d'hôte qui y résout. Aucun ffprobe n'est lancé sur ces cibles.
+     */
+    private function isPrivateRtspTarget(string $rtspUrl): bool
+    {
+        $host = parse_url($rtspUrl, PHP_URL_HOST);
+        if (! is_string($host) || $host === '') {
+            return true;
+        }
+
+        $host = strtolower(trim($host, '[]'));
+        if (in_array($host, ['localhost', 'localhost.localdomain'], true)) {
+            return true;
+        }
+        if (str_ends_with($host, '.local') || str_ends_with($host, '.internal') || str_ends_with($host, '.lan')) {
+            return true;
+        }
+
+        $candidates = [];
+        if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
+            $candidates[] = $host;
+        } else {
+            $resolved = @gethostbynamel($host);
+            if ($resolved === false) {
+                return true; // non résolu — ne pas laisser ffprobe tenter l'accès
+            }
+            $candidates = $resolved;
+        }
+
+        foreach ($candidates as $ip) {
+            if ($this->isPrivateIp($ip)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isPrivateIp(string $ip): bool
+    {
+        $packed = @inet_pton($ip);
+        if ($packed === false) {
+            return true; // IP illisible → on refuse par défaut
+        }
+
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false) {
+            $parts = array_map('intval', explode('.', $ip));
+
+            return $parts[0] === 0        // 0.0.0.0/8
+                || $parts[0] === 10       // 10.0.0.0/8
+                || $parts[0] === 127      // 127.0.0.0/8 loopback
+                || ($parts[0] === 100 && $parts[1] >= 64 && $parts[1] <= 127) // 100.64.0.0/10 CGNAT
+                || ($parts[0] === 169 && $parts[1] === 254) // 169.254.0.0/16 link-local
+                || ($parts[0] === 172 && $parts[1] >= 16 && $parts[1] <= 31) // 172.16.0.0/12
+                || ($parts[0] === 192 && $parts[1] === 168) // 192.168.0.0/16
+                || ($parts[0] === 192 && $parts[1] === 0 && $parts[2] === 0) // 192.0.0.0/24
+                || ($parts[0] === 192 && $parts[1] === 0 && $parts[2] === 2) // 192.0.2.0/24 TEST-NET
+                || ($parts[0] === 198 && ($parts[1] === 18 || $parts[1] === 19)) // 198.18.0.0/15
+                || ($parts[0] === 198 && $parts[1] === 51 && $parts[2] === 100) // 198.51.100.0/24
+                || ($parts[0] === 203 && $parts[1] === 0 && $parts[2] === 113) // 203.0.113.0/24
+                || $parts[0] >= 224;      // multicast + réservé
+        }
+
+        // IPv6 : boucle (::1), unspecified (::), lien-local (fe80::/10),
+        // ULA (fc00::/7), multicast (ff00::/8), documentation (2001:db8::/32),
+        // et IPv4-mappée (::ffff:a.b.c.d) — déléguée au filtre IPv4.
+        $hex = bin2hex($packed);
+        $firstWord = substr($hex, 0, 4);
+
+        if ($firstWord === '0000') {
+            $suffix = substr($hex, 20);
+            if ($suffix === '') {
+                return true; // :: ou ::1
+            }
+            if (str_starts_with($suffix, 'ffff')) {
+                $v4 = implode('.', [
+                    hexdec(substr($suffix, 4, 2)),
+                    hexdec(substr($suffix, 6, 2)),
+                    hexdec(substr($suffix, 8, 2)),
+                    hexdec(substr($suffix, 10, 2)),
+                ]);
+
+                return $this->isPrivateIp($v4);
+            }
+
+            return true; // autre 0000 non-mappé — refuse par défaut
+        }
+
+        return $firstWord === 'fe80' || $firstWord === 'fec0'
+            || $firstWord === 'fc00' || $firstWord === 'fd00'
+            || $firstWord === 'ff00'
+            || $firstWord === '2001' && substr($hex, 4, 4) === '0db8';
+    }
+}
