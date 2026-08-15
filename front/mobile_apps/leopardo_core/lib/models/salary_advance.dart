@@ -8,7 +8,7 @@ class SalaryAdvance {
     this.employeeEmail,
     this.companyId,
     this.companyName,
-    this.currency = 'DZD',
+    this.currency = '',
     this.reason,
     this.approvedBy,
     this.decisionComment,
@@ -96,7 +96,7 @@ class SalaryAdvance {
       currency:
           json['currency']?.toString() ??
           companyMap?['currency']?.toString() ??
-          'DZD',
+          '',
       reason: json['reason'] as String?,
       approvedBy: (json['approved_by'] as num?)?.toInt(),
       decisionComment: json['decision_comment'] as String?,

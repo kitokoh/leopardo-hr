@@ -53,7 +53,7 @@ class ProvisionGuidedTrial
                 'tenancy_type' => 'shared',
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays(14)->toDateString(),
+                'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
                 'language' => strtolower($countryDefaults['language']),
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
@@ -120,7 +120,7 @@ class ProvisionGuidedTrial
             'price_yearly' => 0,
             'max_employees' => 50,
             'features' => json_encode(['rh' => true, 'tasks' => true, 'attendance' => true, 'mobile_apps' => true]),
-            'trial_days' => 30,
+            'trial_days' => (int) config('billing.trial_days'),
             'is_active' => true,
         ]);
     }
