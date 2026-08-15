@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\CalendarEvent;
+use App\Modules\Attendance\Infrastructure\Services\CalendarSyncService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Modules\Attendance\Domain\Models\CalendarEvent;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Attendance\Infrastructure\Services\CalendarSyncService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Tests\Support\CreatesMvpSchema;
@@ -130,6 +130,7 @@ class CalendarSyncServiceTest extends TestCase
 
         CalendarEvent::query()->create([
             'employee_id' => $this->employee->id,
+            'company_id' => $this->employee->company_id,
             'source_type' => 'absence',
             'source_id' => $absence->id,
             'provider' => $connection->provider,
@@ -180,6 +181,7 @@ class CalendarSyncServiceTest extends TestCase
 
         CalendarEvent::query()->create([
             'employee_id' => $this->employee->id,
+            'company_id' => $this->employee->company_id,
             'source_type' => 'training_session',
             'source_id' => $sessionId,
             'provider' => 'outlook',
@@ -236,6 +238,7 @@ class CalendarSyncServiceTest extends TestCase
     {
         CalendarEvent::query()->create([
             'employee_id' => $this->employee->id,
+            'company_id' => $this->employee->company_id,
             'provider' => 'caldav',
             'title' => 'Later',
             'starts_at' => '2026-06-03 08:00:00',
@@ -248,6 +251,7 @@ class CalendarSyncServiceTest extends TestCase
 
         CalendarEvent::query()->create([
             'employee_id' => $this->employee->id,
+            'company_id' => $this->employee->company_id,
             'provider' => 'caldav',
             'title' => 'Earlier',
             'starts_at' => '2026-06-01 08:00:00',
@@ -260,6 +264,7 @@ class CalendarSyncServiceTest extends TestCase
 
         CalendarEvent::query()->create([
             'employee_id' => $this->employee->id,
+            'company_id' => $this->employee->company_id,
             'provider' => 'caldav',
             'title' => 'Outside',
             'starts_at' => '2026-07-01 08:00:00',
@@ -307,4 +312,3 @@ class CalendarSyncServiceTest extends TestCase
         return $sessionId;
     }
 }
-

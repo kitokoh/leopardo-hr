@@ -54,7 +54,7 @@ class PayrollBalance {
       employeeId: _asInt(json['employee_id']),
       employeeName: (json['employee_name'] ?? '').toString(),
       country: (json['country'] ?? '').toString(),
-      currency: (json['currency'] ?? 'DZD').toString(),
+      currency: (json['currency'] ?? '').toString(),
       periodStart: (period['start'] ?? '').toString(),
       periodEnd: (period['end'] ?? '').toString(),
       periodLabel: (period['label'] ?? '').toString(),

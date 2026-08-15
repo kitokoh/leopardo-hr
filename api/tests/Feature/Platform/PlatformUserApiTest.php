@@ -147,6 +147,7 @@ class PlatformUserApiTest extends TestCase
             ->assertJsonPath('data.name', 'Renamed Admin');
 
         $fresh = $user->fresh();
+        $this->assertNotNull($fresh);
         $this->assertTrue(Hash::check('NewSecret456!', (string) $fresh->password_hash));
     }
 

@@ -20,7 +20,7 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/register',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
       data: {
         'first_name': firstName,
@@ -33,7 +33,7 @@ class UserAuthRepository {
 
     final data = _authPayload(response.data);
     final token = data['token'] as String;
-    await storage.saveToken(token);
+    await storage.saveUserToken(token);
 
     final user = AppUser.fromJson(_userPayload(data));
     return {'user': user};
@@ -45,14 +45,14 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/login',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
       data: {'email': email, 'password': password, 'device_name': 'Mobile App'},
     );
 
     final data = _authPayload(response.data);
     final token = data['token'] as String;
-    await storage.saveToken(token);
+    await storage.saveUserToken(token);
 
     final user = AppUser.fromJson(_userPayload(data));
     return {'user': user};
@@ -67,7 +67,7 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/google-signin',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
       data: {
         'google_id': googleId,
@@ -80,19 +80,20 @@ class UserAuthRepository {
 
     final data = _authPayload(response.data);
     final token = data['token'] as String;
-    await storage.saveToken(token);
+    await storage.saveUserToken(token);
 
     final user = AppUser.fromJson(_userPayload(data));
     return {'user': user, 'is_new': data['is_new'] ?? false};
   }
 
   Future<AppUser?> checkAuth() async {
-    final token = await storage.getToken();
+    final token = await storage.getUserToken();
     if (token == null) return null;
 
     try {
       final response = await apiClient.requestWithRetry(
         '/user/me',
+        useUserSession: true,
         timeoutOverride: const Duration(seconds: 8),
         maxRetriesOverride: 0,
       );
@@ -107,20 +108,22 @@ class UserAuthRepository {
     try {
       await apiClient.requestWithRetry(
         '/user/logout',
-        method: 'POST',
+        method: 'POST', maxRetriesOverride: 0,
+        useUserSession: true,
         timeoutOverride: const Duration(seconds: 8),
         maxRetriesOverride: 0,
       );
     } catch (_) {
       // Ignore
     } finally {
-      await storage.deleteToken();
+      await storage.deleteUserToken();
     }
   }
 
   Future<List<Map<String, dynamic>>> getCompanyRequests() async {
     final response = await apiClient.requestWithRetry(
       '/user/company-requests',
+      useUserSession: true,
       timeoutOverride: const Duration(seconds: 12),
     );
     return extractDataList(
@@ -139,8 +142,10 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/company-requests',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
+      useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
+      maxRetriesOverride: 0,
       data: {
         'company_name': companyName,
         'email': email,
@@ -163,6 +168,7 @@ class UserAuthRepository {
     final response = await apiClient.requestWithRetry(
       '/user/profile',
       method: 'PATCH',
+      useUserSession: true,
       timeoutOverride: const Duration(seconds: 12),
       data: {
         if (firstName != null) 'first_name': firstName,
@@ -185,7 +191,8 @@ class UserAuthRepository {
         preferredLanguage: lang,
         isRtl: isRtl,
       );
-      apiClient.dio.options.headers['Accept-Language'] = lang;
+      // Header Accept-Language gere par l'intercepteur core (api_client.dart)
+      // a partir de _preferences.preferredLanguage — pas de mutation globale.
     }
 
     return user;

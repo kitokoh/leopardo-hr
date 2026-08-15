@@ -14,6 +14,9 @@ export interface BlogPost {
   category: string;
   readingTime: number;
   tags: string[];
+  /** QA 2026-08-15 (#2657) : contenu daté (2023/2024) conservé mais marqué
+   *  comme archivé — les dates de publication restent fidèles au contenu. */
+  archived?: boolean;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -67,6 +70,7 @@ Pour garder vos meilleurs talents:
 Une bonne gestion RH est la clé du succès d'une startup. En suivant ces étapes, vous pouvez construire une équipe forte et engagée.`,
     image: '/blog/startup-rh.svg',
     date: new Date('2024-01-15'),
+    archived: true,
     author: {
       name: 'Ahmed Benali',
       avatar: '/avatars/ahmed.svg',
@@ -129,6 +133,7 @@ Assurez-vous que votre équipe:
 La migration de Excel vers un logiciel de paie peut sembler intimidante, mais avec une bonne planification, c'est un processus fluide qui vous fera gagner du temps et réduira les erreurs.`,
     image: '/blog/paie-excel.svg',
     date: new Date('2024-01-10'),
+    archived: true,
     author: {
       name: 'Jean Martin',
       avatar: '/avatars/jean.svg',
@@ -183,6 +188,7 @@ La technologie transforme la RH:
 2024 sera une année de transformation pour la RH. Les entreprises qui s'adaptent à ces tendances seront mieux positionnées pour le succès.`,
     image: '/blog/tendances-rh.svg',
     date: new Date('2024-01-05'),
+    archived: true,
     author: {
       name: 'Sophie Bernard',
       avatar: '/avatars/sophie.svg',
@@ -237,6 +243,7 @@ La technologie est votre allié:
 En suivant ces conseils, vous pouvez économiser des heures chaque semaine et vous concentrer sur les tâches stratégiques.`,
     image: '/blog/productivite.svg',
     date: new Date('2023-12-28'),
+    archived: true,
     author: {
       name: 'Fatima Dupont',
       avatar: '/avatars/fatima.svg',
@@ -292,6 +299,7 @@ Les employés ont le droit de:
 La conformité RGPD est essentielle. En mettant en place les bonnes mesures, vous protégez vos employés et votre entreprise.`,
     image: '/blog/rgpd.svg',
     date: new Date('2023-12-20'),
+    archived: true,
     author: {
       name: 'Jean Martin',
       avatar: '/avatars/jean.svg',
@@ -347,6 +355,7 @@ Vous pouvez mesurer la culture par:
 Une bonne culture d'entreprise est un investissement qui paie. Elle crée un environnement où les employés veulent travailler et où l'entreprise prospère.`,
     image: '/blog/culture.svg',
     date: new Date('2023-12-15'),
+    archived: true,
     author: {
       name: 'Sophie Bernard',
       avatar: '/avatars/sophie.svg',
@@ -406,6 +415,7 @@ Les coûts incluent:
 Le pointage biométrique est une solution moderne qui améliore la sécurité et l'efficacité. Avec une bonne implémentation, c'est un investissement rentable.`,
     image: '/blog/biometrique.svg',
     date: new Date('2023-12-10'),
+    archived: true,
     author: {
       name: 'Ahmed Benali',
       avatar: '/avatars/ahmed.svg',
@@ -465,6 +475,7 @@ Vous devez:
 Une gestion efficace des absences améliore la satisfaction des employés et réduit les erreurs administratives.`,
     image: '/blog/absences.svg',
     date: new Date('2023-12-05'),
+    archived: true,
     author: {
       name: 'Fatima Dupont',
       avatar: '/avatars/fatima.svg',
@@ -525,6 +536,7 @@ Optimisez votre processus:
 Le recrutement digital est essentiel pour attirer les meilleurs talents. En utilisant les bons canaux et stratégies, vous pouvez construire une équipe exceptionnelle.`,
     image: '/blog/recrutement.svg',
     date: new Date('2023-11-30'),
+    archived: true,
     author: {
       name: 'Sophie Bernard',
       avatar: '/avatars/sophie.svg',
@@ -585,6 +597,7 @@ Mesurez l'impact:
 Investir dans la formation de vos employés est un investissement dans l'avenir de votre entreprise. Cela crée une équipe plus compétente et engagée.`,
     image: '/blog/formation.svg',
     date: new Date('2023-11-25'),
+    archived: true,
     author: {
       name: 'Ahmed Benali',
       avatar: '/avatars/ahmed.svg',

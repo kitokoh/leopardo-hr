@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -20,7 +21,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CalendarEvent extends Model
 {
+    use BelongsToCompany;
     protected $fillable = [
+        'company_id',
         'employee_id',
         'external_event_id',
         'provider',

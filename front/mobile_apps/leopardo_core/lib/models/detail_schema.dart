@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'detail_schema.g.dart';
 
@@ -156,7 +157,13 @@ class DetailField {
   Map<String, dynamic> toJson() => _$DetailFieldToJson(this);
 
   /// Formate une valeur selon le type et format du champ
-  String formatValue(dynamic value) {
+  String formatValue(
+    dynamic value, {
+    String locale = 'fr',
+    String currency = '',
+    String yesLabel = 'Oui',
+    String noLabel = 'Non',
+  }) {
     if (value == null) return '';
 
     switch (type) {
@@ -172,10 +179,11 @@ class DetailField {
           // Format simple pour les nombres (ex: "0.00" pour 2 décimales)
           if (format!.contains('.')) {
             final decimals = format!.split('.')[1].length;
-            return numValue.toStringAsFixed(decimals);
+            return NumberFormat.decimalPattern(locale)
+                .format(numValue.toStringAsFixed(decimals));
           }
         }
-        return numValue.toString();
+        return NumberFormat.decimalPattern(locale).format(numValue);
 
       case DetailFieldType.date:
         if (value is DateTime) {
@@ -197,15 +205,19 @@ class DetailField {
 
       case DetailFieldType.boolean:
         if (value is bool) {
-          return value ? 'Oui' : 'Non';
+          return value ? yesLabel : noLabel;
         }
-        return value.toString().toLowerCase() == 'true' ? 'Oui' : 'Non';
+        return value.toString().toLowerCase() == 'true' ? yesLabel : noLabel;
 
       case DetailFieldType.currency:
         final num? numValue =
             value is num ? value : num.tryParse(value.toString());
         if (numValue == null) return value.toString();
-        return '${numValue.toStringAsFixed(2)} €';
+        return NumberFormat.currency(
+          locale: locale,
+          symbol: currency.isEmpty ? '' : currency,
+          decimalDigits: 2,
+        ).format(numValue);
 
       case DetailFieldType.percentage:
         final num? numValue =

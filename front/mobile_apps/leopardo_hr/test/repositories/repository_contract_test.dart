@@ -138,7 +138,7 @@ void main() {
     final client = recordingClient(recorder);
 
     await AbsenceRepository(client).getMyAbsences();
-    await PayrollRepository(client).getMyPayrolls();
+    await PayrollRepository(client).getMyPaySlips();
     await NotificationRepository(client).getMyNotifications();
     await EvaluationRepository(client).getMyEvaluations();
     await ContractRepository(client).getMyContracts();
@@ -150,7 +150,7 @@ void main() {
 
     expect(recorder.requests, [
       'GET /absences',
-      'GET /payrolls',
+      'GET /me/pay-slips',
       'GET /notifications',
       'GET /evaluations',
       'GET /me/contracts',
@@ -170,16 +170,16 @@ void main() {
     await NotificationRepository(client).markAsRead(7);
     await ApprovalRepository(client).approve(9, comment: 'ok');
     await ApprovalRepository(client).reject(10, comment: 'missing file');
-    await OnboardingRepository(client).completeStep(11);
-    await OnboardingRepository(client).skipStep(12);
+    await OnboardingRepository(client).completeStep('first_employee');
+    await OnboardingRepository(client).skipStep('company_branding');
 
     expect(recorder.requests, [
-      'PUT /notifications/read-all',
-      'PUT /notifications/7/read',
+      'POST /notifications/mark-all-read',
+      'PATCH /notifications/7/read',
       'POST /approvals/9/approve',
       'POST /approvals/10/reject',
-      'POST /onboarding-setup/11/complete',
-      'POST /onboarding-setup/12/skip',
+      'PATCH /onboarding-setup/first_employee/complete',
+      'PATCH /onboarding-setup/company_branding/skip',
     ]);
   });
 
@@ -266,7 +266,7 @@ void main() {
       expect(recorder.requests, [
         'PUT /absences/33/approve',
         'PUT /absences/33/reject',
-        'PUT /salary-advances/12/approve',
+        'PUT /salary-advances/12/manager-approve',
         'PUT /salary-advances/12/reject',
       ]);
 

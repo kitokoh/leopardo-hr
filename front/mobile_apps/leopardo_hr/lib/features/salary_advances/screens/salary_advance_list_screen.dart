@@ -17,6 +17,8 @@ import 'package:leopardo_hr/features/salary_advances/providers/salary_advance_pr
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -264,7 +266,7 @@ class _SalaryAdvanceListScreenState
     final requestedAt = advance.requestedAt ?? advance.createdAt;
     final date = requestedAt == null
         ? 'Date non renseignee'
-        : DateFormat('d MMM yyyy', 'fr_FR').format(requestedAt);
+        : DateFormat('d MMM yyyy', deviceIntlDateLocale).format(requestedAt);
     final repayment = advance.repaymentMonths == null
         ? 'Remboursement a definir'
         : '${advance.repaymentMonths} mois';
@@ -280,11 +282,11 @@ class _SalaryAdvanceListScreenState
     final validation = _validationLabel(advance.validationStatus);
     final payment = [
       if (advance.managerApprovedAt != null)
-        'Validation manager : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.managerApprovedAt!)}',
+        'Validation manager : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.managerApprovedAt!)}',
       if (advance.paymentDeclaredAt != null)
-        'Paiement declare : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.paymentDeclaredAt!)}',
+        'Paiement declare : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.paymentDeclaredAt!)}',
       if (advance.employeeConfirmedAt != null)
-        'Reception employee : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.employeeConfirmedAt!)}',
+        'Reception employee : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.employeeConfirmedAt!)}',
     ].join('\n');
 
     return Text(
@@ -532,7 +534,7 @@ class _SalaryAdvanceListScreenState
   }
 
   static String _formatMoney(double? amount, String currency) =>
-      '${(amount ?? 0).toStringAsFixed(0)} $currency';
+      '${(amount ?? 0).toStringAsFixed(0)}${currencySuffix(currency)}';
 }
 
 class _SalaryAdvanceRequestSheet extends ConsumerStatefulWidget {
@@ -574,7 +576,7 @@ class _SalaryAdvanceRequestSheetState
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final currency = ref.watch(authProvider).employee?.currency ?? 'DZD';
+    final currency = ref.watch(authProvider).employee?.currency ?? '';
 
     return Padding(
       padding: EdgeInsets.fromLTRB(22, 18, 22, bottom + 24),
@@ -615,7 +617,7 @@ class _SalaryAdvanceRequestSheetState
               style: const TextStyle(color: MobileSurface.text),
               decoration: InputDecoration(
                 labelText: 'Montant demande',
-                suffixText: currency,
+                suffixText: currencySuffix(currency).trim(),
               ),
               validator: (value) {
                 final amount = _parseAmount(value ?? '');
