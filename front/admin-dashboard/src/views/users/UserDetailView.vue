@@ -40,7 +40,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useToast } from 'vue-toastification'
 import UserDetailModal from '@/components/users/UserDetailModal.vue'
 import api from '@/services/api'
 
