@@ -1126,9 +1126,9 @@ function CheckoutInner() {
   const searchParams = useSearchParams();
   // #2907 : clés canoniques free/pilot/operations/enterprise ; les anciens
   // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
-  const rawPlan = (searchParams.get('plan') || 'business') as string;
+  const rawPlan = (searchParams.get('plan') || 'starter') as string;
   const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
-  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'operations') as PlanKey;
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'starter') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 

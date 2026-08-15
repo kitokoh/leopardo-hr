@@ -94,7 +94,7 @@ class PlatformAdminApp extends ConsumerWidget {
       title: 'Leopardo Platform Admin',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       // Issue #2761 — locale résolue depuis les préférences utilisateur

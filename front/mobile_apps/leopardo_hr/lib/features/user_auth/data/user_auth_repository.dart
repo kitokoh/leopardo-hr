@@ -145,6 +145,7 @@ class UserAuthRepository {
       method: 'POST',
       useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
+      maxRetriesOverride: 0,
       data: {
         'company_name': companyName,
         'email': email,

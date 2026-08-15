@@ -205,10 +205,9 @@ export function SignupForm({
         if (response.provisioned === false) {
           // Backend could not send an OTP right now (e.g. cold-start timeout).
           // The lead was still captured, so tell the user honestly instead of
-          // showing a verification screen for a code that was never sent.
+          // showing a vérification screen for a code that was never sent.
           setPendingMessage(
-            response.message ||
-              "c.pendingFallback"
+            response.message || c.pendingFallback
           );
           setCurrentStep('pending');
         } else {
@@ -271,7 +270,7 @@ export function SignupForm({
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
-      setOtpError('c.otpInvalidLength');
+      setOtpError(c.otpInvalidLength);
       return;
     }
 
@@ -287,10 +286,10 @@ export function SignupForm({
         reset();
         onSuccess?.({} as SignupFormData);
       } else {
-        setOtpError(response.message || 'c.otpInvalidCode');
+        setOtpError(response.message || c.otpInvalidCode);
       }
     } catch (error) {
-      setOtpError('c.otpVerifyError');
+      setOtpError(c.otpVerifyError);
     } finally {
       setIsVerifying(false);
     }
@@ -475,7 +474,7 @@ export function SignupForm({
         )}
 
         {/* ═══════════════════════════════════════ */}
-        {/* STEP 2: OTP Verification                */}
+        {/* STEP 2: OTP Vérification                */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'otp' && (
           <motion.div
@@ -602,15 +601,15 @@ export function SignupForm({
             </p>
 
             <div className="rounded-xl bg-transparent px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-              Notre systeme de creation d&apos;espace instantane est momentanement
+              Notre système de creation d&apos;espace instantane est momentanement
               indisponible (redemarrage serveur). Votre demande est bien
               enregistree : une personne de l&apos;equipe Leopardo vous contactera
-              par email sous 24h ouvrables avec un acces adapte a votre
+              par email sous 24h ouvrables avec un accès adapte a votre
               contexte.
             </div>
 
             <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
-              Vous avez deja un compte?{' '}
+              Vous avez déjà un compte?{' '}
               <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
                 Se connecter
               </Link>
@@ -754,7 +753,7 @@ export function SignupForm({
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
                 <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <h3 className="text-lg font-black text-emerald-900 dark:text-emerald-100">
-                  Votre espace est pret !
+                  {c.successTitle}
                 </h3>
               </div>
 

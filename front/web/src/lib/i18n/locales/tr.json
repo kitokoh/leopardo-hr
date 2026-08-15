@@ -255,7 +255,8 @@
       "exportInProgress": "Disa aktarim yapiliyor...",
       "exportDone": "Disa aktarim tamamlandi",
       "exportError": "Disa aktarim basarisiz oldu",
-      "selectionExportDone": "Secim disa aktarimi tamamlandi"
+      "selectionExportDone": "Secim disa aktarimi tamamlandi",
+      "bulkDone": "Güncelleme tamamlandı"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
@@ -263,7 +264,32 @@
     "errors": {
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
-      "fix_fields": "Lütfen kırmızı alanları düzeltin"
+      "fix_fields": "Lütfen kırmızı alanları düzeltin",
+      "password_min": "Şifre en az 8 karakter olmalıdır",
+      "search_no_match": "Aramanızla eşleşen sayfa yok",
+      "update_failed": "Kullanıcı güncellenemedi"
+    },
+    "impersonation": {
+      "title": "Bir çalışanı taklit et",
+      "subtitle": ":name adına oturum aç",
+      "reason": "Gerekçe (zorunlu, en az 5 karakter)",
+      "reasonMin": "Gerekçe zorunludur (en az 5 karakter).",
+      "noLink": "Bu hesaba bağlı çalışan yok — taklit edilemiyor.",
+      "start": "Oturum oluştur",
+      "cancel": "İptal",
+      "tokenTitle": "Taklit belirteci (tek kullanımlık)",
+      "expires": ":date tarihinde sona erer",
+      "copy": "Belirteci kopyala",
+      "copied": "Belirteç kopyalandı",
+      "created": "Taklit oturumu oluşturuldu",
+      "error": "Taklit oturumu oluşturulurken hata oluştu",
+      "done": "Tamam",
+      "employee": "Bağlı çalışan #:id"
+    },
+    "edit": {
+      "title": "Kullanıcıyı düzenle",
+      "status": "Durum",
+      "save": "Güncelle"
     }
   },
   "dashboard": {
@@ -680,6 +706,19 @@
       "employeesRequired": "Bir ekip boyutu seçin",
       "phoneInvalid": "Geçersiz telefon numarası",
       "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Şirket detayları yüklenemedi.",
+      "tickets_failed": "Destek talepleri yüklenemedi.",
+      "subscription_failed": "Abonelik güncellenemedi.",
+      "features_failed": "Modül ayarları kaydedilemedi."
     }
   }
 }

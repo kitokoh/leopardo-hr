@@ -40,6 +40,22 @@ class UserEmployeeLinkController extends Controller
             ], 404);
         }
 
+        // Issue #3065 (QA 2026-08-15) : l'employee_id doit appartenir à la
+        // société de l'acteur — un manager ne peut pas lier un utilisateur à
+        // un employé d'une autre entreprise (lien cross-tenant interdit).
+        // 404 (et non 422) : pas de fuite d'existence cross-tenant.
+        $employee = Employee::query()
+            ->where('id', $validated['employee_id'])
+            ->where('company_id', $manager->company_id)
+            ->first();
+
+        if (! $employee) {
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'Employe introuvable dans votre entreprise.',
+            ], 404);
+        }
+
         $existing = UserEmployeeLink::where('user_id', $user->id)
             ->where('company_id', $manager->company_id)
             ->first();
