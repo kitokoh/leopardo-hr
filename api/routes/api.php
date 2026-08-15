@@ -46,11 +46,11 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
@@ -66,9 +66,9 @@ Route::prefix('v1')->group(function (): void {
     // Sonde live+ready : DB + Redis + storage. Consommee par Render (deploy hook)
     // et la supervision externe. 503 si la DB tombe, 200 sinon (Redis et storage
     // peuvent etre degrades sans bloquer l'API).
-    Route::get('/health', HealthController::class);
-    Route::get('/health/live', [HealthController::class, 'live']);
-    Route::get('/health/ready', [HealthController::class, 'ready']);
+    Route::get('/health', HealthController::class)->middleware('throttle:60,1');
+    Route::get('/health/live', [HealthController::class, 'live'])->middleware('throttle:60,1');
+    Route::get('/health/ready', [HealthController::class, 'ready'])->middleware('throttle:60,1');
     // Platform-wide metrics (versions PHP/Laravel, drivers, tenant/employee
     // counts) are business intelligence + version fingerprinting material:
     // they must not be served anonymously. See issue #1466.
@@ -339,6 +339,7 @@ Route::prefix('v1')->group(function (): void {
 
         // Issue #2634 : équivalents /admin des vues Training et Webhooks
         // (les routes tenant /training/* et /webhooks* sont api.manager → 401 super-admin).
+        Route::get('/training/courses', [PlatformAdminTrainingController::class, 'indexCourses']);
         Route::get('/training/sessions', [PlatformAdminTrainingController::class, 'indexSessions']);
         Route::get('/training/enrollments', [PlatformAdminTrainingController::class, 'indexEnrollments']);
         Route::get('/webhooks', [PlatformAdminWebhookController::class, 'index']);

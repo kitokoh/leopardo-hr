@@ -258,7 +258,7 @@ class WebhookController extends Controller
             $webhookEndpoint->deliveries()
                 ->deadLettered()
                 ->orderByDesc('delivered_at')
-                ->paginate((int) $request->integer('per_page', 20))
+                ->paginate(max(1, min(100, (int) $request->integer('per_page', 20))))
         );
     }
 

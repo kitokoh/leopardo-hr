@@ -7,13 +7,12 @@ const CACHE_NAME = 'leopardo-edge-v1';
 const OFFLINE_URL = '/offline';
 
 // Assets to pre-cache on install
+// Issue #2983 : les routes dashboard/attendance/absences/employees sont des
+// routes AUTHENTIFIÉES — les précacher expose la page de login en cache et
+// stocke du HTML privé côté client. On ne précache que les pages publiques.
 const PRECACHE_ASSETS = [
   '/',
   '/offline',
-  '/dashboard',
-  '/attendance',
-  '/absences',
-  '/employees',
   '/favicon.ico',
 ];
 
@@ -81,8 +80,11 @@ self.addEventListener('fetch', (event) => {
 });
 
 // ── Background Sync (when back online) ────────────────────
+// QA #3028 — tags réellement enregistrés par le client (PWAProvider :
+// 'sync-forms' + 'sync-analytics') ; 'leopardo-sync' conservé par compat.
+const SYNC_TAGS = new Set(['leopardo-sync', 'sync-forms', 'sync-analytics']);
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'leopardo-sync') {
+  if (SYNC_TAGS.has(event.tag)) {
     event.waitUntil(
       self.clients.matchAll().then((clients) => {
         clients.forEach((client) =>

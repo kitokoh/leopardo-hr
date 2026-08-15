@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
+use App\Rules\NotPrivateUrl;
+
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -129,6 +131,13 @@ final class OidcIdTokenValidator
         if (is_array($keys)) {
             /** @var list<array<string, mixed>> $keys */
             return $keys;
+        }
+
+        $host = parse_url($jwksUri, PHP_URL_HOST);
+        if (! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
+            Log::warning('OIDC JWKS fetch blocked by SSRF guard', ['jwks_uri' => $jwksUri]);
+
+            return [];
         }
 
         try {

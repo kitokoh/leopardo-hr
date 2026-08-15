@@ -7,6 +7,7 @@ use App\AI\Providers\ClaudeClient;
 use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Policies\ExportPolicy;
@@ -220,12 +221,6 @@ class AppServiceProvider extends ServiceProvider
                 ->by('public-careers:'.$request->ip());
         });
 
-        // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req /
-        // 5 s pendant 60 s) — un limit 5/15 min le 429ait systématiquement.
-        // Limiteur dédié 60/min/IP (statut non sensible, pas de mutation).
-        RateLimiter::for('trial-status', function (Request $request) {
-            return Limit::perMinute(60)->by('trial-status:'.$request->ip());
-        });
     }
 
     private function resolvePlanLimit(string $plan): int
@@ -234,11 +229,9 @@ class AppServiceProvider extends ServiceProvider
 
         return match ($normalized) {
             'enterprise' => (int) config('security.plan_rate_limits.enterprise_per_minute', 0),
-            'business' => (int) config('security.plan_rate_limits.business_per_minute', 1000),
-            'professional' => (int) config('security.plan_rate_limits.professional_per_minute', 1000),
-            'pro' => (int) config('security.plan_rate_limits.pro_per_minute', 1000),
-            'starter' => (int) config('security.plan_rate_limits.starter_per_minute', 100),
-            'trial' => (int) config('security.plan_rate_limits.trial_per_minute', 60),
+            'operations' => (int) config('security.plan_rate_limits.operations_per_minute', 1000),
+            'pilot' => (int) config('security.plan_rate_limits.pilot_per_minute', 100),
+            'free' => (int) config('security.plan_rate_limits.free_per_minute', 60),
             default => (int) config('security.plan_rate_limits.default_per_minute', 100),
         };
     }
@@ -254,11 +247,15 @@ class AppServiceProvider extends ServiceProvider
             return $planName;
         }
 
-        return 'trial';
+        return PlanCode::Free->value;
     }
 
     private function normalizePlan(string $plan): string
     {
-        return strtolower(trim($plan));
+        try {
+            return PlanCode::normalize($plan)->value;
+        } catch (\InvalidArgumentException) {
+            return strtolower(trim($plan));
+        }
     }
 }

@@ -21,7 +21,11 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _readTimeout,
     );
-    return decodeTodayResponse((response.data as Map).cast<String, dynamic>());
+    // #3406 : garde TypeError sur payload non-Map (corps d'erreur).
+    final raw = response.data is Map
+        ? (response.data as Map).cast<String, dynamic>()
+        : const <String, dynamic>{};
+    return decodeTodayResponse(raw);
   }
 
   Future<AttendanceLog> checkIn({
@@ -526,7 +530,7 @@ class AttendanceCorrection {
   final int id;
   final String employeeName;
   final String date;
-  final DateTime requestedCheckIn;
+  final DateTime? requestedCheckIn;
   final DateTime? requestedCheckOut;
   final String reason;
   final String status;

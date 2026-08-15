@@ -241,7 +241,7 @@ test.describe('Dashboard client — actions rapides et carte Leo IA', () => {
             data: {
               id: 7001,
               title: 'Felicitations equipe',
-              body: 'Felicitations a toute l\'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !',
+              body: 'Felicitations a toute l\'equipe pour votre engagement de cette semaine. Continuez sur cette dynamique !',
               priority: 'normal',
               audience_type: 'company',
               created_by: 101,
@@ -272,7 +272,7 @@ test.describe('Dashboard client — actions rapides et carte Leo IA', () => {
     expect(captured.request?.body.title).toBe('Felicitations equipe');
     expect(captured.request?.body.audience_type).toBe('company');
     expect(captured.request?.body.priority).toBe('normal');
-    expect(String(captured.request?.body.body)).toContain('retards');
+    expect(String(captured.request?.body.body)).toContain('equipe');
   });
 
   test('« Oui, envoyer » affiche une erreur inline si l API echoue et conserve les boutons', async ({ page }) => {

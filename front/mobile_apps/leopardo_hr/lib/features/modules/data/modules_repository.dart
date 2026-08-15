@@ -278,7 +278,7 @@ class ModulesRepository {
 
   Future<void> markAllNotificationsRead() async {
     await _apiClient.requestWithRetry<void>(
-      '/notifications/read-all',
+      '/notifications/mark-all-read',
       method: 'POST',
       timeoutOverride: const Duration(seconds: 12),
     );
