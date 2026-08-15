@@ -782,5 +782,8 @@
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
+  },
+  "a11y": {
+    "skip_to_content": "Ana içeriğe geç"
   }
 }
