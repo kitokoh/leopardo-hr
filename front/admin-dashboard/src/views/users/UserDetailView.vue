@@ -81,11 +81,6 @@ async function loadUser() {
 
 onMounted(loadUser)
 
-function retry() {
-  selectedUser.value = null
-  loadUser()
-}
-
 function goBack() {
   router.push('/users')
 }
