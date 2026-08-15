@@ -1787,48 +1787,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
-  /admin/users:
-    get:
-      tags: ["Platform Admin"]
-      summary: "Liste reelle des utilisateurs plateforme"
-      description: "Agregat super-admin depuis shared_tenants.employees joint a public.companies. Alimente la vue Users du cockpit admin (remplacement des donnees mock). Ajoute en vague QA 2026-08-14."
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: per_page
-          in: query
-          required: false
-          schema: { type: integer, default: 25 }
-        - name: search
-          in: query
-          required: false
-          schema: { type: string }
-      responses:
-        "200":
-          description: "Utilisateurs pagines"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id: { type: integer }
-                        name: { type: string }
-                        email: { type: string, nullable: true }
-                        status: { type: string }
-                        company_id: { type: string, nullable: true }
-                        company_name: { type: string, nullable: true }
-                        created_at: { type: string }
-                  meta:
-                    $ref: "#/components/schemas/PaginationMeta"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
   /admin/dashboard/activities:
     get:
       tags: ["Platform"]
@@ -7422,36 +7380,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /me/vehicles:
-    get:
-      tags: ["Me"]
-      summary: "Mes vehicules (employee)"
-      description: "Vehicules assignes a l'employe courant (assigned_driver_id) avec derniere position Traccar best-effort."
-      responses:
-        "200":
-          description: "Liste des vehicules de l'employe"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        vehicle_id: { type: integer }
-                        id: { type: integer }
-                        plate_number: { type: string }
-                        brand: { type: string, nullable: true }
-                        model: { type: string, nullable: true }
-                        latitude: { type: number, nullable: true }
-                        longitude: { type: number, nullable: true }
-                        speed: { type: number, nullable: true }
-                        updated_at: { type: string, nullable: true }
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /me/trainings/{session}/enroll:
     post:
       tags: ["Me"]
@@ -9397,13 +9325,6 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
     post:
-      parameters:
-        - name: payrollRun
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: "Identifiant du cycle de paie"
       tags: ["Payroll"]
       summary: "Creer un export bancaire pour un run valide/paye (asynchrone)"
       requestBody:
@@ -11112,20 +11033,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /export/pay-slips:
-    get:
-      tags: ["Exports"]
-      summary: "Exporter les bulletins"
-      parameters:
-        - name: format
-          in: query
-          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
-      responses:
-        "200":
-          description: "Donnees export"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /export/absences:
     get:
       tags: ["Exports"]
@@ -12263,15 +12170,6 @@ paths:
         "201": { description: "Demande créée" }
         "422": { $ref: "#/components/responses/Error422" }
 
-  /growth/partner/dashboard:
-    get:
-      tags: ["Growth"]
-      summary: "Tableau de bord partenaire connecté"
-      security: [{ BearerAuth: [] }]
-      responses:
-        "200": { description: "Vue d'ensemble parrainages et commissions" }
-        "401": { $ref: "#/components/responses/Error401" }
-
   /platform/growth/partners:
     get:
       tags: ["Growth", "Platform Admin"]
@@ -12596,51 +12494,6 @@ paths:
                         description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
         "401":
           $ref: "#/components/responses/Error401"
-
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lire la configuration du mode de pointage de l'entreprise"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Configuration actuelle (data null si aucune configuration)"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    nullable: true
-                    allOf:
-                      - $ref: "#/components/schemas/AttendanceModeSettings"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour la configuration GPS (admin)"
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AttendanceModeSettingsRequest"
-      responses:
-        "200":
-          description: "Configuration mise à jour"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/AttendanceModeSettings"
-        "422":
-          $ref: "#/components/responses/Validation422"
 
   /smart-attendance/preferences:
     put:
@@ -14191,15 +14044,6 @@ components:
           type: boolean
           description: "Passer a true remet failure_count a 0."
 
-    PlatformUser:
-      type: object
-      properties:
-        id: { type: integer }
-        name: { type: string }
-        email: { type: string, format: email }
-        status: { type: string, enum: [active, deactivated, suspended] }
-        last_login_at: { type: string, format: date-time, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
 
     WebhookDelivery:
       type: object
@@ -17727,6 +17571,7 @@ components:
           type: object
           allOf:
             - $ref: "#/components/schemas/Compliance"
+          type: object
           nullable: true
           description: >-
             Bloc conformité (issue #2116) — null quand le pays du run n'est
@@ -18216,6 +18061,40 @@ components:
               tax: { type: number }
         net: { type: number }
         total_cost: { type: number }
+    TrainingEnrollment:
+      type: object
+      description: "Inscription a une session de formation (TrainingEnrollmentResource) — liste globale GET /training/enrollments."
+      properties:
+        id: { type: integer }
+        training_session_id: { type: integer }
+        employee_id: { type: integer }
+        status: { type: string }
+        score: { type: number, nullable: true }
+        feedback: { type: string, nullable: true }
+        completed_at: { type: string, format: date-time, nullable: true }
+        course_title: { type: string, nullable: true }
+        session_date: { type: string, nullable: true }
+        progress: { type: integer, nullable: true }
+        employee: { type: object, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+
+    TrainingSession:
+      type: object
+      description: "Session de formation (TrainingSessionResource) — liste globale GET /training/sessions."
+      properties:
+        id: { type: integer }
+        training_course_id: { type: integer }
+        trainer_id: { type: integer, nullable: true }
+        external_trainer: { type: string, nullable: true }
+        start_date: { type: string, format: date, nullable: true }
+        end_date: { type: string, format: date, nullable: true }
+        location: { type: string, nullable: true }
+        status: { type: string }
+        notes: { type: string, nullable: true }
+        trainer: { type: object, nullable: true }
+        enrollments: { type: array, nullable: true, items: { $ref: "#/components/schemas/TrainingEnrollment" } }
+        created_at: { type: string, format: date-time, nullable: true }
+
     TaxSlabInput:
       type: object
       required: [country_code, name, min_amount, rate, effective_from]
