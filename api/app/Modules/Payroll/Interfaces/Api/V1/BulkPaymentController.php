@@ -81,8 +81,24 @@ class BulkPaymentController extends Controller
                 // Statut stale (completed*/crash) : on reprend la main.
                 Redis::connection('default')->set($progressKey, $claimPayload, 'EX', 21600); // @phpstan-ignore argument.type, arguments.count
             }
-        } catch (Throwable) {
-            // Redis unavailable — allow dispatch to continue
+        } catch (Throwable $e) {
+            // #3857 : FAIL-CLOSED. Redis est le coordinateur anti-doublon
+            // (claim NX du run). S'il est indisponible, un dispatch sans
+            // claim laisserait deux requêtes concurrentes (retry client,
+            // double-clic) lancer deux jobs qui paieraient 2× les mêmes
+            // bulletins — mouvement d'argent, inacceptable. On refuse le
+            // dispatch avec un 503 explicite : le client retry-aware pourra
+            // re-tenter, aucun job n'est lancé.
+            Log::error('payroll.bulk_payment.redis_unavailable', [
+                'payroll_run_id' => $payrollRun->id,
+                'actor_id' => $actor->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Bulk payment is temporarily unavailable (payment coordinator offline). Please retry in a few seconds.',
+                'error' => 'BULK_PAYMENT_COORDINATOR_UNAVAILABLE',
+            ], 503);
         }
 
         ProcessBulkPaymentJob::dispatch($payrollRun->id, $actor->id, $paySlipIds);

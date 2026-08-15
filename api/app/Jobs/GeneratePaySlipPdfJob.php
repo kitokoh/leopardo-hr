@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Contracts\Queue\TenantScopedJob;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\Middleware\EnsureTenantContext;
+use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use App\Support\I18nCatalog;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -65,7 +65,7 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(PushNotificationService $pushService): void
@@ -153,17 +153,22 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
             // `notifications.payroll_ready_*` keys, resolved for the
             // employee's own locale (App::setLocale() above already set it).
             $period = $run->period_end->format('M Y');
-            $pushService->sendToEmployee($employee, [
-                'title' => trans('notifications.payroll_ready_title'),
-                'body' => trans('notifications.payroll_ready_body_with_period', ['period' => $period]),
-                'data' => [
+            // Issue #4010 — la signature de sendToEmployee est
+            // (Employee, string $title, string $body, array $data) : un appel
+            // avec un tableau en 2e position levait un TypeError silencieux
+            // (catch Throwable) → la notification « bulletin prêt » n'était
+            // jamais envoyée.
+            $pushService->sendToEmployee(
+                $employee,
+                (string) trans('notifications.payroll_ready_title'),
+                (string) trans('notifications.payroll_ready_body_with_period', ['period' => $period]),
+                [
                     'type' => 'pay_slip_ready',
                     'payroll_run_id' => $run->id,
                 ],
-            ]);
+            );
         } catch (Throwable $e) {
             Log::warning("GeneratePaySlipPdfJob: Push notification failed for employee #{$employee->id}: {$e->getMessage()}");
         }
     }
 }
-

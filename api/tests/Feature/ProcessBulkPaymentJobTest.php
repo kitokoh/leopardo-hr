@@ -14,6 +14,7 @@ use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Redis;
 use RuntimeException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -218,6 +219,43 @@ class ProcessBulkPaymentJobTest extends TestCase
 
         $run->refresh();
         $this->assertSame('paid', $run->status);
+    }
+
+    public function test_job_aborts_fail_closed_when_redis_claims_are_unavailable(): void
+    {
+        // #3857 : FAIL-CLOSED. Sans claim NX, un job concurrent (retry queue,
+        // second dispatch) re-traiterait des slips déjà payés → double
+        // déclaration de paiement. Quand Redis est indisponible pendant le
+        // traitement, le lot entier est avorté : aucune avance marquée payée,
+        // le run reste 'validated', le claim du run est libéré et le job
+        // échoue (RuntimeException) pour retry propre.
+        Queue::fake();
+
+        [$company, $manager] = $this->companyAndManager();
+        $run = $this->payrollRun($company);
+        $employeeA = Employee::factory()->create(['company_id' => $company->id]);
+        $employeeB = Employee::factory()->create(['company_id' => $company->id]);
+        $this->paySlip($run, $employeeA);
+        $this->paySlip($run, $employeeB);
+
+        $client = Mockery::mock();
+        $client->shouldReceive('set')->andThrow(new RuntimeException('Redis connection refused'));
+        $client->shouldReceive('del')->andReturn(1);
+        Redis::shouldReceive('connection')->with('default')->andReturn($client);
+
+        try {
+            (new ProcessBulkPaymentJob($run->id, $manager->id))->handle();
+            $this->fail('Le job doit échouer (fail-closed) quand Redis est indisponible.');
+        } catch (RuntimeException) {
+            // attendu — le lot est avorté
+        }
+
+        $run->refresh();
+        $this->assertSame('validated', $run->status, 'Le run ne doit pas être marqué paid après un abort fail-closed.');
+        $this->assertSame(0, AuditLog::query()
+            ->where('action', 'bulk_payment_processed')
+            ->where('company_id', $company->id)
+            ->count(), 'Aucun audit de batch terminé ne doit être écrit.');
     }
 
     /**

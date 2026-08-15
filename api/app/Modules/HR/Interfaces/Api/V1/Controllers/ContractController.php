@@ -8,17 +8,20 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ContractAmendmentResource;
 use App\Http\Resources\Api\V1\ContractResource;
+use App\Modules\HR\Application\Actions\ContractLifecycleAction;
 use App\Modules\HR\Domain\Contracts\ContractDocumentGeneratorInterface;
+use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\ContractAmendment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ContractController extends Controller
 {
+    public function __construct(private readonly ContractLifecycleAction $contractLifecycle) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -221,17 +224,13 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->hasManagerRole('principal', 'rh') === false) {
-            abort(403);
-        }
-        if ($contract->status !== 'draft') {
-            return response()->json(['message' => 'Only draft contracts can be activated.'], 422);
-        }
+        $this->authorize('activate', $contract);
 
-        $contract->update(['status' => 'active', 'signed_at' => now()]);
-
-        /** @var Contract $contractFresh */
-        $contractFresh = $contract->fresh();
+        try {
+            $contractFresh = $this->contractLifecycle->activate($contract);
+        } catch (InvalidContractTransitionException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
@@ -243,17 +242,13 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->hasManagerRole('principal', 'rh') === false) {
-            abort(403);
-        }
-        if ($contract->status !== 'active') {
-            return response()->json(['message' => 'Only active contracts can be suspended.'], 422);
-        }
+        $this->authorize('activate', $contract);
 
-        $contract->update(['status' => 'suspended']);
-
-        /** @var Contract $contractFresh */
-        $contractFresh = $contract->fresh();
+        try {
+            $contractFresh = $this->contractLifecycle->suspend($contract);
+        } catch (InvalidContractTransitionException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
@@ -265,25 +260,17 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->hasManagerRole('principal', 'rh') === false) {
-            abort(403);
-        }
-        if (in_array($contract->status, ['active', 'suspended'], true) === false) {
-            return response()->json(['message' => 'Contract must be active or suspended to terminate.'], 422);
-        }
+        $this->authorize('terminate', $contract);
 
         $validated = $request->validate([
             'termination_reason' => 'required|string|max:500',
         ]);
 
-        $contract->update([
-            'status' => 'terminated',
-            'termination_reason' => $validated['termination_reason'],
-            'terminated_at' => now(),
-        ]);
-
-        /** @var Contract $contractFresh */
-        $contractFresh = $contract->fresh();
+        try {
+            $contractFresh = $this->contractLifecycle->terminate($contract, $validated['termination_reason']);
+        } catch (InvalidContractTransitionException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
     }
@@ -295,9 +282,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->hasManagerRole('principal', 'rh') === false) {
-            abort(403);
-        }
+        $this->authorize('renew', $contract);
 
         $validated = $request->validate([
             'start_date' => 'required|date',
@@ -305,33 +290,7 @@ class ContractController extends Controller
             'base_salary' => 'nullable|numeric|min:0',
         ]);
 
-        $newContract = DB::transaction(function () use ($contract, $validated, $actor) {
-            $newContract = Contract::create([
-                'company_id' => $contract->company_id,
-                'employee_id' => $contract->employee_id,
-                'contract_type' => $contract->contract_type,
-                'reference' => null,
-                'start_date' => $validated['start_date'],
-                'end_date' => $validated['end_date'] ?? null,
-                'job_title' => $contract->job_title,
-                'department_id' => $contract->department_id,
-                'position_id' => $contract->position_id,
-                'base_salary' => $validated['base_salary'] ?? $contract->base_salary,
-                'currency' => $contract->currency,
-                'salary_frequency' => $contract->salary_frequency,
-                'work_hours_per_week' => $contract->work_hours_per_week,
-                'benefits' => $contract->benefits,
-                'clauses' => $contract->clauses,
-                'status' => 'draft',
-                'created_by' => $actor->id,
-            ]);
-
-            if (in_array($contract->status, ['active', 'suspended'], true)) {
-                $contract->update(['status' => 'expired']);
-            }
-
-            return $newContract;
-        });
+        $newContract = $this->contractLifecycle->renew($contract, $actor, $validated);
 
         return (new ContractResource($newContract->load('employee:id,first_name,last_name')))
             ->response()

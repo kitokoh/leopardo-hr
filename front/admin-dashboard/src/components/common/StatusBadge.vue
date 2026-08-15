@@ -17,7 +17,7 @@ const props = defineProps({
       cancelled: { label: 'Annule', color: 'gray' },
       draft: { label: 'Brouillon', color: 'gray' },
       validated: { label: 'Valide', color: 'green' },
-      completed: { label: 'Termine', color: 'blue' },
+      completed: { label: 'Terminé', color: 'blue' },
       expired: { label: 'Expire', color: 'red' },
       paid: { label: 'Paye', color: 'green' },
       overdue: { label: 'En retard', color: 'red' },
