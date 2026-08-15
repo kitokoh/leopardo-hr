@@ -74,8 +74,6 @@ class ProvisionDemoTenantJob implements ShouldQueue
         }
     }
 
-<<<<<<< HEAD
-=======
     private function issueDemoAccess(Employee $manager): void
     {
         $token = Str::random(48);
@@ -107,5 +105,4 @@ class ProvisionDemoTenantJob implements ShouldQueue
             'expires_at' => $expiresAt->toIso8601String(),
         ]);
     }
->>>>>>> 552b378b (fix(trial): magic link d'accès démo réellement émis par ProvisionDemoTenantJob (Closes #2629))
 }
