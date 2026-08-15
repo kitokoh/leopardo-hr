@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(mobile+web+admin): notifications — tous les clients alignés POST/PATCH (canonique #2674, #3047, #3510).** La chorégraphie PUT (#3133, #3345) avait laissé hr/manager/web/admin en `PUT /notifications/read-all` + `PUT /{id}/read` contre un backend `POST`/`PATCH` (rh.php, rétabli par #3510) → **405 garanti** sur « tout marquer lu » dans 4 surfaces. Alignement complet : `notification_repository` (hr, manager), `(dashboard)/layout.tsx` (web), `stores/realtime.js` (admin). Employee était déjà aligné.
 
 - **fix(web): suppression de l'orphelin `structured-data.ts` (0 import) (Closes #3265).**- **fix(admin/mobile/api): vague hygiène — modal morte TaxRates, composables orphelins, routes RH mortes, N+1 (Closes #3144, #3145, #3148, #3151).** `TaxRatesView` : modale « historique » inatteignable retirée (+ historyBadge/historyLabel/formatDate morts) ; composables `useFocusTrap`/`useAnnouncer` supprimés (0 référence) ; app RH : routes GoRouter `/approvals`, `/manager/anomalies`, `/manager/corrections` (aucune entrée UI) retirées ; `PaymentBatchController::markPaid` eager-load `items.employee` et `FleetController::liveMap` utilise `TraccarService::getLastPositions` (un seul appel agrégé au lieu d'un par véhicule).
 ### Fixed
