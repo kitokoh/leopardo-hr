@@ -165,17 +165,9 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   return UserAuthRepository(apiClient, storage, preferences);
 });
 
-final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AiChatRepository(apiClient);
-});
 
-final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((
-  ref,
-) {
-  final apiClient = ref.watch(apiClientProvider);
-  return VehiclePositionRepository(apiClient);
-});
+
+
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);

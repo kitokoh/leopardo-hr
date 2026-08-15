@@ -129,27 +129,13 @@ final contractRepositoryProvider = Provider<ContractRepository>((ref) {
   return ContractRepository(apiClient);
 });
 
-final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ExpenseRepository(apiClient);
-});
 
-final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AiChatRepository(apiClient);
-});
 
-final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((
-  ref,
-) {
-  final apiClient = ref.watch(apiClientProvider);
-  return VehiclePositionRepository(apiClient);
-});
 
-final approvalRepositoryProvider = Provider<ApprovalRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ApprovalRepository(apiClient);
-});
+
+
+
+
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);

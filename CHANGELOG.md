@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(mobile): providers orphelins retirés des 3 `core_providers.dart` (régression #3855).** Le merge #3855 supprimait les repos/écrans orphelins (issue #3812) mais laissait 8 registrations `core_providers.dart` (hr: expense/aiChat/vehiclePosition/approval, employee: aiChat/vehiclePosition, manager: contract/expense) référencer des classes supprimées → `flutter analyze` cassé ×3 apps. Suppression des registrations mortes ; les providers des features conservées (manager ai_chat/vehicle_position/approvals, hr contracts/organigramme) sont inchangés.
 
 - **fix(web): a11y FAQ + Navbar (Closes #3732).** Input de recherche /faq avec `<label>` sr-only + `aria-label` localisés (4 locales), accordéons avec `aria-expanded`/`aria-controls` + `role=region`, tiroir mobile Navbar : `aria-label` localisé (`copy.nav.menuLabel`) et toggle avec `aria-expanded`/`aria-controls` (parité desktop).
 - **fix(api): matrice PHP standardisée sur 8.4.1 (Closes #3819).** `composer.json` et `composer.lock` (platform) déclaraient `^8.2` alors que le lock verrouille des composants Symfony 8.x exigeant PHP >= 8.4.1 → `composer install` échouait sur PHP 8.3 documenté. Alignés sur 8.4.1 (déjà utilisé par CI, Dockerfile.prod et README) + `DEVELOPMENT.md` à jour.
