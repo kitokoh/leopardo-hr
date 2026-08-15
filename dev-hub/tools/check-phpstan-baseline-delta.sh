@@ -3,7 +3,7 @@
 # PA2-ARCH-005 — CI guard: fail a diff that INCREASES the number of ignored
 # PHPStan/Larastan errors attributed to a module the PR already touches.
 #
-# Context: plan de réduction de baseline PHPStan (docs/archive/PLAN_ACTION2/) — créé pour
+# Context: docs/PLAN_ACTION2/PHPSTAN_BASELINE_REDUCTION_PLAN.md (created for
 # this ticket) documents a per-module reduction plan for
 # api/phpstan-baseline.neon and api/phpstan-modules-baseline.neon (1168 and
 # 53 ignored error occurrences respectively at the time of writing). The
@@ -122,7 +122,7 @@ for f in "${touched_php_files[@]}"; do
 done
 
 if [ ${#touched_modules[@]} -eq 0 ]; then
-  echo "This diff only touches legacy app/Http, app/Services or non-module code — no per-module baseline to check (voir la stratégie de réduction de baseline dans CONVENTIONS.md)."
+  echo "This diff only touches legacy app/Http, app/Services or non-module code — no per-module baseline to check (see PHPSTAN_BASELINE_REDUCTION_PLAN.md Phase 3)."
   exit 0
 fi
 
@@ -152,7 +152,7 @@ echo "Checked ${#touched_modules[@]} touched module(s) against ${#BASELINE_FILES
 
 if [ "$VIOLATIONS" -gt 0 ]; then
   echo "Found $VIOLATIONS module(s) with an increased PHPStan baseline count (PA2-ARCH-005)."
-  echo "Fix the new finding instead of adding it to the baseline, ou voir la stratégie de réduction de baseline dans CONVENTIONS.md."
+  echo "Fix the new finding instead of adding it to the baseline, or see docs/PLAN_ACTION2/PHPSTAN_BASELINE_REDUCTION_PLAN.md."
   exit 1
 fi
 
