@@ -11,7 +11,9 @@
 | F4 | P2 | OpenAPI : 137 routes non documentées (`check-openapi-coverage.sh`) | rapport local 2026-08-15 | Ouvert (partiel #3121 : 20 routes) |
 | F5 | P3 | Mobile : manifeste vs routeurs réels désalignés (#2212 non résolu) | `check-mobile-manifest-routes.sh` ECHEC | Ouvert (#2212) |
 | F6 | P2 | Email vs provisioning : `SendDripEmailsJob`/drips non vérifiés pour la durée annoncée | constat F2 connexe | À vérifier |
-| F7 | P2 | PHPStan Strict rouge sur main (14 erreurs #3298 : GenerateBankExportJob 3e arg, PayrollCalculator clés dupliquées, fixtures non typées) | issue #3298 + run local | Suivi par session parallèle (PR #32xx) |
+| F7 | P1 | PHPStan Strict rouge sur main (17 erreurs #3298 : GenerateBankExportJob 3e arg ignoré, PayrollCalculator clés dupliquées merge #3128, 3 erreurs TrialWelcomeMail introduites par mon #3229, fixtures non typées, baseline counts) | issue #3298 + run local | Corrigé → branche fix/3298-phpstan-main-vert (PR ouverte) |
+| F8 | P1 | Verify trial : réponse `trial.days=30` + `ends_at=now+14j` (contradiction interne, provisioning réel 14j) | SelfServiceTrialController.php:222-225 | Couvert par session parallèle (#3218, days→14) |
+| F9 | P2 | Flux trial E2E validé localement (signup→verify→201, tenant + manager provisionnés) après fix F1 | curl local (PG14 leopardo) | ✅ |
 
 ## Vérifications runtime effectuées (locale, PG16 + bootstrap CI)
 
