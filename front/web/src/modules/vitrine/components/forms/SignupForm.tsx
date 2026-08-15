@@ -35,7 +35,7 @@ interface SignupFormProps {
   className?: string;
 }
 
-type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'success';
+type Step = 'form' | 'otp' | 'pending' | 'tracking' | 'provisioning' | 'success';
 
 // #2469 : clé sessionStorage du token de provisioning (jamais dans l'URL).
 const TRIAL_TOKEN_STORAGE_KEY = 'lp_trial_provisioning_token';
@@ -156,6 +156,23 @@ export function SignupForm({
     setTrialTimedOut(false);
     setIsTracking(true);
     setCurrentStep('tracking');
+  };
+
+  // ── Compatibilité (merge des deux PRs guided trial #2492/#2507) ──
+  // Le fragment JSX « provisioning » (#2507) référence ces noms ; on les
+  // aligne sur l'implémentation #2492 (même flux de suivi du sandbox).
+  const PROVISIONING_TOKEN_KEY = TRIAL_TOKEN_STORAGE_KEY;
+  const provisioningToken = trialToken;
+  const setProvisioningToken = persistTrialToken;
+  const provisioningState: 'pending' | 'ready' | 'failed' | 'timeout' | 'unknown' = trialTimedOut
+    ? 'timeout'
+    : trialStatus;
+  const startProvisioningPolling = (_token?: string | null) => startTracking();
+  const stopProvisioningPolling = () => {};
+  // Le fragment #2507 attend login_url/message ; on alimente depuis l'état #2492.
+  const provisioningData = {
+    login_url: trialLoginUrl || undefined,
+    message: null as string | null,
   };
 
   const copyPassword = async (password: string) => {

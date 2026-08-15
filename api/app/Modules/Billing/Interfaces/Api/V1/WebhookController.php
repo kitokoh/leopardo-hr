@@ -124,24 +124,8 @@ class WebhookController extends Controller
      * Issue #2225 — envoie un événement de test au webhook (le client vérifie
      * que son endpoint reçoit bien les payloads Leopardo).
      */
-    public function test(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if ((string) $webhookEndpoint->company_id !== (string) $actor->company_id) {
-            abort(404);
-        }
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+    
 
-        DispatchWebhook::dispatch($webhookEndpoint, 'test', [
-            'message' => 'Webhook de test Leopardo RH',
-            'timestamp' => now()->toIso8601String(),
-        ]);
-
-        return response()->json(['message' => 'Webhook test event dispatched.']);
-    }
 
     public function events(): JsonResponse
     {
@@ -215,6 +199,18 @@ class WebhookController extends Controller
      * Envoie un événement de test `webhook.test` vers un endpoint (bouton
      * « Tester » du cockpit admin). La delivery est tracée comme les autres.
      */
+    /**
+     * POST /webhooks/{webhookEndpoint}/test
+     *
+     * Sends a synchronous test payload to the endpoint URL (same signature
+     * headers and anti-SSRF guard as `DispatchWebhook`) and records a traced
+     * `webhook_deliveries` row with event `test`. QA wave 2026-08-14 — T002
+     * (#2227): the admin SPA "Tester" button used to fail with a 404.
+     *
+     * @return JsonResponse 200 with {status, http_status, duration_ms, delivery}
+     *                       or 422 when the URL is invalid/blocked.
+     */
+    
     public function test(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
         /** @var Employee $actor */
@@ -226,13 +222,82 @@ class WebhookController extends Controller
             abort(404);
         }
 
-        $webhookEndpoint->update(['failure_count' => 0, 'active' => true]);
+        // Anti-SSRF defence-in-depth: same guard as DispatchWebhook::handle().
+        $host = parse_url($webhookEndpoint->url, PHP_URL_HOST);
+        if (! str_starts_with($webhookEndpoint->url, 'https://') || ! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
+            return response()->json([
+                'message' => 'Webhook URL rejected: must be a public https URL.',
+                'status' => 'blocked',
+                'http_status' => 0,
+                'duration_ms' => 0,
+            ], 422);
+        }
 
-        DispatchWebhook::dispatch($webhookEndpoint, 'webhook.test', [
-            'test' => true,
-            'message' => 'Test de webhook depuis le cockpit Leopardo RH',
-        ]);
+        $body = [
+            'event' => 'test',
+            'timestamp' => now()->toIso8601String(),
+            'data' => [
+                'test' => true,
+                'message' => 'Leopardo HR webhook test',
+            ],
+        ];
 
-        return response()->json(['message' => 'Webhook test event dispatched.'], 202);
+        $jsonBody = json_encode($body, JSON_THROW_ON_ERROR);
+        $timestamp = time();
+        $signedPayload = "{$timestamp}.{$jsonBody}";
+        $signature = hash_hmac('sha256', $signedPayload, (string) $webhookEndpoint->secret);
+
+        $start = microtime(true);
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'Webhook-Id' => Str::uuid()->toString(),
+                    'Webhook-Timestamp' => (string) $timestamp,
+                    'Webhook-Signature' => "v1={$signature},t={$timestamp}",
+                    'X-Leopardo-Event' => 'test',
+                    'Content-Type' => 'application/json',
+                ])
+                ->post($webhookEndpoint->url, $body);
+
+            $durationMs = (int) ((microtime(true) - $start) * 1000);
+
+            $delivery = WebhookDelivery::create([
+                'webhook_endpoint_id' => $webhookEndpoint->id,
+                'event' => 'test',
+                'payload' => $body,
+                'response_code' => $response->status(),
+                'response_body' => mb_substr($response->body(), 0, 2000),
+                'duration_ms' => $durationMs,
+            ]);
+
+            return response()->json([
+                'message' => $response->successful()
+                    ? 'Webhook delivered successfully.'
+                    : 'Webhook delivered but the endpoint returned an error status.',
+                'status' => $response->successful() ? 'success' : 'error',
+                'http_status' => $response->status(),
+                'duration_ms' => $durationMs,
+                'delivery' => (new WebhookDeliveryResource($delivery))->resolve(),
+            ]);
+        } catch (Throwable $e) {
+            $durationMs = (int) ((microtime(true) - $start) * 1000);
+
+            WebhookDelivery::create([
+                'webhook_endpoint_id' => $webhookEndpoint->id,
+                'event' => 'test',
+                'payload' => $body,
+                'response_code' => 0,
+                'response_body' => mb_substr($e->getMessage(), 0, 2000),
+                'duration_ms' => $durationMs,
+            ]);
+
+            return response()->json([
+                'message' => 'Webhook delivery failed: '.$e->getMessage(),
+                'status' => 'error',
+                'http_status' => 0,
+                'duration_ms' => $durationMs,
+            ], 422);
+        }
     }
 }

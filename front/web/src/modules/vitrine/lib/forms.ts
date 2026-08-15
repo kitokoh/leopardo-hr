@@ -118,44 +118,6 @@ export async function submitSignupForm(
   }
 }
 
-/**
- * Fetch trial provisioning status via the same-origin proxy
- * (GET /api/forms/trial-status?token=…). #2469
- */
-export async function fetchTrialStatus(token: string): Promise<FormSubmissionResponse> {
-  try {
-    const response = await fetch(`/api/forms/trial-status?token=${encodeURIComponent(token)}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    const payload = await response.json().catch(() => null);
-
-    if (!response.ok || payload === null || payload.success === false) {
-      return {
-        success: false,
-        message: payload?.message || "Suivi temporairement indisponible.",
-        error: payload?.error || "TRIAL_STATUS_UNAVAILABLE",
-        data: payload?.data,
-      };
-    }
-
-    return {
-      success: true,
-      message: payload.message || "",
-      data: payload.data,
-    };
-  } catch (error) {
-    safeLog("Trial status error:", error);
-    return {
-      success: false,
-      message: "Suivi temporairement indisponible.",
-      error: error instanceof Error ? error.message : "NETWORK_ERROR",
-    };
-  }
-}
 
 /**
  * Submit OTP verification to complete trial provisioning

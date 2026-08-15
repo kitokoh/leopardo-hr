@@ -22,3 +22,10 @@
 - [ ] Fermer #2465 (migration app_notifications existe sur main via PR #2446 mergée)
 - [ ] Review issues + création tickets manquants
 - [ ] Vérifier CI PR #2479 puis merge si vert
+
+## 08:00 — Main vert en cours
+- Découvert: main ROUGE (PHPStan Modules + Frontend ESLint/TS) — artefacts de merge swarm
+- PR #2542 ouverte (fix/main-vert-swarm): WebhookController::test restauré #2353, myVehicles/indexEnrollments dédupliqués, PayrollCalculator clés rules_* dupliquées, SSO docblock, OidcFlowService garde, EmployeeController instanceof, BankExportGenerator mort, SignupForm/forms.ts/route.ts TS réparés
+- Swarm en parallèle: #2524 (mêmes fixes PHPStan), #2525 (web trial), #2528/#2536 (tests), #2538 (migrations) — convergence vers main vert
+- Mes PRs ouvertes: #2509 (no-undef), #2513 (routes dupes), #2542 (main-vert)
+- TODO: surveiller checks, merger si vert, rapport final

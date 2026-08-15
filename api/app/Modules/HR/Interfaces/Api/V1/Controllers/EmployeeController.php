@@ -364,10 +364,9 @@ class EmployeeController extends Controller
             'target_employee_id' => $employee->id,
         ]);
 
-        $company = currentCompany();
-        if ($company instanceof Company) {
-            $employee->setRelation('company', $company);
-        }
+        // currentCompany() : Company (non nullable — helpers.php) ; le
+        // instanceof était toujours vrai (PHPStan Modules).
+        $employee->setRelation('company', currentCompany());
 
         return (new EmployeeResource($employee))->response();
     }
