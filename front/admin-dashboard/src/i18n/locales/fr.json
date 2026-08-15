@@ -255,7 +255,8 @@
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
       "exportError": "Erreur lors de l'export",
-      "selectionExportDone": "Export de la selection termine"
+      "selectionExportDone": "Export de la selection termine",
+      "bulkDone": "Action groupee terminee"
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
@@ -263,6 +264,7 @@
     "errors": {
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères.",
       "fix_fields": "Veuillez corriger les champs en rouge"
     }
   },
