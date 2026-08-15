@@ -119,9 +119,9 @@ export default function LandingPage() {
         <ProductDemoVideo locale={locale} />
 
         {/* ─── FEATURES ─── Phase-3 */}
-        {/* id="fonctionnalités": PA2-MKT-013 — Footer links here via /#fonctionnalites */}
+        {/* id="fonctionnalites": PA2-MKT-013 — Footer links here via /#fonctionnalites */}
         <ModernFeaturesSection
-          id="fonctionnalités"
+          id="fonctionnalites"
           badge={{ text: copy.features.badge }}
           title={copy.features.title}
           subtitle={copy.features.titleHighlight}
