@@ -125,7 +125,7 @@ class AbsenceService
 
         DB::transaction(function () use ($absence, $reason) {
             // If already approved and balance was deducted, restore it
-            if ($absence->status === 'approved' && $absence->absenceType->deducts_leave) {
+            if ($absence->status === 'approved' && $absence->absenceType?->deducts_leave) {
                 $lastLog = LeaveBalanceLog::where('employee_id', $absence->employee_id)
                     ->orderByDesc('id')
                     ->first();
@@ -146,7 +146,7 @@ class AbsenceService
             // Issue #2329: keep the leave_balances snapshot in sync — a rejected
             // pending absence releases its pending days; a rejected approved
             // absence restores the used days.
-            if ($absence->absenceType->deducts_leave) {
+            if ($absence->absenceType?->deducts_leave) {
                 $this->syncLeaveBalanceSnapshot(
                     $absence,
                     $absence->status === 'approved' ? 'reject_approved' : 'reject_pending'
