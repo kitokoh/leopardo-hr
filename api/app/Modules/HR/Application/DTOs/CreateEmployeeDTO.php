@@ -72,6 +72,7 @@ final readonly class CreateEmployeeDTO
             'bank_account' => $this->bank_account,
             'role' => $this->role,
             'manager_role' => $this->manager_role,
+            'password' => $this->password,
             'send_invitation' => $this->send_invitation,
             'matricule' => $this->matricule,
             'company_id' => $this->company_id,

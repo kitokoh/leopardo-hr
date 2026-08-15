@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\TrainingCourseResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Http\Resources\Api\V1\TrainingSessionResource;
+use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +22,25 @@ use Illuminate\Http\Request;
 class PlatformAdminTrainingController extends Controller
 {
     /**
+     * GET /admin/training/courses — tous les cours de formation, tous tenants,
+     * paginés (avec société et nombre de sessions). Équivalent cross-tenant de
+     * GET /v1/training/courses (scopé tenant api.manager → 401 super-admin).
+     */
+    public function indexCourses(Request $request): JsonResponse
+    {
+        $courses = TrainingCourse::query()
+            ->withCount('sessions')
+            ->leftJoin('companies', 'companies.id', '=', 'training_courses.company_id')
+            ->select('training_courses.*', 'companies.name as company_name')
+            ->orderBy('training_courses.title')
+            ->paginate($request->integer('per_page', 20));
+
+        return TrainingCourseResource::collection($courses)->response();
+    }
+
+    /**
      * GET /admin/training/sessions — toutes les sessions de formation,
+
      * tous tenants, paginées (avec société + formateur + cours).
      */
     public function indexSessions(Request $request): JsonResponse

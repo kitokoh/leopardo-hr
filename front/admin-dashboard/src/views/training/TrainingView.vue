@@ -245,7 +245,7 @@ async function fetchData() {
   try {
     const [coursesRes, sessionsRes, enrollRes] = await Promise.all([
       // #2634 : sessions/enrollments en vue cross-tenant console (routes /admin/*).
-      api.get('/v1/training/courses').catch(() => ({ data: { data: [] } })),
+      api.get('/admin/training/courses').catch(() => ({ data: { data: [] } })),
       api.get('/admin/training/sessions').catch(() => ({ data: { data: [] } })),
       api.get('/admin/training/enrollments').catch(() => ({ data: { data: [] } })),
     ])
