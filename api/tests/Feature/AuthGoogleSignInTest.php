@@ -61,15 +61,16 @@ class AuthGoogleSignInTest extends TestCase
     {
         $this->mockGoogleUser('google@example.com');
 
-        Employee::create([
-            'company_id' => null,
+        $employee = Employee::create([
             'first_name' => 'Google',
             'last_name' => 'User',
             'email' => 'google@example.com',
             'password_hash' => Hash::make('secret1234'),
-            'role' => 'ordinary',
-            'status' => 'active',
         ]);
+        $employee->company_id = null;
+        $employee->role = 'ordinary';
+        $employee->status = 'active';
+        $employee->save();
 
         $response = $this->withSession(['google_oauth_state' => 'valid-state'])
             ->getJson('/api/v1/auth/google/callback?state=valid-state');
@@ -82,15 +83,16 @@ class AuthGoogleSignInTest extends TestCase
     {
         $this->mockGoogleUser('suspended@example.com');
 
-        Employee::create([
-            'company_id' => null,
+        $employee = Employee::create([
             'first_name' => 'Suspended',
             'last_name' => 'User',
             'email' => 'suspended@example.com',
             'password_hash' => Hash::make('secret1234'),
-            'role' => 'ordinary',
-            'status' => 'suspended',
         ]);
+        $employee->company_id = null;
+        $employee->role = 'ordinary';
+        $employee->status = 'suspended';
+        $employee->save();
 
         $response = $this->withSession(['google_oauth_state' => 'valid-state'])
             ->getJson('/api/v1/auth/google/callback?state=valid-state');

@@ -185,15 +185,16 @@ class PayrollCycleIntegrationTest extends TestCase
             'status' => 'validated',
         ]);
 
-        SalaryAdvance::create([
+        $advance = SalaryAdvance::create([
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'amount' => 15000,
             'reason' => 'Urgence familiale',
-            'status' => 'approved',
             'validation_status' => 'payment_declared',
             'payment_declared_at' => now(),
         ]);
+        $advance->status = 'approved';
+        $advance->save();
 
         Sanctum::actingAs($employee);
 

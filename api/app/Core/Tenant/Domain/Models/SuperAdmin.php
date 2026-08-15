@@ -32,9 +32,7 @@ class SuperAdmin extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'status',
         'password_hash',
-        'two_fa_secret',
         'last_login_at',
     ];
 

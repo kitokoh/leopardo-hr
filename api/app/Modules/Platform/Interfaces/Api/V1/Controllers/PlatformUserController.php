@@ -72,8 +72,10 @@ class PlatformUserController extends Controller
             'name' => $validated['name'],
             'email' => mb_strtolower($validated['email']),
             'password_hash' => Hash::make($validated['password']),
-            'status' => 'active',
         ]);
+        // Issue #3597 : status non mass-assignable — assignation explicite.
+        $user->status = 'active';
+        $user->save();
 
         $this->audit($request, $user, 'platform_user_created');
 

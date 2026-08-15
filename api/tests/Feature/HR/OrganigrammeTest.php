@@ -31,10 +31,11 @@ class OrganigrammeTest extends TestCase
         $this->assertInstanceOf(Employee::class, $manager);
 
         $department = Department::create([
-            'company_id' => $company->id,
             'name' => 'Operations',
             'manager_id' => $manager->id,
         ]);
+        $department->company_id = $company->id;
+        $department->save();
 
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
@@ -67,10 +68,11 @@ class OrganigrammeTest extends TestCase
         $this->assertInstanceOf(Employee::class, $manager);
 
         $department = Department::create([
-            'company_id' => $company->id,
             'name' => 'Vide',
             'manager_id' => $manager->id,
         ]);
+        $department->company_id = $company->id;
+        $department->save();
 
         $this->actingAs($manager, 'sanctum')
             ->getJson("/api/v1/departments/{$department->id}/hierarchy")
@@ -94,9 +96,10 @@ class OrganigrammeTest extends TestCase
         $this->assertInstanceOf(Employee::class, $managerA);
 
         $departmentB = Department::create([
-            'company_id' => $companyB->id,
             'name' => 'Autre tenant',
         ]);
+        $departmentB->company_id = $companyB->id;
+        $departmentB->save();
 
         // Le manager A ne peut pas voir le département du tenant B (403 via la
         // Policy DepartmentPolicy::view — isolation garantie).

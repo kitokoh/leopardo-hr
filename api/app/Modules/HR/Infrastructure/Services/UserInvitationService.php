@@ -30,27 +30,34 @@ class UserInvitationService
         // l'employe a change apres la premiere invitation, on veut mettre a
         // jour l'invitation existante (et donc invalider son ancien token),
         // pas en creer une nouvelle en parallele.
-        UserInvitation::query()->updateOrCreate(
-            [
-                'company_id' => $company->id,
-                'employee_id' => $employee->id,
-            ],
-            [
-                'email' => $employee->email,
-                'schema_name' => $company->schema_name,
-                'role' => $employee->role,
-                'manager_role' => $employee->manager_role,
-                'invited_by_type' => $invitedByType,
-                'invited_by_email' => $invitedByEmail,
-                'token_hash' => hash('sha256', $plainToken),
-                'expires_at' => now()->addDays(7),
-                'accepted_at' => null,
-                'last_sent_at' => now(),
-                'metadata' => [
-                    'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
-                ],
-            ],
-        );
+        // Issue #3597 : company_id/role/manager_role non mass-assignables —
+        // updateOrCreate ne peut plus porter ces clés (elles seraient
+        // silencieusement ignorées à la création). Logique explicite.
+        $invitation = UserInvitation::query()
+            ->where('company_id', $company->id)
+            ->where('employee_id', $employee->id)
+            ->first();
+
+        if ($invitation === null) {
+            $invitation = new UserInvitation();
+            $invitation->company_id = $company->id;
+            $invitation->employee_id = $employee->id;
+        }
+
+        $invitation->email = $employee->email;
+        $invitation->schema_name = $company->schema_name;
+        $invitation->role = $employee->role;
+        $invitation->manager_role = $employee->manager_role;
+        $invitation->invited_by_type = $invitedByType;
+        $invitation->invited_by_email = $invitedByEmail;
+        $invitation->token_hash = hash('sha256', $plainToken);
+        $invitation->expires_at = now()->addDays(7);
+        $invitation->accepted_at = null;
+        $invitation->last_sent_at = now();
+        $invitation->metadata = [
+            'employee_name' => trim(($employee->first_name ?? '').' '.($employee->last_name ?? '')),
+        ];
+        $invitation->save();
 
         // Issue #1776 : un transport mail absent ou invalide (MAIL_MAILER non
         // configuré, MAIL_URL vide → « Unsupported mail transport [] ») ne doit
