@@ -85,7 +85,10 @@ class TaxSlabController extends Controller
         // Contrat isolation (PayrollTenantIsolationTest) : une ressource
         // d'un AUTRE tenant répond 404 (pas 403 — pas de fuite d'existence)
         // avant la Policy (rôle).
-        if ($taxSlab->company_id !== $request->user()?->company_id) {
+        /** @var \App\Core\Auth\Domain\Models\Employee $actor */
+        $actor = $request->user();
+
+        if ($taxSlab->company_id !== $actor->company_id) {
             abort(404);
         }
 
@@ -123,7 +126,11 @@ class TaxSlabController extends Controller
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
     {
         // Contrat isolation : 404 cross-tenant avant la Policy (voir update).
-        if ($taxSlab->company_id !== $request->user()?->company_id) {
+        // @var Employee : le middleware tenant garantit un employé authentifié.
+        /** @var \App\Core\Auth\Domain\Models\Employee $actor */
+        $actor = $request->user();
+
+        if ($taxSlab->company_id !== $actor->company_id) {
             abort(404);
         }
 
