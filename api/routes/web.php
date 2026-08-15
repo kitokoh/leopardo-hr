@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\KioskController;
 use App\Http\Controllers\Web\MyDashboardController;
 use App\Http\Controllers\Web\PlatformAuthController;
 use App\Http\Controllers\Web\PlatformCompanyController;
+use App\Http\Controllers\Web\DemoLoginController;
 use App\Http\Controllers\Web\WebAuthController;
 use App\Http\Controllers\Web\WebEmployeeController;
 use App\Http\Controllers\Web\WebEmployeeManagementController;
@@ -22,6 +23,9 @@ Route::get('/', function () {
 Route::get('/p/{code}', function () {
     return redirect('/signup');
 })->name('partner.link');
+
+// Issue #2253 — magic link d'accès au sandbox de démo (jeton à usage unique).
+Route::middleware('throttle:auth-sensitive')->get('/demo-login/{token}', DemoLoginController::class);
 
 Route::get('/docs', function () {
     return view('docs.openapi');

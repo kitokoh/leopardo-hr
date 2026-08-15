@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'demo_link_invalid' => 'Geçersiz veya daha önce kullanılmış demo erişim bağlantısı.',
+    'demo_link_expired' => 'Bu demo erişim bağlantısının süresi doldu. Yeni erişim isteyin.',
     'login_success' => 'Giriş başarılı.',
     'logout_success' => 'Çıkış başarılı.',
     'session_expired' => 'Oturumunuz sona erdi. Lütfen tekrar giriş yapın.',

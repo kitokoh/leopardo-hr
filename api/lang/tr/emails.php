@@ -2,6 +2,9 @@
 
 return [
     // Sujets
+    'demo_access_subject' => 'Leopardo RH demo çalışma alanınız hazır',
+    'demo_access_body' => "Hoş geldiniz! Sandbox'unuz hazırlandı. Çalışma alanınıza erişmek için aşağıdaki bağlantıya tıklayın (72 saat geçerli, tek kullanımlık). Bağlantı: :url",
+
     'invoice_subject' => 'Fatura :number — :company',
     'welcome_subject' => ':company\'ye hoş geldiniz',
     'password_reset_subject' => 'Şifre sıfırlama',
