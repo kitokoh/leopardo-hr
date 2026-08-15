@@ -2,12 +2,12 @@ name: Branch Protection Guard
 
 # Issue #2011 — incident 2026-08-14 : la protection de main a été vidée
 # (checks requis + reviews supprimés) par un outillage de merge. Cette garde
-# vérifie sur schedule + dispatch + pull_request que la protection RÉELLE de
-# main est identique au canonique committé, et échoue sinon.
+# vérifie sur dispatch + pull_request que la protection RÉELLE de main est
+# identique au canonique committé. L’API GitHub exige un token admin dédié.
 
 on:
-  schedule:
-    - cron: "0 * * * *" # toutes les heures
+  # La vérification n’est pas planifiée : GITHUB_TOKEN n’a pas accès à l’API
+  # de protection de branche. Utiliser workflow_dispatch avec le secret admin.
   workflow_dispatch:
   pull_request:
     branches: [main]
@@ -26,6 +26,7 @@ concurrency:
 jobs:
   check:
     name: Check branch protection (issue #2011)
+    if: ${{ secrets.BRANCH_PROTECTION_TOKEN != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -35,5 +36,15 @@ jobs:
 
       - name: Verify main protection matches canonical
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Fine-grained PAT/App token with administration:read on this repo.
+          GITHUB_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN }}
         run: dev-hub/tools/check-branch-protection.sh kitokoh/leopardo-hr main
+
+  explain-missing-token:
+    name: Explain missing branch protection token
+    if: ${{ secrets.BRANCH_PROTECTION_TOKEN == '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain manual setup
+        run: |
+          echo "::notice::Branch protection verification skipped: configure the BRANCH_PROTECTION_TOKEN repository secret with administration:read, then run this workflow manually."
