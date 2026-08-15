@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(mobile): 403 différencié — suspension (payload) vs défaut de permission (Closes #2743).** Fini le « Compte suspendu » systématique qui bloquait l'utilisateur sans explication.
 - **fix(mobile): `onUnauthorized` branché dans les 3 apps — sortie propre sur session révoquée (Closes #2737).** `handleSessionExpired()` reset l'état auth sans appel API (fini l'UI « authentifiée » fantôme ; pas de récursion via l'intercepteur 401).
 - **fix(mobile): `checkAuth()` ne supprime le token que sur 401 explicite (Closes #2736).** Une erreur réseau/timeout ne détruit plus la session au lancement (pointage hors-ligne #1290 préservé).
 - **fix(mobile): navigation cabinet de l'app Manager réparée (Closes #2735).** Route `/cabinet/:folderId` → `/cabinet/folder/:folderId` (alignée sur employee/HR) — fini le GoRouter no-match à l'ouverture d'un dossier.
