@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(api): pagination sur 3 listes non bornées (Closes #3948).** `DepartmentController::index`, `TrainingController::indexSessions` et `WebhookController::index` (Billing) utilisent désormais `paginate(per_page)` au lieu de `->get()` — alignés sur le contrat pagination existant (`data` + meta). ScheduleController conserve son cache (retour Collection, non paginable).
 - **fix(api): comptes ordinaires sans entreprise — gardes de statut appliquées (Closes #3942).** TenantMiddleware laissait passer un employé `role: ordinary` suspendu/archivé (branche $next sans les checks) → accès API conservé. Désormais 403 EMPLOYEE_SUSPENDED/EMPLOYEE_ARCHIVED, comme les employés liés.
 - **fix(api): estimations paie — authorize('view') au lieu de viewAny (Closes #3943).** quickEstimate/receipt n'appliquaient aucun scope équipe : un manager dept/superviseur pouvait estimer/télécharger des reçus PDF de n'importe quel employé. Résolution de l'employé puis policy `view` (scope équipe + auto-accès), aligné sur dailySummary.
 - **fix(api): trial/signup — réponse uniforme anti-énumération (Closes #3945).** L'endpoint public répondait 409 EMAIL_ALREADY_REGISTERED pour un email existant → énumération de comptes. Signup renvoie désormais la même réponse 200 (log serveur) ; la détection doublon vit à l'étape verify (OTP = preuve de possession de la boîte mail) ; pas de double provisioning en guided-trial.

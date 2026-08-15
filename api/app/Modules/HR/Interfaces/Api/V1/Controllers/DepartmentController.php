@@ -32,7 +32,9 @@ class DepartmentController extends Controller
             $query->where('id', $user->department_id ?? -1);
         }
 
-        $departments = $query->orderBy('name')->get();
+        // #3948 : pagination alignée sur le contrat des autres listes.
+        $perPage = (int) ($request->input('per_page', 20));
+        $departments = $query->orderBy('name')->paginate($perPage);
 
         return DepartmentResource::collection($departments);
     }

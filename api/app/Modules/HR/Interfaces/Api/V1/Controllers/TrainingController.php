@@ -130,7 +130,13 @@ class TrainingController extends Controller
             abort(404);
         }
 
-        return TrainingSessionResource::collection($trainingCourse->sessions()->with('trainer:id,first_name,last_name')->orderByDesc('start_date')->get())
+        // #3948 : pagination alignée sur le contrat des autres listes.
+        return TrainingSessionResource::collection(
+            $trainingCourse->sessions()
+                ->with('trainer:id,first_name,last_name')
+                ->orderByDesc('start_date')
+                ->paginate((int) ($request->input('per_page', 20)))
+        )
             ->response();
     }
 
