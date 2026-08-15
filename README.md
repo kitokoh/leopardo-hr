@@ -25,19 +25,19 @@
 
 ## 📊 Project Stats
 
-> Measured on `main`, 2026-08-11 — see the [full audit](docs/audits/AUDIT.md) for methodology.
+> Measured on `main`, 2026-08-15 — see the [full audit](docs/audits/AUDIT.md) for methodology.
 
 | Metric | Value |
 | :--- | :--- |
 | 🧪 **Backend tests passing** | **1 917** (6 909 assertions, 291 test files) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
 | 🧩 **DDD business modules** | **19** + shared core (Auth, Tenant, Feature) |
-| 🔌 **API endpoints** (OpenAPI spec) | **326** |
+| 🔌 **API endpoints** (OpenAPI spec) | **424** |
 | 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
 | ⚙️ **CI/CD pipelines** | **35** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
 | 📚 **Documentation files** | **518** (architecture, security, specs, runbooks, GTM) |
 | 🕒 **Commit history** | **2 622 commits** since Sept 2025 |
-| 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇫🇷 🇹🇷 (+ growing) |
+| 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇹🇳 🇫🇷 🇹🇷 🇨🇲 🇬🇦 🇨🇬 🇨🇮 🇸🇳 🇧🇫 🇲🇱 (+ 19 codes au catalogue, voir `docs/payroll/`) |
 | 📦 **License** | MIT — open source, self-hostable or SaaS |
 
 > Coverage per module is tracked in CI ([issue #1726](https://github.com/kitokoh/leopardo-hr/issues/1726)) with a **Payroll ≥ 80 %** target.
