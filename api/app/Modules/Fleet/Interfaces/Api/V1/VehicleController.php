@@ -274,43 +274,5 @@ class VehicleController extends Controller
         return VehicleAssignmentResource::collection($assignments)->response();
     }
 
-    /**
-     * Véhicules assignés à l'employé courant (self-service mobile employee).
-     * Chaque véhicule est enrichi de sa dernière position Traccar (best-effort).
-     */
-    public function myVehicles(Request $request, TraccarService $traccar): JsonResponse
-    {
-        /** @var Employee $user */
-        $user = $request->user();
-
-        $vehicles = Vehicle::where('company_id', $user->company_id)
-            ->where('assigned_driver_id', $user->id)
-            ->orderBy('plate_number')
-            ->get();
-
-        $items = $vehicles->map(function (Vehicle $vehicle) use ($traccar): array {
-            $position = null;
-            if ($vehicle->traccar_device_id) {
-                try {
-                    $position = $traccar->getLastPosition((int) $vehicle->traccar_device_id);
-                } catch (Throwable $e) {
-                    // Position indisponible (traqueur hors ligne / erreur Traccar) — on ne casse pas la liste.
-                }
-            }
-
-            return [
-                'vehicle_id' => $vehicle->id,
-                'id' => $vehicle->id,
-                'plate_number' => $vehicle->plate_number,
-                'brand' => $vehicle->brand,
-                'model' => $vehicle->model,
-                'latitude' => $position['latitude'] ?? null,
-                'longitude' => $position['longitude'] ?? null,
-                'speed' => $position['speed'] ?? null,
-                'updated_at' => $position['fixTime'] ?? ($position['deviceTime'] ?? null),
-            ];
-        });
-
-        return response()->json(['data' => $items->values()]);
-    }
+    
 }
