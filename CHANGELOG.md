@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(web): e2e navigation réalignés — menu mobile + focus Tab (Closes #3503).** `navigation-and-links.spec.ts` : T1 cherchait un `<nav aria-label*=mobile>` inexistant (le menu mobile est un `motion.div` — vérifié : l'app fonctionne, le test était périmé) → cible désormais `[aria-label="Menu mobile"]` (aria-label ajouté sur le conteneur dans Navbar.tsx, a11y bonus) ; T2 pressait 5×Tab sans déplacer le focus initial dans chromium headless-shell → boucle Tab jusqu'à sortie de `<body>` (max 10), assertion sur la balise focalisée.
 - **fix(api): races trial/verify et bulk-pay — verrou atomique + claims Redis idempotents (Closes #2996, #2997).** `VerifyTrialSignup` réserve la CompanyRequest en `processing` sous `lockForUpdate` (2 POST simultanés ne créent plus 2 tenants pour 1 email ; 409 `ALREADY_PROCESSED` si déjà traitée ; revert `pending` sur échec de provisioning ; migration publique 000007 étend la contrainte CHECK). `BulkPaymentController` passe en garde `SET NX EX` (TOCTOU fermé) ; `ProcessBulkPaymentJob` claim chaque slip en Redis (retry = seuls les slips en échec rejoués, plus de doubles documents de paiement).
 - **fix(api): OAuth Google refuse les emails inconnus (Closes #2998).** Plus d'auto-création d'employé tenantless + token (variante #2636) — `EMPLOYEE_NOT_FOUND` 401 explicite.
 - **fix(api): throttles endpoints publics SSO + groupe /platform/growth (Closes #3000).** `throttle:api` sur SAML/OIDC callbacks + `whereUuid` SAML ; `throttle:platform-sensitive` sur growth admin.
