@@ -71,6 +71,15 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
+      {post.archived && (
+        <div className="mx-auto max-w-3xl px-4 pt-6">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            ⚠️ Article archivé — contenu publié en 2024, conservé pour référence.
+            Les chiffres et recommandations peuvent ne plus refléter l&apos;état actuel du produit.
+          </div>
+        </div>
+      )}
+
       <BlogArticle
         post={post}
         relatedPosts={relatedPosts}
