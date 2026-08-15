@@ -6,6 +6,7 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
@@ -29,8 +30,7 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly LoginAction $loginAction,
-        // #2636 : RegisterAction retiré — /auth/register est désactivé (compte
-        // orphelin sans company_id inutilisable).
+        private readonly RegisterAction $registerAction,
         private readonly LogoutAction $logoutAction,
         private readonly RefreshTokenAction $refreshTokenAction,
         private readonly UpdateProfileAction $updateProfileAction,
@@ -58,15 +58,18 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        // Sécurité/cohérence #2636 : la création d'un compte employé autonome sans
-        // société (company_id null) produit un compte inutilisable (login impossible)
-        // et permet du probing cross-tenant. Le parcours officiel passe par
-        // l'invitation employeur ou /user/register + company-request.
-        return new JsonResponse([
-            'error' => 'REGISTRATION_UNAVAILABLE',
-            'message' => 'La création de compte autonome n\'est pas disponible. Utilisez le lien d\'invitation envoyé par votre employeur.',
-            'localized_message' => __('errors.REGISTRATION_UNAVAILABLE'),
-        ], 422);
+        // #2617 (main) : inscription réservée aux invitations valides — le
+        // RegisterAction refuse sans invitation_token et rattache l'employé au
+        // company_id de l'invitation (plus d'employé orphelin, #2636).
+        $result = $this->registerAction->execute($request->validated());
+
+        return (new EmployeeResource($result['employee']))
+            ->additional([
+                'token' => $result['token'],
+                'token_type' => $result['token_type'],
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function me(Request $request): JsonResponse
