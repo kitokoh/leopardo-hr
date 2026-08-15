@@ -186,6 +186,18 @@ api.interceptors.response.use(
             removeAuthToken()
             delete api.defaults.headers.common.Authorization
 
+            // Issue #3929 : sans remise à zéro du store Pinia, `isAuthenticated`
+            // restait vrai et le guard rebondissait /login → / (SPA figée).
+            import('@/stores/auth').then(({ useAuthStore }) => {
+              const authStore = useAuthStore()
+              if (authStore.isAuthenticated) {
+                authStore.clearSession()
+              }
+            }).catch(() => {
+              // Store non encore monté (premier 401 avant l'app) : le reload
+              // du guard / sessionStorage suffira.
+            })
+
             if (window.location.pathname !== '/login') {
               toast.warning(contextualErrorMessage(401, data, requestUrl))
               // Navigation SPA (plus de reload complet) : le router redirige
