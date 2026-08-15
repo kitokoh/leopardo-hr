@@ -26,12 +26,12 @@ const faqItems: FaqItem[] = [
   {
     category: 'Tarification',
     question: 'Comment fonctionne la tarification ?',
-    answer: 'Nous proposons des plans mensuels et annuels adaptes a la taille de votre equipe. Le plan Starter est gratuit pour les petites equipes, le plan Pro inclut toutes les fonctionnalites, et le plan Enterprise offre des options sur mesure.',
+    answer: 'Nous proposons des plans mensuels et annuels adaptés à la taille de votre équipe. Le plan Free est gratuit jusqu\'à 5 employés, le plan Pilot démarre à 29 €/mois, le plan Operations inclut toutes les fonctionnalités avancées, et le plan Enterprise offre des options sur mesure.',
   },
   {
     category: 'Tarification',
     question: 'Y a-t-il un essai gratuit ?',
-    answer: 'Oui ! Nous offrons un essai gratuit de 14 jours sans engagement et sans carte de credit. Vous avez acces a toutes les fonctionnalites du plan Pro pendant la periode d\'essai.',
+    answer: 'Oui ! Nous offrons un essai gratuit de 30 jours sans engagement et sans carte de crédit. Vous avez accès à toutes les fonctionnalités des plans payants pendant la période d\'essai.',
   },
   {
     category: 'Fonctionnalites',
@@ -61,7 +61,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Support',
     question: 'Quel support est disponible ?',
-    answer: 'Le plan Starter inclut le support par email. Le plan Pro inclut le support prioritaire avec un temps de reponse de 4h. Le plan Enterprise inclut un account manager dedie et un support 24/7.',
+    answer: 'Le plan Free inclut le support communautaire. Le plan Pilot inclut le support par email sous 48h. Le plan Operations inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
   },
   {
     category: 'Integration',

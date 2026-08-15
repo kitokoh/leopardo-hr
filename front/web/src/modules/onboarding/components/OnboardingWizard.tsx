@@ -25,25 +25,24 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
 
     setLoading(true);
     try {
-      // Mark as completed in metadata
-      const response = await apiFetch('/company/branding', {
+      // Marquer le onboarding comme terminé via l'endpoint dédié
+      // (PATCH /api/v1/onboarding-setup/{stepKey}/complete), jamais via
+      // /company/branding qui sert à la configuration visuelle du tenant.
+      await apiFetch('/onboarding-setup/configure_schedules/complete', {
         method: 'PATCH',
-        body: JSON.stringify({ 
-          metadata: { ...user.company?.metadata, onboarding_completed: true }
-        }),
       });
-      
-      const payload = await response.json();
-      if (payload.data) {
-        // Update local user 
-        const updatedUser = { ...user, company: { ...user.company, metadata: { ...user.company?.metadata, onboarding_completed: true } } };
-        storeAuthSession(null, updatedUser);
-      }
-      
+
+      // Update local user
+      const updatedUser = { ...user, company: { ...user.company, metadata: { ...user.company?.metadata, onboarding_completed: true } } };
+      storeAuthSession(null, updatedUser);
+
       setIsOpen(false);
       onComplete();
     } catch (e) {
+      // Le wizard se ferme même si l'API échoue : ne pas bloquer l'utilisateur.
       console.error(e);
+      setIsOpen(false);
+      onComplete();
     } finally {
       setLoading(false);
     }

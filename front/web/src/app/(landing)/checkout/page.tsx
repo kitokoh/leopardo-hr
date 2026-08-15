@@ -705,7 +705,7 @@ function StepFreeAccount({
     setSubmitting(true);
     setError(null);
     try {
-      await fetch('/api/forms/signup', {
+      const res = await fetch('/api/forms/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -719,11 +719,24 @@ function StepFreeAccount({
           locale: 'fr',
         }),
       });
+
+      const payload = (await res.json().catch(() => null)) as {
+        success?: boolean;
+        message?: string;
+      } | null;
+
+      // On ne redirige qu'en cas de succès réel (response.ok + success:true).
+      // En cas d'échec, on affiche l'erreur et on reste sur la page.
+      if (!res.ok || !payload?.success) {
+        setError(payload?.message || 'Une erreur est survenue. Réessayez dans quelques instants.');
+        return;
+      }
+
+      router.push('/auth/login?registered=true&plan=free');
     } catch {
-      // Redirect regardless — backend may not yet support free plan creation
+      setError('Une erreur réseau est survenue. Réessayez dans quelques instants.');
     } finally {
       setSubmitting(false);
-      router.push('/auth/login?registered=true&plan=free');
     }
   }
 

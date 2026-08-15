@@ -73,10 +73,10 @@ const docCategories = [
     icon: Webhook,
     color: 'pink',
     items: [
-      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-overview' },
-      { title: 'Evenements disponibles', desc: 'attendance.*, leave.*, salary_advance.*, payroll.*', href: '/docs#webhooks-overview' },
-      { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-security' },
-      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-overview' },
+      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-intro' },
+      { title: 'Evenements disponibles', desc: 'attendance.*, leave.*, salary_advance.*, payroll.*', href: '/docs#webhooks-events' },
+      { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-overview' },
+      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-testing' },
     ],
   },
   {
@@ -307,7 +307,7 @@ export default function DocsPage() {
           </div>
           <p id="webhooks-security" className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             Chaque payload est signe avec <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">X-Leopardo-Signature</code> (HMAC-SHA256).{' '}
-            <Link href="/docs#webhooks-security" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc →</Link>
+            <Link href="/docs#webhooks-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc →</Link>
           </p>
         </div>
       </section>
@@ -389,6 +389,70 @@ export default function DocsPage() {
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             Code source complet du bridge et de l&apos;UI kiosque : <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">front/zkteco-kiosk/</code>.{' '}
             <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la page telechargement →</Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Sécurité & RGPD */}
+      <section id="security" className="py-12 px-4 bg-slate-50 dark:bg-slate-900/60 border-y border-slate-200 dark:border-slate-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Sécurité & RGPD</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Chiffrement, isolation multi-tenant et conformité réglementaire</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { title: 'Chiffrement en transit', desc: 'Toutes les communications passent par TLS 1.3. Aucun échange en clair entre les clients, l\'API et les bornes.' },
+              { title: 'Chiffrement au repos', desc: 'Les données sensibles sont chiffrées en AES-256. Les données biométriques restent sur le terminal, seuls des hash transitent.' },
+              { title: 'Isolation multi-tenant', desc: 'Un schéma PostgreSQL isolé par entreprise. Les accès sont contrôlés par RBAC (Principal, RH, Employé, Super Admin).' },
+              { title: 'Conformité RGPD', desc: 'Hébergement européen, audit trail complet, exports et suppression des données personnelles conformes au RGPD.' },
+            ].map((item) => (
+              <div key={item.title} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{item.title}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Applications mobiles — installation */}
+      <section id="mobile-install" className="py-12 px-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+              <Smartphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Installer les applications mobiles</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Employee, Manager et Platform Admin — iOS & Android</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { name: 'Leopardo Employee', desc: "Pointage mobile, géolocalisation, bulletins, demandes d'absence et notifications push.", href: '/signup?source=download_employee_android' },
+              { name: 'Leopardo Manager', desc: 'Équipe, horaires, tâches, approbations des demandes et paie simplifiée depuis le terrain.', href: '/signup?source=download_manager_android' },
+              { name: 'Leopardo Platform Admin', desc: 'Création de tenants, supervision des entreprises clientes et provisioning 2FA.', href: '/signup?source=download_platform-admin_android' },
+            ].map((app) => (
+              <div key={app.name} className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{app.name}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">{app.desc}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                  Google Play et App Store : <span className="font-semibold text-emerald-600 dark:text-emerald-400">bientôt disponibles</span>.
+                </p>
+                <Link href={app.href} className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                  Rejoindre les testeurs <ExternalLink className="w-3 h-3" />
+                </Link>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+            Plus de détails sur les trois apps : <Link href="/mobile" className="text-emerald-600 dark:text-emerald-400 hover:underline">page Applications mobiles →</Link>.
           </p>
         </div>
       </section>
