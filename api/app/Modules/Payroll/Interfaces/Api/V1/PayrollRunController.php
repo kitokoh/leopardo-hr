@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
@@ -108,6 +109,49 @@ class PayrollRunController extends Controller
 
         if (in_array($payrollRun->status, ['draft', 'calculated'], true) === false) {
             return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
+        }
+
+        // QA #2332 : la garde `acknowledge_placeholder` (présente sur les
+        // contrôleurs de simulation, issue #1872) est reportée sur le chemin
+        // de calcul d'un run réel — un pays placeholder (CF/TD/GQ/TG/BJ/NE :
+        // aucune valeur légale sourcée) ne doit pas produire un run complet
+        // sans confirmation explicite (montants indicatifs présentés comme
+        // réels). L'acceptation est auditée (tenant, pays, acteur, run).
+        $rules = $this->calculator->rulesResolver()->resolve(
+            (string) $payrollRun->country_code,
+            (string) $actor->company_id
+        );
+
+        if ($rules->confidenceLevel() === 'placeholder') {
+            $acknowledged = $request->boolean('acknowledge_placeholder');
+            if (! $acknowledged) {
+                return response()->json([
+                    'message' => __('payroll.placeholder_acknowledge_required', ['country' => $payrollRun->country_code]),
+                    'errors' => [
+                        'acknowledge_placeholder' => [__('payroll.placeholder_acknowledge_required', ['country' => $payrollRun->country_code])],
+                    ],
+                ], 422);
+            }
+
+            AuditLog::create([
+                'company_id' => $actor->company_id,
+                'user_id' => $actor->id,
+                'action' => 'placeholder_warning_acknowledged',
+                'auditable_type' => PayrollRun::class,
+                'auditable_id' => $payrollRun->id,
+                'old_values' => [],
+                'new_values' => [
+                    'country_code' => $payrollRun->country_code,
+                    'context' => 'payroll_run_calculate',
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => mb_substr((string) $request->userAgent(), 0, 500),
+                'metadata' => [
+                    'category' => 'placeholder_warning',
+                    'country_code' => $payrollRun->country_code,
+                    'context' => 'payroll_run_calculate',
+                ],
+            ]);
         }
 
         $payrollRun->update(['status' => 'calculating']);
