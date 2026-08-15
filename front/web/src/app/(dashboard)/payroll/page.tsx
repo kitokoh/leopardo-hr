@@ -110,7 +110,11 @@ export default function PayrollPage() {
   }, []);
 
   const openDetail = useCallback(async (slip: PaySlip) => {
-    setDetailSlip(slip);
+    // Repli immédiat sur la ligne de liste pendant le chargement du détail :
+    // seule `employee_name` y est nullable (vs `string | undefined` pour
+    // PaySlipDetail) — le modal tolère l'absence (rendu `?? '—'`). Le détail
+    // réel (GET /pay-slips/{id}) remplace ensuite ce fallback.
+    setDetailSlip(slip as unknown as PaySlipDetail);
     setDetailLoading(true);
     setDetailError(false);
     try {
@@ -118,7 +122,12 @@ export default function PayrollPage() {
       const payload = await res.json() as { data?: PaySlipDetail };
       if (payload?.data) {
         // Ne rouvre pas le modal si l'utilisateur l'a ferme pendant le chargement.
-        setDetailSlip((current) => (current?.id === slip.id ? payload.data : current));
+        setDetailSlip((current) => {
+          if (current?.id !== slip.id || !payload.data) {
+            return current;
+          }
+          return payload.data;
+        });
       }
     } catch {
       // Repli sur les donnees de la ligne deja chargees.
