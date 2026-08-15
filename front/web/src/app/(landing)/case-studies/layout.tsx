@@ -1,5 +1,6 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
 
@@ -16,15 +17,16 @@ async function listingMetadata(lang?: string): Promise<Metadata> {
 
 // #3435 : metadata par slug (title/description/canonical propres) au lieu du
 // canonical fixe du layout pour les 12 études de cas.
+// #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang
+// (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug?: string }>;
-  searchParams: Promise<{ lang?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { lang } = await searchParams;
+  const headerList = await headers();
+  const lang = headerList.get('x-vitrine-lang') ?? undefined;
   if (!slug) {
     return listingMetadata(lang);
   }

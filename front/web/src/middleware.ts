@@ -2,43 +2,72 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 /**
  * Middleware de protection serveur de la zone dashboard (QA wave 2026-08-14,
- * T012, issue #2236).
+ * T012, issue #2236) + normalisation `?lang=` vitrine (issue #4004).
  *
- * Avant : la zone `(dashboard)` n'était protégée que côté client
- * (`layout.tsx` → redirect après montage) → le HTML était servi sans session.
- * Désormais, toute requête vers un chemin de la zone dashboard sans cookie de
- * session `leopardo_token` (httpOnly, posé par `/api/v1/auth/login`) est
- * redirigée vers `/auth/login` avant même le rendu.
- *
- * Les pages du groupe `(dashboard)` vivent à la racine des URLs (le groupe de
- * routes n'ajoute pas de segment) : la liste explicite du matcher est la
- * source de vérité des chemins protégés. Les routes `/api/*`, `/auth/*` et la
- * vitrine `(landing)` ne sont pas matchées.
+ * 1. Zone dashboard : toute requête sans cookie de session `leopardo_token`
+ *    est redirigée vers `/auth/login` avant même le rendu (gate cosmétique,
+ *    la vraie auth reste serveur — issue #3522).
+ * 2. Vitrine `(landing)` : `?lang=` (fr/en/tr/ar) est copié dans l'en-tête
+ *    `x-vitrine-lang` pour les layouts. Next 15 ne passe PAS `searchParams`
+ *    aux `generateMetadata` des LAYOUTS (pages seulement) → les 27 layouts
+ *    landing lisent `headers()` (pattern pricing #3487, blog #3923).
  */
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
+const DASHBOARD_PREFIXES = [
+  '/dashboard',
+  '/absences',
+  '/attendance',
+  '/billing',
+  '/contracts',
+  '/employees',
+  '/partner',
+  '/payroll',
+  '/reports',
+  '/training',
+  '/settings',
+  '/smart-attendance',
+  '/social',
+  '/social-marketing',
+];
+
+const SUPPORTED_LOCALES = ['fr', 'en', 'tr', 'ar'];
+
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const { pathname } = request.nextUrl;
+  const isDashboard = DASHBOARD_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 
-  // NOTE (issue #3522): this is a cosmetic/UX gate only, meant to avoid
-  // serving dashboard HTML/JS to obviously unauthenticated visitors before
-  // the client-side app mounts. It is NOT a security boundary: a valid
-  // shape here does not mean a valid session. Real authentication and
-  // authorization are enforced server-side by the API on every request.
-  const isValidToken =
-    !!token && token.length >= 20 && /^[A-Za-z0-9._-]+$/.test(token);
+  if (isDashboard) {
+    const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
-  if (!isValidToken) {
-    const loginUrl = new URL('/auth/login', request.url);
-    return NextResponse.redirect(loginUrl);
+    // NOTE (issue #3522): this is a cosmetic/UX gate only, meant to avoid
+    // serving dashboard HTML/JS to obviously unauthenticated visitors before
+    // the client-side app mounts. It is NOT a security boundary: a valid
+    // shape here does not mean a valid session. Real authentication and
+    // authorization are enforced server-side by the API on every request.
+    const isValidToken =
+      !!token && token.length >= 20 && /^[A-Za-z0-9._-]+$/.test(token);
+
+    if (!isValidToken) {
+      const loginUrl = new URL('/auth/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
-  return NextResponse.next();
+  // Vitrine : propager ?lang= aux layouts via un en-tête (issue #4004).
+  const lang = request.nextUrl.searchParams.get('lang');
+  const response = NextResponse.next();
+  if (lang && SUPPORTED_LOCALES.includes(lang)) {
+    response.headers.set('x-vitrine-lang', lang);
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: [
+    // Zone dashboard protégée (source PROTECTED_PREFIXES, garde #3377).
     '/dashboard/:path*',
     '/absences/:path*',
     '/attendance/:path*',
@@ -53,5 +82,32 @@ export const config = {
     '/smart-attendance/:path*',
     '/social/:path*',
     '/social-marketing/:path*',
+    // Vitrine landing — ?lang= → en-tête x-vitrine-lang (issue #4004).
+    // Routes statiques (exactes) + préfixes dynamiques (source
+    // VITRINE_LANG_PREFIXES, garde protected-prefixes.test.ts).
+    '/',
+    '/employes',
+    '/documents',
+    '/comptabilite',
+    '/marketing',
+    '/integrations',
+    '/pricing',
+    '/about',
+    '/changelog',
+    '/docs',
+    '/download',
+    '/contact',
+    '/demo',
+    '/faq',
+    '/testimonials',
+    '/videos',
+    '/branding',
+    '/careers',
+    '/mobile',
+    '/signup',
+    '/blog/:path*',
+    '/guides/:path*',
+    '/case-studies/:path*',
+    '/checkout/:path*',
   ],
 };

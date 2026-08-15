@@ -6,12 +6,14 @@ import { generateMetadata as generateSEOMetadata, getPageMetadata, generateFAQSc
 import { getFaqPageContent } from '@/modules/vitrine/data/faq-page';
 import type { AppLocale } from '@/lib/i18n';
 
-export async function generateMetadata({ searchParams }: {
-  searchParams: Promise<{ lang?: string }>;
-}): Promise<Metadata> {
-  const { lang } = await searchParams;
+export async function generateMetadata(): Promise<Metadata> {
+  // #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang
+  // (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
+  const headerList = await headers();
+  const lang = headerList.get('x-vitrine-lang') ?? undefined;
   const seo = getPageMetadata('faq', lang);
   return generateSEOMetadata({
+
 
   title: seo.title,
   description: seo.description,

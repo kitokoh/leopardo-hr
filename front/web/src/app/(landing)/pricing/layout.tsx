@@ -24,14 +24,11 @@ function resolveSsrLang(acceptLanguage: string | null): AppLocale {
     : 'fr';
 }
 
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ lang?: string }>;
-}): Promise<Metadata> {
-  const { lang } = await searchParams;
+export async function generateMetadata(): Promise<Metadata> {
   const headerList = await headers();
-  // #4004 : ?lang= (liens internes vitrine) prime sur Accept-Language SSR.
+  // #4004 : ?lang= (liens internes vitrine, normalisé par le middleware en
+  // x-vitrine-lang) prime sur Accept-Language SSR.
+  const lang = headerList.get('x-vitrine-lang') ?? undefined;
   const locale = (lang as AppLocale | undefined) ?? resolveSsrLang(headerList.get('accept-language'));
   const seo = getPageMetadata('pricing', locale);
 
