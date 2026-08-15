@@ -26,7 +26,7 @@ class GoogleOAuthStateTest extends TestCase
         // On ne peut pas exécuter Socialite sans réseau ; on vérifie la
         // présence de la route et du comportement session par unité basique.
         $this->assertTrue($ref->isPublic());
-        $route = collect(app('router')->getRoutes())
+        $route = collect(app('router')->getRoutes()->getRoutes())
             ->first(fn ($r) => $r->uri() === 'api/v1/auth/google' && in_array('GET', $r->methods(), true));
         $this->assertNotNull($route, 'Route GET /api/v1/auth/google introuvable.');
     }
