@@ -6,6 +6,7 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
+use App\Rules\NotPrivateUrl;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
 use App\Http\Controllers\Controller;
@@ -64,9 +65,9 @@ class SSOController extends Controller
             'client_secret' => 'nullable|string',
             // OpenID Connect (issue #2231) — champs du flux authorize/callback.
             'issuer' => 'nullable|string|url',
-            'authorize_url' => 'nullable|string|url',
-            'token_url' => 'nullable|string|url',
-            'jwks_uri' => 'nullable|string|url',
+            'authorize_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'token_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'jwks_uri' => ['nullable', 'string', 'url', new NotPrivateUrl],
             'redirect_uri' => 'nullable|string|url',
             'scopes' => 'nullable|string|max:255',
         ]);

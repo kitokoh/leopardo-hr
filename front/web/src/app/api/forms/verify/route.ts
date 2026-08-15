@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
 import { RateLimiter, sanitizeEmail } from '@/modules/vitrine/lib/validation';
-import { getClientIp } from '../_lib/lead-capture';
+import { areFormsEnabled, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
 
 const rateLimiter = new RateLimiter(10, 15 * 60 * 1000);
 
@@ -15,6 +15,10 @@ const LEOPARDO_API_URL = process.env.LEOPARDO_API_URL ||
   resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 
 export async function POST(request: NextRequest) {
+  if (!areFormsEnabled()) {
+    return formsDisabledResponse();
+  }
+
   try {
     const ip = getClientIp(request);
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SITE_URL } from '@/lib/site-url'
 import {
   type AppLocale,
   applyDocumentLocale,
@@ -11,10 +12,9 @@ import {
 const LOCALE_EVENT = 'vitrine-locale-changed'
 
 // L'espace client réellement en ligne (issue #1775 : app.leopardo-rh.com ne
-// résout pas — DNS mort). Configurable via NEXT_PUBLIC_SITE_URL.
-const DEMO_APP_URL = process.env.NEXT_PUBLIC_SITE_URL
-  ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '')}/dashboard`
-  : 'https://gestionemployer-backend.vercel.app/dashboard'
+// résout pas — DNS mort). URL centralisée (src/lib/site-url.ts), priorité à
+// NEXT_PUBLIC_SITE_URL.
+const DEMO_APP_URL = `${SITE_URL}/dashboard`
 
 type LocaleOption = {
   value: AppLocale
@@ -177,12 +177,12 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'Disponible sur mobile',
       downloadCta: 'Telecharger les apps',
       visualAlt: 'Capture du tableau de bord admin Leopardo RH',
-      primaryCta: 'Essai gratuit 30 jours',
+      primaryCta: 'Essai gratuit 14 jours',
       secondaryCta: 'Voir la demo',
       stats: [
         { value: 3, suffix: '', label: 'Apps mobiles' },
         { value: 2, suffix: '', label: 'Apps web' },
-        { value: 30, suffix: 'j', label: 'Essai gratuit' },
+        { value: 14, suffix: 'j', label: 'Essai gratuit' },
         { value: 7, suffix: 'j', label: 'Pilote terrain' },
       ],
     },
@@ -265,7 +265,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Pret pour les pilotes terrain',
       title: 'Pret a transformer',
       titleHighlight: 'votre gestion RH ?',
-      subtitle: 'Commencez votre essai gratuit de 30 jours. Aucune carte de credit requise. Configuration en moins de 5 minutes.',
+      subtitle: 'Commencez votre essai gratuit de 14 jours. Aucune carte de credit requise. Configuration en moins de 5 minutes.',
       primary: 'Commencer gratuitement',
       secondary: 'Demander une demo',
     },
@@ -279,7 +279,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: "Mobile-First Company OS pour gerer votre personnel sur le terrain, en bureau et a distance. Employee, Manager et Platform Admin disponibles sur mobile.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
+        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'A propos', 'Videos'] },
         { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute'] },
         { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
@@ -321,12 +321,12 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'Available on mobile',
       downloadCta: 'Download the apps',
       visualAlt: 'Leopardo HR admin dashboard screenshot',
-      primaryCta: 'Start 30-day free trial',
+      primaryCta: 'Start 14-day free trial',
       secondaryCta: 'Watch demo',
       stats: [
         { value: 3, suffix: '', label: 'Mobile apps' },
         { value: 2, suffix: '', label: 'Web apps' },
-        { value: 30, suffix: 'd', label: 'Free trial' },
+        { value: 14, suffix: 'd', label: 'Free trial' },
         { value: 7, suffix: 'd', label: 'Field pilot' },
       ],
     },
@@ -409,7 +409,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Ready for field pilots',
       title: 'Ready to transform',
       titleHighlight: 'your HR operations?',
-      subtitle: 'Launch your 30-day free trial. No credit card required. Production setup in under five minutes.',
+      subtitle: 'Launch your 14-day free trial. No credit card required. Production setup in under five minutes.',
       primary: 'Start for free',
       secondary: 'Request a demo',
     },
@@ -423,7 +423,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
-        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
+        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos'] },
         { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
         { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
@@ -455,7 +455,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'IK Platformu',
     },
     hero: {
-      badge: 'Leo IA 2.0 hazir',
+      badge: 'Saha ekipleri icin mobil oncelikli isletim sistemi',
       badgeNew: 'Yeni',
       titleTop: 'Sirketinizi',
       titleBottom: 'tek uygulamadan yonetin.',
@@ -465,12 +465,12 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'Mobilde kullanilabilir',
       downloadCta: 'Uygulamalari indir',
       visualAlt: 'Leopardo IK yonetici paneli ekran goruntusu',
-      primaryCta: '30 gun ucretsiz deneyin',
+      primaryCta: '14 gun ucretsiz deneyin',
       secondaryCta: 'Demoyu izle',
       stats: [
         { value: 3, suffix: '', label: 'Mobil app' },
         { value: 2, suffix: '', label: 'Web app' },
-        { value: 30, suffix: 'g', label: 'Ucretsiz deneme' },
+        { value: 14, suffix: 'g', label: 'Ucretsiz deneme' },
         { value: 7, suffix: 'g', label: 'Saha pilotu' },
       ],
     },
@@ -553,7 +553,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Saha pilotlari icin hazir',
       title: 'IK sureclerini',
       titleHighlight: 'donusturmeye hazir misiniz?',
-      subtitle: '30 gun ucretsiz deneyin. Kredi karti gerekmez. Kurulum bes dakikadan kisa surer.',
+      subtitle: '14 gun ucretsiz deneyin. Kredi karti gerekmez. Kurulum bes dakikadan kisa surer.',
       primary: 'Ucretsiz basla',
       secondary: 'Demo iste',
     },
@@ -567,7 +567,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar'] },
         { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
         { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
@@ -599,7 +599,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'منصة الموارد البشرية',
     },
     hero: {
-      badge: 'Leo IA 2.0 متاح الان',
+      badge: 'نظام تشغيل متحرك أولاً لفرق الميدان',
       badgeNew: 'جديد',
       titleTop: 'نظام تشغيل الشركة',
       titleBottom: 'المتحرك بالجوال.',
@@ -609,13 +609,13 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       mobileBadge: 'متاح على الجوال',
       downloadCta: 'تحميل التطبيقات',
       visualAlt: 'لقطة شاشة للوحة تحكم الإدارة في ليوباردو للموارد البشرية',
-      primaryCta: 'ابدأ تجربة 30 يوما',
+      primaryCta: 'ابدأ تجربة 14 يوما',
       secondaryCta: 'شاهد العرض',
       stats: [
         { value: 3, suffix: '', label: 'تطبيقات جوال' },
         { value: 2, suffix: '', label: 'تطبيقات ويب' },
-        { value: 30, suffix: 'ي', label: 'تجربة مجانية' },
-        { value: 7, suffix: 'ي', label: 'تشغيل ميداني' },
+        { value: 14, suffix: 'يومًا', label: 'تجربة مجانية' },
+        { value: 7, suffix: 'أيام', label: 'تشغيل ميداني' },
       ],
     },
     heroQuickTrial: {
@@ -697,7 +697,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'جاهز للتشغيل الميداني',
       title: 'هل انت مستعد',
       titleHighlight: 'لتطوير عمليات الموارد البشرية؟',
-      subtitle: 'ابدأ تجربة مجانية لمدة 30 يوما بدون بطاقة ائتمان. التشغيل يتم خلال اقل من خمس دقائق.',
+      subtitle: 'ابدأ تجربة مجانية لمدة 14 يوما بدون بطاقة ائتمان. التشغيل يتم خلال اقل من خمس دقائق.',
       primary: 'ابدأ مجانا',
       secondary: 'اطلب عرضا',
     },
@@ -711,7 +711,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات'] },
         { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
         { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
@@ -729,7 +729,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
   },
 }
 
-function getCurrentLocale(): AppLocale {
+export function getCurrentLocale(): AppLocale {
   if (typeof window === 'undefined') {
     return 'fr'
   }

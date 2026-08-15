@@ -83,7 +83,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Sur devis',
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
-      trialNote: '30 jours offerts · Aucune CB requise',
+      trialNote: '14 jours offerts · Aucune CB requise',
     },
     currency: {
       label: 'Afficher les prix en',
@@ -117,11 +117,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
             { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
             { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -159,8 +159,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
         { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
-        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 30 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
+        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
         { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Pilot : email sous 48h. Operations : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
@@ -193,7 +193,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Custom',
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
-      trialNote: '30 days free · No credit card required',
+      trialNote: '14 days free · No credit card required',
     },
     currency: {
       label: 'Show prices in',
@@ -227,11 +227,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Payroll & finance',
           features: [
-            { name: 'Automated payroll', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
             { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
             { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-country & currency', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
             { name: 'Advanced legal compliance', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -269,8 +269,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Is the Free plan really free?', answer: 'Yes, 100% free. No credit card ever required. Immediate access for up to 5 employees. Upgrade to a paid plan anytime.', category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
         { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
-        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 30 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
-        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 30 more days. No automatic billing without your consent.', category: 'Trial' },
+        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 14 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
         { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
@@ -303,7 +303,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Teklif alın',
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
-      trialNote: '30 gün ücretsiz · Kredi kartı gerekmez',
+      trialNote: '14 gün ücretsiz · Kredi kartı gerekmez',
     },
     currency: {
       label: 'Fiyatları şu para birimiyle göster',
@@ -337,11 +337,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
             { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
             { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -380,7 +380,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
         { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
         { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
-        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 30 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
+        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
         { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Pilot: 48 saatte e-posta. Operations: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
         { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
@@ -413,7 +413,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'حسب الطلب',
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
-      trialNote: '30 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
+      trialNote: '14 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
     },
     currency: {
       label: 'عرض الأسعار بعملة',
@@ -447,7 +447,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'الرواتب والمالية',
           features: [
-            { name: 'حساب رواتب آلي', free: false, starter: true, business: true, enterprise: true },
+            { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
             { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
             { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
@@ -489,8 +489,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
         { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
-        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 30 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
+        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
         { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Pilot: بريد إلكتروني خلال 48 ساعة. Operations: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
@@ -644,10 +644,10 @@ export default function PricingPage() {
     // Free plan → direct account creation, no payment
     if (plan.price === '0') return '/checkout?plan=free';
     // Enterprise → contact
-    if (!showsCurrency(plan.price)) return '/contact?type=enterprise';
+    if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment
     if (plan.popular) return '/checkout?plan=business';
-    // Pilot → essai guidé 30 jours (aucun paiement à l'inscription) : le
+    // Pilot → essai guidé 14 jours (aucun paiement à l'inscription) : le
     // checkout ne doit pas être présenté comme « gratuit » (#2649).
     return '/signup?source=pricing_pilot';
   }
@@ -717,7 +717,7 @@ export default function PricingPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Link>
             <Link
-              href="/contact?type=enterprise"
+              href="/contact?topic=enterprise"
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
               <MessageCircle className="w-5 h-5" />
@@ -830,6 +830,10 @@ export default function PricingPage() {
               const Icon = planIcons[index % planIcons.length];
               const iconColor = planIconColors[index % planIconColors.length];
               const displayPrice = isAnnual ? plan.annualPrice : plan.price;
+              // #3023 — le vrai period du plan (avec surcoût par employé actif
+              // pour Pilot/Operations), sinon le libellé générique localisé.
+              const displayPeriod = (isAnnual ? plan.annualPeriod : plan.period)
+                || (isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly);
               const isFree = plan.price === '0';
               const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
               const ctaHref = getPlanHref(plan);
@@ -907,7 +911,7 @@ export default function PricingPage() {
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
                           <p className="text-sm text-slate-500">
-                            {isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly}
+                            {displayPeriod}
                           </p>
                           {isAnnual && (
                             <p className="text-xs text-slate-400 dark:text-slate-600">
@@ -1245,7 +1249,7 @@ export default function PricingPage() {
               </span>
             </Link>
             <Link
-              href="/contact?type=enterprise"
+              href="/contact?topic=enterprise"
               className="group flex items-center gap-2.5 px-10 py-4 bg-white/10 text-white font-bold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm text-base"
             >
               <Building2 className="w-5 h-5" />

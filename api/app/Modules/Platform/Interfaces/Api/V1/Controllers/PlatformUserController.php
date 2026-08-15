@@ -47,7 +47,7 @@ class PlatformUserController extends Controller
         }
 
         $users = $query->orderByDesc('id')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return new JsonResponse([
             'data' => collect($users->items())->map(fn (SuperAdmin $user): array => $this->serialize($user)),
@@ -119,6 +119,8 @@ class PlatformUserController extends Controller
         }
 
         $user->update(['status' => 'deactivated']);
+        // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
+        $user->tokens()->delete();
 
         $this->audit($request, $user, 'platform_user_deactivated');
 
@@ -140,6 +142,8 @@ class PlatformUserController extends Controller
         }
 
         $user->update(['status' => 'deactivated']);
+        // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
+        $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_deactivated');
 
         return new JsonResponse(['data' => $this->serialize($user->fresh() ?? $user)]);
@@ -152,6 +156,8 @@ class PlatformUserController extends Controller
         }
 
         $user->update(['status' => 'suspended']);
+        // Sécurité #2630 : suspendre un compte révoque ses tokens actifs.
+        $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_suspended');
 
         return new JsonResponse(['data' => $this->serialize($user->fresh() ?? $user)]);

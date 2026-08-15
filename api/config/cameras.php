@@ -29,7 +29,7 @@ return [
     // Base URL WebRTC (exposée par MediaMTX derrière proxy TLS).
     // Utilisée pour construire stream_url retourné à l'app.
     // Ex : wss://proxy.leopardo-rh.com/cam
-    'stream_base_url' => env('CAMERAS_STREAM_BASE_URL', 'wss://proxy.leopardo-rh.com/cam'),
+    'stream_base_url' => env('CAMERAS_STREAM_BASE_URL', 'wss://localhost/cam'),
 
     // Page publique viewer tiers (lien partagé).
     'public_view_url' => env('CAMERAS_PUBLIC_VIEW_URL'),

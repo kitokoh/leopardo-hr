@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Modules\Absence\Interfaces\Api\V1\Controllers\AbsenceController;
-use App\Modules\Absence\Interfaces\Api\V1\Controllers\LeavePolicyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,14 +22,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // PA2-MOB-006: download the supporting document attached to a request.
         Route::get('/{absence}/proof', [AbsenceController::class, 'downloadProof'])->whereNumber('absence');
         Route::put('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
-        Route::post('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
         Route::put('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
-        Route::post('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
         Route::delete('/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
-    });
-
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])
-    ->prefix('employees/{employeeId}/leave-balances')
-    ->group(function (): void {
-        Route::get('/', [LeavePolicyController::class, 'balances']);
     });

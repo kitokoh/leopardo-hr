@@ -27,8 +27,8 @@ class TrainingCourseResource extends JsonResource
             'cost_per_participant' => $this->cost_per_participant,
             'currency' => $this->currency,
             'sessions' => $this->whenLoaded('sessions'),
+            'sessions_count' => $this->whenCounted('sessions'),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }
-

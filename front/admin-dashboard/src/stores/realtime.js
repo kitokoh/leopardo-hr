@@ -55,7 +55,19 @@ export const useRealtimeStore = defineStore('realtime', () => {
       return
     }
 
-    socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || 'ws://localhost:6001', {
+    // Défaut dérivé de l'origine API (wss://hôte) pour ne jamais viser le
+    // localhost du visiteur en production (#3392). VITE_WEBSOCKET_URL reste
+    // prioritaire quand un serveur push existe.
+    const defaultWsUrl = (() => {
+      try {
+        const apiUrl = new URL(import.meta.env.VITE_API_URL || '')
+        const proto = apiUrl.protocol === 'https:' ? 'wss' : 'ws'
+        return `${proto}://${apiUrl.host}`
+      } catch {
+        return 'ws://localhost:6001'
+      }
+    })()
+    socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || defaultWsUrl, {
       auth: {
         token
       },
@@ -69,7 +81,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
     // Événements de connexion
     socket.value.on('connect', () => {
-      console.log('WebSocket connecté')
+      // console.log removed (audit 2026-08-15) — WebSocket connecté
       isConnected.value = true
       clearPushGraceTimer()
       stopPolling()
@@ -77,7 +89,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     })
 
     socket.value.on('disconnect', () => {
-      console.log('WebSocket déconnecté')
+      // console.log removed (audit 2026-08-15) — WebSocket déconnecté
       isConnected.value = false
       toast.warning('Connexion temps réel perdue')
       // Push dropped after being connected: switch to fallback polling
@@ -302,8 +314,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   function addNotification(notification) {
     const { silent, ...rest } = notification
+    // Issue #2707 — id synthétique uniquement si le payload socket n'en
+    // fournit pas (sinon PATCH /v1/notifications/{id}/read → 404).
     const newNotification = {
-      id: Date.now() + Math.random(),
+      id: rest.id ?? Date.now() + Math.random(),
       read: false,
       ...rest
     }
@@ -335,7 +349,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // Issue #2239 — persister côté backend (PATCH /notifications/{id}/read).
     // Best-effort : un échec réseau ne doit pas casser l'UX locale.
     try {
-      await api.patch(`/v1/notifications/${notificationId}/read`)
+      // Issue #2705 — _skipAuthRedirect : en super-admin ces routes tenant
+      // répondent 401 ; sans ce flag l'intercepteur détruisait la session.
+      await api.put(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist notification read state', err)
     }
@@ -343,9 +359,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
-    // Issue #2239 — persister côté backend (POST /notifications/mark-all-read).
+    // Issue #2239 — persister côté backend (PUT /notifications/read-all,
+    // contrat canonique #3121 — le POST répondait 405).
     try {
-      await api.post('/v1/notifications/mark-all-read')
+      await api.put('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist mark-all-read', err)
     }

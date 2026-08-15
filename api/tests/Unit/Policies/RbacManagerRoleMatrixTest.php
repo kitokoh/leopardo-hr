@@ -194,6 +194,51 @@ class RbacManagerRoleMatrixTest extends TestCase
         self::assertTrue($policy->view($actor, $target));
     }
 
+    // #3232 — EmployeePolicy doit être aveugle aux company_id étrangers :
+    // view/update/archive renvoient false dès que l'employé cible appartient
+    // à une autre société, quel que soit le rôle manager de l'acteur (même
+    // principal/RH) et même si l'acteur se voit lui-même (ID identique).
+    #[DataProvider('managerRoleProvider')]
+    public function test_employee_policy_view_denied_across_companies(string $managerRole): void
+    {
+        $policy = new EmployeePolicy;
+        $actor = $this->manager($managerRole);
+        $foreign = $this->employee(['id' => 201, 'company_id' => self::COMPANY_B]);
+
+        self::assertFalse($policy->view($actor, $foreign), "manager_role={$managerRole} must never view across tenants");
+    }
+
+    #[DataProvider('managerRoleProvider')]
+    public function test_employee_policy_update_denied_across_companies(string $managerRole): void
+    {
+        $policy = new EmployeePolicy;
+        $actor = $this->manager($managerRole);
+        $foreign = $this->employee(['id' => 201, 'company_id' => self::COMPANY_B]);
+
+        self::assertFalse($policy->update($actor, $foreign), "manager_role={$managerRole} must never update across tenants");
+    }
+
+    #[DataProvider('managerRoleProvider')]
+    public function test_employee_policy_archive_denied_across_companies(string $managerRole): void
+    {
+        $policy = new EmployeePolicy;
+        $actor = $this->manager($managerRole);
+        $foreign = $this->employee(['id' => 201, 'company_id' => self::COMPANY_B]);
+
+        self::assertFalse($policy->archive($actor, $foreign), "manager_role={$managerRole} must never archive across tenants");
+    }
+
+    public function test_employee_policy_self_view_denied_when_company_mismatches(): void
+    {
+        $policy = new EmployeePolicy;
+        // Même ID que l'acteur, mais société différente : la garde company_id
+        // prime sur la règle « on peut toujours se voir soi-même ».
+        $foreignSelf = $this->employee(['id' => 100, 'company_id' => self::COMPANY_B]);
+
+        self::assertFalse($policy->view($this->manager('principal'), $foreignSelf));
+        self::assertFalse($policy->update($this->manager('principal'), $foreignSelf));
+    }
+
     // -----------------------------------------------------------------
     // AbsencePolicy
     // -----------------------------------------------------------------

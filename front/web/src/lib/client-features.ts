@@ -215,6 +215,12 @@ function valueFor(keys: string[], values?: Record<string, unknown> | null): unkn
     return undefined;
   }
 
+  // Payload sous forme de liste de clés (ex. features: ['rh', 'finance']) —
+  // la présence de la clé vaut « activé » (#3379).
+  if (Array.isArray(values)) {
+    return keys.some((key) => values.includes(key)) ? true : undefined;
+  }
+
   const matchedKey = keys.find((key) => Object.prototype.hasOwnProperty.call(values, key));
   return matchedKey ? values[matchedKey] : undefined;
 }
@@ -249,6 +255,12 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
     return capabilityState;
   }
 
+  // Features tenant au niveau racine (/auth/me → EmployeeResource → FeatureFlag::for).
+  const rootFeatureState = stateFromValue(valueFor(module.featureKeys, user.features));
+  if (rootFeatureState) {
+    return rootFeatureState;
+  }
+
   const companyFeatureState = stateFromValue(valueFor(module.featureKeys, user.company?.features));
   if (companyFeatureState) {
     return companyFeatureState;
@@ -259,7 +271,18 @@ function resolveModuleState(module: ClientModule, user?: StoredAuthUser | null):
     return planFeatureState;
   }
 
-  return 'available';
+  // #3379 : fail-closed quand le backend fournit bien des données de
+  // features/capabilities mais que la clé du module est absente (ex. un
+  // non-partenaire sans is_partner). Si AUCUNE donnée de gate n'est
+  // présente (ancienne session, contrat pas encore branché), on retombe
+  // sur le rôle comme seul garde plutôt que de tout verrouiller.
+  const hasGateData =
+    (user.capabilities && Object.keys(user.capabilities).length > 0) ||
+    (user.features && Object.keys(user.features).length > 0) ||
+    (user.company?.features && Object.keys(user.company.features).length > 0) ||
+    (user.plan?.features && Object.keys(user.plan.features).length > 0);
+
+  return hasGateData ? 'locked' : 'available';
 }
 
 export function getClientModuleAccess(user?: StoredAuthUser | null): ClientModuleAccess[] {

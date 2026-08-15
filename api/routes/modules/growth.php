@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\Route;
 // Espace Partenaire (Web Client)
 // Access via the main dashboard requires the sanctum guard (Employee token).
 Route::prefix('growth')->group(function () {
-    // Issue #2622 : isolation tenant obligatoire (cross-tenant = 404).
-    Route::middleware(['auth:sanctum', 'tenant'])->prefix('partner')->group(function () {
+    // Issue #2622 + #2635 : isolation tenant obligatoire (cross-tenant = 404) +
+    // alignement sur le groupe standard (token.refresh + throttle:api-plan).
+    Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('partner')->group(function () {
         Route::post('/apply', [PartnerDashboardController::class, 'apply']);
         Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
         Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);
@@ -18,7 +19,8 @@ Route::prefix('growth')->group(function () {
 });
 
 // Espace Administration (Super Admin)
-Route::middleware(['auth:super_admin_api'])->prefix('platform/growth')->group(function () {
+// QA #3000 : throttle aligné sur les autres groupes plateforme (api.php:264).
+Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
     Route::get('/partners', [GrowthAdminController::class, 'partners']);
     Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
     Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);
