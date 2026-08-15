@@ -5,11 +5,6 @@ import { t } from '@/lib/i18n/locale-catalog';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
-/** Build a canonical URL from the configured site URL. */
-export function canonicalUrl(path: string): string {
-  return `${siteUrl}${path}`;
-}
-
 export interface SEOMetadata {
   title: string;
   description: string;
@@ -21,6 +16,19 @@ export interface SEOMetadata {
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
+  /** Locale BCP-47 de la page (ex. "fr_FR", "en_US", "tr_TR", "ar_AR"). */
+  locale?: string;
+}
+
+/** #3807 : mapping AppLocale → og:locale BCP-47 (évite le fr_FR codé en dur). */
+export function ogLocaleFor(locale: string): string {
+  const map: Record<string, string> = {
+    fr: 'fr_FR',
+    en: 'en_US',
+    tr: 'tr_TR',
+    ar: 'ar_AR',
+  };
+  return map[locale] ?? 'fr_FR';
 }
 
 /**
@@ -55,6 +63,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
       description: seo.description,
       url: url,
       siteName: siteName,
+      ...(seo.locale && { locale: ogLocaleFor(seo.locale) }),
       images: [
         {
           url: image,
@@ -257,6 +266,71 @@ export const pageMetadata = {
       "assistance logiciel RH",
     ],
     ogImage: `${siteUrl}/og/default.png`,
+  },
+
+  guideRhStartup: {
+    title: "Guide Complet RH pour Startup | Télécharger",
+    description:
+      "Guide complet RH pour startup. Conseils, templates et bonnes pratiques. Téléchargez gratuitement en PDF.",
+    keywords: [
+      "guide RH startup",
+      "RH pour startup",
+      "gestion RH",
+      "conseils RH",
+    ],
+    ogImage: `${siteUrl}/og/guides-rh-startup.png`,
+  },
+
+  guidePlanningEmployes: {
+    title: "Modèle Planning Employés | Télécharger Excel",
+    description:
+      "Modèle de planning pour vos employés. Template Excel gratuit, flexible et facile à utiliser.",
+    keywords: [
+      "planning employés",
+      "modèle planning",
+      "template Excel",
+      "gestion planning",
+    ],
+    ogImage: `${siteUrl}/og/guides-planning-employes.png`,
+  },
+
+  guideChecklistPaie: {
+    title: "Checklist Paie 2026 | Télécharger Gratuitement",
+    description:
+      "Checklist complète pour votre paie. Vérifications et conformité. Téléchargez gratuitement en PDF.",
+    keywords: [
+      "checklist paie",
+      "paie",
+      "conformité paie",
+      "gestion paie",
+    ],
+    ogImage: `${siteUrl}/og/guides-checklist-paie.png`,
+  },
+
+  guides: {
+    title: "Guides & Ressources RH | Téléchargements Gratuits",
+    description:
+      "Téléchargez nos guides gratuits : Guide RH Startup, Checklist Paie 2026, Modèle Planning Employés.",
+    keywords: [
+      "guides gratuits",
+      "ressources RH",
+      "templates RH",
+      "téléchargements",
+    ],
+    ogImage: `${siteUrl}/og/guides.png`,
+  },
+
+  demo: {
+    title: "Demander une Démo | Leopardo RH",
+    description:
+      "Planifiez une démo gratuite de Leopardo RH. Découvrez la gestion RH automatisée : paie multi-pays, pointage, absences, formations.",
+    keywords: [
+      "demo Leopardo RH",
+      "démo logiciel RH",
+      "planifier démo SaaS",
+      "gestion RH automatisée",
+    ],
+    ogImage: `${siteUrl}/og/demo.png`,
   },
 
   faq: {
@@ -480,66 +554,3 @@ export function generateBreadcrumbSchema(
   };
 }
 
-/**
- * Sitemap generation
- */
-export interface SitemapEntry {
-  url: string;
-  lastmod?: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: number;
-}
-
-export function generateSitemapXML(entries: SitemapEntry[]): string {
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries
-  .map(
-    (entry) => `
-  <url>
-    <loc>${entry.url}</loc>
-    ${entry.lastmod ? `<lastmod>${entry.lastmod}</lastmod>` : ""}
-    ${entry.changefreq ? `<changefreq>${entry.changefreq}</changefreq>` : ""}
-    ${entry.priority ? `<priority>${entry.priority}</priority>` : ""}
-  </url>
-`
-  )
-  .join("")}
-</urlset>`;
-
-  return xml;
-}
-
-/**
- * Robots.txt generation
- */
-export function generateRobotsTxt(): string {
-  return `User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api
-Disallow: /.env
-Disallow: /.git
-
-Sitemap: ${siteUrl}/sitemap.xml
-
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /`;
-}
-
-/**
- * Open Graph image generation helper
- */
-export function getOGImageUrl(page: string): string {
-  return `${siteUrl}/og/${page}.png`;
-}
-
-/**
- * Canonical URL helper
- */
-export function getCanonicalUrl(path: string): string {
-  return `${siteUrl}${path}`;
-}

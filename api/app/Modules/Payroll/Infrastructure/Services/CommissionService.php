@@ -8,6 +8,7 @@ use App\Modules\Payroll\Domain\Models\Commission;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Payroll\Domain\Models\Payment;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class CommissionService
@@ -61,19 +62,35 @@ class CommissionService
         // Exchange rate snapshot (Fake 1.0 if same currency for MVP)
         $exchangeRate = 1.0;
 
-        $commission = Commission::create([
-            'partner_id' => $partner->id,
-            'company_id' => $company->id,
-            'payment_id' => $payment->id,
-            'amount' => $commissionAmount, // Total to pay to partner
-            'net_amount' => $netAmountInCents, // HT Base
-            'currency' => $payment->currency,
-            'applied_rate' => $rate,
-            'exchange_rate' => $exchangeRate,
-            'original_amount' => $paymentAmountInCents,
-            'original_currency' => $payment->currency,
-            'status' => 'pending',
-        ]);
+        try {
+            $commission = Commission::create([
+                'partner_id' => $partner->id,
+                'company_id' => $company->id,
+                'payment_id' => $payment->id,
+                'amount' => $commissionAmount, // Total to pay to partner
+                'net_amount' => $netAmountInCents, // HT Base
+                'currency' => $payment->currency,
+                'applied_rate' => $rate,
+                'exchange_rate' => $exchangeRate,
+                'original_amount' => $paymentAmountInCents,
+                'original_currency' => $payment->currency,
+                'status' => 'pending',
+            ]);
+        } catch (QueryException $e) {
+            // Issue #3811 : course entre le exists() d'idempotence (ligne 25) et
+            // le create() — un paiement concurrent a déjà créé la commission
+            // (index unique commissions_payment_id_unique, migration
+            // 2026_08_15_000011). 23505 = SQLSTATE unique_violation (pattern
+            // PartnerService/PayrollService #3238) : comportement idempotent,
+            // jamais de 500 ni de commission dupliquée.
+            if ($e->getCode() === '23505') {
+                Log::warning("Commission race for payment {$payment->id} — concurrent create won, skipping.");
+
+                return null;
+            }
+
+            throw $e;
+        }
 
         Log::info("Commission recorded: {$commission->id} for partner {$partner->id} (HT base: {$netAmountInCents})");
 

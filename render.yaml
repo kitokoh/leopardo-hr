@@ -57,13 +57,20 @@ services:
           property: password
       - key: DB_SEARCH_PATH
         value: shared_tenants,public
-      # Redis (Upstash)
+      # Redis (instance interne Render leopardo-redis — issue #3774).
+      # REDIS_CLIENT=predis reste le défaut compatible Upstash ; un override
+      # externe (Upstash) reste possible via le dashboard Render en remplaçant
+      # REDIS_URL / REDIS_PASSWORD (les garder sync: false sur l'instance).
       - key: REDIS_CLIENT
         value: predis
       - key: REDIS_URL
-        sync: false  # set in Render dashboard
+        fromDatabase:
+          name: leopardo-redis
+          property: connectionString
       - key: REDIS_PASSWORD
-        sync: false
+        fromDatabase:
+          name: leopardo-redis
+          property: password
       # App secrets
       - key: APP_KEY
         generateValue: true
@@ -197,9 +204,13 @@ services:
       - key: REDIS_CLIENT
         value: predis
       - key: REDIS_URL
-        sync: false
+        fromDatabase:
+          name: leopardo-redis
+          property: connectionString
       - key: REDIS_PASSWORD
-        sync: false
+        fromDatabase:
+          name: leopardo-redis
+          property: password
       - key: APP_KEY
         sync: false  # must match web service
       - key: QUEUE_CONNECTION
@@ -279,7 +290,13 @@ services:
       - key: DB_SEARCH_PATH
         value: shared_tenants,public
       - key: REDIS_URL
-        sync: false
+        fromDatabase:
+          name: leopardo-redis
+          property: connectionString
+      - key: REDIS_PASSWORD
+        fromDatabase:
+          name: leopardo-redis
+          property: password
       - key: APP_KEY
         sync: false
       - key: QUEUE_CONNECTION
@@ -311,4 +328,13 @@ databases:
     user: leopardo_user
     region: frankfurt
     plan: starter
+    ipAllowList: []  # restricted to Render internal network
+  # Issue #3774 : Redis interne Render (plan gratuit) pour QUEUE/CACHE/SESSION.
+  # Les trois services (web, leopardo-queue-worker, leopardo-scheduler) y sont
+  # branchés via fromDatabase ; un override Upstash externe reste possible en
+  # remplaçant REDIS_URL/REDIS_PASSWORD dans le dashboard Render.
+  - name: leopardo-redis
+    plan: free
+    type: redis
+    maxmemoryPolicy: allkeys-lru
     ipAllowList: []  # restricted to Render internal network

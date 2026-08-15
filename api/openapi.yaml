@@ -262,6 +262,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/v1/edge/download/Caddyfile.edge:
+    get:
+      tags: ["Health"]
+      summary: "Caddyfile.edge de reference pour le nœud edge (public)"
+      description: "Fichier de configuration Caddy monté par docker-compose.yml du nœud edge (issue #3741)."
+      security: []
+      responses:
+        "200":
+          description: "Fichier Caddyfile.edge"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Fichier introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/v1/edge/download/env-example:
     get:
       tags: ["Health"]

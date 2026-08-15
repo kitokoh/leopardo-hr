@@ -7,6 +7,7 @@ namespace App\Modules\EdgeSync\Application\Services;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -181,16 +182,34 @@ class SyncEngineService
         $payload                         = $item->payload;
         $payload['synced_from_offline']  = true;
 
-        match ($item->operation) {
-            'create' => DB::table('attendance_logs')->insert($payload),
-            'update' => DB::table('attendance_logs')
-                ->where('id', $item->entity_id)
-                ->update($payload),
-            'delete' => DB::table('attendance_logs')
-                ->where('id', $item->entity_id)
-                ->delete(),
-            default  => null,
-        };
+        try {
+            match ($item->operation) {
+                'create' => DB::table('attendance_logs')->insert($payload),
+                'update' => DB::table('attendance_logs')
+                    ->where('id', $item->entity_id)
+                    ->update($payload),
+                'delete' => DB::table('attendance_logs')
+                    ->where('id', $item->entity_id)
+                    ->delete(),
+                default  => null,
+            };
+        } catch (QueryException $e) {
+            // Issue #3811 : course entre le exists() ci-dessus et l'insert
+            // (index unique attendance_logs.external_event_id) — un sync
+            // concurrent a déjà inséré l'événement. 23505 = SQLSTATE
+            // unique_violation : résultat conflit idempotent, jamais de 500
+            // dans le job de sync (pattern 23505, cf. PartnerService #3238).
+            if ($e->getCode() === '23505' && $item->operation === 'create') {
+                Log::warning("Sync attendance race on external_event_id {$item->entity_id} — duplicate create skipped.");
+
+                return [
+                    'conflict'      => true,
+                    'conflict_note' => 'Duplicate external_event_id — create skipped.',
+                ];
+            }
+
+            throw $e;
+        }
 
         return ['conflict' => false, 'conflict_note' => null];
     }

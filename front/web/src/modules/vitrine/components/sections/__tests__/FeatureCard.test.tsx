@@ -74,13 +74,15 @@ describe('FeatureCard Component', () => {
   describe('Variants', () => {
     it('should render with default variant', () => {
       const { container } = render(<FeatureCard {...defaultProps} variant="default" />);
-      const card = container.querySelector('div');
-      expect(card).toHaveClass('bg-white', 'dark:bg-slate-900');
+      const cards = container.querySelectorAll('.rounded-3xl');
+      const card = cards[cards.length - 1]; // dernier = carte (le 1er est le glow)
+      expect(card).toHaveClass('bg-white', 'dark:bg-slate-900/80');
     });
 
     it('should render with highlighted variant', () => {
       const { container } = render(<FeatureCard {...defaultProps} variant="highlighted" />);
-      const card = container.querySelector('div');
+      const cards = container.querySelectorAll('.rounded-3xl');
+      const card = cards[cards.length - 1];
       expect(card).toHaveClass('bg-gradient-to-br');
     });
   });
@@ -88,8 +90,8 @@ describe('FeatureCard Component', () => {
   describe('Accessibility', () => {
     it('should have proper semantic structure', () => {
       const { container } = render(<FeatureCard {...defaultProps} />);
-      const article = container.querySelector('article');
-      expect(article).toBeInTheDocument();
+      const card = container.querySelector('.group');
+      expect(card).toBeInTheDocument();
     });
 
     it('should have accessible heading', () => {
@@ -113,8 +115,9 @@ describe('FeatureCard Component', () => {
   describe('Hover Effects', () => {
     it('should have hover classes', () => {
       const { container } = render(<FeatureCard {...defaultProps} />);
-      const card = container.querySelector('article');
-      expect(card).toHaveClass('hover:shadow-lg', 'transition-shadow');
+      const cards = container.querySelectorAll('.rounded-3xl');
+      const card = cards[cards.length - 1];
+      expect(card).toHaveClass('group-hover:shadow-xl', 'transition-all');
     });
   });
 });

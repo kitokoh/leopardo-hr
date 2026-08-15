@@ -12,8 +12,10 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\Payroll\Domain\Models\LoanRepayment;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SelfServiceController extends Controller
 {
@@ -89,12 +91,27 @@ class SelfServiceController extends Controller
             return response()->json(['message' => 'Already enrolled in this session.'], 422);
         }
 
-        $enrollment = TrainingEnrollment::create([
-            'training_session_id' => $sessionId,
-            'employee_id' => $user->id,
-            'company_id' => $user->company_id,
-            'status' => 'enrolled',
-        ]);
+        try {
+            $enrollment = TrainingEnrollment::create([
+                'training_session_id' => $sessionId,
+                'employee_id' => $user->id,
+                'company_id' => $user->company_id,
+                'status' => 'enrolled',
+            ]);
+        } catch (QueryException $e) {
+            // Issue #3811 : course entre le exists() ci-dessus et le create()
+            // (contrainte unique (training_session_id, employee_id)) — une
+            // requête concurrente a gagné la course. 23505 = SQLSTATE
+            // unique_violation (pattern PartnerService #3238) : réponse 422
+            // idempotente, jamais de 500.
+            if ($e->getCode() === '23505') {
+                Log::warning("Training enrollment race for session {$sessionId}, employee {$user->id} — concurrent create won.");
+
+                return response()->json(['message' => 'Already enrolled in this session.'], 422);
+            }
+
+            throw $e;
+        }
 
         return (new TrainingEnrollmentResource($enrollment))
             ->response()

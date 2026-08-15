@@ -202,6 +202,19 @@ class AuthController extends Controller
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
+            // Issue #3724 : pas d'auto-provisionnement silencieux en production.
+            // Le flux d'invitation (#2617) crée toujours la ligne employé en
+            // amont — un email totalement inconnu n'a donc aucun chemin légitime
+            // ici. L'auto-création reste possible uniquement sur les environnements
+            // de démo explicitement configurés (DEMO_MODE_ENABLED=true), en
+            // parité avec le 401 de handleGoogleToken.
+            if (! config('app.demo_mode_enabled')) {
+                return new JsonResponse([
+                    'error' => 'UNKNOWN_ACCOUNT',
+                    'message' => 'No account exists for this Google email. Ask your administrator for an invitation.',
+                ], 401);
+            }
+
             /** @var Employee $employee */
             $employee = Employee::create([
                 'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),

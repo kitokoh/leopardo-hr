@@ -11,7 +11,9 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\HR\Infrastructure\Services\SectorTemplateService;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -49,9 +51,8 @@ class CompanyProvisioningService
             $trialDays = (int) ($plan->trial_days ?? 14);
             $slug = $this->resolveUniqueSlug((string) ($payload['slug'] ?? Str::slug((string) $payload['name'])));
 
-            $company = Company::query()->create([
+            $companyData = [
                 'name' => $payload['name'],
-                'slug' => $slug,
                 'sector' => $payload['sector'],
                 'country' => $payload['country'],
                 'city' => $payload['city'],
@@ -68,7 +69,9 @@ class CompanyProvisioningService
                 'timezone' => $payload['timezone'],
                 'currency' => $payload['currency'],
                 'notes' => $payload['notes'] ?? null,
-            ]);
+            ];
+
+            $company = $this->createCompanyWithUniqueSlug($companyData, $slug);
 
             DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
             $this->tenantManager->setTenant($company);
@@ -116,6 +119,36 @@ class CompanyProvisioningService
         );
 
         return $result;
+    }
+
+    /**
+     * Issue #3811 — création société résiliente à la course sur companies.slug.
+     *
+     * `resolveUniqueSlug()` est un check-then-create : entre le `exists()` et
+     * l'insert, un provisionnement concurrent peut gagner la course (index
+     * unique companies.slug) → QueryException 23505. La création s'exécute
+     * dans un `DB::transaction` imbriqué (savepoint) : PostgreSQL aborte la
+     * transaction courante sur erreur, le savepoint absorbe l'abort et permet
+     * de re-résoudre un slug libre puis de retenter UNE fois — jamais de 500
+     * sur collision de slug (pattern 23505, cf. PartnerService #3238).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function createCompanyWithUniqueSlug(array $data, string $slug): Company
+    {
+        try {
+            return DB::transaction(fn (): Company => Company::query()->create($data + ['slug' => $slug]));
+        } catch (QueryException $e) {
+            if ($e->getCode() !== '23505') {
+                throw $e;
+            }
+
+            Log::warning("Company slug race on '{$slug}' — re-resolving unique slug and retrying once.");
+
+            return DB::transaction(
+                fn (): Company => Company::query()->create($data + ['slug' => $this->resolveUniqueSlug($slug)])
+            );
+        }
     }
 
     private function resolveUniqueSlug(string $baseSlug): string

@@ -6,7 +6,7 @@ Guide pour les nouveaux contributeurs. Pour les regles agent/CI, voir `AGENTS.md
 
 - **Docker** >= 24 + **Docker Compose** v2
 - **Node.js** >= 20 (pour le dashboard admin et la vitrine Next.js)
-- **PHP** >= 8.2 + Composer >= 2.6 (pour le backend Laravel)
+- **PHP** >= 8.4.1 + Composer >= 2.6 (pour le backend Laravel — le lock Composer contient des composants Symfony 8.x qui exigent PHP 8.4.1+, cf. issue #3819)
 - **Flutter** >= 3.22 (pour l'application mobile)
 
 ## Quick Start (Docker)

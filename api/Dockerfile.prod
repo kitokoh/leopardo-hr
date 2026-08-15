@@ -48,6 +48,12 @@ COPY api/ .
 # Without this copy, GET /api/v1/i18n/catalog/* 500s in production
 # (Locale catalog not found). See issue #1773.
 COPY shared/i18n /shared/i18n
+
+# Edge installation assets (issue #3770 / #3591) : le script d'installation et
+# le docker-compose sont servis publiquement par EdgeDownloadController via
+# base_path('../edge/...') = /edge/... Sans cette copie, GET
+# /api/v1/edge/install.sh et /api/v1/edge/download/* 404 en production.
+COPY edge/ /edge
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader

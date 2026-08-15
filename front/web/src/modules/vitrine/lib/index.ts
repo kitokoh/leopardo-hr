@@ -1,6 +1,3 @@
-// Animations
-export * from "./animations";
-
 // Analytics
 export * from "./analytics";
 
@@ -15,9 +12,6 @@ export * from "./forms";
 
 // Environment
 export * from "./env";
-
-// Utils
-export * from "./utils";
 
 // Locale
 export * from "./vitrine-locale";

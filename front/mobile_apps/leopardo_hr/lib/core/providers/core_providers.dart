@@ -22,7 +22,6 @@ import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
 import 'package:leopardo_hr/features/training/data/training_repository.dart';
 import 'package:leopardo_hr/features/expenses/data/expense_repository.dart';
 import 'package:leopardo_hr/features/ai_chat/data/ai_chat_repository.dart';
-import 'package:leopardo_hr/features/ai_voice/data/ai_voice_repository.dart';
 import 'package:leopardo_hr/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_hr/features/approvals/data/approval_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
@@ -148,11 +147,6 @@ final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
 final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return AiChatRepository(apiClient);
-});
-
-final aiVoiceRepositoryProvider = Provider<AiVoiceRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AiVoiceRepository(apiClient);
 });
 
 final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((

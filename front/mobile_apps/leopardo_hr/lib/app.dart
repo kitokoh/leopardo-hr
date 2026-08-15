@@ -13,7 +13,10 @@ import 'package:leopardo_hr/features/auth/screens/login_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/register_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
+import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
+import 'package:leopardo_hr/features/evaluations/screens/evaluation_list_screen.dart';
+import 'package:leopardo_hr/features/notifications/screens/notification_list_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
 import 'package:leopardo_hr/features/home/screens/hr_main_shell.dart';
 import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
@@ -166,8 +169,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PayrollListScreen(),
       ),
       GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: '/evaluations',
+        builder: (context, state) => const EvaluationListScreen(),
+      ),
+      GoRoute(
         path: '/attendance',
         builder: (context, state) => const AttendanceScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        builder: (context, state) => const HistoryScreen(),
       ),
       GoRoute(
         path: '/me/monthly',

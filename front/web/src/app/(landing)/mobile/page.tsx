@@ -1,9 +1,9 @@
 ﻿'use client';
 
-import { useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { motion } from 'framer-motion';
 import {
   mobileDownloadLabel,
@@ -246,11 +246,11 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; badge
 ───────────────────────────────────────── */
 export default function MobilePage() {
   const { isDark, toggleDarkMode } = useDarkMode();
-  const [lang, setLang] = useState<Lang>('fr');
+  const { locale: lang, direction, setLocale } = useVitrineLocale();
   useScrollReveal();
 
   const t = copy[lang];
-  const isRtl = lang === 'ar';
+  const isRtl = direction === 'rtl';
 
   return (
     <div
@@ -267,7 +267,7 @@ export default function MobilePage() {
             {langs.map((l) => (
               <button
                 key={l}
-                onClick={() => setLang(l)}
+                onClick={() => setLocale(l)}
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
                   lang === l
                     ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
