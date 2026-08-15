@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(admin): état réel du canal push — `pushUnavailable` défini dans le store (Closes #3932).** Référencé par `SystemAlertsOverlay` et `Header` mais jamais assigné, l'état était toujours falsy → la bannière rouge « Connexion temps réel perdue » s'affichait en permanence pour tout super-admin sans WS, l'état neutre « Push non configuré » (#3269) étant inatteignable. `pushUnavailable` est désormais un ref du store : réinitialisé à chaque `connect()`, passé à `true` sur `connect_error` et au grace timeout de 8 s (fallback polling PA2-COMM-013), repassé à `false` à la connexion. Spec : `docs/specifications/ISSUE_3932_PUSH_UNAVAILABLE.md`.
 - **fix(api): casts Eloquent manquants sur 3 modèles (Closes #3893).** `BiometricEnrollmentRequest` (booléens `requested_face_enabled`/`requested_fingerprint_enabled`, `submitted_at`/`approved_at`/`rejected_at`), `KioskAnnouncement` (`is_active`, `starts_at`, `expires_at`) et `ZktecoDevice` (`port`, capacités, `capabilities` JSON, `last_heartbeat_at`/`last_sync_at`) retournaient des chaînes au lieu de bool/Carbon/array → comparaisons silencieusement fausses côté API.
 
 - **fix(api): ATS — index unique (job_posting_id, email) + garde 409 ALREADY_APPLIED (Closes #3860).** `applicants` n'avait aucune contrainte d'unicité → candidatures en double illimitées (double-clic, spam, retry). Migration tenant additive : dédoublonnage (garde la plus ancienne) puis `CREATE UNIQUE INDEX applicants_job_posting_email_unique`. Portail public (`CandidateApplicationController`) et ajout manager (`RecruitmentController`) : check préalable + catch 23505 → 409 `ALREADY_APPLIED`. 2 tests ajoutés (doublon refusé, multi-poste autorisé).
