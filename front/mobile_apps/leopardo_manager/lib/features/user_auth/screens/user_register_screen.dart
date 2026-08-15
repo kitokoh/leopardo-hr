@@ -62,11 +62,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       final account = await googleSignIn.authenticate();
 
       final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
-            googleId: account.id,
-            email: account.email,
-            firstName: account.displayName?.split(' ').first ?? '',
-            lastName: account.displayName?.split(' ').skip(1).join(' ') ?? '',
-            avatarUrl: account.photoUrl,
+            idToken: account.idToken ?? '',
           );
 
       if (ok && mounted) {
