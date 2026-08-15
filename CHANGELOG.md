@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 ### Fixed
 - **fix(ci): main vert — PHPStan Strict/Modules (level 8/5), Module Structure Validator, I18N sync, AIGatewayAndAnalyticsTest.** (1) App : `AuthService::login` convertit `locked_until` en Carbon avant `isFuture()`/`AccountLockedException` (DateTimeInterface → Carbon) ; `AuthController::redirectToGoogle` type le provider Socialite (GoogleProvider) pour `with()` ; `KioskController::resolveAuthorizedKiosk` ne caste plus un `??` non nullable ; `EdgeNodeController::sync` refresh le nœud avant de lire `last_sync_at` (null-safe). (2) Tests : 29 fichiers réalignés PHPStan level 8 (collect(RouteCollection) → getRoutes()->getRoutes(), @var FQCN sur factory()->create(), Mockery typé, `assertExitCode` sur PendingCommand instancié, casts null-safe, dead props retirées, `@property company_id` ajouté à CalendarConnection). (3) `AIGatewayAndAnalyticsTest` attend 2 workflows (prepare_payroll, weekly_report) — le workflow fantôme `new_employee_onboarding` a été retiré (Closes #3118, #2808). Closes #1962 (préfixes migrations doublés) via #2969.
 
