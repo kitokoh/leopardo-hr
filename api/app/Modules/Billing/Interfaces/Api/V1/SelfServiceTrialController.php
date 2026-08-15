@@ -9,6 +9,7 @@ use App\Jobs\ProvisionDemoTenantJob;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -68,8 +69,9 @@ class SelfServiceTrialController extends Controller
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
             if ($existingManager) {
-                // Pas de double provisioning pour un email déjà enregistré :
-                // réponse uniforme uniquement (token aléatoire, aucun row/job).
+                // Issue #3945 : pas de double provisioning pour un email déjà
+                // enregistré : réponse uniforme uniquement (token aléatoire,
+                // aucun row/job) — l'anti-énumération prime.
                 return new JsonResponse([
                     'success' => true,
                     'message' => __('billing.trial_signup_received'),
@@ -81,19 +83,85 @@ class SelfServiceTrialController extends Controller
                 ], 200);
             }
 
+            // Issue #3951 : un double POST guided_trial (retry réseau, double
+            // clic, onglet dupliqué) ne doit PAS créer 2 lignes pending + 2
+            // ProvisionDemoTenantJob → 2 tenants sandbox. On réutilise la
+            // ligne pending existante (même token, idempotent).
+            $existingPending = DB::table('trial_provisionings')
+                ->where('email', $email)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($existingPending) {
+                Log::info('trial.signup_existing_pending_reused', ['email' => $email]);
+
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => __('billing.trial_signup_received'),
+                    'data' => [
+                        'email' => $email,
+                        'status' => 'provisioning_sandbox',
+                        'provisioning_token' => $existingPending->provisioning_token,
+                    ],
+                ], 200);
+            }
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => __('billing.trial_signup_received'),
+                    'data' => [
+                        'email' => $email,
+                        'status' => 'provisioning_sandbox',
+<<<<<<< HEAD
+                        'provisioning_token' => Str::random(64),
+=======
+                        'provisioning_token' => $existingPending->provisioning_token,
+>>>>>>> d4dba580 (fix(api): trial/signup guided_trial — dédup provisionings pending, plus de double tenant (Closes #3951))
+                    ],
+                ], 200);
+            }
+
             // MULTI-PAYS (#1950) : le pays validé du signup est transmis au job
             // (plus de fallback silencieux DZ — invariant 10 de la spec).
             // #2437 : un provisioning_token est créé pour permettre au prospect
             // de poller GET /trial/status sans exposer l'email brut.
             $provisioningToken = Str::random(64);
 
-            DB::table('trial_provisionings')->insert([
-                'email' => $email,
-                'provisioning_token' => $provisioningToken,
-                'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            try {
+                DB::table('trial_provisionings')->insert([
+                    'email' => $email,
+                    'provisioning_token' => $provisioningToken,
+                    'status' => 'pending',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (QueryException $e) {
+                // Issue #3951 : course entre le check ci-dessus et l'insert —
+                // un POST concurrent a gagné (index partiel unique
+                // trial_provisionings_pending_email_unique, migration
+                // 2026_08_15_000012). 23505 = SQLSTATE unique_violation
+                // (pattern PartnerService #3238) : on récupère la ligne
+                // gagnante et on répond son token — jamais de 500.
+                if ($e->getCode() === '23505') {
+                    Log::warning("Trial provisioning race on {$email} — reusing winner row.");
+
+                    $winner = DB::table('trial_provisionings')
+                        ->where('email', $email)
+                        ->where('status', 'pending')
+                        ->firstOrFail();
+
+                    return new JsonResponse([
+                        'success' => true,
+                        'message' => __('billing.trial_signup_received'),
+                        'data' => [
+                            'email' => $email,
+                            'status' => 'provisioning_sandbox',
+                            'provisioning_token' => $winner->provisioning_token,
+                        ],
+                    ], 200);
+                }
+
+                throw $e;
+            }
 
             ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken);
 
