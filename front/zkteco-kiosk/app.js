@@ -642,6 +642,16 @@ function init() {
   // Demo access
   initDemoAccess();
 
+  // Issue #2911 : sans apiBaseUrl/deviceCode (config.json absent), la borne
+  // appelait /api/v1/kiosks//… → alerte « Error 404 » brute. Afficher un
+  // état « borne non configurée » explicite et désactiver les actions.
+  if (!CONFIG.apiBaseUrl || !CONFIG.deviceCode) {
+    setStatus('#statusBox', t('error.kioskNotConfigured'), true);
+    setPunchButtonsDisabled(true);
+    if (els.syncRetryBtn) els.syncRetryBtn.disabled = true;
+    return;
+  }
+
   // Initial loads
   refreshStatus();
   setInterval(refreshStatus, CONFIG.refreshInterval);
