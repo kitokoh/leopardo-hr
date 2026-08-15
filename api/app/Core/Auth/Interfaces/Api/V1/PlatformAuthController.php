@@ -38,6 +38,15 @@ class PlatformAuthController extends Controller
             ], 401);
         }
 
+        // Sécurité #2630 : un super-admin suspendu/désactivé ne peut pas se connecter.
+        if ($superAdmin->status !== 'active') {
+            return new JsonResponse([
+                'error' => 'ACCOUNT_SUSPENDED',
+                'message' => 'Votre compte a été suspendu. Contactez votre administrateur.',
+                'localized_message' => __('errors.ACCOUNT_SUSPENDED'),
+            ], 403);
+        }
+
         // Check 2FA if enabled
         if ($superAdmin->two_fa_secret) {
             if (! isset($validated['two_fa_code'])) {

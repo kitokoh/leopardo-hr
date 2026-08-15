@@ -142,3 +142,14 @@
 
 **Dernière mise à jour :** 2026-08-14 (vague QA hardening)
 **Mis à jour par :** Neo (Pulumi Agent)
+
+
+---
+
+## Vague QA expert 2026-08-15 (audit complet)
+
+- **Périmètre** : vitrine/web (Next.js), cockpit admin (Vue 3), mobile (Flutter ×6), API (Laravel 12) — workflows, logiques, onboarding, cohérence.
+- **Issues** : ~86 sous le label `qa-audit-2026-08-15` (T001-T099 ; T001-T013 = sessions expert parallèles, issues #2594-#2626 ; doublons fermés vers canoniques).
+- **Features Spec Kit** : `.specify/features/qa-audit-expert-{api,admin,web,mobile}-2026-08-15/{spec,plan,tasks}.md` + `docs/audits/AUDIT_EXPERT_2026-08-15.md`.
+- **Correctifs livrés (39 PRs)** : approbation de congé sur snapshot `leave_balances` (plus d'échec après crédit), webhook email-bounce fail-closed, webhook Stripe 500-sur-erreur, pointage verrouillé + index unique partiel, leave-balances scopé entreprise (IDOR), gardes de transition expense, trial signup non avalé, 1/10e `calculated`, clipping congés paie, verbes de notification canoniques, `per_page` borné, labels localisés, URLs config neutres, AI `current_company` ; admin : console sans simulations (maintenance/démo/globe), UsersView honnête (pagination/CSV/deactivate), realtime sans wipe de session, MetricCard/route titles/money locale ; web : lang/dir SSR, OG images réelles, SW précache réparé, OAuth proxy, démo conditionnelle, i18n login ; mobile : route cabinet, session hors-ligne conservée, onUnauthorized, mojibake, 403 différencié, Android 14, locale platform_admin.
+- **Reste ouvert** : T006/T012/T032/T034/T042/T049/T058/T059/T072/T079 (doublons fermés), T010 (jours ouvrés), T014 (OpenAPI ~134 chemins), T019 (temp_password — dépendance front), T026 (chunking paie), T068 (SignupForm i18n complet), T085 (i18n mobile ~1 300 chaînes), T086 (devise DZD), T089 (formatage nombres), T090 (offline manager), T094/T095 (mobile), T001-T009 sessions parallèles (PRs #2663-#2665 en cours).

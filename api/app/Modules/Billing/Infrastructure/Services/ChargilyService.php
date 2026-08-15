@@ -31,8 +31,12 @@ class ChargilyService
     public function verifyWebhookSignature(string $payload, string $signatureHeader): ?array
     {
         if (empty($this->webhookSecret)) {
-            Log::warning('Chargily: Webhook secret not configured, skipping signature verification.');
-            return json_decode($payload, true);
+            // #2615 fail-closed : secret absent = webhook non vérifiable = on
+            // REJETTE (null). Un secret vide ne doit jamais accepter un
+            // payload (fail-open = signature by-passable en prod).
+            Log::error('Chargily: Webhook secret not configured — webhook REJETÉ (fail-closed).');
+
+            return null;
         }
 
         // Strip the "sha256=" prefix if present

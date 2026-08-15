@@ -210,6 +210,7 @@ async function disableMaintenanceMode() {
   // n'existe : l'action était simulée (setTimeout + toast de succès).
   // Désormais, état honnête : on ne peut pas désactiver le mode depuis l'UI.
   toast.info('Mode maintenance : désactivation non disponible depuis la console (aucun endpoint admin).')
+  isMaintenanceMode.value = false
 }
 
 // Expose methods for external control
