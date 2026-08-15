@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+### Fixed
+- **fix(admin): DashboardView — champs alignés sur les payloads réels (Closes #3036, #3037).** « Priorités Portefeuille » lisait item.name/slug/mrr_eur (absents) → noms vides, MRR 0€, lien /companies/undefined ; corrigé sur item.company.* + item.subscription.mrr/currency. « Inscriptions en attente » lisait request.name/manager_email (absents) → titres vides ; corrigé sur company_name + user.name || email.
 - **fix(kiosk): état non configuré localisé quand apiBaseUrl ou deviceCode manque (Closes #2911).** La borne n’essaie plus d’appeler une URL `/api/v1/kiosks/` invalide : les actions distantes sont désactivées et un message d’installation est affiché en FR/EN/TR/AR.
 ### Added
 - **feat(admin): impersonation SPA câblée sur POST /admin/impersonations (Closes #2518).** Le backend PA2-ADM-006 existait (PlatformImpersonationController : session Sanctum 30-120 min, motif obligatoire, audit) mais aucun bouton UI — la PR #2466 avait même retiré l'émetteur `@impersonate`. (1) `UsersView` recharge le détail via `GET /admin/users/{id}` (seule source du lien employé `company.employee_id`, décision #2519) ; (2) modal d'impersonation : motif obligatoire ≥ 5 caractères, POST `/admin/impersonations` {company_id, employee_id, reason}, affichage du jeton + expiration + copie, erreurs API ; (3) `UserDetailModal` affiche entreprise/employé lié depuis le payload `company` ; (4) i18n `users.impersonation.*` dans les 4 locales. Au passage (artefacts merge #2469 signalés par #2517) : doublons `import api` + `deleteUser` + handlers de modales morts (`handleUserCreated`/`handleUserUpdated`/`generateTemporaryPassword`) supprimés — lint 0 erreur, build vert.
