@@ -158,6 +158,7 @@
 
 ### Fixed
 
+- **fix(web): OG images réelles + meta pricing alignée (Closes #2722, #2721).** Les OG images pointaient vers `/og/*.png` inexistants (404) → `/brand/opengraph.svg` ; meta description pricing alignée sur les plans réels (Free/Pilot 29€/Operations 99€/Enterprise) et l'essai 30 jours.
 - **fix(web): `lang`/`dir` calculés par requête au SSR (Closes #2719).** Fini le `lang="fr"` codé en dur pour les visiteurs en/tr/ar (LocaleSync ajuste ensuite côté client selon les préférences).
 - **fix(ui): accents login admin + kiosk état non configuré (Closes #2910, #2911).** LoginView « Accès Demo » ; kiosk : sans `config.json` → état explicite « Borne non configurée » (i18n fr/en/tr/ar) + actions désactivées au lieu de l'alerte « Error 404 ».
 - **fix(attendance): pointage protégé contre les courses (Closes #2669).** `lockForUpdate` sur la recherche de session ouverte dans une transaction + index unique partiel `(employee_id, date) WHERE check_out IS NULL` (migration `2026_08_15_000004`) — deux check-in parallèles ne créent plus deux sessions ouvertes. `PayrollWorkInputsTest` réaligné sur l'invariant.
