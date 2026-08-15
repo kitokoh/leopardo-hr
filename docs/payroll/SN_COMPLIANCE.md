@@ -25,6 +25,19 @@
 | Jours fériés fixes SN | 📝 via CRUD jours fériés (#1811) | loi | — |
 | Jours fériés islamiques (Korité, Tabaski, Gamou, Taamhrit) | 📝 via calendrier islamique (#1812) | table `islamic_calendar` | — |
 
+## 0. Pattern déclaration CSV — le générateur lit le moteur (issue #2539)
+
+Les générateurs de déclaration CSV (`IpresDeclarationGenerator` SN,
+`CnssDeclarationGenerator` CI, `CemacCnpsDeclarationGenerator` GA/CG,
+`CedeaoCnsDeclarationGenerator` BF/ML) ne doivent **jamais** dupliquer les
+taux/plafonds : ils lisent `socialContributions()` des règles pays (source
+unique). SN et CI sont déjà refactorés (aucune constante locale) ; GA/CG/BF/ML
+gardent des constantes **gardées par le test `DeclarationRatesMatchEngineTest`**
+qui compare chaque constante aux règles par code — une divergence moteur ↔
+déclaration (classe de bug #2473) fait échouer la CI. Un changement de taux se
+fait dans les règles pays + goldens + CHANGELOG (constitution §III), jamais
+dans un générateur.
+
 ## 1. IR — Impôt sur le revenu (salaires)
 
 **Barème ANNUEL** (`SenegalPayrollRules::defaultTaxSlabs()`) :
