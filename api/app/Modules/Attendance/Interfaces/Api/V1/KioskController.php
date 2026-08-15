@@ -121,11 +121,11 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doRoster($company),
+            fn (): JsonResponse => $this->doRoster($company, $kiosk->device_code),
         );
     }
 
-    private function doRoster(Company $company): JsonResponse
+    private function doRoster(Company $company, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($company);
 
@@ -154,7 +154,7 @@ class KioskController extends Controller
 
         return new JsonResponse([
             'data' => [
-                'device_code' => $kiosk->device_code,
+                'device_code' => $deviceCode,
                 'company_id' => $company->id,
                 'company_name' => $company->name,
                 'employees' => $items,
@@ -186,6 +186,9 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doSync(AttendanceKiosk $kiosk, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($kiosk->company);
@@ -219,6 +222,9 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doEmployeeInfo(Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
@@ -280,11 +286,11 @@ class KioskController extends Controller
 
         return $this->withTenantSearchPath(
             $company,
-            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company),
+            fn (): JsonResponse => $this->doAnnouncements($kiosk, $company, $kiosk->device_code),
         );
     }
 
-    private function doAnnouncements(AttendanceKiosk $kiosk, Company $company): JsonResponse
+    private function doAnnouncements(AttendanceKiosk $kiosk, Company $company, string $deviceCode): JsonResponse
     {
         $this->setTenantSearchPath($company);
 
@@ -333,7 +339,7 @@ class KioskController extends Controller
         } catch (Throwable $exception) {
             Log::warning('Kiosk announcements skipped because the tenant table is not queryable.', [
                 'company_id' => $company->id,
-                'device_code' => $kiosk->device_code,
+                'device_code' => $deviceCode,
                 'error' => $exception->getMessage(),
             ]);
 
@@ -360,6 +366,9 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doLeaveBalance(Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
@@ -410,6 +419,9 @@ class KioskController extends Controller
         );
     }
 
+/**
+     * @param  array<string, mixed>  $validated
+     */
     private function doQrPunch(AttendanceKiosk $kiosk, Company $company, array $validated): JsonResponse
     {
         $this->setTenantSearchPath($company);
@@ -453,8 +465,18 @@ class KioskController extends Controller
         // (try/finally) pour ne pas laisser l'état de connexion PostgreSQL
         // pointer vers shared_tenants sur les requêtes suivantes du même
         // worker (pattern RequestTrialSignup).
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previous = (string) ($searchPathRow->search_path ?? 'public,shared_tenants');
+        // #2973 : lecture du search_path — larastan type selectOne() non-null,
+        // les variantes nullsafe/?? sont refusées par PHPStan strict. Garde
+        // is_object + property_exists, défaut explicite si indisponible.
+        $previous = 'public,shared_tenants';
+        try {
+            $searchPathRow = DB::selectOne('SHOW search_path');
+            if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
+                $previous = (string) $searchPathRow->search_path;
+            }
+        } catch (\Throwable) {
+            // défaut conservé
+        }
         DB::statement('SET search_path TO shared_tenants,public');
 
         try {
@@ -473,7 +495,7 @@ class KioskController extends Controller
                 // 'audit' channel so brute-force attempts against a kiosk device
                 // token are visible independently of the per-minute throttle.
                 Log::channel('audit')->warning('kiosk_auth.failed', [
-                    'device_code' => $kiosk->device_code,
+                    'device_code' => $deviceCode,
                     'ip' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                 ]);

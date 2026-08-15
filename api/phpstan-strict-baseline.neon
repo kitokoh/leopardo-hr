@@ -4855,6 +4855,24 @@ parameters:
 			path: tests/Feature/Absences/AbsenceIndexTest.php
 
 		-
+			message: '#^Parameter \#1 \$value of function collect expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), mixed\>\|iterable\<\(int\|string\), mixed\>\|null, Illuminate\\Routing\\RouteCollectionInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/AdminImpersonationEndpointsTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: tests/Feature/AdminImpersonationEndpointsTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: tests/Feature/AdminImpersonationEndpointsTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department_id\.$#'
 			identifier: property.notFound
 			count: 2
@@ -4883,6 +4901,12 @@ parameters:
 			identifier: argument.templateType
 			count: 4
 			path: tests/Feature/AnnouncementControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/ApiErrorContractTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -4931,6 +4955,12 @@ parameters:
 			identifier: offsetAccess.notFound
 			count: 2
 			path: tests/Feature/Attendance/AutoCloseAttendanceCommandTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\CalendarConnection\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Attendance/CalendarTenantScopingTest.php
 
 		-
 			message: '#^Cannot call method format\(\) on Illuminate\\Support\\Carbon\|null\.$#'
@@ -5135,6 +5165,12 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\CalendarConnection\:\:\$company_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/CalendarCompanyIdTest.php
 
 		-
 			message: '#^Property Tests\\Feature\\CalendarSyncControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'

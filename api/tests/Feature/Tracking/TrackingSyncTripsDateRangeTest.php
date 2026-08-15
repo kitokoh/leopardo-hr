@@ -25,8 +25,12 @@ class TrackingSyncTripsDateRangeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->company = Company::factory()->create();
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
     }
 
     /** @test */
