@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(web): preuve sociale honnête — témoignages/cas marqués « exemples », chiffres invérifiables retirés (Closes #3246).** `TESTIMONIALS_ARE_DEMO` est enfin consommé : TestimonialCard et TestimonialHighlight affichent un badge « Exemple illustratif » (fr/en/tr/ar) et suffixent l'attribution « (exemple) » — plus aucune citation présentée comme réelle. /about : les stats « 50K+ utilisateurs », « 99,9 % » remplacées par les métriques vérifiables de SocialProofMetrics (6 pays de paie, 4 locales, 7 surfaces, 1200+ tests backend) ; MiniCaseStudies : badge sur chaque profil type et métriques inventées (-40 %/+60 %/-35 %) retirées ; /videos : « Témoignage client : Atlas Digital » rewordé en « Démonstration produit » sans revendication client.
+
 - **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 - **fix(admin): route morte /users/:id supprimée (Closes #3280).** UserDetailView (prop `:show` inexistante, « Impersonner » inerte) jamais liée — code mort retiré du bundle.
 - **fix(admin): notifications temps réel — id de repli déterministe (Closes #3191).** `stores/realtime.js` : `socket-<timestamp>-<compteur>` au lieu de `Date.now()+Math.random()` (id non persistant, non corrélable).

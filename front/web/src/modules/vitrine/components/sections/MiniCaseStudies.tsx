@@ -1,13 +1,21 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Building2, MapPin, Users, ArrowRight } from 'lucide-react';
+import { MapPin, Users, ArrowRight } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
+import { getIllustrativeExampleLabel } from '@/modules/vitrine/lib/vitrine-locale';
 
+/**
+ * #3246 — preuve sociale honnête. Aucun client payant à ce jour
+ * (PILOTAGE.md « Clients payants | 0 ») : ces cas ne décrivent PAS des
+ * clients réels mais des profils types illustratifs. Chaque carte porte un
+ * badge « Exemple illustratif » et les métriques chiffrées inventées
+ * (-40 % temps admin, +60 % remplissage, -35 % absentéisme) ont été
+ * retirées des résultats — seuls les scénarios d'usage restent décrits.
+ */
 type MiniCase = {
   company: string;
   country: string;
-  sector: string;
   employees: string;
   challenge: string;
   result: string;
@@ -17,136 +25,124 @@ type MiniCase = {
 const casesByLocale: Record<AppLocale, { badge: string; title: string; titleHighlight: string; cases: MiniCase[] }> = {
   fr: {
     badge: 'Profils types',
-    title: 'Des resultats',
-    titleHighlight: 'concrets',
+    title: 'Des cas d\'usage',
+    titleHighlight: 'typiques',
     cases: [
       {
-        company: 'IT & Services · 350 emp.',
+        company: 'IT & Services — profil type',
         country: 'Algerie',
-        sector: 'IT & Services',
         employees: '350',
         challenge: 'Pointage papier sur 3 sites, paie manuelle multi-bureaux',
-        result: 'Paie automatisee, pointage biometrique ZKTeco, -40% temps admin',
+        result: 'Paie automatisee, pointage biometrique ZKTeco',
         flag: '🇩🇿',
       },
       {
-        company: 'Marketing Digital · 120 emp.',
+        company: 'Marketing Digital — profil type',
         country: 'Maroc',
-        sector: 'Marketing digital',
         employees: '120',
         challenge: 'Recrutement eparpille, pas de suivi integre',
-        result: 'Pipeline kanban, onboarding automatise, +60% remplissage postes',
+        result: 'Pipeline kanban, onboarding automatise',
         flag: '🇲🇦',
       },
       {
-        company: 'Transport & Logistique · 200 emp.',
+        company: 'Transport & Logistique — profil type',
         country: 'Senegal',
-        sector: 'Transport & Logistique',
         employees: '200',
         challenge: 'Equipes terrain sans visibilite, pointage impossible hors connexion',
-        result: 'Mode offline mobile, synchro auto, -35% absenteisme',
+        result: 'Mode offline mobile, synchro auto',
         flag: '🇸🇳',
       },
     ],
   },
   en: {
     badge: 'Use cases',
-    title: 'Real',
-    titleHighlight: 'results',
+    title: 'Typical',
+    titleHighlight: 'use cases',
     cases: [
       {
-        company: 'IT & Services · 350 emp.',
+        company: 'IT & Services — example profile',
         country: 'Algeria',
-        sector: 'IT & Services',
         employees: '350',
         challenge: 'Paper-based attendance across 3 sites, manual multi-office payroll',
-        result: 'Automated payroll, ZKTeco biometric, -40% admin time',
+        result: 'Automated payroll, ZKTeco biometric attendance',
         flag: '🇩🇿',
       },
       {
-        company: 'Digital Marketing · 120 emp.',
+        company: 'Digital Marketing — example profile',
         country: 'Morocco',
-        sector: 'Digital marketing',
         employees: '120',
         challenge: 'Scattered recruitment, no integrated tracking',
-        result: 'Kanban pipeline, automated onboarding, +60% position fill rate',
+        result: 'Kanban pipeline, automated onboarding',
         flag: '🇲🇦',
       },
       {
-        company: 'Transport & Logistics · 200 emp.',
+        company: 'Transport & Logistics — example profile',
         country: 'Senegal',
-        sector: 'Transport & Logistics',
         employees: '200',
         challenge: 'Field teams with no visibility, impossible offline attendance',
-        result: 'Offline mobile mode, auto sync, -35% absenteeism',
+        result: 'Offline mobile mode, auto sync',
         flag: '🇸🇳',
       },
     ],
   },
   tr: {
     badge: 'Kullanım senaryoları',
-    title: 'Gercek',
-    titleHighlight: 'sonuclar',
+    title: 'Ornek',
+    titleHighlight: 'kullanim senaryolari',
     cases: [
       {
-        company: 'BT Hizmetleri · 350 çal.',
+        company: 'BT Hizmetleri — ornek profil',
         country: 'Cezayir',
-        sector: 'BT ve Hizmetler',
         employees: '350',
         challenge: '3 sahada kagit devam takibi, manuel bordro',
-        result: 'Otomatik bordro, ZKTeco biyometrik, -%40 yonetim suresi',
+        result: 'Otomatik bordro, ZKTeco biyometrik devam takibi',
         flag: '🇩🇿',
       },
       {
-        company: 'Dijital Pazarlama · 120 çal.',
+        company: 'Dijital Pazarlama — ornek profil',
         country: 'Fas',
-        sector: 'Dijital pazarlama',
         employees: '120',
         challenge: 'Daginis ise alim, entegre takip yok',
-        result: 'Kanban boru hatti, otomatik ise alim, +%60 pozisyon doldurma',
+        result: 'Kanban boru hatti, otomatik ise alim',
         flag: '🇲🇦',
       },
       {
-        company: 'Taşımacılık · 200 çal.',
+        company: 'Tasimacilik — ornek profil',
         country: 'Senegal',
-        sector: 'Ulasim ve Lojistik',
         employees: '200',
         challenge: 'Saha ekipleri gorunurluk yok, cevrimdisi devam imkansiz',
-        result: 'Cevrimdisi mobil, otomatik esitleme, -%35 devamsizlik',
+        result: 'Cevrimdisi mobil mod, otomatik esitleme',
         flag: '🇸🇳',
       },
     ],
   },
   ar: {
     badge: 'سيناريوهات الاستخدام',
-    title: 'نتائج',
-    titleHighlight: 'ملموسة',
+    title: 'حالات استخدام',
+    titleHighlight: 'نموذجية',
     cases: [
       {
-        company: 'تكنولوجيا المعلومات · 350 موظف',
+        company: 'تكنولوجيا المعلومات — نموذج توضيحي',
         country: 'الجزائر',
-        sector: 'تكنولوجيا المعلومات',
         employees: '350',
         challenge: 'حضور ورقي عبر 3 مواقع، رواتب يدوية',
-        result: 'رواتب آلية، بصمة ZKTeco، -40% وقت إداري',
+        result: 'رواتب آلية، حضور بيومتري عبر ZKTeco',
         flag: '🇩🇿',
       },
       {
-        company: 'التسويق الرقمي · 120 موظف',
+        company: 'التسويق الرقمي — نموذج توضيحي',
         country: 'المغرب',
-        sector: 'تسويق رقمي',
         employees: '120',
         challenge: 'توظيف مبعثر، بدون تتبع متكامل',
-        result: 'لوحة كانبان، تأهيل آلي، +60% ملء المناصب',
+        result: 'لوحة كانبان، تأهيل آلي',
         flag: '🇲🇦',
       },
       {
-        company: 'النقل واللوجستيك · 200 موظف',
+        company: 'النقل واللوجستيك — نموذج توضيحي',
         country: 'السنغال',
-        sector: 'نقل ولوجستيك',
         employees: '200',
         challenge: 'فرق ميدانية بدون رؤية، حضور مستحيل بدون اتصال',
-        result: 'وضع دون اتصال، مزامنة تلقائية، -35% تغيب',
+        result: 'وضع دون اتصال، مزامنة تلقائية',
         flag: '🇸🇳',
       },
     ],
@@ -159,6 +155,7 @@ export interface MiniCaseStudiesProps {
 
 export function MiniCaseStudies({ locale = 'fr' }: MiniCaseStudiesProps) {
   const data = casesByLocale[locale] ?? casesByLocale.fr;
+  const exampleLabel = getIllustrativeExampleLabel(locale);
 
   return (
     <section className="relative py-24 overflow-hidden">
@@ -194,11 +191,14 @@ export function MiniCaseStudies({ locale = 'fr' }: MiniCaseStudiesProps) {
               transition={{ duration: 0.6, delay: index * 0.15 }}
               className="group relative bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-lg hover:border-blue-200/50 dark:hover:border-blue-800/50 transition-all duration-300"
             >
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-100/70 dark:bg-amber-500/10 border border-amber-300/50 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 text-[11px] font-semibold tracking-wide uppercase mb-3">
+                {exampleLabel}
+              </span>
+
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-2xl">{miniCase.flag}</span>
                 <div>
                   <div className="text-base font-bold text-slate-900 dark:text-white">{miniCase.company}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{miniCase.sector}</div>
                 </div>
               </div>
 
