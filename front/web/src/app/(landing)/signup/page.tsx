@@ -27,8 +27,8 @@ const signupCopy: Record<AppLocale, SignupCopy> = {
       badge: 'Essai guide',
       headline: 'Testez Leopardo RH sans tunnel complique',
       subheadline:
-        "Un email professionnel suffit pour lancer une demande d'essai claire. Notre equipe qualifie votre contexte et prepare l'acces adapte.",
-      cta: "Recevoir mon acces d'essai",
+        "Un email professionnel suffit pour lancer une demande d'essai claire. Notre équipe qualifie votre contexte et prepare l'accès adapte.",
+      cta: "Recevoir mon accès d'essai",
     },
     sideBadge: 'Funnel marketing operationnel',
     title: "Ce qui se passe apres votre demande",

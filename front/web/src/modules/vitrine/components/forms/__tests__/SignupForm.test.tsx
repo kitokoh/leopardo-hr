@@ -7,7 +7,9 @@ import { submitSignupForm, fetchTrialStatus } from '@/modules/vitrine/lib/forms'
 // Mock the form submission
 jest.mock('@/modules/vitrine/lib/forms', () => ({
   submitSignupForm: jest.fn(),
+  submitVerifyForm: jest.fn(),
   fetchTrialStatus: jest.fn(),
+  getLeadSource: () => 'signup_form',
   initialFormState: {
     isSubmitting: false,
     isSuccess: false,
