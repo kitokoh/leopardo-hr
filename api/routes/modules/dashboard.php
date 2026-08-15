@@ -32,8 +32,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread', [NotificationController::class, 'unread']);
     // DEPRECIES (compat) : la convention canonique de marquage est
-    //   PUT /notifications/read-all et PUT /notifications/{id}/read
-    // definies dans routes/modules/rh.php (consommees par web + mobile).
+    //   POST /notifications/read-all et PATCH /notifications/{id}/read
+    // definies dans routes/modules/rh.php (consommees par web + mobile,
+    // issue #2674 — un PR antérieur a tenté PUT et a été rejeté).
     // Ces alias POST/PATCH restent actifs et testes (NotificationControllerTest),
     // mais ne doivent plus etre utilises par les nouveaux clients.
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
