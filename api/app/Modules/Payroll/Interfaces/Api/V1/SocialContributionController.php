@@ -13,6 +13,7 @@ use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class SocialContributionController extends Controller
@@ -154,7 +155,9 @@ class SocialContributionController extends Controller
         try {
             $this->validation->submit($socialContribution, $actor);
         } catch (\DomainException $e) {
-            abort(422, $e->getMessage());
+            // #3810 : code stable — le message brut (règle métier interne) reste en logs.
+            Log::error('social_contribution.submit_failed', ['contribution_id' => $socialContribution->id, 'error' => $e->getMessage()]);
+            abort(422, __('errors.SOCIAL_CONTRIBUTION_SUBMIT_FAILED'));
         }
 
         return (new SocialContributionResource($socialContribution->refresh()))->response();

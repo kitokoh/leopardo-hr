@@ -11,8 +11,8 @@ use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Issue #1813 — Approbation/rejet des modifications de taux légaux.
@@ -66,7 +66,8 @@ class RateValidationAdminController extends Controller
             $this->validation->approve($model, $admin);
         } catch (\DomainException $e) {
             Log::error('Approbation de taux refusée', ['table' => $table, 'id' => $id, 'error' => $e->getMessage()]);
-            abort(422, $e->getMessage());
+            // #3810 : code stable — le message brut (règle métier interne) reste en logs.
+            abort(422, __('errors.RATE_APPROVAL_FAILED'));
         }
 
         return response()->json(['data' => $this->serialize($model->refresh(), $table)]);
@@ -91,7 +92,8 @@ class RateValidationAdminController extends Controller
             $this->validation->reject($model, $admin, $reason);
         } catch (\DomainException $e) {
             Log::error('Rejet de taux refusé', ['table' => $table, 'id' => $id, 'error' => $e->getMessage()]);
-            abort(422, $e->getMessage());
+            // #3810 : code stable — le message brut (règle métier interne) reste en logs.
+            abort(422, __('errors.RATE_REJECTION_FAILED'));
         }
 
         return response()->json(['data' => $this->serialize($model->refresh(), $table)]);
