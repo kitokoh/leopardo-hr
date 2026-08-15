@@ -8,6 +8,13 @@ import 'package:leopardo_core/core/storage/app_preferences.dart';
 
 import 'core/platform_providers.dart';
 import 'features/auth/platform_auth_controller.dart';
+import 'features/companies/company_detail_screen.dart';
+import 'features/auth/platform_login_screen.dart';
+import 'features/companies/company_create_screen.dart';
+import 'features/companies/company_requests_screen.dart';
+import 'features/companies/company_screen.dart';
+import 'features/dashboard/platform_dashboard_screen.dart';
+
 
 /// Issue #2761 — résout la locale depuis les préférences (langue choisie),
 /// sinon null (locale de l'appareil).
@@ -15,13 +22,6 @@ Locale? _resolvedLocale(Ref ref) {
   final code = ref.read(appPreferencesProvider).preferredLanguage.trim();
   return code.isEmpty ? null : Locale(code);
 }
-
-import 'features/companies/company_detail_screen.dart';
-import 'features/auth/platform_login_screen.dart';
-import 'features/companies/company_create_screen.dart';
-import 'features/companies/company_requests_screen.dart';
-import 'features/companies/company_screen.dart';
-import 'features/dashboard/platform_dashboard_screen.dart';
 
 final platformRouterProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<PlatformAuthState>(
