@@ -23,7 +23,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
-import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
@@ -188,12 +188,10 @@ const SANDBOX_CARD = {
    GOOGLE AUTH HREF
 ───────────────────────────────────────────── */
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-      ? directApi
-      : getApiBaseUrl();
-  return `${baseUrl}/auth/google`;
+  // Issue #2725 — même pattern que login (QA #2277) : passer par le proxy
+  // Next.js (même origine) pour que le cookie de session soit posé sur la
+  // vitrine, pas sur l'origine API directe.
+  return '/api/v1/auth/google';
 }
 
 /* ─────────────────────────────────────────────
@@ -716,7 +714,7 @@ function StepFreeAccount({
           phone: data.phone || undefined,
           employees: data.employees || undefined,
           plan: 'free',
-          locale: 'fr',
+          locale: getCurrentLocale(),
         }),
       });
 
@@ -956,7 +954,7 @@ function StepPayment({
           last_name: account.lastName,
           phone: account.phone || undefined,
           employees: account.employees || undefined,
-          locale: 'fr',
+          locale: getCurrentLocale(),
           success_url: successUrl,
           cancel_url: cancelUrl,
         }),
