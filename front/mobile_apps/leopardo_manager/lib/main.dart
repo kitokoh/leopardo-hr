@@ -11,6 +11,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'app.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,7 @@ Future<void> main() async {
     (options) {
       options.dsn =
           const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = 1.0;
+      options.tracesSampleRate = 0.2; // #2766 : échantillonnage borné (PII)
     },
     appRunner: () => runApp(
       StartupGate(
@@ -85,7 +86,7 @@ Future<void> _openOfflineCache() async {
 }
 
 Future<void> _initializeLocales() async {
-  await initializeDateFormatting('fr_FR', null);
+  await initializeDateFormatting(deviceIntlDateLocale, null);
   await initializeDateFormatting('fr_CA', null);
   await initializeDateFormatting('fr_BE', null);
   await initializeDateFormatting('ar', null);

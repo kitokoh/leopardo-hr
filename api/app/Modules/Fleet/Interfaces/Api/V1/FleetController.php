@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -118,5 +118,3 @@ class FleetController extends Controller
         return response()->json(['data' => $upcoming]);
     }
 }
-
-

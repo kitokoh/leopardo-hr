@@ -26,7 +26,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Tarification',
     question: 'Comment fonctionne la tarification ?',
-    answer: 'Nous proposons des plans mensuels et annuels adaptés à la taille de votre équipe. Le plan Free est gratuit jusqu\'à 5 employés, le plan Pilot démarre à 29 €/mois, le plan Operations inclut toutes les fonctionnalités avancées, et le plan Enterprise offre des options sur mesure.',
+    answer: 'Nous proposons trois plans en facturation mensuelle ou annuelle : Starter à 29 €/mois (20 employés inclus), Business à 79 €/mois (200 employés inclus) et Enterprise à 199 €/mois (employés illimités). Chaque plan démarre par un essai gratuit de 14 jours.',
   },
   {
     category: 'Tarification',
@@ -41,7 +41,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Fonctionnalités',
     question: 'Peut-on generer des bulletins de paie multi-pays ?',
-    answer: 'Oui, Leopardo RH supporte la paie multi-pays (Algérie, Maroc, Tunisie, France, Turquie, Sénégal, Canada + zones CEMAC et CEDEAO) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
+    answer: 'Oui, Leopardo RH supporte la paie multi-pays avec 9 moteurs de regles locales (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie) : baremes fiscaux et cotisations sociales specifiques a chaque pays ou zone. Les bulletins sont generes en PDF.',
   },
   {
     category: 'Fonctionnalités',
@@ -61,7 +61,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Support',
     question: 'Quel support est disponible ?',
-    answer: 'Le plan Free inclut le support communautaire. Le plan Pilot inclut le support par email sous 48h. Le plan Operations inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
+    answer: 'Le plan Starter inclut le support par email sous 48h. Le plan Business inclut le support prioritaire avec un temps de réponse sous 24h. Le plan Enterprise inclut un account manager dédié et un support 24/7.',
   },
   {
     category: 'Integration',

@@ -1579,6 +1579,18 @@ parameters:
 			path: app/Modules/Attendance/Domain/Models/ApprovalRequest.php
 
 		-
+			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_seen_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_sync_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
+
+		-
 			message: '#^Class App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog has PHPDoc tag @property for property \$punch_meta with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1955,6 +1967,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/BiometricEnrollmentController.php
+
+		-
+			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
 		-
 			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeKiosk\(\) return type has no value type specified in iterable type array\.$#'
@@ -8225,12 +8243,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/TrialDripEmailLocalizationTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 9
-			path: tests/Feature/VehicleControllerTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'

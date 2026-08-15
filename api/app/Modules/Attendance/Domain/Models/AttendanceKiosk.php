@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -18,10 +19,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $biometric_mode
  * @property string|null $trusted_device_label
  * @property string|null $sync_token_hash
- * @property \Illuminate\Support\Carbon|null $last_seen_at
- * @property \Illuminate\Support\Carbon|null $last_sync_at
+ * @property Carbon|null $last_seen_at
+ * @property Carbon|null $last_sync_at
  *
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class AttendanceKiosk extends Model
 {
@@ -45,4 +46,3 @@ class AttendanceKiosk extends Model
         'last_sync_at' => 'datetime',
     ];
 }
-

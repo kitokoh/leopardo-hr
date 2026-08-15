@@ -66,9 +66,9 @@ Route::prefix('v1')->group(function (): void {
     // Sonde live+ready : DB + Redis + storage. Consommee par Render (deploy hook)
     // et la supervision externe. 503 si la DB tombe, 200 sinon (Redis et storage
     // peuvent etre degrades sans bloquer l'API).
-    Route::get('/health', HealthController::class);
-    Route::get('/health/live', [HealthController::class, 'live']);
-    Route::get('/health/ready', [HealthController::class, 'ready']);
+    Route::get('/health', HealthController::class)->middleware('throttle:60,1');
+    Route::get('/health/live', [HealthController::class, 'live'])->middleware('throttle:60,1');
+    Route::get('/health/ready', [HealthController::class, 'ready'])->middleware('throttle:60,1');
     // Platform-wide metrics (versions PHP/Laravel, drivers, tenant/employee
     // counts) are business intelligence + version fingerprinting material:
     // they must not be served anonymously. See issue #1466.
