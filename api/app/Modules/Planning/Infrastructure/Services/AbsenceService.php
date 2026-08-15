@@ -13,6 +13,7 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -60,6 +61,13 @@ class AbsenceService
             'proof_path' => $proofPath,
         ]);
 
+        // #2329 : snapshot leave_balances synchronisé — la demande pending
+        // réserve les jours (pending += days). La source de vérité reste la
+        // chaîne leave_balance_logs (comptage réel).
+        if ($type->deducts_leave) {
+            $this->syncLeaveBalanceSnapshot($absence, 'pending_add');
+        }
+
         AbsenceRequested::dispatch($absence);
 
         return $absence;
@@ -97,6 +105,11 @@ class AbsenceService
                     $absence->id,
                     $newBalance
                 );
+
+                // #2329 : la demande pending passe en used (pending -= days,
+                // used += days).
+                $this->syncLeaveBalanceSnapshot($absence, 'pending_remove');
+                $this->syncLeaveBalanceSnapshot($absence, 'used_add');
             }
 
             $absence->update([
@@ -136,6 +149,14 @@ class AbsenceService
                     $absence->id,
                     $newBalance
                 );
+
+                // #2329 : snapshot — used -= days (approbation annulée).
+                $this->syncLeaveBalanceSnapshot($absence, 'used_remove');
+            }
+
+            // #2329 : demande pending rejetée → pending -= days.
+            if ($absence->status === 'pending' && $absence->absenceType?->deducts_leave === true) {
+                $this->syncLeaveBalanceSnapshot($absence, 'pending_remove');
             }
 
             $absence->update([
@@ -155,6 +176,11 @@ class AbsenceService
     {
         if ($absence->status !== 'pending') {
             throw new AbsenceNotPendingException;
+        }
+
+        // #2329 : snapshot — la demande annulée libère la réservation.
+        if ($absence->absenceType?->deducts_leave === true) {
+            $this->syncLeaveBalanceSnapshot($absence, 'pending_remove');
         }
 
         $absence->update(['status' => 'cancelled']);
@@ -183,6 +209,43 @@ class AbsenceService
         }
 
         return $query->exists();
+    }
+
+    /**
+     * #2329 — synchronise le snapshot `leave_balances` (balance/used/pending)
+     * servi par LeavePolicyController. La source de vérité reste la chaîne
+     * `leave_balance_logs` (comptage réel) ; ce snapshot est un cache
+     * lisible par l'API. Opérations : pending_add / pending_remove /
+     * used_add / used_remove.
+     */
+    private function syncLeaveBalanceSnapshot(Absence $absence, string $operation): void
+    {
+        $type = $absence->absenceType;
+        if ($type === null || ! $type->deducts_leave) {
+            return;
+        }
+
+        $year = (int) Carbon::parse($absence->start_date)->format('Y');
+
+        $balance = LeaveBalance::firstOrCreate(
+            [
+                'company_id' => $absence->company_id,
+                'employee_id' => $absence->employee_id,
+                'absence_type_id' => $type->id,
+                'year' => $year,
+            ],
+            ['balance' => 0, 'used' => 0, 'pending' => 0]
+        );
+
+        $days = (float) $absence->days_count;
+
+        match ($operation) {
+            'pending_add' => $balance->increment('pending', $days),
+            'pending_remove' => $balance->decrement('pending', $days),
+            'used_add' => $balance->increment('used', $days),
+            'used_remove' => $balance->decrement('used', $days),
+            default => null,
+        };
     }
 
     private function logBalanceChange(int $employeeId, int|string|null $companyId, float $delta, string $reason, int $referenceId, float $balanceAfter): LeaveBalanceLog
