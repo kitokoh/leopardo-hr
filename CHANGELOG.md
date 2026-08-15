@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **fix(mobile): mark-all notifications → POST /notifications/mark-all-read (Closes #3005).** Les 3 apps appelaient POST /notifications/read-all (aucune route ne matche) → 405 sur « Tout marquer comme lu » ; aligné sur le canonique dashboard.php.
 - **fix(api): liste /employees — PII retirées de la projection (Closes #3309).** personal_email, recovery_email, personal_phone, adresse et contacts d'urgence exclus de la liste ; salaire conservé (écran équipe mobile manager) ; PII toujours sur /employees/{id}.
 - **fix(mobile): DateTime.parse résiduels → tryParse dans 3 modèles core (Closes #3433).** attendance_log (date/check_in/check_out), payroll (validated_at), project_task (start/end/due_date) : plus de FormatException sur données malformées.
 - **fix(mobile): Contract.fromJson — start_date nullable gardé (Closes #3432).** Cast « as String » non gardé → TypeError au parsing de la liste contrats ; repli '' (comme endDate).
