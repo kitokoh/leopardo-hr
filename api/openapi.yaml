@@ -17521,7 +17521,6 @@ components:
           type: object
           allOf:
             - $ref: "#/components/schemas/Compliance"
-          type: object
           nullable: true
           description: >-
             Bloc conformité (issue #2116) — null quand le pays du run n'est
@@ -18499,55 +18498,7 @@ components:
           type: string
           nullable: true
 
-    TrainingSession:
-      type: object
-      description: "Session de formation (contrat GET /training/sessions, QA 2026-08-14)"
-      properties:
-        id: { type: integer }
-        training_course_id: { type: integer }
-        trainer_id: { type: integer, nullable: true }
-        external_trainer: { type: string, nullable: true }
-        start_date: { type: string, format: date, nullable: true }
-        end_date: { type: string, format: date, nullable: true }
-        location: { type: string, nullable: true }
-        status: { type: string, enum: [planned, scheduled, in_progress, completed, cancelled] }
-        notes: { type: string, nullable: true }
-        trainer:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string, nullable: true }
-            last_name: { type: string, nullable: true }
-        enrollments:
-          type: array
-          description: "Présent uniquement quand la relation est chargée"
-          items:
-            $ref: "#/components/schemas/TrainingEnrollment"
-        created_at: { type: string, format: date-time, nullable: true }
 
-    TrainingEnrollment:
-      type: object
-      description: "Inscription à une session de formation (contrat GET /training/enrollments, QA 2026-08-14)"
-      properties:
-        id: { type: integer }
-        training_session_id: { type: integer }
-        employee_id: { type: integer }
-        status: { type: string, enum: [enrolled, completed, cancelled] }
-        score: { type: number, nullable: true }
-        feedback: { type: string, nullable: true }
-        completed_at: { type: string, format: date-time, nullable: true }
-        course_title: { type: string, nullable: true, description: "Présent quand session.course est chargée" }
-        session_date: { type: string, format: date, nullable: true }
-        progress: { type: integer, nullable: true }
-        employee:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string, nullable: true }
-            last_name: { type: string, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
 
     TrainingCourse:
       type: object
@@ -18577,71 +18528,7 @@ components:
           format: date-time
 
 
-    TrainingSession:
-      type: object
-      description: "Session de formation (TrainingSessionResource)"
-      properties:
-        id:
-          type: integer
-        training_course_id:
-          type: integer
-        trainer_id:
-          type: integer
-          nullable: true
-        external_trainer:
-          type: string
-          nullable: true
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        location:
-          type: string
-          nullable: true
-        status:
-          type: string
-          enum: [planned, in_progress, completed, cancelled]
-        notes:
-          type: string
-          nullable: true
-        trainer:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string }
-            last_name: { type: string }
-        created_at:
-          type: string
-          format: date-time
 
-    TrainingEnrollment:
-      type: object
-      description: "Inscription à une session de formation (TrainingEnrollmentResource)"
-      properties:
-        id:
-          type: integer
-        training_session_id:
-          type: integer
-        employee_id:
-          type: integer
-        company_id:
-          type: integer
-        status:
-          type: string
-          enum: [enrolled, in_progress, completed, dropped]
-        employee:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string }
-            last_name: { type: string }
-        created_at:
-          type: string
-          format: date-time
 
     StoreTrainingCourseRequest:
       type: object
@@ -18887,33 +18774,4 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
-    TrainingSession:
-      type: object
-      description: "Session de formation (contrat TrainingSessionResource)."
-      properties:
-        id: { type: integer }
-        training_course_id: { type: integer }
-        trainer_id: { type: integer, nullable: true }
-        external_trainer: { type: string, nullable: true }
-        start_date: { type: string, format: date, nullable: true }
-        end_date: { type: string, format: date, nullable: true }
-        location: { type: string, nullable: true }
-        status: { type: string, enum: [planned, in_progress, completed, cancelled] }
-        notes: { type: string, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
 
-    TrainingEnrollment:
-      type: object
-      description: "Inscription à une session de formation (contrat TrainingEnrollmentResource)."
-      properties:
-        id: { type: integer }
-        training_session_id: { type: integer }
-        employee_id: { type: integer }
-        status: { type: string, enum: [enrolled, attended, completed, no_show, cancelled] }
-        score: { type: number, nullable: true }
-        feedback: { type: string, nullable: true }
-        completed_at: { type: string, format: date-time, nullable: true }
-        course_title: { type: string, nullable: true }
-        session_date: { type: string, format: date, nullable: true }
-        progress: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }

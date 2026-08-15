@@ -8,6 +8,9 @@
 
 ### Fixed
 ### Fixed
+- **fix(api): openapi.yaml — YAML valide, lint Redocly 0 erreur (doublons Training + compliance) (suite #2480).** Les merges concurrents des PRs #2489/#2493/#2495/#2503 ont laissé main avec un YAML cassé : `type: object` dupliqué dans le bloc `compliance` (/me/balance, ligne ~17524) et 4 copies de `TrainingSession`/`TrainingEnrollment` dans `components/schemas`. Les blocs redondants sont supprimés (la copie principale + les 13 schémas uniques du cluster sont conservés). Vérifié : parseur YAML strict 0 doublon, `redocly lint` **valide 0 erreur** (510 warnings pré-existants), SDK/miroir régénérés.
+
+### Fixed
 - **fix(api): openapi.yaml — lint Redocly 0 erreur : YAML réparé (6 chemins + schéma dédoublonnés, artefacts de merge de PRs concurrentes) + 7 erreurs struct corrigées (Closes #2480).** Le YAML était cassé sur main (`duplicated mapping key` → lint impossible) : `/admin/users`, `/export/history`, `/export/pay-slips`, `/growth/partner/dashboard`, `/me/vehicles`, `/smart-attendance/mode-settings` et le schéma `PlatformUser` étaient définis DEUX fois (merges concurrents #2405/#2452/… — le lint OpenAPI ne tournait plus depuis la saturation #2131). Bloc le plus complet conservé pour chaque doublon. Corrections struct : `Compliance` nullable sans `type` (→ `type: object` ajouté), `verification_date`/`token_expires_at`/`manager_role` en `type: [string, "null"]` interdit OAS3 (→ `type: string` + `nullable: true`), paramètre path fantôme `payrollRun` sur `POST /bank-exports` retiré (le run id est dans le body), `$ref` `TrainingSession`/`TrainingEnrollment` inexistants (→ schémas ajoutés, shape réelle des resources). SDK JS/Python + miroir dev-hub régénérés. Vérifié : `redocly lint` 0 erreur / 512 warnings pré-existants.
 
 

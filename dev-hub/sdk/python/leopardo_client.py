@@ -1172,10 +1172,6 @@ class LeopardoClient:
         """Auto-inscription a une formation"""
         return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
 
-    def get_me_vehicles(self, **kwargs):
-        """Vehicules assignes a l'employe connecte (mobile)"""
-        return self.request("GET", "/me/vehicles", **kwargs)
-
     def get_notification_preferences(self, **kwargs):
         """Lire les preferences de notification de l'utilisateur courant"""
         return self.request("GET", "/notification-preferences", **kwargs)
@@ -1791,14 +1787,6 @@ class LeopardoClient:
     def post_smart_attendance_geo_events(self, **kwargs):
         """Envoyer un événement géographique (entrée/sortie de zone)"""
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
-
-    def get_smart_attendance_mode_settings(self, **kwargs):
-        """Lire la configuration du mode de pointage de l'entreprise"""
-        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
-
-    def put_smart_attendance_mode_settings(self, **kwargs):
-        """Mettre à jour la configuration GPS (admin)"""
-        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
 
     def get_smart_attendance_my_sessions(self, **kwargs):
         """Sessions GPS de l'employé courant"""
