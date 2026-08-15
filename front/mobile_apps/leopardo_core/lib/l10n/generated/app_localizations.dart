@@ -2709,7 +2709,7 @@ abstract class AppLocalizations {
   /// No description provided for @signupBadge.
   ///
   /// In fr, this message translates to:
-  /// **'Essai gratuit 30 jours'**
+  /// **'Essai gratuit 14 jours'**
   String get signupBadge;
 
   /// No description provided for @signupTitle.

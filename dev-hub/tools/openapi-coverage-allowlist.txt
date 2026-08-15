@@ -1,14 +1,3 @@
-# Allowlist des routes non documentées dans openapi.yaml (issue #1473).
-# Gaps CONNUS, documentés et justifiés par module — régénérée le 2026-08-15
-# après correction du parseur de routes (issue #2424, préfixes imbriqués +
-# contexte des require) : les clés sont désormais au format réel
-# « MÉTHODE /chemin/vers/la/route » et ne concernent QUE les routes
-# réellement non documentées.
-# La cible reste de réduire cette liste module par module (voir docs/security/OPENAPI_COVERAGE_GAP_2026-07-19.md,
-# section « Suivi de rémediation »). Toute route NON présente ici et non documentée fait échouer la garde CI.
-#
-# Format : une entrée par ligne « METHODE /chemin/normalisé ». Les lignes commençant par # sont des commentaires.
-
 ## ai.php — 9 route(s)
 GET /v1/ai/agent/workflows
 GET /v1/ai/workflows/weekly-report
@@ -20,9 +9,7 @@ POST /v1/ai/voice/synthesize
 POST /v1/ai/voice/transcribe
 POST /v1/ai/workflows/prepare-payroll
 
-## api.php — 46 route(s)
-DELETE /v1/platform/announcements/{param}
-DELETE /v1/platform/impersonations/{param}
+## api.php — 24 route(s)
 GET /v1/auth/google
 GET /v1/auth/google/callback
 GET /v1/company-requests
@@ -31,33 +18,17 @@ GET /v1/health/ready
 GET /v1/metrics
 GET /v1/onboarding/checklist
 GET /v1/onboarding/invitation/{param}
-GET /v1/platform/announcements
-GET /v1/platform/announcements/{param}
-GET /v1/platform/crm/pipeline
-GET /v1/platform/impersonations
-GET /v1/platform/observability/notifications
-GET /v1/platform/observability/queues
-GET /v1/platform/support-tickets
-GET /v1/platform/support-tickets/{param}
 GET /v1/public/careers/{param}
 GET /v1/public/careers/{param}/feed.xml
 GET /v1/public/careers/{param}/jobs/{param}
-GET /v1/support-tickets
-GET /v1/support-tickets/{param}
 PATCH /v1/platform/auth/profile
-PATCH /v1/platform/support-tickets/{param}/triage
 POST /v1/company-requests
 POST /v1/onboarding/invitation/{param}/activate
-POST /v1/platform/announcements
 POST /v1/platform/auth/2fa/disable
 POST /v1/platform/auth/2fa/enable
 POST /v1/platform/auth/2fa/setup
 POST /v1/platform/auth/change-password
-POST /v1/platform/impersonations
-POST /v1/platform/support-tickets/{param}/reply
 POST /v1/public/careers/{param}/jobs/{param}/apply
-POST /v1/support-tickets
-POST /v1/support-tickets/{param}/reply
 POST /v1/trial/signup
 POST /v1/trial/verify
 POST /v1/webhooks/chargily
@@ -70,14 +41,10 @@ GET /v1/employees/{param}/leave-balances
 POST /v1/absences/{param}/approve
 POST /v1/absences/{param}/reject
 
-## modules/billing.php — 1 route(s)
-GET /v1/onboarding/steps
-
-## modules/cabinet.php — 5 route(s)
+## modules/cabinet.php — 4 route(s)
 DELETE /v1/cabinet/shares/{param}
 GET /v1/cabinet/shared/{param}
 GET /v1/cabinet/shares
-GET /v1/cabinet/stats
 POST /v1/cabinet/shares
 
 ## modules/dashboard.php — 15 route(s)
@@ -165,14 +132,9 @@ PUT /v1/payroll/cycle-settings
 GET /v1/planning/shift-rebalancing
 GET /v1/planning/weekly-optimization
 
-## modules/rh.php — 30 route(s)
-DELETE /v1/announcements/{param}
+## modules/rh.php — 20 route(s)
 DELETE /v1/departments/{param}
 DELETE /v1/payrolls/{param}
-GET /v1/announcements
-GET /v1/conversations
-GET /v1/conversations/{param}
-GET /v1/conversations/{param}/messages/{param}/attachment
 GET /v1/departments
 GET /v1/departments/{param}
 GET /v1/notifications/stream
@@ -185,11 +147,6 @@ PATCH /v1/payrolls/{param}
 PATCH /v1/positions/{param}
 PATCH /v1/schedules/{param}
 PATCH /v1/sites/{param}
-POST /v1/announcements
-POST /v1/announcements/{param}/cancel
-POST /v1/announcements/{param}/publish
-POST /v1/conversations
-POST /v1/conversations/{param}/messages
 POST /v1/departments
 POST /v1/notifications/sse-token
 POST /v1/payrolls
@@ -211,19 +168,7 @@ POST /v1/user/google-signin
 POST /v1/user/login
 POST /v1/user/register
 
-# ── QA 2026-08-15 (#2662) : routes de modules DDD désormais scannées par la
-# garde (EdgeSync + SmartAttendance, enregistrées via loadRoutesFrom hors
-# api/routes/). Non documentées dans openapi.yaml pour l'instant — à
-# documenter en priorité (chantier openapi, voir #2662). Forme composée
-# api/v1/... (chemins absolus des providers).
-GET /api/v1/edge
-GET /api/v1/edge/download/docker-compose.yml
-GET /api/v1/edge/download/env-example
-GET /api/v1/edge/health
-GET /api/v1/edge/install.sh
-GET /api/v1/edge/license-public-key
-GET /api/v1/edge-node/{param}/pull
-GET /api/v1/edge/{param}
+## modules DDD (SmartAttendance) — enregistrees via loadRoutesFrom (hors api/routes/) — 12 route(s)
 GET /api/v1/smart-attendance/config
 GET /api/v1/smart-attendance/dashboard
 GET /api/v1/smart-attendance/employees/{param}/preference
@@ -231,13 +176,6 @@ GET /api/v1/smart-attendance/mode-settings
 GET /api/v1/smart-attendance/my-sessions
 GET /api/v1/smart-attendance/sessions
 GET /api/v1/smart-attendance/sessions/{param}
-POST /api/v1/edge
-POST /api/v1/edge/heartbeat
-POST /api/v1/edge-node/{param}/heartbeat
-POST /api/v1/edge-node/{param}/push
-POST /api/v1/edge-node/validate-license
-POST /api/v1/edge/{param}/license
-POST /api/v1/edge/{param}/sync
 POST /api/v1/smart-attendance/geo-events
 POST /api/v1/smart-attendance/sessions/{param}/approve
 POST /api/v1/smart-attendance/sessions/{param}/reject
