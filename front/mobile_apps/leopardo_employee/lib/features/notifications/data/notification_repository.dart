@@ -22,7 +22,7 @@ class NotificationRepository {
   Future<void> markAllAsRead() async {
     await apiClient.requestWithRetry<void>(
       '/notifications/read-all',
-      method: 'POST',
+      method: 'PUT',
       timeoutOverride: const Duration(seconds: 12),
     );
   }
