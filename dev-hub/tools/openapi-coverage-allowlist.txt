@@ -38,8 +38,6 @@ POST /v1/webhooks/stripe
 ## modules/absence.php — 4 route(s)
 GET /v1/absences/{param}/proof
 GET /v1/employees/{param}/leave-balances
-POST /v1/absences/{param}/approve
-POST /v1/absences/{param}/reject
 
 ## modules/cabinet.php — 4 route(s)
 DELETE /v1/cabinet/shares/{param}

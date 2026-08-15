@@ -2737,12 +2737,20 @@ paths:
   /admin/training/courses:
     get:
       tags: ["Platform"]
-      summary: "Formations cross-tenant (super-admin)"
+
+      summary: "Cours de formation cross-tenant (super-admin, avec société et nombre de sessions)"
       security:
         - SuperAdminBearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
       responses:
         "200":
-          description: "Liste des formations"
+          description: "Liste des cours"
           content:
             application/json:
               schema:

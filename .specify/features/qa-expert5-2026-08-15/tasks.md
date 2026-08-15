@@ -1,140 +1,77 @@
-# Tasks — Session QA expert 5 (2026-08-15, vague tardive)
+# Tasks: Vague QA Expert 5 — 2026-08-15
 
-## Tâches documentation (issues à créer)
-- [x] T001 (#3317) — Issue API-1 : licences Edge forgeables (fail-open) [P1]
-- [x] T002 (#3318) — Issue API-2 : SSRF OIDC + /sso/configure sans garde rôle [P2]
-- [x] T003 (#3319) — Issue API-3 : émission licence Edge sans garde + valid_days non borné [P2]
-- [x] T004 (#3320) — Issue API-4 : RateLimiter trial-status dupliqué [P3]
-- [x] T005 (#3321) — Issue API-5 : per_page non borné 8 endpoints [P3]
-- [x] T006 (#3323) — Issue API-6 : OpenAPI /public-holidays fantôme [P3]
-- [x] T007 (#3326) — Issue WEB-1 : checkout crash plan inconnu [P2]
-- [x] T008 (#3327) — Issue WEB-2 : métriques fabriquées testimonials/about [P2]
-- [x] T009 (#3328) — Issue WEB-3 : Enterprise « Sur devis » vs prix [P2]
-- [x] T010 (#3329) — Issue WEB-4 : CTA home pilot → checkout payant [P2]
-- [x] T011 (#3330) — Issue WEB-5 : résidus FR SignupForm [P3]
-- [x] T012 (#3331) — Issue WEB-6 : lien mort /offline [P3]
-- [x] T013 (#3332) — Issue WEB-7 : sitemap /share [P3]
-- [x] T014 (#3333) — Issue WEB-8 : guides 2024 périmés [P3]
-- [x] T015 (#3334) — Issue WEB-9 : pages landing FR-only [P3]
-- [x] T016 (#3336) — Issue ADM-1 : WebhooksView contract mismatch [P2]
-- [x] T017 (#3337) — Issue ADM-2 : EdgeNodesView phantom fields [P3]
-- [x] T018 (#3338) — Issue ADM-3 : DashboardView slug absent payload [P3]
-- [x] T019 (#3339) — Issue ADM-4 : CompanyDetailView created_at absent [P3]
-- [x] T020 (#3340) — Issue ADM-5 : CSV injection LeavesView [P3]
-- [x] T021 (#3341) — Issue ADM-6 : ChatView avale 501 [P3]
-- [x] T022 (#3342) — Issue MOB-1 : DateTime.parse HR sans tryParse [P3]
+**Input**: spec.md + plan.md (`.specify/features/qa-expert5-2026-08-15/`)
+**Prerequisites**: plan.md (required), spec.md (required)
+**Tests**: gardes scripts + lint/build + CI PR (voir plan.md « Validation »)
 
-## Tâches implémentation (PR par issue, Closes #X)
-- [ ] T101 — API-1 : fail-closed licence Edge + test (branche `fix/<issue>-edge-license-failclosed`)
-- [ ] T102 — API-2 : garde api.manager /sso + validation anti-SSRF + tests
-- [ ] T103 — API-3 : garde api.manager licence + bornes valid_days + tests
-- [ ] T104 — API-4 : dédup RateLimiter trial-status
-- [ ] T105 — API-5 : bornes per_page 8 endpoints
-- [ ] T106 — API-6 : openapi.yaml public-holidays nettoyé
-- [ ] T107 — WEB-1 : checkout fallback sûr + erreur propre
-- [ ] T108 — WEB-2 : badge démo / chiffres sourcés testimonials + about
-- [ ] T109 — WEB-3 : Enterprise cohérent (prix ou « Sur devis »)
-- [ ] T110 — WEB-4 : CTA home pilot → /signup
-- [ ] T111 — WEB-5 : résidus FR signup via catalogues
-- [ ] T112 — WEB-6 : lien mort /offline retiré
-- [ ] T113 — WEB-7 : /share retiré du sitemap
-- [ ] T114 — WEB-8 : guides checklist paie 2026
-- [ ] T116 — ADM-1 : WebhooksView aligné sur le contrat réel
-- [ ] T117 — ADM-2 : EdgeNodesView aligné sur payload réel
-- [ ] T118 — ADM-3 : slug exposé par health OU ligne retirée
-- [ ] T119 — ADM-4 : created_at exposé par health
-- [ ] T120 — ADM-5 : échappement CSV complet (=+-@)
-- [ ] T121 — ADM-6 : ChatView affiche l'erreur backend honnête
-- [ ] T122 — MOB-1 : DateTime.tryParse HR attendance
+## Phase 1 — API (issues #3363-#3370) 🎯 MVP
 
-## Tâches coordination
-- [ ] T201 — Merge des PRs vertes de la campagne (vérifier checks avant merge ; main vert)
-- [ ] T202 — Nettoyage branches mergées (delete) + mise à jour AGENTS.md/CHANGELOG si leçon
-- [ ] T203 — Vérification finale : `gh pr checks` sur les PRs mergées, main vert
+- [ ] T001 [P1] #3363 Password reset : résolution `public.user_lookups` + setTenantSearchPath (forgot + reset), fusion mail/test (#3370), test tenant à schéma
+- [ ] T002 [P2] #3364 /auth/register : résolution invitation → setTenant → MAJ employé existant (ou fermeture endpoint + alignement mobile)
+- [ ] T003 [P2] #3365 QR punch : parser `base64url(payload).signature`, vérifier signature+expiration, employee_id scopé, rejeter non signés
+- [ ] T004 [P3] #3366 Supprimer double registration `RateLimiter::for('trial-status')` (garder clé token|IP)
+- [ ] T005 [P3] #3367 Monter `throttle:kiosk-punch` sur le groupe kiosque (integrations.php + rh.php)
+- [ ] T006 [P3] #3368 try/finally restore search_path dans les 6 handlers kiosque
+- [ ] T007 [P3] #3369 syncTrips : index unique `(company_id, traccar_trip_id)` + insertOrIgnore + bornage 31 j
 
-## Ordre d'exécution
-1. P1/P2 sécurité API (T101-T103) — priorité max.
-2. P2 vitrine (T107-T110).
-3. P2 admin (T116).
-4. P3 (le reste).
+## Phase 2 — Web (issues #3372-#3382, #3410, #3416)
 
----
+- [ ] T008 [P2] #3372 Checkout : afficher surcoût/employé actif + sièges inclus (PlanSummaryCard + résumé)
+- [ ] T009 [P2] #3373 Home CTA « pilote gratuit » → `/signup?source=...`
+- [ ] T010 [P2] #3374 Enterprise : retirer de PLAN_CONFIG/checkout → `/contact?topic=enterprise`
+- [ ] T011 [P2] #3375 robots.ts : disallow 13 prefixes racine (miroir middleware)
+- [ ] T012 [P2] #3376 sitemap : gater /blog sur enableBlog ; retirer /share + /offline
+- [ ] T013 [P2] #3377 Checkout/success : localisation FR/EN/TR/AR (erreurs, validation, labels paiement)
+- [ ] T014 [P2] #3378 Dashboard métier : étendre i18n.ts + getCopy(locale) (billing d'abord)
+- [ ] T015 [P2] #3379 client-features : défaut 'locked', preuve positive, capabilities arrays
+- [ ] T016 [P3] #3380 Billing : retirer upgrade manual (une seule voie de paiement)
+- [ ] T017 [P3] #3381 Footer : ajouter /about + /videos aux 4 catalogues section 0
+- [ ] T018 [P3] #3382 Carrières : localisation portail (catalogues vitrine)
+- [ ] T019 [P3] #3410 changelog-public.ts : régénérer depuis CHANGELOG.md (retirer 4.16.55-59)
+- [ ] T020 [P3] #3416 web-offline : .env.example NEXT_PUBLIC_EDGE_API
 
-<!-- Version antérieure de la même session (fusionnée via #3300) — conservée pour traçabilité -->
+## Phase 3 — Admin (issues #3388-#3395)
 
-# Tasks: QA Expert #5 — Test exhaustif plateforme (2026-08-15)
+- [ ] T021 [P1] #3388 MarketingOAuthView : extraire OAuthProviderCard en SFC .vue
+- [ ] T022 [P2] #3389 WebhooksView : GET /admin/webhooks/events + mapper is_active ↔ active
+- [ ] T023 [P2] #3390 ChatView : désactiver composer + avis « chat IA plateforme indisponible »
+- [ ] T024 [P3] #3391 realtime.js : PUT /v1/notifications/read-all
+- [ ] T025 [P3] #3392 VITE_WEBSOCKET_URL : injecter en CI (ou défaut wss origin API)
+- [ ] T026 [P3] #3393 KeyboardShortcutsModal : retirer ligne Alt+R obsolète
+- [ ] T027 [P3] #3394 GrowthDashboardView : retirer affectation morte / consommer commissions
+- [ ] T028 [P3] #3395 ExportsView : catch → historyError + retry
 
-**Input**: spec.md — chaque tâche correspond à une issue GitHub ouverte (label `qa-expert5-2026-08-15`).
+## Phase 4 — Mobile (issues #3400-#3406)
 
-## Phase 1 — P1 (sécurité & parcours critiques)
-- [ ] T001 [#3231] API — scopes company_id manquants sur 6 contrôleurs (IDOR) + test isolation
-- [ ] T002 [#3232] API — EmployeePolicy company_id + test
-- [ ] T003 [#3233] API — drift OpenAPI : aligner spec sur routes live (ou déprécier)
-- [ ] T004 [#3234] API — clamp per_page uniforme (helper max(1,min(100)))
-- [ ] T005 [#3235] API — masquer messages bruts (SSO, auth Google, import) + Log
-- [ ] T006 [#3282] Mobile manager — déclarer les 9 GoRoutes manquantes
-- [ ] T007 [#3283] Mobile employee — PUT /notifications/read-all
-- [ ] T008 [#3267] Admin — WebhooksView : aligner contrat (active, company_name)
-- [ ] T009 [#3268] Admin — UsersView : détail depuis /platform/users (company.employee_id)
-- [ ] T010 [#3269] Admin — stack temps réel : neutraliser bandeaux/mark-all-read ou provisionner Reverb
-- [ ] T011 [#3270] Admin — migrer les vues accessibles vers $t
-- [ ] T012 [#3246] Vitrine — marquer témoignages/cas comme démo, retirer chiffres invérifiables
-- [ ] T013 [#3247] Vitrine — source unique des plans (aligner pricing.ts/checkout/PlanSeeder)
-- [ ] T014 [#3248] Vitrine — localiser les 10+ pages FR-only
+- [ ] T029 [P2] #3400 Manager : ajouter GoRoutes /tasks /team /me/monthly (port HR) + garde manifeste verte
+- [ ] T030 [P2] #3401 read-all : aligner hr/manager notification_repository (PATCH/POST) avec #3167
+- [ ] T031 [P2] #3402 HR : DateTime.tryParse requested_check_in + nullable
+- [ ] T032 [P3] #3403 ai_voice : maxRetriesOverride: 0
+- [ ] T033 [P3] #3404 Employee : retirer/câbler /me/monthly
+- [ ] T034 [P3] #3405 fr_FR dates : locale dérivée (20 écrans)
+- [ ] T035 [P3] #3406 casts directs : extractDataMap/List (8 sites)
 
-## Phase 2 — P2 (cohérence, i18n, fiabilité)
-- [ ] T015 [#3236] API — Log::error sur catches argent (billing, import, taux, auth Google)
-- [ ] T016 [#3237] API — messages via __()/lang files (~36 chaînes)
-- [ ] T017 [#3238] API — firstOrCreate/unique sur évaluations + paie
-- [ ] T018 [#3239] API — fusionner les 2 moteurs de checklist onboarding
-- [ ] T019 [#3240] API — supprimer squelette Training mort
-- [ ] T020 [#3241] API — throttle /health* + /sso/providers
-- [ ] T021 [#3242] API — SSRF guard sur tokenUrl/jwksUri OIDC
-- [ ] T022 [#3243] API — fail-closed demo password + decryptField
-- [ ] T023 [#3284] Mobile HR — retirer 9 routes mortes
-- [ ] T024 [#3285] Mobile manager — retirer 6 routes mortes
-- [ ] T025 [#3286] Mobile — maxRetriesOverride:0 sur register/google-signin/publish
-- [ ] T026 [#3249] Vitrine — restaurer les accents FR/TR
-- [ ] T027 [#3250] Vitrine — hreflang/x-default (ou localisation par chemin)
-- [ ] T028 [#3251] Vitrine — fusionner site.ts/site-url.ts
-- [ ] T029 [#3252] Vitrine — retirer /share et /offline du sitemap
-- [ ] T030 [#3253] Vitrine — aligner l'ancre fonctionnalités
-- [ ] T031 [#3254] Vitrine — corriger ?topic=enterprise + renommer Forum
-- [ ] T032 [#3255] Vitrine — corriger {copy.info.responseTime}
-- [ ] T033 [#3257] Vitrine — retirer/transformer la page Desktop fantôme
-- [ ] T034 [#3258] Vitrine — étiqueter honnêtement les boutons de téléchargement
-- [ ] T035 [#3260] Vitrine — générer JSON-LD offers depuis la source pricing
-- [ ] T036 [#3261] Vitrine — OG par locale + comptes d'apps corrigés
-- [ ] T037 [#3262] Vitrine — localiser manifest/PWAProvider, masquer leopardo.local
-- [ ] T038 [#3263] Vitrine — badge « Archivé » sur les vieux posts blog
-- [ ] T039 [#3264] Vitrine — liste unique des pays + catégories FAQ dédoublonnées
-- [ ] T040 [#3271] Admin — ChatView : état honnête « indisponible »
-- [ ] T041 [#3272] Admin — débloquer /exports et /fleet, stubler 10 routes tenant
-- [ ] T042 [#3273] Admin — ajouter slug/created_at au payload health (ou retirer)
-- [ ] T043 [#3274] Admin — états d'erreur visibles + santé par défaut unknown
-- [ ] T044 [#3275] Admin — source unique des raccourcis (Alt+R)
-- [ ] T045 [#3276] Admin — SystemView : supprimer ou brancher les 6 sections
-- [ ] T046 [#3277] Admin — toIntlLocale partout
+## Phase 5 — Cohérence (issues #3409-#3414)
 
-## Phase 3 — P3 (hygiène, cleanup)
-- [ ] T047 [#3244] API — /employees/link-user sous api.manager
-- [ ] T048 [#3245] API — dédupliquer MeController/HrController
-- [ ] T049 [#3265] Vitrine — supprimer structured-data.ts
-- [ ] T050 [#3266] Vitrine — uniformiser badges Leo IA + suffixe AR
-- [ ] T051 [#3278] Admin — migrer 14 fichiers vers glass tokens, fusionner MetricCard
-- [ ] T052 [#3279] Admin — corriger CTA intégrations
-- [ ] T053 [#3280] Admin — supprimer route /users/:id morte
-- [ ] T054 [#3281] Admin — nettoyer les valeurs i18n
-- [ ] T055 [#3287] Mobile — currencySuffix au lieu de FCFA
-- [ ] T056 [#3288] Mobile — amorcer la migration l10n (ou retirer locales annoncées)
-- [ ] T057 [#3289] Mobile — downloadWithRetry
-- [ ] T058 [#3290] Mobile — timeouts Dio core_providers
-- [ ] T059 [#3291] Mobile — smart_attendance queryParameters + extractDataList
-- [ ] T060 [#3292] Mobile — tracesSampleRate 0.2 platform_admin
-- [ ] T061 [#3293] Mobile — /create-post dans le ShellRoute marketing
-- [ ] T062 [#3294] Mobile — retirer client ID Google OAuth debug
+- [ ] T036 [P2] #3409 CHANGELOG : supprimer 1207-1656, fusionner 13 lignes, dédup 4.22.x
+- [ ] T037 [P3] #3411 Matrix : lignes 140-144 dans la table principale
+- [ ] T038 [P3] #3412 RBAC : fusionner famille Payroll engine
+- [ ] T039 [P3] #3413 dev-hub refs : pointer docs/archive/PLAN_ACTION2/ ou retirer
+- [ ] T040 [P3] #3414 allowlist : retirer POST approve/reject
 
-## Vérification globale
-- [ ] Chaque PR : `Closes #N` dans le body + entrée CHANGELOG.md
-- [ ] Checks requis main verts (Backend Coverage, PHPStan Strict L8, Module Structure, ESLint+TS, actionlint)
-- [ ] Nettoyage des branches après merge
+## Phase 6 — Campagne merge & main vert
+
+- [ ] T041 Résoudre les conflits des PRs ouvertes du swarm (git merge origin/main + push)
+- [ ] T042 Merger en cascade les PRs dont les checks requis sont verts (`gh pr merge --merge --delete-branch`)
+- [ ] T043 Vérifier `gh run list --branch main` vert après chaque merge ; corriger les rouges
+- [ ] T044 CHANGELOG.md : entrées Unreleased pour chaque lot ; AGENTS.md si leçon opérationnelle
+- [ ] T045 Rapport final : registre des issues créées/fermées, PRs mergées, état de main
+
+## Dependencies & Execution Order
+
+- T001-T007 parallélisables (fichiers PHP distincts) mais T001 fusionne #3370
+- T008-T020 : fichiers Next.js distincts, parallélisables ; T011/T012/T017 indépendants
+- T021-T028 : fichiers Vue distincts
+- T029-T035 : Flutter — T029 dépend de la résolution manifeste ; T030 doit être coordonné avec #3167
+- T036-T040 : docs/tooling, indépendants
+- T041-T043 : continus, dès que les checks CI le permettent (file GitHub Actions saturée)

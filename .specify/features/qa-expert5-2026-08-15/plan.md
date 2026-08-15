@@ -1,91 +1,110 @@
-# Plan — Session QA expert 5 (2026-08-15, vague tardive)
+# Implementation Plan: Vague QA Expert 5 — 2026-08-15
 
-## Objectifs
-1. Documenter 22 nouveaux constats (issues + spec kit).
-2. Implémenter les correctifs P1/P2 puis P3 — 1 branche `fix/<issue>-<slug>` par issue (protocole #2400).
-3. Merger le max de branches vertes ; main doit rester vert.
+**Branches**: `fix/<issue>-<slug>` (une par issue, protocole #2400) | **Date**: 2026-08-15
+**Spec**: `.specify/features/qa-expert5-2026-08-15/spec.md`
 
-## Architecture des correctifs
+## Summary
 
-### API (api/)
-| Constat | Correctif | Fichiers |
-|---------|-----------|----------|
-| API-1 (P1) fail-open licence Edge | `decode()` lève une exception si `license_public_key` absent → `validateLicense` retourne 422 ; test dédié sans clé | `EdgeLicenseService.php`, `EdgeNodeController.php`, test `EdgeLicenseValidationTest` |
-| API-2 (P2) SSRF OIDC + garde rôle | middleware `api.manager` sur le groupe `/sso` (configure/disable/status) ; validation `SsoConfigureRequest` avec blocage IP privées (réutiliser le helper anti-SSRF de #3147) ; tests 403 + 422 | `routes/modules/sso.php`, `SSOController.php`, FormRequest dédié, `PrivateIpGuard` (shared) |
-| API-3 (P2) licence Edge rôle + bornes | `api.manager` sur `edge/{nodeId}/license` + `valid_days` 1..3650 via FormRequest ; tests 403/422 | `routes/api.php` (module EdgeSync), `EdgeNodeController`, FormRequest |
-| API-4 (P3) RateLimiter dupliqué | supprimer la 2e définition (garde IP seule) ; garder token+IP | `AppServiceProvider.php` |
-| API-5 (P3) per_page | `min(100, ...)` sur les 8 endpoints (Training ×4, SelfService ×2, EmployeeLoan, Webhook dead-letters) — aligné #3059 | 4 contrôleurs |
-| API-6 (P3) OpenAPI /public-holidays | supprimer les chemins tenant fantômes de `openapi.yaml` (garder `/admin/*`) | `openapi.yaml` |
+41 manquements nouveaux vérifiés (8 API, 11 web, 8 admin, 7 mobile, 7 cohérence/tooling) → 41 issues
+#3363-#3416. Implémentation par lots de surface, une PR par issue avec `Closes #N`, CHANGELOG sous
+`[Unreleased]`, checks CI verts avant merge. Campagne merge parallèle sur les ~45 PRs ouvertes du
+swarm : résolution des conflits, attente des checks, merge en cascade, garde de non-régression
+(AGENTS.md : vérifier qu'une vieille branche n'écrase pas un fix plus récent).
 
-### Vitrine (front/web/)
-| Constat | Correctif | Fichiers |
-|---------|-----------|----------|
-| WEB-1 (P2) checkout crash | fallback `PLAN_CONFIG[plan] ?? free` + redirection propre si inconnu + error boundary | `checkout/page.tsx` |
-| WEB-2 (P2) métriques fabriquées | badge « Chiffres de démonstration » sur /testimonials + /about (pattern home) ou chiffres réalistes sourcés | `testimonials/page.tsx`, `about/page.tsx` |
-| WEB-3 (P2) Enterprise incohérent | harmoniser « Sur devis » partout ou prix partout (aligner `pricing.ts` ↔ checkout) | `pricing.ts`, `checkout/page.tsx` |
-| WEB-4 (P2) CTA home pilot | CTA → `/signup?source=home_pilot` (comme /pricing) au lieu de checkout payant | `PricingSection.tsx` |
-| WEB-5 (P3) résidus FR signup | catalogues `signup.*` — « jours », « Se connecter » | `signup/page.tsx`, catalogues i18n |
-| WEB-6 (P3) lien mort /offline | retirer le lien `leopardo.local` | `offline/page.tsx` |
-| WEB-7 (P3) sitemap /share | retirer `/share` du sitemap (POST-only) | `sitemap.ts` |
-| WEB-8 (P3) guides 2024 | mettre à jour « Checklist Paie 2025/2026 » + liens | `guides/checklist-paie/page.tsx` |
-| WEB-9 (P3) pages FR-only | issue de suivi (travail i18n séparé, aligné #2605) | — |
+## Technical Context
 
-### Admin (front/admin-dashboard/)
-| Constat | Correctif | Fichiers |
-|---------|-----------|----------|
-| ADM-1 (P2) WebhooksView contract | aligner colonnes/form sur `WebhookEndpointResource` (active/failure_count) | `WebhooksView.vue` |
-| ADM-2 (P3) EdgeNodesView phantom | aligner sur payload `listAllNodes` (id, is_online, license_valid, company_name) | `EdgeNodesView.vue` |
-| ADM-3 (P3) DashboardView slug | ajouter `slug` au payload health OU retirer la ligne | `PlatformCompanyHealthService.php` ou `DashboardView.vue` |
-| ADM-4 (P3) CompanyDetailView created_at | exposer `created_at` dans le payload health | `PlatformCompanyHealthService.php` |
-| ADM-5 (P3) CSV injection | `escapeCsvCell` neutralise `=+-@\t\r` | `LeavesView.vue` (+ Payroll si présent) |
-| ADM-6 (P3) ChatView 501 | afficher le message backend (`ADMIN_CHAT_UNAVAILABLE`) au lieu d'erreur générique | `ChatView.vue` |
+- **Backend**: Laravel 12 (PHP 8.3/8.4, PostgreSQL 16 shared `search_path`), DDD modulaire
+  `api/app/Modules/{Module}/{Application,Domain,Infrastructure,Interfaces}`.
+- **Auth/tenancy**: `public.user_lookups` (schema_name/company_id/employee_id) + `SET search_path`
+  via `TenantManager`/`AuthService` — pattern canonique à réutiliser pour password reset.
+- **Kiosk**: `KioskController` + `OnboardingQrService` (jetons signés `base64url(payload).signature`).
+- **Admin**: Vue 3 + Vite (runtime-only build — pas de template string), routes `/admin/*` avec
+  auth `super_admin_api` ; normalizeApiPath ne touche que `/v1/`.
+- **Vitrine/dashboard**: Next.js (App Router), `useVitrineLocale` FR/EN/TR/AR, gating
+  `client-features.ts`, middleware racine (13 prefixes protégés).
+- **Mobile**: Flutter, `go_router`, convention `requestWithRetry` + `extractDataMap/List`.
+- **CI**: GitHub Actions = source de vérité ; checks requis sur main : Backend Coverage,
+  PHPStan Strict (level 8), Module Structure Validator, Frontend ESLint+TS, actionlint.
+  Vercel check externe non bloquant (rate-limited).
+- **Sandbox**: PHP 8.3 + PostgreSQL 14 + Redis installés localement (composer install, migrations,
+  tests ciblés) ; pas de Flutter SDK → mobile validé par CI + gardes statiques.
 
-### Mobile (front/mobile_apps/)
-| Constat | Correctif | Fichiers |
-|---------|-----------|----------|
-| MOB-1 (P3) DateTime.parse HR | `DateTime.tryParse` + fallback (aligné manager #3157) | `leopardo_hr/.../attendance_repository.dart:543` |
+## Constitution Check
+
+- Spec-first ✓ (ce document + issues). Auto-assignation issue ✓. Marker branch ✓. Une PR par issue ✓.
+- Multi-tenant : les fixes API préservent l'isolation (search_path, scopes company_id).
+- Qualité : PHPStan strict vert, lint admin/web verts, gardes du repo verts.
+
+## Lot API (issues #3363-#3370)
+
+| Issue | Fix |
+|---|---|
+| #3363 P1 password reset | Résolution via `public.user_lookups` + `setTenantSearchPath` (pattern AuthService) avant forgot/reset ; test tenant à schéma ; fusion des 2 classes/test PasswordResetMail (#3370) |
+| #3364 P2 register | `RegisterAction` : résoudre l'invitation → `setTenant` → MAJ employé existant (chemin OnboardingController::activate) ou fermer l'endpoint ; aligner le client mobile |
+| #3365 P2 QR punch | Parser `base64url(payload).signature`, vérifier signature+expiration, résoudre par `employee_id` scopé kiosque ; rejeter payloads non signés |
+| #3366 P3 rate limiter | Supprimer la double registration `trial-status` (garder clé `token\|IP`) |
+| #3367 P3 kiosk-punch | `throttle:kiosk-punch` sur le groupe kiosque (integrations.php + rh.php) |
+| #3368 P3 search_path kiosk | try/finally restore autour de `setTenantSearchPath` dans les 6 handlers |
+| #3369 P3 syncTrips | Index unique `(company_id, traccar_trip_id)` + `insertOrIgnore` + bornage from/to (31 j) |
+
+## Lot Web (issues #3372-#3382, #3410, #3416)
+
+| Issue | Fix |
+|---|---|
+| #3372 checkout surcoût | Afficher priceNote/surcoût dans PlanSummaryCard + résumé paiement ; aligner sièges inclus |
+| #3373 CTA pilote | Home CTA → `/signup?source=...` (alignement /pricing) |
+| #3374 Enterprise | Retirer enterprise de PLAN_CONFIG/checkout → redirection `/contact?topic=enterprise` |
+| #3375 robots | Disallow les 13 prefixes racine (miroir middleware) |
+| #3376 sitemap | Gater /blog sur enableBlog ; retirer /share + /offline |
+| #3377 checkout FR-only | Catalogues vitrine pour checkout/success (erreurs + validation + labels paiement) |
+| #3378 dashboard FR-only | Étendre `src/lib/i18n.ts` (billing/reports/employees/...) + `getCopy(locale)` |
+| #3379 gating fail-open | Défaut `'locked'` ; preuve positive pour available ; capabilities arrays dans valueFor |
+| #3380 upgrade manual | Retirer les boutons manual ou router via checkout |
+| #3381 footer mort | Ajouter /about + /videos aux 4 catalogues section 0 |
+| #3382 carrières FR-only | Catalogues vitrine section careers + useVitrineLocale |
+| #3410 versions fantômes | Régénérer changelog-public.ts depuis CHANGELOG.md |
+
+## Lot Admin (issues #3388-#3395)
+
+| Issue | Fix |
+|---|---|
+| #3388 OAuth template | Extraire `OAuthProviderCard` en SFC `.vue` |
+| #3389 webhooks | GET /admin/webhooks/events pour les checkboxes ; mapper is_active ↔ active |
+| #3390 chat 501 | Désactiver le composer + avis « chat IA plateforme indisponible » |
+| #3391 read-all | `api.put('/v1/notifications/read-all')` |
+| #3392 websocket URL | Injecter VITE_WEBSOCKET_URL (ou défaut wss origin API) ; aligner .env.example |
+| #3393 raccourci Alt+R | Retirer la ligne obsolète du modal |
+| #3394 growth dead code | Retirer l'affectation morte ; consommer commissions ou alléger la requête |
+| #3395 exports catch | try/catch → état historyError + retry |
+
+## Lot Mobile (issues #3400-#3406)
+
+| Issue | Fix |
+|---|---|
+| #3400 manager routes + garde | Ajouter GoRoutes /tasks /team /me/monthly au manager (port HR) + aligner manifeste → garde verte |
+| #3401 read-all verbes | Aligner hr/manager notification_repository sur PATCH/POST (dans le PR #3167 ou cohérent avec lui) |
+| #3402 DateTime HR | `DateTime.tryParse` + nullable (miroir manager #3157) |
+| #3403 ai_voice retries | `maxRetriesOverride: 0` sur transcribe/synthesize |
+| #3404 route orpheline | Retirer /me/monthly employee ou la câbler |
+| #3405 fr_FR dates | Locale dérivée de Localizations/preferredLanguage |
+| #3406 casts directs | extractDataMap/List aux 8 sites |
+
+## Lot Cohérence (issues #3409-#3414)
+
+| Issue | Fix |
+|---|---|
+| #3409 CHANGELOG dup | Supprimer lignes 1207-1656 ; fusionner 13 lignes uniques ; dédup 4.22.x |
+| #3411 matrix orphelins | Déplacer lignes 140-144 dans la table principale |
+| #3412 RBAC dup | Fusionner la famille Payroll engine |
+| #3413 refs PLAN_ACTION2 | Pointer vers docs/archive/PLAN_ACTION2/ ou retirer |
+| #3414 allowlist morte | Retirer POST approve/reject |
+| #3416 web-offline env | Ajouter .env.example |
 
 ## Validation
-- Backend : `vendor/bin/phpstan analyse --configuration phpstan-strict.neon` (0 erreur), `vendor/bin/pint --test`, tests ciblés.
-- Web/admin : `npm run lint` + `tsc`/build.
-- Mobile : `flutter analyze` (leopardo_hr).
-- Merge : vérifier branches existantes avant de créer (`gh api branches | grep <issue>`), PR avec `Closes #X`, CHANGELOG sous [Unreleased].
 
-## Risques
-- CI saturée (campagne multi-agents) → gates locales prioritaires.
-- Conflits de merge fréquents (main bouge) → rebaser systématiquement avant PR.
-- Ne pas dupliquer les PRs existantes (protocole #2400) : vérifier branches/PRs avant chaque issue.
-
----
-
-<!-- Version antérieure de la même session (fusionnée via #3300) — conservée pour traçabilité -->
-
-# Plan: QA Expert #5 — Test exhaustif plateforme (2026-08-15)
-
-**Input**: spec.md
-
-## Stratégie
-
-1. **Audit** (terminé) : 4 subagents experts (api/web/admin/mobile) + tests live HTTP (Render/Vercel/CF Pages). 62 nouveaux constats, tous dédupliqués contre les issues/branches existantes (#2400).
-2. **Tickets** (terminé) : 62 issues GitHub créées (#3231-#3294), label `qa-expert5-2026-08-15`, format `[QA][Px][surface]`.
-3. **Implémentation** : par vagues P1 → P2 → P3, chaque correctif en branche `fix/<issue>-<slug>` + PR avec `Closes #N` + CHANGELOG. Priorité aux P1 sécurité (IDOR, SSRF, messages bruts) et aux parcours mobiles cassés (#3282, #3283).
-4. **En parallèle** : campagne de merge des 22 PRs ouvertes (dont les waves QA précédentes) — vérifier les checks, merger les vertes, réparer/fermer les rouges (#3111, #3125, #3128).
-5. **Garde** : main doit rester vert (5 checks requis) ; vérifier les runs post-merge avant d'annoncer.
-
-## Ordre d'exécution conseillé
-
-| Vague | Contenu | Issues |
-|---|---|---|
-| 0 | Merge campaign PRs vertes + réparation des PRs cassées | — |
-| 1 | P1 API (company_id, policy, per_page, messages bruts) | #3231 #3232 #3234 #3235 |
-| 2 | P1 mobile (GoRoutes manager, 405 read-all) | #3282 #3283 |
-| 3 | P1 admin (WebhooksView, UsersView, realtime, i18n) | #3267 #3268 #3269 #3270 |
-| 4 | P1 vitrine (preuve sociale, tarifs, FR-only) | #3246 #3247 #3248 |
-| 5 | P2 quick wins (throttle, Log, FR API, sitemap, ancres…) | #3236 #3237 #3241 #3252 #3253 #3255… |
-| 6 | P3 cleanup | restantes |
-
-## Risques
-
-- **CI saturée** : 22 PRs × ~20 workflows — merger par vagues, prioriser les vertes, éviter de créer des PRs concurrentes sur les mêmes fichiers.
-- **Régression par branches périmées** (leçon 2026-08-15) : avant merge d'une vieille branche, vérifier `git diff origin/main...HEAD` sur les fichiers partagés.
-- **Anti-doublon** : un seul `fix/<issue>-*` par issue ; vérifier les branches avant de coder.
+- `cd api && composer install && php artisan migrate:fresh --seed` (PostgreSQL local) + tests ciblés
+  (PasswordReset tenant schéma, kiosk QR, syncTrips, rate limiters).
+- `python3 dev-hub/tools/check-openapi-route-coverage.py` ; `bash dev-hub/tools/check-mobile-manifest-routes.sh`.
+- `npm run lint && npm run build` (front/web, front/admin-dashboard).
+- CI PR : checks requis verts avant merge (`gh pr checks`), puis merge `--merge --delete-branch`.
+- Après merge : `gh run list --branch main` vert ; CHANGELOG à jour ; AGENTS.md leçons si nécessaire.
