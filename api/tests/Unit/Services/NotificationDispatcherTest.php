@@ -91,6 +91,7 @@ class NotificationDispatcherTest extends TestCase
         $employee = $this->makeEmployee();
         DeviceToken::query()->create([
             'employee_id' => $employee->id,
+            'company_id' => $employee->company_id,
             'token' => 'fcm-token-1',
             'platform' => 'android',
             'is_active' => true,
@@ -127,6 +128,7 @@ class NotificationDispatcherTest extends TestCase
         $employee = $this->makeEmployee();
         DeviceToken::query()->create([
             'employee_id' => $employee->id,
+            'company_id' => $employee->company_id,
             'token' => 'fcm-token-bad',
             'platform' => 'ios',
             'is_active' => true,
