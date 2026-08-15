@@ -126,15 +126,9 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   return UserAuthRepository(apiClient, storage, preferences);
 });
 
-final contractRepositoryProvider = Provider<ContractRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ContractRepository(apiClient);
-});
 
-final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ExpenseRepository(apiClient);
-});
+
+
 
 final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
