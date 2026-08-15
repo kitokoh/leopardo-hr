@@ -121,8 +121,8 @@
           <div class="flex items-start space-x-3">
             <ExclamationTriangleIcon :class="['h-5 w-5 mt-0.5', alert.level === 'critical' ? 'text-red-500' : alert.level === 'warning' ? 'text-amber-500' : 'text-slate-400']" />
             <div>
-              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ alert.title }}</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ alert.description }}</p>
+              <p class="text-sm font-bold text-slate-800 dark:text-slate-200">{{ alert.message || alert.title }}</p>
+              <p v-if="alert.description" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ alert.description }}</p>
             </div>
           </div>
           <button
