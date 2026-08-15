@@ -100,6 +100,117 @@ class GenerateBankExportJobTest extends TestCase
         $this->assertNull($export->file_path);
     }
 
+    public function test_job_generates_sepa_with_real_company_and_employee_iban(): void
+    {
+        // Issue #2198 — the SEPA file must contain real debtor IBAN/BIC from
+        // companies.metadata and the employee's own IBAN; never placeholders.
+        [$company, $employee] = $this->companyAndEmployee();
+        $company->update([
+            'metadata' => [
+                'company_iban' => 'FR7610071750000000000000000',
+                'company_bic' => 'PSSTFRPP',
+            ],
+        ]);
+        $employee->update(['iban' => 'DE89370400440532013000']);
+        [$run] = $this->payrollSlip($company, $employee);
+
+        $export = BankExport::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'format' => 'sepa_xml',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
+
+        $export->refresh();
+
+        $this->assertSame(BankExport::STATUS_GENERATED, $export->status);
+        $this->assertNull($export->error_message);
+
+        $content = Storage::disk('local')->get($export->file_path);
+
+        $this->assertIsString($content);
+        $this->assertStringContainsString('FR7610071750000000000000000', $content);
+        $this->assertStringContainsString('PSSTFRPP', $content);
+        $this->assertStringContainsString('DE89370400440532013000', $content);
+        $this->assertStringNotContainsString('PLACEHOLDER', $content);
+        $this->assertStringNotContainsString('NOTPROVIDED', $content);
+        $this->assertStringNotContainsString('UNKNOWN', $content);
+    }
+
+    public function test_job_marks_sepa_failed_when_company_iban_missing(): void
+    {
+        // No companies.metadata.company_iban → the generator refuses to emit
+        // a placeholder; the job records MISSING_COMPANY_IBAN as the failure.
+        [$company, $employee] = $this->companyAndEmployee();
+        $employee->update(['iban' => 'DE89370400440532013000']);
+        [$run] = $this->payrollSlip($company, $employee);
+
+        $export = BankExport::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'format' => 'sepa_xml',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        $thrown = null;
+
+        try {
+            (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
+        } catch (\Throwable $e) {
+            $thrown = $e;
+        }
+
+        $this->assertNotNull($thrown, 'Expected the job to rethrow the missing company IBAN failure.');
+        $this->assertStringContainsString('MISSING_COMPANY_IBAN', $thrown->getMessage());
+
+        $export->refresh();
+
+        $this->assertSame(BankExport::STATUS_FAILED, $export->status);
+        $this->assertStringContainsString('MISSING_COMPANY_IBAN', (string) $export->error_message);
+        $this->assertNull($export->file_path);
+    }
+
+    public function test_sepa_omits_creditor_bic_when_company_bic_missing(): void
+    {
+        // BIC créancier optionnel : fallback BIC entreprise, sinon élément
+        // CdtrAgt omis (valide selon pain.001.001.03) — jamais NOTPROVIDED.
+        [$company, $employee] = $this->companyAndEmployee();
+        $company->update(['metadata' => ['company_iban' => 'FR7610071750000000000000000']]);
+        $employee->update(['iban' => 'DE89370400440532013000']);
+        [$run] = $this->payrollSlip($company, $employee);
+
+        $export = BankExport::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'format' => 'sepa_xml',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
+
+        $export->refresh();
+
+        $this->assertSame(BankExport::STATUS_GENERATED, $export->status);
+
+        $content = Storage::disk('local')->get($export->file_path);
+
+        $this->assertIsString($content);
+        $this->assertStringContainsString('FR7610071750000000000000000', $content);
+        $this->assertStringNotContainsString('<CdtrAgt>', $content);
+        $this->assertStringNotContainsString('NOTPROVIDED', $content);
+    }
+
     /**
      * @return array{0: Company, 1: Employee}
      */

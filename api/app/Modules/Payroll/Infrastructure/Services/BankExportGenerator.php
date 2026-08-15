@@ -19,7 +19,13 @@ use Illuminate\Support\Collection;
  */
 class BankExportGenerator
 {
-    public function generate(PayrollRun $run, string $format): string
+    /**
+     * @param  array{name?: string, iban?: ?string, bic?: ?string}  $companyBank
+     *        Débiteur SEPA lu depuis `companies.metadata` (issue #2198) :
+     *        `name` = raison sociale, `iban` = IBAN débiteur (obligatoire SEPA),
+     *        `bic` = BIC débiteur (optionnel, sinon l'élément est omis).
+     */
+    public function generate(PayrollRun $run, string $format, array $companyBank = []): string
     {
         $slips = $run->paySlips()
             ->with('employee:id,first_name,last_name,iban,bank_account')
@@ -34,7 +40,7 @@ class BankExportGenerator
         $currency = CountryDefaults::for($run->country_code)['currency'];
 
         return match ($format) {
-            'sepa_xml' => $this->generateSepaXml($run, $slips, $currency),
+            'sepa_xml' => $this->generateSepaXml($run, $slips, $currency, $companyBank),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
             'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
             'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
@@ -70,26 +76,20 @@ class BankExportGenerator
         };
     }
 
-    private function generateSepaXml(PayrollRun $run, Collection $slips, string $currency = 'EUR'): string
+    /**
+     * @param  array{name?: string, iban?: ?string, bic?: ?string}  $companyBank
+     */
+    private function generateSepaXml(PayrollRun $run, Collection $slips, string $currency = 'EUR', array $companyBank = []): string
     {
-        // Issue #2223 : les coordonnées bancaires de l'entreprise ne peuvent
-        // plus être des placeholders littéraux — fail-closed.
-        $bank = $this->companyBankDetails($run);
+        // Issue #2198 — no placeholder ever: the SEPA file must be usable by
+        // a bank as-is. The debtor IBAN comes from companies.metadata and is
+        // mandatory; the debtor BIC is optional (element omitted when absent).
+        $companyName = trim((string) ($companyBank['name'] ?? 'Leopardo RH'));
+        $companyIban = isset($companyBank['iban']) ? trim((string) $companyBank['iban']) : '';
+        $companyBic = isset($companyBank['bic']) ? trim((string) $companyBank['bic']) : '';
 
-        // Un fichier bancaire incomplet est pire qu'aucun fichier : un virement
-        // vers un IBAN inconnu ('UNKNOWN') serait rejeté ou mal routé.
-        $missingIban = $slips->filter(static fn ($slip): bool => empty($slip->employee->iban));
-        if ($missingIban->isNotEmpty()) {
-            $names = $missingIban->take(3)
-                ->map(static fn ($slip): string => trim(($slip->employee->first_name ?? '').' '.($slip->employee->last_name ?? '')))
-                ->implode(', ');
-
-            throw new \RuntimeException(sprintf(
-                'SEPA export requires an IBAN for every employee (%d missing: %s%s).',
-                $missingIban->count(),
-                $names,
-                $missingIban->count() > 3 ? ', …' : ''
-            ));
+        if ($companyIban === '') {
+            throw new \RuntimeException('MISSING_COMPANY_IBAN: company IBAN (metadata.company_iban) is required for SEPA export.');
         }
 
         $msgId = 'LEO-'.now()->format('YmdHis').'-'.$run->id;
@@ -113,19 +113,29 @@ class BankExportGenerator
         $xml .= '      <NbOfTxs>'.$nbTransactions.'</NbOfTxs>'."\n";
         $xml .= '      <CtrlSum>'.number_format($totalAmount, 2, '.', '').'</CtrlSum>'."\n";
         $xml .= '      <ReqdExctnDt>'.now()->addWeekdays(2)->format('Y-m-d').'</ReqdExctnDt>'."\n";
-        $xml .= '      <Dbtr><Nm>Leopardo RH</Nm></Dbtr>'."\n";
-        $xml .= '      <DbtrAcct><Id><IBAN>'.$this->xmlEscape($bank['iban']).'</IBAN></Id></DbtrAcct>'."\n";
-        $xml .= '      <DbtrAgt><FinInstnId><BIC>'.$this->xmlEscape($bank['bic']).'</BIC></FinInstnId></DbtrAgt>'."\n";
+        $xml .= '      <Dbtr><Nm>'.$this->xmlEscape($companyName).'</Nm></Dbtr>'."\n";
+        $xml .= '      <DbtrAcct><Id><IBAN>'.$this->xmlEscape($companyIban).'</IBAN></Id></DbtrAcct>'."\n";
+        if ($companyBic !== '') {
+            $xml .= '      <DbtrAgt><FinInstnId><BIC>'.$this->xmlEscape($companyBic).'</BIC></FinInstnId></DbtrAgt>'."\n";
+        }
 
         foreach ($slips as $slip) {
             $employee = $slip->employee;
             $name = trim(($employee->first_name ?? '').' '.($employee->last_name ?? ''));
-            $iban = $employee->iban;
+            $iban = trim((string) ($employee->iban ?? ''));
+
+            if ($iban === '') {
+                throw new \RuntimeException('MISSING_EMPLOYEE_IBAN: employee #'.$slip->employee_id.' has no IBAN for SEPA export.');
+            }
 
             $xml .= '      <CdtTrfTxInf>'."\n";
             $xml .= '        <PmtId><EndToEndId>SAL-'.$run->id.'-'.$slip->employee_id.'</EndToEndId></PmtId>'."\n";
             $xml .= '        <Amt><InstdAmt Ccy="'.$this->xmlEscape($currency).'">'.number_format($slip->net_salary, 2, '.', '').'</InstdAmt></Amt>'."\n";
-            $xml .= '        <CdtrAgt><FinInstnId><BIC>NOTPROVIDED</BIC></FinInstnId></CdtrAgt>'."\n";
+            // BIC créancier optionnel : BIC entreprise en fallback, sinon
+            // l'élément CdtrAgt est omis (valide selon pain.001.001.03).
+            if ($companyBic !== '') {
+                $xml .= '        <CdtrAgt><FinInstnId><BIC>'.$this->xmlEscape($companyBic).'</BIC></FinInstnId></CdtrAgt>'."\n";
+            }
             $xml .= '        <Cdtr><Nm>'.$this->xmlEscape($name).'</Nm></Cdtr>'."\n";
             $xml .= '        <CdtrAcct><Id><IBAN>'.$this->xmlEscape((string) $iban).'</IBAN></Id></CdtrAcct>'."\n";
             $xml .= '        <RmtInf><Ustrd>Salaire '.$run->period_start->format('m/Y').'</Ustrd></RmtInf>'."\n";

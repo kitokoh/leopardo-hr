@@ -28,6 +28,7 @@ class BankExportControllerTest extends TestCase
         Queue::fake();
 
         [$company, $manager, $employee] = $this->actors();
+        $company->update(['metadata' => ['company_iban' => 'FR7610071750000000000000000', 'company_bic' => 'PSSTFRPP']]);
         [$run] = $this->payrollSlip($company, $employee);
 
         Sanctum::actingAs($manager);
@@ -47,6 +48,44 @@ class BankExportControllerTest extends TestCase
         $this->assertNull($export->file_path);
 
         Queue::assertPushed(GenerateBankExportJob::class, fn (GenerateBankExportJob $job): bool => $job->bankExportId === $export->id);
+    }
+
+    public function test_generate_sepa_without_company_iban_returns_422_missing_company_iban(): void
+    {
+        Queue::fake();
+
+        [$company, $manager, $employee] = $this->actors();
+        // No metadata.company_iban → SEPA must be rejected synchronously.
+        [$run] = $this->payrollSlip($company, $employee);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bank-export", [
+            'format' => 'sepa_xml',
+        ])->assertStatus(422)
+            ->assertJsonPath('error', 'MISSING_COMPANY_IBAN');
+
+        $this->assertDatabaseMissing('bank_exports', ['payroll_run_id' => $run->id]);
+        Queue::assertNotPushed(GenerateBankExportJob::class);
+    }
+
+    public function test_generate_sepa_company_iban_from_another_company_is_ignored(): void
+    {
+        Queue::fake();
+
+        [$company, $manager, $employee] = $this->actors();
+        [$foreignCompany] = $this->actors();
+        $foreignCompany->update(['metadata' => ['company_iban' => 'DE89370400440532013000']]);
+        [$run] = $this->payrollSlip($company, $employee);
+
+        Sanctum::actingAs($manager);
+
+        // The debtor IBAN is resolved from the payroll run's own company,
+        // not from any other tenant's metadata.
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bank-export", [
+            'format' => 'sepa_xml',
+        ])->assertStatus(422)
+            ->assertJsonPath('error', 'MISSING_COMPANY_IBAN');
     }
 
     public function test_generate_requires_manager_role(): void
