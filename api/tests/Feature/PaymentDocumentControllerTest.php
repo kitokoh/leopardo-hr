@@ -107,12 +107,12 @@ class PaymentDocumentControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->getJson("/api/v1/payroll-runs/{$run->id}/payment-documents")
+        $this->getJson("/api/v1/payments/{$run->id}/documents")
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $document->id);
 
-        $this->getJson("/api/v1/payroll-runs/{$foreignRun->id}/payment-documents")
+        $this->getJson("/api/v1/payments/{$foreignRun->id}/documents")
             ->assertNotFound();
     }
 

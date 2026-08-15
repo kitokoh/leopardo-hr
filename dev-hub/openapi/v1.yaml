@@ -6817,33 +6817,6 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
-  /payroll-runs/{payrollRun}/payment-documents:
-    get:
-      tags: ["Payroll"]
-      summary: "Documents de paiement d'un cycle paie"
-      parameters:
-        - in: path
-          name: payrollRun
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Documents du cycle"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PaymentDocument"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
   /payment-batches:
     get:
       tags: ["Payroll"]
@@ -6943,7 +6916,7 @@ paths:
   /payments/{payrollRun}/documents:
     get:
       tags: ["Payroll"]
-      summary: "Alias mobile pour documents de paiement d'un cycle"
+      summary: "Documents de paiement d.un cycle paie"
       parameters:
         - in: path
           name: payrollRun
@@ -8784,6 +8757,56 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   # --- Bank Export ---
+  /payroll-runs/{payrollRun}/bank-export:
+    post:
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: "Identifiant du cycle de paie"
+      tags: ["Payroll"]
+      summary: "Generer un export bancaire"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [payroll_run_id, format]
+              properties:
+                payroll_run_id:
+                  type: integer
+                format:
+                  type: string
+                  enum: [sepa, csv, ach]
+      responses:
+        "201":
+          description: "Export genere"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /bank-exports/{bankExport}:
+    get:
+      tags: ["Payroll"]
+      summary: "Détail d'un export bancaire"
+      parameters:
+        - name: bankExport
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Export bancaire"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /bank-exports/{bankExport}/download:
     get:
       tags: ["Payroll"]
@@ -11530,19 +11553,13 @@ paths:
 
   /i18n/catalog:
     get:
-      tags: ["Admin"]
-      summary: "Catalogue de traductions (toutes locales)"
-      parameters:
-        - name: locale
-          in: query
-          required: false
-          schema: { type: string }
+      tags: ["Core"]
+      summary: "Catalogue de traductions (locales disponibles)"
       responses:
         "200":
-          description: "Catalogue complet"
+          description: "Locales disponibles"
         "401":
           $ref: "#/components/responses/Error401"
-
   /i18n/catalog/{locale}:
     get:
       tags: ["Admin"]
@@ -12089,20 +12106,11 @@ paths:
             type: integer
       responses:
         "200":
-          description: "Session approuvée"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/GeoAttendanceSession"
-        "403":
-          $ref: "#/components/responses/Error403"
+          description: "Session mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
         "404":
           $ref: "#/components/responses/Error404"
-        "422":
-          $ref: "#/components/responses/Validation422"
 
   /smart-attendance/sessions/{id}/reject:
     post:
@@ -12116,32 +12124,13 @@ paths:
           required: true
           schema:
             type: integer
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                rejection_reason:
-                  type: string
-                  maxLength: 500
       responses:
         "200":
-          description: "Session rejetée"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/GeoAttendanceSession"
-        "403":
-          $ref: "#/components/responses/Error403"
+          description: "Session mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
         "404":
           $ref: "#/components/responses/Error404"
-        "422":
-          $ref: "#/components/responses/Validation422"
 
   /smart-attendance/dashboard:
     get:
@@ -12442,6 +12431,296 @@ paths:
           $ref: "#/components/responses/Error403"
         "404":
           description: "Aucune pointeuse enregistree avec ce numero de serie"
+
+  /smart-attendance/my-sessions:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Sessions GPS de l'employé courant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Sessions de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Config mode géolocalisation de l'entreprise (manager/RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Réglages entreprise"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Mettre à jour la config mode géolocalisation (principal)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Config mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /smart-attendance/employees/{employeeId}/preference:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Préférence mode géolocalisation d'un employé (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Préférence de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /growth/partner/dashboard:
+    get:
+      tags: ["Growth"]
+      summary: "Tableau de bord de l'espace partenaire"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Données du tableau de bord partenaire"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/growth/payouts/{payout}:
+    patch:
+      tags: ["Growth"]
+      summary: "Mettre à jour le statut d'un payout partenaire (super-admin)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payout
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Payout mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /platform/growth/history:
+    get:
+      tags: ["Growth"]
+      summary: "Historique des opérations growth (super-admin)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Historique"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/growth/partners/{partner}/application:
+    patch:
+      tags: ["Growth"]
+      summary: "Mettre à jour le statut de candidature d'un partenaire (super-admin)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: partner
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Candidature mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /employees/{employee}/balance:
+    get:
+      tags: ["HR"]
+      summary: "Solde de congés d'un employé (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Soldes de l'employé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /employees/{employee}/ledger:
+    get:
+      tags: ["HR"]
+      summary: "Journal de paie d'un employé (manager/RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Journal de paie"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /me/ledger:
+    get:
+      tags: ["HR"]
+      summary: "Journal de paie de l'employé courant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Journal de paie"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/attendance-anomalies:
+    get:
+      tags: ["HR"]
+      summary: "Anomalies de pointage de l'employé courant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Anomalies de pointage"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /attendance/regularity:
+    get:
+      tags: ["Attendance"]
+      summary: "Régularité de présence (manager/RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statistiques de régularité"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/edge/nodes:
+    get:
+      tags: ["Edge"]
+      summary: "Lister les nœuds edge de la plateforme (super-admin)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des nœuds edge"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/edge/nodes/{nodeId}/sync:
+    post:
+      tags: ["Edge"]
+      summary: "Forcer la synchronisation d'un nœud edge (super-admin)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Synchronisation déclenchée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/edge/nodes/{nodeId}:
+    delete:
+      tags: ["Edge"]
+      summary: "Révoquer un nœud edge (super-admin)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Nœud révoqué"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/edge-nodes:
+    get:
+      tags: ["Edge"]
+      summary: "Alias SPA — lister les nœuds edge (super-admin)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des nœuds edge"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/edge-nodes/{nodeId}/sync:
+    post:
+      tags: ["Edge"]
+      summary: "Alias SPA — forcer la synchronisation d'un nœud edge"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Synchronisation déclenchée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/edge-nodes/{nodeId}/revoke:
+    post:
+      tags: ["Edge"]
+      summary: "Alias SPA — révoquer un nœud edge"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Nœud révoqué"
+        "401":
+          $ref: "#/components/responses/Error401"
 
 components:
   securitySchemes:

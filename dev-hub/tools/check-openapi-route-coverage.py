@@ -88,69 +88,34 @@ def normalize_path(path: str) -> str:
     return path.rstrip("/") or "/"
 
 
-def parse_routes() -> list[dict]:
-    """Retourne [{method, path, file}] pour chaque route trouvée."""
-    routes: list[dict] = []
-    files = sorted(ROUTES_DIR.rglob("*.php")) + MODULE_ROUTE_FILES
-    for file in files:
-        # web.php sert les pages HTML (docs, tester-guide) — hors contrat API.
-        if file.name == "web.php" and file.parent == ROUTES_DIR:
-            continue
-        try:
-            rel = file.relative_to(ROUTES_DIR).as_posix()
-        except ValueError:
-            rel = file.relative_to(REPO_ROOT).as_posix()
-        # Les fichiers de routes DDD (enregistrés via loadRoutesFrom) portent
-        # leur(s) propre(s) prefix racine(s) `Route::prefix('api/v1/...')`,
-        # souvent sur une ligne séparée du groupe : parseur dédié, le dernier
-        # prefix vu s'applique au fichier (EdgeSync a plusieurs groupes avec
-        # des prefixes différents : api/v1/edge et api/v1/edge-node).
-        if file in MODULE_ROUTE_FILES:
-            file_prefix = ""
-            for raw in file.read_text(encoding="utf-8", errors="replace").splitlines():
-                line = raw.strip()
-                if not line or line.startswith("//") or line.startswith("*"):
-                    continue
-                m = PREFIX_RE.search(line)
-                if m:
-                    file_prefix = m.group(1)
-                    continue
-                m = ROUTE_RE.search(line)
-                if m:
-                    verb, path = m.group(1).lower(), m.group(2)
-                    routes.append({
-                        "method": verb,
-                        "path": normalize_path(file_prefix + path),
-                        "file": rel,
-                    })
-                    continue
-                m = RESOURCE_RE.search(line)
-                if m:
-                    kind, name = m.group(1), m.group(2)
-                    methods = RESOURCE_METHODS if kind == "resource" else API_RESOURCE_METHODS
-                    param = re.sub(r"s$", "", name)
-                    for action, verb in methods.items():
-                        if action in ("index", "create"):
-                            p = f"/{name}"
-                            if action == "create":
-                                p = f"/{name}/create"
-                        elif action == "store":
-                            p = f"/{name}"
-                        elif action == "edit":
-                            p = f"/{name}/{{{param}}}/edit"
-                        elif action in ("show", "update", "destroy"):
-                            p = f"/{name}/{{{param}}}"
-                        else:
-                            continue
-                        routes.append({
-                            "method": verb,
-                            "path": normalize_path(file_prefix + p),
-                            "file": rel,
-                        })
-            continue
+def _build_base(prefixes: list[str]) -> str:
+    """Joindre les préfixes de groupe avec un séparateur '/' (bug corrigé #2233 :
+    la concaténation brute `growth`+`partner`+`/apply` produisait `growthpartner/apply`,
+    rendant des centaines de routes impossibles à couvrir par la garde)."""
+    parts = [p.strip("/") for p in prefixes if p and p.strip("/")]
+    return normalize_path("/" + "/".join(parts)) if parts else ""
 
-        prefix_stack: list[tuple[int, str]] = []
-        current_prefixes: list[str] = []
+
+def parse_routes() -> list[dict]:
+    """Retourne [{method, path, file}] pour chaque route trouvée.
+
+    Corrections #2233 :
+      - préfixes imbriqués joints avec '/' (plus de concaténation brute) ;
+      - chaînes multi-lignes `->middleware(...)->prefix('x')->group(function` :
+        le préfixe est mémorisé et poussé quand le groupe s'ouvre (même sur
+        une ligne suivante) ;
+      - contexte des fichiers `require`'d depuis routes/api.php : le groupe
+        `prefix('v1')` englobant est hérité par chaque module (sinon les
+        routes des modules sont incomparables à openapi.yaml).
+    """
+    routes: list[dict] = []
+
+    def parse_file(file: Path, inherited: list[tuple[int, str]] | None = None) -> None:
+        rel = file.relative_to(ROUTES_DIR).as_posix()
+        prefix_stack: list[tuple[int, str]] = list(inherited or [])
+        current_prefixes = [p for _, p in prefix_stack]
+        pending_prefix: str | None = None
+
         for raw in file.read_text(encoding="utf-8", errors="replace").splitlines():
             line = raw.strip()
             if not line or line.startswith("//") or line.startswith("*"):
@@ -164,20 +129,19 @@ def parse_routes() -> list[dict]:
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
 
-            # Chaîne Route::prefix('...')->...->group(function () { ... });
-            # Le préfixe s'applique au groupe ouvert sur cette ligne.
+            # prefix('...') peut être sur la même ligne que ->group( ou sur une
+            # ligne précédente (chaîne chaînée multi-lignes).
             m = PREFIX_RE.search(line)
-            if m and GROUP_OPEN_RE.search(line):
-                prefix_stack.append((indent, m.group(1)))
+            if m and "prefix(" in line:
+                pending_prefix = m.group(1)
+
+            if GROUP_OPEN_RE.search(line):
+                prefix_stack.append((indent, pending_prefix or ""))
+                pending_prefix = None
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
 
-            if GROUP_OPEN_RE.search(line):
-                # Groupe sans nouveau préfixe : hérite du contexte courant.
-                prefix_stack.append((indent, ""))
-                continue
-
-            base = "".join(current_prefixes)
+            base = _build_base(current_prefixes)
 
             m = ROUTE_RE.search(line)
             if m:
@@ -210,7 +174,56 @@ def parse_routes() -> list[dict]:
                     )
                 continue
 
-        # Pile résiduelle : groupes fermés par fin de fichier (rare).
+    # 1) api.php d'abord : collecte des require de modules avec le contexte de
+    #    préfixe au point d'inclusion (le groupe `v1` englobant).
+    api_file = ROUTES_DIR / "api.php"
+    inherited_by_module: dict[str, list[tuple[int, str]]] = {}
+    if api_file.exists():
+        stack: list[tuple[int, str]] = []
+        current: list[str] = []
+        pending: str | None = None
+        for raw in api_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("//"):
+                continue
+            indent = len(raw) - len(raw.lstrip())
+            if GROUP_CLOSE_RE.match(raw):
+                while stack and stack[-1][0] >= indent:
+                    stack.pop()
+                current = [p for _, p in stack]
+                continue
+            m = PREFIX_RE.search(line)
+            if m and "prefix(" in line:
+                pending = m.group(1)
+            if GROUP_OPEN_RE.search(line):
+                stack.append((indent, pending or ""))
+                pending = None
+                current = [p for _, p in stack]
+                continue
+            m = re.search(r"require\s+__DIR__\.\s*['\"]([^'\"]+)['\"]", line)
+            if m and current:
+                key = m.group(1).lstrip("./").lstrip("/")
+                inherited_by_module.setdefault(key, []).extend(
+                    [(i, p) for i, p in stack]
+                )
+
+    # 2) Parse de chaque fichier, avec le contexte hérité le cas échéant.
+    for file in sorted(ROUTES_DIR.rglob("*.php")):
+        # web.php sert les pages HTML (docs, tester-guide) — hors contrat API.
+        if file.name == "web.php" and file.parent == ROUTES_DIR:
+            continue
+        if file == api_file:
+            continue  # api.php est analysé à l'étape 1 pour les requires ; ses
+            # propres routes restent couvertes par la passe ci-dessous.
+        rel = file.relative_to(ROUTES_DIR).as_posix()
+        inherited = inherited_by_module.get(rel) or inherited_by_module.get(
+            "modules/" + file.name
+        )
+        parse_file(file, inherited)
+    # api.php lui-même (routes directes sous v1, platform, admin, etc.)
+    if api_file.exists():
+        parse_file(api_file)
+
     return routes
 
 
@@ -288,20 +301,10 @@ def canonical_spec_path(path: str) -> str | None:
     Renvoie None si le chemin ne commence pas par un préfixe de version
     (les routes sans préfixe `v1` sont comparées telles quelles).
     """
-    stripped = path
-    m = re.match(r"^api/v\d+", stripped)
-    if m:
-        stripped = stripped[m.end():]
-    else:
-        m = re.match(r"^api/", stripped)
-        if m:
-            stripped = stripped[m.end():]
-        else:
-            m = re.match(r"^v\d+", stripped)
-            if m:
-                stripped = stripped[m.end():]
-            else:
-                return None
+    m = re.match(r"^/?v\d+(?=/|$)", path)
+    if not m:
+        return None
+    stripped = path[m.end():]
     if not stripped.startswith("/"):
         stripped = "/" + stripped
     return stripped
