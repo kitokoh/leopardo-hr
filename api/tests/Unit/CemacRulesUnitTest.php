@@ -87,17 +87,23 @@ class CemacRulesUnitTest extends TestCase
 
     public function test_other_cemac_members_unaffected(): void
     {
+        // #1824/#2118 : GA est passé pilot (IRPP + CNSS + abattement DGI) —
+        // les membres non implémentés restent CF/TD/GQ sur le placeholder.
         $ga = (new CemacPayrollRules)->forMemberCountry('GA');
+        $this->assertSame('pilot', $ga->confidenceLevel());
+        $this->assertCount(8, $ga->taxSlabs());
+
+        $td = (new CemacPayrollRules)->forMemberCountry('TD');
 
         // Placeholder conservé : 5 tranches génériques, pas d'abattement,
         // pas de préavis, confidence placeholder.
-        $this->assertCount(5, $ga->taxSlabs());
-        $this->assertSame(['rate' => 0.0, 'cap' => null], $ga->professionalExpensesDeduction());
-        $this->assertSame(0.0, $ga->noticePeriodDays(3.0));
-        $this->assertSame('placeholder', $ga->confidenceLevel());
+        $this->assertCount(5, $td->taxSlabs());
+        $this->assertSame(['rate' => 0.0, 'cap' => null], $td->professionalExpensesDeduction());
+        $this->assertSame(0.0, $td->noticePeriodDays(3.0));
+        $this->assertSame('placeholder', $td->confidenceLevel());
 
-        // CNPS GA non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
-        $charges = $ga->calculateSocialCharges(2000000.0);
+        // CNPS TD non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
+        $charges = $td->calculateSocialCharges(2000000.0);
         $this->assertSame(84000.0, $charges['employee']);
         $this->assertSame(324000.0, $charges['employer']);
     }

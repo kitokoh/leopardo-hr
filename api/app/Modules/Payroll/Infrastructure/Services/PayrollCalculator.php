@@ -284,6 +284,13 @@ class PayrollCalculator
 
             $run->update([
                 'status' => 'calculated',
+                // Issue #1871/#1874 — version/identifiant/période des règles
+                // EFFECTIVES persistées sur le run (l'audit les relit) ; les
+                // bulletins les portaient déjà — le run manquait (NULL dans
+                // payroll_calculation_audits, QA pass 2026-08-14).
+                'rules_version' => $rulesVersion,
+                'rules_identifier' => $rulesIdentifier,
+                'rules_period' => $rulesPeriod,
                 'total_gross' => round($totalGross, 2),
                 'total_deductions' => round($totalDeductions, 2),
                 'total_net' => round($totalNet, 2),

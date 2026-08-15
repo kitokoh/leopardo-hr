@@ -8,15 +8,15 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Modules\Platform\Domain\Models\ScheduledTaskRun;
 use App\Modules\Platform\Infrastructure\Services\ScheduledTaskRunRecorder;
 use Illuminate\Console\Events\ScheduledTaskFailed;
-use Illuminate\Console\Scheduling\CacheEventMutex;
-use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskStarting;
+use Illuminate\Console\Scheduling\CacheEventMutex;
+use Illuminate\Console\Scheduling\Event;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Contracts\Console\Kernel;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -39,6 +39,13 @@ class QueueObservabilityApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // QA pass 2026-08-14 (#2172) : après une classe RefreshTenantDatabase,
+        // une seconde table `migrations` existe dans shared_tenants — selon
+        // l'ordre du search_path, le Migrator résout la mauvaise et rejoue des
+        // migrations déjà appliquées (SQLSTATE[42P07] sur 000004). Forcer
+        // `public` en premier (même correctif que MigrationSchemaPlacementTest).
+        DB::statement('SET search_path TO public,shared_tenants');
 
         $this->artisan('migrate:fresh', [
             '--path' => 'database/migrations/public',

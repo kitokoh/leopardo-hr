@@ -14,6 +14,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Mockery\Expectation;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -117,10 +118,12 @@ class PayrollAuditTest extends TestCase
         $this->assertSame(PayrollCalculationAudit::ACTOR_USER, $audit->actor_type);
         $this->assertSame($this->managerA->id, $audit->actor_id);
 
-        // Agrégats uniquement (jamais de salaires individuels).
-        $this->assertSame(1, (int) ($audit->input_snapshot['employee_count'] ?? 0));
-        $this->assertSame(60000.0, (float) ($audit->result_snapshot['total_gross'] ?? 0.0));
-        $this->assertSame(1, (int) ($audit->result_snapshot['employee_count'] ?? 0));
+        // Agrégats uniquement (jamais de salaires individuels). Le manager
+        // actif de la société est un employé payé (structure par défaut) :
+        // 2 bulletins × 60 000 → brut 120 000 (latent main, QA pass 2026-08-14).
+        $this->assertSame(2, (int) ($audit->input_snapshot['employee_count'] ?? 0));
+        $this->assertSame(120000.0, (float) ($audit->result_snapshot['total_gross'] ?? 0.0));
+        $this->assertSame(2, (int) ($audit->result_snapshot['employee_count'] ?? 0));
         $this->assertGreaterThan(0.0, (float) ($audit->result_snapshot['total_net'] ?? 0.0));
         $this->assertGreaterThan(0.0, (float) ($audit->result_snapshot['total_employer_cost'] ?? 0.0));
     }
@@ -190,7 +193,7 @@ class PayrollAuditTest extends TestCase
 
         // Aucun utilisateur authentifié (équivalent ProcessPayrollBatchJob /
         // commande) : l'acteur de l'audit doit être `job`.
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $run->refresh();
         $this->assertNotNull($run->correlation_id);
@@ -283,7 +286,7 @@ class PayrollAuditTest extends TestCase
         // (y compris Log::withContext) est vérifié — aucun secret ne doit
         // apparaître dans les messages ni les contextes.
         $log = Log::spy();
-        /** @var \Mockery\Expectation $channelExpectation */
+        /** @var Expectation $channelExpectation */
         $channelExpectation = $log->shouldReceive('channel');
         $channelExpectation->andReturn($log);
 

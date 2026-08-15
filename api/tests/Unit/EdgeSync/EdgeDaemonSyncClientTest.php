@@ -86,17 +86,17 @@ class EdgeDaemonSyncClientTest extends TestCase
     public function test_push_posts_pending_queue_items_to_cloud_and_marks_them_synced(): void
     {
         $item = SyncQueue::create([
-            'edge_node_id'  => self::NODE_ID,
-            'entity_type'   => 'attendance_logs',
-            'entity_id'     => '22222222-2222-2222-2222-222222222222',
-            'operation'     => 'create',
-            'payload'       => ['employee_id' => 'emp-1', 'check_in' => '2026-07-26T08:00:00Z'],
-            'status'        => 'pending',
+            'edge_node_id' => self::NODE_ID,
+            'entity_type' => 'attendance_logs',
+            'entity_id' => '22222222-2222-2222-2222-222222222222',
+            'operation' => 'create',
+            'payload' => ['employee_id' => 'emp-1', 'check_in' => '2026-07-26T08:00:00Z'],
+            'status' => 'pending',
             'attempt_count' => 0,
         ]);
 
         Http::fake([
-            self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/push' => Http::response(['queued' => 1], 200),
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/push' => Http::response(['queued' => 1], 200),
         ]);
 
         $result = $this->client()->push();
@@ -104,8 +104,8 @@ class EdgeDaemonSyncClientTest extends TestCase
         $this->assertSame(['sent' => 1, 'failed' => 0], $result);
 
         Http::assertSent(function ($request) {
-            return $request->url() === self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/push'
-                && $request->hasHeader('Authorization', 'Bearer ' . self::EDGE_TOKEN)
+            return $request->url() === self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/push'
+                && $request->hasHeader('Authorization', 'Bearer '.self::EDGE_TOKEN)
                 && $request['records'][0]['entity_type'] === 'attendance_logs'
                 && $request['records'][0]['entity_id'] === '22222222-2222-2222-2222-222222222222';
         });
@@ -117,17 +117,17 @@ class EdgeDaemonSyncClientTest extends TestCase
     public function test_push_marks_items_pending_for_retry_on_transient_cloud_failure(): void
     {
         $item = SyncQueue::create([
-            'edge_node_id'  => self::NODE_ID,
-            'entity_type'   => 'absences',
-            'entity_id'     => '33333333-3333-3333-3333-333333333333',
-            'operation'     => 'create',
-            'payload'       => ['employee_id' => 'emp-2'],
-            'status'        => 'pending',
+            'edge_node_id' => self::NODE_ID,
+            'entity_type' => 'absences',
+            'entity_id' => '33333333-3333-3333-3333-333333333333',
+            'operation' => 'create',
+            'payload' => ['employee_id' => 'emp-2'],
+            'status' => 'pending',
             'attempt_count' => 1,
         ]);
 
         Http::fake([
-            self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/push' => Http::response(['error' => 'unavailable'], 503),
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/push' => Http::response(['error' => 'unavailable'], 503),
         ]);
 
         $result = $this->client()->push();
@@ -142,17 +142,17 @@ class EdgeDaemonSyncClientTest extends TestCase
     public function test_push_marks_item_failed_after_five_attempts(): void
     {
         $item = SyncQueue::create([
-            'edge_node_id'  => self::NODE_ID,
-            'entity_type'   => 'absences',
-            'entity_id'     => '44444444-4444-4444-4444-444444444444',
-            'operation'     => 'create',
-            'payload'       => ['employee_id' => 'emp-3'],
-            'status'        => 'pending',
+            'edge_node_id' => self::NODE_ID,
+            'entity_type' => 'absences',
+            'entity_id' => '44444444-4444-4444-4444-444444444444',
+            'operation' => 'create',
+            'payload' => ['employee_id' => 'emp-3'],
+            'status' => 'pending',
             'attempt_count' => 4,
         ]);
 
         Http::fake([
-            self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/push' => Http::response(['error' => 'unavailable'], 503),
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/push' => Http::response(['error' => 'unavailable'], 503),
         ]);
 
         $this->client()->push();
@@ -173,8 +173,8 @@ class EdgeDaemonSyncClientTest extends TestCase
     public function test_pull_requests_delta_from_cloud_with_bearer_token(): void
     {
         Http::fake([
-            self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/pull' => Http::response([
-                'since'    => '2026-07-25T00:00:00Z',
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/pull' => Http::response([
+                'since' => '2026-07-25T00:00:00Z',
                 'entities' => [],
             ], 200),
         ]);
@@ -184,8 +184,8 @@ class EdgeDaemonSyncClientTest extends TestCase
         $this->assertSame(['received' => 0], $result);
 
         Http::assertSent(function ($request) {
-            return $request->url() === self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/pull'
-                && $request->hasHeader('Authorization', 'Bearer ' . self::EDGE_TOKEN)
+            return $request->url() === self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/pull'
+                && $request->hasHeader('Authorization', 'Bearer '.self::EDGE_TOKEN)
                 && $request->method() === 'GET';
         });
     }
@@ -193,7 +193,7 @@ class EdgeDaemonSyncClientTest extends TestCase
     public function test_pull_returns_zero_received_on_cloud_failure(): void
     {
         Http::fake([
-            self::CLOUD_URL . '/api/v1/edge-node/' . self::NODE_ID . '/pull' => Http::response(['error' => 'invalid token'], 401),
+            self::CLOUD_URL.'/api/v1/edge-node/'.self::NODE_ID.'/pull' => Http::response(['error' => 'invalid token'], 401),
         ]);
 
         $result = $this->client()->pull();

@@ -252,4 +252,3 @@ class FeatureTest extends TestCase
         $this->assertNull($feature->company_id);
     }
 }
-

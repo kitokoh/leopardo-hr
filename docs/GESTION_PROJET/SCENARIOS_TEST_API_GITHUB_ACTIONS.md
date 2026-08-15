@@ -1356,3 +1356,9 @@ Note 2026-08-14 (#1815) : interface admin des cotisations sociales + simulation 
 - Couverture : `SocialContributionAdminControllerTest` (3 tests) + `PayrollSimulationControllerTest` étendu.
 Note 2026-08-14 (#1817) : archivage automatique des bulletins PDF dans le Cabinet employé. `GET /me/pay-slips/{slip}/document` (nouvel endpoint, propriétaire ou manager ; isolation tenant 404 ; repli sur le PDF standard si le run n'est pas clôturé) ; suppression d'un `CabinetDocument` `read_only` → 403. Scénarios : après `lock()`, un document par bulletin (audit `payslip_archived`), double exécution du job → pas de doublon, employé d'une autre société → 404. Couverture : `PaySlipCabinetArchiveTest` (4 tests).
  (feat(payroll): archivage automatique bulletin PDF dans le Cabinet employé après clôture (Closes #1817))
+
+
+Note 2026-08-14 (issue #2172, QA pass) : durcissement isolation + contrat d'audit paie.
+- `PUT|DELETE /api/v1/tax-slabs/{id}` (+ `/submit` et `/{id}/history`) : une ressource d'un AUTRE tenant répond désormais **404** (et non 403) — convention d'isolation `PayrollTenantIsolationTest` (le manager étranger ne doit pas deviner l'existence de la ligne). Scénario : manager B `PUT /tax-slabs/{slab-de-A}` → 404, `DELETE` → 404, `history` → 404 ; manager A sur sa propre ligne → inchangé.
+- `POST /payroll-runs/{id}/calculate` : le run persiste désormais `rules_version`, `rules_identifier` et `rules_period` des règles EFFECTIVES (les bulletins les portaient déjà — le run ne les avait jamais, d'où `NULL` dans `payroll_calculation_audits`). Scénario : après calcul, `GET /payroll/audit/{correlationId}` expose rules_version/rules_identifier non vides.
+- Couverture : `PayrollTenantIsolationTest`, `PayrollAuditTest`, `BiometricPurgeExpiredTest`, `SensitiveDataAccessAuditTest`, `QueueObservabilityApiTest`, `MigrationSchemaPlacementTest`, `CotisationSimulationTest`, `PayrollCalculationContractTest`.

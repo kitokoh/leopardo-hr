@@ -166,7 +166,21 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        foreach (['ML', 'BF', 'BJ', 'TG', 'NE'] as $memberCode) {
+        // #1829 : BF/ML sont passés pilot (CNSS BF / INPS ML avec taux légaux) ;
+        // seuls BJ/TG/NE restent sur le placeholder non plafonné.
+        foreach (['BF', 'ML'] as $memberCode) {
+            $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
+
+            $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
+            // Taux légaux par pays (#1829) : CNSS_BF_* / INPS_ML_* remplacent
+            // les codes génériques du placeholder CEDEAO.
+            $codes = array_column($rules->socialContributions(), 'code');
+            $this->assertNotContains('CNSS_CEDEAO_EMP', $codes, $memberCode);
+            $this->assertNotContains('CNSS_CEDEAO_PAT', $codes, $memberCode);
+            $this->assertFalse($rules->thirteenthMonthMandatory(), $memberCode);
+        }
+
+        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             // Placeholder intact : pas de barème légal, pas de CN, pas de
