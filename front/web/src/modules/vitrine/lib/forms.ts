@@ -159,6 +159,58 @@ export async function submitVerifyForm(
     };
   }
 }
+
+/**
+ * Statut de provisioning d'un essai guidé (issue #2469).
+ * Le backend expose GET /api/v1/trial/status?token=… (pending|ready|failed) ;
+ * on passe par le proxy same-origin /api/forms/trial-status pour éviter
+ * tout CORS et ne jamais exposer l'email côté client.
+ */
+export interface TrialStatusData {
+  status: "pending" | "ready" | "failed";
+  provisioned_at?: string | null;
+  login_url?: string;
+  message?: string;
+}
+
+export interface TrialStatusResponse {
+  success: boolean;
+  error?: string;
+  message?: string;
+  data?: TrialStatusData;
+}
+
+export async function fetchTrialStatus(
+  token: string
+): Promise<TrialStatusResponse> {
+  try {
+    const response = await fetch(`/api/forms/trial-status?token=${encodeURIComponent(token)}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const result = (await response.json()) as TrialStatusResponse;
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: result.error || "TRIAL_STATUS_UNAVAILABLE",
+        message: result.message || "Le statut de votre espace est indisponible.",
+      };
+    }
+
+    return result;
+  } catch (error) {
+    safeLog("Trial status error:", error);
+    return {
+      success: false,
+      error: "NETWORK_ERROR",
+      message: "Le statut de votre espace est momentanément indisponible.",
+    };
+  }
+}
 /**
  * Submit demo request form
  */
