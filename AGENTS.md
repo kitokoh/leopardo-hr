@@ -81,6 +81,7 @@ Protocol OBLIGATOIRE avant de commencer a coder :
 - Apres un merge dans `main`, supprimer la branche distante et nettoyer les branches locales devenues inutiles.
 - Ne jamais perdre les stashes existants. Verifier `git stash list` avant toute operation destructive.
 - Chaque changement de comportement, migration, CI ou procedure doit avoir une entree `CHANGELOG.md`.
+- **CHANGELOG.md (issue #2417)** : toute PR ajoute son entree sous `## [Unreleased]` avec la categorie adaptee (`### Added` / `### Changed` / `### Fixed` / `### Removed`) — Keep a Changelog. Les sections versionnees (`## [x.y.z] - date`) sont creees a la release ; l'historique integral vit dans `CHANGELOG_ARCHIVE.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
 
 ## 🗺️ Cartographie de l'Ecosysteme Leopardo RH (A respecter strictement)
