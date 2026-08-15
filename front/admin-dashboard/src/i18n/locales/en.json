@@ -255,7 +255,8 @@
       "exportInProgress": "Export in progress...",
       "exportDone": "Export completed",
       "exportError": "Export failed",
-      "selectionExportDone": "Selection export completed"
+      "selectionExportDone": "Selection export completed",
+      "bulkDone": "Bulk action completed"
     },
     "confirm": {
       "delete": "Are you sure you want to delete :name?"
@@ -263,6 +264,7 @@
     "errors": {
       "name_required": "The full name is required.",
       "password_required": "The password is required.",
+      "password_min": "Password must contain at least 8 characters.",
       "fix_fields": "Please fix the highlighted fields"
     }
   },
