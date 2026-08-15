@@ -43,7 +43,11 @@ export const useDashboardStore = defineStore('dashboard', () => {
   })
 
   const criticalAlerts = computed(() => {
-    return systemAlerts.value.filter(alert => alert.level === 'critical')
+    // Garde de forme : ne filtre que si systemAlerts est bien un tableau
+    // (voir #2747 — l'enveloppe {data:[...]} aurait pu s'y glisser).
+    return Array.isArray(systemAlerts.value)
+      ? systemAlerts.value.filter(alert => alert.level === 'critical')
+      : []
   })
 
   // Actions
@@ -57,8 +61,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
       ])
 
       stats.value = statsResponse.data
-      recentActivities.value = activitiesResponse.data
-      systemAlerts.value = alertsResponse.data
+      // Issue #2747 — les endpoints /admin/dashboard/{activities,alerts} renvoient
+      // une enveloppe Laravel {data: [...]} : déballer avant d'affecter, sinon
+      // criticalAlerts() (filter) explose sur l'objet enveloppe → badge alertes /
+      // SystemAlertsOverlay cassés sur le happy path connecté.
+      recentActivities.value = activitiesResponse.data?.data ?? []
+      systemAlerts.value = alertsResponse.data?.data ?? []
       lastUpdated.value = new Date()
 
     } catch (error) {
@@ -82,13 +90,18 @@ export const useDashboardStore = defineStore('dashboard', () => {
   async function dismissAlert(alertId) {
     try {
       await api.post(`/admin/dashboard/alerts/${alertId}/dismiss`)
-      systemAlerts.value = systemAlerts.value.filter(alert => alert.id !== alertId)
+      if (Array.isArray(systemAlerts.value)) {
+        systemAlerts.value = systemAlerts.value.filter(alert => alert.id !== alertId)
+      }
     } catch (error) {
       console.error('Erreur lors de la suppression de l\'alerte:', error)
     }
   }
 
   function addRealtimeActivity(activity) {
+    if (!Array.isArray(recentActivities.value)) {
+      recentActivities.value = []
+    }
     recentActivities.value.unshift(activity)
     // Garder seulement les 50 dernières activités
     if (recentActivities.value.length > 50) {

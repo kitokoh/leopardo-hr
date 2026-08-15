@@ -93,10 +93,10 @@ class CemacRulesUnitTest extends TestCase
         $ga = (new CemacPayrollRules)->forMemberCountry('GA');
         $this->assertSame('pilot', $ga->confidenceLevel());
         $this->assertCount(8, $ga->taxSlabs());
-
-        $this->assertCount(8, $ga->taxSlabs());
         $this->assertSame('pilot', $ga->confidenceLevel());
-        $this->assertSame(30.0, $ga->noticePeriodDays(3.0));
+        // Préavis OHADA 1 mois (30 j calendaires) converti en jours ouvrés
+        // (#2219/#2280, même conversion que CM/GA/CG) → 22 j ouvrés.
+        $this->assertSame(22.0, $ga->noticePeriodDays(3.0));
 
         // CNSS GA (2 000 000 < plafond 3 000 000) : salarié 2,5 % = 50 000 ;
         // patronal (5 % + 8 %) + AT 3 % = 260 000 + 60 000 = 320 000.

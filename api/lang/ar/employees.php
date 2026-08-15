@@ -1,6 +1,12 @@
 <?php
 
 return [
+'work_state_offline' => 'غير متصل',
+    'work_state_leave' => 'في إجازة',
+    'work_state_absent' => 'غائب',
+    'work_state_break' => 'في استراحة',
+    'work_state_mission' => 'في مهمة',
+    'work_state_present' => 'حاضر',
     // Rôles
     'role_manager' => 'مدير',
     'role_employee' => 'موظف',

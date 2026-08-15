@@ -124,6 +124,9 @@ import {
   AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon
 } from '@heroicons/vue/24/outline'
 import api, { downloadApiFile } from '@/services/api'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
@@ -165,9 +168,13 @@ const exportStatusMap = {
 async function downloadReport(report) {
   report.downloading = true
   try {
+    // Issue #2710 — état de téléchargement réel (plus de setTimeout simulé).
     await downloadApiFile(`${report.endpoint}?format=${report.format}`, `${report.key}.${report.format}`)
+  } catch (error) {
+    console.error('Download failed:', error)
+    toast.error('Erreur lors du téléchargement du rapport')
   } finally {
-    setTimeout(() => { report.downloading = false }, 1000)
+    report.downloading = false
   }
 }
 
@@ -188,7 +195,9 @@ async function generateHrReport() {
 async function fetchHistory() {
   historyLoading.value = true
   try {
-    const res = await api.get('/v1/export/history').catch(() => ({ data: { data: [] } }))
+    // Issue #2710 — un échec backend s'affiche comme une erreur explicite
+    // (plus de catch silencieux qui ressemble à « aucun export »).
+    const res = await api.get('/v1/export/history')
     exportHistory.value = res.data.data || res.data || []
   } finally {
     historyLoading.value = false

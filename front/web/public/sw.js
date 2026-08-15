@@ -11,9 +11,9 @@ const PRECACHE_ASSETS = [
   '/',
   '/offline',
   '/dashboard',
-  '/dashboard/attendance',
-  '/dashboard/absences',
-  '/dashboard/employees',
+  '/attendance',
+  '/absences',
+  '/employees',
   '/favicon.ico',
 ];
 
