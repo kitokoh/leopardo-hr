@@ -5,20 +5,24 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Modules\Notification\Domain\Models\AppNotification;
 use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class NotificationDispatcherTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
+
+    protected Company $company;
 
     protected function setUp(): void
     {
@@ -26,37 +30,21 @@ class NotificationDispatcherTest extends TestCase
         Config::set('services.firebase.project_id', 'test-project-id');
         Cache::put('firebase_access_token', 'mock-access-token', 3600);
 
-        // La table `app_notifications` n'est créée par aucune migration du
-        // repo (dette #1813) : schéma manuel local au test (pattern
+        // La table `app_notifications` est créée par la migration tenant
+        // `2026_08_15_000002_create_app_notifications_table` (issue #2398,
+        // dette #1813) — pas de schéma manuel (pattern
         // TaxSlabValidationWorkflowTest).
-        if (! Schema::hasTable('app_notifications')) {
-            Schema::create('app_notifications', function ($table): void {
-                $table->bigIncrements('id');
-                $table->unsignedBigInteger('user_id')->index();
-                $table->string('type', 80);
-                $table->string('title', 255);
-                $table->text('body')->nullable();
-                $table->jsonb('data')->nullable();
-                $table->boolean('read')->default(false);
-                $table->timestamp('read_at')->nullable();
-                $table->string('action_url', 500)->nullable();
-                $table->timestampsTz();
-            });
-        }
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
     }
 
     private function makeEmployee(): Employee
     {
-        return Employee::query()->create([
-            'company_id' => '00000000-0000-0000-0000-000000000001',
-            'matricule' => 'DISPATCH-01',
-            'first_name' => 'Push',
-            'last_name' => 'Test',
-            'email' => 'push@test.test',
-            'password_hash' => bcrypt('password'),
-            'role' => 'employee',
-            'status' => 'active',
-        ]);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+
+        return $employee;
     }
 
     public function test_dispatch_creates_in_app_notification(): void
@@ -103,7 +91,7 @@ class NotificationDispatcherTest extends TestCase
         $dispatcher = new NotificationDispatcher(new PushNotificationService());
         $dispatcher->dispatch($employee->id, 'payroll_ready', 'Bulletin disponible', 'Votre bulletin est prêt.');
 
-        Http::assertSent(function ($request): bool {
+        Http::assertSent(function (PendingRequest $request): bool {
             return $request->url() === 'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send'
                 && $request['message']['token'] === 'fcm-token-1'
                 && $request['message']['notification']['title'] === 'Bulletin disponible';
