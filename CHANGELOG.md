@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+### Fixed
+- **fix(api): webhook email-bounce configurable (Closes #3058).** `services.mail_bounce_webhook.secret` n'était défini nulle part → 503 permanent malgré le fail-closed #2616. Ajout de la clé `config/services.php` (env `MAIL_BOUNCE_WEBHOOK_SECRET`) + entrée `.env.example` ; vide = refusé (défensif).
 
 - **fix(mobile): mark-all notifications → POST /notifications/mark-all-read (Closes #3005).** Les 3 apps appelaient POST /notifications/read-all (aucune route ne matche) → 405 sur « Tout marquer comme lu » ; aligné sur le canonique dashboard.php.
 - **fix(api): liste /employees — PII retirées de la projection (Closes #3309).** personal_email, recovery_email, personal_phone, adresse et contacts d'urgence exclus de la liste ; salaire conservé (écran équipe mobile manager) ; PII toujours sur /employees/{id}.
