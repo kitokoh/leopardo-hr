@@ -96,10 +96,26 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $this->requestTrialSignup->execute($validated);
+        $otpSent = $this->requestTrialSignup->execute($validated);
+
+        if ($otpSent === false) {
+            // #3057 : le lead est capturé mais aucun code n'a pu partir —
+            // réponse honnête (provisioned=false → l'UI affiche l'état
+            // « demande reçue, contact sous 24 h » au lieu d'un écran OTP).
+            return new JsonResponse([
+                'success' => true,
+                'provisioned' => false,
+                'message' => 'Votre demande a bien été enregistrée. Notre équipe vous contacte sous 24 h ouvrables.',
+                'data' => [
+                    'email' => $email,
+                    'status' => 'pending_fallback',
+                ],
+            ], 200);
+        }
 
         return new JsonResponse([
             'success' => true,
+            'provisioned' => true,
             'message' => 'Code de vérification envoyé.',
             'data' => [
                 'email' => $email,

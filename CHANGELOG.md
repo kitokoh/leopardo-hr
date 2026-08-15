@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 ### Fixed
+- **fix(api): essai self-service — échec d'envoi OTP rapporté honnêtement (Closes #3057).** `RequestTrialSignup::execute()` renvoie maintenant si le mail est parti ; le contrôleur répond `provisioned=false` + `status=pending_fallback` (message « contact sous 24 h ») au lieu d'un 200 « Code envoyé » mensonger. Test ajouté (échec mail simulé).
 - **fix(web): pricing — libellés FR en dur remplacés par le copy localisé (Closes #3443).** `100% Gratuit` / `Gratuit` / `Sans carte bancaire · Pour toujours` étaient codés en dur dans le template (affichés aussi en EN/TR/AR) ; ajout de `plans.freeBadge/freePriceLabel/freeNoCard` dans les 4 locales.
 - **fix(billing): essai 30 jours cohérent backend + réponse verify (Closes #3056, contribue #3012).** Offre canonique 30 j (spec #2909, vitrine #2972) : `VerifyTrialSignup` provisionne `subscription_end=+30j` et `trial_days=30` ; `ProvisionGuidedTrial` et `PlanSeeder` `trial_days=30` ; la réponse `POST /api/v1/trial/verify` annonce `days=30/ends_at=+30` (plus d'incohérence 14/30).
 - **fix(billing): durée d'essai unifiée 30 jours backend (Closes #3056, contribue #3012).** La réponse `POST /api/v1/trial/verify` annonçait `days=30` mais `ends_at=+14j` (incohérent) ; `ProvisionGuidedTrial` et `PlanSeeder` provisionnaient 14j alors que l'offre canonique est 30j (spec #2909, #2721). Aligné : verify `days=30/ends_at+30`, `trial_days=30` partout côté backend.
