@@ -9,7 +9,7 @@ use App\Core\Auth\Interfaces\Api\V1\SSOController;
 use Illuminate\Support\Facades\Route;
 
 // Public: supported providers list
-Route::get('/sso/providers', [SSOController::class, 'providers']);
+Route::get('/sso/providers', [SSOController::class, 'providers'])->middleware('throttle:60,1');
 
 // Public: SSO callbacks (no auth required — these receive IdP responses)
 Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback']);
