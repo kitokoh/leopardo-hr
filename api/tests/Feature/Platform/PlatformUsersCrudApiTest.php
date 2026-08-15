@@ -19,7 +19,7 @@ use Tests\TestCase;
  * utilisateurs plateforme (public.users), réservée au super-admin, sans
  * jamais de suppression physique.
  */
-class PlatformUsersApiTest extends TestCase
+class PlatformUsersCrudApiTest extends TestCase
 {
     use RefreshTenantDatabase;
 
