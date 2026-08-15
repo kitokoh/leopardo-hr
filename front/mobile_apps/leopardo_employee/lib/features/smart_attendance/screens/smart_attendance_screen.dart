@@ -8,14 +8,14 @@ import 'package:leopardo_employee/features/smart_attendance/data/models/smart_at
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
 import 'package:leopardo_employee/features/smart_attendance/screens/attendance_mode_picker_screen.dart';
 
-/// Ã‰cran principal du module Pointage Intelligent.
+/// Écran principal du module Pointage Intelligent.
 ///
 /// Affiche :
 /// - Le mode de pointage effectif (GPS auto / QR / Manuel)
-/// - Si mode GPS : statut zone (dedans/dehors) avec badge colorÃ©
-/// - Bouton d'activation du monitoring GPS si non dÃ©marrÃ©
-/// - Liste des derniÃ¨res sessions GPS avec badge de statut
-/// - Bouton pour changer sa prÃ©fÃ©rence (si non forcÃ© par l'entreprise)
+/// - Si mode GPS : statut zone (dedans/dehors) avec badge coloré
+/// - Bouton d'activation du monitoring GPS si non démarré
+/// - Liste des dernières sessions GPS avec badge de statut
+/// - Bouton pour changer sa préférence (si non forcé par l'entreprise)
 class SmartAttendanceScreen extends ConsumerStatefulWidget {
   const SmartAttendanceScreen({super.key});
 
@@ -25,7 +25,7 @@ class SmartAttendanceScreen extends ConsumerStatefulWidget {
 }
 
 class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
-  // Palette de couleurs cohÃ©rente avec le reste de l'app
+  // Palette de couleurs cohérente avec le reste de l'app
   static const Color _bg = AppColors.mobileDarkBg;
   static const Color _card = AppColors.mobileDarkSurface;
   static const Color _text = AppColors.mobileDarkText;
@@ -58,7 +58,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
           ),
         ),
         actions: [
-          // Bouton de rafraÃ®chissement
+          // Bouton de rafraîchissement
           IconButton(
             tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded, color: _muted),
@@ -133,14 +133,14 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
           const SizedBox(height: 20),
         ],
 
-        // Titre section sessions rÃ©centes
+        // Titre section sessions récentes
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Sessions rÃ©centes',
+                'Sessions récentes',
                 style: TextStyle(
                   color: _text,
                   fontWeight: FontWeight.w600,
@@ -179,7 +179,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
     );
   }
 
-  /// Ouvre l'Ã©cran de sÃ©lection du mode de pointage.
+  /// Ouvre l'écran de sélection du mode de pointage.
   Future<void> _openModePicker(String currentMode) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
@@ -187,7 +187,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
       ),
     );
 
-    // Si l'utilisateur a sauvegardÃ© un nouveau mode, rafraÃ®chir
+    // Si l'utilisateur a sauvegardé un nouveau mode, rafraîchir
     if (result == true) {
       ref.invalidate(smartAttendanceConfigProvider);
     }
@@ -295,7 +295,7 @@ class _ModeStatusCard extends StatelessWidget {
                   ],
                 ),
               ),
-              // Badge "ImposÃ©" si mode forcÃ©
+              // Badge "Imposé" si mode forcé
               if (config.hasForced)
                 Container(
                   padding:
@@ -305,7 +305,7 @@ class _ModeStatusCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'ImposÃ©',
+                    'Imposé',
                     style: TextStyle(
                       color: _modeColor,
                       fontSize: 11,
@@ -316,7 +316,7 @@ class _ModeStatusCard extends StatelessWidget {
             ],
           ),
 
-          // Bouton de changement de mode si autorisÃ©
+          // Bouton de changement de mode si autorisé
           if (canChangeMode) ...[
             const SizedBox(height: 14),
             const Divider(color: AppColors.mobileDarkBorder, height: 1),
@@ -346,7 +346,7 @@ class _ModeStatusCard extends StatelessWidget {
   }
 }
 
-/// Carte affichant l'Ã©tat de la zone GPS et les contrÃ´les de monitoring.
+/// Carte affichant l'état de la zone GPS et les contrôles de monitoring.
 class _GpsZoneStatusCard extends StatelessWidget {
   final SmartAttendanceConfig config;
   final ActiveGeoSessionState sessionState;
@@ -403,7 +403,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
           // Badge statut zone : actif/inactif
           Row(
             children: [
-              // Indicateur d'activitÃ©
+              // Indicateur d'activité
               Container(
                 width: 10,
                 height: 10,
@@ -450,7 +450,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                       color: _green, size: 16),
                   const SizedBox(width: 8),
                   Text(
-                    'PrÃ©sence en cours depuis ${_formatTime(sessionState.activeSession!.startedAt)}',
+                    'Présence en cours depuis ${_formatTime(sessionState.activeSession!.startedAt)}',
                     style: const TextStyle(
                       color: _green,
                       fontSize: 12,
@@ -480,7 +480,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'La zone GPS de votre entreprise n\'est pas encore configurÃ©e.',
+                      'La zone GPS de votre entreprise n\'est pas encore configurée.',
                       style: TextStyle(color: AppColors.mobileAccentOrange, fontSize: 12),
                     ),
                   ),
@@ -491,7 +491,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Bouton dÃ©marrer / arrÃªter
+          // Bouton démarrer / arrêter
           if (config.hasValidZone)
             SizedBox(
               width: double.infinity,
@@ -505,7 +505,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                 ),
                 label: Text(
                   isMonitoring
-                      ? 'DÃ©sactiver le GPS automatique'
+                      ? 'Désactiver le GPS automatique'
                       : 'Activer le GPS automatique',
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
@@ -563,15 +563,15 @@ class _SessionCard extends StatelessWidget {
   String get _statusLabel {
     switch (session.status) {
       case 'approved':
-        return 'ApprouvÃ©e';
+        return 'Approuvée';
       case 'detected':
-        return 'DÃ©tectÃ©e';
+        return 'Détectée';
       case 'pending_validation':
         return 'En validation';
       case 'rejected':
-        return 'RejetÃ©e';
+        return 'Rejetée';
       case 'cancelled':
-        return 'AnnulÃ©e';
+        return 'Annulée';
       default:
         return session.status;
     }
@@ -685,7 +685,7 @@ class _SessionCard extends StatelessWidget {
   }
 }
 
-/// Panneau d'erreur rÃ©utilisable.
+/// Panneau d'erreur réutilisable.
 class _ErrorPanel extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
@@ -712,7 +712,7 @@ class _ErrorPanel extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('RÃ©essayer'),
+              label: const Text('Réessayer'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.mobileAccentBlue,
                 foregroundColor: Colors.white,
@@ -725,7 +725,7 @@ class _ErrorPanel extends StatelessWidget {
   }
 }
 
-/// BanniÃ¨re d'erreur inline.
+/// Bannière d'erreur inline.
 class _ErrorBanner extends StatelessWidget {
   final String message;
 
@@ -749,7 +749,7 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
-/// Panneau affichÃ© quand la liste des sessions est vide.
+/// Panneau affiché quand la liste des sessions est vide.
 class _EmptySessionsPanel extends StatelessWidget {
   const _EmptySessionsPanel();
 

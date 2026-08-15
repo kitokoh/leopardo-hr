@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.pricing.keywords,
   ogImage: pageMetadata.pricing.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/pricing',
+  canonical: `${SITE_URL}/pricing`,
   robots: 'index, follow',
 });
 
