@@ -261,46 +261,6 @@ type CopyTree = {
     saving: string;
     cancel: string;
   };
-  edgeNodesPage: {
-    title: string;
-    subtitle: string;
-    loadError: string;
-    syncError: string;
-    createError: string;
-    newNode: string;
-    nodeCreatedTitle: string;
-    copy: string;
-    statTotalNodes: string;
-    statOnline: string;
-    statOffline: string;
-    statValidLicenses: string;
-    configuredNodesTitle: string;
-    loadingNodes: string;
-    noNodes: string;
-    licenseExpired: string;
-    addressMissing: string;
-    lastSyncLabel: string;
-    lastSyncNever: string;
-    statusOnline: string;
-    statusOffline: string;
-    syncing: string;
-    sync: string;
-    modeCloud: string;
-    modeHybrid: string;
-    modeOffline: string;
-    modalTitle: string;
-    siteNameLabel: string;
-    siteNamePlaceholder: string;
-    siteAddressLabel: string;
-    siteAddressPlaceholder: string;
-    modeLabel: string;
-    modeHybridOption: string;
-    modeOfflineOption: string;
-    modeCloudOption: string;
-    cancel: string;
-    createNode: string;
-    syncCompleteMessage: string;
-  };
   developerSettingsPage: {
     title: string;
     subtitle: string;
@@ -589,46 +549,6 @@ const copy: Record<AppLocale, CopyTree> = {
       saving: 'Enregistrement…',
       cancel: 'Annuler',
     },
-    edgeNodesPage: {
-      title: 'Edge Nodes',
-      subtitle: 'Gerez les noeuds locaux pour le mode offline-first : etat de connexion, licences et synchronisation.',
-      loadError: 'Impossible de charger les Edge nodes.',
-      syncError: 'Erreur lors de la synchronisation',
-      createError: 'Erreur lors de la creation du node',
-      newNode: 'Nouveau Node',
-      nodeCreatedTitle: 'Node cree ! Copiez et executez cette commande sur votre serveur local :',
-      copy: 'Copier',
-      statTotalNodes: 'Total nodes',
-      statOnline: 'En ligne',
-      statOffline: 'Hors ligne',
-      statValidLicenses: 'Licences valides',
-      configuredNodesTitle: 'Noeuds configures',
-      loadingNodes: 'Chargement des Edge nodes...',
-      noNodes: 'Aucun Edge node configure. Creez un nouveau node pour activer le mode offline-first.',
-      licenseExpired: 'Licence expiree',
-      addressMissing: 'Adresse non renseignee',
-      lastSyncLabel: 'Derniere sync : ',
-      lastSyncNever: 'jamais',
-      statusOnline: 'En ligne',
-      statusOffline: 'Hors ligne',
-      syncing: 'Sync...',
-      sync: 'Sync',
-      modeCloud: 'Cloud',
-      modeHybrid: 'Hybride',
-      modeOffline: 'Offline',
-      modalTitle: 'Nouveau Edge Node',
-      siteNameLabel: 'Nom du site',
-      siteNamePlaceholder: 'ex: Entrepot Nord',
-      siteAddressLabel: 'Adresse du site',
-      siteAddressPlaceholder: 'ex: Zone Industrielle, Batiment A',
-      modeLabel: 'Mode',
-      modeHybridOption: 'Hybride (recommande)',
-      modeOfflineOption: 'Offline total',
-      modeCloudOption: 'Cloud uniquement',
-      cancel: 'Annuler',
-      createNode: 'Creer le node',
-      syncCompleteMessage: 'Sync termine — envoyes: {sent}, conflits: {conflicts}',
-    },
     developerSettingsPage: {
       title: 'Espace Développeur',
       subtitle: 'Gerez vos cles API et vos webhooks pour integrer Leopardo RH a vos outils.',
@@ -914,46 +834,6 @@ const copy: Record<AppLocale, CopyTree> = {
       save: 'حفظ',
       saving: 'جار التنفيذ…',
       cancel: 'إلغاء',
-    },
-    edgeNodesPage: {
-      title: 'عقد Edge',
-      subtitle: 'إدارة العقد المحلية لوضع offline-first: حالة الاتصال، التراخيص والمزامنة.',
-      loadError: 'تعذر تحميل عقد Edge.',
-      syncError: 'خطأ أثناء المزامنة',
-      createError: 'خطأ أثناء إنشاء العقدة',
-      newNode: 'عقدة جديدة',
-      nodeCreatedTitle: 'تم إنشاء العقدة! انسخ ونفّذ هذا الأمر على خادمك المحلي:',
-      copy: 'نسخ',
-      statTotalNodes: 'إجمالي العقد',
-      statOnline: 'متصل',
-      statOffline: 'منقطع',
-      statValidLicenses: 'تراخيص سارية',
-      configuredNodesTitle: 'العقد المكوّنة',
-      loadingNodes: 'تحميل عقد Edge...',
-      noNodes: 'لا توجد عقدة Edge مكوّنة. أنشئ عقدة جديدة لتفعيل وضع offline-first.',
-      licenseExpired: 'الترخيص منتهٍ',
-      addressMissing: 'العنوان لم يرد',
-      lastSyncLabel: 'آخر مزامنة: ',
-      lastSyncNever: 'لم يجرِ',
-      statusOnline: 'متصل',
-      statusOffline: 'منقطع',
-      syncing: 'جارٍ المزامنة...',
-      sync: 'مزامنة',
-      modeCloud: 'سحابي',
-      modeHybrid: 'هجين',
-      modeOffline: 'دون اتصال',
-      modalTitle: 'عقدة Edge جديدة',
-      siteNameLabel: 'اسم الموقع',
-      siteNamePlaceholder: 'مثلاً: مستودع الشمال',
-      siteAddressLabel: 'عنوان الموقع',
-      siteAddressPlaceholder: 'مثلاً: المنطقة الصناعية، المبنى A',
-      modeLabel: 'الوضع',
-      modeHybridOption: 'هجين (موصى به)',
-      modeOfflineOption: 'دون اتصال كلي',
-      modeCloudOption: 'سحابي فقط',
-      cancel: 'إلغاء',
-      createNode: 'إنشاء العقدة',
-      syncCompleteMessage: 'اكتملت المزامنة — مرسل: {sent}، التعارضات: {conflicts}',
     },
     developerSettingsPage: {
       title: 'إعدادات المطور',
@@ -1241,46 +1121,6 @@ const copy: Record<AppLocale, CopyTree> = {
       saving: 'Kaydediliyor…',
       cancel: 'Vazgec',
     },
-    edgeNodesPage: {
-      title: 'Edge Node\'lari',
-      subtitle: 'Offline-first modu icin yerel node\'lari yonetin: baglanti durumu, lisanslar ve senkronizasyon.',
-      loadError: 'Edge node\'lari yuklenemedi.',
-      syncError: 'Senkronizasyon sirasinda hata olustu',
-      createError: 'Node olusturma sirasinda hata olustu',
-      newNode: 'Yeni Node',
-      nodeCreatedTitle: 'Node olusturuldu! Bu komutu yerel sunucunuzda kopyalayip calistirin:',
-      copy: 'Kopyala',
-      statTotalNodes: 'Toplam node',
-      statOnline: 'Cevrimici',
-      statOffline: 'Cevrimdisi',
-      statValidLicenses: 'Gecerli lisanslar',
-      configuredNodesTitle: 'Yapilandirilmis node\'lar',
-      loadingNodes: 'Edge node\'lari yukleniyor...',
-      noNodes: 'Yapilandirilmis Edge node yok. Offline-first modunu etkinlestirmek icin yeni bir node olusturun.',
-      licenseExpired: 'Lisans suresi doldu',
-      addressMissing: 'Adres belirtilmedi',
-      lastSyncLabel: 'Son senkronizasyon: ',
-      lastSyncNever: 'hicbir zaman',
-      statusOnline: 'Cevrimici',
-      statusOffline: 'Cevrimdisi',
-      syncing: 'Senkronize ediliyor...',
-      sync: 'Senkronize et',
-      modeCloud: 'Bulut',
-      modeHybrid: 'Hibrit',
-      modeOffline: 'Cevrimdisi',
-      modalTitle: 'Yeni Edge Node',
-      siteNameLabel: 'Site adi',
-      siteNamePlaceholder: 'orn: Kuzey Deposu',
-      siteAddressLabel: 'Site adresi',
-      siteAddressPlaceholder: 'orn: Sanayi Bolgesi, A Blok',
-      modeLabel: 'Mod',
-      modeHybridOption: 'Hibrit (onerilir)',
-      modeOfflineOption: 'Tam cevrimdisi',
-      modeCloudOption: 'Sadece bulut',
-      cancel: 'Vazgec',
-      createNode: 'Node olustur',
-      syncCompleteMessage: 'Senkronizasyon tamamlandi — gonderilen: {sent}, catisma: {conflicts}',
-    },
     developerSettingsPage: {
       title: 'Gelistirici Alani',
       subtitle: 'Leopardo HR\'yi araclarinizla entegre etmek icin API anahtarlarinizi ve webhook\'larinizi yonetin.',
@@ -1566,46 +1406,6 @@ const copy: Record<AppLocale, CopyTree> = {
       save: 'Save',
       saving: 'Saving…',
       cancel: 'Cancel',
-    },
-    edgeNodesPage: {
-      title: 'Edge Nodes',
-      subtitle: 'Manage local nodes for offline-first mode: connection status, licenses and synchronization.',
-      loadError: 'Unable to load Edge nodes.',
-      syncError: 'Error during synchronization',
-      createError: 'Error while creating the node',
-      newNode: 'New Node',
-      nodeCreatedTitle: 'Node created! Copy and run this command on your local server:',
-      copy: 'Copy',
-      statTotalNodes: 'Total nodes',
-      statOnline: 'Online',
-      statOffline: 'Offline',
-      statValidLicenses: 'Valid licenses',
-      configuredNodesTitle: 'Configured nodes',
-      loadingNodes: 'Loading Edge nodes...',
-      noNodes: 'No Edge node configured. Create a new node to enable offline-first mode.',
-      licenseExpired: 'License expired',
-      addressMissing: 'No address provided',
-      lastSyncLabel: 'Last sync: ',
-      lastSyncNever: 'never',
-      statusOnline: 'Online',
-      statusOffline: 'Offline',
-      syncing: 'Syncing...',
-      sync: 'Sync',
-      modeCloud: 'Cloud',
-      modeHybrid: 'Hybrid',
-      modeOffline: 'Offline',
-      modalTitle: 'New Edge Node',
-      siteNameLabel: 'Site name',
-      siteNamePlaceholder: 'e.g. North Warehouse',
-      siteAddressLabel: 'Site address',
-      siteAddressPlaceholder: 'e.g. Industrial Zone, Building A',
-      modeLabel: 'Mode',
-      modeHybridOption: 'Hybrid (recommended)',
-      modeOfflineOption: 'Fully offline',
-      modeCloudOption: 'Cloud only',
-      cancel: 'Cancel',
-      createNode: 'Create node',
-      syncCompleteMessage: 'Sync complete — sent: {sent}, conflicts: {conflicts}',
     },
     developerSettingsPage: {
       title: 'Developer Area',
