@@ -1,37 +1,46 @@
 # QA Session — Expert 14 (2026-08-15)
 
-> Audit 360° + consolidation + implémentation. Spec-kit : `.specify/features/3834-cta-e2e-i18n/`, `.specify/features/3810-exception-renderer/`.
+> Audit 360° + consolidation + implémentation. Spec-kit : `.specify/features/4035-signupform-flaky-test/` et `.specify/features/3971-web-offline-tests/`.
 
-## Phase 1 — Audit (constats vérifiés)
+## Exécution
+
+### Phase 1 — Audit (constats vérifiés)
 
 | Constat | Preuve | Statut |
 |---|---|---|
-| OpenAPI CI rouge sur main — clés dupliquées (3 chemins edge + `/admin/training/courses`) | `npx @redocly/cli lint` → *duplicated mapping key (356:3)* | NOUVEAU → #3856 |
-| `sha256.txt` documenté `text/plain` mais réponse JSON (verrouillée par test) | spec vs `EdgeDownloadController::sha256()` | #3856 |
-| `edge/install.sh` parse le manifeste JSON en texte → hash jamais extrait → install KO en réel | simulation awk sur JSON réel | NOUVEAU → #4007 |
-| E2E `client-feature-gates` : attentes sans apostrophe vs catalogues (`n est` vs `n'est`) | Playwright chromium — 2 tests rouges reproduits | #3834 |
-| Renderer `HttpExceptionInterface` expose encore `getMessage()` brut (résiduel #3877) | `git show main:api/bootstrap/app.php` | NOUVEAU → #4044 |
-| Gardes dev-hub (hygiène, env, migrations, openapi reverse) | scripts locaux | ✅ positifs |
-| Widget « Nectios » sur la landing | screenshot | faux positif (extension navigateur) |
+| **SignupForm.test.tsx flaky sur main** — « polls pending → ready » échoue ~1 run/8 en suite complète | `npx jest` ×8 (instrumentation : `startTracking` s'exécute mais l'étape tracking ne monte jamais) | NOUVEAU → issue **#4035** + fix |
+| **web-offline zéro test** — workflow « lint + build + tests » sans test, `package.json` sans script test | `.github/workflows/web-offline-ci.yml` + `front/web-offline/package.json` | NOUVEAU → issue **#3971** + fix |
+| Vitrine lint/tsc/tests : verts sur main après fix #4035 | `npm run lint`, `npx tsc --noEmit`, `npm test` (351 tests) | ✅ positif |
+| Admin lint/build : verts | `npm run lint`, `npm run build` | ✅ positif |
+| web-offline lint/tsc/build : verts | idem | ✅ positif |
+| Kiosk : 27 tests pytest verts | `pytest tests/` | ✅ positif |
+| Gardes dev-hub (hygiene, manifest routes, firebase, canonical) : vertes | exécution locale des 6 gardes | ✅ positif |
+| API : plus de fuite `getMessage()` résiduelle (plateforme incluse) | grep statique | ✅ positif (pattern #3725 respecté) |
+| OpenAPI drift : connu et documenté | `check-openapi-route-coverage.py` | connue → #2638/#2675/#3233 |
+| Factories `@extends` #3830 : déjà mergé par agent parallèle (a2163848) | rebase → « patch already upstream » | fermé (doublon) |
+| #3819 PHP 8.4 : déjà traité (composer.json `^8.4.1`, issue fermée) | code + issue | fermé |
 
-## Phase 2 — Consolidation
+### Phase 2 — Consolidation
 
-- **PRs réalignées sur main** : #3828 (routes manifest HR), #3832 (AI Voice), #3839 (marketing auth) — mergées par l'orchestrateur après mes rebases.
-- **Branches de PR mises à jour** (merge main + résolution conflits) : #4027 (checksums i18n — conflit fr.json résolu « union clés, branche gagne »), #4006 (middleware api.manager — union des middlewares cameras.php), #4049 (pricing canonique — conflit FAQ pricing/page.tsx résolu en faveur de `getPricingFaq()`), #4043 (Google Sign-In).
-- **Leçon dure** : la PR #4000 (Closes #3834) a été mergée avec **uniquement le commit marker** — un force-push concurrent sur la branche a éclipsé l'implémentation entre ma vérification locale et le merge. Contrôle post-merge systématique : `git show main:front/web/e2e/client-feature-gates.spec.ts | grep "n est pas inclus"` → toujours présent → re-livraison via PR #4051.
+- **#3811 (races check-then-create, 6 sites)** : implémenté (migration index unique `commissions_payment_id_unique`, catch 23505 ×6, tests de course par hook Eloquent `creating`), PR **#3849 MERGÉE** dans main (0e5a31ab).
+- **#3830 (7 factories sans `@extends`)** : implémenté puis **PR fermée comme doublon** — le fix identique a été mergé par un agent parallèle (a2163848). Protocole anti-doublon #2400 appliqué (commentaire de renvoi).
+- **#4035 (flaky SignupForm.test.tsx)** : causes racine instrumentées (AnimatePresence `mode="wait"` + RAF réelle capturée par framer-motion au chargement du module → fake timers impuissants ; `userEvent.click` sous fake timers intermittemment avalé). Fix test-only (mock framer-motion local, `fireEvent` synchrone, ordre employees-avant-role) → **12/12 runs verts**. PR **#4039**.
+- **#3971 (web-offline zéro test)** : extraction `src/lib/edge-health.ts` + `public/sw-strategies.js` (importScripts), 22 tests Vitest, étape `npm test` dans `web-offline-ci.yml`. PR **#4062**.
 
-## Phase 3 — Implémentation
+### Phase 3 — Implémentation des constats d'audit
 
-| PR | Sujet | Statut |
-|---|---|---|
-| #4016 | OpenAPI valide (doublons purgés, content-type sha256.txt) + install.sh JSON (Closes #3856, #4007) | mergée |
-| #4051 | CTA/E2E contrat stable + FeatureLockedPanel localisé 4 locales (Closes #3834) | ouverte |
-| #4045 | Renderer HttpException — sanitisation getMessage() (Closes #4044) | ouverte |
-| #4058 | Specs docs/specifications (#3834, #3856/#4007, #4044) | ouverte |
+Couvert par les fixes #4035 et #3971 ci-dessus (specs spec-kit créées pour les deux), plus :
+
+- **#3951 (double POST trial guided_trial → 2 tenants sandbox)** : dédup des lignes `trial_provisionings` pending (réutilisation du token, catch 23505, index unique partiel `(email) WHERE status='pending'`, migration 2026_08_15_000012). PR **#4074** + tests `TrialProvisioningDedupTest` (3 scénarios). Complémentaire de #3945 (anti-énumération, cas manager).
+- **#4044 (renderer HttpException getMessage brut)** : déjà implémenté et fermé par un agent parallèle (branche `fix/3810-exception-renderer` mergée) — vérifié sur main. Pas de doublon.
+
+## Rebase / résolution de conflits
+
+- `fix/4035-signupform-flaky-test` : rebasé sur main (orchestrateur), mergeable.
+- `fix/3971-web-offline-tests` : rebasé sur main après le merge #4061 (conflit CHANGELOG absorbé), mergeable.
 
 ## Notes pour les prochaines sessions
 
-- **Vérifier le contenu des merges, pas seulement l'état merged** : les force-push concurrents sur une branche partagée peuvent retirer l'implémentation avant le merge (cas #4000). Après merge, `git show <merge>:<fichier>` sur les fichiers clés.
-- CI toujours saturée : les checks peuvent rester pending 30 min+ ; ne pas re-pusher en boucle.
-- `npx @redocly/cli lint api/openapi.yaml` est un bon smoke de santé spec avant tout PR touchant openapi.yaml.
-- Les conflits i18n JSON se résolvent « union clés, branche gagne » (pattern établi).
+- CI GitHub Actions toujours en saturation : les PRs restent `blocked` le temps que les checks requis passent — ne pas confondre avec un vrai blocage.
+- Le backlog se renouvelle très vite (86+ issues ouvertes, numérotation ~4040) — toujours vérifier branches+PRs avant de claim (protocole #2400).
+- `jest.useFakeTimers()` en milieu de suite + framer-motion = piège connu (voir fix #4035) ; pour les composants animés, mock framer-motion local ou pragma jsdom.
