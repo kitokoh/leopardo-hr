@@ -62,8 +62,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/training/courses', [TrainingController::class, 'indexCourses']);
     Route::get('/training/courses/{trainingCourse}', [TrainingController::class, 'showCourse']);
     Route::get('/training/courses/{trainingCourse}/sessions', [TrainingController::class, 'indexSessions']);
-    Route::get('/training/sessions', [TrainingController::class, 'allSessions']);
-    Route::get('/training/enrollments', [TrainingController::class, 'allEnrollments']);
     Route::post('/training/sessions/{trainingSession}/enroll', [TrainingController::class, 'enroll']);
 
     // ── Loan read (employees can see their loans) ────────────────────────
@@ -126,7 +124,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // ── Training management ──────────────────────────────────────────
         // Issue #2225 : vues dashboard admin (listes globales sessions/inscriptions).
-        Route::get('/training/sessions', [TrainingController::class, 'indexAllSessions']);
+        Route::get('/training/sessions', [TrainingController::class, 'indexSessionsAll']);
         Route::get('/training/enrollments', [TrainingController::class, 'indexEnrollments']);
         Route::post('/training/courses', [TrainingController::class, 'storeCourse']);
         Route::put('/training/courses/{trainingCourse}', [TrainingController::class, 'updateCourse']);
