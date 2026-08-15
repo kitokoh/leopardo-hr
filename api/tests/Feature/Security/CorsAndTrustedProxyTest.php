@@ -44,6 +44,27 @@ class CorsAndTrustedProxyTest extends TestCase
         $this->assertContains('http://localhost:3000', $origins);
         $this->assertContains('http://localhost:3001', $origins);
     }
+
+    public function test_cors_whitelist_includes_cloudflare_pages_admin(): void
+    {
+        // Issue #2333 : le panneau admin déployé sur https://leo-admin.pages.dev
+        // ne recevait aucune en-tête Access-Control-Allow-Origin → toutes les
+        // requêtes navigateur échouaient (« Erreur de connexion »). L'origine
+        // stable doit rester dans l'allowlist explicite ET un pattern couvre
+        // les previews Cloudflare (*.pages.dev).
+        $origins = config('cors.allowed_origins');
+        $patterns = config('cors.allowed_origins_patterns');
+
+        $this->assertIsArray($origins);
+        $this->assertContains('https://leo-admin.pages.dev', $origins);
+
+        $this->assertIsArray($patterns);
+        $this->assertContains('https://*.pages.dev', $patterns);
+
+        foreach ($origins as $origin) {
+            $this->assertNotSame('*', $origin);
+        }
+    }
     public function test_trusts_x_forwarded_for(): void
     {
         // Render is the single edge proxy in front of this app; the request's

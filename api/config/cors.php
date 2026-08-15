@@ -39,11 +39,19 @@ return [
         'https://www.leopardo-rh.com',
         'https://app.leopardo-rh.com',
         'https://admin.leopardo-rh.com',
+        // Cloudflare Pages — panneau admin (leo-admin.pages.dev, cf.
+        // PILOTAGE.md / README) et previews de déploiement (issue #2333).
+        'https://leo-admin.pages.dev',
         env('ADMIN_DASHBOARD_URL'),
         env('CORS_EXTRA_ORIGIN'),
     ]),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        // Previews Cloudflare Pages (chaque PR déploie un sous-domaine
+        // aléatoire *.pages.dev) — l'allowlist explicite reste la règle pour
+        // les origines stables (audit API 2026-07-19, section 4).
+        'https://*.pages.dev',
+    ],
 
     // Explicit allow-list instead of '*': defence-in-depth so that a future
     // debug-time addition of '*' to allowed_origins (a classic CORS-debugging
