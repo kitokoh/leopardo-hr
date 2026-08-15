@@ -141,6 +141,12 @@ export async function POST(request: NextRequest) {
             id: lead.id,
             email: signupResult.email,
             status: signupResult.status,
+            // Issue #2469 : le provisioning_token (guided trial #2437) doit
+            // transiter jusqu'au client pour permettre le polling de suivi du
+            // provisioning (GET /api/forms/trial-status), sans exposer l'email.
+            ...(signupResult.provisioning_token
+              ? { provisioning_token: signupResult.provisioning_token }
+              : {}),
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
           },

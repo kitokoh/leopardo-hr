@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import React, { useReducer, useState, useRef, useCallback } from 'react';
+import React, { useReducer, useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +35,15 @@ interface SignupFormProps {
   className?: string;
 }
 
-type Step = 'form' | 'otp' | 'pending' | 'success';
+type Step = 'form' | 'otp' | 'pending' | 'success' | 'tracking';
+
+// Issue #2469 : clé sessionStorage du token de suivi de provisioning
+// (guided trial #2437). Le token ne doit JAMAIS apparaître dans l'URL.
+const TRIAL_TOKEN_KEY = 'lp_trial_provisioning_token';
+
+// Statuts du suivi : pending (spinner) → ready (login_url) / failed, avec
+// repli honnête après ~60 s de polling infructueux.
+type TrackingStatus = 'pending' | 'ready' | 'failed' | 'timeout' | null;
 
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
@@ -77,6 +85,16 @@ export function SignupForm({
   const [pendingMessage, setPendingMessage] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // ── Guided trial provisioning tracking (issue #2469) ──
+  const [provisioningToken, setProvisioningToken] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return window.sessionStorage.getItem(TRIAL_TOKEN_KEY);
+  });
+  const [trackingStatus, setTrackingStatus] = useState<TrackingStatus>(null);
+  const [trackingLoginUrl, setTrackingLoginUrl] = useState('');
+  const [trackingMessage, setTrackingMessage] = useState('');
+  const [trackingCopied, setTrackingCopied] = useState(false);
+
   const copyPassword = async (password: string) => {
     try {
       await navigator.clipboard.writeText(password);
@@ -113,7 +131,14 @@ export function SignupForm({
         setPendingEmail(data.email);
         dispatch({ type: 'RESET' });
 
-        if (response.provisioned === false) {
+        const provisioningToken = response.data?.provisioning_token as string | undefined;
+        if (provisioningToken) {
+          // Guided trial (#2469) : le backend a démarré le provisioning du
+          // sandbox (status provisioning_sandbox + token). Le flux OTP ne
+          // s'applique pas ici (aucun code envoyé) : on suit l'état du
+          // provisioning (pending → ready avec login_url / failed).
+          startTracking(provisioningToken);
+        } else if (response.provisioned === false) {
           // Backend could not send an OTP right now (e.g. cold-start timeout).
           // The lead was still captured, so tell the user honestly instead of
           // showing a verification screen for a code that was never sent.
@@ -204,6 +229,82 @@ export function SignupForm({
       setOtpError('Erreur lors de la verification. Veuillez reessayer.');
     } finally {
       setIsVerifying(false);
+    }
+  };
+
+  // ── Guided trial : démarrer le suivi du provisioning (#2469) ──
+  const startTracking = useCallback((token: string) => {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(TRIAL_TOKEN_KEY, token);
+    }
+    setProvisioningToken(token);
+    setTrackingStatus('pending');
+    setTrackingLoginUrl('');
+    setTrackingMessage('');
+    setTrackingCopied(false);
+    setCurrentStep('tracking');
+  }, []);
+
+  // Polling ~5 s du statut via le proxy same-origin /api/forms/trial-status.
+  // Arrêt : statut ready/failed, repli après ~60 s, ou démontage.
+  useEffect(() => {
+    if (currentStep !== 'tracking' || !provisioningToken) return;
+
+    let cancelled = false;
+    let pollCount = 0;
+
+    const poll = async () => {
+      if (cancelled) return;
+      try {
+        const res = await fetch(
+          `/api/forms/trial-status?token=${encodeURIComponent(provisioningToken)}`,
+          { signal: AbortSignal.timeout(8000) }
+        );
+        const body = await res.json();
+        if (cancelled) return;
+
+        const status = body?.data?.status;
+        if (status === 'ready') {
+          setTrackingStatus('ready');
+          setTrackingLoginUrl(body.data.login_url || '');
+          return;
+        }
+        if (status === 'failed') {
+          setTrackingStatus('failed');
+          setTrackingMessage(body.data.message || '');
+          return;
+        }
+        // pending (ou statut transitoire inattendu) : on continue.
+        setTrackingStatus('pending');
+      } catch {
+        // Backend injoignable (cold start Render…) : on reste en pending,
+        // le tick suivant réessaie. Jamais d'erreur bloquante sur ce chemin.
+        if (!cancelled) setTrackingStatus('pending');
+      }
+
+      pollCount += 1;
+      if (pollCount >= 12) {
+        // Repli après ~60 s : on arrête de poller, message honnête.
+        setTrackingStatus('timeout');
+      }
+    };
+
+    poll();
+    const interval = setInterval(poll, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [currentStep, provisioningToken]);
+
+  const handleCopyLoginUrl = async () => {
+    if (!trackingLoginUrl) return;
+    try {
+      await navigator.clipboard.writeText(trackingLoginUrl);
+      setTrackingCopied(true);
+      setTimeout(() => setTrackingCopied(false), 2000);
+    } catch {
+      setTrackingCopied(false);
     }
   };
 
@@ -472,6 +573,17 @@ export function SignupForm({
             <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
               Le code est valide pendant 30 minutes. Verifiez vos spams si vous ne le trouvez pas.
             </p>
+
+            {provisioningToken && (
+              <button
+                type="button"
+                onClick={() => startTracking(provisioningToken)}
+                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+              >
+                <Rocket className="h-4 w-4" />
+                Suivre l&apos;etat de mon espace
+              </button>
+            )}
           </motion.div>
         )}
 
@@ -515,6 +627,118 @@ export function SignupForm({
                 Se connecter
               </Link>
             </p>
+          </motion.div>
+        )}
+
+        {/* ═══════════════════════════════════════ */}
+        {/* STEP 2c: Guided trial provisioning      */}
+        {/* (issue #2469 — polling /api/forms/trial-status) */}
+        {/* ═══════════════════════════════════════ */}
+        {currentStep === 'tracking' && (
+          <motion.div
+            key="step-tracking"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
+            {trackingStatus === 'ready' ? (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
+                  <CheckCircle className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Votre espace est pret
+                </h2>
+                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Votre espace de demonstration Leopardo vient d&apos;etre provisionne.
+                  Accedez-y directement :
+                </p>
+                <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center">
+                  <Link
+                    href={trackingLoginUrl}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-emerald-700"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Acceder a mon espace
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleCopyLoginUrl}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <ClipboardCopy className="h-4 w-4" />
+                    {trackingCopied ? 'Lien copie !' : 'Copier le lien'}
+                  </button>
+                </div>
+              </>
+            ) : trackingStatus === 'failed' ? (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 dark:bg-red-900/40">
+                  <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Creation interrompue
+                </h2>
+                <p className="mb-6 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  {trackingMessage ||
+                    'La creation de votre espace a rencontre un probleme. Notre equipe vous contactera par email avec une solution.'}
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
+                  Besoin d&apos;aide ?{' '}
+                  <Link
+                    href="/contact"
+                    className="font-semibold text-emerald-600 hover:text-emerald-700"
+                  >
+                    Contactez-nous
+                  </Link>
+                </p>
+              </>
+            ) : trackingStatus === 'timeout' ? (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/40">
+                  <Clock3 className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Votre espace se prepare
+                </h2>
+                <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  La creation peut prendre quelques minutes de plus. Nous vous
+                  enverrons le lien par email des qu&apos;il est pret.
+                </p>
+                <p className="mb-6 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                  {pendingEmail}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => provisioningToken && startTracking(provisioningToken)}
+                  className="text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
+                >
+                  Verifier a nouveau
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 dark:bg-emerald-900/40">
+                  <Rocket className="h-8 w-8 animate-pulse text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white">
+                  Creation de votre espace en cours
+                </h2>
+                <p className="mb-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Nous provisionnons votre espace de demonstration. Cela prend
+                  generalement moins d&apos;une minute.
+                </p>
+                <p className="mb-6 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                  {pendingEmail}
+                </p>
+                <div className="flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                  <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-500" />
+                  Verification automatique du statut...
+                </div>
+              </>
+            )}
           </motion.div>
         )}
 

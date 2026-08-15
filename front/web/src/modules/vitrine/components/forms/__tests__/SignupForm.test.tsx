@@ -192,6 +192,121 @@ describe('SignupForm Component', () => {
     });
   });
 
+  describe('Guided trial provisioning tracking (issue #2469)', () => {
+    const TOKEN = 'a'.repeat(64);
+
+    beforeEach(() => {
+      mockedSubmitSignupForm.mockReset();
+      window.sessionStorage.clear();
+    });
+
+    afterEach(() => {
+      window.sessionStorage.clear();
+      delete (globalThis as { fetch?: unknown }).fetch;
+      jest.useRealTimers();
+    });
+
+    async function fillValidForm() {
+      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      const selects = screen.getAllByRole('combobox');
+      await userEvent.selectOptions(selects[0], 'founder');
+      await userEvent.selectOptions(selects[1], '1-10');
+      await userEvent.click(screen.getByRole('checkbox'));
+    }
+
+    it('shows the tracking screen and persists the token when signup returns a provisioning_token', async () => {
+      // Le polling initial renvoie pending.
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data: { status: 'pending' } }),
+      });
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Demande recue.',
+        data: { provisioning_token: TOKEN },
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /creation de votre espace en cours/i })).toBeInTheDocument();
+      });
+      expect(window.sessionStorage.getItem('lp_trial_provisioning_token')).toBe(TOKEN);
+      // Le token ne doit jamais apparaître dans l'URL ni dans le DOM.
+      expect(screen.queryByText(TOKEN)).not.toBeInTheDocument();
+    });
+
+    it('switches to ready state with the login link when polling returns ready', async () => {
+      // Premier poll → ready.
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: { status: 'ready', login_url: '/dashboard' },
+        }),
+      });
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Demande recue.',
+        data: { provisioning_token: TOKEN },
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /votre espace est pret/i })).toBeInTheDocument();
+      });
+      expect(screen.getByRole('link', { name: /acceder a mon espace/i })).toHaveAttribute('href', '/dashboard');
+    });
+
+    it('switches to failed state with a generic message when polling returns failed', async () => {
+      // Premier poll → failed.
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, data: { status: 'failed' } }),
+      });
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Demande recue.',
+        data: { provisioning_token: TOKEN },
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /creation interrompue/i })).toBeInTheDocument();
+      });
+    });
+
+    it('shows the "Suivre l etat de mon espace" link on the OTP screen when a token exists', async () => {
+      window.sessionStorage.setItem('lp_trial_provisioning_token', TOKEN);
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de verification envoye.',
+        data: {},
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /suivre l'etat de mon espace/i })).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('User Interactions', () => {
     it('should clear form after successful submission', async () => {
       render(<SignupForm />);
