@@ -130,7 +130,7 @@ jobs:
         env:
           BASE_URL: ${{ github.event.inputs.base_url }}
           EMPLOYEE_TOKENS: ${{ secrets.K6_EMPLOYEE_TOKENS }}
-          PUNCH_MODE: manual
+          PUNCH_MODE: manual  # was github.event.inputs.attendance_punch_mode; hardcoded to reduce inputs to ≤10 (#3612)
           STAGE_DURATION: ${{ github.event.inputs.attendance_stage_duration }}
         run: |
           set -euo pipefail
