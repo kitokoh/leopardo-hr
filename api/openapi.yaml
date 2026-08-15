@@ -282,6 +282,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /api/v1/edge/download/sha256.txt:
+    get:
+      tags: ["Health"]
+      summary: "Sommes SHA-256 des artefacts edge (public)"
+      description: "Manifeste des sommes SHA-256 (format texte) utilise par install.sh pour verifier l'integrite des telechargements (issues #3529/#3770)."
+      security: []
+      responses:
+        "200":
+          description: "Manifeste SHA-256"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Manifeste introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/docker-compose.yml.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Somme SHA-256 de docker-compose.yml edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256 du fichier docker-compose.yml"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Somme introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/Caddyfile.edge.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Somme SHA-256 de Caddyfile.edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256 du fichier Caddyfile.edge"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Somme introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/v1/edge/download/env-example:
     get:
       tags: ["Health"]
