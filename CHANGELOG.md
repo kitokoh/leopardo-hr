@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(kiosk): état non configuré localisé quand apiBaseUrl ou deviceCode manque (Closes #2911).** La borne n’essaie plus d’appeler une URL `/api/v1/kiosks/` invalide : les actions distantes sont désactivées et un message d’installation est affiché en FR/EN/TR/AR.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
 ### Fixed
