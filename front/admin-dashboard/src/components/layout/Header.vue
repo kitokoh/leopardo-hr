@@ -14,7 +14,7 @@
         <!-- Search -->
         <div class="flex flex-1 items-center justify-center px-2 lg:ml-6 lg:justify-start">
           <div class="w-full max-w-lg lg:max-w-xs">
-            <label for="search" class="sr-only">Rechercher</label>
+            <label for="search" class="sr-only">{{ $t('shell.search', 'Rechercher') }}</label>
             <div class="relative group">
               <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 transition-colors group-focus-within:text-brand-500">
                 <MagnifyingGlassIcon class="h-5 w-5 text-slate-400" />
@@ -24,7 +24,7 @@
                 v-model="searchQuery"
                 name="search"
                 class="block w-full rounded-xl border-slate-200/50 dark:border-slate-700/50 bg-slate-100/50 dark:bg-slate-800/50 py-2 pl-10 pr-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:ring-2 focus:ring-brand-500 sm:text-sm sm:leading-6 transition-all duration-200"
-                placeholder="Rechercher..."
+                :placeholder="$t('shell.search', 'Rechercher') + '...'"
                 type="search"
                 @keyup.enter="handleSearch"
               />
@@ -35,7 +35,7 @@
         <!-- Right side -->
         <div class="flex items-center space-x-4">
           <!-- Real-time connection status -->
-          <div class="flex items-center" :title="realtimeStore.isPolling ? 'Notifications via polling de secours (push indisponible)' : ''">
+          <div class="flex items-center" :title="realtimeStore.isPolling ? $t('shell.fallbackPollingTitle', 'Notifications via polling de secours (push indisponible)') : ''">
             <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
@@ -43,7 +43,7 @@
               ]"
             ></div>
             <span class="text-xs text-gray-500 hidden sm:block">
-              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : (realtimeStore.pushUnavailable ? 'Push non configuré' : 'Déconnecté')) }}
+              {{ realtimeStore.isConnected ? $t('shell.connected', 'Connecté') : (realtimeStore.isPolling ? $t('shell.fallbackPolling', 'Mode secours (polling)') : (realtimeStore.pushUnavailable ? $t('shell.pushUnconfigured', 'Push non configuré') : $t('shell.disconnected', 'Déconnecté'))) }}
             </span>
           </div>
 
@@ -84,7 +84,7 @@
             <button
               @click="showNotifications = !showNotifications"
               class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              aria-label="Notifications"
+              :aria-label="$t('shell.notifications', 'Notifications')"
             >
               <BellIcon class="h-6 w-6" />
               <span
@@ -103,7 +103,7 @@
             >
               <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center justify-between">
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">Notifications</h3>
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('shell.notifications', 'Notifications') }}</h3>
                   <button
                     @click="realtimeStore.markAllNotificationsAsRead()"
                     class="text-xs text-indigo-600 hover:text-indigo-500"
@@ -147,7 +147,7 @@
                 </div>
 
                 <div v-if="realtimeStore.recentNotifications.length === 0" class="px-4 py-6 text-center">
-                  <p class="text-sm text-gray-500">Aucune notification</p>
+                  <p class="text-sm text-gray-500">{{ $t('shell.noNotifications', 'Aucune notification') }}</p>
                 </div>
               </div>
             </div>
@@ -174,7 +174,7 @@
               @click.stop
             >
               <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-sm font-medium text-gray-900 dark:text-white">Alertes critiques</h3>
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('shell.criticalAlerts', 'Alertes critiques') }}</h3>
               </div>
               <div class="max-h-96 overflow-y-auto">
                 <div
@@ -184,7 +184,7 @@
                 >
                   <p class="text-sm font-medium text-red-600">{{ alert.title }}</p>
                   <p v-if="alert.message" class="text-xs text-gray-500 mt-0.5">{{ alert.message }}</p>
-                  <p v-if="alert.level" class="text-xs text-gray-400 mt-0.5">Niveau : {{ alert.level }}</p>
+                  <p v-if="alert.level" class="text-xs text-gray-400 mt-0.5">{{ $t('shell.level', 'Niveau :') }} {{ alert.level }}</p>
                 </div>
                 <div v-if="dashboardStore.criticalAlerts.length === 0" class="px-4 py-6 text-center">
                   <p class="text-sm text-gray-500">Aucune alerte critique</p>

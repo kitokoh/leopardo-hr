@@ -778,12 +778,33 @@
     "growth": "Growth Administration",
     "edge": "Edge Nodes",
     "system": "System",
-    "mainMenu": "Main menu"
+    "mainMenu": "Main menu",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "companyDetail": "Company detail",
+    "contributions": "Social contributions",
+    "taxBrackets": "Tax brackets",
+    "legalRates": "Legal rates",
+    "account": "My account",
+    "notFound": "Page not found"
   },
   "webhooks": {
     "confirm_delete": "Delete this webhook?"
   },
   "a11y": {
     "skip_to_content": "Skip to main content"
+  },
+  "shell": {
+    "connected": "Connected",
+    "fallbackPolling": "Fallback mode (polling)",
+    "pushUnconfigured": "Push not configured",
+    "disconnected": "Disconnected",
+    "search": "Search",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "criticalAlerts": "Critical alerts",
+    "level": "Level:",
+    "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
+    "tenantOnly": "Enterprise feature — reserved for client workspaces"
   }
 }

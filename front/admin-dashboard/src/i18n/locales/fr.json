@@ -781,12 +781,33 @@
     "growth": "Administration Growth",
     "edge": "Nœuds Edge",
     "system": "Système",
-    "mainMenu": "Menu principal"
+    "mainMenu": "Menu principal",
+    "login": "Connexion",
+    "logout": "Deconnexion",
+    "companyDetail": "Detail Entreprise",
+    "contributions": "Cotisations sociales",
+    "taxBrackets": "Baremes fiscaux",
+    "legalRates": "Taux legaux",
+    "account": "Mon compte",
+    "notFound": "Page non trouvee"
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"
   },
   "a11y": {
     "skip_to_content": "Aller au contenu principal"
+  },
+  "shell": {
+    "connected": "Connecte",
+    "fallbackPolling": "Mode secours (polling)",
+    "pushUnconfigured": "Push non configure",
+    "disconnected": "Deconnecte",
+    "search": "Rechercher",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune notification",
+    "criticalAlerts": "Alertes critiques",
+    "level": "Niveau :",
+    "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
   }
 }
