@@ -41,5 +41,11 @@ return [
     'FORBIDDEN' => 'Vous n\'avez pas les droits pour cette action.',
     'SERVER_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'VALIDATION_ERROR' => 'Certains champs sont incorrects.',
+    'BAD_REQUEST' => 'Requête invalide.',
+    'CONFLICT' => 'Le conflit de données empêche cette opération.',
+    'VALIDATION_FAILED' => 'Certains champs sont incorrects.',
+    'TOO_MANY_REQUESTS' => 'Trop de requêtes. Réessayez plus tard.',
+    'SERVICE_UNAVAILABLE' => 'Service temporairement indisponible.',
+    'HTTP_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'UNSUPPORTED_API_VERSION' => 'Version API non supportee.',
 ];

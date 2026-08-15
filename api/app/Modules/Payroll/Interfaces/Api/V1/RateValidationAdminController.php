@@ -65,8 +65,9 @@ class RateValidationAdminController extends Controller
         try {
             $this->validation->approve($model, $admin);
         } catch (\DomainException $e) {
+            // Issue #3810 : détail en log serveur, message générique localisé.
             Log::error('Approbation de taux refusée', ['table' => $table, 'id' => $id, 'error' => $e->getMessage()]);
-            abort(422, $e->getMessage());
+            abort(422, __('payroll.rate_approve_failed'));
         }
 
         return response()->json(['data' => $this->serialize($model->refresh(), $table)]);
@@ -90,8 +91,9 @@ class RateValidationAdminController extends Controller
         try {
             $this->validation->reject($model, $admin, $reason);
         } catch (\DomainException $e) {
+            // Issue #3810 : détail en log serveur, message générique localisé.
             Log::error('Rejet de taux refusé', ['table' => $table, 'id' => $id, 'error' => $e->getMessage()]);
-            abort(422, $e->getMessage());
+            abort(422, __('payroll.rate_reject_failed'));
         }
 
         return response()->json(['data' => $this->serialize($model->refresh(), $table)]);

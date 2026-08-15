@@ -41,5 +41,11 @@ return [
     'FORBIDDEN' => 'ليس لديك صلاحية لهذا الإجراء.',
     'SERVER_ERROR' => 'حدث خطأ. يرجى المحاولة مجدداً.',
     'VALIDATION_ERROR' => 'بعض الحقول غير صحيحة.',
+    'BAD_REQUEST' => 'طلب غير صالح.',
+    'CONFLICT' => 'تعارض في البيانات يمنع هذه العملية.',
+    'VALIDATION_FAILED' => 'بعض الحقول غير صحيحة.',
+    'TOO_MANY_REQUESTS' => 'طلبات كثيرة جداً. حاول لاحقاً.',
+    'SERVICE_UNAVAILABLE' => 'الخدمة غير متوفرة مؤقتاً.',
+    'HTTP_ERROR' => 'حدث خطأ. يرجى المحاولة مجدداً.',
     'UNSUPPORTED_API_VERSION' => 'إصدار API غير مدعوم.',
 ];

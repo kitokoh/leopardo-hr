@@ -161,7 +161,10 @@ class TaxSlabController extends Controller
         try {
             $this->validation->submit($taxSlab, $actor);
         } catch (\DomainException $e) {
-            abort(422, $e->getMessage());
+            // Issue #3810 : le message d'exception reste en log serveur — le
+            // client reçoit un message générique localisé, jamais du brut.
+            Log::error('Soumission de barème refusée', ['tax_slab_id' => $taxSlab->id, 'error' => $e->getMessage()]);
+            abort(422, __('payroll.rate_submit_failed'));
         }
 
         return (new TaxSlabResource($taxSlab->refresh()))->response();

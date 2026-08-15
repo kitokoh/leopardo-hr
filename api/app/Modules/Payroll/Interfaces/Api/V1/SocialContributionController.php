@@ -154,7 +154,9 @@ class SocialContributionController extends Controller
         try {
             $this->validation->submit($socialContribution, $actor);
         } catch (\DomainException $e) {
-            abort(422, $e->getMessage());
+            // Issue #3810 : détail en log serveur, message générique localisé.
+            Log::error('Soumission de cotisation refusée', ['social_contribution_id' => $socialContribution->id, 'error' => $e->getMessage()]);
+            abort(422, __('payroll.rate_submit_failed'));
         }
 
         return (new SocialContributionResource($socialContribution->refresh()))->response();
