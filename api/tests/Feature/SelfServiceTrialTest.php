@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -89,6 +90,11 @@ class SelfServiceTrialTest extends TestCase
                     'trial' => ['days', 'ends_at'],
                 ],
             ]);
+
+        // Cohérence essai (constat QA live 2026-08-15, #3012/#3056) : la
+        // réponse doit annoncer le même nombre de jours que le
+        // provisionnement réel (14 j — VerifyTrialSignup + plan fallback).
+        $this->assertSame(14, $response->json('data.trial.days'));
 
         // #2680 — le mot de passe temporaire ne doit JAMAIS transiter dans la
         // réponse JSON (fuite potentielle via logs/proxy) : il part par email.
@@ -231,7 +237,7 @@ class SelfServiceTrialTest extends TestCase
         // Un seul tenant créé pour cet email
         $this->assertSame(
             1,
-            \Illuminate\Support\Facades\DB::table('companies')
+            DB::table('companies')
                 ->where('name', 'Race Test Algeria')
                 ->count(),
             'Le double verify ne doit pas créer deux tenants.'
@@ -269,7 +275,7 @@ class SelfServiceTrialTest extends TestCase
 
         $this->assertSame(
             0,
-            \Illuminate\Support\Facades\DB::table('companies')
+            DB::table('companies')
                 ->where('name', 'Claimed Test')
                 ->count(),
             'Aucun tenant ne doit être créé pour une demande déjà claimée.'
