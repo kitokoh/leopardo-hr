@@ -16,6 +16,7 @@
 
 
 - **fix(admin): erreurs de chargement dashboard et prédictions rendues visibles (Closes #3274).** La santé commence à `unknown`, le shell signale les KPI incomplets et chaque panneau prédictif affiche son échec API.
+- **fix(mobile): Smart Attendance utilise des query parameters et un décodage paginé sûr (Closes #3291).** Les apps manager et HR ne castent plus directement `data` en liste.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
 - **fix(test): main vert — factories `newModel()` en `public` (fatal PHP) + doublon PasswordResetTest retiré.** PR #3680 (#3597) a introduit des overrides `protected function newModel()` dans Employee/User/SalaryAdvanceFactory → fatal « access level » chargeant toute la suite ; visibilité alignée sur le parent (`public function newModel(array $attributes = [])`). `tests/Feature/Auth/PasswordResetTest.php` (4 tests, contrat pré-#2626 réintroduit par mégarde) supprimé — doublon strict de `tests/Feature/PasswordResetTest.php` (6 tests, contrat courant avec codes machine PASSWORD_RESET_SENT/DONE).
