@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(mobile): DateTime.parse résiduels → tryParse dans 3 modèles core (Closes #3433).** attendance_log (date/check_in/check_out), payroll (validated_at), project_task (start/end/due_date) : plus de FormatException sur données malformées.
 ### Fixed
 - **fix(ci): main vert — PHPStan Strict/Modules (level 8/5), Module Structure Validator, I18N sync, AIGatewayAndAnalyticsTest.** (1) App : `AuthService::login` convertit `locked_until` en Carbon avant `isFuture()`/`AccountLockedException` (DateTimeInterface → Carbon) ; `AuthController::redirectToGoogle` type le provider Socialite (GoogleProvider) pour `with()` ; `KioskController::resolveAuthorizedKiosk` ne caste plus un `??` non nullable ; `EdgeNodeController::sync` refresh le nœud avant de lire `last_sync_at` (null-safe). (2) Tests : 29 fichiers réalignés PHPStan level 8 (collect(RouteCollection) → getRoutes()->getRoutes(), @var FQCN sur factory()->create(), Mockery typé, `assertExitCode` sur PendingCommand instancié, casts null-safe, dead props retirées, `@property company_id` ajouté à CalendarConnection). (3) `AIGatewayAndAnalyticsTest` attend 2 workflows (prepare_payroll, weekly_report) — le workflow fantôme `new_employee_onboarding` a été retiré (Closes #3118, #2808). Closes #1962 (préfixes migrations doublés) via #2969.
 
