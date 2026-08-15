@@ -186,26 +186,26 @@ const isLoadingObservability = ref(false)
 const notificationObservability = ref(null)
 const isLoadingNotificationObservability = ref(false)
 
-// System status
-const systemStatus = reactive({
-  overall: 'healthy',
-  overallDetails: 'Tous les services fonctionnent normalement',
-  database: 'healthy',
-  databaseDetails: 'Connexions: 45/100 • Latence: 12ms',
-  api: 'healthy',
-  apiDetails: 'Temps de réponse moyen: 89ms',
-  websocket: 'healthy',
-  websocketDetails: '1,247 connexions actives',
-  maintenanceMode: false
+// Health — résultats réels de GET /health/live + /health/ready (issue #2186).
+// Aucune valeur simulée : tant que le Health Check n'a pas tourné, les cartes
+// affichent un état « unavailable » explicite.
+const healthCheck = ref(null)
+const healthCheckTimestamp = ref(null)
+
+// Dernier succès de GET /admin/dashboard/stats (validation API super-admin).
+const lastUpdated = ref(null)
+
+// Statut global : dérivé du dernier Health Check réel (jamais de faux positif).
+const globalHealthStatus = computed(() => {
+  if (!healthCheck.value) return 'unavailable'
+  return healthCheck.value.status === 'pass' ? 'healthy' : 'error'
 })
 
 const globalHealthDetails = computed(() => {
-  const map = {
-    healthy: 'Sonde agrégée DB + Redis opérationnelle.',
-    warning: 'Sonde agrégée : dégradation détectée.',
-    error: 'Sonde agrégée : base de données injoignable.'
-  }
-  return map[globalHealthStatus.value] || 'Non disponible — GET /admin/dashboard/stats'
+  if (!healthCheck.value) return 'Lancez le Health Check pour mesurer l\'état de la plateforme.'
+  return healthCheck.value.details || (healthCheck.value.status === 'pass'
+    ? 'Sondes /health/live + /health/ready opérationnelles.'
+    : 'Dégradation détectée — voir le détail des sondes.')
 })
 
 // Base de données : résultat réel du Health Check (GET /health/ready)
@@ -214,17 +214,11 @@ const databaseStatus = computed(() => {
   return healthCheck.value.checks?.database?.ok ? 'healthy' : 'error'
 })
 
-// Automated tasks
-const automatedTasks = ref([])
-const backups = ref([])
-const securityAlerts = ref([])
-const apiTests = ref([])
-
-// Security status
-const securityStatus = reactive({
-  level: 'high',
-  label: 'SÉCURISÉ',
-  score: 95
+const databaseDetails = computed(() => {
+  if (!healthCheck.value) return 'Non disponible — lancez un Health Check.'
+  return healthCheck.value.checks?.database?.ok
+    ? 'Base de données opérationnelle (readiness OK).'
+    : 'Base de données injoignable (readiness KO).'
 })
 
 onMounted(async () => {
@@ -239,11 +233,12 @@ onMounted(async () => {
 async function loadSystemStats() {
   try {
     const response = await api.get('/admin/dashboard/stats')
-    stats.value = response.data
     lastUpdated.value = new Date()
+    return response.data
   } catch (error) {
     console.error('Failed to load system stats:', error)
     toast.error('Erreur lors du chargement des stats système')
+    return null
   }
 }
 
@@ -279,75 +274,11 @@ async function loadNotificationObservability() {
   }
 }
 
-async function loadAutomatedTasks() {
-  // Pas d'API de taches planifiees — liste vide honnete (vague QA 2026-08-14)
-  automatedTasks.value = []
-}
-
-async function loadBackups() {
-  // Pas d'API de sauvegardes — liste vide honnete (vague QA 2026-08-14)
-  backups.value = []
-}
-
-async function loadSecurityAlerts() {
-  // Pas d'API dediee — liste vide honnete (vague QA 2026-08-14)
-  securityAlerts.value = []
-}
-
-async function loadApiTests() {
-  // Pas d'API de tests — liste vide honnete (vague QA 2026-08-14)
-  apiTests.value = []
-}
-
-async function loadSystemConfig() {
-  // Pas d'API de configuration systeme — etat vide honnete (vague QA 2026-08-14)
-  systemConfig.value = null
-}
-
-async function loadLoadBalancerNodes() {
-  // Pas d'API de load balancer — liste vide honnete (vague QA 2026-08-14)
-  loadBalancerNodes.value = []
-}
-
-function startMetricsRefresh() {
-  // Update metrics every 5 seconds
-  metricsInterval = setInterval(updatePerformanceMetrics, 5000)
-}
-
-function updatePerformanceMetrics() {
-  const now = new Date()
-
-  // Generate realistic metrics
-  const cpu = Math.random() * 30 + 40 // 40-70%
-  const memory = Math.random() * 20 + 60 // 60-80%
-  const network = Math.random() * 40 + 10 // 10-50%
-
-  // Update performance metrics
-  performanceMetrics.value.cpu.push(cpu)
-  performanceMetrics.value.memory.push(memory)
-  performanceMetrics.value.network.push(network)
-  performanceMetrics.value.timestamps.push(now)
-
-  // Keep only last 20 points
-  if (performanceMetrics.value.cpu.length > 20) {
-    performanceMetrics.value.cpu.shift()
-    performanceMetrics.value.memory.shift()
-    performanceMetrics.value.network.shift()
-    performanceMetrics.value.timestamps.shift()
-  }
-
-  // Update resource usage
-  resourceUsage.cpu = Math.round(cpu)
-  resourceUsage.memory = Math.round(memory)
-  resourceUsage.network = Math.round(network)
-  resourceUsage.disk = Math.round(Math.random() * 20 + 30) // 30-50%
-}
-
+// Health check réel — endpoints publics /health/live + /health/ready.
 async function runHealthCheck() {
   isRunningHealthCheck.value = true
 
   try {
-    // Health check reel (endpoints publics /health/live + /health/ready)
     const [live, ready] = await Promise.all([
       api.get('/health/live').catch(() => null),
       api.get('/health/ready').catch(() => null)
@@ -356,13 +287,16 @@ async function runHealthCheck() {
     const liveOk = live !== null && live.status === 200
     const readyOk = ready !== null && ready.status === 200
 
-    systemStatus.overall = liveOk && readyOk ? 'healthy' : 'degraded'
-    systemStatus.api = liveOk ? 'healthy' : 'unreachable'
-    systemStatus.database = readyOk ? 'healthy' : 'degraded'
-    systemStatus.websocket = 'unknown'
-    systemStatus.overallDetails = liveOk && readyOk
-      ? 'Liveness + readiness OK'
-      : `Liveness ${liveOk ? 'OK' : 'KO'} / Readiness ${readyOk ? 'OK' : 'KO'}`
+    healthCheck.value = {
+      status: liveOk && readyOk ? 'pass' : 'fail',
+      checks: {
+        liveness: { ok: liveOk },
+        database: { ok: readyOk }
+      },
+      details: `Liveness ${liveOk ? 'OK' : 'KO'} / Readiness ${readyOk ? 'OK' : 'KO'}`
+    }
+    healthCheckTimestamp.value = new Date()
+    lastUpdated.value = new Date()
 
     if (liveOk && readyOk) {
       toast.success('Health check terminé — tous les services sont opérationnels')
@@ -370,181 +304,16 @@ async function runHealthCheck() {
       toast.error('Health check : liveness/readiness en échec — voir détails ci-dessus')
     }
   } catch (error) {
-    healthCheck.value = error.response?.data || {
+    healthCheck.value = {
       status: 'fail',
-      checks: { database: { ok: false } }
+      checks: { database: { ok: false } },
+      details: 'Health check injoignable — les sondes backend n\'ont pas répondu.'
     }
     healthCheckTimestamp.value = new Date()
     console.error('Health check failed:', error)
     toast.error('Health check terminé — base de données injoignable')
   } finally {
     isRunningHealthCheck.value = false
-  }
-}
-
-async function toggleMaintenanceMode() {
-  // Pas d'endpoint backend de maintenance — etat honnete (vague QA 2026-08-14)
-  toast.warning('Action non disponible : aucun endpoint backend de maintenance n\'est exposé')
-}
-
-function refreshMetrics() {
-  updatePerformanceMetrics()
-  toast.success('Métriques actualisées')
-}
-
-// Task management
-function toggleTask(taskId) {
-  const task = automatedTasks.value.find(t => t.id === taskId)
-  if (task) {
-    task.enabled = !task.enabled
-    toast.success(`Tâche ${task.enabled ? 'activée' : 'désactivée'}`)
-  }
-}
-
-function editTask(task) {
-  toast.info(`Édition de la tâche: ${task.name}`)
-}
-
-function deleteTask(taskId) {
-  automatedTasks.value = automatedTasks.value.filter(t => t.id !== taskId)
-  toast.success('Tâche supprimée')
-}
-
-function handleTaskCreated(task) {
-  automatedTasks.value.push(task)
-  showCreateTaskModal.value = false
-  toast.success('Tâche créée avec succès')
-}
-
-// Backup management
-async function createBackup() {
-  isCreatingBackup.value = true
-
-  try {
-    await new Promise(resolve => setTimeout(resolve, 5000))
-
-    const newBackup = {
-      id: Date.now(),
-      name: `backup-${new Date().toISOString().split('T')[0]}-${new Date().toTimeString().split(' ')[0].replace(/:/g, '-')}`,
-      type: 'manual',
-      size: '2.1 GB',
-      createdAt: new Date(),
-      status: 'completed'
-    }
-
-    backups.value.unshift(newBackup)
-    toast.success('Sauvegarde créée avec succès')
-  } catch (error) {
-    console.error('Backup creation failed:', error)
-    toast.error('Erreur lors de la création de la sauvegarde')
-  } finally {
-    isCreatingBackup.value = false
-  }
-}
-
-function restoreBackup(backup) {
-  toast.warning(`Restauration de la sauvegarde: ${backup.name}`)
-}
-
-function deleteBackup(backupId) {
-  backups.value = backups.value.filter(b => b.id !== backupId)
-  toast.success('Sauvegarde supprimée')
-}
-
-function downloadBackup(backup) {
-  toast.info(`Téléchargement de: ${backup.name}`)
-}
-
-// Security
-function investigateAlert(alert) {
-  toast.info(`Investigation de l'alerte: ${alert.message}`)
-}
-
-function dismissSecurityAlert(alertId) {
-  securityAlerts.value = securityAlerts.value.filter(a => a.id !== alertId)
-  toast.success('Alerte fermée')
-}
-
-// Configuration
-function updateConfig(section, config) {
-  systemConfig.value[section] = { ...systemConfig.value[section], ...config }
-  toast.success('Configuration mise à jour')
-}
-
-function resetConfig(section) {
-  toast.warning(`Configuration ${section} réinitialisée`)
-}
-
-function exportConfig() {
-  const configBlob = new Blob([JSON.stringify(systemConfig.value, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(configBlob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'system-config.json'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-
-  toast.success('Configuration exportée')
-}
-
-function handleConfigImported(config) {
-  systemConfig.value = config
-  showImportModal.value = false
-  toast.success('Configuration importée')
-}
-
-// API Testing
-function runApiTest(test) {
-  toast.info(`Exécution du test: ${test.name}`)
-}
-
-function editApiTest(test) {
-  toast.info(`Édition du test: ${test.name}`)
-}
-
-function deleteApiTest(testId) {
-  apiTests.value = apiTests.value.filter(t => t.id !== testId)
-  toast.success('Test supprimé')
-}
-
-function handleApiTestCreated(test) {
-  apiTests.value.push(test)
-  showApiTesterModal.value = false
-  toast.success('Test API créé')
-}
-
-// Scaling
-function updateScalingConfig(config) {
-  Object.assign(scalingConfig, config)
-  toast.success('Configuration d\'auto-scaling mise à jour')
-}
-
-function manualScale(action) {
-  if (action === 'up') {
-    scalingMetrics.currentInstances++
-    toast.success('Instance ajoutée manuellement')
-  } else {
-    scalingMetrics.currentInstances--
-    toast.success('Instance supprimée manuellement')
-  }
-}
-
-// Load Balancer
-function toggleLoadBalancerNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = node.status === 'healthy' ? 'unhealthy' : 'healthy'
-    toast.success(`NÅ“ud ${node.name} ${node.status === 'healthy' ? 'activé' : 'désactivé'}`)
-  }
-}
-
-function drainNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = 'draining'
-    toast.info(`Drainage du nÅ“ud ${node.name} en cours`)
   }
 }
 </script>
