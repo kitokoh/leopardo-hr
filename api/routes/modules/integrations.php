@@ -34,7 +34,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 });
 
 // Device kiosks authenticate with X-Kiosk-Token, not a Sanctum user token.
-Route::middleware(['throttle:api'])->group(function (): void {
+// #3367 : bucket dédié kiosk-punch (par device_code) — ne pas partager le
+// bucket anonyme `api` (IP) avec tout le trafic non authentifié.
+Route::middleware(['throttle:kiosk-punch'])->group(function (): void {
     Route::post('/kiosks/{deviceCode}/employee-info', [KioskController::class, 'employeeInfo']);
     Route::get('/kiosks/{deviceCode}/announcements', [KioskController::class, 'announcements']);
     Route::post('/kiosks/{deviceCode}/leave-balance', [KioskController::class, 'leaveBalance']);
