@@ -91,7 +91,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
         await emailInput.fill('john@example.com');
 
         // Step 5: User clicks submit
-        const submitButton = page.locator('button:has-text("Demander"), button:has-text("Submit")').first();
+        const submitButton = page.locator('button[type="submit"]').first();
         await submitButton.click();
 
         // Step 6: User sees success message
@@ -125,7 +125,7 @@ test.describe('Conversion Funnel E2E Tests', () => {
         await messageInput.fill('I have a question about your pricing plans.');
 
         // Step 5: User clicks submit
-        const submitButton = page.locator('button:has-text("Envoyer"), button:has-text("Send")').first();
+        const submitButton = page.locator('button[type="submit"]').first();
         await submitButton.click();
 
         // Step 6: User sees success message
