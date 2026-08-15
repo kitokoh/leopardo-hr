@@ -220,12 +220,7 @@ class AppServiceProvider extends ServiceProvider
                 ->by('public-careers:'.$request->ip());
         });
 
-        // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req /
-        // 5 s pendant 60 s) — un limit 5/15 min le 429ait systématiquement.
-        // Limiteur dédié 60/min/IP (statut non sensible, pas de mutation).
-        RateLimiter::for('trial-status', function (Request $request) {
-            return Limit::perMinute(60)->by('trial-status:'.$request->ip());
-        });
+
     }
 
     private function resolvePlanLimit(string $plan): int
