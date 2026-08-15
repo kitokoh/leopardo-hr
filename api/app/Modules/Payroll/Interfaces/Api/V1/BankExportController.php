@@ -22,9 +22,8 @@ class BankExportController extends Controller
     public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
 
     /**
-     * Issue #2267 — GET /bank-exports : liste des exports bancaires du tenant
-     * (paginée, filtre payroll_run_id optionnel). Le schéma OpenAPI
-     * documentait cette route sans implémentation → clients générés en 404.
+     * GET /api/v1/bank-exports — liste paginée des exports bancaires du
+     * tenant (issue #2267, spec openapi-sync US2).
      */
     public function index(Request $request): JsonResponse
     {
@@ -34,42 +33,56 @@ class BankExportController extends Controller
             abort(403);
         }
 
-        $query = BankExport::query()
-            ->with('payrollRun:id,period_start,period_end,status')
-            ->where('company_id', $actor->company_id)
-            ->orderByDesc('id');
+        $validated = $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'status' => ['nullable', 'string', 'max:20'],
+        ]);
 
-        if ($request->filled('payroll_run_id')) {
-            $query->where('payroll_run_id', $request->integer('payroll_run_id'));
+        $query = BankExport::query()
+            ->where('company_id', $actor->company_id)
+            ->with('payrollRun:id,period_start,period_end,status')
+            ->orderByDesc('created_at');
+
+        if (! empty($validated['status'])) {
+            $query->where('status', $validated['status']);
         }
 
-        $perPage = min(max($request->integer('per_page', 25), 1), 100);
+        $exports = $query->paginate((int) ($validated['per_page'] ?? 20));
 
-        return BankExportResource::collection($query->paginate($perPage))->response();
+        return BankExportResource::collection($exports)->response();
     }
 
     /**
-     * Issue #2267 — POST /bank-exports : génère un export bancaire (équivalent
-     * du POST /payroll-runs/{run}/bank-export, contrat OpenAPI déjà publié).
+     * POST /api/v1/bank-exports — crée un export bancaire pour un run
+     * validé/payé (issue #2267, spec openapi-sync US2). Délègue la
+     * génération du fichier à GenerateBankExportJob (async, lifecycle
+     * pending → generating → generated/failed).
      */
     public function store(Request $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
-
-        $validated = $request->validate([
-            'payroll_run_id' => 'required|integer',
-            'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
-        ]);
-
-        /** @var PayrollRun|null $payrollRun */
-        $payrollRun = PayrollRun::query()->find($validated['payroll_run_id']);
-        if ($payrollRun === null || $payrollRun->company_id !== $actor->company_id) {
-            abort(404);
-        }
         if (! $actor->isManager()) {
             abort(403);
         }
+
+        $validated = $request->validate([
+            'payroll_run_id' => ['required', 'integer'],
+            'format' => ['required', 'in:sepa_xml,ccp_dz,virement_ma,csv_generic'],
+        ]);
+
+        /** @var PayrollRun|null $payrollRun */
+        $payrollRun = PayrollRun::query()
+            ->where('company_id', $actor->company_id)
+            ->find($validated['payroll_run_id']);
+
+        if ($payrollRun === null) {
+            return response()->json([
+                'message' => 'Payroll run not found.',
+                'errors' => ['payroll_run_id' => ['Payroll run not found.']],
+            ], 422);
+        }
+
         if (! in_array($payrollRun->status, ['validated', 'paid'])) {
             return response()->json(['message' => 'Payroll run must be validated before generating bank export.'], 422);
         }

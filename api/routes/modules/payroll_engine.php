@@ -117,7 +117,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/pay-slips/{paySlip}', [PaySlipController::class, 'show'])->whereNumber('paySlip');
         Route::get('/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
 
-        // Bank Exports
+        // Bank Exports (issue #2267 — collection /bank-exports conforme spec)
+        Route::get('/bank-exports', [BankExportController::class, 'index']);
+        Route::post('/bank-exports', [BankExportController::class, 'store']);
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
         // Issue #2267 : contrat OpenAPI GET/POST /bank-exports (liste + génération).
         Route::get('/bank-exports', [BankExportController::class, 'index']);
