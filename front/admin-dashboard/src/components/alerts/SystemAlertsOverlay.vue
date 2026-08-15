@@ -148,11 +148,16 @@ onMounted(() => {
 
   // Listen for new critical alerts from real-time
   realtimeStore.$subscribe((mutation, state) => {
-    if (mutation.events?.some(event =>
-      event.key === 'notifications' &&
-      event.type === 'add' &&
-      state.notifications[0]?.priority === 'critical'
-    )) {
+    // Garde de forme #2747 : selon la mutation Pinia, `events` peut être
+    // absent ou non-tableau — ne jamais supposer `events.some` disponible.
+    const events = mutation?.events
+    const hasNewCriticalNotification = Array.isArray(events) &&
+      events.some(event =>
+        event.key === 'notifications' &&
+        event.type === 'add' &&
+        state.notifications[0]?.priority === 'critical'
+      )
+    if (hasNewCriticalNotification) {
       const criticalNotification = state.notifications[0]
       if (criticalNotification.type === 'system_alert') {
         showCriticalAlertBanner(criticalNotification)

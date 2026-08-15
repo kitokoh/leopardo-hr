@@ -91,7 +91,12 @@ let dismissTimers = new Map()
 onMounted(() => {
   // Listen for new real-time notifications
   const unsubscribe = realtimeStore.$subscribe((mutation, state) => {
-    if (mutation.events?.some(event => event.key === 'notifications' && event.type === 'add')) {
+    // Garde de forme #2747 : `events` peut être absent ou non-tableau selon
+    // la mutation Pinia — ne jamais supposer `events.some` disponible.
+    const events = mutation?.events
+    const hasNewNotification = Array.isArray(events) &&
+      events.some(event => event.key === 'notifications' && event.type === 'add')
+    if (hasNewNotification) {
       const newNotification = state.notifications[0]
       if (newNotification && !localNotifications.value.find(n => n.id === newNotification.id)) {
         showNotification(newNotification)
