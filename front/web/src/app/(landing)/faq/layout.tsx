@@ -19,10 +19,10 @@ export default function FaqLayout({
   const faqSchema = generateFAQSchema([
     {
       question: 'Leopardo RH propose-t-il un essai gratuit ?',
-      answer: 'Oui, un essai guide gratuit de 30 jours est disponible sans carte bancaire.',
+      answer: 'Oui, un essai guidé gratuit de 14 jours est disponible sans carte bancaire.',
     },
     {
-      question: 'Mes donnees sont-elles sécurisées ?',
+      question: 'Mes donnees sont-elles securisees ?',
       answer: 'Oui, toutes les donnees sont chiffrees (AES-256) et isolees par entreprise (multi-tenant).',
     },
     {

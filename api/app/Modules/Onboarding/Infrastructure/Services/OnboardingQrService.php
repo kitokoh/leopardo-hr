@@ -145,7 +145,14 @@ class OnboardingQrService implements OnboardingQrInterface
     {
         $key = (string) Config::get('app.key', '');
 
-        return $key !== '' ? $key : 'leopardo-local-onboarding-key';
+        if ($key === '') {
+            // Fail-closed (QA #3060) : sans clé de signature, aucun token QR ne
+            // doit être émis ni accepté — un fallback codé en dur rendrait les
+            // QR forgeables (signature connue de tous).
+            throw new \RuntimeException('QR signing key is not configured (APP_KEY empty).');
+        }
+
+        return $key;
     }
 
     private function base64UrlEncode(string $value): string

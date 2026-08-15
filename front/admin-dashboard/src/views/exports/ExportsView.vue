@@ -103,7 +103,7 @@
       search-placeholder="Rechercher dans l'historique..."
       default-sort="created_at"
       default-sort-dir="desc"
-      empty-message="Aucun export recent."
+      :empty-message="historyError || 'Aucun export recent.'"
     >
       <template #cell-status="{ value }">
         <StatusBadge :status="value" :map="exportStatusMap" />
@@ -132,6 +132,7 @@ import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const exportHistory = ref([])
 const historyLoading = ref(false)
+const historyError = ref('')
 const hrReportResult = ref(null)
 const generatingReport = ref(false)
 const hrReportError = ref('')
@@ -194,11 +195,15 @@ async function generateHrReport() {
 
 async function fetchHistory() {
   historyLoading.value = true
+  historyError.value = ''
   try {
     // Issue #2710 — un échec backend s'affiche comme une erreur explicite
     // (plus de catch silencieux qui ressemble à « aucun export »).
     const res = await api.get('/v1/export/history')
     exportHistory.value = res.data.data || res.data || []
+  } catch (err) {
+    // #3395 : état d'erreur visible + retry au lieu d'une liste vide trompeuse.
+    historyError.value = err?.response?.data?.message || 'Impossible de charger l\'historique des exports.'
   } finally {
     historyLoading.value = false
   }

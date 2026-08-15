@@ -10,16 +10,26 @@ API_BASE="${BASE_URL}/api/v1"
 
 ENABLED="${STAGING_DEMO_AUTH_SMOKE:-false}"
 MANAGER_EMAIL="${STAGING_MANAGER_EMAIL:-fatima.meziane@techcorp-algerie.dz}"
-MANAGER_PASSWORD="${STAGING_MANAGER_PASSWORD:-password123}"
+MANAGER_PASSWORD="${STAGING_MANAGER_PASSWORD:-}"
 EMPLOYEE_EMAIL="${STAGING_EMPLOYEE_EMAIL:-karim.aouad@techcorp-algerie.dz}"
-EMPLOYEE_PASSWORD="${STAGING_EMPLOYEE_PASSWORD:-password123}"
+EMPLOYEE_PASSWORD="${STAGING_EMPLOYEE_PASSWORD:-}"
 PLATFORM_EMAIL="${STAGING_PLATFORM_EMAIL:-admin@leopardo-rh.com}"
-PLATFORM_PASSWORD="${STAGING_PLATFORM_PASSWORD:-password123}"
+PLATFORM_PASSWORD="${STAGING_PLATFORM_PASSWORD:-}"
 
 if [[ "${ENABLED}" != "true" ]]; then
   echo "[SKIP] Staging demo auth smoke disabled. Set STAGING_DEMO_AUTH_SMOKE=true to run real demo logins."
   exit 0
 fi
+
+# Issue #3521 : plus de fallback password123 codé en dur — les credentials de
+# démo viennent de l'API (/api/v1/demo-users, cf. docs/DEMO_ACCOUNTS.md) ou
+# des variables d'environnement STAGING_*_PASSWORD. Échec explicite sinon.
+for var in MANAGER_PASSWORD EMPLOYEE_PASSWORD PLATFORM_PASSWORD; do
+  if [[ -z "${!var}" ]]; then
+    echo "[FAIL] ${var} non défini : fournir STAGING_${var} (source canonique : GET /api/v1/demo-users)." >&2
+    exit 1
+  fi
+done
 
 require_jq() {
   if ! command -v jq >/dev/null 2>&1; then

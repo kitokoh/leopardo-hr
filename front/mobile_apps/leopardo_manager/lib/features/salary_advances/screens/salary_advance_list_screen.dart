@@ -19,6 +19,7 @@ import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -266,7 +267,7 @@ class _SalaryAdvanceListScreenState
     final requestedAt = advance.requestedAt ?? advance.createdAt;
     final date = requestedAt == null
         ? 'Date non renseignee'
-        : DateFormat('d MMM yyyy', 'fr_FR').format(requestedAt);
+        : DateFormat('d MMM yyyy', deviceIntlDateLocale).format(requestedAt);
     final repayment = advance.repaymentMonths == null
         ? 'Remboursement a definir'
         : '${advance.repaymentMonths} mois';
@@ -282,11 +283,11 @@ class _SalaryAdvanceListScreenState
     final validation = _validationLabel(advance.validationStatus);
     final payment = [
       if (advance.managerApprovedAt != null)
-        'Validation manager : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.managerApprovedAt!)}',
+        'Validation manager : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.managerApprovedAt!)}',
       if (advance.paymentDeclaredAt != null)
-        'Paiement declare : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.paymentDeclaredAt!)}',
+        'Paiement declare : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.paymentDeclaredAt!)}',
       if (advance.employeeConfirmedAt != null)
-        'Reception employee : ${DateFormat('d MMM yyyy', 'fr_FR').format(advance.employeeConfirmedAt!)}',
+        'Reception employee : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.employeeConfirmedAt!)}',
     ].join('\n');
 
     return Text(

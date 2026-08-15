@@ -10,6 +10,8 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerAuditLog;
 use App\Modules\Payroll\Domain\Models\Payment;
+use App\Exceptions\DomainException;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -17,6 +19,10 @@ class PartnerService
 {
     /**
      * Soumet une candidature de partenaire.
+     *
+     * Anti-doublon #2999 : la contrainte unique partners_user_id_unique
+     * (migration 2026_08_15_000006) est le verrou définitif — deux
+     * candidatures simultanées ne peuvent pas créer deux partenaires.
      */
     public function apply(int $userId, array $details): Partner
     {
@@ -25,14 +31,23 @@ class PartnerService
             ? $encryptor->encrypt($details['payment_details'])
             : null;
 
-        return Partner::create([
-            'user_id' => $userId,
-            'referral_code' => strtoupper(\Illuminate\Support\Str::random(10)),
-            'application_status' => 'pending',
-            'status' => 'suspended', // Suspended until approved
-            'type' => $details['type'] ?? 'individual',
-            'payment_details' => $encryptedDetails,
-        ]);
+        try {
+            return Partner::create([
+                'user_id' => $userId,
+                'referral_code' => strtoupper(\Illuminate\Support\Str::random(10)),
+                'application_status' => 'pending',
+                'status' => 'suspended', // Suspended until approved
+                'type' => $details['type'] ?? 'individual',
+                'payment_details' => $encryptedDetails,
+            ]);
+        } catch (QueryException $e) {
+            // 23505 = violation de contrainte unique (race gagnée par l'autre requête).
+            if ($e->getCode() === '23505' || str_contains($e->getMessage(), 'partners_user_id_unique')) {
+                throw new DomainException('Déjà partenaire.', 400, 'ALREADY_EXISTS');
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -140,31 +155,42 @@ class PartnerService
 
     /**
      * Demander un paiement (Payout).
+     *
+     * #2999 : transaction + lockForUpdate sur le partenaire — les demandes
+     * concurrentes se sérialisent et ne peuvent pas dépasser le solde.
      */
     public function requestPayout(Partner $partner, int $amountCents, string $currency): \App\Modules\Billing\Domain\Models\PartnerPayoutRequest
     {
-        // Calcul du solde disponible
-        $totalEarned = $partner->commissions()->where('status', 'approved')->sum('amount');
-        $totalRequested = \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::where('partner_id', $partner->id)
-            ->whereIn('status', ['pending', 'approved', 'paid'])
-            ->sum('amount');
+        return DB::transaction(function () use ($partner, $amountCents, $currency) {
+            // Verrou pessimiste : sérialise les demandes concurrentes.
+            $lockedPartner = Partner::query()
+                ->whereKey($partner->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $available = $totalEarned - $totalRequested;
+            // Calcul du solde disponible (recalculé sous verrou).
+            $totalEarned = $lockedPartner->commissions()->where('status', 'approved')->sum('amount');
+            $totalRequested = \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::where('partner_id', $lockedPartner->id)
+                ->whereIn('status', ['pending', 'approved', 'paid'])
+                ->sum('amount');
 
-        if ($amountCents > $available) {
-            throw new \App\Exceptions\DomainException("Solde insuffisant.", 422, "INSUFFICIENT_BALANCE");
-        }
+            $available = $totalEarned - $totalRequested;
 
-        if ($amountCents < $partner->payout_threshold) {
-            throw new \App\Exceptions\DomainException("Montant sous le seuil.", 422, "BELOW_PAYOUT_THRESHOLD");
-        }
+            if ($amountCents > $available) {
+                throw new \App\Exceptions\DomainException("Solde insuffisant.", 422, "INSUFFICIENT_BALANCE");
+            }
 
-        return \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::create([
-            'partner_id' => $partner->id,
-            'amount' => $amountCents,
-            'currency' => $currency,
-            'status' => 'pending',
-        ]);
+            if ($amountCents < $lockedPartner->payout_threshold) {
+                throw new \App\Exceptions\DomainException("Montant sous le seuil.", 422, "BELOW_PAYOUT_THRESHOLD");
+            }
+
+            return \App\Modules\Billing\Domain\Models\PartnerPayoutRequest::create([
+                'partner_id' => $lockedPartner->id,
+                'amount' => $amountCents,
+                'currency' => $currency,
+                'status' => 'pending',
+            ]);
+        });
     }
 
     /**

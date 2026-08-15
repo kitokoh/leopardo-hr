@@ -14,6 +14,7 @@ use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\EdgeNodeActionRequest;
+use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\IssueLicenseRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -96,12 +97,12 @@ class EdgeNodeController extends Controller
      * Issue or renew an Edge license.
      * POST /api/v1/edge/{nodeId}/license
      */
-    public function issueLicense(Request $request, string $nodeId): JsonResponse
+    public function issueLicense(IssueLicenseRequest $request, string $nodeId): JsonResponse
     {
         $node = EdgeNode::where('company_id', $request->user()->company_id)
             ->findOrFail($nodeId);
 
-        $days = (int) $request->input('valid_days', config('edge.license_validity_days', 30));
+        $days = $request->integer('valid_days', (int) config('edge.license_validity_days', 30));
         $license = $this->licenseService->issueLicense($node, $days);
 
         return response()->json(['data' => $license]);
@@ -123,7 +124,7 @@ class EdgeNodeController extends Controller
             'data' => $log->fresh(),
             'node' => [
                 'id' => $node->id,
-                'last_sync_at' => $node->fresh()->last_sync_at,
+                'last_sync_at' => $node->fresh()?->last_sync_at,
             ],
         ]);
     }

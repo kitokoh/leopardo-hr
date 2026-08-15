@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
 use App\Core\Auth\Infrastructure\Services\AuthService;
+use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -134,6 +135,14 @@ final class OidcFlowService
 
         if (! $sso['config']->isOidcFlowReady()) {
             throw new \RuntimeException('OIDC SSO incomplet : issuer, authorize_url, token_url, jwks_uri, redirect_uri et client_id requis.');
+        }
+
+        foreach (['authorizeUrl', 'tokenUrl', 'jwksUri'] as $field) {
+            $url = $sso['config']->{$field};
+            $host = is_string($url) ? parse_url($url, PHP_URL_HOST) : null;
+            if (! is_string($host) || ! NotPrivateUrl::isPublicHost($host)) {
+                throw new \RuntimeException('OIDC endpoint refusé : hôte privé, réservé ou non résolvable.');
+            }
         }
 
         return $sso['config'];

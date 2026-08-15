@@ -108,6 +108,9 @@ export default function TestimonialsPage() {
               </motion.div>
             ))}
           </div>
+          <p className="mt-8 text-center text-emerald-100/80 text-xs">
+            Chiffres de démonstration — données fictives à titre d&apos;illustration.
+          </p>
         </div>
       </section>
 
@@ -163,7 +166,7 @@ export default function TestimonialsPage() {
 
       <CTASection
         title="Rejoignez nos 500+ clients satisfaits"
-        description="Démarrez votre essai gratuit de 30 jours"
+        description="Démarrez votre essai gratuit de 14 jours"
         primaryCta={{ text: 'Commencer maintenant', href: '/signup' }}
         secondaryCta={{ text: 'Demander une démo', href: '/demo' }}
       />

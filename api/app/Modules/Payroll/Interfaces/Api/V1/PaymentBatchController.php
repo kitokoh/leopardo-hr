@@ -153,7 +153,7 @@ class PaymentBatchController extends Controller
                     'paid_at' => now(),
                 ]);
 
-            return $paymentBatch->fresh(['items.paySlip']);
+            return $paymentBatch->fresh(['items.paySlip', 'items.employee']);
         });
 
         foreach ($batch->items as $item) {
