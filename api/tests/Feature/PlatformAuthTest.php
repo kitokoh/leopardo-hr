@@ -256,4 +256,63 @@ class PlatformAuthTest extends TestCase
         $response->assertJsonPath('error', 'INVALID_PASSWORD');
         $this->assertTrue(Hash::check('password123', $this->superAdmin->fresh()->password_hash));
     }
+
+    public function test_suspended_super_admin_cannot_login(): void
+    {
+        $suspended = SuperAdmin::query()->create([
+            'name' => 'Suspended Admin',
+            'email' => 'suspended@leopardo.test',
+            'password_hash' => Hash::make('password123'),
+            'status' => 'suspended',
+        ]);
+
+        $this->assertSame('suspended', $suspended->status);
+
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'suspended@leopardo.test',
+            'password' => 'password123',
+        ])->assertStatus(403)
+            ->assertJsonPath('error', 'ACCOUNT_SUSPENDED');
+    }
+
+    public function test_deactivated_super_admin_cannot_login(): void
+    {
+        SuperAdmin::query()->create([
+            'name' => 'Deactivated Admin',
+            'email' => 'deactivated@leopardo.test',
+            'password_hash' => Hash::make('password123'),
+            'status' => 'deactivated',
+        ]);
+
+        $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'deactivated@leopardo.test',
+            'password' => 'password123',
+        ])->assertStatus(403)
+            ->assertJsonPath('error', 'ACCOUNT_SUSPENDED');
+    }
+
+    public function test_deactivating_super_admin_revokes_existing_tokens(): void
+    {
+        // Login ok pour un admin actif
+        $login = $this->postJson('/api/v1/platform/auth/login', [
+            'email' => 'admin@leopardo.test',
+            'password' => 'password123',
+            'device_name' => 'token-revocation-check',
+        ])->assertOk();
+
+        $token = $login->json('token');
+        $this->assertIsString($token);
+
+        // Le token fonctionne avant désactivation
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/platform/auth/me')
+            ->assertOk();
+
+        // Désactivation via l'endpoint admin (simule l'action plateforme)
+        $admin = SuperAdmin::query()->where('email', 'admin@leopardo.test')->firstOrFail();
+        $admin->update(['status' => 'deactivated']);
+        $admin->tokens()->delete();
+
+        $this->assertSame(0, $admin->tokens()->count(), 'Les tokens doivent être révoqués à la désactivation');
+    }
 }

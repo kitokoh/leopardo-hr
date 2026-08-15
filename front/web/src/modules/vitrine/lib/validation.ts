@@ -5,71 +5,29 @@ import { z } from "zod";
  */
 
 import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 
 /**
  * Validation messages for the guided-trial signup form, localized.
  * The form is a 4-locale surface (FR/EN/TR/AR); the zod schema must
  * produce messages in the active locale (issue #2648).
  */
-export const signupValidationMessages: Record<AppLocale, {
-  emailInvalid: string;
-  emailTooShort: string;
-  emailTooLong: string;
-  companyTooShort: string;
-  companyTooLong: string;
-  roleRequired: string;
-  employeesRequired: string;
-  phoneInvalid: string;
-  agreeTerms: string;
-}> = {
-  fr: {
-    emailInvalid: 'Email invalide',
-    emailTooShort: 'Email trop court',
-    emailTooLong: 'Email trop long',
-    companyTooShort: "Le nom de l'entreprise doit contenir au moins 2 caractères",
-    companyTooLong: "Le nom de l'entreprise est trop long",
-    roleRequired: 'Sélectionnez votre rôle',
-    employeesRequired: "Sélectionnez une taille d'équipe",
-    phoneInvalid: 'Numéro de téléphone invalide',
-    agreeTerms: "Vous devez accepter les conditions d'utilisation",
-  },
-  en: {
-    emailInvalid: 'Invalid email',
-    emailTooShort: 'Email too short',
-    emailTooLong: 'Email too long',
-    companyTooShort: 'Company name must be at least 2 characters',
-    companyTooLong: 'Company name is too long',
-    roleRequired: 'Select your role',
-    employeesRequired: 'Select a team size',
-    phoneInvalid: 'Invalid phone number',
-    agreeTerms: 'You must accept the terms of use',
-  },
-  tr: {
-    emailInvalid: 'Geçersiz e-posta',
-    emailTooShort: 'E-posta çok kısa',
-    emailTooLong: 'E-posta çok uzun',
-    companyTooShort: 'Şirket adı en az 2 karakter olmalıdır',
-    companyTooLong: 'Şirket adı çok uzun',
-    roleRequired: 'Rolünüzü seçin',
-    employeesRequired: 'Bir ekip boyutu seçin',
-    phoneInvalid: 'Geçersiz telefon numarası',
-    agreeTerms: 'Kullanım koşullarını kabul etmelisiniz',
-  },
-  ar: {
-    emailInvalid: 'البريد الإلكتروني غير صالح',
-    emailTooShort: 'البريد الإلكتروني قصير جدًا',
-    emailTooLong: 'البريد الإلكتروني طويل جدًا',
-    companyTooShort: 'يجب أن يتكون اسم الشركة من حرفين على الأقل',
-    companyTooLong: 'اسم الشركة طويل جدًا',
-    roleRequired: 'اختر دورك',
-    employeesRequired: 'اختر حجم الفريق',
-    phoneInvalid: 'رقم الهاتف غير صالح',
-    agreeTerms: 'يجب عليك قبول شروط الاستخدام',
-  },
-};
+function buildSignupValidationMessages(locale: AppLocale) {
+  return {
+    emailInvalid: t(locale, 'signup.validation.emailInvalid'),
+    emailTooShort: t(locale, 'signup.validation.emailTooShort'),
+    emailTooLong: t(locale, 'signup.validation.emailTooLong'),
+    companyTooShort: t(locale, 'signup.validation.companyTooShort'),
+    companyTooLong: t(locale, 'signup.validation.companyTooLong'),
+    roleRequired: t(locale, 'signup.validation.roleRequired'),
+    employeesRequired: t(locale, 'signup.validation.employeesRequired'),
+    phoneInvalid: t(locale, 'signup.validation.phoneInvalid'),
+    agreeTerms: t(locale, 'signup.validation.agreeTerms'),
+  };
+}
 
 export function signupFormSchema(locale: AppLocale) {
-  const m = signupValidationMessages[locale] ?? signupValidationMessages.fr;
+  const m = buildSignupValidationMessages(locale);
 
   return z.object({
     email: z

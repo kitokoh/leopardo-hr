@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { setSessionCookie } from './session-helpers';
 
 const visualUser = {
   id: 101,
@@ -97,6 +98,36 @@ async function mockDashboard(page: Page) {
       body: JSON.stringify({ data: [], meta: { total: 0 } }),
     });
   });
+
+  // Le dashboard hydrate la session de démo via /demo-users (même contrat
+  // que auth-client-smoke) : sans mock, la requête part vers le backend réel
+  // → 404 → redirection /auth/login.
+  await page.route('**/api/v1/demo-users', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          companies: [
+            {
+              name: 'TechCorp Algerie SARL',
+              slug: 'techcorp-algerie',
+              country: 'DZ',
+              users: [
+                {
+                  email: 'fatima.meziane@techcorp-algerie.dz',
+                  name: 'Fatima Meziane',
+                  role: 'manager',
+                  manager_role: 'rh',
+                  password: 'password123',
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    });
+  });
 }
 
 test.describe('Client visual smoke attachments', () => {
@@ -114,6 +145,7 @@ test.describe('Client visual smoke attachments', () => {
       window.localStorage.setItem('auth_user', JSON.stringify(user));
     }, visualUser);
 
+    await setSessionCookie(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('body')).toContainText('TechCorp Algerie SARL');
     await expect(page.locator('body')).toContainText('absence.approved');
