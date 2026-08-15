@@ -123,7 +123,7 @@ export default function DashboardLayout({
     }
 
     await apiFetch('/notifications/read-all', {
-      method: 'POST',
+      method: 'PUT',
     });
 
     setNotificationPreview((items) => items.map((item) => ({ ...item, is_read: true })));

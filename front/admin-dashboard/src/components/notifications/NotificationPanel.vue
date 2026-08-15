@@ -35,14 +35,6 @@
                 <p class="mt-1 text-sm text-gray-500">
                   {{ notification.message }}
                 </p>
-                <div v-if="notification.action" class="mt-3 flex space-x-7">
-                  <button
-                    @click="handleNotificationAction(notification)"
-                    class="rounded-md bg-white text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    {{ notification.action.label }}
-                  </button>
-                </div>
               </div>
               <div class="ml-4 flex flex-shrink-0">
                 <button
@@ -145,13 +137,6 @@ function dismissNotification(notificationId) {
     clearTimeout(timer)
     dismissTimers.delete(notificationId)
   }
-}
-
-function handleNotificationAction(notification) {
-  if (notification.action?.callback) {
-    notification.action.callback()
-  }
-  dismissNotification(notification.id)
 }
 
 function getNotificationIcon(type) {
