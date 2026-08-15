@@ -625,14 +625,6 @@
       }
     }
   },
-  "companies": {
-    "toast": {
-      "load_failed": "تعذّر تحميل تفاصيل الشركة.",
-      "tickets_failed": "تعذّر تحميل تذاكر الدعم.",
-      "subscription_failed": "تعذّر تحديث الاشتراك.",
-      "features_failed": "تعذّر حفظ إعدادات الوحدات."
-    }
-  },
   "signup": {
     "badge": "تجربة مجانية لمدة 30 يومًا",
     "title": "جرّب Leopardo مع شركتك",
@@ -714,6 +706,14 @@
       "employeesRequired": "اختر حجم الفريق",
       "phoneInvalid": "رقم الهاتف غير صالح",
       "agreeTerms": "يجب عليك قبول شروط الاستخدام"
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "تعذّر تحميل تفاصيل الشركة.",
+      "tickets_failed": "تعذّر تحميل تذاكر الدعم.",
+      "subscription_failed": "تعذّر تحديث الاشتراك.",
+      "features_failed": "تعذّر حفظ إعدادات الوحدات."
     }
   }
 }
