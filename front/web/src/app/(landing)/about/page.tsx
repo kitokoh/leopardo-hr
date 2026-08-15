@@ -66,11 +66,16 @@ export default function AboutPage() {
     },
   ];
 
+  // #3246 — preuve sociale honnête : mêmes métriques vérifiables que
+  // SocialProofMetrics (PA2-MKT-006). Aucune donnée client inventée
+  // (PILOTAGE.md « Clients payants | 0 ») : règles de paie par pays,
+  // locales produit, surfaces produit et taille de la suite de tests
+  // backend — tout est vérifiable dans le dépôt public.
   const stats = [
-    { value: '50K+', label: 'Utilisateurs Actifs' },
-    { value: '99.9%', label: 'Précision' },
-    { value: '3x', label: 'Plus Rapide' },
-    { value: '24/7', label: 'Support' },
+    { value: '6', label: 'Pays avec règles de paie dédiées' },
+    { value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
+    { value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
+    { value: '1200+', label: 'Tests automatisés backend' },
   ];
 
   return (
@@ -130,9 +135,8 @@ export default function AboutPage() {
                 pendant des années, il a décidé de créer une plateforme qui changerait tout.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-                Aujourd&apos;hui, Leopardo aide plus de 50 000 utilisateurs dans 15 pays à gérer leurs employés, leur paie
-                et leurs documents. Nous sommes fiers d&apos;avoir une satisfaction client de 98% et un taux de rétention
-                de 95%.
+                Aujourd&apos;hui, Leopardo accompagne des équipes RH en Afrique francophone et en Europe sur la paie,
+                les congés et les documents employés, avec une exigence forte de sécurité et de conformité.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
                 Notre mission est simple: rendre la gestion RH accessible à tous, peu importe la taille de votre
@@ -273,7 +277,7 @@ export default function AboutPage() {
               Chiffres Clés
             </div>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white mb-6 tracking-tight">
-              Notre Impact
+              Leopardo en Chiffres
             </h2>
           </motion.div>
 
@@ -296,6 +300,11 @@ export default function AboutPage() {
               </motion.div>
             ))}
           </div>
+
+          <p className="mt-8 text-center text-slate-400 dark:text-slate-500 text-xs">
+            Métriques vérifiables dans le dépôt public du produit — aucun chiffre client
+            (Leopardo n&apos;a pas encore de client payant, cf. PILOTAGE.md).
+          </p>
         </div>
       </section>
 

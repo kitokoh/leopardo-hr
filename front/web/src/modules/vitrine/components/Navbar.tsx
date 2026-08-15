@@ -99,7 +99,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'Communaute',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Forum', description: 'Echangez avec la communaute' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Communaute', description: 'Echangez avec la communaute' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'FAQ', description: 'Questions frequentes' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contactez notre equipe' },
       ],
@@ -129,7 +129,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'Community',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Forum', description: 'Connect with the community' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Community', description: 'Connect with the community' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'FAQ', description: 'Frequently asked questions' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contact our team' },
       ],
@@ -159,7 +159,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'Topluluk',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Forum', description: 'Toplulukla baglanti kurun' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Topluluk', description: 'Toplulukla baglanti kurun' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'SSS', description: 'Sik sorulan sorular' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Destek', description: 'Ekibimize ulasin' },
       ],
@@ -189,7 +189,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'المجتمع',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المنتدى', description: 'تواصل مع المجتمع' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المجتمع', description: 'تواصل مع المجتمع' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'الأسئلة الشائعة', description: 'إجابات سريعة قبل الإطلاق' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'الدعم', description: 'تواصل مع فريقنا' },
       ],

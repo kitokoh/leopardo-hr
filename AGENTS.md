@@ -105,11 +105,15 @@ reste ouverte même une fois le correctif livré. Règles :
 Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles definis "noir sur blanc" :
 
 ### Les 5 Applications Mobiles Flutter (`front/mobile_apps/`)
+- **`leopardo_employee`** : Application employee (self-service) — pointage GPS, absences, soldes, notifications.
 - **`leopardo_manager`** : Application dediee a la gestion du tenant (entreprise). Vue globale, affectation des roles, evolution.
 - **`leopardo_hr`** : Application dediee aux Ressources Humaines. Suivi des employes, presences/absences, taches, et gestion du recrutement (ATS).
 - **`leopardo_marketing`** : Application dediee aux marketeurs. Planification et publication en "1-clic" sur les differents reseaux sociaux.
 - **`leopardo_platform_admin`** : Application ultra-securisee pour le Super-Admin (proprietaire du SaaS) pour gerer les abonnements et l'infrastructure.
-- **`leopardo_kiosk`** : Application dediee au materiel physique (tablette pointeuse/biometrie).
+
+> `leopardo_core` est le package partage (design system, API client, modeles, l10n) consomme par les 5 apps.
+> Le **kiosk/biometrie n'est PAS une app Flutter** : c'est une web app offline-first (`front/zkteco-kiosk`,
+> pointage local `/local/punch` + bridge ZKTeco) — cf. `front/zkteco-kiosk/README.md`.
 
 ### L'Ecosysteme Web (`front/`)
 - **La Web App Client (`front/web` et admin-dashboard)** : Le portail web client est **unique**. Un employe, un RH ou un Manager se connecte au meme portail, mais l'interface s'adapte dynamiquement et change completement en fonction du role (RBAC).

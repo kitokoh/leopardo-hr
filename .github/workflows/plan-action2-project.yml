@@ -49,7 +49,7 @@ env:
 
 concurrency:
   group: plan-action2-project-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   validate:
