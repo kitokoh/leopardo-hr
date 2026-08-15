@@ -14,6 +14,7 @@ import 'package:leopardo_employee/features/attendance/providers/attendance_provi
 import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
+import 'package:leopardo_core/core/utils/currency_format.dart';
 
 DateTime attendanceHistoryMonthKey(DateTime value) {
   return DateTime(value.year, value.month);
@@ -139,13 +140,13 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 (day) => _buildDayRow(
                   day,
                   canDirectEdit: canDirectEdit,
-                  currency: attState.summary?.currency ?? 'DZD',
+                  currency: attState.summary?.currency ?? '',
                 ),
               ),
               const SizedBox(height: 10),
               _buildWeekSummary(
                 week,
-                currency: attState.summary?.currency ?? 'DZD',
+                currency: attState.summary?.currency ?? '',
               ),
             ],
           ),
@@ -605,7 +606,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     final statusColor = _statusColor(log);
     final gain = state.summary?.totalEstimated ??
         _estimatedEarnings(log?.workedHours ?? 0);
-    final currency = state.summary?.currency ?? 'DZD';
+    final currency = state.summary?.currency ?? '';
     final sessionsCount =
         int.tryParse(state.daySummary?['sessions_count']?.toString() ?? '') ??
             state.todaySessions.length;
@@ -673,7 +674,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               ),
               const Spacer(),
               Text(
-                '${gain.toStringAsFixed(0)} $currency',
+                '${gain.toStringAsFixed(0)}${currencySuffix(currency)}',
                 style: const TextStyle(
                   color: AppColors.rh,
                   fontSize: 16,
@@ -818,8 +819,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       const SizedBox(height: 2),
                       Text(
                         day.isAbsent
-                            ? '0 $currency'
-                            : '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
+                            ? '0${currencySuffix(currency)}'
+                            : '${day.estimatedEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
                         style: TextStyle(
                           fontSize: 10,
                           color: day.isAbsent ? _soft : AppColors.rh,
@@ -895,7 +896,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             color: AppColors.mobileDarkTextSoft,
           ),
           _WeekStat(
-            value: '${totalEarnings.toStringAsFixed(0)} $currency',
+            value: '${totalEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
             label: 'Gain estime',
             color: AppColors.rh,
           ),
@@ -1083,7 +1084,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         child: _DetailMetric(
                           label: 'Gain estime',
                           value:
-                              '${day.estimatedEarnings.toStringAsFixed(0)} $currency',
+                              '${day.estimatedEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
                           color: AppColors.rh,
                         ),
                       ),
