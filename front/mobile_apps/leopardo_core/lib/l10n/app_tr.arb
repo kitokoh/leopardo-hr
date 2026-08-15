@@ -456,7 +456,7 @@
   "payrollConfidencePilotMessage": "{country} için pilot kurallar: genel kamu kaynaklarından (iş kanunu) alınan ancak yerelde henüz yasal olarak doğrulanmamış tutarlar. Yasal yükümlülükleriniz için bu rakamlara (vergi dilimleri, sosyal güvenlik katkıları, fazla mesai eşikleri) dayanmadan önce yerel bir hukuk veya vergi danışmanına danışın.",
   "payrollConfidencePlaceholderMessage": "{country} için değersiz taslak: vergi ve sosyal güvenlik katkı tutarları henüz belgelenmemiştir ve değiştirilene kadar gerçek maaş döngülerinde kullanılmamalıdır.",
   "payrollConfidenceUnknownMessage": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor.",
-  "signupBadge": "30 günlük ücretsiz deneme",
+  "signupBadge": "14 günlük ücretsiz deneme",
   "signupTitle": "Leopardo'yu şirketinizle deneyin",
   "signupSubtitle": "Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.",
   "signupLabelemail": "İş e-postası",
@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "Şirket detayları yüklenemedi.",
   "companiesToastTicketsFailed": "Destek talepleri yüklenemedi.",
   "companiesToastSubscriptionFailed": "Abonelik güncellenemedi.",
-  "companiesToastFeaturesFailed": "Modül ayarları kaydedilemedi."
+  "companiesToastFeaturesFailed": "Modül ayarları kaydedilemedi.",
+  "seoPricingDescription": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
 }
