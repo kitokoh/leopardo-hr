@@ -18,6 +18,8 @@ class HrSmartAttendanceRepository {
       '/smart-attendance/sessions?status=pending_validation&per_page=50',
       timeoutOverride: _readTimeout,
     );
+    // #3500 : extractDataList absorbe les payloads directs, enveloppés et
+    // paginés Laravel ({data:{data:[...]}}) — le cast direct crashait dessus.
     final list = extractDataList(response.data);
     return list
         .map((e) => GeoAttendanceSession.fromJson(e as Map<String, dynamic>))

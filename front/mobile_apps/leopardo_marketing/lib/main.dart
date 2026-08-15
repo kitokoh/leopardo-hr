@@ -8,7 +8,10 @@ import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:leopardo_core/core/widgets/leopardo_bottom_nav.dart';
 import 'features/marketing/screens/marketing_home_screen.dart';
 
-void main() async {
+void main() {
+  // #3500 : pas d'await avant runApp() — le premier frame ne doit jamais
+  // attendre un init natif (page grise). initializeDateFormatting est déplacé
+  // dans le bootstrap StartupGate (aligné sur les 3 autres apps, cf. #2748).
   WidgetsFlutterBinding.ensureInitialized();
 
   FlutterError.onError = (details) {
@@ -30,6 +33,7 @@ void main() async {
 
 Future<void> _bootstrap() async {
   // Initialization logic for marketing app
+  await initializeDateFormatting('fr_FR', null);
 }
 
 // #3500 — l'initialisation des locales était un await bloquant avant runApp
