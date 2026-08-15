@@ -32,7 +32,7 @@ const COPY: Record<
     stats: [
       ['3', 'apps mobiles'],
       ['2', 'apps web'],
-      ['30 j', "d'essai gratuit"],
+      ['14 j', "d'essai gratuit"],
     ],
     badges: ['Web', 'Mobile', 'Kiosque', 'IA-ready'],
   },
@@ -42,7 +42,7 @@ const COPY: Record<
     stats: [
       ['3', 'mobile apps'],
       ['2', 'web apps'],
-      ['30 days', 'free trial'],
+      ['14 days', 'free trial'],
     ],
     badges: ['Web', 'Mobile', 'Kiosk', 'AI-ready'],
   },
@@ -52,7 +52,7 @@ const COPY: Record<
     stats: [
       ['3', 'mobil uygulama'],
       ['2', 'web uygulaması'],
-      ['30 gün', 'ücretsiz deneme'],
+      ['14 gün', 'ücretsiz deneme'],
     ],
     badges: ['Web', 'Mobil', 'Kiosk', 'Yapay zekâ hazır'],
   },
@@ -62,7 +62,7 @@ const COPY: Record<
     stats: [
       ['3', 'تطبيقات جوّال'],
       ['2', 'تطبيقات ويب'],
-      ['30 يومًا', 'تجربة مجانية'],
+      ['14 يومًا', 'تجربة مجانية'],
     ],
     badges: ['ويب', 'جوّال', 'كشك', 'جاهز للذكاء الاصطناعي'],
   },
