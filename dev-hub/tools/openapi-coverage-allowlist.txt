@@ -68,16 +68,6 @@ DELETE /v1/recruitment/interviews/{param}
 DELETE /v1/recruitment/jobs/{param}
 GET /v1/me/contract
 GET /v1/recruitment/applicants/{param}
-GET /v1/reports/absenteeism
-GET /v1/reports/cost-analysis
-GET /v1/reports/demographics
-GET /v1/reports/headcount
-GET /v1/reports/loan-summary
-GET /v1/reports/overtime
-GET /v1/reports/payroll-summary
-GET /v1/reports/recruitment-pipeline
-GET /v1/reports/training-completion
-GET /v1/reports/turnover
 PATCH /v1/recruitment/applicants/{param}/status
 PATCH /v1/recruitment/interviews/{param}/feedback
 
@@ -100,22 +90,16 @@ POST /v1/marketing/social-accounts/connect
 POST /v1/marketing/social-accounts/disconnect
 
 ## modules/rh.php — 18 route(s)
-DELETE /v1/departments/{param}
 DELETE /v1/payrolls/{param}
-GET /v1/departments
-GET /v1/departments/{param}
 GET /v1/notifications/stream
 GET /v1/payrolls/{param}
 GET /v1/schedules/{param}
 GET /v1/tasks/{param}/comments
-PATCH /v1/departments/{param}
 PATCH /v1/payrolls/{param}
 PATCH /v1/positions/{param}
 PATCH /v1/schedules/{param}
 PATCH /v1/sites/{param}
-POST /v1/departments
 POST /v1/notifications/sse-token
-PUT /v1/departments/{param}
 PUT /v1/payrolls/{param}
 PUT /v1/payrolls/{param}/validate
 
