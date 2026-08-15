@@ -82,6 +82,13 @@ class TaxSlabController extends Controller
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Contrat isolation (PayrollTenantIsolationTest) : une ressource
+        // d'un AUTRE tenant répond 404 (pas 403 — pas de fuite d'existence)
+        // avant la Policy (rôle).
+        if ($taxSlab->company_id !== $request->user()?->company_id) {
+            abort(404);
+        }
+
         // Issue #1917 : Policy Laravel (manager + tenant isolation).
         $this->authorize('update', $taxSlab);
 
@@ -115,6 +122,11 @@ class TaxSlabController extends Controller
 
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        // Contrat isolation : 404 cross-tenant avant la Policy (voir update).
+        if ($taxSlab->company_id !== $request->user()?->company_id) {
+            abort(404);
+        }
+
         // Issue #1917 : Policy Laravel (manager + tenant isolation).
         $this->authorize('delete', $taxSlab);
 

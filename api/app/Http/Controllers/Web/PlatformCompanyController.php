@@ -210,6 +210,11 @@ class PlatformCompanyController extends Controller
      */
     public function edit(string $companyId): View
     {
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $originalSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
         DB::statement('SET search_path TO public');
 
         $company = Company::query()->findOrFail($companyId);
@@ -231,6 +236,11 @@ class PlatformCompanyController extends Controller
      */
     public function update(Request $request, string $companyId): RedirectResponse|JsonResponse
     {
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $originalSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
         DB::statement('SET search_path TO public');
 
         $company = Company::query()->findOrFail($companyId);
@@ -285,6 +295,11 @@ class PlatformCompanyController extends Controller
      */
     public function updateCountry(Request $request, string $companyId): RedirectResponse|JsonResponse
     {
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $originalSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
         DB::statement('SET search_path TO public');
 
         $company = Company::query()->findOrFail($companyId);
@@ -312,18 +327,13 @@ class PlatformCompanyController extends Controller
         // pour le check, puis RESTAURATION en `finally` (une session restée
         // sur le schéma tenant fuirait vers les requêtes suivantes — même
         // garde que `withTenantSearchPath()` de PlatformCompanyHealthService).
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previousSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
-            ? (string) $searchPathRow->search_path
-            : 'public';
-
         $hasPayrollData = false;
         DB::statement('SET search_path TO '.$company->getSafeSearchPath());
         try {
             $hasPayrollData = PayrollRun::query()->where('company_id', $company->id)->exists()
                 || SalaryStructure::query()->where('company_id', $company->id)->exists();
         } finally {
-            DB::statement('SET search_path TO '.$previousSearchPath);
+            DB::statement('SET search_path TO public');
         }
 
         if ($hasPayrollData) {
@@ -352,6 +362,12 @@ class PlatformCompanyController extends Controller
         $company->language = strtolower($countryDefaults['language']);
         $company->save();
 
+        // L'audit trail (audit_logs) vit dans le schéma du TENANT — la
+        // session est sur `public` ici : bascule temporaire sur le schéma de
+        // la société, puis restauration du search_path original (garde
+        // #1873, régression 500 constatée vague QA 2026-08-14).
+        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
+
         AuditLog::create([
             'company_id' => $company->id,
             'user_id' => $request->user()?->id,
@@ -373,6 +389,8 @@ class PlatformCompanyController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
+
+        DB::statement('SET search_path TO '.$originalSearchPath);
 
         if ($request->expectsJson()) {
             return new JsonResponse([
@@ -399,6 +417,11 @@ class PlatformCompanyController extends Controller
         string $companyId,
         UserInvitationService $invitationService,
     ): RedirectResponse {
+        $searchPathRow = DB::selectOne('SHOW search_path');
+        $originalSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+            ? (string) $searchPathRow->search_path
+            : 'public';
+
         DB::statement('SET search_path TO public');
 
         $company = Company::query()->findOrFail($companyId);

@@ -51,7 +51,7 @@ class TenantCountryLocksTest extends TestCase
         Storage::fake('local');
 
         /** @var Company $company */
-        $company = Company::factory()->create(['country' => '']);
+        $company = Company::factory()->create(['country' => '', 'timezone' => 'Africa/Algiers', 'currency' => 'DZD']);
         Sanctum::actingAs($this->makeManager($company));
 
         $csv = "first_name,last_name,email\nAli,Ben,ali@example.com\n";
@@ -86,7 +86,7 @@ class TenantCountryLocksTest extends TestCase
     public function test_qr_onboarding_create_refused_when_tenant_country_missing(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create(['country' => '']);
+        $company = Company::factory()->create(['country' => '', 'timezone' => 'Africa/Algiers', 'currency' => 'DZD']);
         Sanctum::actingAs($this->makeManager($company));
 
         $this->post('/api/v1/company/qr-onboarding/create-employee', [
@@ -100,7 +100,10 @@ class TenantCountryLocksTest extends TestCase
     public function test_admin_can_repair_country_on_legacy_tenant_without_payroll(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create(['country' => '', 'currency' => null, 'timezone' => null]);
+        // Le schéma interdit timezone/currency NULL (NOT NULL + défauts) :
+        // on part d'un tenant « legacy » au pays vide — la réparation dérive
+        // timezone/devise du nouveau pays (assertions ci-dessous).
+        $company = Company::factory()->create(['country' => '', 'timezone' => 'Africa/Algiers', 'currency' => 'DZD']);
         Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
 
         $this->patchJson('/api/v1/platform/companies/'.$company->id.'/country', [
@@ -119,21 +122,22 @@ class TenantCountryLocksTest extends TestCase
             ->latest('id')
             ->first();
         $this->assertNotNull($audit, 'Le changement de pays doit être journalisé.');
-        $this->assertSame('', $audit->old_values['country'] ?? '');
+        // country est CHAR(2) : la valeur vide est padée '  ' par PostgreSQL.
+        $this->assertSame('', trim((string) ($audit->old_values['country'] ?? '')));
         $this->assertSame('SN', $audit->new_values['country'] ?? null);
     }
 
     public function test_admin_country_repair_rejects_unknown_country(): void
     {
         /** @var Company $company */
-        $company = Company::factory()->create(['country' => '']);
+        $company = Company::factory()->create(['country' => '', 'timezone' => 'Africa/Algiers', 'currency' => 'DZD']);
         Sanctum::actingAs($this->superAdmin(), ['*'], 'super_admin_api');
 
         $this->patchJson('/api/v1/platform/companies/'.$company->id.'/country', [
             'country' => 'ZZ',
         ])->assertStatus(422)->assertJsonValidationErrors('country');
 
-        $this->assertSame('', $company->refresh()->country);
+        $this->assertSame('', trim((string) $company->refresh()->country));
     }
 
     public function test_country_change_refused_after_payroll_run_invariant9(): void

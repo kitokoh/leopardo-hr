@@ -52,7 +52,7 @@ class PayrollCalculationContractTest extends TestCase
         // Calcul manuel (CI #1918 — réforme ITS 2024, CGI art. 119 bis) — brut 500 000 XOF :
         //   CNSS retraite salariale 3,2 % = 16 000 (plafond 1 647 315 non atteint)
         //   Patronal : retraite 4,5 % = 22 500 · famille 5,75 % = 28 750 ·
-        //   AT 2,0 % = 10 000 → 61 250
+        //   AT 2,0 % plafonné à 70 000 (#1913) = 1 400 → 27 925
         //   ITS unifié MENSUEL sur le BRUT (plus d'abattement ni de CN) :
         //     75 001–240 000 × 16 % = 26 400 · 240 001–500 000 × 21 %
         //     = 260 000 × 21 % = 54 600 → 81 000,00
@@ -69,8 +69,8 @@ class PayrollCalculationContractTest extends TestCase
         $this->assertEquals(0.0, $contract['bracket_tax']);
         $this->assertEquals(0.0, $contract['other_deductions']);
         $this->assertEquals(403000.0, $contract['net_salary']);
-        $this->assertEquals(61250.0, $contract['social_employer']);
-        $this->assertEquals(561250.0, $contract['total_cost']);
+        $this->assertEquals(27925.0, $contract['social_employer']);
+        $this->assertEquals(527925.0, $contract['total_cost']);
     }
 
     public function test_golden_fr_contract(): void

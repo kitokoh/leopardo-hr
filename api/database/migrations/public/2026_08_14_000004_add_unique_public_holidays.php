@@ -51,12 +51,22 @@ return new class extends Migration
         // Contrainte d'unicité (toutes bases) — les NULL de company_id restent
         // distincts en SQL, donc on ajoute en plus un index partiel PostgreSQL
         // pour les fériés nationaux. Nom qualifié (F-17).
-        Schema::table($qualified, function (Blueprint $table): void {
-            $table->unique(
-                ['country_code', 'year', 'date', 'company_id'],
-                'public_holidays_country_year_date_company_unique'
-            );
-        });
+        // Idempotence (garde #2326) : le garde `Schema::hasTable` ne couvre
+        // pas les contraintes — re-exécuter la migration (tests « artisan
+        // migrate is idempotent ») dupliquait la contrainte → 42P07.
+        $constraintExists = DB::selectOne(
+            "SELECT 1 FROM pg_constraint c JOIN pg_namespace n ON n.oid = c.connamespace WHERE c.conname = ? AND n.nspname = ?",
+            ['public_holidays_country_year_date_company_unique', $schema]
+        ) !== null;
+
+        if (! $constraintExists) {
+            Schema::table($qualified, function (Blueprint $table): void {
+                $table->unique(
+                    ['country_code', 'year', 'date', 'company_id'],
+                    'public_holidays_country_year_date_company_unique'
+                );
+            });
+        }
 
         if (DB::getDriverName() === 'pgsql') {
             DB::statement(

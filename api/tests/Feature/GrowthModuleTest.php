@@ -271,6 +271,8 @@ class GrowthModuleTest extends TestCase
             'email' => $email,
             'company' => 'Test Growth Co '.uniqid(),
             'referral_code' => $partner->referral_code,
+            // MULTI-PAYS (#1867) : pays obligatoire depuis le registre.
+            'country' => 'DZ',
         ])->assertStatus(200);
 
         // Step 2: verify with the OTP
