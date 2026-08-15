@@ -1,15 +1,26 @@
 import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { headers } from 'next/headers';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.demo.title,
-  description: pageMetadata.demo.description,
-  keywords: pageMetadata.demo.keywords,
-  ogImage: pageMetadata.demo.ogImage,
+export async function generateMetadata(): Promise<Metadata> {
+  // #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang
+  // (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
+  const headerList = await headers();
+  const lang = headerList.get('x-vitrine-lang') ?? undefined;
+  const seo = getPageMetadata('demo', lang);
+  return generateSEOMetadata({
+
+
+  title: seo.title,
+  description: seo.description,
+  keywords: seo.keywords,
+  ogImage: seo.ogImage,
   ogType: 'website',
   canonical: `${SITE_URL}/demo`,
-});
+    locale: lang,
+  });
+}
 
 export default function DemoLayout({
   children,

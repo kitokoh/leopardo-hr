@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { PROTECTED_PREFIXES } from '@/lib/protected-prefixes';
+import { PROTECTED_PREFIXES, VITRINE_LANG_PREFIXES } from '@/lib/protected-prefixes';
 import robots from '@/app/robots';
 
 /**
@@ -16,11 +16,16 @@ describe('protected prefixes (source unique #3377)', () => {
     expect(middlewareSrc).toContain(`'${prefix}/:path*'`);
   });
 
-  it('le matcher middleware ne protège rien hors de la source unique', () => {
+    it('le matcher middleware ne déclare que des préfixes connus (sources uniques #3377/#4004)', () => {
+    const known = [...PROTECTED_PREFIXES, ...VITRINE_LANG_PREFIXES];
     const matcherEntries = [...middlewareSrc.matchAll(/'(\/[a-z-]+)\/:path\*'/g)].map((m) => m[1]);
     for (const entry of matcherEntries) {
-      expect(PROTECTED_PREFIXES).toContain(entry);
+      expect(known).toContain(entry);
     }
+  });
+
+  it.each(VITRINE_LANG_PREFIXES)('%s est déclaré dans le matcher middleware (normalisation ?lang= #4004)', (prefix) => {
+    expect(middlewareSrc).toContain(`'${prefix}/:path*'`);
   });
 
   it.each(PROTECTED_PREFIXES)('sw.js ne met pas en cache le préfixe protégé %s (issue #3729)', (prefix) => {

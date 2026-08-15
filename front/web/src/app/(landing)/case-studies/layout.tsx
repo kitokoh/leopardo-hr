@@ -1,32 +1,39 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { headers } from 'next/headers';
+import { generateMetadata as generateSEOMetadata, getPageMetadata } from '@/modules/vitrine/lib/seo';
 import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
 
-const listingMetadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.caseStudies.title,
-  description: pageMetadata.caseStudies.description,
-  keywords: pageMetadata.caseStudies.keywords,
-  ogImage: pageMetadata.caseStudies.ogImage,
-  ogType: 'website',
-  canonical: `${SITE_URL}/case-studies`,
-});
+// #4004 : listing localisé (FR par défaut, ?lang= pour EN/TR/AR).
+async function listingMetadata(lang?: string): Promise<Metadata> {
+  const seo = getPageMetadata('caseStudies', lang);
+  return generateSEOMetadata({
+    ...seo,
+    ogType: 'website',
+    canonical: `${SITE_URL}/case-studies`,
+    locale: lang,
+  });
+}
 
 // #3435 : metadata par slug (title/description/canonical propres) au lieu du
 // canonical fixe du layout pour les 12 études de cas.
+// #4004 : ?lang= normalisé par le middleware en en-tête x-vitrine-lang
+// (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug?: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const headerList = await headers();
+  const lang = headerList.get('x-vitrine-lang') ?? undefined;
   if (!slug) {
-    return listingMetadata;
+    return listingMetadata(lang);
   }
 
   const study = getCaseStudy(slug);
   if (!study) {
-    return listingMetadata;
+    return listingMetadata(lang);
   }
 
   return generateSEOMetadata({
@@ -34,6 +41,7 @@ export async function generateMetadata({
     description: study.description,
     ogType: 'website',
     canonical: `${SITE_URL}/case-studies/${study.slug}`,
+    locale: lang,
   });
 }
 

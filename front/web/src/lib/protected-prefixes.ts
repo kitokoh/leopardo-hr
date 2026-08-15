@@ -28,3 +28,17 @@ export const PROTECTED_PREFIXES = [
   '/social',
   '/social-marketing',
 ] as const;
+
+/**
+ * Préfixes vitrine dont le middleware normalise `?lang=` en en-tête
+ * `x-vitrine-lang` pour les layouts (issue #4004). Source unique distincte de
+ * PROTECTED_PREFIXES : ces routes sont PUBLIQUES (aucun gate de session, pas
+ * de robots.txt disallow) — seuls les chemins dynamiques (sous-routes) ont
+ * besoin du wildcard.
+ */
+export const VITRINE_LANG_PREFIXES = [
+  '/blog',
+  '/guides',
+  '/case-studies',
+  '/checkout',
+] as const;

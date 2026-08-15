@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): métadonnées SEO de la vitrine localisées FR/EN/TR/AR (Closes #4004).** Les 27 blocs `pageMetadata` étaient 100% FR en dur → un visiteur EN/TR/AR recevait un `<title>`/description français sur toutes les pages. Nouveau dictionnaire `pageMetadataI18n` (27 pages × 3 locales) + helper `getPageMetadata(page, lang)` ; les 27 layouts landing passent en `generateMetadata()` dynamique lisant `searchParams.lang` (fallback FR sans `?lang`, `og:locale` aligné). `/pricing` et `/case-studies` préfèrent aussi `?lang=` à l'Accept-Language SSR. 5 tests unitaires ajoutés (défaut FR, override EN, fallback, couverture 27 pages × 3 locales).
 - **fix(api): SelfServiceTrialController — marqueurs de conflit retirés (régression #4074).** Le merge #4074 (dédup trial #3951) a atterri sur main avec un bloc de conflit git non résolu (`<<<<<<< HEAD`/`>>>>>>>`) + un return orphelin hors `if ($existingPending)` → erreur de parse PHP sur tout le contrôleur (signup trial 500). Bloc orphelin et marqueurs supprimés ; la logique combinée (anti-énumération #3945 → idempotence pending #3951 → création + catch 23505) est conservée.
 
 - **fix(api): pagination sur 3 listes non bornées (Closes #3948).** `DepartmentController::index`, `TrainingController::indexSessions` et `WebhookController::index` (Billing) utilisent désormais `paginate(per_page)` au lieu de `->get()` — alignés sur le contrat pagination existant (`data` + meta). ScheduleController conserve son cache (retour Collection, non paginable).
