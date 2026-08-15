@@ -6,6 +6,7 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -132,11 +133,32 @@ class EmployeeImportController extends Controller
 
                 $fillData['password_hash'] = Hash::make(Str::random(32));
 
-                $employee = Employee::create($fillData);
-                $employee->company_id = $companyId;
-                $employee->status = $status;
-                $employee->save();
-                $imported++;
+                try {
+                    $employee = Employee::create($fillData);
+                    $employee->company_id = $companyId;
+                    $employee->status = $status;
+                    $employee->save();
+                    $imported++;
+                } catch (QueryException $e) {
+                    // Issue #3726 : course entre le check exists() (ligne 110) et
+                    // le create() — un import concurrent (ou un doublon arrivé
+                    // entre les deux) viole l'index unique global employees(email)
+                    // (migration enforce_global_unique_email_on_employees).
+                    // 23505 = SQLSTATE unique_violation (pattern PartnerService,
+                    // PayrollService #3238) : on signale la ligne, on continue —
+                    // jamais de 500, jamais de rollback global.
+                    if ($e->getCode() === '23505') {
+                        $errors[] = [
+                            'line' => $index + 2,
+                            'error' => "Email {$row['email']} existe deja (doublon concurrent)",
+                        ];
+                        $skipped++;
+
+                        continue;
+                    }
+
+                    throw $e;
+                }
             }
 
             DB::commit();
