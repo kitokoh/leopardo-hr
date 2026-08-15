@@ -6,7 +6,6 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
-import 'package:leopardo_core/core/widgets/primary_button.dart';
 import '../repositories/providers.dart';
 
 class PostCreateScreen extends ConsumerStatefulWidget {
@@ -193,11 +192,24 @@ class _PostCreateScreenState extends ConsumerState<PostCreateScreen> {
           ),
         ),
         const SizedBox(height: 32),
-        PrimaryButton(
-          onPressed: _isSubmitting ? () {} : _submitPost,
-          text: _isSubmitting 
-              ? 'Création en cours...' 
-              : (_scheduledDate == null ? 'Publier' : 'Planifier le Post'),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: _isSubmitting ? null : _submitPost,
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: Text(
+              _isSubmitting
+                  ? 'Création en cours...'
+                  : (_scheduledDate == null ? 'Publier' : 'Planifier le Post'),
+              style: AppTypography.bodyMedium(context)?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 32),
       ],
