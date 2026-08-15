@@ -9494,6 +9494,54 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /training/sessions:
+    get:
+      tags: ["Training"]
+      summary: "Lister toutes les sessions de formation (toutes formations, tenant scope)"
+      description: "Liste globale paginee des sessions du tenant, filtrable par `status` et `course_id`. QA wave 2026-08-14 T003 (#2228)."
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [planned, in_progress, completed, cancelled] }
+        - name: course_id
+          in: query
+          required: false
+          schema: { type: integer }
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee des sessions"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /training/enrollments:
+    get:
+      tags: ["Training"]
+      summary: "Lister toutes les inscriptions formation (tenant scope)"
+      description: "Liste globale paginee des inscriptions du tenant, filtrable par `status` et `session_id`. QA wave 2026-08-14 T003 (#2228)."
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, enum: [enrolled, attended, completed, no_show, cancelled] }
+        - name: session_id
+          in: query
+          required: false
+          schema: { type: integer }
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, default: 15 }
+      responses:
+        "200":
+          description: "Liste paginee des inscriptions"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /training/sessions/{trainingSession}:
     put:
       tags: ["Training"]

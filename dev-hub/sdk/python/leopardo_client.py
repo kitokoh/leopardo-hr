@@ -1844,9 +1844,17 @@ class LeopardoClient:
         """Creer une session de formation"""
         return self.request("POST", "/training/courses/{trainingCourse}/sessions", **kwargs)
 
+    def get_training_enrollments(self, **kwargs):
+        """Lister toutes les inscriptions formation (tenant scope)"""
+        return self.request("GET", "/training/enrollments", **kwargs)
+
     def put_training_enrollments_by_trainingenrollment(self, **kwargs):
         """Modifier une inscription"""
         return self.request("PUT", "/training/enrollments/{trainingEnrollment}", **kwargs)
+
+    def get_training_sessions(self, **kwargs):
+        """Lister toutes les sessions de formation (toutes formations, tenant scope)"""
+        return self.request("GET", "/training/sessions", **kwargs)
 
     def put_training_sessions_by_trainingsession(self, **kwargs):
         """Modifier une session"""
