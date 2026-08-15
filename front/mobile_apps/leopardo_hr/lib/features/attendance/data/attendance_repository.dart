@@ -6,7 +6,6 @@ import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
-import 'package:leopardo_core/core/utils/network_error.dart';
 
 class AttendanceRepository {
   final ApiClient apiClient;
@@ -85,10 +84,17 @@ class AttendanceRepository {
     }
   }
 
-  /// T090 : détection hors-ligne standardisée (leopardo_core) — même
-  /// sémantique que le repository employee (timeouts DioException inclus,
-  /// pas seulement les messages 'connexion'/'internet').
-  static bool _isOfflineError(Object e) => isOfflineNetworkError(e);
+  /// Mirrors the fallback used by `leopardo_employee`'s
+  /// `AttendanceRepository`: on a network failure, queue the punch in the
+  /// same `offline_punches` Hive box so [OfflineSyncService] (wired up in
+  /// `leopardo_core`) can replay it once connectivity returns, instead of
+  /// letting the raw `ApiException` reach the UI and lose the punch
+  /// (issue #1289).
+  static bool _isOfflineError(Object e) {
+    return e is ApiException &&
+        (e.message.toLowerCase().contains('connexion') ||
+            e.message.toLowerCase().contains('internet'));
+  }
 
   static Future<void> _saveOfflinePunch(
     String type,
@@ -166,15 +172,6 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-  }
-
-  Future<DailySummary> getDailySummary(int employeeId) async {
-    final response = await apiClient.requestWithRetry(
-      '/employees/$employeeId/daily-summary',
-      maxRetriesOverride: 0,
-      timeoutOverride: _readTimeout,
-    );
-    return DailySummary.fromJson(extractDataMap(response.data));
   }
 
   Future<DailySummary> getMyDailySummary({DateTime? date}) async {
@@ -543,11 +540,9 @@ class AttendanceCorrection {
       id: _asInt(json['id']),
       employeeName: employee['name']?.toString() ?? 'Employe',
       date: json['date']?.toString() ?? '',
-      requestedCheckIn:
-          DateTime.tryParse(json['requested_check_in']?.toString() ?? '') ??
-              DateTime.utc(1970),
+      requestedCheckIn: DateTime.parse(json['requested_check_in'].toString()),
       requestedCheckOut: json['requested_check_out'] != null
-          ? DateTime.tryParse(json['requested_check_out'].toString())
+          ? DateTime.parse(json['requested_check_out'].toString())
           : null,
       reason: json['reason']?.toString() ?? '',
       status: json['status']?.toString() ?? 'pending',

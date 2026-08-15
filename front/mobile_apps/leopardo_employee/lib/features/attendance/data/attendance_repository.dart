@@ -7,7 +7,6 @@ import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:hive/hive.dart';
 import 'package:leopardo_employee/features/attendance/models/attendance_anomaly.dart';
-import 'package:leopardo_core/core/utils/network_error.dart';
 
 class AttendanceRepository {
   final ApiClient apiClient;
@@ -181,15 +180,6 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-  }
-
-  Future<DailySummary> getDailySummary(int employeeId) async {
-    final response = await apiClient.requestWithRetry(
-      '/employees/$employeeId/daily-summary',
-      maxRetriesOverride: 0,
-      timeoutOverride: _readTimeout,
-    );
-    return DailySummary.fromJson(extractDataMap(response.data));
   }
 
   Future<DailySummary> getMyDailySummary({DateTime? date}) async {
@@ -458,7 +448,20 @@ class AttendanceRepository {
     return false;
   }
 
-  /// T090 : détection hors-ligne standardisée (leopardo_core) — timeouts
-  /// et erreurs de connexion mis en file, jamais les erreurs métier.
-  static bool _isOfflineNetworkError(Object e) => isOfflineNetworkError(e);
+  /// Une erreur est « hors-ligne » si le transport a échoué (connexion,
+  /// timeout) ou si l'API signale une indisponibilité réseau. Les erreurs
+  /// métier (4xx/5xx avec réponse) ne sont PAS mises en file.
+  static bool _isOfflineNetworkError(Object e) {
+    if (e is DioException) {
+      return e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout;
+    }
+    if (e is ApiException) {
+      final message = e.message.toLowerCase();
+      return message.contains('connexion') || message.contains('internet');
+    }
+    return false;
+  }
 }

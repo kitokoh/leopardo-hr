@@ -138,7 +138,7 @@ void main() {
     final client = recordingClient(recorder);
 
     await AbsenceRepository(client).getMyAbsences();
-    await PayrollRepository(client).getMyPayrolls();
+    await PayrollRepository(client).getMyPaySlips();
     await NotificationRepository(client).getMyNotifications();
     await EvaluationRepository(client).getMyEvaluations();
     await ContractRepository(client).getMyContracts();
@@ -150,7 +150,7 @@ void main() {
 
     expect(recorder.requests, [
       'GET /absences',
-      'GET /payrolls',
+      'GET /me/pay-slips',
       'GET /notifications',
       'GET /evaluations',
       'GET /me/contracts',
@@ -174,8 +174,8 @@ void main() {
     await OnboardingRepository(client).skipStep('company_branding');
 
     expect(recorder.requests, [
-      'PUT /notifications/read-all',
-      'PUT /notifications/7/read',
+      'POST /notifications/mark-all-read',
+      'PATCH /notifications/7/read',
       'POST /approvals/9/approve',
       'POST /approvals/10/reject',
       'PATCH /onboarding-setup/first_employee/complete',
