@@ -1119,7 +1119,10 @@ class PayrollCalculator
         $slips = PaySlip::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
-            ->where('status', 'validated')
+            // Issue #2679 — les runs créent des bulletins 'calculated' (non
+            // encore validés) : une entreprise qui ne valide jamais retombait
+            // en silence sur base×12. Les deux statuts comptent.
+            ->whereIn('status', ['calculated', 'validated'])
             ->where('period_start', '>=', $twelveMonthsAgo)
             ->where('period_start', '<', $run->period_start)
             ->get(['gross_salary', 'period_start']);
@@ -1221,7 +1224,7 @@ class PayrollCalculator
 
     private function sumApprovedLeaveDays(PayrollRun $run, Employee $employee, bool $paid): float
     {
-        return (float) Absence::query()
+        $absences = Absence::query()
             ->where('company_id', $run->company_id)
             ->where('employee_id', $employee->id)
             ->where('status', 'approved')
@@ -1230,7 +1233,38 @@ class PayrollCalculator
             ->whereHas('absenceType', function (Builder $q) use ($paid): void {
                 $q->where('is_paid', $paid);
             })
-            ->sum('days_count');
+            ->get(['start_date', 'end_date', 'days_count']);
+
+        $periodStart = $run->period_start->copy()->startOfDay();
+        $periodEnd = $run->period_end->copy()->startOfDay();
+        $total = 0.0;
+
+        foreach ($absences as $absence) {
+            // Issue #2672 (QA 2026-08-15) — clipping sur la période : une
+            // absence chevauchante (ex. 25 janv. → 5 févr.) était comptée en
+            // TOTALITÉ dans les runs de janvier ET février (double déduction
+            // dans le prorata). On ne compte que l'intersection avec la
+            // période, au prorata du days_count stocké.
+            if ($absence->end_date === null) {
+                continue;
+            }
+
+            $overlapStart = $absence->start_date->copy()->max($periodStart);
+            $overlapEnd = $absence->end_date->copy()->min($periodEnd);
+
+            if ($overlapEnd->lt($overlapStart)) {
+                continue;
+            }
+
+            $overlapDays = $overlapStart->diffInDays($overlapEnd) + 1;
+            $totalSpanDays = $absence->start_date->diffInDays($absence->end_date) + 1;
+
+            $total += $totalSpanDays > 0
+                ? (float) $absence->days_count * ($overlapDays / $totalSpanDays)
+                : (float) $absence->days_count;
+        }
+
+        return $total;
     }
 
     /**
