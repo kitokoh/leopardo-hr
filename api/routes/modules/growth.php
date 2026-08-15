@@ -1,16 +1,15 @@
 <?php
 
-use App\Modules\Growth\Interfaces\Api\V1\Controllers\GrowthAdminController;
 use App\Modules\Growth\Interfaces\Api\V1\Controllers\PartnerDashboardController;
+use App\Modules\Growth\Interfaces\Api\V1\Controllers\GrowthAdminController;
 use Illuminate\Support\Facades\Route;
 
 // Espace Partenaire (Web Client)
 // Access via the main dashboard requires the sanctum guard (Employee token).
-// Audit expert 2026-08-15 (issue #2622) : le middleware `tenant` manquait —
-// les POST /apply et /payout écrivaient en cross-tenant (le scope
-// BelongsToCompany était inerte sans search_path tenant).
 Route::prefix('growth')->group(function () {
-    Route::middleware(['auth:sanctum', 'tenant'])->prefix('partner')->group(function () {
+    // Issue #2622 + #2635 : isolation tenant obligatoire (cross-tenant = 404) +
+    // alignement sur le groupe standard (token.refresh + throttle:api-plan).
+    Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('partner')->group(function () {
         Route::post('/apply', [PartnerDashboardController::class, 'apply']);
         Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
         Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);

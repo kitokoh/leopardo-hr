@@ -14,6 +14,7 @@ use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -258,8 +259,13 @@ class QaHardeningEndpointsTest extends TestCase
 
     public function test_principal_can_test_a_webhook_endpoint(): void
     {
+        // Issue #2548/#2572 : le bouton « Tester » envoie un payload SYNCHRONE
+        // (Http::fake) et trace une webhook_deliveries — plus un dispatch async.
         [$company, $manager] = $this->tenantFixture();
-        Queue::fake();
+
+        Http::fake([
+            'erp.client.example/*' => Http::response('{"ok":true}', 200, ['Content-Type' => 'application/json']),
+        ]);
 
         $endpoint = WebhookEndpoint::query()->create([
             'company_id' => $company->id,
@@ -272,12 +278,23 @@ class QaHardeningEndpointsTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->postJson("/api/v1/webhooks/{$endpoint->id}/test")
-            ->assertStatus(202)
-            ->assertJsonPath('message', 'Webhook test event dispatched.');
+        $response = $this->postJson("/api/v1/webhooks/{$endpoint->id}/test")
+            ->assertOk()
+            ->assertJsonPath('status', 'success')
+            ->assertJsonPath('http_status', 200)
+            ->assertJsonStructure(['message', 'status', 'http_status', 'duration_ms', 'delivery']);
 
-        Queue::assertPushed(DispatchWebhook::class, 1);
-        Queue::assertPushedOn('webhooks', DispatchWebhook::class);
+        Http::assertSent(function ($request): bool {
+            return str_contains($request->url(), 'erp.client.example/hook')
+                && $request->hasHeader('X-Leopardo-Event', 'test')
+                && $request->hasHeader('Webhook-Signature');
+        });
+
+        $this->assertDatabaseHas('webhook_deliveries', [
+            'webhook_endpoint_id' => $endpoint->id,
+            'event' => 'test',
+            'response_code' => 200,
+        ]);
     }
 
     public function test_webhook_test_is_tenant_isolated(): void

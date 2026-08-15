@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
-use App\Core\Auth\Domain\Models\User;
 use App\Exceptions\AccountLockedException;
-use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\InvalidCredentialsException;
+use App\Core\Auth\Domain\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 readonly class UserAuthService
@@ -41,14 +40,13 @@ readonly class UserAuthService
             throw new InvalidCredentialsException;
         }
 
-        // Audit expert 2026-08-15 (issue #2618) : un compte suspendu ne doit
-        // plus obtenir de token (l'ancien code ignorait `status`).
-        if ($user->status !== 'active') {
-            throw new AccountSuspendedException;
-        }
-
         if ($user->locked_until && $user->locked_until->isFuture()) {
             throw new AccountLockedException($user->locked_until);
+        }
+
+        if ($user->status !== 'active') {
+            // Issue #2618 : compte suspendu = aucun token émis (fail-closed).
+            throw new \App\Exceptions\AccountSuspendedException;
         }
 
         if (! Hash::check($password, $user->password_hash)) {
@@ -84,10 +82,9 @@ readonly class UserAuthService
         }
 
         if ($user) {
-            // Audit expert 2026-08-15 (issue #2618) : le Google Sign-In doit
-            // aussi refuser les comptes suspendus.
             if ($user->status !== 'active') {
-                throw new AccountSuspendedException;
+                // Issue #2618 : compte suspendu = aucun token émis (fail-closed).
+                throw new \App\Exceptions\AccountSuspendedException;
             }
 
             $user->update([

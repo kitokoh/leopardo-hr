@@ -31,14 +31,13 @@ class EmailBounceWebhookController extends Controller
     {
         $configuredSecret = (string) config('services.mail_bounce_webhook.secret', '');
 
-        // Audit expert 2026-08-15 (issue #2616) : fail-closed. Sans secret
-        // configuré, aucun payload ne peut être authentifié — refus net pour
-        // éviter qu'un attaquant marque des emails comme bounced (DoS de la
-        // communication) sans secret.
         if ($configuredSecret === '') {
-            Log::error('Email bounce webhook: shared secret not configured — refusing unverified payload.');
+            // #2616 fail-closed : secret non configuré = webhook non
+            // authentifiable = on REFUSE (503). Un webhook sans secret ne
+            // doit jamais traiter un payload (fail-open = spooling/poisoning).
+            Log::error('Email bounce webhook: secret non configuré — webhook REJETÉ (fail-closed).');
 
-            return new JsonResponse(['error' => 'Webhook secret not configured'], 503);
+            abort(503, 'Email bounce webhook not configured.');
         }
 
         $providedSecret = (string) $request->header('X-Bounce-Webhook-Secret', '');

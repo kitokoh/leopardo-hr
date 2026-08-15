@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_hr/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/login_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/register_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
@@ -59,6 +60,36 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/welcome',
     refreshListenable: authListenable,
+    // Issue #2748 — écran de secours au lieu d'une page blanche/erreur
+    // quand une navigation ne matche aucune route.
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+              const SizedBox(height: 12),
+              const Text(
+                'Une erreur est survenue',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'La page demandée est introuvable ou la navigation a échoué.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => context.go('/'),
+                child: const Text('Retour à l\'accueil'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
     redirect: (context, state) {
       final authState = authListenable.value;
       final isAuth = authState.employee != null;
@@ -77,15 +108,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-login',
         '/user-home',
         '/company-request',
+        '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
+      final isAuthorized = isAuth && authState.employee!.isHr;
 
       if (!isAuth && !onPublic) return '/welcome';
-      if (isAuth && onPublic) return '/';
-      if (isAuth && !authState.employee!.isHr && !onPublic) {
-        // Redirection si l'utilisateur n'est pas RH dans l'app RH
-        return '/welcome';
+      if (isAuth && !isAuthorized) {
+        // T116 : plus de boucle /welcome ↔ / — écran « accès refusé » explicite
+        // pour un utilisateur connecté sans le rôle de l'app RH.
+        return location == '/access-denied' ? null : '/access-denied';
       }
+      if (isAuth && onPublic) return '/';
 
       return null;
     },
@@ -93,6 +127,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/access-denied',
+        builder: (context, state) => const AccessDeniedScreen(),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
@@ -152,7 +190,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/cabinet/folder/:folderId',
         builder: (context, state) {
-          final folderId = int.parse(state.pathParameters['folderId']!);
+          final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
+            if (folderId == null) {
+              // T121 : deep-link avec folderId non numérique → écran vide
+              // plutôt qu'un crash int.parse.
+              return const Scaffold(body: SizedBox.shrink());
+            }
           final folderName = state.extra as String?;
           return CabinetScreen(folderId: folderId, folderName: folderName);
         },

@@ -68,6 +68,13 @@
       <div class="w-full max-w-lg rounded-lg p-6 shadow-xl">
         <h3 class="text-lg font-semibold text-gray-900">{{ editingWebhook ? 'Modifier' : 'Nouveau' }} webhook</h3>
         <form class="mt-4 space-y-4" @submit.prevent="saveWebhook">
+          <div v-if="!editingWebhook">
+            <label class="block text-sm font-medium text-gray-700">Societe</label>
+            <select v-model="form.company_id" required class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option :value="null" disabled>Selectionner une societe...</option>
+              <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
+            </select>
+          </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">URL</label>
             <input v-model="form.url" type="url" required class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://..." />
@@ -116,12 +123,14 @@ const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
 const webhooks = ref([])
+const companies = ref([])
 const showCreateModal = ref(false)
 const editingWebhook = ref(null)
 
-const form = ref({ url: '', description: '', events: [], is_active: true })
+const form = ref({ company_id: null, url: '', description: '', events: [], is_active: true })
 
 const columns = [
+  { key: 'company_name', label: 'Societe', sortable: true },
   { key: 'url', label: 'URL', sortable: true },
   { key: 'description', label: 'Description' },
   { key: 'events', label: 'Evenements' },
@@ -146,7 +155,7 @@ async function fetchData() {
   loading.value = true
   error.value = ''
   try {
-    const res = await api.get('/v1/webhooks')
+    const res = await api.get('/admin/webhooks') // #2634 : console cross-tenant
     webhooks.value = res.data.data || res.data || []
   } catch {
     error.value = 'Impossible de charger les webhooks.'
@@ -155,25 +164,34 @@ async function fetchData() {
   }
 }
 
+async function fetchCompanies() {
+  try {
+    const res = await api.get('/platform/companies')
+    companies.value = res.data.data || res.data || []
+  } catch {
+    companies.value = []
+  }
+}
+
 function editWebhook(wh) {
   editingWebhook.value = wh
-  form.value = { url: wh.url, description: wh.description || '', events: [...(wh.events || [])], is_active: wh.is_active }
+  form.value = { company_id: wh.company_id ?? null, url: wh.url, description: wh.description || '', events: [...(wh.events || [])], is_active: wh.is_active }
   showCreateModal.value = true
 }
 
 function closeModal() {
   showCreateModal.value = false
   editingWebhook.value = null
-  form.value = { url: '', description: '', events: [], is_active: true }
+  form.value = { company_id: null, url: '', description: '', events: [], is_active: true }
 }
 
 async function saveWebhook() {
   saving.value = true
   try {
     if (editingWebhook.value) {
-      await api.put(`/v1/webhooks/${editingWebhook.value.id}`, form.value)
+      await api.put(`/admin/webhooks/${editingWebhook.value.id}`, form.value) // #2634
     } else {
-      await api.post('/v1/webhooks', form.value)
+      await api.post('/admin/webhooks', form.value) // #2634
     }
     closeModal()
     fetchData()
@@ -186,7 +204,7 @@ async function saveWebhook() {
 
 async function testWebhook(id) {
   try {
-    await api.post(`/v1/webhooks/${id}/test`)
+    await api.post(`/admin/webhooks/${id}/test`) // #2634
   } catch (err) {
     console.warn('Failed to test webhook', err)
   }
@@ -195,13 +213,13 @@ async function testWebhook(id) {
 async function deleteWebhook(id) {
   if (!confirm('Supprimer ce webhook ?')) return
   try {
-    await api.delete(`/v1/webhooks/${id}`)
+    await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()
   } catch (err) {
     console.warn('Failed to delete webhook', err)
   }
 }
 
-onMounted(fetchData)
+onMounted(() => { fetchData(); fetchCompanies() })
 </script>
 

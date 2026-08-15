@@ -6,26 +6,25 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
-use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
-use App\Exceptions\EmployeeNotActiveException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\GoogleProvider;
 
 class AuthController extends Controller
 {
@@ -59,7 +58,13 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        $result = $this->registerAction->execute($request->validated());
+        // #2617 (main) : inscription réservée aux invitations valides — le
+        // RegisterAction refuse sans invitation_token et rattache l'employé au
+        // company_id de l'invitation (plus d'employé orphelin, #2636).
+        /** @var array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string} $validated */
+        $validated = $request->validated();
+
+        $result = $this->registerAction->execute($validated);
 
         return (new EmployeeResource($result['employee']))
             ->additional([
@@ -159,28 +164,24 @@ class AuthController extends Controller
 
     public function redirectToGoogle(): mixed
     {
-        // Audit expert 2026-08-15 (issue #2619) : paramètre `state` anti-CSRF
-        // (account-linking / login CSRF). Le state est stocké en session —
-        // les routes google portent le middleware `web` (routes/api.php).
-        $state = Str::random(40);
-        session()->put('google_oauth_state', $state);
+        // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
+        // au callback. Plus de Socialite stateless sans protection.
+        $state = \Illuminate\Support\Str::random(40);
+        session(['google_oauth_state' => $state]);
 
-        /** @var GoogleProvider $driver */
-        $driver = Socialite::driver('google');
-
-        return $driver->with(['state' => $state])->stateless()->redirect();
+        return Socialite::driver('google')->with(['state' => $state])->redirect();
     }
 
     public function handleGoogleCallback(Request $request): JsonResponse
     {
-        // Validation du state (anti-CSRF). Le flux navigateur doit fournir le
-        // state émis par redirectToGoogle ; à défaut, refus net.
-        $expectedState = session()->pull('google_oauth_state');
-        $providedState = (string) $request->query('state', '');
-
-        if ($expectedState === null || $providedState === '' || ! hash_equals($expectedState, $providedState)) {
-            return new JsonResponse(['error' => 'GOOGLE_OAUTH_STATE_MISMATCH', 'message' => 'Invalid OAuth state.'], 400);
+        // Issue #2619 : validation du state — callback sans state ou avec un
+        // state inconnu → 400 (pas de login).
+        $expected = session('google_oauth_state');
+        $provided = $request->query('state');
+        if (! is_string($expected) || ! is_string($provided) || ! hash_equals($expected, $provided)) {
+            return new JsonResponse(['error' => 'INVALID_OAUTH_STATE'], 400);
         }
+        session()->forget('google_oauth_state');
 
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
@@ -192,15 +193,27 @@ class AuthController extends Controller
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
-            // Audit expert 2026-08-15 (issue #2617) : ne plus créer d'employé
-            // sans company_id (compte inutilisable, impossible à connecter).
-            // L'auto-création ténantless est remplacée par un refus clair —
-            // le compte doit exister (invitation/trial) avant le SSO Google.
-            return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account. Ask your HR team for an invitation.'], 401);
+            /** @var Employee $employee */
+            $employee = Employee::create([
+                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
+                'last_name' => $googleUser->offsetGet('family_name') ?? '',
+                'email' => $googleUser->getEmail(),
+                'password_hash' => Hash::make(str()->random(24)),
+                'role' => 'ordinary',
+                'status' => 'active',
+            ]);
         }
 
+        // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
+        // ne peut pas s'authentifier, y compris via Google.
         if ($employee->status !== 'active') {
-            throw new EmployeeNotActiveException;
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
         }
 
         $token = $employee->createToken('google-auth');
@@ -211,7 +224,7 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ])
             ->response()
-            ->setStatusCode(200);
+            ->setStatusCode($employee->wasRecentlyCreated ? 201 : 200);
     }
 
     public function handleGoogleToken(Request $request): JsonResponse
@@ -234,8 +247,15 @@ class AuthController extends Controller
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
         }
 
+        // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
         if ($employee->status !== 'active') {
-            throw new EmployeeNotActiveException;
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

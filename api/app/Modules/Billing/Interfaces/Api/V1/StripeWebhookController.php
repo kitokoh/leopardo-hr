@@ -46,8 +46,12 @@ class StripeWebhookController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            // Return 200 to prevent Stripe from retrying on app errors
-            return new JsonResponse(['received' => true, 'error' => 'processing_error'], 200);
+            // Issue #2668 (QA 2026-08-15) — une erreur de TRAITEMENT doit être
+            // signalée par un 500 pour que Stripe retente l'événement : un 200
+            // (« prevent Stripe from retrying ») faisait disparaître les
+            // événements de paiement en silence (perte de données). Seule une
+            // signature invalide (400 ci-dessus) ne doit pas être retentée.
+            return new JsonResponse(['received' => false, 'error' => 'processing_error'], 500);
         }
 
         return new JsonResponse(['received' => true]);

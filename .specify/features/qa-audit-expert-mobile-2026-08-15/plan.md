@@ -1,38 +1,48 @@
-# Plan: Audit Expert Mobile — Applications Flutter — 2026-08-15
+# Plan: Audit expert Mobile — 2026-08-15
 
-**Input**: spec.md (US1-US3) + Constitution + registre project-state
+**Input**: spec.md (US M1-M9 + T001-T004) + Constitution + audit 2026-08-15
 
 ## Architecture / Décisions techniques
 
-### US1 — Endpoint organigramme (P1) — IMPLÉMENTABLE (PHP)
-- Ajouter `GET /departments/{department}/hierarchy` dans `api/routes/modules/rh.php` (groupe tenant, `api.manager` requis comme les autres routes org) → nouvelle méthode `hierarchy()` sur `DepartmentController` (ou controller dédié) : charge le département scopé, ses équipes, managers et employés actifs, retourne un arbre `{department, teams[], managers[], employees[]}`.
-- Modèle : `Department` → relation `manager`, `employees` existante (vérifier relations dans `app/Modules/HR/Domain/Models/Department.php`).
-- Test : `tests/Feature/OrganigrammeTest` — 200 arbre, 404 cross-tenant, 404 département inexistant, 200 arbre vide.
-
-### US2 — Stats marketing réelles (P2) — DOCUMENTÉE (Dart, pas de toolchain)
-- Préconisation : `MarketingRepository.fetchStats()` — agrégation des posts (`/marketing/posts` + `/marketing/posts/{id}/publish`) par plateforme/période ; retirer les littéraux `24_310` etc. (`stats_dashboard_screen.dart:39-54`) ; états d'erreur AsyncValue. À implémenter en CI/session avec Flutter.
-
-### US3 — Hygiène mobile (P3) — DOCUMENTÉE (Dart)
-- **Expense catch** : `try { await … } finally { loading=false }` → ajouter `catch` + message (`leopardo_employee|manager|hr/.../expense_list_screen.dart:38`).
-- **AI Voice** : retirer les écrans placeholder (`ai_voice_screen.dart:6-48` ×3 apps) + routes GoRouter associées OU câbler `/ai/voice/transcribe` (issue #2213).
-- **URLs** : `api_client.dart:13-16` (défaut `gestionemployerbackend.onrender.com` → variable de build `--dart-define=API_BASE_URL` obligatoire en release, fallback dédié) ; `core_providers.dart:85` (retirer le fallback `http://leopardo.local:7878`).
-- **password123** : `demo_user_bottom_sheet.dart:13` — gate `kDebugMode`/`DEMO_MODE_ENABLED`.
-- **Offline dual** : décision — **drift** (`AttendanceOfflineService`) devient l'unique propriétaire des pointages offline ; le Hive legacy (`offline_punches`, `OfflineSyncService`) est retiré après migration (documenté, chantier séparé).
-- **Dé-duplication** : `leopardo_hr` ≈ `leopardo_manager` (92 vs 93 fichiers) → extraire les screens partagés vers `leopardo_core` (chantier structurel documenté).
+- **M1 Onboarding** : changement **mobile d'abord** (le backend PATCH + `step_key` est l'API canonique) :
+  - `OnboardingStep` (leopardo_core) : ajouter `stepKey` (parse de `step_key`).
+  - `OnboardingRepository` (employee/manager/hr) : `PATCH /onboarding-setup/{stepKey}/complete|skip`.
+  - Corriger le test de contrat `leopardo_hr/test/repositories/repository_contract_test.dart` (PATCH + step_key).
+- **M2 Cabinet manager** : renommer la route manager en `/cabinet/folder/:folderId` (alignement employee/HR) — `app.dart:179` inchangé.
+- **M3 Session** : `checkAuth()` ne supprime le token que sur 401 ; brancher `onUnauthorized` → `authProvider.logout()` dans les 3 apps (`apiClientProvider`).
+- **M4 Double auth** : clés SecureStorage distinctes (`auth_token_employee` / `auth_token_user`) avec migration de lecture (ancienne clé en fallback).
+- **M5 i18n/mojibake** : ré-encoder les fichiers concernés en UTF-8 ; router les chaînes dures via `context.l10n` (échantillon prioritaire : attendance, welcome, onboarding, payroll, expenses, evaluations) ; labels mixtes → clés.
+- **M6 Monnaie** : dériver la devise du payload (`employee.currency`, summary) avec fallback pays du tenant ; `NumberFormat.currency(locale, symbol)` partout ; `detail_schema`/`list_schema` acceptent devise/locale en paramètre.
+- **M7 Idempotence & erreurs** : `maxRetriesOverride: 0` sur `POST /salary-advances` (et l'appel IA) ; interprétation du 403 selon payload (`suspended`) ; offline detection standardisée (types DioException dans le core, partagée par employee/manager).
+- **M8 Android** : `android:foregroundServiceType="location"` + permission `FOREGROUND_SERVICE_LOCATION` (employee) ; `usesCleartextTraffic` dans le manifest **debug** seulement ; `Locale` de platform_admin résolue depuis préférences (comme les autres apps).
+- **M9 Hygiène** : supprimer l'écran mort `company_request_screen` ; `String.fromEnvironment` pour le client ID Google + masquer le bouton démo en release ; `tracesSampleRate: 0.2` + exclusions PII ; `tryParse` pour `requested_check_in` ; retirer les méthodes mortes (ou les router via `/me/*`) ; finir ou retirer le stub marketing (T002).
 
 ## Phases
 
-### Phase 1 — US1 endpoint backend (P1)
-- T001 Route + controller `hierarchy` + tests (200/404/arbre vide)
+### Phase 1 — P1 (M1, M2 + T001-T004)
+- Onboarding PATCH + step_key (3 apps + contrat) ; route cabinet manager ; T001 (départements hierarchy), T003 (expense catch), T004 (AI voice).
 
-### Phase 2 — US2+US3 documentation & issues (P2/P3)
-- T002 Stats marketing réelles (instructions Dart + issue)
-- T003 Expense catch (3 apps)
-- T004 AI Voice placeholders
-- T005 URLs de base configurables
-- T006 password123 hors release
-- T007 Offline : un seul mécanisme
-- T008 Dé-duplication leopardo_hr/manager
+### Phase 2 — P2 (M3-M8)
+- Session (token 401-only + onUnauthorized), double auth (clés), mojibake + i18n, monnaie/formatage, idempotence/403/offline, Android manifest + locale platform_admin.
 
-## Validation finale
-`php artisan test --filter=OrganigrammeTest` + phpstan/pint ; les tasks Dart sont vérifiées par `flutter analyze` en CI (issue dédiée) — non poussées depuis l'environnement d'audit sans validation.
+### Phase 3 — P3 (M9)
+- Écran mort, client ID/creds, Sentry sampling, tryParse, méthodes mortes, T002 (stats marketing réelles).
+
+## Fichiers touchés (référence)
+
+- `front/mobile_apps/leopardo_core/lib/models/onboarding_step.dart`, `core/api/api_client.dart`, `core/storage/secure_storage.dart`, `core/models/{detail_schema,list_schema}.dart`
+- `front/mobile_apps/leopardo_{employee,manager,hr}/lib/features/onboarding/data/onboarding_repository.dart`
+- `front/mobile_apps/leopardo_hr/test/repositories/repository_contract_test.dart`
+- `front/mobile_apps/leopardo_manager/lib/app.dart` (+ routeurs cabinet des 3 apps)
+- `front/mobile_apps/leopardo_employee/lib/features/auth/data/auth_repository.dart`, `user_auth/data/user_auth_repository.dart`
+- `front/mobile_apps/leopardo_{employee,manager,hr}/lib/features/{evaluations,expenses,personal_space,smart_attendance,attendance,payrolls,salary_advances,welcome,onboarding}/**`
+- `front/mobile_apps/leopardo_employee/android/app/src/{main,debug}/AndroidManifest.xml`
+- `front/mobile_apps/leopardo_platform_admin/lib/src/platform_admin_app.dart`
+- `front/mobile_apps/leopardo_marketing/lib/features/marketing/screens/stats_dashboard_screen.dart`
+
+## Contraintes
+
+- `leopardo_core` : toute modification partagée va dans le core (règle README mobile).
+- Garder les garde-fous CI : `validate-mobile-apps-split.ps1`, `validate-mobile-workflow-contracts.ps1`, `check-mobile-manifest-routes.sh` verts.
+- Pas de Dart SDK dans l'environnement de test → vérification par lecture + contrats ; `flutter analyze` à passer en CI.
+- Rétro-compat : ne pas casser `/me/trainings`, `getChecklist()`, la lecture des anciens tokens (fallback).

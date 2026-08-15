@@ -4,31 +4,27 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
-use App\Shared\Traits\BelongsToCompany;
-use Illuminate\Database\Eloquent\Builder;
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property string $company_id
  * @property int $employee_id
  * @property string $provider
  * @property string|null $access_token
  * @property string|null $refresh_token
  * @property string|null $calendar_id
- * @property Carbon|null $token_expires_at
+ * @property \Illuminate\Support\Carbon|null $token_expires_at
  * @property bool $sync_leaves
  * @property bool $sync_training
  * @property bool $is_active
- * @property Carbon|null $last_synced_at
+ * @property \Illuminate\Support\Carbon|null $last_synced_at
  *
- * @mixin Builder<static>
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class CalendarConnection extends Model
 {
     use BelongsToCompany;
-
     protected $fillable = [
         'company_id',
         'employee_id',
@@ -56,3 +52,4 @@ class CalendarConnection extends Model
         return $this->token_expires_at !== null && $this->token_expires_at->isPast();
     }
 }
+

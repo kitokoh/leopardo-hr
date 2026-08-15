@@ -35,6 +35,12 @@ class ProvisionDemoTenantJob implements ShouldQueue
         try {
             $result = $provisioner->execute($this->email, $this->companyName, $this->country);
 
+            // #2629 : le magic link (démo) est réellement émis — la méthode
+            // issueDemoAccess() envoie l'email avec un lien à usage unique
+            // (72 h) géré par DemoLoginController. Best-effort : un échec
+            // d'envoi ne fait pas échouer le provisioning.
+            $this->issueDemoAccess($result['manager']);
+
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail
             // client ; le magic link email est un bonus, jamais le seul canal).
@@ -45,21 +51,16 @@ class ProvisionDemoTenantJob implements ShouldQueue
                         'status' => 'ready',
                         'company_id' => $result['company']->id,
                         'login_url' => '/auth/login',
+                        'access_sent_at' => now(),
                         'provisioned_at' => now(),
                         'updated_at' => now(),
                     ]);
             }
 
-            // Audit expert 2026-08-15 (issue #2620) : le magic link n'était
-            // plus émis — issueDemoAccess() (hash SHA-256 + email) était devenue
-            // du code mort quand le tail de handle() a été remplacé (#2437), et
-            // ProvisionDemoTenantJobTest échouait. Restauration de l'appel.
-            if (isset($result['manager']) && $result['manager'] instanceof Employee) {
+            // Issue #2620 : magic link envoyé au manager après provisioning
+            // réussi (token 72 h à usage unique, hash stocké sur extra_data).
+            if (isset($result['manager']) && $result['manager'] instanceof \App\Core\Auth\Domain\Models\Employee) {
                 $this->issueDemoAccess($result['manager']);
-            } else {
-                Log::warning('ProvisionDemoTenantJob: no manager in provisioning result — magic link not issued', [
-                    'company_id' => $result['company']->id ?? null,
-                ]);
             }
 
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);

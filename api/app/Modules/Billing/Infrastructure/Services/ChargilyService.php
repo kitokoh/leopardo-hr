@@ -31,9 +31,10 @@ class ChargilyService
     public function verifyWebhookSignature(string $payload, string $signatureHeader): ?array
     {
         if (empty($this->webhookSecret)) {
-            // Audit expert 2026-08-15 (issues #2615) : fail-closed — un secret
-            // absent ne doit jamais accepter un payload non vérifié.
-            Log::error('Chargily: Webhook secret not configured — refusing unverified payload.');
+            // #2615 fail-closed : secret absent = webhook non vérifiable = on
+            // REJETTE (null). Un secret vide ne doit jamais accepter un
+            // payload (fail-open = signature by-passable en prod).
+            Log::error('Chargily: Webhook secret not configured — webhook REJETÉ (fail-closed).');
 
             return null;
         }
@@ -46,22 +47,19 @@ class ChargilyService
 
         if (empty($provided)) {
             Log::warning('Chargily: Missing or malformed signature header.');
-
             return null;
         }
 
         $expected = hash_hmac('sha256', $payload, $this->webhookSecret);
 
-        if (! hash_equals($expected, $provided)) {
+        if (!hash_equals($expected, $provided)) {
             Log::warning('Chargily: Webhook signature mismatch.');
-
             return null;
         }
 
         $data = json_decode($payload, true);
-        if (! is_array($data)) {
+        if (!is_array($data)) {
             Log::warning('Chargily: Invalid JSON payload.');
-
             return null;
         }
 

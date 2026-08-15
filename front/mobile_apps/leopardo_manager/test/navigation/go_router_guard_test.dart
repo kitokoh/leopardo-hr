@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:leopardo_manager/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_manager/features/home/screens/home_screen.dart';
 
@@ -15,7 +16,24 @@ void main() {
     expect(find.text('Leopardo RH'), findsOneWidget);
   });
 
-  testWidgets('authenticated users are redirected away from public login', (
+  testWidgets('authenticated manager is redirected away from public login', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      appRouterHarness(
+        overrides: [
+          authOverride(
+            testEmployee(role: 'manager', managerRole: 'principal'),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('authenticated non-manager sees access denied (no redirect loop)', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -23,6 +41,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byType(HomeScreen), findsOneWidget);
+    // T116 : plus de boucle /welcome <-> / — l'utilisateur sans le rôle
+    // Manager reçoit un écran explicite.
+    expect(find.byType(AccessDeniedScreen), findsOneWidget);
   });
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Attendance\Domain\Models\CalendarConnection;
 use App\Modules\Attendance\Domain\Models\CalendarEvent;
-use App\Modules\Planning\Domain\Models\Absence;
+use App\Core\Auth\Domain\Models\Employee;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +25,8 @@ class CalendarSyncService
                 'provider' => $provider,
             ],
             [
-                // Audit expert 2026-08-15 (issue #2623) : company_id explicite —
-                // ne pas dépendre du hook du trait BelongsToCompany (aucun
-                // tenant courant dans certains contextes hors requête HTTP).
+                // Issue #2623 : scoping tenant explicite (le trait auto-fill
+                // ne couvre pas updateOrCreate sur les lignes historiques).
                 'company_id' => $employee->company_id,
                 'access_token' => encrypt($accessToken),
                 'refresh_token' => $refreshToken ? encrypt($refreshToken) : null,
@@ -68,12 +67,12 @@ class CalendarSyncService
                     $event = CalendarEvent::query()->updateOrCreate(
                         [
                             'employee_id' => $employee->id,
+                            'company_id' => $employee->company_id,
                             'source_type' => 'absence',
                             'source_id' => $absence->id,
                             'provider' => $connection->provider,
                         ],
                         [
-                            'company_id' => $employee->company_id,
                             'title' => 'Congé : '.($absence->type ?? 'absence'),
                             'description' => $absence->reason ?? '',
                             'starts_at' => $absence->start_date,
@@ -125,12 +124,12 @@ class CalendarSyncService
                     $event = CalendarEvent::query()->updateOrCreate(
                         [
                             'employee_id' => $employee->id,
+                            'company_id' => $employee->company_id,
                             'source_type' => 'training_session',
                             'source_id' => $session->id,
                             'provider' => $connection->provider,
                         ],
                         [
-                            'company_id' => $employee->company_id,
                             'title' => 'Formation : '.($session->title ?? 'Session'),
                             'starts_at' => $session->start_date,
                             'ends_at' => $session->end_date ?? $session->start_date,
@@ -276,3 +275,4 @@ class CalendarSyncService
         return false;
     }
 }
+

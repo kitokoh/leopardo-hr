@@ -1,39 +1,36 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+declare(strict_types=1);
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Issue #2626 — jetons de réinitialisation de mot de passe (usage unique,
+ * 60 min). Table publique (le lookup est par email, hors tenant).
+ */
 return new class extends Migration
 {
-    /**
-     * Audit expert 2026-08-15 (issue #2626) : flux forgot/reset password —
-     * l'API n'avait aucun mécanisme de réinitialisation. Table cross-tenant
-     * (schéma public, comme user_lookups) : email → token haché (SHA-256),
-     * expiration 60 min, usage unique. Le reset bascule le search_path du
-     * tenant avant de modifier l'employé.
-     */
     public function up(): void
     {
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->string('email', 150)->index();
-            $table->uuid('company_id');
-            $table->unsignedInteger('employee_id');
-            $table->string('token_hash', 64)->unique();
-            $table->timestampTz('expires_at');
-            $table->timestampTz('used_at')->nullable();
-            $table->timestamps();
-
-            $table->index(['email', 'token_hash']);
-        });
-
-        DB::statement("COMMENT ON TABLE password_reset_tokens IS 'Tokens de réinitialisation de mot de passe (cross-tenant, hash SHA-256, 60 min, usage unique)'");
+        DB::statement('SET search_path TO public');
+        DB::unprepared(<<<'SQL'
+CREATE TABLE IF NOT EXISTS public.password_reset_tokens (
+    email varchar(150) NOT NULL,
+    token_hash varchar(64) NOT NULL,
+    expires_at timestamp(0) with time zone NOT NULL,
+    used_at timestamp(0) with time zone NULL,
+    created_at timestamp(0) with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (email, token_hash)
+);
+CREATE INDEX IF NOT EXISTS password_reset_tokens_email_index
+    ON public.password_reset_tokens (email);
+SQL);
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('password_reset_tokens');
+        DB::statement('SET search_path TO public');
+        DB::unprepared('DROP TABLE IF EXISTS public.password_reset_tokens');
     }
 };

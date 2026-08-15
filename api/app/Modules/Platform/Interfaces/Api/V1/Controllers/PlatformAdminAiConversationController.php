@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Conversations IA — vue cross-tenant super-admin (contrat SPA admin,
@@ -37,8 +38,15 @@ class PlatformAdminAiConversationController extends Controller
                 ->get();
 
             return response()->json(['data' => $conversations]);
-        } catch (\Throwable) {
-            return response()->json(['data' => []]);
+        } catch (\Throwable $exception) {
+            Log::error('admin.ai.conversations.list_failed', [
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'error' => 'AI_CONVERSATIONS_UNAVAILABLE',
+                'message' => __('platform.conversations_unavailable'),
+            ], 500);
         }
     }
 
@@ -73,10 +81,13 @@ class PlatformAdminAiConversationController extends Controller
             }
         }
 
+        // La console plateforme est cross-tenant en lecture seule : aucun
+        // assistant IA plateforme n'existe (issue #2311). On renvoie une
+        // erreur explicite et documentée — jamais un 200 factice.
         return response()->json([
-            'conversation_id' => $validated['conversation_id'] ?? null,
-            'response' => __('platform.admin_chat_unavailable'),
-        ]);
+            'error' => 'ADMIN_CHAT_UNAVAILABLE',
+            'message' => __('platform.admin_chat_unavailable'),
+        ], 501);
     }
 
     public function messages(int $conversation): JsonResponse
@@ -109,8 +120,16 @@ class PlatformAdminAiConversationController extends Controller
             }
 
             return response()->json(['data' => $enriched]);
-        } catch (\Throwable) {
-            return response()->json(['data' => []]);
+        } catch (\Throwable $exception) {
+            Log::error('admin.ai.conversation.messages_failed', [
+                'conversation' => $conversation,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'error' => 'AI_MESSAGES_UNAVAILABLE',
+                'message' => __('platform.conversations_unavailable'),
+            ], 500);
         }
     }
 }

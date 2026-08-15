@@ -30,8 +30,8 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Leopardo', {
         body: 'Une nouvelle version est disponible. Rechargez la page.',
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
+        icon: '/icon.svg',
+        badge: '/icon.svg',
       });
     }
   };
