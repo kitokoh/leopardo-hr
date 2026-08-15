@@ -42,10 +42,27 @@ class TunisiaPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
-        $annualTaxable = $grossTaxable * $annualBasis;
+        // Issue #2261 — CGI TN art. 39 : abattement de 10 % sur le revenu
+        // imposable ANNUEL (plancher 1 000 / plafond 1 500 TND/an) appliqué
+        // AVANT le barème progressif. Méthode dédiée (constitution §III) :
+        // la valeur légale vit dans une méthode, pas inline.
+        $annualTaxable = $this->applyAnnualAbatement($grossTaxable * $annualBasis);
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
 
         return round($tax / $annualBasis, 2);
+    }
+
+    /**
+     * Issue #2261 — abattement IRPP tunisien (CGI TN art. 39) : 10 % du
+     * revenu annuel imposable, borné [1 000 ; 1 500 TND/an].
+     *
+     * @see docs/payroll/TN_COMPLIANCE.md §1
+     */
+    public function applyAnnualAbatement(float $annualTaxable): float
+    {
+        $abatement = min(max($annualTaxable * 0.10, 1000.0), 1500.0);
+
+        return max(0.0, $annualTaxable - $abatement);
     }
 
     public function calculateSocialCharges(float $grossSalary): array
