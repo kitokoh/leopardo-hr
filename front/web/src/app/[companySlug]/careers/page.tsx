@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: CareersPortalPageProps): Prom
   return generateSEOMetadata({
     title: `Carrieres${displayName ? ` - ${displayName}` : ''} - ${jobs.length} offre${jobs.length > 1 ? 's' : ''} d'emploi`,
     description: `Decouvrez les offres d'emploi ouvertes chez ${displayName || 'cette entreprise'} et postulez en ligne en quelques minutes.`,
-    canonical: `https://gestionemployer-backend.vercel.app/${companySlug}/careers`,
+    canonical: `${SITE_URL}/${companySlug}/careers`,
     ogType: 'website',
     ogImage: company?.logo_url ?? undefined,
   });
@@ -64,7 +65,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
           itemListElement: jobs.map((job, index) => ({
             '@type': 'ListItem',
             position: index + 1,
-            url: `https://gestionemployer-backend.vercel.app/${companySlug}/careers/jobs/${job.id}`,
+            url: `${SITE_URL}/${companySlug}/careers/jobs/${job.id}`,
           })),
         }}
       />
