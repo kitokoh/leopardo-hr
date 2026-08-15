@@ -16,6 +16,9 @@ use Tests\TestCase;
  * Règles (pilot) : CNSS 9,18 % / 16,57 % non plafonnée · IR mensuel = progressif
  * ANNUEL (0-5k 0 %, 5-20k 26 %, 20-30k 28 %, 30-50k 32 %, >50k 35 %) / 12,
  * assiette = brut − CNSS.
+ *
+ * Abattement CGI TN art. 39 (issue #2261) : 10 % du revenu imposable ANNUEL,
+ * borné [1 000 ; 1 500 TND/an], appliqué AVANT le barème progressif.
  */
 class GoldenTnPayrollTest extends TestCase
 {
@@ -28,9 +31,11 @@ class GoldenTnPayrollTest extends TestCase
     {
         // Calcul manuel, brut = SMIG 480 TND :
         //   CNSS salariale = 480 × 9,18 % = 44,06
-        //   IR : assiette 435,94 → annuel 5 231,28 → tranche 26 % :
-        //     (5 231,28 − 5 000) × 26 % = 60,13 → mensuel 5,01
-        //   Net = 480 − 44,06 − 5,01 = 430,93
+        //   Assiette IR = 480 − 44,06 = 435,94 → annuel 5 231,28
+        //   Abattement art. 39 = min(max(523,13 ; 1 000) ; 1 500) = 1 000
+        //   Revenu imposable = 5 231,28 − 1 000 = 4 231,28 → tranche 0 % : IR = 0
+        //   IR mensuel = 0 / 12 = 0,00
+        //   Net = 480 − 44,06 − 0,00 = 435,94
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(480.0);
@@ -38,38 +43,44 @@ class GoldenTnPayrollTest extends TestCase
         $this->assertSame(79.54, $charges['employer']);
 
         $tax = $rules->calculateIncomeTax(480.0 - $charges['employee']);
-        $this->assertSame(5.01, $tax);
-        $this->assertSame(430.93, round(480.0 - $charges['employee'] - $tax, 2));
+        $this->assertSame(0.00, $tax);
+        $this->assertSame(435.94, round(480.0 - $charges['employee'] - $tax, 2));
     }
 
     public function test_golden_tn_cadre_moyen_2000(): void
     {
         // Calcul manuel, brut 2 000 TND :
-        //   CNSS = 183,60 · IR : assiette 1 816,40 → annuel 21 796,80 :
-        //     15 000 × 26 % + 1 796,80 × 28 % = 4 403,10 → mensuel 366,93
-        //   Net = 2 000 − 183,60 − 366,93 = 1 449,47
+        //   CNSS = 183,60 · Assiette IR = 1 816,40 → annuel 21 796,80
+        //   Abattement art. 39 = min(max(2 179,68 ; 1 000) ; 1 500) = 1 500
+        //   Revenu imposable = 21 796,80 − 1 500 = 20 296,80
+        //     15 000 × 26 % + 296,80 × 28 % = 3 900 + 83,10 = 3 983,10
+        //   IR mensuel = 3 983,10 / 12 = 331,93
+        //   Net = 2 000 − 183,60 − 331,93 = 1 484,47
         $charges = $this->rules()->calculateSocialCharges(2000.0);
         $this->assertSame(183.60, $charges['employee']);
         $this->assertSame(331.40, $charges['employer']);
 
         $tax = $this->rules()->calculateIncomeTax(2000.0 - $charges['employee']);
-        $this->assertSame(366.93, $tax);
-        $this->assertSame(1449.47, round(2000.0 - $charges['employee'] - $tax, 2));
+        $this->assertSame(331.93, $tax);
+        $this->assertSame(1484.47, round(2000.0 - $charges['employee'] - $tax, 2));
     }
 
     public function test_golden_tn_haut_salaire_8000(): void
     {
         // Calcul manuel, brut 8 000 TND :
-        //   CNSS = 734,40 · IR : assiette 7 265,60 → annuel 87 187,20 :
-        //     15 000 × 26 % + 10 000 × 28 % + 20 000 × 32 % + 37 187,20 × 35 %
-        //     = 26 115,52 → mensuel 2 176,29
-        //   Net = 8 000 − 734,40 − 2 176,29 = 5 089,31
+        //   CNSS = 734,40 · Assiette IR = 7 265,60 → annuel 87 187,20
+        //   Abattement art. 39 = min(max(8 718,72 ; 1 000) ; 1 500) = 1 500
+        //   Revenu imposable = 87 187,20 − 1 500 = 85 687,20
+        //     15 000 × 26 % + 10 000 × 28 % + 20 000 × 32 % + 35 687,20 × 35 %
+        //     = 3 900 + 2 800 + 6 400 + 12 490,52 = 25 590,52
+        //   IR mensuel = 25 590,52 / 12 = 2 132,54
+        //   Net = 8 000 − 734,40 − 2 132,54 = 5 133,06
         $charges = $this->rules()->calculateSocialCharges(8000.0);
         $this->assertSame(734.40, $charges['employee']);
         $this->assertSame(1325.60, $charges['employer']);
 
         $tax = $this->rules()->calculateIncomeTax(8000.0 - $charges['employee']);
-        $this->assertSame(2176.29, $tax);
-        $this->assertSame(5089.31, round(8000.0 - $charges['employee'] - $tax, 2));
+        $this->assertSame(2132.54, $tax);
+        $this->assertSame(5133.06, round(8000.0 - $charges['employee'] - $tax, 2));
     }
 }

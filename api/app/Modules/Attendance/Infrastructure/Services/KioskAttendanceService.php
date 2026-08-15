@@ -10,6 +10,8 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
+use App\Exceptions\MissingCheckInException;
 
 class KioskAttendanceService
 {
@@ -58,14 +60,46 @@ class KioskAttendanceService
         });
     }
 
+    /**
+     * Synchronise un batch d'événements offline kiosk.
+     *
+     * Issue #3587 — les événements non importables n'étaient skippés
+     * silencieusement (continue sans log) alors que le bridge marquait TOUT
+     * le batch comme synchronisé → pointages définitivement perdus sans
+     * alerte (erreurs de paie invisibles). Désormais chaque événement refusé
+     * est retourné dans `skipped` (avec raison) ET journalisé, pour que le
+     * bridge l'isole en dead-letter au lieu de le marquer synced.
+     *
+     * @param  array<int, array<string, mixed>>  $events
+     * @return array{processed: array<int, int>, skipped: array<int, array{external_event_id: string|null, identifier: string, reason: string}>}
+     */
     public function syncPunches(AttendanceKiosk $kiosk, array $events): array
     {
         return $this->tenantManager->withinTenant($kiosk->company, function () use ($kiosk, $events) {
             $processed = [];
+            $skipped = [];
 
             foreach ($events as $event) {
                 $identifier = trim((string) ($event['identifier'] ?? ''));
+                $externalEventId = isset($event['external_event_id']) ? (string) $event['external_event_id'] : null;
+
+                $skip = static function (string $reason) use (&$skipped, $externalEventId, $identifier, $kiosk): void {
+                    $skipped[] = [
+                        'external_event_id' => $externalEventId,
+                        'identifier' => $identifier,
+                        'reason' => $reason,
+                    ];
+                    Log::warning('kiosk.sync_event_skipped', [
+                        'device_code' => $kiosk->device_code,
+                        'company_id' => $kiosk->company_id,
+                        'external_event_id' => $externalEventId,
+                        'identifier' => $identifier,
+                        'reason' => $reason,
+                    ]);
+                };
+
                 if ($identifier === '') {
+                    $skip('IDENTIFIER_REQUIRED');
                     continue;
                 }
 
@@ -80,25 +114,34 @@ class KioskAttendanceService
                     ->first();
 
                 if (! $employee) {
+                    $skip('EMPLOYEE_NOT_FOUND');
                     continue;
                 }
 
                 if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
+                    $skip('BIOMETRIC_NOT_APPROVED');
                     continue;
                 }
 
-                $log = $this->attendanceService->importExternalPunch($employee, new CheckInDTO(
-                    method: 'kiosk_offline',
-                    occurred_at: $event['occurred_at'] ?? null,
-                    external_event_id: $event['external_event_id'] ?? null,
-                    biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
-                    synced_from_offline: true,
-                    action: $event['action'] ?? 'check_in',
-                    source_device_code: $kiosk->device_code,
-                    // PA2-ATT-010: offline-synced kiosk events also carry the
-                    // multi-event work_type, matching mobile's offline sync.
-                    work_type: $event['work_type'] ?? 'normal',
-                ));
+                try {
+                    $log = $this->attendanceService->importExternalPunch($employee, new CheckInDTO(
+                        method: 'kiosk_offline',
+                        occurred_at: $event['occurred_at'] ?? null,
+                        external_event_id: $event['external_event_id'] ?? null,
+                        biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,
+                        synced_from_offline: true,
+                        action: $event['action'] ?? 'check_in',
+                        source_device_code: $kiosk->device_code,
+                        // PA2-ATT-010: offline-synced kiosk events also carry the
+                        // multi-event work_type, matching mobile's offline sync.
+                        work_type: $event['work_type'] ?? 'normal',
+                    ));
+                } catch (MissingCheckInException) {
+                    // Rejet métier borné à CET événement (#3588) : un check_out
+                    // sans session ouverte ne doit plus faire échouer le batch.
+                    $skip('NO_OPEN_SESSION');
+                    continue;
+                }
 
                 $processed[] = $log->id;
             }
@@ -108,7 +151,10 @@ class KioskAttendanceService
                 'last_sync_at' => now(),
             ])->save();
 
-            return $processed;
+            return [
+                'processed' => $processed,
+                'skipped' => $skipped,
+            ];
         });
     }
 }

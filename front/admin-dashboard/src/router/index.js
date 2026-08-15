@@ -229,8 +229,7 @@ const routes = [
         component: () => import('@/views/fleet/FleetView.vue'),
         meta: {
           title: 'Flotte véhicules',
-          icon: 'TruckIcon',
-          requiresTenant: true
+          icon: 'TruckIcon'
         }
       },
       {
@@ -259,8 +258,7 @@ const routes = [
         component: () => import('@/views/exports/ExportsView.vue'),
         meta: {
           title: 'Exports & Rapports',
-          icon: 'ArrowDownTrayIcon',
-          requiresTenant: true
+          icon: 'ArrowDownTrayIcon'
         }
       },
       {
