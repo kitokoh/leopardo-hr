@@ -142,7 +142,9 @@ export default function RootLayout({
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />
-            {children}
+            <main id="main-content" className="flex min-h-screen flex-col">
+              {children}
+            </main>
           </PWAProvider>
         </DarkModeProvider>
       </body>
