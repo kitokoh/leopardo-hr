@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +8,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 
+import 'features/auth/providers/auth_provider.dart';
+import 'features/auth/screens/login_screen.dart';
 import 'features/marketing/screens/marketing_home_screen.dart';
+import 'core/providers/core_providers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +42,8 @@ Future<void> _criticalBootstrap() async {
 }
 
 Future<void> _bootstrap() async {
-  // Initialization logic for marketing app (réservé : auth, analytics).
+  // Issue #3006 : l'état d'authentification est porté par authProvider
+  // (checkAuth au démarrage) ; le routeur redirige vers /login si besoin.
 }
 
 Future<void> _optionalBootstrap() async {
@@ -54,31 +59,70 @@ Future<void> _optionalBootstrap() async {
 // (app marketing en skeleton, cf. #3006), le routeur n'expose que la home —
 // pas de navigation morte. Réintroduire les onglets AVEC leurs routes le jour
 // où les écrans arrivent.
+//
+// Issue #3006 : le redirect() exige une session (`/marketing/*` est protégé
+// par auth:sanctum + api.manager:marketing,principal) — sans session, l'app
+// affichait des 401 en cascade. Le routeur redirige vers /login tant que
+// authProvider n'a pas d'employé authentifié (pattern ValueNotifier +
+// refreshListenable, cf. leopardo_manager/app.dart).
 
-final _router = GoRouter(
-  initialLocation: '/',
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const MarketingHomeScreen(),
-    ),
-  ],
-);
+final _routerProvider = Provider<GoRouter>((ref) {
+  final authListenable = ValueNotifier<AuthState>(ref.read(authProvider));
+  ref.listen<AuthState>(authProvider, (previous, next) {
+    authListenable.value = next;
+  });
+  ref.onDispose(authListenable.dispose);
+
+  return GoRouter(
+    initialLocation: '/',
+    refreshListenable: authListenable,
+    redirect: (context, state) {
+      final authState = authListenable.value;
+      final isAuth = authState.employee != null;
+
+      // Pendant l'hydratation auth, garder l'écran courant visible.
+      if (authState.isLoading) {
+        return null;
+      }
+
+      final loggingIn = state.matchedLocation == '/login';
+      if (!isAuth && !loggingIn) {
+        return '/login';
+      }
+      if (isAuth && loggingIn) {
+        return '/';
+      }
+      return null;
+    },
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const MarketingHomeScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+    ],
+  );
+});
 
 // ─── Application ──────────────────────────────────────────────────────────────
 
-class LeopardoMarketingApp extends StatelessWidget {
+class LeopardoMarketingApp extends ConsumerWidget {
   const LeopardoMarketingApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(_routerProvider);
+
     return MaterialApp.router(
       title: 'Leopardo Marketing',
       theme: TenantTheme.apply(ThemeData.light(), null),
       darkTheme: TenantTheme.apply(ThemeData.dark(), null),
       // Issue #3053 : ne pas forcer le dark — suivre le système.
       themeMode: ThemeMode.system,
-      routerConfig: _router,
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }
