@@ -5,6 +5,9 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+### Fixed
+- **fix(admin): temps réel neutre quand le push n'est pas configuré (Closes #3269, P1).** `realtime.js` tentait `io('ws://localhost:6001')` en prod sans `VITE_WEBSOCKET_URL` (connexion vers la machine du client) et le bandeau affichait en continu « Connexion perdue » / « les notifications continuent d'arriver » (faux pour le profil super-admin dont l'inbox `/notifications` est une route tenant → 401). Désormais : sans URL push configurée, plus aucune tentative socket — passage direct en polling REST best-effort, état `pushUnavailable` exposé, bandeau de connexion masqué (état neutre), pastille du header « Push non configuré » (grise) au lieu de « Déconnecté », et le 401 de l'inbox super-admin bascule l'état en neutre au lieu de laisser un faux « mode secours ».
+
 
 - **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 - **fix(admin): route morte /users/:id supprimée (Closes #3280).** UserDetailView (prop `:show` inexistante, « Impersonner » inerte) jamais liée — code mort retiré du bundle.
