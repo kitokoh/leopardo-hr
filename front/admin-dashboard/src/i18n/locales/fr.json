@@ -598,5 +598,13 @@
         "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
       }
     }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Impossible de charger la fiche entreprise.",
+      "tickets_failed": "Impossible de charger les tickets support.",
+      "subscription_failed": "Échec de la mise à jour de l'abonnement.",
+      "features_failed": "Échec de la configuration des modules."
+    }
   }
 }
