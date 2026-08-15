@@ -121,10 +121,19 @@ Codes : `CNSS_CI_RET_EMP`, `CNSS_CI_RET_PAT`, `CNSS_CI_FAM_PAT`,
 | Employés / Techniciens | 1 mois | 2 mois |
 | Cadres | 3 mois | 3 mois |
 
-⚠️ L'interface `noticePeriodDays(yearsOfService)` n'expose que l'ancienneté :
-implémentation pilote au niveau **employé/technicien** (< 5 ans : 30 j ;
-≥ 5 ans : 60 j) — ouvriers et cadres documentés ici, la catégorie du contrat
-sera prise en compte dans un suivi.
+⚠️ Implémentation (#2264, niveau pilot — à valider expert-comptable
+OHADA-CI) : `noticePeriodDays(yearsOfService, ?category)` applique la
+matrice complète par catégorie professionnelle, la catégorie provenant de
+`employees.ipres_category` (`general` | `cadre`, transmise par
+`EndOfContractService`) :
+
+- `cadre` / `executive` / `manager` → **90 j** (3 mois, quel que soit le niveau) ;
+- `ouvrier` / `worker` → **8 j** (< 5 ans) / **15 j** (≥ 5 ans) ;
+- défaut (employés / techniciens, y compris `general` et appel sans catégorie)
+  → **30 j** (< 5 ans) / **60 j** (≥ 5 ans).
+
+Le palier « ≥ 10 ans → 90 j » (ancienne approximation par ancienneté seule)
+est supprimé : il contredisait la ligne employé/technicien.
 
 ## 9. 13ème mois
 

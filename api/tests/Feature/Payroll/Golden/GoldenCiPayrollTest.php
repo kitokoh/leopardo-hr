@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll\Golden;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -201,22 +206,22 @@ class GoldenCiPayrollTest extends TestCase
     public static function itsProvider(): array
     {
         return [
-            'tranche 0 % (≤ 75k)'             => [50000.0, 1600.0, 0.0],
+            'tranche 0 % (≤ 75k)' => [50000.0, 1600.0, 0.0],
             // 150 000 → 75 001–150 000 × 16 % = 75 000 × 16 % = 12 000,00
-            'tranche 16 % (75k–240k)'         => [150000.0, 4800.0, 12000.00],
+            'tranche 16 % (75k–240k)' => [150000.0, 4800.0, 12000.00],
             // 300 000 → 26 400 + 60 000 × 21 % = 12 600 → 39 000,00
-            'tranche 21 % (240k–800k)'        => [300000.0, 9600.0, 39000.00],
+            'tranche 21 % (240k–800k)' => [300000.0, 9600.0, 39000.00],
             // 700 000 → 26 400 + 460 000 × 21 % = 96 600 → 123 000,00
-            'tranche 24 % (800k–2,4M)'        => [700000.0, 22400.0, 123000.00],
+            'tranche 24 % (800k–2,4M)' => [700000.0, 22400.0, 123000.00],
             // 3 000 000 → 26 400 + 117 600 + 1 600 000 × 24 % = 384 000
             //   + 600 000 × 28 % = 168 000 → 696 000,00
-            'tranche 28 % (2,4M–8M)'          => [3000000.0, 96000.0, 696000.00],
+            'tranche 28 % (2,4M–8M)' => [3000000.0, 96000.0, 696000.00],
             // 10 000 000 → 26 400 + 117 600 + 384 000 + 5 600 000 × 28 %
             //   = 1 568 000 + 2 000 000 × 32 % = 640 000 → 2 736 000,00
-            'tranche 32 % (> 8M)'             => [10000000.0, 320000.0, 2736000.00],
+            'tranche 32 % (> 8M)' => [10000000.0, 320000.0, 2736000.00],
             // 12 000 000 (> 10 M — suivi #1918) → 2 736 000
             //   + 4 000 000 × 32 % = 1 280 000 → 3 376 000,00
-            'tranche 32 % (> 10M)'            => [12000000.0, 384000.0, 3376000.00],
+            'tranche 32 % (> 10M)' => [12000000.0, 384000.0, 3376000.00],
         ];
     }
 
@@ -247,25 +252,28 @@ class GoldenCiPayrollTest extends TestCase
     }
 
     #[DataProvider('preavisProvider')]
-    public function test_golden_ci_preavis(float $years, float $expectedDays): void
+    public function test_golden_ci_preavis(float $years, float $expectedDays, ?string $category = null): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §6 — Code du travail art. 18) :
-        //  < 5 ans → 30 j · 5-10 ans → 60 j · ≥ 10 ans → 90 j
-        //  (palier employé/technicien — pilot, à valider).
+        // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18) :
+        //  employés/techniciens < 5 ans → 30 j · ≥ 5 ans → 60 j
+        //  (défaut) ; cadres → 90 j ; ouvriers → 8 j / 15 j (#2264).
         $rules = $this->rules();
 
-        $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
+        $this->assertSame($expectedDays, $rules->noticePeriodDays($years, $category));
     }
 
     /**
-     * @return array<string, array{float, float}>
+     * @return array<string, array{float, float, string|null}>
      */
     public static function preavisProvider(): array
     {
         return [
-            'moins de 5 ans'  => [2.0, 30.0],
-            '5 à 10 ans'      => [7.0, 60.0],
-            '10 ans et plus'  => [12.0, 90.0],
+            'moins de 5 ans' => [2.0, 30.0],
+            '5 à 10 ans' => [7.0, 60.0],
+            '10 ans et plus' => [12.0, 60.0],
+            'cadre 12 ans' => [12.0, 90.0, 'cadre'],
+            'ouvrier 2 ans' => [2.0, 8.0, 'ouvrier'],
+            'ouvrier 7 ans' => [7.0, 15.0, 'worker'],
         ];
     }
 
@@ -273,13 +281,13 @@ class GoldenCiPayrollTest extends TestCase
     {
         // Calcul manuel (CI_COMPLIANCE.md) : prorata entrée le 15 → 12,06 j/22
         // (même mécanique F-05 que DZ) : 22 × 17/31 = 12,06.
-        $this->assertSame(32890.91, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 12.06));
+        $this->assertSame(32890.91, (new PayrollCalculator)->computeProratedBase(60000.0, 22.0, 12.06));
     }
 
     public function test_golden_ci_prorata_sortie_10(): void
     {
         // Calcul manuel : sortie le 10 → 7,10 j/22 : 22 × 10/31 = 7,10.
-        $this->assertSame(19363.64, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 7.10));
+        $this->assertSame(19363.64, (new PayrollCalculator)->computeProratedBase(60000.0, 22.0, 7.10));
     }
 
     public function test_golden_ci_cnss_employee_zero_on_zero_salary(): void
@@ -355,19 +363,19 @@ class GoldenCiPayrollTest extends TestCase
      */
     public function test_golden_ci_full_run_its_2024(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
-        $company = \App\Core\Tenant\Domain\Models\Company::factory()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'country' => 'CI',
             'currency' => 'XOF',
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => 100000,
         ]);
 
-        \App\Modules\Payroll\Domain\Models\SalaryStructure::create([
+        SalaryStructure::create([
             'company_id' => $company->id,
             'name' => 'Grille CI test',
             'base_salary' => 100000,
@@ -377,8 +385,8 @@ class GoldenCiPayrollTest extends TestCase
             'active' => true,
         ]);
 
-        /** @var \App\Modules\Payroll\Domain\Models\PayrollRun $run */
-        $run = \App\Modules\Payroll\Domain\Models\PayrollRun::create([
+        /** @var PayrollRun $run */
+        $run = PayrollRun::create([
             'company_id' => $company->id,
             'period_start' => '2026-07-01',
             'period_end' => '2026-07-31',
@@ -386,9 +394,9 @@ class GoldenCiPayrollTest extends TestCase
             'status' => 'draft',
         ]);
 
-        (new \App\Modules\Payroll\Infrastructure\Services\PayrollCalculator)->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $slip */
+        /** @var PaySlip $slip */
         $slip = $run->paySlips()->firstOrFail();
 
         $this->assertSame(100000.0, (float) $slip->gross_salary);

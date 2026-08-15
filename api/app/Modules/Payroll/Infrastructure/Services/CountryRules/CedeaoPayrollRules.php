@@ -323,13 +323,16 @@ class CedeaoPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * CI (#1825) : préavis légal (Code du travail CI art. 18) — la matrice
-     * complète distingue ouvriers (< 5 ans : 8 j ; ≥ 5 ans : 15 j),
-     * employés/techniciens (< 5 ans : 1 mois ; ≥ 5 ans : 2 mois) et cadres
-     * (3 mois). Le moteur ne transmet pas la catégorie à
-     * noticePeriodDays() : approximation pilote sur l'ancienneté seule
-     * (palier employé/technicien), matrice complète documentée
-     * CI_COMPLIANCE.md §6 — à valider par expert-comptable OHADA-CI.
+     * CI (#1825, #2264) : préavis légal (Code du travail CI art. 18,
+     * CI_COMPLIANCE.md §8) par catégorie professionnelle :
+     *   - ouvriers          : < 5 ans 8 j · ≥ 5 ans 15 j ;
+     *   - employés/tech.    : < 5 ans 1 mois · ≥ 5 ans 2 mois ;
+     *   - cadres            : 3 mois quel que soit le niveau.
+     * La catégorie vient de `employees.ipres_category` ('general'|'cadre',
+     * EndOfContractService). Sans catégorie (rétrocompatibilité), le palier
+     * employé/technicien s'applique — le palier 90 j « ≥ 10 ans » non
+     * documenté est supprimé (contredisait la ligne employé/technicien).
+     * Niveau pilot — à valider par expert-comptable OHADA-CI.
      */
     public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
@@ -344,10 +347,10 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return parent::noticePeriodDays($yearsOfService);
         }
 
-        return match (true) {
-            $yearsOfService < 5.0 => 30.0,
-            $yearsOfService < 10.0 => 60.0,
-            default => 90.0,
+        return match (strtolower((string) $category)) {
+            'cadre', 'executive', 'manager' => 90.0,
+            'ouvrier', 'worker' => $yearsOfService < 5.0 ? 8.0 : 15.0,
+            default => $yearsOfService < 5.0 ? 30.0 : 60.0,
         };
     }
 

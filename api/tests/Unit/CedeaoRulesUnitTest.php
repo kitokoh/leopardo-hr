@@ -133,12 +133,17 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_ci_notice_period_days(): void
     {
-        // CI_COMPLIANCE.md §6 — palier ancienneté (approximation pilote,
-        // matrice complète ouvriers/employés/cadres documentée) :
-        //   < 5 ans : 30 j · 5–10 ans : 60 j · > 10 ans : 90 j.
+        // CI_COMPLIANCE.md §8 (Code du travail CI art. 18) — matrice par
+        // catégorie (#2264) : employés/techniciens < 5 ans 30 j · ≥ 5 ans
+        // 60 j (défaut) ; cadres 90 j ; ouvriers 8 j / 15 j.
         $this->assertSame(30.0, $this->rules()->noticePeriodDays(3.0));
         $this->assertSame(60.0, $this->rules()->noticePeriodDays(7.0));
-        $this->assertSame(90.0, $this->rules()->noticePeriodDays(12.0));
+        $this->assertSame(60.0, $this->rules()->noticePeriodDays(12.0));
+
+        $this->assertSame(90.0, $this->rules()->noticePeriodDays(3.0, 'cadre'));
+        $this->assertSame(90.0, $this->rules()->noticePeriodDays(12.0, 'cadre'));
+        $this->assertSame(8.0, $this->rules()->noticePeriodDays(3.0, 'ouvrier'));
+        $this->assertSame(15.0, $this->rules()->noticePeriodDays(12.0, 'worker'));
     }
 
     public function test_ci_overtime_tiers(): void
