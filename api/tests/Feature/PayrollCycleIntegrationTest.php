@@ -197,6 +197,55 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertJsonStructure(['data' => ['next_payment_date']]);
     }
 
+    /**
+     * Issue #2143 — /me/balance expose le bloc `compliance` (#1872) résolu
+     * depuis le pays de l'entreprise (niveau pilot pour DZ). Rétro-compatible :
+     * pays non supporté → compliance null (garde anti-500).
+     */
+    public function test_employee_balance_exposes_compliance_block(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 120000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonPath('data.country', 'DZ')
+            ->assertJsonPath('data.compliance.level', 'pilot')
+            ->assertJsonPath('data.compliance.warning_key', 'payroll.compliance_warning_pilot')
+            ->assertJsonPath('data.compliance.source', 'docs/payroll/DZ_COMPLIANCE.md')
+            ->assertJsonPath('data.compliance.verification_date', null);
+    }
+
+    public function test_employee_balance_compliance_null_for_unsupported_country(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'US',
+            'currency' => 'USD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 120000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonPath('data.compliance', null);
+    }
+
     public function test_employee_balance_reports_next_payment_date_from_company_pay_day(): void
     {
         $company = Company::factory()->create([
