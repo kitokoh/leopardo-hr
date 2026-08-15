@@ -37,14 +37,14 @@ class PersonalSpaceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Votre compte est prÃªt. Vous pouvez maintenant rejoindre une entreprise ou en crÃ©er une nouvelle.',
+              'Votre compte est prêt. Vous pouvez maintenant rejoindre une entreprise ou en créer une nouvelle.',
               style: AppTypography.body.copyWith(
                 color: AppColors.textSecondaryFor(context),
               ),
             ),
             const SizedBox(height: 32),
             _ActionCard(
-              title: 'CrÃ©er mon entreprise',
+              title: 'Créer mon entreprise',
               description:
                   'Envoyez une demande pour enregistrer votre entreprise sur Leopardo RH.',
               icon: Icons.business_center_outlined,
@@ -53,7 +53,7 @@ class PersonalSpaceScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             _ActionCard(
-              title: 'Rejoindre une Ã©quipe',
+              title: 'Rejoindre une équipe',
               description:
                   'Attendez que votre employeur vous invite via votre email : ${employee?.email}',
               icon: Icons.group_add_outlined,

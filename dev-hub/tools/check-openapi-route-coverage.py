@@ -111,7 +111,12 @@ def parse_routes() -> list[dict]:
     routes: list[dict] = []
 
     def parse_file(file: Path, inherited: list[tuple[int, str]] | None = None) -> None:
-        rel = file.relative_to(ROUTES_DIR).as_posix()
+        try:
+            rel = file.relative_to(ROUTES_DIR).as_posix()
+        except ValueError:
+            # Fichier hors api/routes/ (modules DDD EdgeSync/SmartAttendance) :
+            # étiquette lisible dans le rapport (repo-relative).
+            rel = file.relative_to(REPO_ROOT).as_posix()
         # Issue #2489 (régression #2431) : le contexte de préfixe hérité du
         # `require` dans api.php (groupe `v1` englobant) doit amorcer la pile —
         # sinon les routes des modules sont comparées sans le préfixe de
@@ -246,6 +251,18 @@ def parse_routes() -> list[dict]:
     # api.php lui-même (routes directes sous v1, platform, admin, etc.)
     if api_file.exists():
         parse_file(api_file)
+
+    # 3) Routes des modules DDD enregistrées par leur provider via
+    #    loadRoutesFrom (hors api/routes/) : EdgeSync, SmartAttendance.
+    #    QA 2026-08-15 (#2662) : elles étaient invisibles à la passe directe
+    #    de cette garde (seule la passe inverse les couvrait via
+    #    scripts/route_openapi_compare.py). Chemins absolus (api/v1/...),
+    #    donc aucun préfixe hérité.
+    for file in MODULE_ROUTE_FILES:
+        if not file.exists():
+            print(f"[WARN] Module route file absent: {file}", file=sys.stderr)
+            continue
+        parse_file(file)
 
     return routes
 

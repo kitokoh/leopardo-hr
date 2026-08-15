@@ -36,30 +36,15 @@ class OnboardingController extends Controller
             ->first();
 
         if (! $invitation) {
-            return new JsonResponse([
-                'error' => [
-                    'code' => 'INVITATION_NOT_FOUND',
-                    'message' => 'Token d\'invitation invalide ou introuvable.',
-                ],
-            ], 404);
+            return $this->errorResponse('INVITATION_NOT_FOUND', 404);
         }
 
         if ($invitation->accepted_at !== null) {
-            return new JsonResponse([
-                'error' => [
-                    'code' => 'INVITATION_ALREADY_ACCEPTED',
-                    'message' => 'Cette invitation a déjà été acceptée.',
-                ],
-            ], 410);
+            return $this->errorResponse('INVITATION_ALREADY_ACCEPTED', 410);
         }
 
         if ($invitation->expires_at?->isPast()) {
-            return new JsonResponse([
-                'error' => [
-                    'code' => 'INVITATION_EXPIRED',
-                    'message' => 'Cette invitation a expiré.',
-                ],
-            ], 410);
+            return $this->errorResponse('INVITATION_EXPIRED', 410);
         }
 
         return new JsonResponse([
@@ -91,30 +76,15 @@ class OnboardingController extends Controller
             ->first();
 
         if (! $invitation) {
-            return new JsonResponse([
-                'error' => [
-                    'code' => 'INVITATION_NOT_FOUND',
-                    'message' => 'Token d\'invitation invalide ou introuvable.',
-                ],
-            ], 404);
+            return $this->errorResponse('INVITATION_NOT_FOUND', 404);
         }
 
         if ($invitation->accepted_at !== null) {
-            return new JsonResponse([
-                'error' => [
-                    'code' => 'INVITATION_ALREADY_ACCEPTED',
-                    'message' => 'Cette invitation a déjà été acceptée.',
-                ],
-            ], 410);
+            return $this->errorResponse('INVITATION_ALREADY_ACCEPTED', 410);
         }
 
         if ($invitation->expires_at?->isPast()) {
-            return new JsonResponse([
-                'error' => [
-                    'code' => 'INVITATION_EXPIRED',
-                    'message' => 'Cette invitation a expiré.',
-                ],
-            ], 410);
+            return $this->errorResponse('INVITATION_EXPIRED', 410);
         }
 
         $employee = $this->userInvitationService->accept($token, $validated['password']);
@@ -139,5 +109,20 @@ class OnboardingController extends Controller
             'message' => 'ACCOUNT_ACTIVATED',
         ], 201);
     }
-}
 
+    /**
+     * QA 2026-08-15 (#2653) : shape d'erreur conforme au contrat API
+     * ({error, message, localized_message}) au lieu de l'objet imbriqué
+     * historique {error: {code, message}}.
+     */
+    private function errorResponse(string $code, int $status): JsonResponse
+    {
+        $translated = __("errors.{$code}");
+
+        return new JsonResponse([
+            'error' => $code,
+            'message' => $code,
+            'localized_message' => $translated !== "errors.{$code}" ? $translated : $code,
+        ], $status);
+    }
+}
