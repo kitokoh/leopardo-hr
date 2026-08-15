@@ -60,7 +60,9 @@ class PasswordResetController
         }
 
         return new JsonResponse([
-            'message' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.',
+            'success' => true,
+            'message' => 'PASSWORD_RESET_SENT',
+            'localized_message' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.',
         ]);
     }
 
@@ -125,7 +127,9 @@ class PasswordResetController
         }
 
         return new JsonResponse([
-            'message' => 'Votre mot de passe a été réinitialisé.',
+            'success' => true,
+            'message' => 'PASSWORD_RESET_DONE',
+            'localized_message' => 'Mot de passe réinitialisé. Connectez-vous avec votre nouveau mot de passe.',
         ]);
     }
 
