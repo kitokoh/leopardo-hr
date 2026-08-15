@@ -46,23 +46,25 @@ export function getErrorBreadcrumbs() {
 function contextualErrorMessage(status, data, url) {
   const endpoint = url || 'inconnu'
   const serverMsg = data?.message || ''
+  // Le backend fournit `localized_message` (clé traduite) : toujours prioritaire.
+  const localized = data?.localized_message || ''
   switch (status) {
     case 401:
-      return 'Session expiree. Reconnexion en cours...'
+      return localized || 'Session expirée. Reconnexion en cours...'
     case 403:
-      return `Acces refuse sur ${endpoint}. Permissions insuffisantes.`
+      return localized || `Accès refusé sur ${endpoint}. Permissions insuffisantes.`
     case 404:
       return `Ressource introuvable : ${endpoint}`
     case 422:
       return null
     case 429:
-      return 'Trop de requetes. Veuillez patienter quelques secondes.'
+      return 'Trop de requêtes. Veuillez patienter quelques secondes.'
     case 500:
-      return `Erreur serveur sur ${endpoint}. ${serverMsg ? '(' + serverMsg + ')' : 'Reessayez plus tard.'}`
+      return `Erreur serveur sur ${endpoint}. ${serverMsg ? '(' + serverMsg + ')' : 'Réessayez plus tard.'}`
     case 502:
     case 503:
     case 504:
-      return `Le serveur est temporairement indisponible (${status}). Reessayez dans quelques instants.`
+      return `Le serveur est temporairement indisponible (${status}). Réessayez dans quelques instants.`
     default:
       return serverMsg || `Erreur ${status} sur ${endpoint}.`
   }
@@ -87,7 +89,11 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+// QA 2026-08-15 (#2659) : tout build sans VITE_API_URL embarquait localhost
+// (déploiement GitHub Actions cassé, dev silencieusement pointé ailleurs).
+// Le défaut est désormais l'URL de production ; localhost reste utilisable
+// explicitement via VITE_API_URL pour le dev local.
+const apiBaseURL = import.meta.env.VITE_API_URL || 'https://gestionemployerbackend.onrender.com/api/v1'
 
 function baseEndsWithV1(baseURL) {
   return /\/api\/v1\/?$/.test(baseURL || '')
@@ -182,7 +188,14 @@ api.interceptors.response.use(
 
             if (window.location.pathname !== '/login') {
               toast.warning(contextualErrorMessage(401, data, requestUrl))
-              window.location.href = '/login'
+              // Navigation SPA (plus de reload complet) : le router redirige
+              // déjà vers /login via le guard ; ce push couvre les appels hors
+              // guard (intercepteur).
+              import('@/router').then(({ default: router }) => {
+                if (router.currentRoute.value.path !== '/login') {
+                  router.push('/login')
+                }
+              })
             }
           }
           break
@@ -193,7 +206,7 @@ api.interceptors.response.use(
               .flat()
               .forEach((message) => toast.error(message))
           } else {
-            toast.error(data.message || 'Donnees invalides.')
+            toast.error(data.message || 'Données invalides.')
           }
           break
 
