@@ -48,7 +48,7 @@ class SocialDeclarationController extends Controller
 
         $employees = $this->declarationService->activeEmployees($actor->company_id);
 
-        $quarterMonths = $this->declarationService->quarterMonths($validated['quarter']);
+        $quarterMonths = $this->declarationService->quarterMonths((string) $validated['quarter']);
 
         $payrollData = $this->declarationService->quarterPayrollData(
             $actor->company_id,
@@ -116,7 +116,7 @@ class SocialDeclarationController extends Controller
 
         $employees = $this->declarationService->activeEmployees($actor->company_id);
 
-        $quarterMonths = $this->declarationService->quarterMonths($validated['quarter']);
+        $quarterMonths = $this->declarationService->quarterMonths((string) $validated['quarter']);
 
         $payrollData = $this->declarationService->quarterPayrollData(
             $actor->company_id,
