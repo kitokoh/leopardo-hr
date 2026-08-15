@@ -160,7 +160,7 @@ class SelfServiceTrialTest extends TestCase
             ]);
     }
 
-    public function test_rejects_duplicate_manager_email()
+    public function test_signup_does_not_enumerate_existing_manager_email()
     {
         Mail::fake();
 
@@ -179,14 +179,54 @@ class SelfServiceTrialTest extends TestCase
             'code' => $otp,
         ])->assertStatus(201);
 
-        // Try again with same email
-        $response = $this->postJson('/api/v1/trial/signup', [
+        // Anti-énumération (#3945) : un second signup avec le même email
+        // reçoit la MÊME réponse uniforme (200) que pour un email inconnu —
+        // plus de 409 EMAIL_ALREADY_REGISTERED sur l'endpoint public.
+        $this->postJson('/api/v1/trial/signup', [
             'email' => 'founder@existing.com',
             'company' => 'Second Company',
             'country' => 'DZ',
-        ]);
+        ])->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.status', 'pending_verification');
+    }
 
-        $response->assertStatus(409)
+    public function test_verify_rejects_duplicate_manager_email_after_otp()
+    {
+        Mail::fake();
+
+        // Full signup + verify flow for first account
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@existing.com',
+            'company' => 'First Company',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $otp = CompanyRequest::where('email', 'founder@existing.com')
+            ->where('status', 'pending')->first()->verification_token;
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@existing.com',
+            'code' => $otp,
+        ])->assertStatus(201);
+
+        // Second signup (réponse uniforme) → un OTP est émis.
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@existing.com',
+            'company' => 'Second Company',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $secondOtp = CompanyRequest::where('email', 'founder@existing.com')
+            ->where('status', 'pending')->first()->verification_token;
+
+        // La détection du doublon vit à l'étape verify : possession de la
+        // boîte mail prouvée (OTP valide) → 409 EMAIL_ALREADY_REGISTERED,
+        // sans provisionner de second tenant.
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@existing.com',
+            'code' => $secondOtp,
+        ])->assertStatus(409)
             ->assertJson([
                 'success' => false,
                 'error' => 'EMAIL_ALREADY_REGISTERED',
