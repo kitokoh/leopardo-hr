@@ -71,7 +71,7 @@
             </tr>
             <tr v-if="!loading && holidays.length === 0">
               <td colspan="5" class="py-8 text-center text-slate-400">
-                {{ $t('holidays.empty', { country: countryCode, year: String(year) }) }}
+                {{ t('holidays.empty', { country: countryCode, year: String(year) }) }}
               </td>
             </tr>
           </tbody>
@@ -93,14 +93,14 @@
             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
           </select>
           <button class="btn-secondary" :disabled="saving || unconfirmedCount === 0" @click="confirmYear">
-            ✅ {{ $t('holidays.islamic.confirm', { year: islamicYear }) }}
+            ✅ {{ t('holidays.islamic.confirm', { year: islamicYear }) }}
           </button>
         </div>
       </div>
 
       <!-- Banner d'alerte -->
       <div v-if="hasUnconfirmed" class="mt-4 rounded-lg border border-amber-300/60 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
-        ⚠️ {{ $t('holidays.islamic.banner_unconfirmed', { count: unconfirmedCount, year: islamicYear }) }}
+        ⚠️ {{ t('holidays.islamic.banner_unconfirmed', { count: unconfirmedCount, year: islamicYear }) }}
       </div>
 
       <div class="mt-5 overflow-x-auto">
@@ -119,7 +119,7 @@
             <tr v-for="f in islamicEntries" :key="f.id" class="border-b border-slate-100 dark:border-slate-800">
               <td class="py-2.5 pr-4 font-medium text-slate-800 dark:text-slate-200">{{ f.name }}</td>
               <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ f.gregorian_date }}</td>
-              <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ $t('holidays.islamic.duration_days', { count: f.duration_days }) }}</td>
+              <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ t('holidays.islamic.duration_days', { count: f.duration_days }) }}</td>
               <td class="py-2.5 pr-4">
                 <span v-for="cc in f.countries" :key="cc" class="mr-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300">
                   {{ cc }}
@@ -141,7 +141,7 @@
             </tr>
             <tr v-if="!islamicLoading && islamicEntries.length === 0">
               <td colspan="6" class="py-8 text-center text-slate-400">
-                {{ $t('holidays.islamic.empty', { year: islamicYear }) }}
+                {{ t('holidays.islamic.empty', { year: islamicYear }) }}
               </td>
             </tr>
           </tbody>
@@ -194,7 +194,7 @@
     <!-- Modal édition fête islamique -->
     <div v-if="islamicModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" @click.self="closeIslamicModal">
       <div class="glass-card w-full max-w-md p-6">
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">{{ $t('holidays.islamic.modal_title', { name: islamicForm.name }) }}</h2>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">{{ t('holidays.islamic.modal_title', { name: islamicForm.name }) }}</h2>
         <form class="space-y-4" @submit.prevent="saveIslamicEntry">
           <div>
             <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="islamic-date">{{ $t('holidays.islamic.label_date') }}</label>

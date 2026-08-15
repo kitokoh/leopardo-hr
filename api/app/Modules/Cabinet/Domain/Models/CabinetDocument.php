@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $company_id
+ * @property string|null $company_id
  * @property int $employee_id
  * @property int|null $folder_id
  * @property string $name
@@ -47,7 +47,6 @@ class CabinetDocument extends Model
     ];
 
     protected $casts = [
-        'company_id' => 'integer',
         'employee_id' => 'integer',
         'size' => 'integer',
         'read_only' => 'boolean',
