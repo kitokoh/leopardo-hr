@@ -17,4 +17,6 @@
 
 ## Phase 3 — Issues ouvertes
 
-- [ ] T-F6-008 [P2] Implémenter le max d'issues ouvertes non assignées (priorité Agent-Ready/P1/P2).
+- [x] T-F6-008 [P2] Implémenter des issues ouvertes non assignées : #3326 checkout fallback (PR #3371), #3331 lien mort /offline (PR #3397), #3332 sitemap /share (PR #3399), #3321 per_page 8 endpoints (PR #3418), #3340 CSV injection (PR #3426).
+- [x] T-F6-009 [P3] Vérifier #3323 (OpenAPI /public-holidays) → faux positif, fermé avec preuve.
+- [ ] T-F6-010 [P2] Suivre la boucle de merge (179 runs orphelins annulés au total).

@@ -33,8 +33,22 @@ référencées par PRs mergées restées ouvertes (#2597, #2605, #2627, #2632, #
 
 ## Merge campaign
 
-- **59 runs orphelins/supersédés annulés** (cancel-orphan-runs.sh, outil officiel #2413) pour désengorger la file (saturation #2488).
-- Boucle de merge des PRs aux 5 checks requis verts (en cours au fil de la file).
+- **179 runs orphelins/supersédés annulés** au total (2 passes de cancel-orphan-runs.sh, outil officiel #2413) pour désengorger la file (saturation #2488 : 0 runner disponible, runs queued en boucle).
+- Boucle de merge automatique en arrière-plan : merge des PRs aux 5 checks requis verts (en cours au fil de la file).
+
+## Implémentation (issues fermées par la session)
+
+| Issue | Correctif | PR |
+|---|---|---|
+| #3220 [P2] Admin | ESLint vert — catch bindings + retry mort supprimés | #3228 |
+| #3225 [P3] Tooling | check-issues-left-open-by-merged-prs.sh réparé (3 bugs) | #3301 |
+| #3326 [P2] Web | Checkout — fallback plan sûr 'free' (page blanche) | #3371 |
+| #3331 [P3] Web | /offline — lien mort leopardo.local → repo GitHub | #3397 |
+| #3332 [P3] Web | Sitemap — /share POST-only retirée | #3399 |
+| #3321 [P3] API | per_page borné à 100 sur 8 endpoints + test | #3418 |
+| #3340 [P3] Admin | Export CSV congés — anti-injection de formule | #3426 |
+| #3224 [P2] API | Collisions migrations (déjà corrigé sur main) | fermée, preuve |
+| #3323 [P3] API | OpenAPI /public-holidays (faux positif : routes tenant existent) | fermée, preuve |
 
 ## État final
 
