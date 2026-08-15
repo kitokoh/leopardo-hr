@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(mobile): mark-all notifications → POST /notifications/mark-all-read (Closes #3005).** Les 3 apps appelaient POST /notifications/read-all (aucune route ne matche) → 405 sur « Tout marquer comme lu » ; aligné sur le canonique dashboard.php.
 ### Fixed
 - **fix(ci): main vert — PHPStan Strict/Modules (level 8/5), Module Structure Validator, I18N sync, AIGatewayAndAnalyticsTest.** (1) App : `AuthService::login` convertit `locked_until` en Carbon avant `isFuture()`/`AccountLockedException` (DateTimeInterface → Carbon) ; `AuthController::redirectToGoogle` type le provider Socialite (GoogleProvider) pour `with()` ; `KioskController::resolveAuthorizedKiosk` ne caste plus un `??` non nullable ; `EdgeNodeController::sync` refresh le nœud avant de lire `last_sync_at` (null-safe). (2) Tests : 29 fichiers réalignés PHPStan level 8 (collect(RouteCollection) → getRoutes()->getRoutes(), @var FQCN sur factory()->create(), Mockery typé, `assertExitCode` sur PendingCommand instancié, casts null-safe, dead props retirées, `@property company_id` ajouté à CalendarConnection). (3) `AIGatewayAndAnalyticsTest` attend 2 workflows (prepare_payroll, weekly_report) — le workflow fantôme `new_employee_onboarding` a été retiré (Closes #3118, #2808). Closes #1962 (préfixes migrations doublés) via #2969.
 
