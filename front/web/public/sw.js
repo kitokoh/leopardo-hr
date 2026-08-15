@@ -7,13 +7,12 @@ const CACHE_NAME = 'leopardo-edge-v1';
 const OFFLINE_URL = '/offline';
 
 // Assets to pre-cache on install
+// Issue #2983 : les routes dashboard/attendance/absences/employees sont des
+// routes AUTHENTIFIÉES — les précacher expose la page de login en cache et
+// stocke du HTML privé côté client. On ne précache que les pages publiques.
 const PRECACHE_ASSETS = [
   '/',
   '/offline',
-  '/dashboard',
-  '/attendance',
-  '/absences',
-  '/employees',
   '/favicon.ico',
 ];
 
