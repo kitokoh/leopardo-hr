@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): comptes ordinaires sans entreprise — gardes de statut appliquées (Closes #3942).** TenantMiddleware laissait passer un employé `role: ordinary` suspendu/archivé (branche $next sans les checks) → accès API conservé. Désormais 403 EMPLOYEE_SUSPENDED/EMPLOYEE_ARCHIVED, comme les employés liés.
 - **fix(ci): launch-observability-smoke — cancel-in-progress: true (Closes #3968).** Le cron */30 (48 runs/jour) s'empilait sur une queue saturée (#3545) : un run en retard remplace désormais le précédent.
 - **fix(edge): HEALTHCHECK Dockerfile.publish aligné sur /api/v1/edge/health (Closes #3960).** La probe sondait encore `/api/edge/health` (pré-#3592) → 404 → conteneur « unhealthy » permanent et deadlock `depends_on: service_healthy` futur. Le docker-compose.yml était déjà corrigé (#3908) ; le Dockerfile standalone restait sur l'ancien chemin.
 
