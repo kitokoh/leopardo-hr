@@ -9244,6 +9244,97 @@ paths:
         "403": { $ref: "#/components/responses/Error403" }
         "404": { $ref: "#/components/responses/Error404" }
 
+  /admin/social-contributions:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les règles de cotisations sociales nationales (platform_admin) — issue #1815"
+      operationId: listAdminSocialContributions
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Règles de cotisations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Platform Admin"]
+      summary: "Créer une règle de cotisation nationale (platform_admin) — issue #1815"
+      operationId: storeAdminSocialContribution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialContributionInput"
+      responses:
+        "201":
+          description: "Règle créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/social-contributions/{socialContribution}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier une règle de cotisation nationale (platform_admin) — issue #1815"
+      operationId: updateAdminSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialContributionInput"
+      responses:
+        "200":
+          description: "Règle modifiée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer une règle de cotisation nationale (platform_admin) — issue #1815"
+      operationId: destroyAdminSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: "Supprimé" }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
   /social-declarations/cnas-dz:
     post:
       tags: ["Payroll Engine"]

@@ -25,7 +25,7 @@ import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
 import { Card } from '@/modules/vitrine/components/common/Card';
 import { signupFormSchema, SignupFormData } from '@/modules/vitrine/lib/validation';
-import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer, initialFormState } from '@/modules/vitrine/lib/forms';
+import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer, initialFormState, getLeadSource } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
@@ -508,7 +508,7 @@ export function SignupForm({
 
       if (response.success) {
         trackSignup(data.email, {
-          source: 'signup_form',
+          source: getLeadSource(),
           page,
           company: data.company,
           role: data.role,

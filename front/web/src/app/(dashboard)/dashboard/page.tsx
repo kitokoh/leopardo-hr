@@ -539,7 +539,7 @@ export default function DashboardPage() {
             </div>
 
             <Link
-              href="/dashboard/reports"
+              href="/reports"
               className="mt-4 flex w-full items-center justify-center rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
             >
               Voir toute l&apos;activite
@@ -608,10 +608,10 @@ export default function DashboardPage() {
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/dashboard/employees' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/dashboard/absences' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/dashboard/reports' },
-                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/dashboard/reports' },
+                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/employees' },
+                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/absences' },
+                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
+                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
                 ].map((action) => (
                   <Link
                     key={action.label}
