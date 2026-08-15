@@ -331,7 +331,7 @@ class CedeaoPayrollRules extends AbstractCountryRules
      * (palier employé/technicien), matrice complète documentée
      * CI_COMPLIANCE.md §6 — à valider par expert-comptable OHADA-CI.
      */
-    public function noticePeriodDays(float $yearsOfService): float
+    public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
         if (in_array($this->memberCountryCode, ['BF', 'ML'], true)) {
             // BF/ML (issue #1829) : préavis légal 1 mois quel que soit le

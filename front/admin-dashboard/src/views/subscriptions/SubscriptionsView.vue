@@ -46,7 +46,7 @@
               <div>
                 <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{{ plan.name }}</h3>
                 <p class="mt-1 text-sm font-bold text-slate-500">
-                  {{ plan.max_employees || 'Illimité' }} employés Â· {{ plan.trial_days }}j essai
+                  {{ plan.max_employees || 'Illimité' }} employés · {{ plan.trial_days }}j essai
                 </p>
               </div>
               <span :class="['rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border', plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200']">
@@ -114,7 +114,7 @@
                 <div class="min-w-0 flex-1">
                   <p class="text-sm font-black text-slate-900 dark:text-white truncate uppercase">{{ item.company.name }}</p>
                   <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    {{ item.plan.name || 'Sans plan' }} Â· <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ item.risk_level }} risk</span>
+                    {{ item.plan.name || 'Sans plan' }} · <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ item.risk_level }} risk</span>
                   </p>
                 </div>
                 <router-link class="shrink-0 rounded-lg bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400 transition-colors" :to="`/companies/${item.company.id}`">
@@ -122,7 +122,7 @@
                 </router-link>
               </div>
               <p v-if="item.next_action" class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
-                <span class="text-brand-500 mr-1">â†’</span> {{ item.next_action.label }}
+                <span class="text-brand-500 mr-1">→</span> {{ item.next_action.label }}
               </p>
             </article>
             <div v-if="priorityClients.length === 0 && !isLoading" class="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">

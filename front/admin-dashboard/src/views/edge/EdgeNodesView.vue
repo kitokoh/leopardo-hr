@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Nodes Edge</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Gestion des nodes Edge Leopardo â€” synchronisation offline-first
+          Gestion des nodes Edge Leopardo — synchronisation offline-first
         </p>
       </div>
       <button
@@ -13,7 +13,7 @@
         :disabled="loading"
         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <span :class="['inline-block w-4 h-4', loading ? 'animate-spin' : '']">â†»</span>
+        <span :class="['inline-block w-4 h-4', loading ? 'animate-spin' : '']">↻</span>
         Actualiser
       </button>
     </div>
@@ -29,8 +29,8 @@
     <!-- Nodes table -->
     <div class="glass-card dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
-        <div class="text-4xl mb-3 animate-spin inline-block">â†»</div>
-        <p>Chargement des nodesâ€¦</p>
+        <div class="text-4xl mb-3 animate-spin inline-block">↻</div>
+        <p>Chargement des nodes”¦</p>
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
@@ -88,7 +88,7 @@
             </td>
 
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
-              {{ node.last_sync_at ? formatRelative(node.last_sync_at) : 'â€”' }}
+              {{ node.last_sync_at ? formatRelative(node.last_sync_at) : '—' }}
             </td>
 
             <td class="px-4 py-3">
@@ -104,7 +104,7 @@
                   :disabled="!node.is_online || syncingNodeId === node.id"
                   class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {{ syncingNodeId === node.id ? 'Syncâ€¦' : 'Sync' }}
+                  {{ syncingNodeId === node.id ? 'Sync”¦' : 'Sync' }}
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
@@ -200,7 +200,7 @@ function formatDate(iso) {
 function formatRelative(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "Ã  l'instant";
+  if (mins < 1) return "à l'instant";
   if (mins < 60) return `il y a ${mins} min`;
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) return `il y a ${hrs} h`;

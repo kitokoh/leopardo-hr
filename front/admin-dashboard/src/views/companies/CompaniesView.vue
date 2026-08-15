@@ -81,7 +81,7 @@
                   <div>
                     <div class="font-bold text-slate-900 dark:text-white uppercase tracking-tight">{{ item.company.name }}</div>
                     <div class="text-[10px] font-black text-slate-400 mt-0.5 uppercase tracking-widest">
-                      {{ item.company.status }} Â· {{ item.company.country }}
+                      {{ item.company.status }} · {{ item.company.country }}
                     </div>
                   </div>
                 </div>

@@ -22,9 +22,9 @@ import {
   Zap,
 } from 'lucide-react';
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   Copy â€” 4 languages
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ─────────────────────────────────────────
+   Copy — 4 languages
+───────────────────────────────────────── */
 type Lang = 'fr' | 'en' | 'tr' | 'ar';
 const langs: Lang[] = ['fr', 'en', 'tr', 'ar'];
 
@@ -49,7 +49,7 @@ const copy: Record<Lang, LangCopy> = {
     badge: 'Applications mobiles',
     hero: 'Gérez votre entreprise depuis votre poche',
     heroSub:
-      'Trois applications Flutter dédiées â€” Employee, Manager et Platform Admin â€” pour couvrir chaque rôle de votre Mobile-First Company OS.',
+      'Trois applications Flutter dédiées — Employee, Manager et Platform Admin — pour couvrir chaque rôle de votre Mobile-First Company OS.',
     appsTitle: 'Trois apps, un écosystème',
     featuresTitle: 'Fonctionnalités clés',
     downloadTitle: 'Téléchargez les applications',
@@ -65,7 +65,7 @@ const copy: Record<Lang, LangCopy> = {
     badge: 'Mobile applications',
     hero: 'Manage your company from your pocket',
     heroSub:
-      'Three dedicated Flutter apps â€” Employee, Manager and Platform Admin â€” to cover every role in your Mobile-First Company OS.',
+      'Three dedicated Flutter apps — Employee, Manager and Platform Admin — to cover every role in your Mobile-First Company OS.',
     appsTitle: 'Three apps, one ecosystem',
     featuresTitle: 'Key features',
     downloadTitle: 'Download the apps',
@@ -79,41 +79,41 @@ const copy: Record<Lang, LangCopy> = {
   },
   tr: {
     badge: 'Mobil uygulamalar',
-    hero: "Åžirketinizi cebinizden yönetin",
+    hero: "Şirketinizi cebinizden yönetin",
     heroSub:
-      'Ãœç özel Flutter uygulamasÄ± â€” Employee, Manager ve Platform Admin â€” Mobile-First Company OS\'inizdeki her rolü kapsar.',
-    appsTitle: 'Ãœç uygulama, bir ekosistem',
+      'Üç özel Flutter uygulaması — Employee, Manager ve Platform Admin — Mobile-First Company OS\'inizdeki her rolü kapsar.',
+    appsTitle: 'Üç uygulama, bir ekosistem',
     featuresTitle: 'Temel özellikler',
-    downloadTitle: 'UygulamalarÄ± indirin',
-    downloadSub: 'Android ve iOS\'ta mevcuttur. MaÄŸazalar aracÄ±lÄ±ÄŸÄ±yla otomatik güncellemeler.',
+    downloadTitle: 'Uygulamaları indirin',
+    downloadSub: 'Android ve iOS\'ta mevcuttur. Mağazalar aracılığıyla otomatik güncellemeler.',
     android: 'Google Play',
     ios: 'App Store',
-    soon: 'Ã‡ok yakÄ±nda',
+    soon: 'Çok yakında',
     waitingPrefix: 'Bu arada bir demo talep edin veya',
-    installGuide: 'kurulum kÄ±lavuzumuza',
+    installGuide: 'kurulum kılavuzumuza',
     demoCta: 'Demo talep et',
   },
   ar: {
-    badge: 'Ø§Ù„ØªØ·Ø¨ÙŠÙ‚Ø§Øª Ø§Ù„Ù…Ø­Ù…ÙˆÙ„Ø©',
-    hero: 'Ø£Ø¯ÙØ± Ø´Ø±ÙƒØªÙƒ Ù…Ù† Ø¬ÙŠØ¨Ùƒ',
+    badge: 'التطبيقات المحمولة',
+    hero: 'أدِر شركتك من جيبك',
     heroSub:
-      'Ø«Ù„Ø§Ø«Ø© ØªØ·Ø¨ÙŠÙ‚Ø§Øª Flutter Ù…Ø®ØµØµØ© â€” Employee ÙˆManager ÙˆPlatform Admin â€” Ù„ØªØºØ·ÙŠØ© ÙƒÙ„ Ø¯ÙˆØ± ÙÙŠ Ù†Ø¸Ø§Ù… Ø¥Ø¯Ø§Ø±Ø© Ø´Ø±ÙƒØªÙƒ Mobile-First.',
-    appsTitle: 'Ø«Ù„Ø§Ø«Ø© ØªØ·Ø¨ÙŠÙ‚Ø§ØªØŒ Ù…Ù†Ø¸ÙˆÙ…Ø© ÙˆØ§Ø­Ø¯Ø©',
-    featuresTitle: 'Ø§Ù„Ù…ÙŠØ²Ø§Øª Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©',
-    downloadTitle: 'Ù†Ø²Ù‘Ù„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚Ø§Øª',
-    downloadSub: 'Ù…ØªÙˆÙØ±Ø© Ø¹Ù„Ù‰ Android ÙˆiOS. ØªØ­Ø¯ÙŠØ«Ø§Øª ØªÙ„Ù‚Ø§Ø¦ÙŠØ© Ø¹Ø¨Ø± Ø§Ù„Ù…ØªØ§Ø¬Ø±.',
+      'ثلاثة تطبيقات Flutter مخصصة — Employee وManager وPlatform Admin — لتغطية كل دور في نظام إدارة شركتك Mobile-First.',
+    appsTitle: 'ثلاثة تطبيقات، منظومة واحدة',
+    featuresTitle: 'الميزات الرئيسية',
+    downloadTitle: 'نزّل التطبيقات',
+    downloadSub: 'متوفرة على Android وiOS. تحديثات تلقائية عبر المتاجر.',
     android: 'Google Play',
     ios: 'App Store',
-    soon: 'Ù‚Ø±ÙŠØ¨Ø§Ù‹',
-    waitingPrefix: 'ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„Ø­Ø§Ù„ÙŠØŒ Ø§Ø·Ù„Ø¨ Ø¹Ø±Ø¶Ø§Ù‹ ØªÙˆØ¶ÙŠØ­ÙŠØ§Ù‹ Ø£Ùˆ Ø§Ø·Ù‘Ù„Ø¹ Ø¹Ù„Ù‰',
-    installGuide: 'Ø¯Ù„ÙŠÙ„ Ø§Ù„ØªØ±ÙƒÙŠØ¨',
-    demoCta: 'Ø§Ø·Ù„Ø¨ Ø¹Ø±Ø¶Ø§Ù‹ ØªÙˆØ¶ÙŠØ­ÙŠØ§Ù‹',
+    soon: 'قريباً',
+    waitingPrefix: 'في الوقت الحالي، اطلب عرضاً توضيحياً أو اطّلع على',
+    installGuide: 'دليل التركيب',
+    demoCta: 'اطلب عرضاً توضيحياً',
   },
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────
    App definitions
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────── */
 const apps = [
   {
     id: 'employee',
@@ -121,25 +121,25 @@ const apps = [
     subtitle: {
       fr: "L'app de l'employé",
       en: "The employee app",
-      tr: "Ã‡alÄ±ÅŸan uygulamasÄ±",
-      ar: "ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ù…ÙˆØ¸Ù",
+      tr: "Çalışan uygulaması",
+      ar: "تطبيق الموظف",
     },
     desc: {
       fr: "Pointage mobile avec géolocalisation, consultation des bulletins, demandes d'absence, avances salaires et notifications push en temps réel.",
       en: "Mobile attendance with geolocation, payslip access, leave requests, salary advances and real-time push notifications.",
-      tr: "CoÄŸrafi konumlu mobil devam takibi, maaÅŸ bordrosu eriÅŸimi, izin talepleri, maaÅŸ avanslarÄ± ve gerçek zamanlÄ± bildirimler.",
-      ar: "ØªØªØ¨Ø¹ Ø§Ù„Ø­Ø¶ÙˆØ± Ø¨Ø§Ù„Ù…ÙˆÙ‚Ø¹ Ø§Ù„Ø¬ØºØ±Ø§ÙÙŠØŒ Ø¹Ø±Ø¶ Ù‚Ø³Ø§Ø¦Ù… Ø§Ù„Ø±Ø§ØªØ¨ØŒ Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ø¥Ø¬Ø§Ø²Ø§ØªØŒ Ø§Ù„Ø³Ù„Ù ÙˆØ§Ù„Ø¥Ø´Ø¹Ø§Ø±Ø§Øª Ø§Ù„ÙÙˆØ±ÙŠØ©.",
+      tr: "Coğrafi konumlu mobil devam takibi, maaş bordrosu erişimi, izin talepleri, maaş avansları ve gerçek zamanlı bildirimler.",
+      ar: "تتبع الحضور بالموقع الجغرافي، عرض قسائم الراتب، طلبات الإجازات، السلف والإشعارات الفورية.",
     },
     color: 'emerald',
     gradient: 'from-emerald-500 to-teal-600',
     icon: Clock,
     features: [
-      { icon: Clock, label: { fr: 'Pointage check-in/out', en: 'Check-in / check-out', tr: 'GiriÅŸ/Ã‡Ä±kÄ±ÅŸ', ar: 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„/Ø§Ù„Ø®Ø±ÙˆØ¬' } },
-      { icon: MapPin, label: { fr: 'Géolocalisation GPS', en: 'GPS geolocation', tr: 'GPS konumu', ar: 'ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ù…ÙˆÙ‚Ø¹ GPS' } },
-      { icon: FileText, label: { fr: 'Bulletins de paie PDF', en: 'PDF payslips', tr: 'PDF bordro', ar: 'Ù‚Ø³Ø§Ø¦Ù… Ø§Ù„Ø±Ø§ØªØ¨ PDF' } },
-      { icon: Bell, label: { fr: 'Notifications push FCM', en: 'FCM push notifications', tr: 'FCM bildirimleri', ar: 'Ø¥Ø´Ø¹Ø§Ø±Ø§Øª FCM' } },
-      { icon: Zap, label: { fr: "Demandes d'absence", en: 'Leave requests', tr: 'Ä°zin talepleri', ar: 'Ø·Ù„Ø¨Ø§Øª Ø§Ù„Ø¥Ø¬Ø§Ø²Ø§Øª' } },
-      { icon: CheckCircle, label: { fr: 'Avances salaires', en: 'Salary advances', tr: 'MaaÅŸ avanslarÄ±', ar: 'Ø³Ù„Ù Ø§Ù„Ø±Ø§ØªØ¨' } },
+      { icon: Clock, label: { fr: 'Pointage check-in/out', en: 'Check-in / check-out', tr: 'Giriş/Çıkış', ar: 'تسجيل الدخول/الخروج' } },
+      { icon: MapPin, label: { fr: 'Géolocalisation GPS', en: 'GPS geolocation', tr: 'GPS konumu', ar: 'تحديد الموقع GPS' } },
+      { icon: FileText, label: { fr: 'Bulletins de paie PDF', en: 'PDF payslips', tr: 'PDF bordro', ar: 'قسائم الراتب PDF' } },
+      { icon: Bell, label: { fr: 'Notifications push FCM', en: 'FCM push notifications', tr: 'FCM bildirimleri', ar: 'إشعارات FCM' } },
+      { icon: Zap, label: { fr: "Demandes d'absence", en: 'Leave requests', tr: 'İzin talepleri', ar: 'طلبات الإجازات' } },
+      { icon: CheckCircle, label: { fr: 'Avances salaires', en: 'Salary advances', tr: 'Maaş avansları', ar: 'سلف الراتب' } },
     ],
     androidHref: '#android-employee',
     iosHref: '#ios-employee',
@@ -150,25 +150,25 @@ const apps = [
     subtitle: {
       fr: "L'app du manager",
       en: "The manager app",
-      tr: "Yönetici uygulamasÄ±",
-      ar: "ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ù…Ø¯ÙŠØ±",
+      tr: "Yönetici uygulaması",
+      ar: "تطبيق المدير",
     },
     desc: {
       fr: "Pilotage de l'équipe, gestion des horaires, tâches, validation des demandes, suivi des avances et paie simplifiée depuis le terrain.",
       en: "Team management, schedule management, tasks, request validation, advance tracking and simplified payroll from the field.",
-      tr: "Ekip yönetimi, program yönetimi, görevler, talep onaylama, avans takibi ve saha üzerinden basitleÅŸtirilmiÅŸ bordro.",
-      ar: "Ø¥Ø¯Ø§Ø±Ø© Ø§Ù„ÙØ±ÙŠÙ‚ ÙˆØ§Ù„Ø¬Ø¯Ø§ÙˆÙ„ Ø§Ù„Ø²Ù…Ù†ÙŠØ© ÙˆØ§Ù„Ù…Ù‡Ø§Ù… ÙˆØ§Ù„Ù…ÙˆØ§ÙÙ‚Ø§Øª ÙˆØªØªØ¨Ø¹ Ø§Ù„Ø³Ù„Ù ÙˆÙƒØ´Ù Ø§Ù„Ø±ÙˆØ§ØªØ¨ Ø§Ù„Ù…Ø¨Ø³Ø· Ù…Ù† Ø§Ù„Ù…ÙŠØ¯Ø§Ù†.",
+      tr: "Ekip yönetimi, program yönetimi, görevler, talep onaylama, avans takibi ve saha üzerinden basitleştirilmiş bordro.",
+      ar: "إدارة الفريق والجداول الزمنية والمهام والموافقات وتتبع السلف وكشف الرواتب المبسط من الميدان.",
     },
     color: 'blue',
     gradient: 'from-blue-500 to-indigo-600',
     icon: Users,
     features: [
-      { icon: Users, label: { fr: 'Vue équipe temps réel', en: 'Real-time team view', tr: 'Gerçek zamanlÄ± ekip', ar: 'Ø§Ù„ÙØ±ÙŠÙ‚ ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„Ø­Ù‚ÙŠÙ‚ÙŠ' } },
-      { icon: Clock, label: { fr: 'Horaires & plannings', en: 'Schedules & planning', tr: 'Programlar', ar: 'Ø§Ù„Ø¬Ø¯Ø§ÙˆÙ„ Ø§Ù„Ø²Ù…Ù†ÙŠØ©' } },
-      { icon: CheckCircle, label: { fr: 'Approbations demandes', en: 'Request approvals', tr: 'Talep onaylarÄ±', ar: 'Ø§Ù„Ù…ÙˆØ§ÙÙ‚Ø§Øª' } },
-      { icon: BriefcaseBusiness, label: { fr: 'Tâches journalières', en: 'Daily tasks', tr: 'Günlük görevler', ar: 'Ø§Ù„Ù…Ù‡Ø§Ù… Ø§Ù„ÙŠÙˆÙ…ÙŠØ©' } },
-      { icon: FileText, label: { fr: 'Paie simplifiée', en: 'Simplified payroll', tr: 'Basit bordro', ar: 'Ø±ÙˆØ§ØªØ¨ Ù…Ø¨Ø³Ø·Ø©' } },
-      { icon: Bell, label: { fr: 'Alertes équipe', en: 'Team alerts', tr: 'Ekip uyarÄ±larÄ±', ar: 'ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø§Ù„ÙØ±ÙŠÙ‚' } },
+      { icon: Users, label: { fr: 'Vue équipe temps réel', en: 'Real-time team view', tr: 'Gerçek zamanlı ekip', ar: 'الفريق في الوقت الحقيقي' } },
+      { icon: Clock, label: { fr: 'Horaires & plannings', en: 'Schedules & planning', tr: 'Programlar', ar: 'الجداول الزمنية' } },
+      { icon: CheckCircle, label: { fr: 'Approbations demandes', en: 'Request approvals', tr: 'Talep onayları', ar: 'الموافقات' } },
+      { icon: BriefcaseBusiness, label: { fr: 'Tâches journalières', en: 'Daily tasks', tr: 'Günlük görevler', ar: 'المهام اليومية' } },
+      { icon: FileText, label: { fr: 'Paie simplifiée', en: 'Simplified payroll', tr: 'Basit bordro', ar: 'رواتب مبسطة' } },
+      { icon: Bell, label: { fr: 'Alertes équipe', en: 'Team alerts', tr: 'Ekip uyarıları', ar: 'تنبيهات الفريق' } },
     ],
     androidHref: '#android-manager',
     iosHref: '#ios-manager',
@@ -179,25 +179,25 @@ const apps = [
     subtitle: {
       fr: "L'app super-admin",
       en: "The super-admin app",
-      tr: "Süper yönetici uygulamasÄ±",
-      ar: "ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„Ù…Ø´Ø±Ù Ø§Ù„Ø¹Ø§Ù…",
+      tr: "Süper yönetici uygulaması",
+      ar: "تطبيق المشرف العام",
     },
     desc: {
       fr: "Création et gestion multi-tenant, supervision des entreprises clientes, authentification 2FA renforcée et provisioning de nouveaux comptes.",
       en: "Multi-tenant creation and management, client company oversight, enhanced 2FA authentication and new account provisioning.",
-      tr: "Ã‡ok kiracÄ±lÄ± oluÅŸturma ve yönetim, müÅŸteri ÅŸirket gözetimi, geliÅŸmiÅŸ 2FA kimlik doÄŸrulamasÄ± ve yeni hesap provizyon.",
-      ar: "Ø¥Ù†Ø´Ø§Ø¡ ÙˆØ¥Ø¯Ø§Ø±Ø© Ù…ØªØ¹Ø¯Ø¯ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ†ØŒ Ø§Ù„Ø¥Ø´Ø±Ø§Ù Ø¹Ù„Ù‰ Ø§Ù„Ø´Ø±ÙƒØ§Øª Ø§Ù„Ø¹Ù…ÙŠÙ„Ø©ØŒ Ø§Ù„Ù…ØµØ§Ø¯Ù‚Ø© Ø§Ù„Ø«Ù†Ø§Ø¦ÙŠØ© Ø§Ù„Ù…Ø­Ø³Ù‘Ù†Ø© ÙˆØªÙˆÙÙŠØ± Ø§Ù„Ø­Ø³Ø§Ø¨Ø§Øª.",
+      tr: "Çok kiracılı oluşturma ve yönetim, müşteri şirket gözetimi, gelişmiş 2FA kimlik doğrulaması ve yeni hesap provizyon.",
+      ar: "إنشاء وإدارة متعدد المستأجرين، الإشراف على الشركات العميلة، المصادقة الثنائية المحسّنة وتوفير الحسابات.",
     },
     color: 'amber',
     gradient: 'from-amber-500 to-orange-600',
     icon: Building2,
     features: [
-      { icon: Building2, label: { fr: 'Création tenants', en: 'Tenant creation', tr: 'KiracÄ± oluÅŸturma', ar: 'Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ†' } },
-      { icon: Shield, label: { fr: 'Auth 2FA renforcée', en: 'Enhanced 2FA auth', tr: 'GeliÅŸmiÅŸ 2FA', ar: 'Ù…ØµØ§Ø¯Ù‚Ø© Ø«Ù†Ø§Ø¦ÙŠØ©' } },
-      { icon: Users, label: { fr: 'Supervision clients', en: 'Client supervision', tr: 'MüÅŸteri denetimi', ar: 'Ø¥Ø´Ø±Ø§Ù Ø§Ù„Ø¹Ù…Ù„Ø§Ø¡' } },
-      { icon: Globe, label: { fr: 'Multi-tenant isolation', en: 'Multi-tenant isolation', tr: 'Ã‡ok kiracÄ±lÄ± yalÄ±tÄ±m', ar: 'Ø¹Ø²Ù„ Ù…ØªØ¹Ø¯Ø¯ Ø§Ù„Ù…Ø³ØªØ£Ø¬Ø±ÙŠÙ†' } },
-      { icon: Zap, label: { fr: 'Provisioning rapide', en: 'Fast provisioning', tr: 'HÄ±zlÄ± provizyon', ar: 'ØªÙˆÙÙŠØ± Ø³Ø±ÙŠØ¹' } },
-      { icon: Bell, label: { fr: 'Alertes plateforme', en: 'Platform alerts', tr: 'Platform uyarÄ±larÄ±', ar: 'ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø§Ù„Ù…Ù†ØµØ©' } },
+      { icon: Building2, label: { fr: 'Création tenants', en: 'Tenant creation', tr: 'Kiracı oluşturma', ar: 'إنشاء المستأجرين' } },
+      { icon: Shield, label: { fr: 'Auth 2FA renforcée', en: 'Enhanced 2FA auth', tr: 'Gelişmiş 2FA', ar: 'مصادقة ثنائية' } },
+      { icon: Users, label: { fr: 'Supervision clients', en: 'Client supervision', tr: 'Müşteri denetimi', ar: 'إشراف العملاء' } },
+      { icon: Globe, label: { fr: 'Multi-tenant isolation', en: 'Multi-tenant isolation', tr: 'Çok kiracılı yalıtım', ar: 'عزل متعدد المستأجرين' } },
+      { icon: Zap, label: { fr: 'Provisioning rapide', en: 'Fast provisioning', tr: 'Hızlı provizyon', ar: 'توفير سريع' } },
+      { icon: Bell, label: { fr: 'Alertes plateforme', en: 'Platform alerts', tr: 'Platform uyarıları', ar: 'تنبيهات المنصة' } },
     ],
     androidHref: '#android-platform-admin',
     iosHref: '#ios-platform-admin',
@@ -225,9 +225,9 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; badge
   },
 };
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────
    Page component
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+───────────────────────────────────────── */
 export default function MobilePage() {
   const [isDark, setIsDark] = useState(false);
   const [lang, setLang] = useState<Lang>('fr');
@@ -243,7 +243,7 @@ export default function MobilePage() {
     >
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
-      {/* â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Hero ───────────────────────────────── */}
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
           {/* Lang switcher */}
@@ -290,10 +290,10 @@ export default function MobilePage() {
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6">
             {[
-              { value: '3', label: { fr: 'Applications', en: 'Apps', tr: 'Uygulama', ar: 'ØªØ·Ø¨ÙŠÙ‚Ø§Øª' } },
-              { value: 'Flutter', label: { fr: 'Framework', en: 'Framework', tr: 'Framework', ar: 'Ø¥Ø·Ø§Ø±' } },
-              { value: '4', label: { fr: 'Langues', en: 'Languages', tr: 'Dil', ar: 'Ù„ØºØ§Øª' } },
-              { value: 'FCM', label: { fr: 'Notifications', en: 'Notifications', tr: 'Bildirimler', ar: 'Ø¥Ø´Ø¹Ø§Ø±Ø§Øª' } },
+              { value: '3', label: { fr: 'Applications', en: 'Apps', tr: 'Uygulama', ar: 'تطبيقات' } },
+              { value: 'Flutter', label: { fr: 'Framework', en: 'Framework', tr: 'Framework', ar: 'إطار' } },
+              { value: '4', label: { fr: 'Langues', en: 'Languages', tr: 'Dil', ar: 'لغات' } },
+              { value: 'FCM', label: { fr: 'Notifications', en: 'Notifications', tr: 'Bildirimler', ar: 'إشعارات' } },
             ].map((stat) => (
               <div key={stat.value} className="text-center">
                 <p className="text-2xl font-black text-slate-900 dark:text-white">{stat.value}</p>
@@ -304,7 +304,7 @@ export default function MobilePage() {
         </div>
       </section>
 
-      {/* â”€â”€ Three apps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Three apps ─────────────────────────── */}
       <section className="py-16 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white text-center mb-12">{t.appsTitle}</h2>
@@ -377,7 +377,7 @@ export default function MobilePage() {
                       <Link
                         href={app.androidHref}
                         className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r ${app.gradient} text-white opacity-75 cursor-not-allowed`}
-                        aria-label={`${t.android} â€” ${t.soon}`}
+                        aria-label={`${t.android} — ${t.soon}`}
                       >
                         <Download className="w-4 h-4" />
                         {t.android}
@@ -386,7 +386,7 @@ export default function MobilePage() {
                       <Link
                         href={app.iosHref}
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 opacity-75 cursor-not-allowed"
-                        aria-label={`${t.ios} â€” ${t.soon}`}
+                        aria-label={`${t.ios} — ${t.soon}`}
                       >
                         <Smartphone className="w-4 h-4" />
                         {t.ios}
@@ -401,7 +401,7 @@ export default function MobilePage() {
         </div>
       </section>
 
-      {/* â”€â”€ Download CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Download CTA ───────────────────────── */}
       <section id="download" className="py-20 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

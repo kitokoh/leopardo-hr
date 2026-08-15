@@ -31,7 +31,7 @@
             </h3>
             <p class="mt-1 text-sm text-gray-600">
               {{ formatPeriod(runSummary.run?.period_start, runSummary.run?.period_end) }}
-              Â· Statut {{ runSummary.run?.status }}
+              · Statut {{ runSummary.run?.status }}
             </p>
           </div>
           <button type="button" class="text-sm font-medium text-gray-600 hover:text-gray-900" @click="runSummary = null">
@@ -312,7 +312,7 @@ function formatPeriod(start, end) {
   if (!start || !end) return '-'
   const a = typeof start === 'string' ? start.slice(0, 10) : start
   const b = typeof end === 'string' ? end.slice(0, 10) : end
-  return `${a} â†’ ${b}`
+  return `${a} → ${b}`
 }
 
 function slipEmployeeLabel(slip) {

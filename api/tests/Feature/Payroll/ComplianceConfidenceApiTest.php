@@ -52,14 +52,14 @@ class ComplianceConfidenceApiTest extends TestCase
         );
         $contract = $presenter->present('DZ', 60000.0);
 
-        $this->assertSame('production', $contract['compliance']['level']);
+        $this->assertSame('pilot', $contract['compliance']['level']);
         $this->assertSame($contract['confidence_level'], $contract['compliance']['level']);
         $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $contract['compliance']['source']);
         $this->assertArrayHasKey('warning', $contract['compliance']);
-        $this->assertSame('payroll.compliance_warning_production', $contract['compliance']['warning_key']);
+        $this->assertSame('payroll.compliance_warning_pilot', $contract['compliance']['warning_key']);
         $this->assertArrayHasKey('verification_date', $contract['compliance']);
 
-        // Pilot : la même structure, niveau pilot.
+        // Second pays pilot : la même structure, niveau pilot.
         $pilot = $presenter->present('CI', 500000.0);
         $this->assertSame('pilot', $pilot['compliance']['level']);
         $this->assertStringContainsString('CI_COMPLIANCE', $pilot['compliance']['source']);
@@ -153,16 +153,19 @@ class ComplianceConfidenceApiTest extends TestCase
         $accepted->assertOk();
     }
 
-    // ── Production / pilot : pas de garde, avertissement visible ──────────
+    // ── Pilot : pas de garde, avertissement visible ───────────────────────
+    // NB : aucun pays n'a encore le niveau 'production' (tous pilot ou
+    // placeholder) — DZ est pilot tant que la validation experte complète
+    // (DZ_COMPLIANCE.md §7) n'est pas actée.
 
-    public function test_production_and_pilot_countries_do_not_require_acknowledgement(): void
+    public function test_pilot_countries_do_not_require_acknowledgement(): void
     {
         Sanctum::actingAs($this->manager);
 
         $this->postJson('/api/v1/cotisation-simulation', [
             'country_code' => 'DZ',
             'gross_salary' => 60000.0,
-        ])->assertOk()->assertJsonPath('data.contract.compliance.level', 'production');
+        ])->assertOk()->assertJsonPath('data.contract.compliance.level', 'pilot');
 
         $this->postJson('/api/v1/cotisation-simulation', [
             'country_code' => 'CI',

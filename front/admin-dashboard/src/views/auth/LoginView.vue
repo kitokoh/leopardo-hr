@@ -188,7 +188,7 @@
 
       <!-- Legal & Info Footer -->
       <div class="flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-600">
-        <span>Â© 2026 Leopardo Systems</span>
+        <span>© 2026 Leopardo Systems</span>
         <div class="flex items-center gap-4">
           <a href="#" class="hover:text-slate-400 transition-colors">Sécurité</a>
           <a href="#" class="hover:text-slate-400 transition-colors">Support</a>

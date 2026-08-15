@@ -1,5 +1,5 @@
 ﻿// ============================================================
-// Edge Nodes Dashboard Page â€” Priority 3.2
+// Edge Nodes Dashboard Page — Priority 3.2
 // Manages Leopardo Edge nodes for the company
 // ============================================================
 
@@ -196,7 +196,7 @@ export default function EdgeNodesPage() {
                         ) : null}
                       </div>
                       <p className="mt-1 text-xs text-slate-500">
-                        {node.site_address ?? labels.addressMissing} Â· v{node.edge_version}
+                        {node.site_address ?? labels.addressMissing} · v{node.edge_version}
                       </p>
                       <p className="mt-1 text-xs text-slate-400">
                         {labels.lastSyncLabel}{node.last_sync_at ? new Date(node.last_sync_at).toLocaleString(intlLocale) : labels.lastSyncNever}

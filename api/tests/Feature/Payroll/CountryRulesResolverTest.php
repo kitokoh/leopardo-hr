@@ -211,7 +211,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function complianceVerifiedAt(): ?string
+            public function complianceVerifiedAt(): null
             {
                 return null;
             }
@@ -221,7 +221,7 @@ class CountryRulesResolverTest extends TestCase
                 return 'test-rules-v1';
             }
 
-            public function noticePeriodDays(float $yearsOfService): float
+            public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
             {
                 return 0.0;
             }
@@ -414,7 +414,7 @@ class CountryRulesResolverTest extends TestCase
                 return [];
             }
 
-            public function complianceVerifiedAt(): ?string
+            public function complianceVerifiedAt(): null
             {
                 return null;
             }
@@ -424,7 +424,7 @@ class CountryRulesResolverTest extends TestCase
                 return 'test-rules-v1';
             }
 
-            public function noticePeriodDays(float $yearsOfService): float
+            public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
             {
                 return 0.0;
             }
