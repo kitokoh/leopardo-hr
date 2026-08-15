@@ -250,7 +250,7 @@ class ApiClient {
           receiveTimeout: timeout,
         );
 
-        final response = await _dio.download<ResponseBody>(
+        final response = await _dio.download(
           path,
           savePath,
           options: requestOptions,

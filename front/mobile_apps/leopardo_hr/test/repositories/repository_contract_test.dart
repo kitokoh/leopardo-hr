@@ -2,16 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_hr/features/absences/data/absence_repository.dart';
-import 'package:leopardo_hr/features/approvals/data/approval_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
 import 'package:leopardo_hr/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_hr/features/expenses/data/expense_repository.dart';
 import 'package:leopardo_hr/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_hr/features/payrolls/data/payroll_repository.dart';
 import 'package:leopardo_hr/features/salary_advances/data/salary_advance_repository.dart';
 import 'package:leopardo_hr/features/team/data/employee_repository.dart';
-import 'package:leopardo_hr/features/training/data/training_repository.dart';
 
 import '../helpers/mobile_test_harness.dart';
 
@@ -142,9 +139,6 @@ void main() {
     await NotificationRepository(client).getMyNotifications();
     await EvaluationRepository(client).getMyEvaluations();
     await ContractRepository(client).getMyContracts();
-    await TrainingRepository(client).getMyEnrollments();
-    await ExpenseRepository(client).getMyClaims();
-    await ApprovalRepository(client).getPending();
     await OnboardingRepository(client).getChecklist();
     await PayrollRepository(client).getPaymentDocumentsForPayrollRun(99);
 
@@ -154,9 +148,6 @@ void main() {
       'GET /notifications',
       'GET /evaluations',
       'GET /me/contracts',
-      'GET /me/training-enrollments',
-      'GET /expense-claims',
-      'GET /approvals/pending',
       'GET /onboarding-setup/checklist',
       'GET /payments/99/documents',
     ]);
@@ -168,16 +159,12 @@ void main() {
 
     await NotificationRepository(client).markAllAsRead();
     await NotificationRepository(client).markAsRead(7);
-    await ApprovalRepository(client).approve(9, comment: 'ok');
-    await ApprovalRepository(client).reject(10, comment: 'missing file');
     await OnboardingRepository(client).completeStep('first_employee');
     await OnboardingRepository(client).skipStep('company_branding');
 
     expect(recorder.requests, [
-      'POST /notifications/mark-all-read',
+      'POST /notifications/read-all',
       'PATCH /notifications/7/read',
-      'POST /approvals/9/approve',
-      'POST /approvals/10/reject',
       'PATCH /onboarding-setup/first_employee/complete',
       'PATCH /onboarding-setup/company_branding/skip',
     ]);

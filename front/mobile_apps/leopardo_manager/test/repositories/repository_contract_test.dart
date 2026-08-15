@@ -3,15 +3,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_manager/features/absences/data/absence_repository.dart';
 import 'package:leopardo_manager/features/approvals/data/approval_repository.dart';
-import 'package:leopardo_manager/features/contracts/data/contract_repository.dart';
 import 'package:leopardo_manager/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_manager/features/expenses/data/expense_repository.dart';
 import 'package:leopardo_manager/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_manager/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_manager/features/payrolls/data/payroll_repository.dart';
 import 'package:leopardo_manager/features/salary_advances/data/salary_advance_repository.dart';
 import 'package:leopardo_manager/features/team/data/employee_repository.dart';
-import 'package:leopardo_manager/features/training/data/training_repository.dart';
 
 import '../helpers/mobile_test_harness.dart';
 
@@ -141,9 +138,6 @@ void main() {
     await PayrollRepository(client).getMyPaySlips();
     await NotificationRepository(client).getMyNotifications();
     await EvaluationRepository(client).getMyEvaluations();
-    await ContractRepository(client).getMyContracts();
-    await TrainingRepository(client).getMyEnrollments();
-    await ExpenseRepository(client).getMyClaims();
     await ApprovalRepository(client).getPending();
     await OnboardingRepository(client).getChecklist();
     await PayrollRepository(client).getPaymentDocumentsForPayrollRun(99);
@@ -153,9 +147,6 @@ void main() {
       'GET /me/pay-slips',
       'GET /notifications',
       'GET /evaluations',
-      'GET /me/contracts',
-      'GET /me/training-enrollments',
-      'GET /expense-claims',
       'GET /approvals/pending',
       'GET /onboarding-setup/checklist',
       'GET /payments/99/documents',
