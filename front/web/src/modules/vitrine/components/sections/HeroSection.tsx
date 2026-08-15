@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { ArrowRight, Play, Sparkles } from 'lucide-react';
 import { useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { withLocaleHref } from '../../lib/locale-href';
 import { ParticleField } from '../ParticleField';
 
 export interface HeroSectionProps {
@@ -51,6 +53,8 @@ export function HeroSection({
   const y = useSpring(useTransform(scrollYProgress, [0, 1], [0, -200]), { stiffness: 80, damping: 30 });
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.6], [1, 0.92]);
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
   const badgeConfig = typeof badge === 'string' ? { text: badge } : badge;
 
   return (
@@ -127,7 +131,7 @@ export function HeroSection({
             >
               {ctaPrimary && (
                 <Link
-                  href={ctaPrimary.href}
+                  href={withLocaleHref(ctaPrimary.href, search)}
                   className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
                 >
                   <span className="relative z-10 flex items-center gap-2.5 text-base">
@@ -140,7 +144,7 @@ export function HeroSection({
 
               {ctaSecondary && (
               <Link
-                href={ctaSecondary.href}
+                href={withLocaleHref(ctaSecondary.href, search)}
                 className="group flex items-center gap-3.5 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-semibold rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all duration-300 hover:shadow-xl"
               >
                 {ctaSecondary.icon ? (

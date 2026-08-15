@@ -254,6 +254,71 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
   },
 
+  guideRhStartup: {
+    title: "Guide Complet RH pour Startup | Télécharger",
+    description:
+      "Guide complet RH pour startup. Conseils, templates et bonnes pratiques. Téléchargez gratuitement en PDF.",
+    keywords: [
+      "guide RH startup",
+      "RH pour startup",
+      "gestion RH",
+      "conseils RH",
+    ],
+    ogImage: `${siteUrl}/og/guides-rh-startup.png`,
+  },
+
+  guidePlanningEmployes: {
+    title: "Modèle Planning Employés | Télécharger Excel",
+    description:
+      "Modèle de planning pour vos employés. Template Excel gratuit, flexible et facile à utiliser.",
+    keywords: [
+      "planning employés",
+      "modèle planning",
+      "template Excel",
+      "gestion planning",
+    ],
+    ogImage: `${siteUrl}/og/guides-planning-employes.png`,
+  },
+
+  guideChecklistPaie: {
+    title: "Checklist Paie 2026 | Télécharger Gratuitement",
+    description:
+      "Checklist complète pour votre paie. Vérifications et conformité. Téléchargez gratuitement en PDF.",
+    keywords: [
+      "checklist paie",
+      "paie",
+      "conformité paie",
+      "gestion paie",
+    ],
+    ogImage: `${siteUrl}/og/guides-checklist-paie.png`,
+  },
+
+  guides: {
+    title: "Guides & Ressources RH | Téléchargements Gratuits",
+    description:
+      "Téléchargez nos guides gratuits : Guide RH Startup, Checklist Paie 2026, Modèle Planning Employés.",
+    keywords: [
+      "guides gratuits",
+      "ressources RH",
+      "templates RH",
+      "téléchargements",
+    ],
+    ogImage: `${siteUrl}/og/guides.png`,
+  },
+
+  demo: {
+    title: "Demander une Démo | Leopardo RH",
+    description:
+      "Planifiez une démo gratuite de Leopardo RH. Découvrez la gestion RH automatisée : paie multi-pays, pointage, absences, formations.",
+    keywords: [
+      "demo Leopardo RH",
+      "démo logiciel RH",
+      "planifier démo SaaS",
+      "gestion RH automatisée",
+    ],
+    ogImage: `${siteUrl}/og/demo.png`,
+  },
+
   faq: {
     title: "Questions Frequentes | FAQ Leopardo RH",
     description:

@@ -48,11 +48,16 @@ export default function FaqPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative mb-10">
             <Search className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <label htmlFor="faq-search" className="sr-only">
+              {content.searchLabel}
+            </label>
             <input
+              id="faq-search"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={content.searchPlaceholder}
+              aria-label={content.searchLabel}
               className="w-full ps-12 pe-4 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
             />
           </div>
@@ -88,6 +93,8 @@ export default function FaqPage() {
                 >
                   <button
                     onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                    aria-expanded={openIndex === i}
+                    aria-controls={`faq-answer-${i}`}
                     className="w-full flex items-center justify-between gap-4 p-5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors text-start"
                   >
                     <span className="font-semibold text-slate-900 dark:text-white">{item.question}</span>
@@ -98,6 +105,9 @@ export default function FaqPage() {
                   <AnimatePresence>
                     {openIndex === i && (
                       <motion.div
+                        id={`faq-answer-${i}`}
+                        role="region"
+                        aria-label={item.question}
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
