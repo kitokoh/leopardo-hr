@@ -48,6 +48,29 @@ CONFIG = load_config()
 # via le header X-Local-Bridge-Token.
 LOCAL_BRIDGE_TOKEN = secrets.token_urlsafe(32)
 LOCAL_TOKEN_HEADER = "X-Local-Bridge-Token"
+MAX_JSON_BODY_BYTES = 64 * 1024
+PUNCH_RATE_LIMIT = 60
+PUNCH_RATE_WINDOW_SECONDS = 60.0
+_PUNCH_RATE_LOCK = threading.Lock()
+_PUNCH_RATE_BUCKETS: dict[str, list[float]] = {}
+
+
+def allow_local_punch(client_ip: str, now: float | None = None) -> bool:
+    """Allow at most 60 local punches per IP in a rolling 60-second window."""
+    current = time.monotonic() if now is None else now
+    cutoff = current - PUNCH_RATE_WINDOW_SECONDS
+    with _PUNCH_RATE_LOCK:
+        timestamps = [t for t in _PUNCH_RATE_BUCKETS.get(client_ip, []) if t > cutoff]
+        if len(timestamps) >= PUNCH_RATE_LIMIT:
+            _PUNCH_RATE_BUCKETS[client_ip] = timestamps
+            return False
+        timestamps.append(current)
+        _PUNCH_RATE_BUCKETS[client_ip] = timestamps
+        return True
+
+
+class PayloadTooLargeError(ValueError):
+    pass
 
 # Allowlist statique stricte : seuls les assets de l'UI kiosk sont servis.
 # config.json (token), config.example.json, *.db (PII), *.py, package*.json,
@@ -542,6 +565,8 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
     def _read_json(self) -> dict:
         length = int(self.headers.get("Content-Length", "0"))
+        if length > MAX_JSON_BODY_BYTES:
+            raise PayloadTooLargeError("REQUEST_BODY_TOO_LARGE")
         if length <= 0:
             return {}
         raw = self.rfile.read(length)
@@ -617,6 +642,9 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 return self._json(415, {"error": "CONTENT_TYPE_JSON_REQUIRED"})
         try:
             if parsed.path == "/local/punch":
+                client_ip = self.client_address[0] if self.client_address else "unknown"
+                if not allow_local_punch(client_ip):
+                    return self._json(429, {"error": "LOCAL_PUNCH_RATE_LIMITED"})
                 payload = self._read_json()
                 identifier = str(payload.get("identifier", "")).strip()
                 action = str(payload.get("action", "check_in")).strip() or "check_in"
@@ -663,6 +691,8 @@ class BridgeHandler(BaseHTTPRequestHandler):
             if parsed.path == "/local/sync/all":
                 return self._json(200, {"data": SYNC_ENGINE.sync_all()})
 
+        except PayloadTooLargeError:
+            return self._json(413, {"error": "REQUEST_BODY_TOO_LARGE"})
         except urllib.error.URLError as error:
             return self._json(502, {"error": f"REMOTE_UNREACHABLE: {error}"})
         except Exception as error:
