@@ -98,8 +98,11 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
-        Route::get('/trial/status', [SelfServiceTrialController::class, 'status']);
     });
+
+    // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req/5 s)
+    // — limit dédié 60/min (hors throttle:5,15 qui 429erait le polling).
+    Route::middleware(['throttle:trial-status'])->get('/trial/status', [SelfServiceTrialController::class, 'status']);
 
     // PA2-MKT-007 - Public vitrine lead capture (signup/demo/contact/
     // newsletter), called server-to-server from front/web's Next.js API
