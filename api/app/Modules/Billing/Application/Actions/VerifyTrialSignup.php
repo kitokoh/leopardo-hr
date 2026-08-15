@@ -351,7 +351,7 @@ class VerifyTrialSignup
         return DB::getDriverName() === 'pgsql' ? 'public.'.$table : $table;
     }
 
-    private function resolveUniqueSlug(string $baseSlug): string
+    protected function resolveUniqueSlug(string $baseSlug): string
     {
         $slug = Str::slug($baseSlug);
         if (! $slug) {
