@@ -84,17 +84,32 @@ jobs:
           )
           FAILED=()
           for ctx in "${REQUIRED[@]}"; do
-            RUNS=$(curl -fsSL \
-              -H "Authorization: Bearer ${{ github.token }}" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100" \
-              | jq -c --arg ctx "$ctx" '[.check_runs[] | select(.name == $ctx) | .conclusion]')
-            COUNT=$(jq 'length' <<<"$RUNS")
+            # Pagination : une release sur un vieux commit peut avoir >100
+            # check-runs (chaque merge rejoue toute la matrice). Issue #3970.
+            CONCS=()
+            PAGE=1
+            while :; do
+              BATCH=$(curl -fsSL \
+                -H "Authorization: Bearer ${{ github.token }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${SHA}/check-runs?per_page=100&page=${PAGE}")
+              COUNT_BATCH=$(jq '.check_runs | length' <<<"$BATCH")
+              if [[ "${COUNT_BATCH}" -eq 0 ]]; then break; fi
+              mapfile -t BATCH_CONCS < <(jq -r --arg ctx "$ctx" '.check_runs[] | select(.name == $ctx) | .conclusion' <<<"$BATCH")
+              CONCS+=("${BATCH_CONCS[@]}")
+              PAGE=$((PAGE + 1))
+              if [[ "${PAGE}" -gt 10 ]]; then break; fi
+            done
+            COUNT=${#CONCS[@]}
             if [[ "${COUNT}" -eq 0 ]]; then
-              echo "::notice::${ctx}: aucun run sur ${SHA} (workflow non declenche sur push) — non bloquant"
+              # Issue #3970 : zero verification CI sur le commit = release
+              # non attestee → bloquant (l'ancien comportement « non bloquant »
+              # laissait partir une release sans aucun check).
+              echo "::error::Aucun check '${ctx}' trouve sur ${SHA} — release refuse (0 verification CI)"
+              FAILED+=("${ctx}")
               continue
             fi
-            CONC=$(jq -r 'unique | join(",")' <<<"$RUNS")
+            CONC=$(printf '%s\n' "${CONCS[@]}" | sort -u | paste -sd, -)
             if [[ "${CONC}" == *"failure"* || "${CONC}" == *"timed_out"* || "${CONC}" == *"cancelled"* ]]; then
               echo "::error::Check requis en echec sur ${SHA} : ${ctx} (${CONC})"
               FAILED+=("${ctx}")
@@ -103,10 +118,10 @@ jobs:
             fi
           done
           if [[ ${#FAILED[@]} -gt 0 ]]; then
-            echo "::error::Release bloquee — checks requis en echec : ${FAILED[*]}"
+            echo "::error::Release bloquee — checks requis en echec ou absents : ${FAILED[*]}"
             exit 1
           fi
-          echo "Required checks: all green (or not run on push) : OK"
+          echo "Required checks: all green : OK"
 
       - name: Extract changelog for this version
         id: changelog
