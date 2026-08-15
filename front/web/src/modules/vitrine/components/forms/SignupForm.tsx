@@ -97,14 +97,14 @@ export function SignupForm({
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [provisionedData, setProvisionedData] = useState<{
-    manager?: { email: string; temp_password: string };
+    manager?: { email: string };
     trial?: { days: number; ends_at: string };
     company?: { name: string };
   } | null>(null);
   const [pendingMessage, setPendingMessage] = useState('');
-  const [copied, setCopied] = useState(false);
 
   // #2469 — suivi du provisioning du guided trial
+  const [copied, setCopied] = useState(false);
   const [trialToken, setTrialToken] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     try {
@@ -177,23 +177,6 @@ export function SignupForm({
     setTrialTimedOut(false);
     setIsTracking(true);
     setCurrentStep('tracking');
-  };
-
-  const copyPassword = async (password: string) => {
-    try {
-      await navigator.clipboard.writeText(password);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = password;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
   };
 
   // ── Step 1: Submit signup form ──
@@ -795,28 +778,11 @@ export function SignupForm({
                             {provisionedData.manager.email}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm text-slate-600 dark:text-slate-300">{c.fieldPassword}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-900 dark:bg-slate-700 dark:text-white">
-                              {provisionedData.manager.temp_password}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => copyPassword(provisionedData.manager!.temp_password)}
-                              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-                              title={c.copyPasswordTitle}
-                            >
-                              <ClipboardCopy className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                        {copied && (
-                          <p className="text-right text-xs font-medium text-emerald-600">{c.copied}</p>
-                        )}
                       </div>
+                      {/* #2680 : le mot de passe temporaire ne transite plus
+                          dans la réponse API — il est envoyé par email. */}
                       <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                        {c.credsSentByEmail} {provisionedData.manager.email}.
+                        {c.credsEmailed}
                       </p>
                     </>
                   ) : (
