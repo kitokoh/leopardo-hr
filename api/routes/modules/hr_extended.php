@@ -165,6 +165,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // ── Webhooks (module Billing gère les endpoints) ─────────────────
         Route::get('/webhooks/events', [WebhookController::class, 'events']);
+        // Définition canonique unique de POST /webhooks/{endpoint}/test
+        // (QA 2026-08-15, #2654 : un doublon était déclaré plus bas).
         Route::post('/webhooks/{webhookEndpoint}/test', [WebhookController::class, 'test']);
         Route::get('/webhooks', [WebhookController::class, 'index']);
         Route::post('/webhooks', [WebhookController::class, 'store']);
