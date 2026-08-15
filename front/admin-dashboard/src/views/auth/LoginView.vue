@@ -174,10 +174,10 @@
                 :disabled="isLoading"
                 class="w-full flex items-center justify-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 py-4 px-4 text-sm font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/20 transition-all duration-300 group"
                 @click="showDemoModal = true"
-                aria-label="Acces Demo"
+                aria-label="Accès Demo"
               >
                 <SparklesIcon class="h-5 w-5 group-hover:animate-pulse" />
-                Acces Demo
+                Accès Demo
               </button>
             </div>
           </form>
