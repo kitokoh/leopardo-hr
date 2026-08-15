@@ -22,7 +22,7 @@ export interface SEOMetadata {
  */
 export function generateMetadata(seo: SEOMetadata): Metadata {
   const url = seo.canonical || siteUrl;
-  const image = seo.ogImage || `${siteUrl}/og-image.png`;
+  const image = seo.ogImage || `${siteUrl}/brand/opengraph.svg`;
   const path = (() => {
     try {
       const parsed = new URL(url, siteUrl);
@@ -82,7 +82,7 @@ export const pageMetadata = {
   landing: {
     title: "Gestion Employés, Paie & Documents | Plateforme Complète",
     description:
-      "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 14 jours, sans carte bancaire.",
+      "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit de 30 jours, sans carte bancaire.",
     keywords: [
       "gestion employés SaaS",
       "logiciel RH PME",
@@ -90,7 +90,7 @@ export const pageMetadata = {
       "pointage numérique",
       "gestion absences",
     ],
-    ogImage: `${siteUrl}/og/landing.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   employes: {
@@ -104,7 +104,7 @@ export const pageMetadata = {
       "logiciel RH",
       "paie employés",
     ],
-    ogImage: `${siteUrl}/og/employes.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   documents: {
@@ -118,7 +118,7 @@ export const pageMetadata = {
       "archivage conformité",
       "RGPD documents",
     ],
-    ogImage: `${siteUrl}/og/documents.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   comptabilite: {
@@ -132,7 +132,7 @@ export const pageMetadata = {
       "bulletins de paie",
       "conformité paie",
     ],
-    ogImage: `${siteUrl}/og/comptabilite.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   marketing: {
@@ -146,20 +146,20 @@ export const pageMetadata = {
       "campagnes email",
       "marketing automation",
     ],
-    ogImage: `${siteUrl}/og/marketing.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      "Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 14 jours.",
+      "Tarifs transparents : Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit de 30 jours, sans carte bancaire.",
     keywords: [
       "prix logiciel RH",
       "tarification paie",
       "coût gestion employés",
       "plans pricing",
     ],
-    ogImage: `${siteUrl}/og/pricing.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   about: {
@@ -167,7 +167,7 @@ export const pageMetadata = {
     description:
       "Découvrez notre mission, équipe et valeurs. Nous aidons les PME à gérer leurs employés simplement.",
     keywords: ["à propos", "équipe", "mission", "valeurs"],
-    ogImage: `${siteUrl}/og/about.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   blog: {
@@ -181,7 +181,7 @@ export const pageMetadata = {
       "tendances RH",
       "automatisation RH",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   changelog: {
@@ -194,7 +194,7 @@ export const pageMetadata = {
       "releases logiciel paie",
       "notes de version",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   docs: {
@@ -207,7 +207,7 @@ export const pageMetadata = {
       "webhooks paie",
       "API gestion employes",
     ],
-    ogImage: `${siteUrl}/og/docs.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   download: {
@@ -220,7 +220,7 @@ export const pageMetadata = {
       "client desktop ZKTeco",
       "app RH Android iOS",
     ],
-    ogImage: `${siteUrl}/og/download.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   contact: {
@@ -233,7 +233,7 @@ export const pageMetadata = {
       "demande commerciale",
       "assistance logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/contact.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   faq: {
@@ -246,7 +246,7 @@ export const pageMetadata = {
       "aide gestion employes",
       "support paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/faq.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   testimonials: {
@@ -259,7 +259,7 @@ export const pageMetadata = {
       "retours utilisateurs paie SaaS",
       "case success RH PME",
     ],
-    ogImage: `${siteUrl}/og/testimonials.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   caseStudies: {
@@ -272,7 +272,7 @@ export const pageMetadata = {
       "cas client Leopardo RH",
       "ROI logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/case-studies.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   videos: {
@@ -285,7 +285,7 @@ export const pageMetadata = {
       "tutoriel pointage biometrique",
       "demonstration paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/videos.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   branding: {
@@ -298,7 +298,7 @@ export const pageMetadata = {
       "logo entreprise application RH",
       "theme personnalise paie",
     ],
-    ogImage: `${siteUrl}/og/branding.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   careers: {
@@ -311,7 +311,7 @@ export const pageMetadata = {
       "recrutement startup SaaS",
       "offres emploi tech RH",
     ],
-    ogImage: `${siteUrl}/og/careers.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   mobile: {
@@ -324,7 +324,7 @@ export const pageMetadata = {
       "app manager RH",
       "app employe pointage",
     ],
-    ogImage: `${siteUrl}/og/mobile.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
   },
 
   signup: {
@@ -337,7 +337,7 @@ export const pageMetadata = {
       "sandbox logiciel RH",
       "inscription essai paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/signup.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     robots: "noindex, follow",
   },
 
@@ -351,7 +351,7 @@ export const pageMetadata = {
       "checkout SaaS RH",
       "paiement plan paie",
     ],
-    ogImage: `${siteUrl}/og/checkout.png`,
+    ogImage: `${siteUrl}/brand/opengraph.svg`,
     robots: "noindex, follow",
   },
 };
@@ -511,7 +511,9 @@ Allow: /`;
  * Open Graph image generation helper
  */
 export function getOGImageUrl(page: string): string {
-  return `${siteUrl}/og/${page}.png`;
+  // Issue #2722 — les fichiers /og/*.png n'existaient pas (404) : retour
+  // vers l'asset de marque réellement servi.
+  return `${siteUrl}/brand/opengraph.svg`;
 }
 
 /**
