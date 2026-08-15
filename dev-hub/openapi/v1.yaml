@@ -1978,6 +1978,45 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /admin/ai/chat:
+    post:
+      tags: ["Platform"]
+      summary: "Envoyer un message a l'assistant IA (super-admin)"
+      description: "Reponse honnete cote plateforme (issue #2311) : l'IA conversationnelle est configuree PAR TENANT et la console super-admin est cross-tenant en lecture seule. L'envoi retourne une reponse structuree indiquant que l'assistant n'est pas disponible au niveau plateforme. Aucune ecriture cross-tenant."
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  maxLength: 4000
+                conversation_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: "Reponse de l'assistant (indisponible au niveau plateforme)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversation_id:
+                    type: integer
+                    nullable: true
+                  response:
+                    type: string
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /admin/fleet/alerts:
     get:
       tags: ["Platform"]
@@ -4981,13 +5020,13 @@ paths:
   /me/vehicles:
     get:
       tags: ["Vehicle Tracking"]
-      summary: "Vehicules assignes a l'employe connecte (self-service)"
-      description: "Liste les vehicules actifs assignes a l'employe authentifie (scopes au tenant courant), avec la derniere position Traccar le cas echeant. Consomme par l'app mobile employee (leopardo_employee)."
+      summary: "Vehicules assignes a l'employe connecte (mobile)"
+      description: "Liste des vehicules actifs assignes au conducteur connecte, avec la derniere position Traccar aplatie (shape alignee sur le modele mobile VehiclePosition)."
       security:
         - BearerAuth: []
       responses:
         "200":
-          description: "Vehicules assignes avec position aplatie"
+          description: "Vehicules de l'employe"
           content:
             application/json:
               schema:
@@ -4998,34 +5037,15 @@ paths:
                     items:
                       type: object
                       properties:
-                        vehicle_id:
-                          type: integer
-                        plate_number:
-                          type: string
-                        brand:
-                          type: string
-                          nullable: true
-                        model:
-                          type: string
-                          nullable: true
-                        type:
-                          type: string
-                          nullable: true
-                        latitude:
-                          type: number
-                          format: double
-                          nullable: true
-                        longitude:
-                          type: number
-                          format: double
-                          nullable: true
-                        speed:
-                          type: number
-                          nullable: true
-                        updated_at:
-                          type: string
-                          format: date-time
-                          nullable: true
+                        vehicle_id: { type: integer }
+                        plate_number: { type: string }
+                        brand: { type: string, nullable: true }
+                        model: { type: string, nullable: true }
+                        type: { type: string, nullable: true }
+                        latitude: { type: number, format: double, nullable: true }
+                        longitude: { type: number, format: double, nullable: true }
+                        speed: { type: number, format: double, nullable: true }
+                        updated_at: { type: string, format: date-time, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -6998,7 +7018,7 @@ paths:
                       warning: { type: string }
                       warning_key: { type: string }
                       source: { type: string }
-                      verification_date: { type: [string, "null"] }
+                      verification_date: { type: string, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -7187,6 +7207,42 @@ paths:
                           remaining: { type: number, format: float }
                           overtime_hours: { type: number, format: float }
                           overtime_pay: { type: number, format: float }
+                      compliance:
+                        type: object
+                        description: "Bloc conformite paie (niveau de confiance + avertissement localise) — issue #2144. Vide si pays non resoluble."
+                        properties:
+                          level: { type: string, enum: [production, pilot, placeholder, unknown] }
+                          warning: { type: string }
+                          warning_key: { type: string }
+                          source: { type: string }
+                          verification_date: { type: string, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /payroll-runs/{payrollRun}/payment-documents:
+    get:
+      tags: ["Payroll"]
+      summary: "Documents de paiement d'un cycle paie"
+      parameters:
+        - in: path
+          name: payrollRun
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Documents du cycle"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaymentDocument"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -7793,6 +7849,60 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cnss-ga:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155)"
+      description: "CSV gabonais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XAF, retraite salariale/patronale 2,5 %/5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas GA."
+      operationId: downloadCnssGaDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS GA"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/cnss-cg:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155)"
+      description: "CSV congolais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 2 500 000 XAF, retraite salariale/patronale 4,0 %/8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas CG."
+      operationId: downloadCnssCgDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CG"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/regularize:
     post:
       tags: ["Payroll Engine"]
@@ -7939,6 +8049,53 @@ paths:
                         description: "Contenu CSV brut, present seulement quand format=csv ou xlsx"
                       filename: { type: string }
                       count: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Reserve aux managers"
+
+  /export/history:
+    get:
+      tags: ["HR"]
+      summary: "Historique des exports du portail manager (issue #2199) - manager uniquement"
+      description: "Source reelle : table append-only `export_history`, tenant-scopee. Pagine, filtre par type."
+      operationId: exportHistory
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema: { type: string, maxLength: 100 }
+          description: "Filtre par type d'export (employees, attendance, pay_slips, absences, training, contracts, vehicles, payroll_journal, payroll_ledger, accounting_od)"
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: "Historique pagine des exports"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        type: { type: string }
+                        format: { type: string, nullable: true }
+                        record_count: { type: integer, nullable: true }
+                        filename: { type: string, nullable: true }
+                        created_at: { type: string, format: date-time }
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -10889,16 +11046,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /export/history:
-    get:
-      tags: ["Exports"]
-      summary: "Historique des exports"
-      responses:
-        "200":
-          description: "Liste des exports precedents"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /export/payroll-journal:
     get:
       tags: ["Exports"]
@@ -11225,7 +11372,7 @@ paths:
                     properties:
                       token: { type: string }
                       token_type: { type: string }
-                      token_expires_at: { type: [string, "null"] }
+                      token_expires_at: { type: string, nullable: true }
                       employee:
                         type: object
                         properties:
@@ -11234,7 +11381,7 @@ paths:
                           last_name: { type: string }
                           email: { type: string }
                           role: { type: string }
-                          manager_role: { type: [string, "null"] }
+                          manager_role: { type: string, nullable: true }
         "400":
           description: "Code ou id_token manquant"
         "422":
@@ -11283,15 +11430,22 @@ paths:
           application/json:
             schema:
               type: object
-              required: [provider, entity_id, sso_url]
+              required: [provider]
               properties:
                 provider: { type: string, enum: [saml, oidc] }
-                entity_id: { type: string, format: uri }
-                sso_url: { type: string, format: uri }
+                entity_id: { type: string, format: uri, nullable: true }
+                sso_url: { type: string, format: uri, nullable: true }
                 slo_url: { type: string, format: uri, nullable: true }
                 certificate: { type: string, nullable: true }
                 client_id: { type: string, nullable: true }
                 client_secret: { type: string, nullable: true }
+                # OpenID Connect (issue #2231)
+                issuer: { type: string, format: uri, nullable: true }
+                authorize_url: { type: string, format: uri, nullable: true }
+                token_url: { type: string, format: uri, nullable: true }
+                jwks_uri: { type: string, format: uri, nullable: true }
+                redirect_uri: { type: string, format: uri, nullable: true }
+                scopes: { type: string, nullable: true }
       responses:
         "200":
           description: "SSO configure avec succes"
@@ -12332,6 +12486,26 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Lire la configuration du mode de pointage de l'entreprise"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Configuration actuelle (data null si aucune configuration)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    nullable: true
+                    allOf:
+                      - $ref: "#/components/schemas/AttendanceModeSettings"
+        "401":
+          $ref: "#/components/responses/Error401"
     put:
       tags: ["SmartAttendance"]
       summary: "Mettre à jour la configuration GPS (admin)"
@@ -17438,6 +17612,7 @@ components:
           description: Pays du run de paie (source du bloc compliance)
           example: CI
         compliance:
+          type: object
           allOf:
             - $ref: "#/components/schemas/Compliance"
           nullable: true

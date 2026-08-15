@@ -120,6 +120,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Envoyer un message a l'assistant IA (super-admin) */
+    postAdminAiChat(options = {}) {
+      return request("POST", "/admin/ai/chat", options);
+    },
+
     /** Conversations IA cross-tenant (super-admin) */
     getAdminAiConversations(options = {}) {
       return request("GET", "/admin/ai/conversations", options);
@@ -1010,8 +1015,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/export/employees", options);
     },
 
-    /** Historique des exports */
-    getExportHistory(options = {}) {
+    /** Historique des exports du portail manager (issue #2199) - manager uniquement */
+    exportHistory(options = {}) {
       return request("GET", "/export/history", options);
     },
 
@@ -1410,7 +1415,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
-    /** Vehicules assignes a l'employe connecte (self-service) */
+    /** Vehicules assignes a l'employe connecte (mobile) */
     getMeVehicles(options = {}) {
       return request("GET", "/me/vehicles", options);
     },
@@ -1565,9 +1570,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", options);
     },
 
+    /** Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155) */
+    downloadCnssCgDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", options);
+    },
+
     /** Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830) */
     downloadCnssCiDeclaration(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", options);
+    },
+
+    /** Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155) */
+    downloadCnssGaDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", options);
     },
 
     /** Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830) */
@@ -2175,24 +2190,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/smart-attendance/geo-events", options);
     },
 
-    /** Config mode géolocalisation de l'entreprise (manager/RH) */
+    /** Lire la configuration du mode de pointage de l'entreprise */
     getSmartAttendanceModeSettings(options = {}) {
       return request("GET", "/smart-attendance/mode-settings", options);
     },
 
-    /** Mettre à jour la config mode géolocalisation (principal) */
+    /** Mettre à jour la configuration GPS (admin) */
     putSmartAttendanceModeSettings(options = {}) {
       return request("PUT", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Sessions GPS de l'employé courant */
-    getSmartAttendanceMySessions(options = {}) {
-      return request("GET", "/smart-attendance/my-sessions", options);
-    },
-
-    /** Lire les préférences de pointage de l'employé */
-    getSmartAttendancePreferences(options = {}) {
-      return request("GET", "/smart-attendance/preferences", options);
     },
 
     /** Mettre à jour les préférences de pointage */
@@ -2273,6 +2278,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Desactiver le SSO de l'entreprise */
     deleteSsoDisable(options = {}) {
       return request("DELETE", "/sso/disable", options);
+    },
+
+    /** Demarrer le flux OpenID Connect (SP -> IdP) */
+    getSsoOidcByCompanyIdAuthorize(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/authorize", options);
     },
 
     /** Callback OpenID Connect (IdP -> SP) */
