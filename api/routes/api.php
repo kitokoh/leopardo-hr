@@ -32,6 +32,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
 use App\Modules\Payroll\Interfaces\Api\V1\PublicHolidayController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
@@ -272,6 +273,17 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
         Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
         Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+
+        // Platform users management (issues #2229/#2269) — comptes portail
+        // `public.users`, jamais de suppression physique (destroy = disabled).
+        Route::get('/users', [PlatformUserController::class, 'index']);
+        Route::post('/users', [PlatformUserController::class, 'store']);
+        Route::get('/users/{id}', [PlatformUserController::class, 'show'])->whereNumber('id');
+        Route::patch('/users/{id}', [PlatformUserController::class, 'update'])->whereNumber('id');
+        Route::delete('/users/{id}', [PlatformUserController::class, 'destroy'])->whereNumber('id');
+        Route::post('/users/{id}/activate', [PlatformUserController::class, 'activate'])->whereNumber('id');
+        Route::post('/users/{id}/deactivate', [PlatformUserController::class, 'deactivate'])->whereNumber('id');
+        Route::post('/users/{id}/suspend', [PlatformUserController::class, 'suspend'])->whereNumber('id');
 
         // Edge node management (super-admin).
         // Uses EdgeNodeController against the canonical UUID edge_nodes

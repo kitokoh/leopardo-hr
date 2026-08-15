@@ -829,6 +829,232 @@ paths:
                     type: string
                     example: "ok"
 
+  /platform/users:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les utilisateurs plateforme (comptes portail)"
+      description: "Super-admin uniquement. Pagine, recherche nom/email, filtre statut, tri allowliste, entreprise liee (user_employee_links + public.companies)."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 20, maximum: 100 }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: status
+          in: query
+          schema: { type: string, enum: [active, disabled, suspended] }
+        - name: sort_by
+          in: query
+          schema: { type: string, enum: [id, first_name, last_name, email, status, created_at, last_login_at] }
+        - name: sort_dir
+          in: query
+          schema: { type: string, enum: [asc, desc] }
+      responses:
+        "200":
+          description: "Liste paginee des utilisateurs"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { "$ref": "#/components/schemas/PlatformUser" }
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "422":
+          description: "sort_by hors allowlist"
+    post:
+      tags: ["Platform"]
+      summary: "Creer un utilisateur plateforme"
+      description: "Email unique ; mot de passe optionnel (hache)."
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [first_name, last_name, email]
+              properties:
+                first_name: { type: string, maxLength: 100 }
+                last_name: { type: string, maxLength: 100 }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                phone: { type: string }
+                preferred_language: { type: string, enum: [fr, en, ar, tr] }
+                status: { type: string, enum: [active, disabled, suspended] }
+      responses:
+        "201":
+          description: "Utilisateur cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "422":
+          description: "Validation ou email deja utilise"
+  /platform/users/{id}:
+    get:
+      tags: ["Platform"]
+      summary: "Detail d'un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "404":
+          description: "Utilisateur introuvable"
+    patch:
+      tags: ["Platform"]
+      summary: "Mettre a jour un utilisateur plateforme"
+      description: "Champs partiels. Garde self-disable : un super-admin ne peut pas desactiver le compte portail associe a son propre email (422)."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name: { type: string, maxLength: 100 }
+                last_name: { type: string, maxLength: 100 }
+                email: { type: string, format: email }
+                phone: { type: string, maxLength: 30 }
+                preferred_language: { type: string, enum: [fr, en, ar, tr] }
+                status: { type: string, enum: [active, disabled, suspended] }
+      responses:
+        "200":
+          description: "Utilisateur mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "422":
+          description: "Validation, email duplique ou self-disable"
+        "404":
+          description: "Utilisateur introuvable"
+    delete:
+      tags: ["Platform"]
+      summary: "Desactiver un utilisateur plateforme"
+      description: "Jamais de suppression physique : status passe a disabled. Self-delete refuse (422)."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Compte desactive"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "422":
+          description: "Self-delete interdit"
+        "404":
+          description: "Utilisateur introuvable"
+  /platform/users/{id}/activate:
+    post:
+      tags: ["Platform"]
+      summary: "Reactiver un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur actif"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "404":
+          description: "Utilisateur introuvable"
+  /platform/users/{id}/deactivate:
+    post:
+      tags: ["Platform"]
+      summary: "Desactiver un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur desactive"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "404":
+          description: "Utilisateur introuvable"
+  /platform/users/{id}/suspend:
+    post:
+      tags: ["Platform"]
+      summary: "Suspendre un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur suspendu"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { "$ref": "#/components/schemas/PlatformUser" }
+        "404":
+          description: "Utilisateur introuvable"
+
   /platform/country-defaults:
     get:
       tags: ["Platform"]
@@ -12254,6 +12480,27 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
   schemas:
+    PlatformUser:
+      type: object
+      properties:
+        id: { type: integer }
+        first_name: { type: string }
+        last_name: { type: string }
+        email: { type: string }
+        phone: { type: string, nullable: true }
+        provider: { type: string }
+        preferred_language: { type: string }
+        status: { type: string, enum: [active, disabled, suspended] }
+        email_verified_at: { type: string, format: date-time, nullable: true }
+        last_login_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+        company:
+          type: object
+          nullable: true
+          properties:
+            id: { type: string }
+            name: { type: string }
+
     # ── SmartAttendance schemas (v4.18.0) ──
     AttendanceModeSettings:
       type: object
