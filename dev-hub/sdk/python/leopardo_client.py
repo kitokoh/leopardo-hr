@@ -1148,6 +1148,10 @@ class LeopardoClient:
         """Auto-inscription a une formation"""
         return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
 
+    def get_me_vehicles(self, **kwargs):
+        """Vehicules assignes a l'employe connecte (self-service)"""
+        return self.request("GET", "/me/vehicles", **kwargs)
+
     def get_notification_preferences(self, **kwargs):
         """Lire les preferences de notification de l'utilisateur courant"""
         return self.request("GET", "/notification-preferences", **kwargs)
