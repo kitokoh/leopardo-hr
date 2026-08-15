@@ -214,6 +214,7 @@ import { useToast } from 'vue-toastification'
 import FormField from '@/components/common/FormField.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale, translate } from '@/i18n/index.js'
+import api from '@/services/api'
 
 const props = defineProps({
   user: {
@@ -301,18 +302,17 @@ async function handleSubmit() {
       return
     }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    // #2641 : appel API réel (PATCH /platform/users/{id}), plus de faux setTimeout.
+    const payload = { name: form.name, email: form.email }
+    if (form.status) payload.status = form.status
+    const res = await api.patch(`/platform/users/${props.user.id}`, payload)
 
-    // Create updated user object
     const updatedUser = {
       ...props.user,
-      name: form.name,
-      email: form.email,
-      role: form.role,
-      status: form.status,
+      name: res.data?.data?.name || form.name,
+      email: res.data?.data?.email || form.email,
+      status: res.data?.data?.status || form.status,
       segment: form.segment,
-      company: companies.value.find(c => c.id === parseInt(form.companyId)) || null,
       updatedAt: new Date()
     }
 
@@ -328,30 +328,29 @@ async function handleSubmit() {
 }
 
 async function resetPassword() {
+  // #2641 : appel API réel — le mot de passe est défini via PATCH /platform/users/{id}
+  const newPassword = window.prompt('Nouveau mot de passe (12 caractères minimum)')
+  if (!newPassword) return
+  if (newPassword.length < 12) {
+    toast.error('Le mot de passe doit contenir au moins 12 caractères')
+    return
+  }
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    toast.success('Mot de passe réinitialisé • Email envoyé à l\'utilisateur')
+    await api.patch(`/platform/users/${props.user.id}`, { password: newPassword })
+    toast.success('Mot de passe réinitialisé')
   } catch {
     toast.error('Erreur lors de la réinitialisation du mot de passe')
   }
 }
 
 async function sendWelcomeEmail() {
-  try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    toast.success('Email de bienvenue envoyé')
-  } catch {
-    toast.error('Erreur lors de l\'envoi de l\'email')
-  }
+  // #2641 : pas d'endpoint backend dédié — état « non disponible » honnête (règle cockpit).
+  toast.warning('Envoi d\'email de bienvenue non disponible pour le moment')
 }
 
 async function forceLogout() {
-  try {
-    await new Promise(resolve => setTimeout(resolve, 500))
-    toast.success('Utilisateur déconnecté de toutes ses sessions')
-  } catch {
-    toast.error('Erreur lors de la déconnexion forcée')
-  }
+  // #2641 : pas d'endpoint backend dédié — état « non disponible » honnête (règle cockpit).
+  toast.warning('Déconnexion forcée non disponible pour le moment')
 }
 
 function formatDate(date) {
