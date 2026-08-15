@@ -111,4 +111,37 @@ class TenantScopeFailClosedTest extends TestCase
             \App\Modules\Notification\Domain\Models\Notification::query()->count()
         );
     }
+
+    public function test_suspended_ordinary_user_without_company_is_rejected(): void
+    {
+        // Issue #3942 — les gardes de statut s'appliquent aussi aux comptes
+        // ordinaires sans entreprise : avant, le branche `ordinary` sautait
+        // les checks suspended/archived et laissait passer la requête.
+        $orphan = Employee::factory()->create([
+            'company_id' => null,
+            'role' => 'ordinary',
+            'status' => 'suspended',
+        ]);
+
+        Sanctum::actingAs($orphan);
+
+        $this->getJson('/api/v1/notifications')
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'EMPLOYEE_SUSPENDED');
+    }
+
+    public function test_archived_ordinary_user_without_company_is_rejected(): void
+    {
+        $orphan = Employee::factory()->create([
+            'company_id' => null,
+            'role' => 'ordinary',
+            'status' => 'archived',
+        ]);
+
+        Sanctum::actingAs($orphan);
+
+        $this->getJson('/api/v1/notifications')
+            ->assertStatus(403)
+            ->assertJsonPath('error', 'EMPLOYEE_ARCHIVED');
+    }
 }
