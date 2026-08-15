@@ -11,6 +11,8 @@ use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * Self-service trial provisioning endpoint.
@@ -67,7 +69,19 @@ class SelfServiceTrialController extends Controller
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
             // MULTI-PAYS (#1950) : le pays validé du signup est transmis au job
             // (plus de fallback silencieux DZ — invariant 10 de la spec).
-            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country']);
+            // #2437 : un provisioning_token est créé pour permettre au prospect
+            // de poller GET /trial/status sans exposer l'email brut.
+            $provisioningToken = Str::random(64);
+
+            DB::table('trial_provisionings')->insert([
+                'email' => $email,
+                'provisioning_token' => $provisioningToken,
+                'status' => 'pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            ProvisionDemoTenantJob::dispatch($email, $validated['company'], $validated['country'], $provisioningToken);
 
             return new JsonResponse([
                 'success' => true,
@@ -75,6 +89,7 @@ class SelfServiceTrialController extends Controller
                 'data' => [
                     'email' => $email,
                     'status' => 'provisioning_sandbox',
+                    'provisioning_token' => $provisioningToken,
                 ],
             ], 200);
         }
@@ -89,6 +104,52 @@ class SelfServiceTrialController extends Controller
                 'status' => 'pending_verification',
             ],
         ], 200);
+    }
+
+    /**
+     * GET /api/v1/trial/status?token=...
+     *
+     * Statut du provisioning d'un essai guidé (#2437). Le prospect reçoit un
+     * provisioning_token au signup et peut poller ce endpoint sans exposer
+     * son email brut : pending → ready (login_url émis) / failed (raison
+     * générique). Le token est vérifié exactement (pas de lookup par email).
+     */
+    public function status(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'token' => ['required', 'string', 'size:64'],
+        ]);
+
+        $row = DB::table('trial_provisionings')
+            ->where('provisioning_token', $validated['token'])
+            ->first();
+
+        if ($row === null) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'PROVISIONING_TOKEN_INVALID',
+                'message' => __('billing.trial_status_token_invalid'),
+            ], 404);
+        }
+
+        $payload = [
+            'success' => true,
+            'data' => [
+                'status' => $row->status,
+                'provisioned_at' => $row->provisioned_at?->toIso8601String(),
+            ],
+        ];
+
+        // Le lien d'accès n'est exposé qu'une fois le sandbox prêt (jamais
+        // dans l'état pending — le prospect n'a rien à ouvrir avant).
+        if ($row->status === 'ready' && is_string($row->login_url) && $row->login_url !== '') {
+            $payload['data']['login_url'] = $row->login_url;
+        }
+        if ($row->status === 'failed') {
+            $payload['data']['message'] = __('billing.trial_status_failed');
+        }
+
+        return new JsonResponse($payload, 200);
     }
 
     /**

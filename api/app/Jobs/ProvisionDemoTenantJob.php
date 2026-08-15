@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -26,6 +27,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
         public readonly string $email,
         public readonly string $companyName,
         public readonly ?string $country = null,
+        public readonly ?string $provisioningToken = null,
     ) {}
 
     public function handle(ProvisionGuidedTrial $provisioner): void
@@ -35,15 +37,36 @@ class ProvisionDemoTenantJob implements ShouldQueue
         try {
             $result = $provisioner->execute($this->email, $this->companyName, $this->country);
 
-            // Issue #2253 — magic link d'accès au sandbox : jeton à usage
-            // unique (hash SHA-256 + expiration 72 h stockés dans
-            // extra_data) + email contenant le lien /demo-login/{token}.
-            $this->issueDemoAccess($result['manager']);
+            // #2437 : le statut du provisioning est persisté pour que le
+            // prospect puisse poller GET /trial/status (login_url = le portail
+            // client ; le magic link email est un bonus, jamais le seul canal).
+            if ($this->provisioningToken !== null) {
+                DB::table('trial_provisionings')
+                    ->where('provisioning_token', $this->provisioningToken)
+                    ->update([
+                        'status' => 'ready',
+                        'company_id' => $result['company']->id,
+                        'login_url' => '/auth/login',
+                        'provisioned_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+            }
 
+            // TODO: Generate magic link and send email to the user
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 
         } catch (\Throwable $e) {
             Log::error('Failed to provision sandbox', ['error' => $e->getMessage()]);
+
+            if ($this->provisioningToken !== null) {
+                DB::table('trial_provisionings')
+                    ->where('provisioning_token', $this->provisioningToken)
+                    ->update([
+                        'status' => 'failed',
+                        'error' => mb_substr($e->getMessage(), 0, 500),
+                        'updated_at' => now(),
+                    ]);
+            }
         }
     }
 
