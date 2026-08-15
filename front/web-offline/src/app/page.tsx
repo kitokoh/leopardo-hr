@@ -7,11 +7,16 @@ const EDGE_API = process.env.NEXT_PUBLIC_EDGE_API ?? 'http://leopardo.local:7878
 type SyncStatus = 'checking' | 'online' | 'offline' | 'error';
 
 interface EdgeHealth {
+  edge?: boolean;
   status: string;
-  node_id: string;
-  pending_sync: number;
-  last_sync?: string;
+  time?: string;
 }
+
+// L'endpoint de sync réel (POST /api/v1/edge-node/{nodeId}/sync) est
+// authentifié et requiert un nodeId : aucune route publique ne permet de
+// déclencher une sync depuis cette UI. Le bouton est donc désactivé
+// honnêtement (issue #3719) plutôt que d'appeler un endpoint inexistant.
+const SYNC_AVAILABLE = false;
 
 export default function HomePage() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('checking');
@@ -22,7 +27,7 @@ export default function HomePage() {
     setChecking(true);
     setSyncStatus('checking');
     try {
-      const res = await fetch(`${EDGE_API}/api/edge/health`, {
+      const res = await fetch(`${EDGE_API}/api/v1/edge/health`, {
         signal: AbortSignal.timeout(4000),
       });
       if (res.ok) {
@@ -40,8 +45,11 @@ export default function HomePage() {
   };
 
   const triggerSync = async () => {
+    if (!SYNC_AVAILABLE) {
+      return;
+    }
     try {
-      await fetch(`${EDGE_API}/api/edge/sync`, {
+      await fetch(`${EDGE_API}/api/v1/edge-node/sync`, {
         method: 'POST',
         signal: AbortSignal.timeout(10000),
       });
@@ -94,7 +102,7 @@ export default function HomePage() {
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Node ID</span>
-                <span className="text-white font-mono">{health.node_id}</span>
+                <span className="text-white font-mono">—</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Statut</span>
@@ -104,12 +112,12 @@ export default function HomePage() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">En attente de sync</span>
-                <span className="text-white">{health.pending_sync} enregistrement(s)</span>
+                <span className="text-white">—</span>
               </div>
-              {health.last_sync && (
+              {health.time && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Dernière synchronisation</span>
-                  <span className="text-white">{new Date(health.last_sync).toLocaleString(typeof window !== 'undefined' ? navigator.language : 'fr-FR')}</span>
+                  <span className="text-slate-400">Horodatage du node</span>
+                  <span className="text-white">{new Date(health.time).toLocaleString(typeof window !== 'undefined' ? navigator.language : 'fr-FR')}</span>
                 </div>
               )}
             </div>
@@ -133,12 +141,20 @@ export default function HomePage() {
           </button>
           <button
             onClick={triggerSync}
-            disabled={syncStatus !== 'online'}
+            disabled={!SYNC_AVAILABLE}
+            title={!SYNC_AVAILABLE ? 'Sync manuelle indisponible : aucun endpoint public sans nodeId (POST /api/v1/edge-node/{nodeId}/sync est authentifié)' : undefined}
             className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors"
           >
-            Synchroniser maintenant
+            {SYNC_AVAILABLE ? 'Synchroniser maintenant' : 'Sync manuelle indisponible'}
           </button>
         </div>
+
+        {!SYNC_AVAILABLE && (
+          <p className="mt-3 text-slate-500 text-xs">
+            La synchronisation est déclenchée par le service Edge lui-même
+            (POST /api/v1/edge-node/{'{nodeId}'}/sync, authentifié).
+          </p>
+        )}
 
         {/* Offline notice */}
         {syncStatus === 'offline' && (

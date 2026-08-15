@@ -2,15 +2,18 @@
 // Stratégie : Cache First pour assets statiques, Network First pour /api/*
 
 const CACHE_NAME = 'leopardo-edge-v1';
+// Issue #3719 : sous export statique Next + trailingSlash, `/index.html` peut
+// manquer (la racine est `/`). Un asset absent ne doit pas casser l'installation.
 const STATIC_ASSETS = [
   '/',
-  '/index.html',
   '/manifest.json',
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => Promise.allSettled(STATIC_ASSETS.map((url) => cache.add(url))))
   );
   self.skipWaiting();
 });
