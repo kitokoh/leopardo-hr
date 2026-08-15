@@ -6,6 +6,7 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
-use Illuminate\Database\QueryException;
 
 /**
  * Issue #2626 — réinitialisation de mot de passe.

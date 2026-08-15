@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -143,5 +143,3 @@ class TrackingSyncController extends Controller
         ]);
     }
 }
-
-
