@@ -8,72 +8,69 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\MoroccoPayrollRules
 use Tests\TestCase;
 
 /**
- * Golden tests paie Maroc (MA), issue #2260.
- * Méthodologie : chaque valeur attendue est CALCULÉE À LA MAIN dans un
- * commentaire PHP, jamais reprise du code. Référence légale :
- * docs/payroll/MA_COMPLIANCE.md §1-§3.
+ * Golden tests Maroc (MA) — issue #2119, constitution §III.
+ *
+ * Méthodologie : chaque valeur est CALCULÉE À LA MAIN (docs/payroll/MA_COMPLIANCE.md),
+ * pas reprise du code — une divergence = régression de conformité.
+ *
+ * Règles (pilot) : CNSS 4,48 % / 8,98 % plafonnée 6 000 MAD · AMO 2,26 % / 4,11 %
+ * non plafonnée · IR mensuel = progressif ANNUEL (tranches 0-30k 0 %, 30-50k 10 %,
+ * 50-60k 20 %, 60-80k 30 %, 80-180k 34 %, >180k 38 %) / 12, assiette = brut − CNSS.
  */
 class GoldenMaPayrollTest extends TestCase
 {
-    private function ma(): MoroccoPayrollRules
+    private function rules(): MoroccoPayrollRules
     {
-        return new MoroccoPayrollRules;
+        return new MoroccoPayrollRules();
     }
 
-    public function test_golden_ma_smig_3111_ir_zero_after_abatement(): void
+    public function test_golden_ma_smig_3111(): void
     {
-        // Calcul manuel (MA_COMPLIANCE.md §1-§3) — SMIG 3 111 MAD/mois :
-        //   CNSS salariale 4,48 % × 3 111 (plafond 6 000) = 139,37
-        //   AMO salariale 2,26 % × 3 111 = 70,31
-        //   → assiette imposable = 3 111 − 209,68 = 2 901,32 → annuel 34 815,84
-        //   Abattement art. 58 : 35 % × 3 111 × 12 = 13 066,20 (entre 2 500 et 30 000)
-        //     → base après abattement 21 749,64 → tranche 0-30 000 @ 0 %
-        //     → IR mensuel 0,00 (SANS abattement : 481,58/an → 40,13/mois)
-        $charges = $this->ma()->calculateSocialCharges(3111.0);
-        $taxable = 3111.0 - $charges['employee'];
+        // Calcul manuel, brut = SMIG 3 111 MAD :
+        //   CNSS salariale = min(3 111, 6 000) × 4,48 % = 139,37
+        //   AMO salariale  = 3 111 × 2,26 % = 70,31 → total salarié 209,68
+        //   IR : assiette 2 901,32 → annuel 34 815,84 → tranche 10 % :
+        //     (34 815,84 − 30 000) × 10 % = 481,58 → mensuel 40,13
+        //   Net = 3 111 − 209,68 − 40,13 = 2 861,19
+        $rules = $this->rules();
 
-        $this->assertSame(209.68, round($charges['employee'], 2));
-        $this->assertSame(0.0, $this->ma()->calculateIncomeTax($taxable, 12, 3111.0));
+        $charges = $rules->calculateSocialCharges(3111.0);
+        $this->assertSame(209.68, $charges['employee']);
+        $this->assertSame(407.23, $charges['employer']); // 279,37 CNSS + 127,86 AMO
+
+        $tax = $rules->calculateIncomeTax(3111.0 - $charges['employee']);
+        $this->assertSame(40.13, $tax);
+        $this->assertSame(2861.19, round(3111.0 - $charges['employee'] - $tax, 2));
     }
 
-    public function test_golden_ma_abatement_dedicated_method(): void
+    public function test_golden_ma_cadre_moyen_10000(): void
     {
-        // Plancher 2 500 : 35 % d'un petit revenu annuel reste < 2 500 → 2 500.
-        $this->assertSame(2500.0, $this->ma()->moroccoProfessionalExpensesAbatement(1000.0));
-        // 35 % de 42 000 = 14 700 → dans la fourchette.
-        $this->assertSame(14700.0, $this->ma()->moroccoProfessionalExpensesAbatement(42000.0));
-        // Plafond 30 000 : 35 % de 120 000 = 42 000 → 30 000.
-        $this->assertSame(30000.0, $this->ma()->moroccoProfessionalExpensesAbatement(120000.0));
+        // Calcul manuel, brut 10 000 MAD :
+        //   CNSS = 6 000 × 4,48 % = 268,80 · AMO = 226,00 → salarié 494,80
+        //   IR : assiette 9 505,20 → annuel 114 062,40 — tranches cumulées :
+        //     30 000×0 % + 20 000×10 % + 10 000×20 % + 20 000×30 %
+        //     + 34 062,40×34 % = 21 581,216 → mensuel 1 798,43 (arrondi somme)
+        $charges = $this->rules()->calculateSocialCharges(10000.0);
+        $this->assertSame(494.80, $charges['employee']);
+        $this->assertSame(949.80, $charges['employer']); // 538,80 CNSS + 411,00 AMO
+
+        $tax = $this->rules()->calculateIncomeTax(10000.0 - $charges['employee']);
+        $this->assertSame(1798.43, $tax);
+        $this->assertSame(7706.77, round(10000.0 - $charges['employee'] - $tax, 2));
     }
 
-    public function test_golden_ma_cadre_10000_ir(): void
+    public function test_golden_ma_haut_salaire_60000(): void
     {
-        // Calcul manuel — brut 10 000 MAD/mois :
-        //   CNSS salariale 4,48 % × 6 000 (plafonné) = 268,80
-        //   AMO salariale 2,26 % × 10 000 = 226,00 → total 494,80
-        //   → assiette 9 505,20 → annuel 114 062,40
-        //   Abattement : 35 % × 120 000 = 42 000 → plafonné 30 000
-        //     → base 84 062,40 → tranche 80 001-180 000 @ 34 % − 17 200
-        //     = 28 581,22 − 17 200 = 11 381,22/an → 948,43/mois
-        $charges = $this->ma()->calculateSocialCharges(10000.0);
-        $taxable = 10000.0 - $charges['employee'];
+        // Calcul manuel, brut 60 000 MAD :
+        //   CNSS = 6 000 × 4,48 % = 268,80 (plafond) · AMO = 1 356,00 → salarié 1 624,80
+        //   IR : assiette 58 375,20 → annuel 700 502,40 → tranche 38 % :
+        //     (700 502,40 − 180 000) × 38 % − 24 400 = 241 790,91 → mensuel 20 149,24
+        $charges = $this->rules()->calculateSocialCharges(60000.0);
+        $this->assertSame(1624.80, $charges['employee']);
+        $this->assertSame(3004.80, $charges['employer']); // 538,80 CNSS + 2 466,00 AMO
 
-        $this->assertSame(494.8, round($charges['employee'], 2));
-        $this->assertSame(948.43, $this->ma()->calculateIncomeTax($taxable, 12, 10000.0));
-    }
-
-    public function test_golden_ma_high_salary_50000_ir(): void
-    {
-        // Calcul manuel — brut 50 000 MAD/mois :
-        //   CNSS salariale 4,48 % × 6 000 = 268,80 ; AMO 2,26 % × 50 000 = 1 130,00
-        //   → assiette 48 601,20 → annuel 583 214,40
-        //   Abattement : 35 % × 600 000 = 210 000 → plafonné 30 000
-        //     → base 553 214,40 → tranche 180 001+ @ 38 % − 24 400
-        //     = 210 221,47 − 24 400 = 185 821,47/an → 15 485,12/mois
-        $charges = $this->ma()->calculateSocialCharges(50000.0);
-        $taxable = 50000.0 - $charges['employee'];
-
-        $this->assertSame(1398.8, round($charges['employee'], 2));
-        $this->assertSame(15485.12, $this->ma()->calculateIncomeTax($taxable, 12, 50000.0));
+        $tax = $this->rules()->calculateIncomeTax(60000.0 - $charges['employee']);
+        $this->assertSame(20149.24, $tax);
+        $this->assertSame(38225.96, round(60000.0 - $charges['employee'] - $tax, 2));
     }
 }
