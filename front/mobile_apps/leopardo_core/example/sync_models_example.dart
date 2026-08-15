@@ -1,11 +1,11 @@
 // Exemple d'utilisation des nouvelles classes de synchronisation
 // Ce fichier démontre comment utiliser Feature, FeatureManifest, FormSchema, ListSchema, et DetailSchema
 
-import 'feature.dart';
-import 'feature_manifest.dart';
-import 'form_schema.dart';
-import 'list_schema.dart';
-import 'detail_schema.dart';
+import 'package:leopardo_core/models/feature.dart';
+import 'package:leopardo_core/models/feature_manifest.dart';
+import 'package:leopardo_core/models/form_schema.dart';
+import 'package:leopardo_core/models/list_schema.dart';
+import 'package:leopardo_core/models/detail_schema.dart';
 
 /// Exemple de création et utilisation des modèles de synchronisation
 class SyncModelsExample {

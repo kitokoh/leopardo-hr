@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(mobile): leopardo_core — sync_models_example.dart déplacé de `lib/` vers `example/` (Closes #3565).** Fichier de démonstration (0 import dans les apps) retiré de la surface publique du package — ses 12 `print()` ne partent plus en log production et le bundle allège. Imports convertis en `package:leopardo_core/...` (convention Dart example/).
 ### Fixed
 - **fix(ci): main vert round 3 — 29 erreurs PHPStan reintroduites par les merges swarm corrigées.** KioskController (bug runtime `undefined $kiosk` dans doRoster, `$deviceCode` non câblé dans doAnnouncements, @param validated ×4), `@property company` sur AttendanceKiosk, `@property Carbon|null` subscription_start/end sur Company + TrialWelcomeMail null-safe, GenerateBankExportJob (3e argument redondant retiré), tests réalignés (GrowthModuleTest doublon country, OnboardingStepWriteGuardTest, TrackingSyncTripsDateRangeTest, VehicleControllerTest, CreatesCameraFixtures, TestRtspSsidGuardTest).
 - **fix(mobile): onboarding HR compile KO, route cabinet manager dédupliquée, verbes notifications (Closes #3003, #3004, #3005).** `onboarding_screen.dart` HR passait un int à `completeStep(String)` (2 erreurs de typage = compile KO) ; route `/cabinet/folder/:folderId` déclarée 2× dans manager `app.dart` (la 1re `int.parse` non gardée gagnait → crash sur deep-link non numérique) ; `modules_repository` (hr/manager) : `PUT /notifications/{id}/read` et `/read-all` → `PATCH`/`POST` (contrat rh.php).
