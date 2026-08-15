@@ -243,7 +243,6 @@ function t(key, vars = {}) {
 }
 
 const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: false })
-
 const years = Array.from({ length: 8 }, (_, i) => 2024 + i)
 
 const countryCode = ref('DZ')

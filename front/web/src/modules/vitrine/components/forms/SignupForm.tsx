@@ -29,6 +29,7 @@ import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 
 interface SignupFormProps {
   page?: string;
@@ -48,324 +49,20 @@ const TRIAL_POLL_MAX_ATTEMPTS = 12;
 const selectClassName =
   'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 dark:border-slate-700 dark:bg-slate-900 dark:text-white';
 
-type SignupFormCopy = {
-  badge: string; title: string; subtitle: string;
-  labelEmail: string; placeholderEmail: string;
-  labelCompany: string; placeholderCompany: string;
-  labelRole: string; rolePlaceholder: string;
-  roleFounder: string; roleManager: string; roleHr: string; roleOperations: string; roleOther: string;
-  labelTeamSize: string; teamPlaceholder: string;
-  labelPhone: string; placeholderPhone: string;
-  operationsNote: string;
-  agreePrefix: string; termsLink: string; privacyLink: string; agreeSuffix: string;
-  submitLabel: string; submittingLabel: string;
-  codeHint: string; haveAccount: string; loginCta: string;
-  back: string; otpTitle: string; otpSentTo: string;
-  otpInvalidLength: string; otpInvalidCode: string; otpVerifyError: string;
-  verifyLabel: string; verifyingLabel: string; codeValidity: string; trackStatus: string;
-  pendingTitle: string; pendingFallback: string; pendingNote: string;
-  readyTitle: string; readySubtitle: string; accessCta: string;
-  copyLink: string; linkCopied: string; linkEmailed: string;
-  failedTitle: string; failedBody: string;
-  timeoutTitle: string; timeoutBody: string; refreshStatus: string;
-  preparingTitle: string; preparingBody: string; statusFor: string; statusEvery5s: string;
-  successTitle: string; emailVerified: string; credsLabel: string;
-  fieldEmail: string; fieldPassword: string; copyPasswordTitle: string; copied: string;
-  credsSentByEmail: string; credsEmailed: string; trialNote: string; trialNoteSuffix: string;
-  downloadApp: string; changePasswordNote: string; defaultError: string;
-};
+type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 
-const signupFormCopy: Record<AppLocale, SignupFormCopy> = {
-  fr: {
-    badge: 'Essai gratuit 30 jours',
-    title: 'Tester Leopardo avec votre entreprise',
-    subtitle: "Créez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.",
-    labelEmail: 'Email professionnel',
-    placeholderEmail: 'vous@entreprise.com',
-    labelCompany: 'Entreprise',
-    placeholderCompany: 'Nom de votre entreprise',
-    labelRole: 'Votre rôle',
-    rolePlaceholder: 'Choisir',
-    roleFounder: 'Fondateur / dirigeant',
-    roleManager: 'Manager',
-    roleHr: 'RH',
-    roleOperations: 'Opérations terrain',
-    roleOther: 'Autre',
-    labelTeamSize: 'Taille équipe',
-    teamPlaceholder: 'Choisir',
-    labelPhone: 'Téléphone (optionnel)',
-    placeholderPhone: '+213 555 000 000',
-    operationsNote: "Nous préparerons un parcours axé terrain : pointage, tâches, kiosk et suivi d'équipe.",
-    agreePrefix: "J'accepte les",
-    termsLink: "conditions d'utilisation",
-    privacyLink: 'politique de confidentialité',
-    agreeSuffix: 'et la',
-    submitLabel: 'Recevoir mon code de vérification',
-    submittingLabel: 'Envoi du code...',
-    codeHint: 'Un code à 6 chiffres sera envoyé à votre email pour confirmer votre identité.',
-    haveAccount: 'Vous avez déjà un compte ?',
-    loginCta: 'Se connecter',
-    back: 'Retour',
-    otpTitle: 'Vérifiez votre email',
-    otpSentTo: 'Nous avons envoyé un code de vérification à 6 chiffres à :',
-    otpInvalidLength: 'Veuillez entrer les 6 chiffres du code.',
-    otpInvalidCode: 'Code invalide ou expiré.',
-    otpVerifyError: 'Erreur lors de la vérification. Veuillez réessayer.',
-    verifyLabel: 'Vérifier et créer mon espace',
-    verifyingLabel: 'Vérification en cours...',
-    codeValidity: 'Le code est valide pendant 30 minutes. Vérifiez vos spams si vous ne le trouvez pas.',
-    trackStatus: "Suivre l'état de mon espace",
-    pendingTitle: "Demande d'essai reçue",
-    pendingFallback: "Demande d'essai reçue. Notre équipe vous contacte sous 24h ouvrables.",
-    pendingNote: "Notre système de création d'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.",
-    readyTitle: 'Votre espace est prêt !',
-    readySubtitle: 'Le sandbox de démonstration est provisionné. Accédez-y directement :',
-    accessCta: 'Accéder à mon espace',
-    copyLink: 'Copier le lien',
-    linkCopied: 'Lien copié !',
-    linkEmailed: "Votre lien d'accès a également été envoyé par email.",
-    failedTitle: 'Création interrompue',
-    failedBody: "Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.",
-    timeoutTitle: 'Création toujours en cours',
-    timeoutBody: "Votre espace est en cours de préparation. Nous vous enverrons le lien d'accès par email dès qu'il sera prêt.",
-    refreshStatus: 'Rafraîchir le statut',
-    preparingTitle: 'Préparation de votre espace',
-    preparingBody: 'Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.',
-    statusFor: 'Pour :',
-    statusEvery5s: 'Statut vérifié toutes les 5 secondes.',
-    successTitle: 'Votre espace est prêt !',
-    emailVerified: 'Votre adresse email a bien été vérifiée.',
-    credsLabel: 'Identifiants de connexion',
-    fieldEmail: 'Email',
-    fieldPassword: 'Mot de passe',
-    copyPasswordTitle: 'Copier le mot de passe',
-    copied: 'Copié !',
-    credsSentByEmail: 'Ces identifiants ont aussi été envoyés par email à',
-    credsEmailed: 'Vos identifiants de connexion viennent de vous être envoyés par email.',
-    trialNote: 'Essai gratuit de',
-    trialNoteSuffix: 'aucune carte bancaire requise',
-    downloadApp: "Télécharger l'app",
-    changePasswordNote: 'Changez votre mot de passe dès la première connexion.',
-    defaultError: 'Une erreur est survenue',
-  },
-  en: {
-    badge: 'Free 30-day trial',
-    title: 'Try Leopardo with your company',
-    subtitle: 'Create your trial workspace in 2 minutes. No credit card required.',
-    labelEmail: 'Work email',
-    placeholderEmail: 'you@company.com',
-    labelCompany: 'Company',
-    placeholderCompany: 'Your company name',
-    labelRole: 'Your role',
-    rolePlaceholder: 'Select',
-    roleFounder: 'Founder / CEO',
-    roleManager: 'Manager',
-    roleHr: 'HR',
-    roleOperations: 'Field operations',
-    roleOther: 'Other',
-    labelTeamSize: 'Team size',
-    teamPlaceholder: 'Select',
-    labelPhone: 'Phone (optional)',
-    placeholderPhone: '+1 555 000 0000',
-    operationsNote: 'We will prepare a field-focused setup: attendance, tasks, kiosk and team monitoring.',
-    agreePrefix: 'I accept the',
-    termsLink: 'terms of use',
-    privacyLink: 'privacy policy',
-    agreeSuffix: 'and the',
-    submitLabel: 'Get my verification code',
-    submittingLabel: 'Sending code...',
-    codeHint: 'A 6-digit code will be sent to your email to confirm your identity.',
-    haveAccount: 'Already have an account?',
-    loginCta: 'Sign in',
-    back: 'Back',
-    otpTitle: 'Verify your email',
-    otpSentTo: 'We sent a 6-digit verification code to:',
-    otpInvalidLength: 'Please enter the 6 digits of the code.',
-    otpInvalidCode: 'Invalid or expired code.',
-    otpVerifyError: 'An error occurred during verification. Please try again.',
-    verifyLabel: 'Verify and create my workspace',
-    verifyingLabel: 'Verifying...',
-    codeValidity: 'The code is valid for 30 minutes. Check your spam folder if you cannot find it.',
-    trackStatus: 'Track my workspace status',
-    pendingTitle: 'Trial request received',
-    pendingFallback: 'Trial request received. Our team will contact you within 24 business hours.',
-    pendingNote: 'Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.',
-    readyTitle: 'Your workspace is ready!',
-    readySubtitle: 'The demo sandbox is provisioned. Access it directly:',
-    accessCta: 'Access my workspace',
-    copyLink: 'Copy link',
-    linkCopied: 'Link copied!',
-    linkEmailed: 'Your access link was also sent by email.',
-    failedTitle: 'Creation interrupted',
-    failedBody: 'An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.',
-    timeoutTitle: 'Still being created',
-    timeoutBody: 'Your workspace is being prepared. We will email you the access link as soon as it is ready.',
-    refreshStatus: 'Refresh status',
-    preparingTitle: 'Preparing your workspace',
-    preparingBody: 'We are provisioning your demo sandbox. This usually takes less than 30 seconds.',
-    statusFor: 'For:',
-    statusEvery5s: 'Status checked every 5 seconds.',
-    successTitle: 'Your workspace is ready!',
-    emailVerified: 'Your email address has been verified.',
-    credsLabel: 'Sign-in credentials',
-    fieldEmail: 'Email',
-    fieldPassword: 'Password',
-    copyPasswordTitle: 'Copy password',
-    copied: 'Copied!',
-    credsSentByEmail: 'These credentials were also sent by email to',
-    credsEmailed: 'Your sign-in credentials were just sent by email.',
-    trialNote: 'Free trial of',
-    trialNoteSuffix: 'no credit card required',
-    downloadApp: 'Download the app',
-    changePasswordNote: 'Change your password on first sign-in.',
-    defaultError: 'Something went wrong',
-  },
-  tr: {
-    badge: '30 günlük ücretsiz deneme',
-    title: "Leopardo'yu şirketinizle deneyin",
-    subtitle: 'Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.',
-    labelEmail: 'İş e-postası',
-    placeholderEmail: 'siz@sirket.com',
-    labelCompany: 'Şirket',
-    placeholderCompany: 'Şirketinizin adı',
-    labelRole: 'Rolünüz',
-    rolePlaceholder: 'Seçin',
-    roleFounder: 'Kurucu / Yönetici',
-    roleManager: 'Yönetici',
-    roleHr: 'İK',
-    roleOperations: 'Saha operasyonları',
-    roleOther: 'Diğer',
-    labelTeamSize: 'Ekip boyutu',
-    teamPlaceholder: 'Seçin',
-    labelPhone: 'Telefon (isteğe bağlı)',
-    placeholderPhone: '+90 555 000 0000',
-    operationsNote: 'Sahaya odaklı bir kurulum hazırlayacağız: yoklama, görevler, kiosk ve ekip takibi.',
-    agreePrefix: 'Kabul ediyorum:',
-    termsLink: 'kullanım koşulları',
-    privacyLink: 'gizlilik politikası',
-    agreeSuffix: 've',
-    submitLabel: 'Doğrulama kodumu al',
-    submittingLabel: 'Kod gönderiliyor...',
-    codeHint: 'Kimliğinizi doğrulamak için e-postanıza 6 haneli bir kod gönderilecek.',
-    haveAccount: 'Zaten hesabınız var mı?',
-    loginCta: 'Giriş yap',
-    back: 'Geri',
-    otpTitle: 'E-postanızı doğrulayın',
-    otpSentTo: '6 haneli doğrulama kodunu şu adrese gönderdik:',
-    otpInvalidLength: 'Lütfen kodun 6 hanesini girin.',
-    otpInvalidCode: 'Geçersiz veya süresi dolmuş kod.',
-    otpVerifyError: 'Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.',
-    verifyLabel: 'Doğrula ve alanımı oluştur',
-    verifyingLabel: 'Doğrulanıyor...',
-    codeValidity: 'Kod 30 dakika geçerlidir. Bulamazsanız spam klasörünü kontrol edin.',
-    trackStatus: 'Alanımın durumunu takip et',
-    pendingTitle: 'Deneme talebi alındı',
-    pendingFallback: 'Deneme talebi alındı. Ekibimiz 24 iş saati içinde sizinle iletişime geçecek.',
-    pendingNote: 'Anlık alan oluşturma hizmetimiz geçici olarak kullanılamıyor (sunucu yeniden başlatıldı). Talebiniz kaydedildi: Leopardo ekibinden biri 24 iş saati içinde size uygun erişimle e-posta gönderecek.',
-    readyTitle: 'Alanınız hazır!',
-    readySubtitle: 'Demo sandbox hazır. Doğrudan erişin:',
-    accessCta: 'Alanıma eriş',
-    copyLink: 'Bağlantıyı kopyala',
-    linkCopied: 'Bağlantı kopyalandı!',
-    linkEmailed: 'Erişim bağlantınız e-postayla da gönderildi.',
-    failedTitle: 'Oluşturma kesintiye uğradı',
-    failedBody: 'Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.',
-    timeoutTitle: 'Oluşturma hâlâ sürüyor',
-    timeoutBody: 'Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.',
-    refreshStatus: 'Durumu yenile',
-    preparingTitle: 'Alanınız hazırlanıyor',
-    preparingBody: 'Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.',
-    statusFor: 'İçin:',
-    statusEvery5s: 'Durum her 5 saniyede bir kontrol edilir.',
-    successTitle: 'Alanınız hazır!',
-    emailVerified: 'E-posta adresiniz doğrulandı.',
-    credsLabel: 'Giriş bilgileri',
-    fieldEmail: 'E-posta',
-    fieldPassword: 'Parola',
-    copyPasswordTitle: 'Parolayı kopyala',
-    copied: 'Kopyalandı!',
-    credsSentByEmail: 'Bu bilgiler e-postayla da gönderildi:',
-    credsEmailed: 'Giriş bilgileriniz e-postayla gönderildi.',
-    trialNote: 'Ücretsiz deneme:',
-    trialNoteSuffix: 'kredi kartı gerekmez',
-    downloadApp: 'Uygulamayı indir',
-    changePasswordNote: 'İlk girişte parolanızı değiştirin.',
-    defaultError: 'Bir hata oluştu',
-  },
-  ar: {
-    badge: 'تجربة مجانية لمدة 30 يومًا',
-    title: 'جرّب Leopardo مع شركتك',
-    subtitle: 'أنشئ مساحة تجربتك في دقيقتين. لا حاجة لبطاقة ائتمانية.',
-    labelEmail: 'البريد المهني',
-    placeholderEmail: 'you@company.com',
-    labelCompany: 'الشركة',
-    placeholderCompany: 'اسم شركتك',
-    labelRole: 'دورك',
-    rolePlaceholder: 'اختر',
-    roleFounder: 'مؤسس / مدير عام',
-    roleManager: 'مدير',
-    roleHr: 'موارد بشرية',
-    roleOperations: 'عمليات ميدانية',
-    roleOther: 'أخرى',
-    labelTeamSize: 'حجم الفريق',
-    teamPlaceholder: 'اختر',
-    labelPhone: 'الهاتف (اختياري)',
-    placeholderPhone: '+213 555 000 000',
-    operationsNote: 'سنُعد مسارًا ميدانيًا: الحضور، المهام، الكشك ومتابعة الفريق.',
-    agreePrefix: 'أوافق على',
-    termsLink: 'شروط الاستخدام',
-    privacyLink: 'سياسة الخصوصية',
-    agreeSuffix: 'و',
-    submitLabel: 'استلام رمز التحقق',
-    submittingLabel: 'جارٍ إرسال الرمز...',
-    codeHint: 'سيتم إرسال رمز من 6 أرقام إلى بريدك لتأكيد هويتك.',
-    haveAccount: 'لديك حساب بالفعل؟',
-    loginCta: 'تسجيل الدخول',
-    back: 'رجوع',
-    otpTitle: 'تحقق من بريدك الإلكتروني',
-    otpSentTo: 'أرسلنا رمز تحقق من 6 أرقام إلى:',
-    otpInvalidLength: 'يرجى إدخال الأرقام الستة للرمز.',
-    otpInvalidCode: 'رمز غير صالح أو منتهي الصلاحية.',
-    otpVerifyError: 'حدث خطأ أثناء التحقق. يرجى المحاولة مرة أخرى.',
-    verifyLabel: 'تحقق وأنشئ مساحتي',
-    verifyingLabel: 'جارٍ التحقق...',
-    codeValidity: 'الرمز صالح لمدة 30 دقيقة. تحقق من البريد العشوائي إذا لم تجده.',
-    trackStatus: 'تتبع حالة مساحتي',
-    pendingTitle: 'تم استلام طلب التجربة',
-    pendingFallback: 'تم استلام طلب التجربة. سيتواصل معك فريقنا خلال 24 ساعة عمل.',
-    pendingNote: 'خدمة الإنشاء الفوري غير متاحة مؤقتًا (إعادة تشغيل الخادم). تم تسجيل طلبك: سيتواصل معك أحد أعضاء فريق Leopardo عبر البريد خلال 24 ساعة عمل مع وصول مناسب لسياقك.',
-    readyTitle: 'مساحتك جاهزة!',
-    readySubtitle: 'تم تجهيز بيئة العرض. يمكنك الوصول مباشرة:',
-    accessCta: 'الوصول إلى مساحتي',
-    copyLink: 'نسخ الرابط',
-    linkCopied: 'تم نسخ الرابط!',
-    linkEmailed: 'تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.',
-    failedTitle: 'تم إيقاف الإنشاء',
-    failedBody: 'حدث خطأ أثناء إنشاء مساحتك. سيتواصل معك فريقنا عبر البريد خلال 24 ساعة عمل بوصول مناسب.',
-    timeoutTitle: 'لا يزال الإنشاء جاريًا',
-    timeoutBody: 'مساحتك قيد التجهيز. سنرسل لك رابط الوصول عبر البريد فور جاهزيته.',
-    refreshStatus: 'تحديث الحالة',
-    preparingTitle: 'تجهيز مساحتك',
-    preparingBody: 'نقوم بتجهيز بيئة العرض. يستغرق هذا عادة أقل من 30 ثانية.',
-    statusFor: 'إلى:',
-    statusEvery5s: 'يتم التحقق من الحالة كل 5 ثوانٍ.',
-    successTitle: 'مساحتك جاهزة!',
-    emailVerified: 'تم التحقق من بريدك الإلكتروني بنجاح.',
-    credsLabel: 'بيانات تسجيل الدخول',
-    fieldEmail: 'البريد الإلكتروني',
-    fieldPassword: 'كلمة المرور',
-    copyPasswordTitle: 'نسخ كلمة المرور',
-    copied: 'تم النسخ!',
-    credsSentByEmail: 'تم إرسال هذه البيانات أيضًا عبر البريد إلى',
-    credsEmailed: 'تم إرسال بيانات تسجيل الدخول إليك عبر البريد.',
-    trialNote: 'تجربة مجانية لمدة',
-    trialNoteSuffix: 'لا حاجة لبطاقة ائتمانية',
-    downloadApp: 'تحميل التطبيق',
-    changePasswordNote: 'غيّر كلمة مرورك عند أول تسجيل دخول.',
-    defaultError: 'حدث خطأ ما',
-  },
-};
+// Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
+// vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
+// littéral utilisateur ajouté dans le composant).
+const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
 
+function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
+  const copy = {} as SignupFormCopy;
+  for (const key of signupFormKeys) {
+    copy[key] = t(locale, `signup.${key}`);
+  }
+  return copy;
+}
 
 export function SignupForm({
   page = '/signup',
@@ -374,7 +71,7 @@ export function SignupForm({
   className = '',
 }: SignupFormProps) {
   const { locale } = useVitrineLocale();
-  const c = signupFormCopy[locale] ?? signupFormCopy.fr;
+  const c = buildSignupFormCopy(locale);
 
   const {
     register,
@@ -400,14 +97,14 @@ export function SignupForm({
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [provisionedData, setProvisionedData] = useState<{
-    manager?: { email: string; temp_password: string };
+    manager?: { email: string };
     trial?: { days: number; ends_at: string };
     company?: { name: string };
   } | null>(null);
   const [pendingMessage, setPendingMessage] = useState('');
-  const [copied, setCopied] = useState(false);
 
   // #2469 — suivi du provisioning du guided trial
+  const [copied, setCopied] = useState(false);
   const [trialToken, setTrialToken] = useState<string | null>(() => {
     if (typeof window === 'undefined') return null;
     try {
@@ -480,23 +177,6 @@ export function SignupForm({
     setTrialTimedOut(false);
     setIsTracking(true);
     setCurrentStep('tracking');
-  };
-
-  const copyPassword = async (password: string) => {
-    try {
-      await navigator.clipboard.writeText(password);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const textarea = document.createElement('textarea');
-      textarea.value = password;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
   };
 
   // ── Step 1: Submit signup form ──
@@ -1098,28 +778,11 @@ export function SignupForm({
                             {provisionedData.manager.email}
                           </span>
                         </div>
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm text-slate-600 dark:text-slate-300">{c.fieldPassword}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="rounded-lg bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-900 dark:bg-slate-700 dark:text-white">
-                              {provisionedData.manager.temp_password}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => copyPassword(provisionedData.manager!.temp_password)}
-                              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-                              title={c.copyPasswordTitle}
-                            >
-                              <ClipboardCopy className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                        {copied && (
-                          <p className="text-right text-xs font-medium text-emerald-600">{c.copied}</p>
-                        )}
                       </div>
+                      {/* #2680 : le mot de passe temporaire ne transite plus
+                          dans la réponse API — il est envoyé par email. */}
                       <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-                        {c.credsSentByEmail} {provisionedData.manager.email}.
+                        {c.credsEmailed}
                       </p>
                     </>
                   ) : (

@@ -116,7 +116,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ExclamationTriangleIcon,
@@ -139,6 +139,7 @@ const currentCriticalAlert = ref(null)
 
 // Auto-check for critical alerts
 let alertCheckInterval = null
+let stopNotificationWatch = null
 
 onMounted(() => {
   checkForCriticalAlerts()
@@ -146,29 +147,26 @@ onMounted(() => {
   // Check for alerts every 30 seconds
   alertCheckInterval = setInterval(checkForCriticalAlerts, 30000)
 
-  // Listen for new critical alerts from real-time
-  realtimeStore.$subscribe((mutation, state) => {
-    // Garde de forme #2747 : selon la mutation Pinia, `events` peut être
-    // absent ou non-tableau — ne jamais supposer `events.some` disponible.
-    const events = mutation?.events
-    const hasNewCriticalNotification = Array.isArray(events) &&
-      events.some(event =>
-        event.key === 'notifications' &&
-        event.type === 'add' &&
-        state.notifications[0]?.priority === 'critical'
-      )
-    if (hasNewCriticalNotification) {
-      const criticalNotification = state.notifications[0]
-      if (criticalNotification.type === 'system_alert') {
-        showCriticalAlertBanner(criticalNotification)
+  // Issue #2716 — $subscribe(mutation.events) ne se déclenche jamais pour les
+  // mutations directes Pinia (events === null) : on écoute l'état du store.
+  stopNotificationWatch = watch(
+    () => realtimeStore.notifications[0],
+    (newNotification, oldNotification) => {
+      if (!newNotification) return
+      if (oldNotification && oldNotification.id === newNotification.id) return
+      if (newNotification.priority === 'critical' && newNotification.type === 'system_alert') {
+        showCriticalAlertBanner(newNotification)
       }
     }
-  })
+  )
 })
 
 onUnmounted(() => {
   if (alertCheckInterval) {
     clearInterval(alertCheckInterval)
+  }
+  if (stopNotificationWatch) {
+    stopNotificationWatch()
   }
 })
 
@@ -208,16 +206,11 @@ function viewSystemAlerts() {
 }
 
 async function disableMaintenanceMode() {
-  try {
-    // Simulate API call to disable maintenance mode
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    isMaintenanceMode.value = false
-    toast.success('Mode maintenance désactivé')
-  } catch (error) {
-    console.error('Failed to disable maintenance mode:', error)
-    toast.error('Erreur lors de la désactivation du mode maintenance')
-  }
+  // Issue #2693 (QA 2026-08-15) — aucun endpoint admin de maintenance
+  // n'existe : l'action était simulée (setTimeout + toast de succès).
+  // Désormais, état honnête : on ne peut pas désactiver le mode depuis l'UI.
+  toast.info('Mode maintenance : désactivation non disponible depuis la console (aucun endpoint admin).')
+  isMaintenanceMode.value = false
 }
 
 // Expose methods for external control

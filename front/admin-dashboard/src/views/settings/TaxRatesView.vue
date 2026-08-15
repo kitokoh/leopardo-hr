@@ -236,7 +236,6 @@ function t(key, fallback = '') {
 }
 
 const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: true })
-
 const isPlatformAdmin = ref(false)
 const rates = ref([])
 const pendingItems = ref([])

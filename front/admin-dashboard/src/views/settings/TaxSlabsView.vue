@@ -127,7 +127,7 @@ import api from '@/services/api'
 import { useSupportedCountries } from '@/composables/useSupportedCountries'
 import TaxSlabEditor from '@/components/payroll/TaxSlabEditor.vue'
 import { useToast } from 'vue-toastification'
-import { translate } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
@@ -143,7 +143,6 @@ function t(key, vars = {}) {
 }
 
 const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: true })
-
 const countryCode = ref('DZ')
 const scope = ref('national')
 const editorRef = ref(null)
@@ -228,7 +227,8 @@ async function runSimulate() {
 }
 
 function money(value) {
-  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0))
+  // Issue #2715 — formatage selon la locale active (plus de fr-FR codé).
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), { maximumFractionDigits: 0 }).format(Number(value || 0))
 }
 
 onMounted(runSimulate)
