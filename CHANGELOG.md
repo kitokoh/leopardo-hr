@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(ops): render.yaml — scheduler sans MAIL_* corrigé (Closes #3594).** Le service `leopardo-scheduler` (tâches planifiées) ne définissait aucun `MAIL_*` → tout email synchrone émis par `schedule:run` retombait sur `127.0.0.1:25` (défaut `config/mail.php`) et échouait en silence. Le bloc mail du web service (`smtp`, port 587, TLS, `noreply@leopardo-rh.com`, secrets en `sync: false`) est maintenant dupliqué sur le scheduler.
+
 - **fix(api): liste /employees — PII retirées de la projection (Closes #3309).** personal_email, recovery_email, personal_phone, adresse et contacts d'urgence exclus de la liste ; salaire conservé (écran équipe mobile manager) ; PII toujours sur /employees/{id}.
 - **fix(mobile): DateTime.parse résiduels → tryParse dans 3 modèles core (Closes #3433).** attendance_log (date/check_in/check_out), payroll (validated_at), project_task (start/end/due_date) : plus de FormatException sur données malformées.
 - **fix(mobile): Contract.fromJson — start_date nullable gardé (Closes #3432).** Cast « as String » non gardé → TypeError au parsing de la liste contrats ; repli '' (comme endDate).
