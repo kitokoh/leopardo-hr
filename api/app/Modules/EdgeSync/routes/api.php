@@ -51,7 +51,8 @@ Route::prefix('api/v1/edge')
         Route::post('/', [EdgeNodeController::class, 'store']);
         Route::get('/{nodeId}', [EdgeNodeController::class, 'show']);
         Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'sync']);
-        Route::post('/{nodeId}/license', [EdgeNodeController::class, 'issueLicense']);
+        // #3319 : émission de licence réservée aux managers (api.manager).
+        Route::post('/{nodeId}/license', [EdgeNodeController::class, 'issueLicense'])->middleware('api.manager');
     });
 
 // ── Edge node machine routes ───────────────────────────────────────────────
