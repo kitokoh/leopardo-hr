@@ -54,7 +54,7 @@ type FaqItem = {
 
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
-  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
+  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
@@ -80,7 +80,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Commencez petit, montez en puissance sans changer de plateforme.',
       monthly: 'Mensuel',
       annual: 'Annuel',
-      savings: "Économisez jusqu'à 17%",
       customPrice: 'Sur devis',
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
@@ -190,7 +189,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Start small, scale up without switching platforms.',
       monthly: 'Monthly',
       annual: 'Annual',
-      savings: 'Save up to 17%',
       customPrice: 'Custom',
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
@@ -300,7 +298,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Küçük başlayın, platform değiştirmeden büyüyün.',
       monthly: 'Aylık',
       annual: 'Yıllık',
-      savings: '%17\'ye varan tasarruf',
       customPrice: 'Teklif alın',
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
@@ -410,7 +407,6 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'ابدأ صغيرًا، توسع دون تغيير المنصة.',
       monthly: 'شهري',
       annual: 'سنوي',
-      savings: 'وفّر حتى 17%',
       customPrice: 'حسب الطلب',
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
@@ -629,8 +625,10 @@ export default function PricingPage() {
   // stays EUR (see currency.ts docblock); this is a display convenience.
   const [currencyOption, setCurrencyOption] = useState<CurrencyOption>(DEFAULT_CURRENCY_OPTION);
 
-  const { locale, direction } = useVitrineLocale();
+  const vitrine = useVitrineLocale();
+  const { locale, direction } = vitrine;
   const copy = pricingPageCopy[locale] ?? pricingPageCopy.fr;
+  const annualSavingsLabel = vitrine.copy.pricing.annualSavings;
   const plans = getPricingPlans(locale);
   useScrollReveal();
 
@@ -819,7 +817,7 @@ export default function PricingPage() {
                   exit={{ opacity: 0, scale: 0.8, x: -8 }}
                   className="px-3 py-1 text-xs font-black text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full"
                 >
-                  {copy.plans.savings}
+                  {annualSavingsLabel}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -920,7 +918,7 @@ export default function PricingPage() {
                                 {isEurSelected ? 'EUR' : currencyOption.currency} {isEurSelected ? plan.price : (convertedPrice(plan.price) ?? plan.price)}
                               </span>
                               {' '}
-                              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{copy.plans.savings}</span>
+                              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{annualSavingsLabel}</span>
                             </p>
                           )}
                           {!isEurSelected && (
