@@ -29,7 +29,7 @@
     <div v-else-if="error" class="rounded-lg p-8 text-center text-sm text-red-600 shadow">
       {{ error }}
     </div>
-    <div v-else-if="reportData" class="rounded-lg p-6 shadow">
+    <div v-else-if="reportData" class="card p-6">
       <h2 class="mb-4 text-lg font-semibold text-gray-900">
         {{ currentTabLabel }}
       </h2>
