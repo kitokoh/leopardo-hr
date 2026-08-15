@@ -91,6 +91,43 @@ class EdgeDownloadController extends Controller
         ]);
     }
 
+    /**
+     * GET /edge/download/docker-compose.yml.sha256
+     *
+     * Empreinte SHA-256 du docker-compose (convention `<fichier>.sha256`
+     * utilisée par install.sh #3529) — plain text, premier token.
+     */
+    public function dockerComposeSha256(): Response
+    {
+        return $this->assetSha256('docker-compose.yml');
+    }
+
+    /**
+     * GET /edge/download/Caddyfile.edge.sha256
+     *
+     * Empreinte SHA-256 du Caddyfile (convention `<fichier>.sha256`,
+     * install.sh #3529) — plain text, premier token.
+     */
+    public function caddyfileSha256(): Response
+    {
+        return $this->assetSha256('Caddyfile.edge');
+    }
+
+    private function assetSha256(string $asset): Response
+    {
+        $path = $this->resolveEdgeAsset($asset);
+        if ($path === null || ! is_file($path)) {
+            abort(404, ucfirst($asset).' not found.');
+        }
+
+        $hash = hash_file('sha256', $path);
+
+        return response($hash === false ? '' : $hash, 200, [
+            'Content-Type'        => 'text/plain',
+            'Cache-Control'       => 'public, max-age=3600',
+        ]);
+    }
+
     /** GET /edge/license-public-key */
     public function licensePublicKey(): Response
     {
