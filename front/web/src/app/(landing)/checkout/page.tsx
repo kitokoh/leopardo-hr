@@ -48,6 +48,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 0,
     employeeLimit: '1-5 employés',
+    perSeat: undefined,
+    includedSeats: undefined,
     isFree: true,
   },
   pilot: {
@@ -68,6 +70,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 14,
     employeeLimit: '1-30 employés',
+    perSeat: '+ 2 EUR/employé actif',
+    includedSeats: '10 employés inclus',
     isFree: false,
   },
   operations: {
@@ -88,6 +92,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 14,
     employeeLimit: '15-250 employés',
+    perSeat: '+ 4 EUR/employé actif',
+    includedSeats: '40 employés inclus',
     isFree: false,
   },
   enterprise: {
@@ -108,6 +114,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 14,
     employeeLimit: '250+ employés',
+    perSeat: undefined,
+    includedSeats: undefined,
     isFree: false,
   },
 } as const;
@@ -238,6 +246,11 @@ function PlanSummaryCard({
             {billing === 'annual' && (
               <p className="text-white/70 text-xs mt-1">
                 Facturé annuellement — économisez EUR {cfg.savings}/an
+              </p>
+            )}
+            {cfg.perSeat && (
+              <p className="text-white/80 text-xs mt-1.5 font-medium">
+                {cfg.perSeat} · {cfg.includedSeats}
               </p>
             )}
           </div>
@@ -1077,6 +1090,11 @@ function StepPayment({
             <span className="font-bold text-slate-900 dark:text-white">Dû aujourd&apos;hui</span>
             <span className="font-black text-lg text-emerald-600">EUR 0,00</span>
           </div>
+          {cfg.perSeat && (
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              Après l&apos;essai : {cfg.priceMonthly} EUR/mois {cfg.perSeat.toLowerCase()} ({cfg.includedSeats}).
+            </p>
+          )}
         </div>
 
         {/* Submit */}
@@ -1155,6 +1173,44 @@ function CheckoutInner() {
   useEffect(() => {
     if (rawBilling) setBilling(rawBilling);
   }, [rawBilling]);
+
+  // #3374 : Enterprise est vendu « sur devis » (cf. /pricing) — le checkout
+  // ne doit ni l'afficher à un prix arbitraire (299€) ni le provisionner à 0€
+  // en sandbox (api/billing/checkout). Redirection douce vers le contact.
+  if (plan === 'enterprise') {
+    return (
+      <div
+        dir={direction}
+        className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}
+      >
+        <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+        <main className="py-24 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-xl mx-auto text-center">
+            <Building2 className="w-14 h-14 mx-auto text-violet-500 mb-4" />
+            <h1 className="text-3xl font-black text-slate-900 dark:text-white">
+              Enterprise — sur devis
+            </h1>
+            <p className="mt-3 text-slate-600 dark:text-slate-300">
+              Le plan Enterprise (multi-pays, SSO, audit trail, schéma PostgreSQL
+              isolé) est vendu sur devis. Contactez notre équipe pour un
+              accompagnement dédié.
+            </p>
+            <Link
+              href="/contact?topic=enterprise"
+              className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-8 py-4 font-black text-white hover:bg-violet-700 transition-colors"
+            >
+              Contacter l&apos;équipe <ArrowRight className="w-5 h-5" />
+            </Link>
+            <p className="mt-6">
+              <Link href="/pricing" className="text-sm text-slate-500 hover:text-slate-700 underline underline-offset-2">
+                Retour aux tarifs
+              </Link>
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -32,52 +32,139 @@ export const publicChangelogReleases: PublicChangelogRelease[] = [
     ],
   },
   {
-    version: '4.16.59',
-    isoDate: '2026-05-16',
-    title: 'API et admin — liste des bulletins par tenant',
+    version: '4.23.4',
+    isoDate: '2026-07-19',
+    title: "Correction de compilation Dart (employee, manager, HR)",
     bullets: [
-      'Nouveau endpoint `GET /api/v1/pay-slips` (pagination manager, filtres run et statut).',
-      "Vue paie admin : chargement des bulletins sans enchaîner un appel par run (réduction N+1).",
-      'Documentation OpenAPI et tests Feature associés.',
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
     ],
   },
   {
-    version: '4.16.58',
-    isoDate: '2026-05-16',
-    title: 'Admin-dashboard — paie et congés',
+    version: '4.23.3',
+    isoDate: '2026-07-19',
+    title: "Résolution de 34 alertes Dependabot",
     bullets: [
-      'Paie : runs paginés, PDF bulletins via session authentifiée, exports CSV navigateur.',
-      'Congés : soldes et politiques réels, approbation / refus via API, pagination absences.',
-      'Liste absences enrichie pour les managers (`employee_name`, `type`).',
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
     ],
   },
   {
-    version: '4.16.57',
-    isoDate: '2026-05-16',
-    title: 'Performance paie — cache rapports et PDF asynchrones',
+    version: '4.23.2',
+    isoDate: '2026-07-16',
+    title: "Sécurité CI : correctif CodeQL sur deploy-main.yml",
     bullets: [
-      'Cache tenant pour `GET /api/v1/reports/headcount` (TTL configurable).',
-      'Après validation d’un run : job de pré-génération des PDF bulletins (warmup).',
-      'Distribution des PDF depuis fichier stocké lorsque disponible.',
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
     ],
   },
   {
-    version: '4.16.56',
-    isoDate: '2026-05-15',
-    title: 'API — versionnement et quotas par plan',
+    version: '4.23.1',
+    isoDate: '2026-07-16',
+    title: "Module Marketing — schéma et modèles de base",
     bullets: [
-      'Middleware de version API (`X-API-Version`) et versions supportées exposées.',
-      'Limiter `api-plan` : quotas par offre commerciale après authentification tenant.',
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
     ],
   },
   {
-    version: '4.16.55',
-    isoDate: '2026-05-14',
-    title: 'Monitoring — Sentry, Slack et requêtes lentes',
+    version: '4.23.0',
+    isoDate: '2026-07-16',
+    title: "Rôle manager marketing invalidable via l'API",
     bullets: [
-      'Enrichissement du contexte Sentry par tenant / utilisateur.',
-      'Notifications Slack pour événements critiques.',
-      'Commande planifiée de détection des requêtes PostgreSQL lentes.',
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.8',
+    isoDate: '2026-07-12',
+    title: "Drip email onboarding (3 emails de nurturing)",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.7',
+    isoDate: '2026-07-05',
+    title: "Correctif CI : erreurs PHP dans les règles paie pays",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.6',
+    isoDate: '2026-07-05',
+    title: "Sécurité : token SSE retiré des query parameters admin",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.5',
+    isoDate: '2026-07-05',
+    title: "Isolation multi-tenant des jobs en file d'attente",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.4',
+    isoDate: '2026-07-04',
+    title: "Suppression de code mort (PaymentWebhookController)",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.3',
+    isoDate: '2026-07-04',
+    title: "Correctifs CI et tests backend",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.2',
+    isoDate: '2026-07-04',
+    title: "Correctif CI : tests backend réalignés",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.1',
+    isoDate: '2026-07-02',
+    title: "Nettoyage de la documentation projet",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.22.0',
+    isoDate: '2026-07-01',
+    title: "Nettoyage architectural Phase 2 (modèles, services, FormRequests)",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.21.1',
+    isoDate: '2026-07-01',
+    title: "Correctif CI bloquant les merges",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.21.0',
+    isoDate: '2026-07-01',
+    title: "Nettoyage architectural API — suppression des doublons legacy",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
+    ],
+  },
+  {
+    version: '4.17.4',
+    isoDate: '2026-07-04',
+    title: "EdgeSync : migration EdgeController vers le module dédié",
+    bullets: [
+      'Voir le CHANGELOG complet du dépôt pour le détail de cette release.',
     ],
   },
 ]

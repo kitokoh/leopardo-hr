@@ -11,6 +11,9 @@ export type StoredAuthUser = {
   role?: string | null;
   manager_role?: string | null;
   capabilities?: Record<string, unknown> | null;
+  // Features tenant (FeatureFlag::for) renvoyées au niveau racine par
+  // /auth/me (EmployeeResource) : {rh, finance, cameras, muhasebe, leo_ai}.
+  features?: Record<string, unknown> | null;
   company?: {
     id?: number | string | null;
     name?: string | null;
