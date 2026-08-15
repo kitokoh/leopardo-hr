@@ -1,115 +1,69 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
-import 'package:leopardo_core/core/widgets/leopardo_bottom_nav.dart';
+
 import 'features/marketing/screens/marketing_home_screen.dart';
 
 void main() {
-  // #3500 : pas d'await avant runApp() — le premier frame ne doit jamais
-  // attendre un init natif (page grise). initializeDateFormatting est déplacé
-  // dans le bootstrap StartupGate (aligné sur les 3 autres apps, cf. #2748).
   WidgetsFlutterBinding.ensureInitialized();
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
   };
 
+  // Anti page noire (doctrine v4.16.188+) : runApp immédiat, sans aucun await
+  // bloquant avant le premier frame. L'init intl passe par le StartupGate.
   runApp(
-    ProviderScope(
+    const ProviderScope(
       child: StartupGate(
         appName: 'Leopardo Marketing',
         initializer: _bootstrap,
-        criticalInitializer: _initializeLocales,
-        optionalInitializer: () async {},
-        child: const LeopardoMarketingApp(),
+        criticalInitializer: _criticalBootstrap,
+        optionalInitializer: _optionalBootstrap,
+        child: LeopardoMarketingApp(),
       ),
     ),
   );
 }
 
+/// Init critique exécutée par le StartupGate APRÈS le premier rendu :
+/// les formats de date FR sont requis par le calendrier marketing.
+Future<void> _criticalBootstrap() async {
+  await initializeDateFormatting('fr_FR', null);
+}
+
 Future<void> _bootstrap() async {
-  // Initialization logic for marketing app
-  await initializeDateFormatting('fr_FR', null);
+  // Initialization logic for marketing app (réservé : auth, analytics).
 }
 
-// #3500 — l'initialisation des locales était un await bloquant avant runApp
-// (premier frame retardé) ; déplacée dans StartupGate (criticalInitializer),
-// même pattern que les apps employee/manager/HR (#2748).
-Future<void> _initializeLocales() async {
-  await initializeDateFormatting('fr_FR', null);
+Future<void> _optionalBootstrap() async {
+  // Init non critique (réservé).
 }
-
-// ─── Navigation items ─────────────────────────────────────────────────────────
-
-const _navItems = [
-  LeopardoNavItem(
-    icon: Icons.calendar_today_outlined,
-    activeIcon: Icons.calendar_today_rounded,
-    label: 'Calendrier',
-    route: '/',
-  ),
-  LeopardoNavItem(
-    icon: Icons.add_box_outlined,
-    activeIcon: Icons.add_box_rounded,
-    label: 'Publier',
-    route: '/create-post',
-  ),
-  LeopardoNavItem(
-    icon: Icons.bar_chart_outlined,
-    activeIcon: Icons.bar_chart_rounded,
-    label: 'Stats',
-    route: '/stats',
-  ),
-];
 
 // ─── Router ───────────────────────────────────────────────────────────────────
+//
+// Issue #3293 : la bottom nav déclarait 3 onglets (« Calendrier » /,
+// « Publier » /create-post, « Stats » /stats) alors que seul `/` était
+// enregistré dans le GoRouter → GoException garantie au tap (écran coincé,
+// shell remplacé). Tant que les écrans publication/stats n'existent pas
+// (app marketing en skeleton, cf. #3006), le routeur n'expose que la home —
+// pas de navigation morte. Réintroduire les onglets AVEC leurs routes le jour
+// où les écrans arrivent.
 
 final _router = GoRouter(
   initialLocation: '/',
   routes: [
-    // Shell persistant : bottom nav partagé entre les 3 onglets principaux.
-    ShellRoute(
-      builder: (context, state, child) => _MarketingShell(
-        currentRoute: state.matchedLocation,
-        child: child,
-      ),
-      routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const MarketingHomeScreen(),
-        ),
-      ],
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const MarketingHomeScreen(),
     ),
   ],
 );
-
-/// Shell layout avec la bottom nav. La route `/create-post` est hors shell
-/// pour prendre tout l'écran (full-screen modal-like).
-class _MarketingShell extends StatelessWidget {
-  const _MarketingShell({
-    required this.currentRoute,
-    required this.child,
-  });
-
-  final String currentRoute;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: LeopardoBottomNav(
-        currentRoute: currentRoute,
-        items: _navItems,
-        onTap: (route) => context.go(route),
-      ),
-    );
-  }
-}
 
 // ─── Application ──────────────────────────────────────────────────────────────
 
