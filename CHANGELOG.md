@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(admin): realtime — skipAuthRedirect, ids serveur, watch au lieu de $subscribe (Closes #2705, #2707, #2716).**
 - **fix(planning): garde de solde de création d'absence verrouillée dans une transaction (Closes #2676).** Le contrôle check-then-insert pouvait laisser deux demandes simultanées sur-réserver le solde ; vérification désormais sous `lockForUpdate` sur la ligne snapshot `leave_balances` (pattern #2666).
 - **fix(mobile): hygiène — mojibake UTF-8, écrans morts, retries POST, Sentry borné, parse null-safe (Closes #2738, #2763, #2742, #2766, #2767).** 12 fichiers ré-encodés (« Aucune Ã©valuation » → « Aucune évaluation ») ; `company_request_screen.dart` morts supprimés (×2) ; `POST /salary-advances` sans retries auto (fini les doublons) ; `tracesSampleRate` 1.0 → 0.2 ; `DateTime.tryParse` sur `requested_check_in`.
 - **fix(admin): navigation morte — palette filtrée, carte dashboard retargetée (Closes #2703, #2704).**
