@@ -15,9 +15,9 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  Future<void> _complete(int stepId) async {
+  Future<void> _complete(String stepKey) async {
     try {
-      await ref.read(onboardingRepositoryProvider).completeStep(stepId);
+      await ref.read(onboardingRepositoryProvider).completeStep(stepKey);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {

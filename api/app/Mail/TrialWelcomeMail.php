@@ -53,16 +53,21 @@ class TrialWelcomeMail extends Mailable
      */
     private function resolveTrialDays(): int
     {
-        $start = $this->company->subscription_start !== null
-            ? $this->company->subscription_start->copy()->startOfDay()
-            : Carbon::today();
+        // Les colonnes sont NULLables en base (tenants legacy, cf. #1952) —
+        // on passe par getAttribute() pour que PHPStan traite la valeur comme
+        // mixed et non comme Carbon non-nullable (docblock du modèle).
+        $startRaw = $this->company->getAttribute('subscription_start');
+        $endRaw = $this->company->getAttribute('subscription_end');
 
-        $end = $this->company->subscription_end !== null
-            ? $this->company->subscription_end->copy()->startOfDay()
+        $start = $startRaw !== null && $startRaw !== ''
+            ? Carbon::parse($startRaw)->startOfDay()
+            : null;
+        $end = $endRaw !== null && $endRaw !== ''
+            ? Carbon::parse($endRaw)->startOfDay()
             : null;
 
-        if ($end !== null && $end->greaterThan($start)) {
-            return (int) $start->diffInDays($end);
+        if ($start !== null && $end !== null && $end->greaterThan($start)) {
+            return max(1, (int) $start->diffInDays($end));
         }
 
         if ($this->company->plan_id) {

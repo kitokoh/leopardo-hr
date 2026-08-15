@@ -83,7 +83,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Sur devis',
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
-      trialNote: '30 jours offerts · Aucune CB requise',
+      trialNote: '14 jours offerts · Aucune CB requise',
       freeBadge: '100% Gratuit',
       freePriceLabel: 'Gratuit',
       freeNoCard: 'Sans carte bancaire · Pour toujours',
@@ -144,7 +144,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
             { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
@@ -162,8 +162,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
         { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
-        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 30 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
+        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
         { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Pilot : email sous 48h. Operations : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
@@ -196,7 +196,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Custom',
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
-      trialNote: '30 days free · No credit card required',
+      trialNote: '14 days free · No credit card required',
       freeBadge: '100% Free',
       freePriceLabel: 'Free',
       freeNoCard: 'No credit card · Forever',
@@ -257,7 +257,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Document vault', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'Immutable audit trail', free: false, starter: false, business: false, enterprise: true },
             { name: 'Isolated PostgreSQL schema', free: false, starter: false, business: false, enterprise: true },
             { name: 'Dedicated SLA & support', free: false, starter: false, business: false, enterprise: true },
@@ -309,7 +309,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Teklif alın',
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
-      trialNote: '30 gün ücretsiz · Kredi kartı gerekmez',
+      trialNote: '14 gün ücretsiz · Kredi kartı gerekmez',
       freeBadge: '%100 Ücretsiz',
       freePriceLabel: 'Ücretsiz',
       freeNoCard: 'Kredi kartı gerekmez · Her zaman',
@@ -370,7 +370,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
             { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
             { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
@@ -388,8 +388,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Free plan gerçekten ücretsiz mi?', answer: 'Evet, %100 ücretsiz. Hiçbir zaman kredi kartı gerekmez. 5 çalışana kadar anında erişim. İstediğiniz zaman ücretli plana geçin.', category: 'Deneme' },
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
         { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
-        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
-        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 30 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
+        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
         { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Pilot: 48 saatte e-posta. Operations: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
         { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
@@ -483,7 +483,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
             { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },
@@ -659,7 +659,7 @@ export default function PricingPage() {
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment
     if (plan.popular) return '/checkout?plan=business';
-    // Pilot → essai guidé 30 jours (aucun paiement à l'inscription) : le
+    // Pilot → essai guidé 14 jours (aucun paiement à l'inscription) : le
     // checkout ne doit pas être présenté comme « gratuit » (#2649).
     return '/signup?source=pricing_pilot';
   }

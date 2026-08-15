@@ -27,7 +27,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 29.00,
                 'price_yearly' => 290.00,     // -17% vs mensuel
                 'max_employees' => 20,
-                'trial_days' => 30,
+                'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => false,
@@ -48,7 +48,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 79.00,
                 'price_yearly' => 790.00,
                 'max_employees' => 200,
-                'trial_days' => 30,
+                'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,
@@ -69,7 +69,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 199.00,
                 'price_yearly' => 1990.00,
                 'max_employees' => null,         // NULL = illimité
-                'trial_days' => 30,           // Trial plus long pour Enterprise
+                'trial_days' => (int) config('billing.trial_days'),           // Trial plus long pour Enterprise
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,

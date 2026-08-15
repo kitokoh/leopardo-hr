@@ -31,7 +31,7 @@ class Contract {
       startDate: json['start_date'] as String? ?? '',
       endDate: json['end_date'] as String?,
       baseSalary: (json['base_salary'] as num?)?.toDouble() ?? 0,
-      currency: json['currency'] as String? ?? 'DZD',
+      currency: json['currency'] as String? ?? '',
       status: json['status'] as String? ?? 'active',
     );
   }
