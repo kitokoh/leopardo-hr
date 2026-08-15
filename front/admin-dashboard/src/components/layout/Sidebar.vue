@@ -188,6 +188,15 @@ const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 
+// Routes tenant-scopées (issue #2272) : masquées de la navigation de la
+// console super-admin (aucun contexte tenant → 401 systématique). Source de
+// vérité unique : le meta.requiresTenant déclaré sur le router.
+const tenantRouteNames = new Set(
+  router.getRoutes()
+    .filter((route) => route.meta?.requiresTenant)
+    .map((route) => route.name),
+)
+
 // Navigation items
 const navigation = computed(() => [
   {
@@ -341,7 +350,7 @@ const navigation = computed(() => [
     path: '/system',
     icon: CogIcon
   },
-])
+].filter((item) => !tenantRouteNames.has(item.name)))
 
 // Computed properties
 const userInitials = computed(() => {
