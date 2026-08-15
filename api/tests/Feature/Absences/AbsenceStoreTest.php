@@ -166,15 +166,93 @@ class AbsenceStoreTest extends TestCase
         $response = $this->postJson('/api/v1/absences', [
             'absence_type_id' => $absenceType->id,
             'start_date' => '2026-04-10',
-            'end_date' => '2026-04-14', // 5 days (10, 11, 12, 13, 14)
+            'end_date' => '2026-04-14', // #2671 : 3 jours OUVRÉS (ven, lun, mar)
         ]);
 
         $response->assertStatus(201);
-        $response->assertJsonPath('data.days_count', 5);
+        $response->assertJsonPath('data.days_count', 3);
 
         /** @var Absence $absence */
         $absence = Absence::query()->firstOrFail();
-        $this->assertSame(5, $absence->days_count);
+        $this->assertSame(3, $absence->days_count);
+    }
+
+    public function test_weekend_days_not_counted_friday_to_monday(): void
+    {
+        // Issue #2671 : un congé vendredi→lundi = 2 jours ouvrés (ven + lun),
+        // les week-ends ne sont pas déduits du solde.
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'timezone' => 'UTC',
+            'currency' => 'DZD',
+        ]);
+
+        $schedule = Schedule::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Day',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
+            'overtime_threshold_daily' => 8.0,
+            'is_default' => true,
+        ]);
+
+        $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Congé payé',
+            'code' => 'CP',
+            'is_paid' => true,
+            'deducts_leave' => true,
+            'requires_proof' => false,
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'schedule_id' => $schedule->id,
+            'first_name' => 'Test',
+            'last_name' => 'User',
+            'email' => 'employee@weekend.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        LeaveBalanceLog::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'delta' => 20.0,
+            'reason' => 'initial_credit',
+            'reference_id' => 0,
+            'balance_after' => 20.0,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        // 2026-04-10 = vendredi, 2026-04-13 = lundi (samedi/dimanche exclus).
+        $response = $this->postJson('/api/v1/absences', [
+            'absence_type_id' => $absenceType->id,
+            'start_date' => '2026-04-10',
+            'end_date' => '2026-04-13',
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonPath('data.days_count', 2);
+
+        /** @var Absence $absence */
+        $absence = Absence::query()->firstOrFail();
+        $this->assertSame(2, $absence->days_count);
     }
 
     public function test_insufficient_balance_returns_422(): void
@@ -520,7 +598,7 @@ class AbsenceStoreTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonPath('data.status', 'pending');
-        $response->assertJsonPath('data.days_count', 5);
+        $response->assertJsonPath('data.days_count', 3);
     }
 
     public function test_rejected_absence_does_not_block_new_request_on_same_dates(): void
