@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
@@ -108,6 +109,44 @@ class PayrollRunController extends Controller
 
         if (in_array($payrollRun->status, ['draft', 'calculated'], true) === false) {
             return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
+        }
+
+        // #2332 — même garde que les simulateurs (#1872) : un pays placeholder
+        // (CF/TD/GQ/BJ/TG/NE) ne peut pas être calculé sans confirmation
+        // explicite acknowledge_placeholder=true — sinon des montants
+        // INDICATIFS seraient présentés comme un bulletin certifié.
+        // L'acceptation est auditée (AuditLog).
+        $rules = $this->calculator->rulesResolver()->resolve(
+            $payrollRun->country_code,
+            $payrollRun->company_id,
+            $payrollRun->period_start
+        );
+        if ($rules->confidenceLevel() === 'placeholder') {
+            $acknowledged = $request->boolean('acknowledge_placeholder');
+            if (! $acknowledged) {
+                return response()->json([
+                    'message' => __('payroll.placeholder_acknowledge_required', ['country' => $payrollRun->country_code]),
+                    'errors' => [
+                        'acknowledge_placeholder' => [__('payroll.placeholder_acknowledge_required', ['country' => $payrollRun->country_code])],
+                    ],
+                ], 422);
+            }
+
+            AuditLog::create([
+                'company_id' => $payrollRun->company_id,
+                'user_id' => $actor->id,
+                'action' => 'placeholder_warning_acknowledged',
+                'auditable_type' => 'App\\Modules\\Payroll\\Infrastructure\\Services\\CountryRules\\CountryRulesResolver',
+                'auditable_id' => 0,
+                'old_values' => [],
+                'new_values' => [
+                    'country_code' => $payrollRun->country_code,
+                    'rules_identifier' => (new \ReflectionClass($rules))->getShortName(),
+                    'confidence_level' => 'placeholder',
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
         }
 
         $payrollRun->update(['status' => 'calculating']);

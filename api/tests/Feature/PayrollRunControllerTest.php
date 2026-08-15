@@ -10,6 +10,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,11 @@ class PayrollRunControllerTest extends TestCase
     private function bindFakePayrollCalculator(): void
     {
         $calculator = Mockery::mock(PayrollCalculator::class);
+        // #2332 : la gate placeholder (calculate) résout les règles via
+        // rulesResolver() — stub vers le vrai résolveur (règles pays réelles).
+        $calculator
+            ->shouldReceive('rulesResolver')
+            ->andReturn(new CountryRulesResolver);
         $calculator
             ->shouldReceive('calculateRun')
             ->once()
@@ -193,6 +199,62 @@ class PayrollRunControllerTest extends TestCase
             'payroll_run_id' => $run->id,
             'company_id' => $company->id,
             'status' => 'calculated',
+        ]);
+    }
+
+    public function test_calculate_placeholder_country_requires_acknowledgement(): void
+    {
+        // #2332 : un pays placeholder (BJ) ne peut pas être calculé sans
+        // acknowledge_placeholder=true (même garde que les simulateurs #1872).
+        // Mock sans attente calculateRun (la requête 422 avant le calcul).
+        $calculator = Mockery::mock(PayrollCalculator::class);
+        $calculator->shouldReceive('rulesResolver')->andReturn(new CountryRulesResolver);
+        $this->app->instance(PayrollCalculator::class, $calculator);
+        $company = Company::factory()->create(['country' => 'BJ', 'currency' => 'XOF']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'BJ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'draft',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate")
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('acknowledge_placeholder');
+
+        // Le run reste draft (jamais calculé sans confirmation).
+        $this->assertSame('draft', $run->fresh()->status);
+    }
+
+    public function test_calculate_placeholder_country_with_acknowledgement_proceeds(): void
+    {
+        $this->bindFakePayrollCalculator();
+        $company = Company::factory()->create(['country' => 'BJ', 'currency' => 'XOF']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'BJ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'draft',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate", [
+            'acknowledge_placeholder' => true,
+        ])->assertOk();
+
+        // L'acceptation est auditée.
+        $this->assertDatabaseHas('audit_logs', [
+            'company_id' => $company->id,
+            'user_id' => $manager->id,
+            'action' => 'placeholder_warning_acknowledged',
         ]);
     }
 
