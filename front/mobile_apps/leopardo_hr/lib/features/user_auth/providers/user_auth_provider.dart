@@ -80,22 +80,10 @@ class UserAuthNotifier extends StateNotifier<UserAuthState> {
     }
   }
 
-  Future<bool> googleSignIn({
-    required String googleId,
-    required String email,
-    required String firstName,
-    required String lastName,
-    String? avatarUrl,
-  }) async {
+  Future<bool> googleSignIn({required String idToken}) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final data = await _repository.googleSignIn(
-        googleId: googleId,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        avatarUrl: avatarUrl,
-      );
+      final data = await _repository.googleSignIn(idToken: idToken);
       state = state.copyWith(isLoading: false, user: data['user'] as AppUser);
       return true;
     } catch (e) {

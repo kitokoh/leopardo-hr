@@ -10,6 +10,7 @@ use App\Exceptions\InvalidCredentialsException;
 use App\Core\Auth\Domain\Models\User;
 use Tests\RefreshTenantDatabase;
 use Illuminate\Support\Facades\Hash;
+use Tests\Support\SignsGoogleIdTokens;
 use Tests\TestCase;
 
 /**
@@ -19,6 +20,7 @@ use Tests\TestCase;
 class SuspendedLoginTest extends TestCase
 {
     use RefreshTenantDatabase;
+    use SignsGoogleIdTokens;
 
     public function test_email_login_rejected_when_account_suspended(): void
     {
@@ -69,9 +71,15 @@ class SuspendedLoginTest extends TestCase
             'status' => 'disabled',
         ]);
 
+        [$privateKey, $jwks] = $this->googleKeyPair();
+        $this->fakeGoogleJwks([$jwks]);
+
         $this->expectException(AccountSuspendedException::class);
 
-        (new UserAuthService)->googleSignIn('google-123', 'suspended-google@example.com', 'Jane', 'Doe');
+        (new UserAuthService)->googleSignIn($this->googleIdToken($privateKey, [
+            'email' => 'suspended-google@example.com',
+            'sub' => 'google-123',
+        ]));
     }
 
     public function test_google_sign_in_ok_when_account_active(): void
@@ -82,7 +90,13 @@ class SuspendedLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        $result = (new UserAuthService)->googleSignIn('google-456', 'active-google@example.com', 'Jane', 'Doe');
+        [$privateKey, $jwks] = $this->googleKeyPair();
+        $this->fakeGoogleJwks([$jwks]);
+
+        $result = (new UserAuthService)->googleSignIn($this->googleIdToken($privateKey, [
+            'email' => 'active-google@example.com',
+            'sub' => 'google-456',
+        ]));
         $this->assertArrayHasKey('token', $result);
         $this->assertFalse($result['is_new']);
     }
