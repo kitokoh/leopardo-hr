@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class ZktecoDevice extends Model
 {
     protected $fillable = [
         'company_id',
         'serial_number',
+        'sync_token_hash',
         'name',
         'ip_address',
         'port',
@@ -29,5 +31,11 @@ class ZktecoDevice extends Model
         'last_heartbeat_at',
         'last_sync_at',
     ];
-}
 
+    /**
+     * Le hash du token de sync ne doit JAMAIS sortir de l'API.
+     */
+    protected $hidden = [
+        'sync_token_hash',
+    ];
+}

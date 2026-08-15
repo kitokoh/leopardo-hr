@@ -5,9 +5,9 @@
  */
 
 use App\Modules\Attendance\Interfaces\Api\V1\CalendarSyncController;
-use App\Modules\Notification\Interfaces\Api\V1\Controllers\DeviceTokenController;
 use App\Modules\Attendance\Interfaces\Api\V1\KioskController;
 use App\Modules\Attendance\Interfaces\Api\V1\ZktecoController;
+use App\Modules\Notification\Interfaces\Api\V1\Controllers\DeviceTokenController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -29,6 +29,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::delete('/zkteco/devices/{id}', [ZktecoController::class, 'destroy'])->whereNumber('id');
     Route::get('/zkteco/devices/{id}/sync-logs', [ZktecoController::class, 'syncLogs'])->whereNumber('id');
     Route::post('/zkteco/devices/{serialNumber}/push-users', [ZktecoController::class, 'pushUsers']);
+    // Sécurité #2216 : rotation du token de device (manager uniquement)
+    Route::post('/zkteco/devices/{id}/regenerate-token', [ZktecoController::class, 'regenerateToken'])->whereNumber('id');
 });
 
 // Device kiosks authenticate with X-Kiosk-Token, not a Sanctum user token.
