@@ -63,11 +63,15 @@
                 </div>
                 <div>
                   <dt class="text-sm font-medium text-gray-500">Entreprise</dt>
-                  <dd class="mt-1 text-sm text-gray-900">{{ user?.company_name || 'Aucune' }}</dd>
+                  <dd class="mt-1 text-sm text-gray-900">{{ user?.company?.name || user?.company_name || 'Aucune' }}</dd>
                 </div>
                 <div>
                   <dt class="text-sm font-medium text-gray-500">ID Entreprise</dt>
-                  <dd class="mt-1 text-sm text-gray-900">{{ user?.company_id || '-' }}</dd>
+                  <dd class="mt-1 text-sm text-gray-900">{{ user?.company?.id || user?.company_id || '-' }}</dd>
+                </div>
+                <div v-if="user?.company?.employee_id">
+                  <dt class="text-sm font-medium text-gray-500">Employé lié</dt>
+                  <dd class="mt-1 text-sm text-gray-900">#{{ user.company.employee_id }}</dd>
                 </div>
                 <div>
                   <dt class="text-sm font-medium text-gray-500">Date d'inscription</dt>
