@@ -45,7 +45,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/me/trainings/{sessionId}/enroll', [SelfServiceController::class, 'selfEnroll'])->whereNumber('sessionId');
     Route::get('/me/loans', [SelfServiceController::class, 'myLoans']);
     Route::get('/me/loans/{loanId}/repayments', [SelfServiceController::class, 'myLoanRepayments'])->whereNumber('loanId');
-    Route::get('/me/vehicles', [VehicleController::class, 'myVehicles']);
 
     // ── Org Chart (all employees, read-only) ─────────────────────────────
     Route::get('/org-chart', [OrgChartController::class, 'index']);
