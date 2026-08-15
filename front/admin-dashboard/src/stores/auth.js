@@ -84,6 +84,21 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /**
+   * Réinitialisation synchrone de la session (issue #3929).
+   *
+   * Un 401 en cours de session (token expiré/révoqué) doit rendre /login
+   * accessible : sans cette remise à zéro du store, `isAuthenticated`
+   * restait vrai (refs `token`/`user` périmées) et le guard rebondissait
+   * systématiquement vers `/` — SPA figée jusqu'au reload complet.
+   */
+  function clearSession() {
+    token.value = null
+    user.value = null
+    storage.removeToken()
+    delete api.defaults.headers.common.Authorization
+  }
+
   async function logout() {
     try {
       if (token.value) {
@@ -92,10 +107,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error('Erreur lors de la deconnexion:', error)
     } finally {
-      token.value = null
-      user.value = null
-      storage.removeToken()
-      delete api.defaults.headers.common.Authorization
+      clearSession()
     }
   }
 
@@ -204,6 +216,7 @@ export const useAuthStore = defineStore('auth', () => {
     userEmail,
     login,
     logout,
+    clearSession,
     checkAuth,
     updateProfile,
     changePassword,

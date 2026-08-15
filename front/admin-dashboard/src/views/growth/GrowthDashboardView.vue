@@ -174,14 +174,18 @@ const auditLogs = ref([]);
 const loadData = async () => {
   loading.value = true;
   try {
+    // #3938 : déballage d'enveloppe normalisé — /partners et /payouts
+    // renvoient {data:[...]}, /history renvoie {commissions, audit_logs}
+    // (contrat GrowthAdminController). Un wrap défensif évite un crash de
+    // rendu (v-for / .length) si le contrat backend évolue.
     const pResponse = await api.get('/platform/growth/partners');
-    partners.value = pResponse.data.data;
+    partners.value = Array.isArray(pResponse.data?.data) ? pResponse.data.data : [];
 
     const hResponse = await api.get('/platform/growth/history');
-    auditLogs.value = hResponse.data.audit_logs;
+    auditLogs.value = Array.isArray(hResponse.data?.audit_logs) ? hResponse.data.audit_logs : [];
 
     const payResponse = await api.get('/platform/growth/payouts');
-    payouts.value = payResponse.data.data;
+    payouts.value = Array.isArray(payResponse.data?.data) ? payResponse.data.data : [];
   } catch (e) {
     console.error("Growth Admin: Data load failed", e);
     loadError.value = 'Erreur lors du chargement des données Growth.';

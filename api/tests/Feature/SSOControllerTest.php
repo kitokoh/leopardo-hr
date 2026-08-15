@@ -223,7 +223,6 @@ class SSOControllerTest extends TestCase
         // Ne jamais renvoyer un succès vide : 501 explicite.
         $response->assertStatus(501);
     }
-}
 
     public function test_saml_callback_is_gated_by_feature_flag(): void
     {
@@ -236,3 +235,4 @@ class SSOControllerTest extends TestCase
         $response->assertStatus(501)
             ->assertJsonPath('error', 'SAML_FEATURE_DISABLED');
     }
+}

@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   web-offline-ci:
-    name: Lint + Build
+    name: Lint + Test + Build
     runs-on: ubuntu-latest
 
     steps:
@@ -47,6 +47,13 @@ jobs:
       - name: Lint
         working-directory: front/web-offline
         run: npm run lint
+
+      - name: Test (issue #3971)
+        # La machine à états du health-check et les stratégies de cache SW
+        # sont désormais couvertes — le workflow annonçait « lint + build +
+        # tests » sans exécuter aucun test.
+        working-directory: front/web-offline
+        run: npm test
 
       - name: Build
         working-directory: front/web-offline

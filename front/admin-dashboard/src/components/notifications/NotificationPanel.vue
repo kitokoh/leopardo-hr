@@ -16,7 +16,7 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div v-if="notification" role="alert" class="pointer-events-auto w-full max-w-sm overflow-hidden card-lg ring-1 ring-black ring-opacity-5">
+        <div v-if="notification" role="alert" class="pointer-events-auto w-full max-w-sm overflow-hidden card ring-1 ring-black/5">
           <div class="p-4">
             <div class="flex items-start">
               <div class="flex-shrink-0">

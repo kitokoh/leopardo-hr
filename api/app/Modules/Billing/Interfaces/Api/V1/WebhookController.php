@@ -52,8 +52,11 @@ class WebhookController extends Controller
             abort(403);
         }
 
+        // #3948 : pagination alignée sur le contrat des autres listes.
         return WebhookEndpointResource::collection(
-            WebhookEndpoint::query()->orderByDesc('created_at')->get()
+            WebhookEndpoint::query()
+                ->orderByDesc('created_at')
+                ->paginate((int) ($request->input('per_page', 20)))
         );
     }
 

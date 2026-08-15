@@ -21,7 +21,8 @@ use Illuminate\Support\Facades\App;
  *
  * Migrated from App\Http\Controllers\Api\V1\EstimationController.
  * Self-service equivalent lives in MeController (HR module).
- * All endpoints require the Employee policy (viewAny = manager).
+ * All endpoints require the Employee policy — `view` (scope équipe) pour
+ * quickEstimate/receipt/dailySummary (#3943).
  */
 class EstimationController extends Controller
 {
@@ -44,9 +45,10 @@ class EstimationController extends Controller
 
     public function quickEstimate(QuickEstimateRequest $request, string $employeeId): JsonResponse
     {
-        $this->authorize('viewAny', Employee::class);
-
+        // #3943 : `view` (et non `viewAny`) — le scope équipe (managesTeamMemberOf)
+        // s'applique aux managers dept/superviseur, et l'auto-accès employé aussi.
         $employee = Employee::query()->findOrFail($employeeId);
+        $this->authorize('view', $employee);
 
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,
@@ -59,9 +61,11 @@ class EstimationController extends Controller
 
     public function receipt(ReceiptRequest $request, string $employeeId): Response
     {
-        $this->authorize('viewAny', Employee::class);
-
+        // #3943 : `view` (et non `viewAny`) — même scope équipe que
+        // quickEstimate/dailySummary : un superviseur ne télécharge un reçu
+        // d'estimation que pour ses propres employés.
         $employee = Employee::query()->findOrFail($employeeId);
+        $this->authorize('view', $employee);
 
         $estimate = $this->estimationService->quickEstimate(
             employee: $employee,

@@ -25,29 +25,41 @@ import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
    CONFETTI (lightweight CSS-based)
 ───────────────────────────────────────────── */
 function Confetti() {
-  const pieces = Array.from({ length: 24 }, (_, i) => i);
+  // Issue #3925 : les valeurs aléatoires sont calculées UNE fois au premier
+  // rendu client (useState initializer) — plus de Math.random() dans le
+  // rendu, donc plus de mismatch SSR/hydration sur les styles inline.
+  const [pieces] = useState(() =>
+    Array.from({ length: 24 }, (_, i) => ({
+      id: i,
+      x: `${Math.random() * 100}vw`,
+      scale: Math.random() * 0.8 + 0.4,
+      rotate: Math.random() * 720 - 360,
+      duration: Math.random() * 2 + 2,
+      delay: Math.random() * 1.5,
+    }))
+  );
   const colors = ['bg-emerald-400', 'bg-cyan-400', 'bg-violet-400', 'bg-amber-400', 'bg-pink-400'];
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
-      {pieces.map((i) => (
+      {pieces.map((p) => (
         <motion.div
-          key={i}
-          className={`absolute w-2 h-2 rounded-full ${colors[i % colors.length]}`}
+          key={p.id}
+          className={`absolute w-2 h-2 rounded-full ${colors[p.id % colors.length]}`}
           initial={{
-            x: `${Math.random() * 100}vw`,
+            x: p.x,
             y: -20,
             opacity: 1,
-            scale: Math.random() * 0.8 + 0.4,
+            scale: p.scale,
             rotate: 0,
           }}
           animate={{
             y: '110vh',
             opacity: [1, 1, 0],
-            rotate: Math.random() * 720 - 360,
+            rotate: p.rotate,
           }}
           transition={{
-            duration: Math.random() * 2 + 2,
-            delay: Math.random() * 1.5,
+            duration: p.duration,
+            delay: p.delay,
             ease: 'easeIn',
           }}
         />
@@ -100,7 +112,18 @@ function SuccessInner() {
 
   const isSandbox = searchParams.get('sandbox') === '1';
   const sessionId = searchParams.get('session_id') || '';
-  const plan = searchParams.get('plan') || 'Business';
+  // #3919 : affiche le nom canonique du plan (Pilot/Operations/Enterprise)
+  // quel que soit le slug (pilot/operations/enterprise ou alias legacy).
+  const PLAN_DISPLAY: Record<string, string> = {
+    free: 'Free',
+    pilot: 'Pilot',
+    starter: 'Pilot',
+    operations: 'Operations',
+    business: 'Operations',
+    enterprise: 'Enterprise',
+    scale: 'Enterprise',
+  };
+  const plan = PLAN_DISPLAY[searchParams.get('plan') || ''] || 'Pilot';
   const billing = searchParams.get('billing') || 'monthly';
   const email = searchParams.get('email') || '';
   const company = searchParams.get('company') || '';

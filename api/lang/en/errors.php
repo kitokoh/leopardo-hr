@@ -41,6 +41,12 @@ return [
     'FORBIDDEN' => 'You do not have permission for this action.',
     'SERVER_ERROR' => 'An error occurred. Please try again.',
     'VALIDATION_ERROR' => 'Some fields are incorrect.',
+    'BAD_REQUEST' => 'Bad request.',
+    'CONFLICT' => 'A data conflict prevents this operation.',
+    'VALIDATION_FAILED' => 'Some fields are incorrect.',
+    'TOO_MANY_REQUESTS' => 'Too many requests. Try again later.',
+    'SERVICE_UNAVAILABLE' => 'Service temporarily unavailable.',
+    'HTTP_ERROR' => 'An error occurred. Please try again.',
     'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',
 
     // #3810 — codes stables (audit 2026-08-15) : plus de message brut exposé

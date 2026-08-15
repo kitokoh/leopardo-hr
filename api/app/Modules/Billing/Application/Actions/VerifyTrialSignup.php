@@ -94,6 +94,24 @@ class VerifyTrialSignup
         $payload = $companyRequest->signup_payload ?? [];
         $companyName = (string) ($companyRequest->company_name ?? '');
 
+        // Anti-énumération (#3945) : la détection « email déjà enregistré »
+        // vit ici — l'OTP valide prouve la possession de la boîte mail, donc
+        // la réponse ne peut plus servir à énumérer des comptes sur
+        // l'endpoint public /trial/signup.
+        $existingManager = $this->requestTrialSignup->findExistingManager($email);
+        if ($existingManager !== null) {
+            // Terminer proprement la demande (état terminal, pas de reprocessing).
+            $companyRequest->update(['status' => 'rejected']);
+            Log::info('trial.verify_duplicate_manager', ['email' => $email]);
+
+            return [
+                'success' => false,
+                'error' => 'EMAIL_ALREADY_REGISTERED',
+                'message' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+                'status' => 409,
+            ];
+        }
+
         // MULTI-PAYS (#1867/#1950) : le pays vient du signup validé (règle
         // SupportedCountry) — résolution STRICTE, aucun fallback silencieux
         // vers DZ (invariant 10). Un payload hérité sans pays valide → 422.

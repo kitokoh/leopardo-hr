@@ -36,8 +36,8 @@ import { getApiBaseUrl } from '@/lib/backend-url';
    gérés ici (Closes #3247) : plus de plan Free ni de « Sur devis ».
 ───────────────────────────────────────────── */
 const PLAN_CONFIG = {
-  starter: {
-    label: 'Starter',
+  pilot: {
+    label: 'Pilot',
     icon: Rocket,
     color: 'blue',
     gradient: 'from-blue-500 to-indigo-600',
@@ -56,14 +56,14 @@ const PLAN_CONFIG = {
     trialDays: 14,
     employeeLimit: "Jusqu'à 20 employés",
   },
-  business: {
-    label: 'Business',
+  operations: {
+    label: 'Operations',
     icon: Zap,
     color: 'emerald',
     gradient: 'from-emerald-500 to-cyan-600',
-    priceMonthly: 79,
-    priceAnnual: 66,
-    savings: 156,
+    priceMonthly: 99,
+    priceAnnual: 79,
+    savings: 240,
     features: [
       'Tout Starter inclus',
       'Paie automatisée',
@@ -80,9 +80,9 @@ const PLAN_CONFIG = {
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
-    priceMonthly: 199,
-    priceAnnual: 166,
-    savings: 396,
+    priceMonthly: null,
+    priceAnnual: null,
+    savings: 0,
     features: [
       'Tout Business inclus',
       'Multi-pays & multi-devises',
@@ -99,13 +99,14 @@ const PLAN_CONFIG = {
 type PlanKey = keyof typeof PLAN_CONFIG;
 
 // Anciens slugs de plans (pré #2907) : redirigés vers les clés canoniques
-// starter/business/enterprise. L'ancien « free » (plan supprimé du backend,
-// Closes #3247) atterrit sur Starter : l'essai gratuit de 14 jours.
+// Clés canoniques pilot/operations/enterprise (#2977/#3919). Les anciens
+// slugs (starter/business/scale/free) restent des alias doux ; « free »
+// (plan supprimé du backend, Closes #3247) atterrit sur Pilot.
 const PLAN_ALIASES: Record<string, PlanKey> = {
-  pilot: 'starter',
-  operations: 'business',
+  starter: 'pilot',
+  business: 'operations',
   scale: 'enterprise',
-  free: 'starter',
+  free: 'pilot',
 };
 
 /* ─────────────────────────────────────────────
@@ -196,6 +197,7 @@ function PlanSummaryCard({
   const cfg = PLAN_CONFIG[plan];
   const Icon = cfg.icon;
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
+  const priceLabel = price === null ? 'Sur devis' : String(price);
 
   return (
     <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50">
@@ -212,11 +214,11 @@ function PlanSummaryCard({
         </div>
         <div>
           <div className="flex items-baseline gap-1">
-            <span className="text-white/70 text-sm">EUR</span>
-            <span className="text-white font-black text-5xl">{price}</span>
-            <span className="text-white/70 text-sm">/mois</span>
+            {price !== null && <span className="text-white/70 text-sm">EUR</span>}
+            <span className="text-white font-black text-5xl">{priceLabel}</span>
+            {price !== null && <span className="text-white/70 text-sm">/mois</span>}
           </div>
-          {billing === 'annual' && (
+          {billing === 'annual' && price !== null && (
             <p className="text-white/70 text-xs mt-1">
               Facturé annuellement — économisez EUR {cfg.savings}/an
             </p>
@@ -342,6 +344,7 @@ function StepRecap({
 }) {
   const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
+  const priceLabel = price === null ? 'Sur devis' : String(price);
 
   return (
     <motion.div
@@ -374,7 +377,7 @@ function StepRecap({
         onClick={onNext}
         className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
-        <>Continuer — EUR {price}/mois <ArrowRight className="w-5 h-5" /></>
+        <>{price === null ? 'Demander un devis' : `Continuer — EUR ${price}/mois`} <ArrowRight className="w-5 h-5" /></>
       </button>
     </motion.div>
   );
@@ -874,10 +877,10 @@ function StepPayment({
 ───────────────────────────────────────────── */
 function CheckoutInner() {
   const searchParams = useSearchParams();
-  // Clés canoniques starter/business/enterprise (Closes #3247) ; les anciens
-  // slugs (free/pilot/operations/scale) sont des alias doux pour la compat
-  // des URLs (voir PLAN_ALIASES).
-  const rawPlan = (searchParams.get('plan') || 'starter') as string;
+  // Clés canoniques pilot/operations/enterprise (Closes #3247, #3919) ; les
+  // anciens slugs (starter/business/scale/free) sont des alias doux pour la
+  // compat des URLs (voir PLAN_ALIASES).
+  const rawPlan = (searchParams.get('plan') || 'pilot') as string;
   const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
   // #3326 : fallback sur 'starter' (clé réelle) — plan inconnu → Starter.
   const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'starter') as PlanKey;

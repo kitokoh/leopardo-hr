@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\Payroll\Domain\Models\LoanRepayment;
 use Illuminate\Http\JsonResponse;
@@ -53,38 +53,38 @@ class EmployeeLoanController extends Controller
         $actor = $request->user();
 
         $validated = $request->validate([
-            'employee_id'   => $actor->isManager()
+            'employee_id' => $actor->isManager()
                 ? ['required', 'integer', Rule::exists('employees', 'id')->where('company_id', $actor->company_id)]
                 : 'prohibited',
-            'loan_type'     => 'required|in:personal,housing,vehicle,education,emergency',
-            'amount'        => 'required|numeric|min:1',
+            'loan_type' => 'required|in:personal,housing,vehicle,education,emergency',
+            'amount' => 'required|numeric|min:1',
             'interest_rate' => 'nullable|numeric|min:0|max:100',
-            'installments'  => 'required|integer|min:1|max:120',
-            'start_date'    => 'required|date',
-            'notes'         => 'nullable|string',
+            'installments' => 'required|integer|min:1|max:120',
+            'start_date' => 'required|date',
+            'notes' => 'nullable|string',
         ]);
 
-        $employeeId          = $validated['employee_id'] ?? $actor->id;
-        $interestRate        = $validated['interest_rate'] ?? 0;
-        $installmentAmount   = round($validated['amount'] * (1 + $interestRate / 100) / $validated['installments'], 2);
+        $employeeId = $validated['employee_id'] ?? $actor->id;
+        $interestRate = $validated['interest_rate'] ?? 0;
+        $installmentAmount = round($validated['amount'] * (1 + $interestRate / 100) / $validated['installments'], 2);
 
         $loan = DB::transaction(function () use ($actor, $validated, $employeeId, $interestRate, $installmentAmount) {
             $loan = EmployeeLoan::create([
-                'company_id'          => $actor->company_id,
-                'employee_id'         => $employeeId,
-                'loan_type'           => $validated['loan_type'],
-                'amount'              => $validated['amount'],
-                'interest_rate'       => $interestRate,
-                'installments'        => $validated['installments'],
-                'installment_amount'  => $installmentAmount,
-                'start_date'          => $validated['start_date'],
-                'status'              => $actor->isManager() ? 'pending_approval' : 'draft',
-                'notes'               => $validated['notes'] ?? null,
+                'company_id' => $actor->company_id,
+                'employee_id' => $employeeId,
+                'loan_type' => $validated['loan_type'],
+                'amount' => $validated['amount'],
+                'interest_rate' => $interestRate,
+                'installments' => $validated['installments'],
+                'installment_amount' => $installmentAmount,
+                'start_date' => $validated['start_date'],
+                'status' => $actor->isManager() ? 'pending_approval' : 'draft',
+                'notes' => $validated['notes'] ?? null,
             ]);
 
-            $startDate               = Carbon::parse($validated['start_date']);
-            $totalInterest           = $validated['amount'] * ($interestRate / 100);
-            $interestPerInstallment  = $validated['installments'] > 0
+            $startDate = Carbon::parse($validated['start_date']);
+            $totalInterest = $validated['amount'] * ($interestRate / 100);
+            $interestPerInstallment = $validated['installments'] > 0
                 ? round($totalInterest / $validated['installments'], 2)
                 : 0;
             $principalPerInstallment = round($validated['amount'] / $validated['installments'], 2);
@@ -92,12 +92,12 @@ class EmployeeLoanController extends Controller
             for ($i = 0; $i < $validated['installments']; $i++) {
                 LoanRepayment::create([
                     'employee_loan_id' => $loan->id,
-                    'company_id'       => $actor->company_id,
-                    'due_date'         => $startDate->copy()->addMonths($i + 1)->toDateString(),
-                    'amount'           => $installmentAmount,
-                    'principal'        => $principalPerInstallment,
-                    'interest'         => $interestPerInstallment,
-                    'status'           => 'pending',
+                    'company_id' => $actor->company_id,
+                    'due_date' => $startDate->copy()->addMonths($i + 1)->toDateString(),
+                    'amount' => $installmentAmount,
+                    'principal' => $principalPerInstallment,
+                    'interest' => $interestPerInstallment,
+                    'status' => 'pending',
                 ]);
             }
 
@@ -120,7 +120,14 @@ class EmployeeLoanController extends Controller
             abort(403);
         }
 
-        return (new LoanResource($employeeLoan->load(['employee:id,first_name,last_name', 'repayments'])))->response();
+        return (new LoanResource($employeeLoan->load([
+            'employee:id,first_name,last_name',
+            // Issue #3950 — defense-in-depth : les repayments sont toujours
+            // filtrées sur le tenant courant, même si le prêt parent a déjà
+            // été vérifié (parité avec le pattern AGENTS.md « isolation via
+            // la relation parent »).
+            'repayments' => fn ($query) => $query->where('company_id', $actor->company_id),
+        ])))->response();
     }
 
     public function approve(Request $request, EmployeeLoan $employeeLoan): JsonResponse
@@ -138,7 +145,7 @@ class EmployeeLoanController extends Controller
         }
 
         $employeeLoan->update([
-            'status'      => 'approved',
+            'status' => 'approved',
             'approved_by' => $actor->id,
         ]);
 
@@ -160,11 +167,10 @@ class EmployeeLoanController extends Controller
         }
 
         $employeeLoan->update([
-            'status'        => 'disbursed',
-            'disbursed_at'  => now(),
+            'status' => 'disbursed',
+            'disbursed_at' => now(),
         ]);
 
         return (new LoanResource($employeeLoan->fresh()))->response();
     }
 }
-

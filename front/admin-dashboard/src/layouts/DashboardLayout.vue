@@ -91,8 +91,10 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { routes } from '@/router'
+import { useRoute, useRouter } from 'vue-router'
+// #3935 : résolution du parent via router.getRoutes() (records aplatis)
+// au lieu du tableau routes de premier niveau (qui ne contient que login/
+// logout//not-found — les enfants comme company-detail en sont absents).
 import { ChevronRightIcon } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useRealtimeStore } from '@/stores/realtime'
@@ -106,6 +108,7 @@ import CommandPalette from '@/components/common/CommandPalette.vue'
 import { useKeyboardShortcuts } from '@/composables/useKeyboardShortcuts'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const realtimeStore = useRealtimeStore()
 const dashboardStore = useDashboardStore()
@@ -120,8 +123,9 @@ const breadcrumbs = computed(() => {
   const crumbs = [{ name: 'dashboard', title: 'Tableau de bord', path: '/' }]
 
   if (route.meta.parent) {
-    // Find parent route
-    const parentRoute = routes.find(r => r.name === route.meta.parent)
+    // Find parent route in the FLATTENED route records (#3935) — children
+    // like company-detail are not in the top-level routes array.
+    const parentRoute = router.getRoutes().find(r => r.name === route.meta.parent)
     if (parentRoute) {
       crumbs.push({
         name: parentRoute.name,

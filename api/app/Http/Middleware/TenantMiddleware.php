@@ -49,6 +49,26 @@ class TenantMiddleware
 
         if (! $company) {
             if ($employee->role === 'ordinary') {
+                // Issue #3942 — les mêmes gardes de statut que les employés
+                // liés s'appliquent aux comptes ordinaires sans entreprise
+                // (fail-closed) : un compte suspendu/archivé n'a AUCUN accès
+                // API, même à la surface self-service.
+                if ($employee->status === 'archived') {
+                    if ($request->expectsJson() || $request->is('api/*')) {
+                        return new JsonResponse(['error' => 'EMPLOYEE_ARCHIVED'], 403);
+                    }
+
+                    abort(403);
+                }
+
+                if ($employee->status === 'suspended') {
+                    if ($request->expectsJson() || $request->is('api/*')) {
+                        return new JsonResponse(['error' => 'EMPLOYEE_SUSPENDED'], 403);
+                    }
+
+                    abort(403);
+                }
+
                 // Issue #3727 — fail-closed : cet employé poursuit SANS compagnie
                 // liée. Le marqueur convertit toute requête BelongsToCompany en
                 // 403 TENANT_CONTEXT_MISSING au lieu d'une requête cross-tenant
