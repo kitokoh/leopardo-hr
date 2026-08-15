@@ -13,6 +13,7 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -62,6 +63,8 @@ class AbsenceService
 
         AbsenceRequested::dispatch($absence);
 
+        $this->syncLeaveBalanceSnapshot($absence, 'pending_add');
+
         return $absence;
     }
 
@@ -98,6 +101,8 @@ class AbsenceService
                     $newBalance
                 );
             }
+
+            $this->syncLeaveBalanceSnapshot($absence, 'approve');
 
             $absence->update([
                 'status' => 'approved',
@@ -138,6 +143,16 @@ class AbsenceService
                 );
             }
 
+            // Issue #2329: keep the leave_balances snapshot in sync — a rejected
+            // pending absence releases its pending days; a rejected approved
+            // absence restores the used days.
+            if ($absence->absenceType->deducts_leave) {
+                $this->syncLeaveBalanceSnapshot(
+                    $absence,
+                    $absence->status === 'approved' ? 'reject_approved' : 'reject_pending'
+                );
+            }
+
             $absence->update([
                 'status' => 'rejected',
                 'rejected_reason' => $reason,
@@ -158,6 +173,9 @@ class AbsenceService
         }
 
         $absence->update(['status' => 'cancelled']);
+
+        // Issue #2329: a cancelled pending absence releases its pending days.
+        $this->syncLeaveBalanceSnapshot($absence, 'cancel');
 
         return $absence->fresh();
     }
@@ -195,5 +213,60 @@ class AbsenceService
             'reference_id' => $referenceId,
             'balance_after' => $balanceAfter,
         ]);
+    }
+
+    /**
+     * Keep the leave_balances snapshot in sync with the leave_balance_logs
+     * chain (source of truth). Issue #2329.
+     *
+     * The snapshot row is keyed by (company_id, employee_id, absence_type_id,
+     * year) — the year being the year of the absence start date. Non-deductible
+     * absence types never touch the snapshot.
+     *
+     * Supported actions:
+     * - pending_add:     pending += days       (absence created)
+     * - approve:         pending -= days, used += days
+     * - reject_pending:  pending -= days
+     * - reject_approved: used -= days
+     * - cancel:          pending -= days
+     */
+    private function syncLeaveBalanceSnapshot(Absence $absence, string $action): void
+    {
+        $type = $absence->absenceType;
+
+        if ($type === null || ! $type->deducts_leave) {
+            return;
+        }
+
+        $year = (int) Carbon::parse($absence->start_date)->format('Y');
+        $days = (float) $absence->days_count;
+
+        $snapshot = LeaveBalance::query()->firstOrCreate(
+            [
+                'company_id' => $absence->company_id,
+                'employee_id' => $absence->employee_id,
+                'absence_type_id' => $type->id,
+                'year' => $year,
+            ],
+            ['balance' => 0, 'used' => 0, 'pending' => 0]
+        );
+
+        match ($action) {
+            'pending_add' => $snapshot->increment('pending', $days),
+            'approve' => $snapshot->update([
+                'pending' => max(0, (float) $snapshot->pending - $days),
+                'used' => (float) $snapshot->used + $days,
+            ]),
+            'reject_pending' => $snapshot->update([
+                'pending' => max(0, (float) $snapshot->pending - $days),
+            ]),
+            'reject_approved' => $snapshot->update([
+                'used' => max(0, (float) $snapshot->used - $days),
+            ]),
+            'cancel' => $snapshot->update([
+                'pending' => max(0, (float) $snapshot->pending - $days),
+            ]),
+            default => throw new \InvalidArgumentException("Unknown leave balance snapshot action [{$action}]."),
+        };
     }
 }
