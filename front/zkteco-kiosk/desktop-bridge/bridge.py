@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hmac
 import json
+import secrets
 import sqlite3
 import threading
 import time
@@ -35,6 +37,38 @@ def load_config() -> dict:
 
 
 CONFIG = load_config()
+
+# Issue #3586 — le bridge écoute sans aucune authentification : n'importe quel
+# poste du LAN pouvait lire config.json (token kiosk) et kiosk.db (PII), ou
+# forger des pointages via POST /local/punch cross-origin. Un token de session
+# local est généré à chaque boot, injecté dans les pages HTML servies par le
+# bridge (window.__LOCAL_BRIDGE_TOKEN) et exigé sur tous les endpoints /local/*
+# via le header X-Local-Bridge-Token.
+LOCAL_BRIDGE_TOKEN = secrets.token_urlsafe(32)
+LOCAL_TOKEN_HEADER = "X-Local-Bridge-Token"
+
+# Allowlist statique stricte : seuls les assets de l'UI kiosk sont servis.
+# config.json (token), config.example.json, *.db (PII), *.py, package*.json,
+# desktop-bridge/** ne doivent JAMAIS être exposés.
+ALLOWED_STATIC_FILES = frozenset({
+    "index.html",
+    "admin.html",
+    "app.js",
+    "admin.js",
+    "i18n.js",
+})
+
+# Enums miroir du contrat serveur (KioskController::sync, #3588) : valider à
+# l'insertion évite qu'un événement « poison » bloque la file offline.
+VALID_ACTIONS = frozenset({"check_in", "check_out"})
+VALID_BIOMETRIC_TYPES = frozenset({"fingerprint", "face", "mixed"})
+
+# Politique de retry de la sync (#3588) : 5xx/réseau = transitoire (backoff
+# exponentiel borné), 4xx = permanent (dead-letter). Au-delà du cap, un
+# événement irrécupérable est isolé en dead_letter au lieu de bloquer la file.
+MAX_SYNC_ATTEMPTS = 10
+RETRY_BASE_SECONDS = 15
+RETRY_MAX_SECONDS = 900
 
 
 class LocalStore:
@@ -78,6 +112,15 @@ class LocalStore:
             );
             """
         )
+        # Migration douce (#3588) : les bases existantes gagnent les colonnes
+        # de retry/dead-letter sans perdre la file en cours.
+        columns = {
+            row["name"] for row in self.conn.execute("pragma table_info(punch_queue)").fetchall()
+        }
+        if "retry_count" not in columns:
+            self.conn.execute("alter table punch_queue add column retry_count integer not null default 0")
+        if "next_retry_at" not in columns:
+            self.conn.execute("alter table punch_queue add column next_retry_at text")
         self.conn.commit()
 
     def upsert_roster(self, employees: list[dict]) -> None:
@@ -139,14 +182,17 @@ class LocalStore:
         return payload
 
     def queued_events(self, limit: int = 200) -> list[dict]:
+        # Ne sélectionne que les événements éligibles : le backoff (#3588)
+        # reporte les événements en échec transitoire via next_retry_at.
         rows = self.conn.execute(
             """
             select * from punch_queue
             where sync_status = 'queued'
+              and (next_retry_at is null or next_retry_at <= ?)
             order by id asc
             limit ?
             """,
-            (limit,),
+            (utc_now_iso(), limit),
         ).fetchall()
         return [dict(row) for row in rows]
 
@@ -182,6 +228,84 @@ class LocalStore:
                     """,
                     (error_message, event_id),
                 )
+
+    def mark_retry(self, external_event_ids: list[str], error_message: str) -> list[str]:
+        """Echec transitoire (#3588) : backoff exponentiel, puis dead-letter au cap.
+
+        Retourne la liste des événements basculés en dead_letter (cap atteint).
+        """
+        dead: list[str] = []
+        with self.conn:
+            for event_id in external_event_ids:
+                row = self.conn.execute(
+                    "select retry_count from punch_queue where external_event_id = ?",
+                    (event_id,),
+                ).fetchone()
+                attempts = int(row["retry_count"]) + 1 if row else 1
+                if attempts >= MAX_SYNC_ATTEMPTS:
+                    self.conn.execute(
+                        """
+                        update punch_queue
+                        set sync_status = 'dead_letter',
+                            retry_count = ?,
+                            error_message = ?,
+                            next_retry_at = null
+                        where external_event_id = ?
+                        """,
+                        (attempts, f"MAX_RETRY_EXCEEDED: {error_message}", event_id),
+                    )
+                    dead.append(event_id)
+                    continue
+                delay = min(RETRY_BASE_SECONDS * (2 ** (attempts - 1)), RETRY_MAX_SECONDS)
+                next_retry = datetime.fromtimestamp(time.time() + delay, tz=timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+                self.conn.execute(
+                    """
+                    update punch_queue
+                    set retry_count = ?,
+                        error_message = ?,
+                        next_retry_at = ?
+                    where external_event_id = ?
+                    """,
+                    (attempts, error_message, next_retry, event_id),
+                )
+        return dead
+
+    def mark_dead_letter(self, external_event_ids: list[str], reason: str) -> None:
+        """Rejet permanent (#3587/#3588) : isolé, jamais marqué synced, réparable."""
+        with self.conn:
+            for event_id in external_event_ids:
+                self.conn.execute(
+                    """
+                    update punch_queue
+                    set sync_status = 'dead_letter',
+                        error_message = ?,
+                        next_retry_at = null
+                    where external_event_id = ?
+                    """,
+                    (reason, event_id),
+                )
+
+    def requeue_event(self, external_event_id: str) -> bool:
+        """Réparation ops (#3588) : un dead_letter/erreur repart en file."""
+        with self.conn:
+            cursor = self.conn.execute(
+                """
+                update punch_queue
+                set sync_status = 'queued',
+                    retry_count = 0,
+                    next_retry_at = null,
+                    error_message = null
+                where external_event_id = ? and sync_status != 'synced'
+                """,
+                (external_event_id,),
+            )
+        return cursor.rowcount > 0
+
+    def dead_letter_count(self) -> int:
+        row = self.conn.execute(
+            "select count(*) as count from punch_queue where sync_status = 'dead_letter'"
+        ).fetchone()
+        return int(row["count"])
 
     def set_state(self, key: str, value: str) -> None:
         with self.conn:
@@ -249,7 +373,9 @@ class SyncEngine:
         events = self.store.queued_events()
         if not events:
             return {"processed_count": 0, "message": "Aucun evenement a synchroniser"}
+        return self._upload_batch(events, allow_poison_retry=True)
 
+    def _upload_batch(self, events: list[dict], allow_poison_retry: bool) -> dict:
         api_payload = {
             "events": [
                 {
@@ -265,17 +391,118 @@ class SyncEngine:
 
         try:
             payload = self._request("POST", f"/kiosks/{self.device_code}/sync", api_payload)
-            processed = payload.get("data", {}).get("processed_count", 0)
-            event_ids = [event["external_event_id"] for event in events]
-            self.store.mark_synced(event_ids, json.dumps(payload.get("data", {}), ensure_ascii=False))
-            self.store.set_state("last_sync_at", utc_now_iso())
-            self.store.set_state("last_sync_error", "")
-            return {"processed_count": processed}
+        except urllib.error.HTTPError as error:
+            return self._handle_sync_http_error(events, error, allow_poison_retry)
         except Exception as error:
+            # 5xx applicatif non HTTP ou erreur réseau : transitoire → backoff.
             event_ids = [event["external_event_id"] for event in events]
-            self.store.mark_error(event_ids, str(error))
+            self.store.mark_retry(event_ids, str(error))
             self.store.set_state("last_sync_error", str(error))
             raise
+
+        data = payload.get("data", {})
+        processed = data.get("processed_count", 0)
+        skipped = data.get("skipped")
+
+        if isinstance(skipped, list):
+            # Contrat #3587 : le serveur détaille les événements refusés
+            # (identifiant inconnu, biométrie non approuvée...). Ils sont
+            # isolés en dead_letter avec la raison — jamais marqués synced.
+            skipped_by_id = {
+                str(item.get("external_event_id")): str(item.get("reason", "SKIPPED"))
+                for item in skipped
+                if isinstance(item, dict) and item.get("external_event_id")
+            }
+            synced_ids = [
+                event["external_event_id"]
+                for event in events
+                if event["external_event_id"] not in skipped_by_id
+            ]
+            if synced_ids:
+                self.store.mark_synced(synced_ids, json.dumps(data, ensure_ascii=False))
+            for event in events:
+                reason = skipped_by_id.get(event["external_event_id"])
+                if reason:
+                    self.store.mark_dead_letter([event["external_event_id"]], reason)
+        elif processed < len(events):
+            # Serveur legacy sans détail : NE PAS marquer synced en aveugle
+            # (#3587 — perte silencieuse historique). Les événements restent
+            # en file avec un warning exploitable ; le cap de retries borne
+            # la rétention (les pointages valides sont idempotents côté API).
+            event_ids = [event["external_event_id"] for event in events]
+            warning = (
+                f"SYNC_PARTIAL_WITHOUT_DETAIL: processed_count={processed} "
+                f"sur {len(events)} evenements envoyes"
+            )
+            self.store.mark_retry(event_ids, warning)
+            self.store.set_state("last_sync_error", warning)
+            return {"processed_count": processed, "warning": warning}
+        else:
+            event_ids = [event["external_event_id"] for event in events]
+            self.store.mark_synced(event_ids, json.dumps(data, ensure_ascii=False))
+
+        self.store.set_state("last_sync_at", utc_now_iso())
+        self.store.set_state("last_sync_error", "")
+        result = {"processed_count": processed}
+        if isinstance(skipped, list):
+            result["skipped_count"] = len(skipped)
+        return result
+
+    def _handle_sync_http_error(self, events: list[dict], error: urllib.error.HTTPError, allow_poison_retry: bool) -> dict:
+        body = ""
+        try:
+            body = error.read().decode("utf-8")
+        except Exception:
+            pass
+
+        if 400 <= error.code < 500:
+            # 4xx = rejet permanent (#3588) : isoler le poison au lieu de
+            # bloquer la file entière en retry infini.
+            poison_ids = self._poison_event_ids(events, body)
+            if poison_ids:
+                remaining = [e for e in events if e["external_event_id"] not in poison_ids]
+                self.store.mark_dead_letter(poison_ids, f"HTTP_{error.code}: {body[:300]}")
+                if remaining and allow_poison_retry:
+                    return self._upload_batch(remaining, allow_poison_retry=False)
+                return {"processed_count": 0, "dead_lettered": len(poison_ids)}
+            if len(events) == 1:
+                self.store.mark_dead_letter(
+                    [events[0]["external_event_id"]], f"HTTP_{error.code}: {body[:300]}"
+                )
+                return {"processed_count": 0, "dead_lettered": 1}
+            # 4xx multi-événements non analysable : transitoire côté file,
+            # le cap de retries finira par isoler le batch.
+            event_ids = [event["external_event_id"] for event in events]
+            self.store.mark_retry(event_ids, f"HTTP_{error.code}: {body[:300]}")
+            self.store.set_state("last_sync_error", f"HTTP_{error.code}")
+            raise error
+
+        # 5xx : transitoire → backoff.
+        event_ids = [event["external_event_id"] for event in events]
+        self.store.mark_retry(event_ids, f"HTTP_{error.code}: {body[:300]}")
+        self.store.set_state("last_sync_error", f"HTTP_{error.code}")
+        raise error
+
+    @staticmethod
+    def _poison_event_ids(events: list[dict], body: str) -> list[str]:
+        """Extrait les événements fautifs des erreurs de validation Laravel.
+
+        Le contrat 422 Laravel indexe les erreurs par `events.<i>.<field>` ;
+        on mappe l'index sur l'external_event_id du batch envoyé.
+        """
+        try:
+            payload = json.loads(body) if body else {}
+        except json.JSONDecodeError:
+            return []
+        errors = payload.get("errors")
+        if not isinstance(errors, dict):
+            return []
+        poison_indexes: set[int] = set()
+        for key in errors:
+            parts = str(key).split(".")
+            if len(parts) >= 2 and parts[0] == "events" and parts[1].isdigit():
+                poison_indexes.add(int(parts[1]))
+        return [events[i]["external_event_id"] for i in sorted(poison_indexes) if i < len(events)]
 
     def sync_all(self) -> dict:
         roster = self.download_roster()
@@ -314,8 +541,40 @@ class BridgeHandler(BaseHTTPRequestHandler):
         raw = self.rfile.read(length)
         return json.loads(raw.decode("utf-8"))
 
+    def _is_authorized_local(self) -> bool:
+        """Token de session local exigé sur /local/* (#3586).
+
+        Le token est injecté dans les pages servies par le bridge ; comparaison
+        en temps constant pour éviter toute oracle temporelle.
+        """
+        provided = self.headers.get(LOCAL_TOKEN_HEADER, "")
+        return bool(provided) and hmac.compare_digest(provided, LOCAL_BRIDGE_TOKEN)
+
+    def _is_same_origin(self) -> bool:
+        """Anti-CSRF (#3586) : un Origin cross-site ne peut pas forger de punch.
+
+        Les requêtes same-origin du kiosk n'envoient pas toujours Origin (GET) ;
+        quand il est présent (fetch POST), son host doit égaler celui du bridge.
+        """
+        origin = self.headers.get("Origin")
+        if not origin:
+            return True
+        origin_host = urlparse(origin).netloc
+        return bool(origin_host) and origin_host == self.headers.get("Host", "")
+
+    def _guard_local(self) -> bool:
+        """Garde commune /local/* : répond et retourne False si refusé."""
+        if not self._is_authorized_local():
+            return self._json(401, {"error": "LOCAL_TOKEN_REQUIRED"}) or False
+        if not self._is_same_origin():
+            return self._json(403, {"error": "ORIGIN_FORBIDDEN"}) or False
+        return True
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path.startswith("/local/") and not self._guard_local():
+            return
+
         if parsed.path == "/local/status":
             online, error_message = SYNC_ENGINE.online_status()
             payload = {
@@ -324,6 +583,7 @@ class BridgeHandler(BaseHTTPRequestHandler):
                     "location_label": CONFIG.get("locationLabel", "Entree principale"),
                     "device_code": CONFIG.get("deviceCode", ""),
                     "queue_count": STORE.queue_count(),
+                    "dead_letter_count": STORE.dead_letter_count(),
                     "online": online,
                     "last_error": error_message or STORE.get_state("last_sync_error", ""),
                     "last_sync_at": STORE.get_state("last_sync_at", ""),
@@ -341,6 +601,14 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:
         parsed = urlparse(self.path)
+        if parsed.path.startswith("/local/"):
+            if not self._guard_local():
+                return
+            # Anti-CSRF (#3586) : un POST cross-site simple (fetch no-cors) ne
+            # peut pas poser application/json → rejet systématique.
+            content_type = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+            if content_type != "application/json":
+                return self._json(415, {"error": "CONTENT_TYPE_JSON_REQUIRED"})
         try:
             if parsed.path == "/local/punch":
                 payload = self._read_json()
@@ -350,6 +618,14 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
                 if not identifier:
                     return self._json(422, {"error": "IDENTIFIER_REQUIRED"})
+                if len(identifier) > 150:
+                    return self._json(422, {"error": "IDENTIFIER_TOO_LONG"})
+                # Validation à l'insertion (#3588) : un événement hors contrat
+                # serveur ne doit jamais entrer dans la file offline.
+                if action not in VALID_ACTIONS:
+                    return self._json(422, {"error": "INVALID_ACTION"})
+                if biometric_type not in VALID_BIOMETRIC_TYPES:
+                    return self._json(422, {"error": "INVALID_BIOMETRIC_TYPE"})
 
                 event = STORE.queue_punch(identifier, action, biometric_type)
                 sync_status = "queued"
@@ -362,6 +638,15 @@ class BridgeHandler(BaseHTTPRequestHandler):
                         sync_status = "queued"
 
                 return self._json(201, {"data": {**event, "sync_status": sync_status}})
+
+            if parsed.path == "/local/events/requeue":
+                payload = self._read_json()
+                event_id = str(payload.get("external_event_id", "")).strip()
+                if not event_id:
+                    return self._json(422, {"error": "EXTERNAL_EVENT_ID_REQUIRED"})
+                if not STORE.requeue_event(event_id):
+                    return self._json(404, {"error": "EVENT_NOT_REQUEUEABLE"})
+                return self._json(200, {"data": {"external_event_id": event_id, "sync_status": "queued"}})
 
             if parsed.path == "/local/sync/roster":
                 return self._json(200, {"data": SYNC_ENGINE.download_roster()})
@@ -381,8 +666,18 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
     def _serve_static(self, path: str) -> None:
         relative = path.lstrip("/") or "index.html"
+
+        # Allowlist stricte (#3586) : config.json (token kiosk), *.db (PII),
+        # *.py et tout le reste du projet ne sont JAMAIS servis.
+        if relative not in ALLOWED_STATIC_FILES:
+            return self._json(404, {"error": "NOT_FOUND"})
+
         target = (ROOT / relative).resolve()
-        if not str(target).startswith(str(ROOT)) or not target.exists() or not target.is_file():
+        try:
+            target.relative_to(ROOT)
+        except ValueError:
+            return self._json(404, {"error": "NOT_FOUND"})
+        if not target.exists() or not target.is_file():
             return self._json(404, {"error": "NOT_FOUND"})
 
         content_type = "text/html; charset=utf-8"
@@ -399,6 +694,9 @@ class BridgeHandler(BaseHTTPRequestHandler):
         # fonctions cloud (employee-info, announcements, leave-balance,
         # qr-punch) appellent `/api/v1/kiosks//…` → 404 (déploiement
         # documenté http://127.0.0.1:8037/index.html).
+        # Issue #3586 — on injecte aussi `window.__LOCAL_BRIDGE_TOKEN` :
+        # les appels `/local/*` exigent désormais le header
+        # `X-Local-Bridge-Token` (auth de session locale).
         if target.suffix == ".html":
             injected = (
                 "<script>\n"
@@ -411,12 +709,18 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 "window.__KIOSK_TOKEN = "
                 + json.dumps(CONFIG.get("kioskToken", ""))
                 + ";\n"
+                "window.__LOCAL_BRIDGE_TOKEN = "
+                + json.dumps(LOCAL_BRIDGE_TOKEN)
+                + ";\n"
                 "</script>"
             ).encode("utf-8")
             body = body.replace(b"</head>", injected + b"</head>", 1)
 
         self.send_response(200)
         self.send_header("Content-Type", content_type)
+        # Le HTML transporte le token de session : jamais de cache (#3586).
+        if target.suffix == ".html":
+            self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
@@ -440,6 +744,10 @@ def main() -> None:
     threading.Thread(target=auto_sync_loop, daemon=True).start()
     host = CONFIG.get("listenHost", "127.0.0.1")
     port = int(CONFIG.get("listenPort", 8037))
+    if host not in ("127.0.0.1", "::1", "localhost"):
+        # #3586 : l'auth locale protege desormais les endpoints, mais exposer
+        # la borne sur le LAN reste un choix a assumer explicitement.
+        print(f"AVERTISSEMENT: bridge expose sur {host} — auth locale active, verifier la config reseau.")
     server = ThreadingHTTPServer((host, port), BridgeHandler)
     print(f"Bridge ZKTeco local demarre sur http://{host}:{port}")
     server.serve_forever()
