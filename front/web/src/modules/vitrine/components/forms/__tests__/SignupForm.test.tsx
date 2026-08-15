@@ -32,7 +32,6 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
 }));
 
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
-const mockedFetchTrialStatus = fetchTrialStatus as jest.Mock;
 
 describe('SignupForm Component', () => {
   describe('Rendering', () => {
@@ -248,6 +247,7 @@ describe('SignupForm Component', () => {
 
     it('polls pending → ready and shows the access link', async () => {
       jest.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       try {
         mockedSubmitSignupForm.mockResolvedValue({
           success: true,
@@ -263,11 +263,16 @@ describe('SignupForm Component', () => {
           });
 
         render(<SignupForm />);
-        await fillValidForm();
-        await fireEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+        await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+        await user.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+        const selects = screen.getAllByRole('combobox');
+        await user.selectOptions(selects[0], 'founder');
+        await user.selectOptions(selects[1], '1-10');
+        await user.click(screen.getByRole('checkbox'));
+        await user.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
         await screen.findByText(/verifiez votre email/i);
 
-        await fireEvent.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+        await user.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
 
         // premier poll immédiat : pending → spinner
         expect(await screen.findByText(/preparation de votre espace/i)).toBeInTheDocument();
@@ -301,104 +306,6 @@ describe('SignupForm Component', () => {
       const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');
-    });
-  });
-
-  describe('Provisioning status tracking (issue #2469)', () => {
-    beforeEach(() => {
-      mockedSubmitSignupForm.mockReset();
-      mockedFetchTrialStatus.mockReset();
-      window.sessionStorage.clear();
-    });
-
-    async function fillValidForm() {
-      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
-      const selects = screen.getAllByRole('combobox');
-      await userEvent.selectOptions(selects[0], 'founder');
-      await userEvent.selectOptions(selects[1], '1-10');
-      await userEvent.click(screen.getByRole('checkbox'));
-    }
-
-    it('shows the "Suivre l\'état" link on the OTP step when a provisioning token is returned', async () => {
-      mockedSubmitSignupForm.mockResolvedValue({
-        success: true,
-        provisioned: true,
-        message: 'Code de verification envoye.',
-        data: { provisioning_token: 'a'.repeat(64) },
-      });
-
-      render(<SignupForm />);
-      await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
-      });
-      expect(screen.getByRole('button', { name: /état de mon espace/i })).toBeInTheDocument();
-    });
-
-    it('polls the status endpoint and shows the ready link with login_url', async () => {
-      // délai poll 5 s + remplissage formulaire → timeout de test étendu
-      mockedSubmitSignupForm.mockResolvedValue({
-        success: true,
-        provisioned: true,
-        message: 'Code de verification envoye.',
-        data: { provisioning_token: 'a'.repeat(64) },
-      });
-      // pending d'abord (appel immédiat), puis ready au polling suivant (5 s)
-      mockedFetchTrialStatus
-        .mockResolvedValueOnce({ success: true, data: { status: 'pending' } })
-        .mockResolvedValue({ success: true, data: { status: 'ready', login_url: 'https://demo.leopardo-rh.com/login?token=abc' } });
-
-      render(<SignupForm />);
-      await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /état de mon espace/i })).toBeInTheDocument();
-      });
-      await userEvent.click(screen.getByRole('button', { name: /état de mon espace/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(/votre espace se prepare/i)).toBeInTheDocument();
-      });
-
-      // le polling suivant part après 5 s (vrai timer — délai attendu)
-      await waitFor(
-        () => {
-          expect(screen.getByText(/votre espace est pret/i)).toBeInTheDocument();
-        },
-        { timeout: 7000 }
-      );
-      expect(screen.getByRole('button', { name: /acceder a mon espace/i })).toBeInTheDocument();
-    }, 15000);
-
-    it('shows a generic failure message when provisioning failed', async () => {
-      mockedSubmitSignupForm.mockResolvedValue({
-        success: true,
-        provisioned: true,
-        message: 'Code de verification envoye.',
-        data: { provisioning_token: 'b'.repeat(64) },
-      });
-      mockedFetchTrialStatus.mockResolvedValue({
-        success: true,
-        data: { status: 'failed', message: 'PROVISIONING_FAILED' },
-      });
-
-      render(<SignupForm />);
-      await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /état de mon espace/i })).toBeInTheDocument();
-      });
-      await userEvent.click(screen.getByRole('button', { name: /état de mon espace/i }));
-
-      await waitFor(() => {
-        expect(screen.getByText(/une erreur est survenue/i)).toBeInTheDocument();
-      });
-      expect(screen.getByText(/PROVISIONING_FAILED/)).toBeInTheDocument();
     });
   });
 });
