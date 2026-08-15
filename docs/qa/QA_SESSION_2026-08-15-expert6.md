@@ -53,7 +53,7 @@ référencées par PRs mergées restées ouvertes (#2597, #2605, #2627, #2632, #
 ## État final
 
 - main : merges continus du swarm (30+ PRs mergées sur la fenêtre) ; gardes repo verts (migrations, env, OpenAPI).
-- **10 PRs créées par cette session** : #3228 (lint admin), #3301 (tool script), #3351 (docs session), #3371 (checkout fallback), #3397 (offline — **mergée**), #3399 (sitemap /share — fermée comme doublon de #3355, fix déjà sur main), #3418 (per_page ×8), #3426 (CSV injection), #3451 (essai 14j TR), #3461 (CHANGELOG dédupliqué), #3469 (SEO case-studies).
-- **4 issues fermées avec preuve code** : #3224 (migrations déjà corrigées), #3323 (faux positif OpenAPI), #3332 (sitemap /share via #3355), + #3331 (via #3397).
+- **11 PRs créées par cette session** : #3228 (lint admin), #3301 (tool script), #3351 (docs session), #3371 (checkout fallback), #3397 (offline — **mergée**), #3399 (sitemap /share — fermée comme doublon de #3355, fix déjà sur main), #3418 (per_page ×8), #3426 (CSV injection), #3451 (essai 14j TR), #3461 (CHANGELOG dédupliqué 1658→1172 lignes), #3469 (SEO case-studies), #3481 (per_page ×11 supplémentaires).
+- **5 issues fermées avec preuve code** : #3224 (migrations déjà corrigées), #3323 (faux positif OpenAPI), #3332 (sitemap /share via #3355), #3331 (via #3397), #3252 (via #3355).
 - Merge campaign : 179 runs orphelins annulés ; boucle de merge active.
 - Token propriétaire : à révoquer en fin de session (jamais persisté hors env).
