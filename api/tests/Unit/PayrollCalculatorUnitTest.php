@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
-use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CanadaPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
@@ -62,7 +61,10 @@ class PayrollCalculatorUnitTest extends TestCase
 
     public function test_get_rules_throws_for_unknown_country(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        // Issue #1868 : le resolver lève UnsupportedCountryRulesException
+        // (RuntimeException métier, 422) — plus d'InvalidArgumentException
+        // générique (aligné PR #2303, re-cassé par le merge direct #2164).
+        $this->expectException(UnsupportedCountryRulesException::class);
         (new PayrollCalculator())->getRules('XX');
     }
 
