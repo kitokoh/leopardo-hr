@@ -80,6 +80,17 @@
 3. GitHub calcule `mergeable_state` en cache — merger origin/main dans la
    branche force le recalcul avant de merger.
 
+
+## 🔴 Découverte majeure — CI backend globale réparée (P1)
+
+**Symptôme** : Backend Coverage + PHPStan rouges sur TOUTES les PRs (même UI-only) → `composer install` échoue au post-autoload-dump (`package:discover`).
+
+**Root cause** : le merge #3693 a introduit `app()->environment('production')` dans `config/queue.php` — appel illégal au conteneur pendant le chargement des configs → `Target class [env] does not exist`.
+
+**Fix** : `env('APP_ENV', 'production') === 'production'` — PR #3778 (mergée). Vérifié localement (PHP installé dans le sandbox, `php artisan package:discover` exit 0).
+
+**Leçon** : ne JAMAIS appeler `app()` dans un fichier config Laravel.
+
 ## Fichiers
 
 - Spec-kit : `.specify/features/qa-expert6-2026-08-15/` (findings-registry
