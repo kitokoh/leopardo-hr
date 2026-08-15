@@ -101,6 +101,21 @@ Deux modes reels sont prevus :
    - ou dans le navigateur :
    - `window.ZKTecoBridge.submitIdentifier("FP-00042", "check_in", "fingerprint")`
 
+## Securite du bridge local (2026-08-15, #3586/#3587/#3588)
+
+- Tous les endpoints `/local/*` exigent le header `X-Local-Bridge-Token` :
+  token de session genere a chaque demarrage du bridge et injecte dans les
+  pages servies (`window.__LOCAL_BRIDGE_TOKEN`). Les integrations SDK locales
+  doivent le lire depuis la page servie par le bridge.
+- Le bridge ne sert que les assets UI (`index.html`, `admin.html`, `app.js`,
+  `admin.js`, `i18n.js`) : `config.json` et `desktop-bridge/data/kiosk.db`
+  ne sont jamais exposes.
+- Les POST exigent `Content-Type: application/json` et un `Origin` same-origin.
+- Sync offline resiliente : les evenements refuses par l API sont isoles en
+  `dead_letter` (visibles via `/local/status` → `dead_letter_count`,
+  reparables via `POST /local/events/requeue`) au lieu de bloquer la file ;
+  les erreurs transitoires suivent un backoff exponentiel (cap 10 essais).
+
 ## Important sur la biometrie
 
 Le materiel ZKTeco reste responsable de la capture / matching brut de l empreinte ou du visage.

@@ -195,12 +195,18 @@ class KioskController extends Controller
         $this->setTenantSearchPath($kiosk->company);
 
 
-        $processed = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events']);
+        $result = $this->kioskAttendanceService->syncPunches($kiosk, $validated['events']);
 
+        // #3587 — le bridge isole les événements refusés en dead-letter au
+        // lieu de les marquer synced : la réponse détaille désormais chaque
+        // skip (external_event_id + raison). Contrat additif :
+        // processed_count/processed_log_ids inchangés.
         return new JsonResponse([
             'data' => [
-                'processed_count' => count($processed),
-                'processed_log_ids' => $processed,
+                'processed_count' => count($result['processed']),
+                'processed_log_ids' => $result['processed'],
+                'skipped_count' => count($result['skipped']),
+                'skipped' => $result['skipped'],
                 'last_sync_at' => $kiosk->fresh()?->last_sync_at?->toIso8601String(),
             ],
         ]);
