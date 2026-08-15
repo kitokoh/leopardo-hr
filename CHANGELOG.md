@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(admin): libellés de features plans/company — clés réelles mappées (Closes #3437).** `SubscriptionsView.formatFeatureLabel` ne couvrait que rh/finance/ai/cameras/... alors que les clés réelles des plans (PlanSeeder) sont `biometric/tasks/advanced_reports/excel_export/bank_export/billing_auto/multi_managers/photo_attendance/api_public/evaluations/schema_isolation` (0/11 → `BIOMETRIC`, `SCHEMA_ISOLATION` bruts) ; `CompanyDetailView.formatFeatureName` ne couvrait pas `muhasebe`/`leo_ai` (KNOWN_MODULES) → `MUHASEBE`, `LEO_AI` bruts. Maps alignées sur les clés réelles + libellés FR.
 
 - **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 - **fix(admin): route morte /users/:id supprimée (Closes #3280).** UserDetailView (prop `:show` inexistante, « Impersonner » inerte) jamais liée — code mort retiré du bundle.
