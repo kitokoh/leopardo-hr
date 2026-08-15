@@ -540,7 +540,9 @@ class AttendanceCorrection {
       id: _asInt(json['id']),
       employeeName: employee['name']?.toString() ?? 'Employe',
       date: json['date']?.toString() ?? '',
-      requestedCheckIn: DateTime.tryParse(json['requested_check_in']?.toString() ?? ''),
+      requestedCheckIn:
+          DateTime.tryParse(json['requested_check_in']?.toString() ?? '') ??
+              DateTime.utc(1970),
       requestedCheckOut: json['requested_check_out'] != null
           ? DateTime.tryParse(json['requested_check_out'].toString())
           : null,
