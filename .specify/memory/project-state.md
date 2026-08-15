@@ -37,9 +37,9 @@
 |------|------|--------|-------------|-------------|---------|
 | Côte d'Ivoire | CI | ✅ `pilot` | ✅ 20+ cas | ✅ CNSS CSV | ITSAS + CN + plafond 1 647 315 |
 | Sénégal | SN | ✅ `pilot` | ✅ 20+ cas | ✅ IPRES/CSS CSV | TRIMF + CFCE + IPRES T2 cadres |
-| Burkina Faso | BF | 🟡 `pilot` | ✅ 6 cas | ❌ | IUTS |
-| Mali | ML | 🟡 `pilot` | ✅ 6 cas | ❌ | ITS + INPS |
-| Togo | TG | 🟡 `pilot` | ✅ 8 cas | ❌ | IRPP art. 74 + CNSS + SMIG 52 500 (#2121) |
+| Burkina Faso | BF | 🟡 `pilot` | ✅ 6 cas | ✅ CNSS CSV (#2158) | IUTS |
+| Mali | ML | 🟡 `pilot` | ✅ 6 cas | ✅ INPS CSV (#2158) | ITS |
+| Togo | TG | 🔴 `placeholder` | ❌ | ❌ | **Prochain candidat CEDEAO** |
 | Bénin | BJ | 🔴 `placeholder` | ❌ | ❌ | |
 | Niger | NE | 🔴 `placeholder` | ❌ | ❌ | |
 

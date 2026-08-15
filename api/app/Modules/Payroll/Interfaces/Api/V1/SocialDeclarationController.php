@@ -9,7 +9,7 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
@@ -395,10 +395,10 @@ class SocialDeclarationController extends Controller
     }
 
     /**
-     * CEMAC (#2155) — déclaration CNSS mensuelle Gabon (CSV).
-     * 422 si le run n'est pas un run GA.
+     * CEDEAO (#2158) — déclaration CNSS mensuelle Burkina Faso (CSV).
+     * 422 si le run n'est pas un run BF.
      */
-    public function generateCnssGaDeclaration(Request $request, PayrollRun $payrollRun): Response
+    public function generateCnssBfDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -408,16 +408,16 @@ class SocialDeclarationController extends Controller
         if (! $actor->hasManagerRole('principal', 'comptable')) {
             abort(403);
         }
-        if ($payrollRun->country_code !== 'GA') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Gabon (CNSS GA).'], 422);
+        if ($payrollRun->country_code !== 'BF') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Burkina Faso (CNSS BF).'], 422);
         }
 
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_ga_declaration');
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_bf_declaration');
 
-        $generator = new CemacCnpsDeclarationGenerator;
+        $generator = new CedeaoCnsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
 
-        $filename = sprintf('CNSS_GA_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+        $filename = sprintf('CNSS_BF_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
 
         return response()->streamDownload(function () use ($content): void {
             echo $content;
@@ -428,10 +428,10 @@ class SocialDeclarationController extends Controller
     }
 
     /**
-     * CEMAC (#2155) — déclaration CNSS mensuelle Congo-Brazzaville (CSV).
-     * 422 si le run n'est pas un run CG.
+     * CEDEAO (#2158) — déclaration INPS mensuelle Mali (CSV).
+     * 422 si le run n'est pas un run ML.
      */
-    public function generateCnssCgDeclaration(Request $request, PayrollRun $payrollRun): Response
+    public function generateInpsMlDeclaration(Request $request, PayrollRun $payrollRun): Response
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -441,16 +441,16 @@ class SocialDeclarationController extends Controller
         if (! $actor->hasManagerRole('principal', 'comptable')) {
             abort(403);
         }
-        if ($payrollRun->country_code !== 'CG') {
-            return response()->json(['message' => 'Ce run ne concerne pas le Congo-Brazzaville (CNSS CG).'], 422);
+        if ($payrollRun->country_code !== 'ML') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Mali (INPS ML).'], 422);
         }
 
-        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_cg_declaration');
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.inps_ml_declaration');
 
-        $generator = new CemacCnpsDeclarationGenerator;
+        $generator = new CedeaoCnsDeclarationGenerator;
         $content = $generator->generate($payrollRun);
 
-        $filename = sprintf('CNSS_CG_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+        $filename = sprintf('INPS_ML_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
 
         return response()->streamDownload(function () use ($content): void {
             echo $content;
