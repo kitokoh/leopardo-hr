@@ -1,3 +1,5 @@
+import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+
 interface JsonLdProps {
   data: Record<string, unknown>;
 }
@@ -63,6 +65,24 @@ export function ArticleJsonLd({
 }
 
 export function OrganizationJsonLd() {
+  const offers = getPricingPlans('fr').map((plan) => {
+    const price = Number(plan.price);
+    const baseOffer = {
+      '@type': 'Offer' as const,
+      name: plan.name,
+      description: plan.description,
+      priceCurrency: 'EUR',
+      url: `${SITE_URL}/pricing`,
+    };
+
+    return Number.isFinite(price)
+      ? { ...baseOffer, price }
+      : {
+          ...baseOffer,
+          description: `${plan.description} Tarif sur devis.`,
+        };
+  });
+
   return (
     <JsonLd
       data={{
@@ -74,13 +94,7 @@ export function OrganizationJsonLd() {
         description:
           'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
         availableLanguage: ['fr', 'en', 'ar', 'tr'],
-        offers: {
-          '@type': 'AggregateOffer',
-          priceCurrency: 'EUR',
-          lowPrice: '0',
-          highPrice: '99',
-          offerCount: '3',
-        },
+        offers,
         creator: {
           '@type': 'Organization',
           name: 'Leopardo RH',
