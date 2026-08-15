@@ -18,8 +18,7 @@ class ManagerSmartAttendanceRepository {
       '/smart-attendance/sessions?status=pending_validation&per_page=50',
       timeoutOverride: _readTimeout,
     );
-    final raw = response.data;
-    final list = (raw is Map ? raw['data'] : raw) as List<dynamic>? ?? [];
+    final list = extractDataList(response.data);
     return list
         .map((e) => GeoAttendanceSession.fromJson(e as Map<String, dynamic>))
         .toList();

@@ -10,7 +10,6 @@ import 'features/marketing/screens/marketing_home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('fr_FR', null);
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
@@ -21,7 +20,7 @@ void main() async {
       child: StartupGate(
         appName: 'Leopardo Marketing',
         initializer: _bootstrap,
-        criticalInitializer: () async {},
+        criticalInitializer: _initializeLocales,
         optionalInitializer: () async {},
         child: const LeopardoMarketingApp(),
       ),
@@ -31,6 +30,13 @@ void main() async {
 
 Future<void> _bootstrap() async {
   // Initialization logic for marketing app
+}
+
+// #3500 — l'initialisation des locales était un await bloquant avant runApp
+// (premier frame retardé) ; déplacée dans StartupGate (criticalInitializer),
+// même pattern que les apps employee/manager/HR (#2748).
+Future<void> _initializeLocales() async {
+  await initializeDateFormatting('fr_FR', null);
 }
 
 // ─── Navigation items ─────────────────────────────────────────────────────────
