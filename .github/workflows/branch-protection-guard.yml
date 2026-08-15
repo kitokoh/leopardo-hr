@@ -26,25 +26,25 @@ concurrency:
 jobs:
   check:
     name: Check branch protection (issue #2011)
-    if: ${{ secrets.BRANCH_PROTECTION_TOKEN != '' }}
     runs-on: ubuntu-latest
+    env:
+      # Fine-grained PAT/App token with administration:read on this repo.
+      BRANCH_PROTECTION_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
 
+      # Le contexte `secrets` n'est pas disponible dans les `if` de job
+      # (actionlint) : la présence du token est testée au niveau step via env.
       - name: Verify main protection matches canonical
+        if: ${{ env.BRANCH_PROTECTION_TOKEN != '' }}
         env:
-          # Fine-grained PAT/App token with administration:read on this repo.
-          GITHUB_TOKEN: ${{ secrets.BRANCH_PROTECTION_TOKEN }}
+          GITHUB_TOKEN: ${{ env.BRANCH_PROTECTION_TOKEN }}
         run: dev-hub/tools/check-branch-protection.sh kitokoh/leopardo-hr main
 
-  explain-missing-token:
-    name: Explain missing branch protection token
-    if: ${{ secrets.BRANCH_PROTECTION_TOKEN == '' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Explain manual setup
+      - name: Explain missing branch protection token
+        if: ${{ env.BRANCH_PROTECTION_TOKEN == '' }}
         run: |
           echo "::notice::Branch protection verification skipped: configure the BRANCH_PROTECTION_TOKEN repository secret with administration:read, then run this workflow manually."
