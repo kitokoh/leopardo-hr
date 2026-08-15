@@ -62,7 +62,7 @@ class PlatformAdminTrainingController extends Controller
     public function indexEnrollments(Request $request): JsonResponse
     {
         $query = TrainingEnrollment::query()
-            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status'])
+            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status', 'session.course:id,title'])
             ->leftJoin('companies', 'companies.id', '=', 'training_enrollments.company_id')
             ->select('training_enrollments.*', 'companies.name as company_name');
 
