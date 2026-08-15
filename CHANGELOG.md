@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **fix(api): liste /employees — PII retirées de la projection (Closes #3309).** personal_email, recovery_email, personal_phone, adresse et contacts d'urgence exclus de la liste ; salaire conservé (écran équipe mobile manager) ; PII toujours sur /employees/{id}.
 - **fix(mobile): DateTime.parse résiduels → tryParse dans 3 modèles core (Closes #3433).** attendance_log (date/check_in/check_out), payroll (validated_at), project_task (start/end/due_date) : plus de FormatException sur données malformées.
 - **fix(mobile): Contract.fromJson — start_date nullable gardé (Closes #3432).** Cast « as String » non gardé → TypeError au parsing de la liste contrats ; repli '' (comme endDate).
 - **fix(api): vague QA expert 5 2026-08-15 — reset password tenants à schéma (public.user_lookups + search_path), rate limiters trial-status/kiosk-punch, restauration search_path kiosque (middleware), syncTrips borné + index unique, mail/test PasswordReset dédupliqués (Closes #3363, #3366, #3367, #3368, #3369, #3370).**
