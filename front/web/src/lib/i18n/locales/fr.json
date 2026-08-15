@@ -626,7 +626,7 @@
     }
   },
   "signup": {
-    "badge": "Essai gratuit 30 jours",
+    "badge": "Essai gratuit 14 jours",
     "title": "Tester Leopardo avec votre entreprise",
     "subtitle": "Créez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.",
     "labelEmail": "Email professionnel",
@@ -706,6 +706,11 @@
       "employeesRequired": "Sélectionnez une taille d'équipe",
       "phoneInvalid": "Numéro de téléphone invalide",
       "agreeTerms": "Vous devez accepter les conditions d'utilisation"
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     }
   },
   "companies": {
