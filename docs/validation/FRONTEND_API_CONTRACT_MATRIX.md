@@ -136,7 +136,6 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Manager web/mobile | CNPS Cameroun — déclaration DAS CSV (CEMAC/CM #1823) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm` | manager principal/comptable | `CnpsDeclarationTest` |
 | Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
 | Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |
-
 ## Regles
 
 - `front/admin-dashboard` utilise `VITE_API_URL` pointe sur `.../api/v1`; les anciens appels `/v1/*` sont normalises par le client Axios.
