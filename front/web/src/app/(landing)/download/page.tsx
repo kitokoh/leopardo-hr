@@ -66,9 +66,9 @@ const copy: Record<AppLocale, {
       { icon: <Fingerprint className="w-6 h-6" />, title: 'Synchronisation ZKTeco', description: 'Connexion directe aux bornes biometriques ZKTeco. Push/pull des pointages en temps reel via TCP/IP ou USB.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez a travailler sans internet. Les pointages sont stockes localement et synchronises automatiquement au retour du reseau.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Supervision multi-sites', description: "Surveillez plusieurs sites depuis un seul poste. Alertes en temps reel pour les anomalies d'acces." },
-      { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les donnees biometriques restent sur le terminal, seuls les hash d'identification transitent." },
+      { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les données biometriques restent sur le terminal, seuls les hash d'identification transitent." },
       { icon: <Zap className="w-6 h-6" />, title: 'Installation rapide', description: "Installateur MSI silencieux. Deploiement GPO/SCCM possible pour les grandes organisations." },
-      { icon: <HardDrive className="w-6 h-6" />, title: 'Logs et audit', description: "Journal complet des operations. Export CSV pour conformite RGPD et audit interne." },
+      { icon: <HardDrive className="w-6 h-6" />, title: 'Logs et audit', description: "Journal complet des operations. Export CSV pour conformité RGPD et audit interne." },
     ],
     requirements: [
       { label: 'OS', value: 'Windows 10 / 11 (64-bit)' },
@@ -80,7 +80,7 @@ const copy: Record<AppLocale, {
     howItWorks: {
       title: 'Comment ca marche',
       steps: [
-        { step: '01', title: 'Installez', description: 'Telechargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
+        { step: '01', title: 'Installez', description: 'Téléchargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
         { step: '02', title: 'Connectez', description: 'Entrez l\'adresse IP de vos bornes ZKTeco. Detection automatique sur le reseau local.' },
         { step: '03', title: 'Synchronisez', description: 'Les pointages remontent automatiquement vers Leopardo RH dans le cloud. Temps reel ou par batch.' },
       ],
@@ -88,7 +88,7 @@ const copy: Record<AppLocale, {
     faq: [
       { question: 'Le client Windows est-il gratuit ?', answer: 'Oui, le client desktop est inclus dans tous les plans Leopardo RH, y compris Starter.' },
       { question: 'Quelles bornes sont supportees ?', answer: 'Toutes les bornes ZKTeco (iClock, SpeedFace, ProFace, uFace). Support etendu pour d\'autres fabricants prevu en 2026.' },
-      { question: 'Peut-on deployer via GPO ?', answer: 'Oui, l\'installateur MSI supporte le deploiement silencieux. Documentation disponible dans le guide d\'administration.' },
+      { question: 'Peut-on déployer via GPO ?', answer: 'Oui, l\'installateur MSI supporte le deploiement silencieux. Documentation disponible dans le guide d\'administration.' },
     ],
   },
   en: {
@@ -225,7 +225,7 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Gestion des equipes, planification des horaires, approbation des demandes et suivi des presences.',
+        description: 'Gestion des équipes, planification des horaires, approbation des demandes et suivi des presences.',
         androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
@@ -335,18 +335,18 @@ type KioskCopy = {
 const kioskCopy: Record<AppLocale, KioskCopy> = {
   fr: {
     sectionTitle: 'Kiosk terrain (borne ZKTeco)',
-    sectionSubtitle: 'Une borne d\'entree biometrie/QR pour les equipes qui pointent sur site, sans smartphone obligatoire.',
+    sectionSubtitle: 'Une borne d\'entrée biometrie/QR pour les équipes qui pointent sur site, sans smartphone obligatoire.',
     bullets: [
       'Pointage par empreinte, visage ou QR/matricule en fallback',
       'Fonctionne hors-ligne : les pointages sont mis en file locale puis synchronises au retour du reseau',
       'Bridge desktop local (Python) + interface tactile plein ecran, deployable sur PC ou mini-PC',
-      'Provisionne depuis l\'app manager : code appareil et token de synchronisation generes en quelques secondes',
+      'Provisionne depuis l\'app manager : code appareil et token de synchronisation générés en quelques secondes',
     ],
     ctaSetup: 'Guide d\'installation kiosk',
     ctaSetupHref: '/docs#kiosk',
     ctaContact: 'Etre accompagne pour l\'installation',
     ctaContactHref: '/contact?topic=download-kiosk',
-    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est necessaire.',
+    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est nécessaire.',
   },
   en: {
     sectionTitle: 'Field Kiosk (ZKTeco terminal)',
@@ -398,7 +398,7 @@ const kioskCopy: Record<AppLocale, KioskCopy> = {
 const platformLabels: Record<AppLocale, Array<{ platform: string; title: string; description: string; href: string }>> = {
   fr: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Synchronisation ZKTeco, mode hors-ligne et supervision site.', href: '/contact?topic=download-windows' },
-    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les equipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
+    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les équipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/download#mobile-apps'},
     { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/download#mobile-apps'},
   ],

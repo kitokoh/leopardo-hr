@@ -193,7 +193,7 @@ export const pageMetadata = {
   changelog: {
     title: "Journal des versions | Leopardo RH",
     description:
-      "Decouvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
+      "Découvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
     keywords: [
       "changelog Leopardo",
       "nouveautes RH",
@@ -206,10 +206,10 @@ export const pageMetadata = {
   docs: {
     title: "Documentation API | Guides techniques Leopardo RH",
     description:
-      "Documentation technique et guides d'integration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
+      "Documentation technique et guides d'intégration pour l'API Leopardo RH : authentification, webhooks, endpoints RH et paie.",
     keywords: [
       "documentation API RH",
-      "integration Leopardo",
+      "intégration Leopardo",
       "webhooks paie",
       "API gestion employes",
     ],
@@ -217,11 +217,11 @@ export const pageMetadata = {
   },
 
   download: {
-    title: "Telecharger Leopardo RH | Windows, macOS, Android, iOS",
+    title: "Télécharger Leopardo RH | Windows, macOS, Android, iOS",
     description:
-      "Telechargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
+      "Téléchargez le client desktop ZKTeco et les applications mobiles Leopardo RH pour Windows, macOS, Android et iOS.",
     keywords: [
-      "telecharger Leopardo RH",
+      "télécharger Leopardo RH",
       "application pointage mobile",
       "client desktop ZKTeco",
       "app RH Android iOS",
@@ -232,7 +232,7 @@ export const pageMetadata = {
   contact: {
     title: "Contactez-nous | Support et Ventes Leopardo RH",
     description:
-      "Une question sur Leopardo RH ? Contactez notre equipe commerciale ou support par email, telephone ou formulaire.",
+      "Une question sur Leopardo RH ? Contactez notre équipe commerciale ou support par email, telephone ou formulaire.",
     keywords: [
       "contact Leopardo RH",
       "support RH SaaS",
@@ -245,7 +245,7 @@ export const pageMetadata = {
   faq: {
     title: "Questions Frequentes | FAQ Leopardo RH",
     description:
-      "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, securite, integrations et support.",
+      "Reponses aux questions les plus posees sur Leopardo RH : tarifs, essai gratuit, sécurité, integrations et support.",
     keywords: [
       "FAQ Leopardo RH",
       "questions logiciel RH",
@@ -256,11 +256,11 @@ export const pageMetadata = {
   },
 
   testimonials: {
-    title: "Temoignages Clients | Avis sur Leopardo RH",
+    title: "Témoignages Clients | Avis sur Leopardo RH",
     description:
-      "Decouvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
+      "Découvrez comment nos clients transforment leur gestion RH avec Leopardo RH : pointage, paie et absences simplifies.",
     keywords: [
-      "temoignages Leopardo RH",
+      "témoignages Leopardo RH",
       "avis clients logiciel RH",
       "retours utilisateurs paie SaaS",
       "case success RH PME",
@@ -271,7 +271,7 @@ export const pageMetadata = {
   caseStudies: {
     title: "Etudes de Cas | Success Stories Leopardo RH",
     description:
-      "Etudes de cas detaillees d'entreprises ayant deploye Leopardo RH pour automatiser paie, pointage et absences.",
+      "Etudes de cas detaillees d'entreprises ayant déployé Leopardo RH pour automatiser paie, pointage et absences.",
     keywords: [
       "etudes de cas RH",
       "success story paie SaaS",
@@ -288,7 +288,7 @@ export const pageMetadata = {
     keywords: [
       "videos Leopardo RH",
       "demo logiciel RH",
-      "tutoriel pointage biometrique",
+      "tutoriel pointage biométrique",
       "demonstration paie SaaS",
     ],
     ogImage: `${siteUrl}/og/videos.png`,
@@ -308,9 +308,9 @@ export const pageMetadata = {
   },
 
   careers: {
-    title: "Carrieres | Rejoignez l'Equipe Leopardo RH",
+    title: "Carrieres | Rejoignez l'Équipe Leopardo RH",
     description:
-      "Decouvrez nos offres d'emploi et rejoignez l'equipe qui construit la plateforme RH de reference pour les PME.",
+      "Découvrez nos offres d'emploi et rejoignez l'équipe qui construit la plateforme RH de reference pour les PME.",
     keywords: [
       "carrieres Leopardo RH",
       "emploi logiciel RH",
@@ -334,7 +334,7 @@ export const pageMetadata = {
   },
 
   signup: {
-    title: "Essai Guide Gratuit | Decouvrez Leopardo RH",
+    title: "Essai Guide Gratuit | Découvrez Leopardo RH",
     description:
       "Demandez votre essai guide gratuit de Leopardo RH : aucun mot de passe requis, un espace de demonstration provisionne automatiquement.",
     keywords: [
@@ -375,9 +375,9 @@ export function generateOrganizationSchema() {
     logo: `${siteUrl}/logo.png`,
     description: "Plateforme complète de gestion RH pour PME et startups",
     sameAs: [
-      "https://twitter.com/leopardo",
+      "https://x.com/leopardo_hr",
       "https://linkedin.com/company/leopardo",
-      "https://facebook.com/leopardo",
+      "https://www.facebook.com/leopardo_hr",
     ],
     contactPoint: {
       "@type": "ContactPoint",
