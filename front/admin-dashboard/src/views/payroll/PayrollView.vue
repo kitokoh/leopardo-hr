@@ -450,7 +450,10 @@ async function viewRun(id) {
 }
 
 function escapeCsvCell(value) {
-  const s = String(value ?? '')
+  let s = String(value ?? '')
+  // Anti-injection de formule (#3045/#2700) : neutraliser les préfixes
+  // = + - @ qui deviennent des formules dans Excel/Sheets.
+  if (/^[=+\-@]/.test(s)) return `'${s}`
   if (/[;"'\n]/.test(s)) {
     return `"${s.replace(/"/g, '""')}"`
   }
