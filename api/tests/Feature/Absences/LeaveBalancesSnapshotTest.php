@@ -2,11 +2,12 @@
 
 namespace Tests\Feature\Absences;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
@@ -121,7 +122,7 @@ class LeaveBalancesSnapshotTest extends TestCase
 
     private function seedAvailableBalance(float $amount = 20.0): void
     {
-        \App\Modules\Planning\Domain\Models\LeaveBalanceLog::query()->create([
+        LeaveBalanceLog::query()->create([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'delta' => $amount,

@@ -17,7 +17,7 @@ class NotificationTest extends TestCase
 
     public function test_send_notification_action_instantiates(): void
     {
-        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+        $dispatcher = new NotificationDispatcher(new PushNotificationService);
         $action = new SendNotification($dispatcher);
         $this->assertInstanceOf(SendNotification::class, $action);
     }
