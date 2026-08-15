@@ -2761,6 +2761,25 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /admin/training/courses:
+    get:
+      tags: ["Platform"]
+      summary: "Cours de formation cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des cours"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /admin/training/sessions:
     get:
       tags: ["Platform"]
