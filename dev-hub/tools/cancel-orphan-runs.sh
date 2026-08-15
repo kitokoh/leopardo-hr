@@ -11,8 +11,14 @@
 # plus sur le remote et n'est pas la tête d'une PR ouverte ni la branche par
 # défaut. Une branche vivante = runs préservés, même si le run est ancien.
 #
+# Issue #2540 : option `--superseded` — en plus des orphelins, annule les runs
+# `queued` SUPERSÉDÉS : pour chaque couple (branche, workflow), tous les runs
+# queued sauf le plus récent sont annulés. Complète le `concurrency` natif des
+# workflows (qui n'annule les runs que lorsque le NOUVEAU run démarre — les
+# runs queued d'un push précédent restent sinon dans la file).
+#
 # Usage :
-#   cancel-orphan-runs.sh <owner/repo> [--dry-run]
+#   cancel-orphan-runs.sh <owner/repo> [--dry-run] [--superseded]
 # Nécessite `gh` authentifié avec permissions `actions: write` (GITHUB_TOKEN).
 # `--dry-run` affiche ce qui serait annulé sans rien modifier.
 #
@@ -21,11 +27,15 @@
 
 set -euo pipefail
 
-REPO="${1:?usage: cancel-orphan-runs.sh <owner/repo> [--dry-run]}"
+REPO="${1:?usage: cancel-orphan-runs.sh <owner/repo> [--dry-run] [--superseded]}"
 DRY_RUN=0
-if [[ "${2:-}" == "--dry-run" ]]; then
-  DRY_RUN=1
-fi
+SUPERSEDED=0
+for OPT in "${@:2}"; do
+  case "${OPT}" in
+    --dry-run) DRY_RUN=1 ;;
+    --superseded) SUPERSEDED=1 ;;
+  esac
+done
 
 if [[ -z "${GH_TOKEN:-}" ]]; then
   echo "::error::GH_TOKEN requis (lecture branches/runs + annulation)."
@@ -80,8 +90,47 @@ for STATUS in queued pending in_progress; do
   )
 done
 
-if [[ "${CANCELLED}" -eq 0 ]]; then
-  echo "OK: aucun run orphelin (runs queued + in_progress vérifiés)."
+# Issue #2540 — runs QUEUED supersédés : pour chaque (branche, workflow),
+# tous les runs queued sauf le plus récent. Ne touche jamais main.
+SUPERSEDED_CANCELLED=0
+if [[ "${SUPERSEDED}" -eq 1 ]]; then
+  # [run_id, branch, workflow_name, created_at] pour les runs queued.
+  declare -A NEWEST_TS
+  declare -A RUN_BRANCH
+  declare -A RUN_WF
+  declare -A RUN_TS
+  while IFS=$'\t' read -r run_id branch wf ts; do
+    RUN_BRANCH["${run_id}"]="${branch}"
+    RUN_WF["${run_id}"]="${wf}"
+    RUN_TS["${run_id}"]="${ts}"
+    key="${branch}\u0001${wf}"
+    if [[ -z "${NEWEST_TS["${key}"]:-}" || "${ts}" > "${NEWEST_TS["${key}"]}" ]]; then
+      NEWEST_TS["${key}"]="${ts}"
+    fi
+  done < <(
+    gh api "repos/${REPO}/actions/runs?status=queued&per_page=100" --paginate \
+      | jq -r '.workflow_runs[] | select(.head_branch != "main") | [.id, .head_branch, .name, .created_at] | @tsv'
+  )
+  for run_id in "${!RUN_BRANCH[@]}"; do
+    branch="${RUN_BRANCH["${run_id}"]}"
+    wf="${RUN_WF["${run_id}"]}"
+    key="${branch}\u0001${wf}"
+    if [[ "${RUN_TS["${run_id}"]}" != "${NEWEST_TS["${key}"]}" ]]; then
+      # Garde : jamais un run d'une branche vivante si c'est le plus récent du couple.
+      SUPERSEDED_CANCELLED=$((SUPERSEDED_CANCELLED + 1))
+      echo "superseded queued run ${run_id} (branch '${branch}', workflow '${wf}')"
+      if [[ "${DRY_RUN}" -eq 0 ]]; then
+        gh api -X POST "repos/${REPO}/actions/runs/${run_id}/cancel" --silent || true
+      fi
+    fi
+  done
+  if [[ "${SUPERSEDED_CANCELLED}" -gt 0 ]]; then
+    echo "Résumé supersédés : ${SUPERSEDED_CANCELLED} run(s) queued supersédé(s) traité(s)."
+  fi
+fi
+
+if [[ "${CANCELLED}" -eq 0 && "${SUPERSEDED_CANCELLED}" -eq 0 ]]; then
+  echo "OK: aucun run orphelin ni supersédé (runs queued + in_progress vérifiés)."
   exit 0
 fi
 
