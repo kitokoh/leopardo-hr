@@ -9,9 +9,11 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PayrollRunResource;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CountryRulesResolver;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCycleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Plan 61 - cycles de paie et solde employe mobile-first.
@@ -157,8 +159,12 @@ class PayrollCycleController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        // Issue #2144 — bloc compliance (niveau de confiance paie) exposé
+        // au mobile employee : le client affiche l'avertissement localisé.
         return response()->json([
-            'data' => $this->cycleService->getEmployeeBalance($actor),
+            'data' => $this->cycleService->getEmployeeBalance($actor) + [
+                'compliance' => $this->complianceFor($actor),
+            ],
         ]);
     }
 
@@ -213,7 +219,52 @@ class PayrollCycleController extends Controller
                     'overtime_hours' => round(array_sum(array_column($items, 'overtime_hours')), 2),
                     'overtime_pay' => round(array_sum(array_column($items, 'overtime_pay')), 2),
                 ],
+                // Issue #2144 — bloc compliance paie (niveau de confiance +
+                // avertissement localisé) pour l'écran paie mobile manager.
+                'compliance' => $this->complianceFor($actor),
             ],
         ]);
+    }
+
+    /**
+     * Issue #2144 — résout le bloc compliance de l'entreprise (même shape
+     * que PayrollCalculationPresenter : level/warning/warning_key/source/
+     * verification_date). Fail-open : `[]` si le pays n'est pas résoluble —
+     * le résumé paie ne doit jamais casser sur un bloc informatif.
+     *
+     * @return array{level?: string, warning?: string, warning_key?: string, source?: string, verification_date?: string|null}
+     */
+    private function complianceFor(Employee $actor): array
+    {
+        try {
+            $countryCode = null;
+
+            if (app()->bound('current_company')) {
+                $company = currentCompany();
+                $countryCode = is_string($company->country ?? null) ? $company->country : null;
+            }
+
+            if ($countryCode === null && DB::getDriverName() === 'pgsql') {
+                $countryCode = DB::table('public.companies')
+                    ->where('id', $actor->company_id)
+                    ->value('country');
+            }
+
+            if (! is_string($countryCode) || $countryCode === '') {
+                return [];
+            }
+
+            $rules = app(CountryRulesResolver::class)->resolve($countryCode, (string) $actor->company_id);
+
+            return [
+                'level' => $rules->confidenceLevel(),
+                'warning' => $rules->complianceWarning(),
+                'warning_key' => 'payroll.compliance_warning_'.$rules->confidenceLevel(),
+                'source' => $rules->complianceSource(),
+                'verification_date' => $rules->verificationDate(),
+            ];
+        } catch (\Throwable $exception) {
+            return [];
+        }
     }
 }

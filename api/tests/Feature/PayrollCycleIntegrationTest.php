@@ -233,6 +233,41 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_balance_exposes_compliance_block(): void
+    {
+        // Issue #2144 — le bloc compliance (niveau de confiance paie) doit
+        // être exposé sur /me/balance pour l'écran paie mobile employee.
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 50000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => ['compliance' => ['level', 'warning', 'warning_key', 'source', 'verification_date']],
+            ])
+            ->assertJsonPath('data.compliance.level', 'pilot');
+    }
+
+    public function test_mobile_summary_exposes_compliance_block(): void
+    {
+        // Issue #2144 — même bloc sur /payroll/mobile-summary (manager).
+        $company = Company::factory()->create(['country' => 'MA']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/payroll/mobile-summary')
+            ->assertOk()
+            ->assertJsonStructure(['data' => ['compliance' => ['level']]])
+            ->assertJsonPath('data.compliance.level', 'pilot');
+    }
+
     public function test_manager_mobile_summary_is_tenant_scoped(): void
     {
         $companyA = Company::factory()->create(['currency' => 'DZD']);
