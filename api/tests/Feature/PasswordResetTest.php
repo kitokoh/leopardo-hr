@@ -159,12 +159,15 @@ class PasswordResetTest extends TestCase
             DB::statement('SET search_path TO public,shared_tenants');
         }
 
+        // #3363 : le modèle Company bloque la création de tenants à schéma
+        // (booted() → abort 422, isolation physique phase 3) — le factory
+        // remplit toutes les colonnes, puis passage en mode schéma par update
+        // brut (le hook creating ne s'applique pas à l'update).
         /** @var Company $company */
-        $company = Company::factory()->create([
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        DB::table('companies')->where('id', $company->id)->update([
             'schema_name' => $schema,
             'tenancy_type' => 'schema',
-            'country' => 'DZ',
-            'currency' => 'DZD',
         ]);
 
         try {
