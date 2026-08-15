@@ -1,4 +1,4 @@
-// Route handler pour le share_target déclaré dans public/manifest.json
+// Route handler pour le share_target déclaré dans la route dynamique /manifest
 // (action: "/share", method: POST, enctype: multipart/form-data).
 // Le navigateur (Web Share Target PWA) envoie title/text/url en FormData ;
 // on consomme le body puis on redirige vers l'inscription.
