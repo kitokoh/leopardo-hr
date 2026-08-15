@@ -6,6 +6,7 @@ import 'package:leopardo_core/models/attendance_log.dart';
 import 'package:leopardo_core/models/daily_summary.dart';
 import 'package:leopardo_core/models/employee_day_detail.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
+import 'package:leopardo_core/core/utils/network_error.dart';
 
 class AttendanceRepository {
   final ApiClient apiClient;
@@ -84,17 +85,10 @@ class AttendanceRepository {
     }
   }
 
-  /// Mirrors the fallback used by `leopardo_employee`'s
-  /// `AttendanceRepository`: on a network failure, queue the punch in the
-  /// same `offline_punches` Hive box so [OfflineSyncService] (wired up in
-  /// `leopardo_core`) can replay it once connectivity returns, instead of
-  /// letting the raw `ApiException` reach the UI and lose the punch
-  /// (issue #1289).
-  static bool _isOfflineError(Object e) {
-    return e is ApiException &&
-        (e.message.toLowerCase().contains('connexion') ||
-            e.message.toLowerCase().contains('internet'));
-  }
+  /// T090 : détection hors-ligne standardisée (leopardo_core) — même
+  /// sémantique que le repository employee (timeouts DioException inclus,
+  /// pas seulement les messages 'connexion'/'internet').
+  static bool _isOfflineError(Object e) => isOfflineNetworkError(e);
 
   static Future<void> _saveOfflinePunch(
     String type,
