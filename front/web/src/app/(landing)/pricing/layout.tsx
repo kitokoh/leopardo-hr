@@ -25,7 +25,7 @@ export default function PricingLayout({
     },
     {
       question: 'Essai gratuit inclus?',
-      answer: 'Oui, tous les plans incluent un essai gratuit de 14 jours sans carte bancaire requise.',
+      answer: 'Oui, tous les plans incluent un essai gratuit de 30 jours sans carte bancaire requise.',
     },
     {
       question: 'Contrat long terme?',
@@ -35,7 +35,7 @@ export default function PricingLayout({
     {
       question: 'Support client disponible?',
       answer:
-        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Business et Enterprise.',
+        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Operations et Enterprise.',
     },
     {
       question: 'Données sécurisées?',

@@ -82,7 +82,7 @@ export const pageMetadata = {
   landing: {
     title: "Gestion Employés, Paie & Documents | Plateforme Complète",
     description:
-      "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 14 jours, sans carte bancaire.",
+      "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 30 jours, sans carte bancaire.",
     keywords: [
       "gestion employés SaaS",
       "logiciel RH PME",
@@ -152,7 +152,7 @@ export const pageMetadata = {
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      "Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 14 jours.",
+      "Pricing transparent: Pilot 29€, Operations 99€, Enterprise sur devis. Essai gratuit 30 jours.",
     keywords: [
       "prix logiciel RH",
       "tarification paie",
@@ -344,7 +344,7 @@ export const pageMetadata = {
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",
