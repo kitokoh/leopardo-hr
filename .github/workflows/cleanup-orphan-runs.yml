@@ -12,7 +12,8 @@ name: CI Queue — Orphan Runs Cleanup
 # les doublons ont été supprimés.
 #
 # Ce workflow annule automatiquement les runs `queued`/`in_progress` dont la
-# branche head n'existe plus (ni branche vivante, ni PR ouverte, ni main) :
+# branche head n'existe plus (ni branche vivante, ni PR ouverte, ni main), et
+# (issue #2540) les runs queued supersédés d'une même branche/workflow :
 #   - en cron (toutes les 6 h) : file nettoyée en continu ;
 #   - à la fermeture d'une PR : les derniers runs de la branche sont annulés
 #     immédiatement au lieu de moisir dans la file ;
@@ -53,9 +54,12 @@ jobs:
         with:
           lfs: true
 
-      - name: Cancel orphan runs
+      - name: Cancel orphan and superseded runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x dev-hub/tools/cancel-orphan-runs.sh
-          dev-hub/tools/cancel-orphan-runs.sh "${{ github.repository }}"
+          # Issue #2540 : --superseded annule aussi les runs queued dont un
+          # push plus récent existe sur la même branche/workflow (complète le
+          # concurrency natif qui n'agit qu'au démarrage du nouveau run).
+          dev-hub/tools/cancel-orphan-runs.sh "${{ github.repository }}" --superseded
