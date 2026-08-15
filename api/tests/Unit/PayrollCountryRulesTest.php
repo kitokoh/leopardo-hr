@@ -39,8 +39,11 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_progressive_income_tax_rules_are_applied_at_slab_edges(): void
     {
+        // TN (#2261) : abattement IRPP 10 % du revenu annuel (plancher 1 000
+        // TND) appliqué avant le barème → 5 000 et 6 000 TND/an tombent tous
+        // deux sous la tranche 0 % après abattement (6 000 − 1 000 = 5 000).
         self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(5000 / 12));
-        self::assertSame(21.67, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
+        self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
         self::assertSame(0.0, (new FrancePayrollRules)->calculateIncomeTax(11294 / 12));
         self::assertSame(0.06, (new FrancePayrollRules)->calculateIncomeTax(11300 / 12));
         self::assertSame(1375.0, (new TurkeyPayrollRules)->calculateIncomeTax(110000 / 12));
@@ -57,10 +60,15 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_morocco_uses_annual_ir_with_fixed_deduction(): void
     {
+        // CGI MA art. 58 (#2260) : abattement frais professionnels 35 % du brut
+        // ANNUEL (plancher 2 500 / plafond 30 000 MAD) appliqué AVANT le barème.
         $rules = new MoroccoPayrollRules;
 
+        // 2 500 × 12 = 30 000 ; abattement 35 % = 10 500 → assiette 19 500 → 0 %
         self::assertSame(0.0, $rules->calculateIncomeTax(2500));
-        self::assertSame(333.33, $rules->calculateIncomeTax(5000));
+        // 5 000 × 12 = 60 000 ; abattement 35 % = 21 000 → assiette 39 000
+        // → tranche 10 % (fixe 3 000) : 39 000 × 10 % − 3 000 = 900/an → 75,00/mois
+        self::assertSame(75.0, $rules->calculateIncomeTax(5000));
     }
 
     /**
