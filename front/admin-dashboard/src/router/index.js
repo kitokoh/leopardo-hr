@@ -20,7 +20,7 @@ const routes = [
     component: () => import('@/views/auth/LoginView.vue'),
     meta: {
       requiresAuth: false,
-      title: 'Connexion'
+      title: 'navigation.login'
     }
   },
   {
@@ -29,7 +29,7 @@ const routes = [
     component: () => import('@/views/auth/LogoutView.vue'),
     meta: {
       requiresAuth: true,
-      title: 'Déconnexion'
+      title: 'navigation.logout'
     }
   },
   {
@@ -42,7 +42,7 @@ const routes = [
         name: 'dashboard',
         component: () => import('@/views/DashboardView.vue'),
         meta: {
-          title: 'Tableau de bord',
+          title: 'navigation.dashboard',
           icon: 'HomeIcon'
         }
       },
@@ -51,7 +51,7 @@ const routes = [
         name: 'analytics',
         component: () => import('@/views/analytics/AnalyticsView.vue'),
         meta: {
-          title: 'Analytics',
+          title: 'navigation.analytics',
           icon: 'ChartBarIcon'
         }
       },
@@ -60,7 +60,7 @@ const routes = [
         name: 'globe',
         component: () => import('@/views/globe/GlobeView.vue'),
         meta: {
-          title: 'Globe Temps Réel',
+          title: 'navigation.globe',
           icon: 'GlobeAltIcon'
         }
       },
@@ -69,7 +69,7 @@ const routes = [
         name: 'users',
         component: () => import('@/views/users/UsersView.vue'),
         meta: {
-          title: 'Utilisateurs',
+          title: 'navigation.users',
           icon: 'UsersIcon'
         }
       },
@@ -78,7 +78,7 @@ const routes = [
         name: 'companies',
         component: () => import('@/views/companies/CompaniesView.vue'),
         meta: {
-          title: 'Entreprises',
+          title: 'navigation.companies',
           icon: 'BuildingOfficeIcon'
         }
       },
@@ -87,7 +87,7 @@ const routes = [
         name: 'company-detail',
         component: () => import('@/views/companies/CompanyDetailView.vue'),
         meta: {
-          title: 'Détail Entreprise',
+          title: 'navigation.companyDetail',
           parent: 'companies'
         }
       },
@@ -96,7 +96,7 @@ const routes = [
         name: 'subscriptions',
         component: () => import('@/views/subscriptions/SubscriptionsView.vue'),
         meta: {
-          title: 'Abonnements',
+          title: 'navigation.subscriptions',
           icon: 'CreditCardIcon'
         }
       },
@@ -105,7 +105,7 @@ const routes = [
         name: 'support',
         component: () => import('@/views/support/SupportView.vue'),
         meta: {
-          title: 'Support',
+          title: 'navigation.support',
           icon: 'ChatBubbleLeftRightIcon'
         }
       },
@@ -114,7 +114,7 @@ const routes = [
         name: 'support-tickets',
         component: () => import('@/views/support/SupportTicketsView.vue'),
         meta: {
-          title: 'Centre support client',
+          title: 'navigation.supportTickets',
           icon: 'LifebuoyIcon'
         }
       },
@@ -123,7 +123,7 @@ const routes = [
         name: 'crm-pipeline',
         component: () => import('@/views/crm/CrmPipelineView.vue'),
         meta: {
-          title: 'Pipeline CRM',
+          title: 'navigation.crm',
           icon: 'FunnelIcon'
         }
       },
@@ -132,7 +132,7 @@ const routes = [
         name: 'system',
         component: () => import('@/views/system/SystemView.vue'),
         meta: {
-          title: 'Système',
+          title: 'navigation.system',
           icon: 'CogIcon'
         }
       },
@@ -142,7 +142,7 @@ const routes = [
         name: 'social-contributions',
         component: () => import('@/views/settings/SocialContributionsView.vue'),
         meta: {
-          title: 'Cotisations sociales',
+          title: 'navigation.contributions',
           icon: 'BanknotesIcon'
         }
       },
@@ -151,7 +151,7 @@ const routes = [
         name: 'tax-slabs',
         component: () => import('@/views/settings/TaxSlabsView.vue'),
         meta: {
-          title: 'Barèmes fiscaux',
+          title: 'navigation.taxBrackets',
           icon: 'ScaleIcon'
         }
       },
@@ -160,7 +160,7 @@ const routes = [
         name: 'tax-rates',
         component: () => import('@/views/settings/TaxRatesView.vue'),
         meta: {
-          title: 'Taux légaux',
+          title: 'navigation.legalRates',
           icon: 'ScaleIcon'
         }
       },
@@ -169,7 +169,7 @@ const routes = [
         name: 'training',
         component: () => import('@/views/training/TrainingView.vue'),
         meta: {
-          title: 'Formations',
+          title: 'navigation.training',
           icon: 'AcademicCapIcon'
         }
       },
@@ -178,7 +178,7 @@ const routes = [
         name: 'fleet',
         component: () => import('@/views/fleet/FleetView.vue'),
         meta: {
-          title: 'Flotte véhicules',
+          title: 'navigation.fleet',
           icon: 'TruckIcon'
         }
       },
@@ -187,7 +187,7 @@ const routes = [
         name: 'chat',
         component: () => import('@/views/chat/ChatView.vue'),
         meta: {
-          title: 'Chat IA',
+          title: 'navigation.chat',
           icon: 'SparklesIcon'
         }
       },
@@ -196,7 +196,7 @@ const routes = [
         name: 'webhooks',
         component: () => import('@/views/webhooks/WebhooksView.vue'),
         meta: {
-          title: 'Webhooks',
+          title: 'navigation.webhooks',
           icon: 'LinkIcon'
         }
       },
@@ -205,7 +205,7 @@ const routes = [
         name: 'exports',
         component: () => import('@/views/exports/ExportsView.vue'),
         meta: {
-          title: 'Exports & Rapports',
+          title: 'navigation.exports',
           icon: 'ArrowDownTrayIcon'
         }
       },
@@ -214,7 +214,7 @@ const routes = [
         name: 'growth',
         component: () => import('@/views/growth/GrowthDashboardView.vue'),
         meta: {
-          title: 'Administration Growth',
+          title: 'navigation.growth',
           icon: 'ArrowTrendingUpIcon'
         }
       },
@@ -223,7 +223,7 @@ const routes = [
         name: 'edge',
         component: () => import('@/views/edge/EdgeNodesView.vue'),
         meta: {
-          title: 'Edge Nodes',
+          title: 'navigation.edge',
           icon: 'ServerIcon'
         }
       },
@@ -241,7 +241,7 @@ const routes = [
         name: 'settings',
         component: () => import('@/views/settings/SettingsView.vue'),
         meta: {
-          title: 'Mon compte',
+          title: 'navigation.account',
           icon: 'UserCircleIcon'
         }
       },
@@ -261,7 +261,7 @@ const routes = [
     name: 'not-found',
     component: () => import('@/views/NotFoundView.vue'),
     meta: {
-      title: 'Page non trouvée'
+      title: 'navigation.notFound'
     }
   }
 ]
@@ -309,7 +309,8 @@ router.beforeEach(async (to, from, next) => {
   // dashboard, jamais une page qui échoue en 401 muet.
   if (to.matched.some((record) => record.meta.requiresTenant)) {
     const toast = useToast()
-    toast.warning('Fonctionnalité entreprise — réservée aux espaces client')
+    const localeStore = useLocaleStore()
+    toast.warning(translate(localeStore.current, 'navigation.tenantOnly', ''))
     next('/')
     return
   }
