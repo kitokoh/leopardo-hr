@@ -3,7 +3,11 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
 
 export default defineConfig({
-  base: './',
+  // #2334 : base racine — `./` + createWebHistory cassait le hard refresh
+  // sur les sous-routes (assets relatifs résolus sous le chemin courant →
+  // index.html servi comme JS → page blanche). Déploiement à la racine du
+  // domaine (leo-admin.pages.dev) ; le fallback SPA vit dans public/_redirects.
+  base: '/',
   plugins: [vue()],
   resolve: {
     alias: {

@@ -1,0 +1,4 @@
+# #2334 — fallback SPA Cloudflare Pages : tout chemin inconnu sert index.html
+# pour que le hard refresh / accès direct aux sous-routes (ex. /companies)
+# charge l'app au lieu d'un 404. Vite copie public/ → dist/ à chaque build.
+/* /index.html 200
