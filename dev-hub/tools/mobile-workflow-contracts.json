@@ -160,7 +160,7 @@
           ],
           "endpoints": [
             "/notifications",
-            "/notifications/read-all",
+            "/notifications/mark-all-read",
             "/device-tokens"
           ],
           "screenFiles": [
@@ -423,7 +423,7 @@
           ],
           "endpoints": [
             "/notifications",
-            "/notifications/read-all",
+            "/notifications/mark-all-read",
             "/device-tokens"
           ],
           "screenFiles": [
