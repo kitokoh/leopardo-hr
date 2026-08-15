@@ -124,7 +124,8 @@ class SelfServiceTrialTest extends TestCase
 
         // Verify Welcome Mail sent after verification
         Mail::assertSent(TrialWelcomeMail::class, function ($mail) {
-            return $mail->hasTo('founder@newtech.dz');
+            return $mail->hasTo('founder@newtech.dz')
+                && $mail->trialDays === 14;
         });
     }
 
