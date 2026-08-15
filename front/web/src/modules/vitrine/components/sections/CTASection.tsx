@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { withLocaleHref } from '../../lib/locale-href';
 
 export interface CTASectionProps {
   headline?: string;
@@ -46,6 +48,8 @@ export function CTASection({
   backgroundImage,
   badge,
 }: CTASectionProps) {
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
   const resolvedHeadline = headline ?? title ?? '';
   const resolvedSubheadline = subheadline ?? description;
   const resolvedPrimaryCta = ctaPrimary ?? primaryCta;
@@ -126,7 +130,7 @@ export function CTASection({
         >
           {resolvedPrimaryCta && (
             <Link
-              href={resolvedPrimaryCta.href}
+              href={withLocaleHref(resolvedPrimaryCta.href, search)}
               className="group relative px-8 py-4 bg-white text-emerald-600 font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(255,255,255,0.3)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5 text-base">
@@ -138,7 +142,7 @@ export function CTASection({
 
           {resolvedSecondaryCta && (
             <Link
-              href={resolvedSecondaryCta.href}
+              href={withLocaleHref(resolvedSecondaryCta.href, search)}
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
               {resolvedSecondaryCta.text}
