@@ -8,7 +8,7 @@ import 'dart:ui' show PlatformDispatcher;
 /// `Accept-Language` déjà envoyé par `ApiClient`), avec repli français.
 String get deviceIntlDateLocale {
   final locale = PlatformDispatcher.instance.locale;
-  final language = locale?.language?.toLowerCase() ?? 'fr';
+  final language = locale.languageCode.toLowerCase();
 
   return switch (language) {
     'ar' => 'ar',

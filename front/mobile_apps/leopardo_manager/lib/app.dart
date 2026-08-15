@@ -35,7 +35,6 @@ import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_s
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
-import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_manager/features/company_branding/screens/company_branding_screen.dart';
 import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_manager/features/smart_attendance/screens/smart_attendance_dashboard_screen.dart';
