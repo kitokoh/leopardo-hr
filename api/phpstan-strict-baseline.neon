@@ -6265,12 +6265,6 @@ parameters:
 			path: tests/Feature/GenerateBankExportJobTest.php
 
 		-
-			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\FilesystemAdapter\:\:get\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/GenerateBankExportJobTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 13
@@ -8573,18 +8567,6 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/TrialStatusThrottleTest.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 11
-			path: tests/Feature/VehicleControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/VehicleControllerTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'

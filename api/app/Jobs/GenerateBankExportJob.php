@@ -93,15 +93,11 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
 
             $format = $export->format ?? 'csv_generic';
 
-            // Issue #2198 — debtor IBAN/BIC for SEPA read from
-            // companies.metadata via the public schema (never the tenant
-            // search_path). The generator throws MISSING_COMPANY_IBAN when
-            // absent; the job then marks the export failed with that message.
-            $companyBank = $format === 'sepa_xml'
-                ? CompanyBankDetails::forCompany((string) $run->company_id)
-                : [];
-
-            $content = $generator->generate($run, $format, $companyBank);
+            // Issue #2198 — le IBAN/BIC débiteur SEPA est résolu en interne par
+            // le générateur (BankExportGenerator::generateSepaXml lit
+            // companies.metadata via CompanyBankDetails et lève
+            // MISSING_COMPANY_IBAN si absent — le job marque l'export failed).
+            $content = $generator->generate($run, $format);
             $extension = $generator->fileExtension($format);
 
             $filePath = sprintf(
