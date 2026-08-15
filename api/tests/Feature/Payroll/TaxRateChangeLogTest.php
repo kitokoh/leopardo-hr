@@ -226,7 +226,6 @@ class TaxRateChangeLogTest extends TestCase
 
         DB::table('tax_rate_change_log')->truncate();
     }
-}
 
     public function test_mass_assignment_allowlist_blocks_unknown_fields(): void
     {
@@ -247,3 +246,4 @@ class TaxRateChangeLogTest extends TestCase
         $this->assertSame(TaxRateChangeLog::TABLE_TAX_SLABS, $log->table_name);
         $this->assertNull($log->getAttribute('company_id'));
     }
+}
