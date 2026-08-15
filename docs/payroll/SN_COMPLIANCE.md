@@ -16,7 +16,7 @@
 | CFCE 3 % patronal | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
 | IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (pilot) | IPRES | à valider expert |
 | IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-2 160k) | ✅ implémentée (pilot) | IPRES | à valider expert |
-| CSS famille patronale 3 % | ✅ implémentée (pilot) | CSS | à valider expert |
+| CSS famille patronale 7 % | ✅ implémentée (pilot, taux officiel CIPRES/CLEISS #2473) | CSS | à valider expert |
 | CSS AT patronale 1 % | ✅ implémentée (pilot) | CSS — variable selon secteur | à valider expert |
 | Abattement frais pro 30 % (non plafonné) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
 | SMIG 58 900 XOF/mois | ✅ implémentée | — | à valider |
@@ -95,17 +95,19 @@ plafonnée) — `CFCE_SN_PAT`.
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
-| Prestations familiales patronale | 3,0 % ⚠️ | employeur | **63 000 XOF/mois** |
+| Prestations familiales patronale | **7,0 %** ✅ | employeur | **63 000 XOF/mois** |
 | Accidents du travail patronale | 1,0 % | employeur | **63 000 XOF/mois** (taux selon risque à confirmer) |
 
-> **⚠️ Écart de taux à valider (issue #1912)** : les sources officielles
-> (CIPRES — lacipres.org ; CLEISS — « 63 000 × 7 % = 4 410 FCFA/mois »)
-> portent la prestation familiale CSS à **7 %** du salaire plafonné, et non
-> 3 % comme implémenté (`SenegalPayrollRules`/`IpresDeclarationGenerator`).
-> Le plafond serait par ailleurs passé de 63 000 à **80 000 XOF** en 2025
-> (décision CSS, contestée par le CNP — senenews 2025-01). L'implémentation
-> reste 3 % (pilot) en attendant la validation expert-comptable — cf.
-> `VALIDATION_EXPERTE.md`.
+> **✅ Écart de taux tranché (issue #2473, 2026-08-15)** : le taux de la
+> prestation familiale CSS est **7 %** du salaire plafonné — sources
+> officielles CIPRES (lacipres.org — « 7 % du salaire mensuel plafonné à
+> 63 000 CFA ») et CLEISS (« 63 000 × 7 % = 4 410 FCFA/mois »).
+> L'implémentation (`SenegalPayrollRules`/`IpresDeclarationGenerator`) est
+> passée de 3 % à **7 %**. Le plafond reste **63 000 XOF/mois** (décision
+> #1913) : le passage à 80 000 XOF annoncé par la CSS en janvier 2025 a été
+> contesté par le CNP (senenews 2025-01) et n'est pas confirmé en vigueur.
+> Reste à valider par expert-comptable sénégalais (#1912) avant production —
+> cf. `VALIDATION_EXPERTE.md`.
 
 ## 7. Abattement frais professionnels
 
@@ -152,7 +154,7 @@ et documenté :
 |---|---|---|---|
 | IPRES T1 (8,4 % patronal, plaf. 432 000) | ✅ | ✅ | déclaration IPRES |
 | IPRES T2 cadres (3,6 %, tranche 432 k–2 160 k) | ✅ | ✅ | déclaration IPRES |
-| CSS famille (3,0 %) | ✅ **plafonné 63 000** (#1913) | ✅ **plafonné 63 000** (aligné) | ✓ aligné moteur/CSV |
+| CSS famille (7,0 %) | ✅ **plafonné 63 000** (#1913) | ✅ **plafonné 63 000** (aligné) | ✓ aligné moteur/CSV |
 | CSS AT (1,0 %) | ✅ | ❌ | déclaration CSS dédiée (taux selon risque) |
 | CFCE (3,0 %) | ✅ | ❌ | déclaration CFCE dédiée |
 
@@ -192,8 +194,8 @@ ré-évaluer).
 | 3 | CSS AT 1 % | plafond assiette 63 000 XOF/mois | taux selon risque + canal de déclaration (mensuel vs annuel) |
 | 4 | CFCE 3 % | masse salariale brute non plafonnée | taux + canal (trimestriel DGI) + périmètre fichier IPRES/CSS |
 | 5 | Abattement frais pro 30 % | brut non plafonné (§7) | assiette exacte (plafonnée ?) |
-| 6 | Plafond CSS famille 63 000 | 3 % sur min(brut, 63 000) (§6) | 63 000 vs 80 000 (décision CSS 2025 contestée) |
-| 7 | **Taux CSS famille 7 % vs 3 %** | 3 % implémenté (pilot) | 7 % officiel (CIPRES/CLEISS — « 63 000 × 7 % = 4 410 FCFA/mois ») vs 3 % implémenté : l'expert tranche (§6, suivi #1912) |
+| 6 | Plafond CSS famille 63 000 | 7 % sur min(brut, 63 000) (§6) | 63 000 vs 80 000 (décision CSS 2025 contestée — 63 000 maintenu #1913/#2473) |
+| 7 | **Taux CSS famille 7 % vs 3 %** | **7 % implémenté** (aligné officiel CIPRES/CLEISS, #2473) | ✅ tranché (#2473) : 7 % officiel — reste la signature experte formelle (#1912) |
 | 8 | Périmètre déclaration IPRES/CSS (§11) | AT + CFCE exclus par conception | confirmation expert (Q1/Q2/Q3 §11) |
 
 **Critère de sortie #1912** : fiche signée → `confidenceLevel()` → `production`
