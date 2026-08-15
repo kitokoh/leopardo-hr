@@ -265,9 +265,9 @@ const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
-// Issue #3858 : useRouter() doit être appelé dans setup() (inject), pas dans un
-// event handler — hors setup, inject() renvoie undefined et getRoutes() lève
-// une TypeError (recherche header morte depuis la refonte premium).
+// Issues #3858/#3931 : useRouter() doit être appelé dans setup() (inject), pas
+// dans un event handler — hors setup, inject() renvoie undefined et getRoutes()
+// lève une TypeError (recherche header morte, refonte premium).
 const router = useRouter()
 
 const languageLabels = {
