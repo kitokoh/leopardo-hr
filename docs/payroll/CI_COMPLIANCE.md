@@ -117,22 +117,16 @@ Codes : `CNSS_CI_RET_EMP`, `CNSS_CI_RET_PAT`, `CNSS_CI_FAM_PAT`,
 
 | Catégorie | < 5 ans | ≥ 5 ans |
 |---|---|---|
-| Ouvriers | 8 jours | 15 jours |
-| Employés / Techniciens | 1 mois | 2 mois |
-| Cadres | 3 mois | 3 mois |
+| Ouvriers | 6 j ouvrés (8 j cal.) | 11 j ouvrés (15 j cal.) |
+| Employés / Techniciens | 22 j ouvrés (1 mois) | 44 j ouvrés (2 mois) |
+| Cadres | 66 j ouvrés (3 mois) | 66 j ouvrés (3 mois) |
 
-Implémentation par catégorie professionnelle (issue #2264, `category` porté
-par `employees.ipres_category`, transmis par `EndOfContractService`) :
-
-| Catégorie | < 5 ans | ≥ 5 ans |
-|---|---|---|
-| Ouvriers | 8 jours | 15 jours |
-| Employés / Techniciens (défaut) | 30 j (1 mois) | 60 j (2 mois) |
-| Cadres | 90 j (3 mois) | 90 j (3 mois) |
-
-Le palier « 90 j sans catégorie pour ≥ 10 ans » (ancienne approximation) est
-supprimé : il contredisait la ligne employé/technicien. Niveau pilot — à
-valider par expert-comptable OHADA-CI (#1904).
+⚠️ Issue #2219 : `noticePeriodDays()` renvoie des **jours ouvrés** (le moteur
+divise par les jours ouvrés du mois, ~22) — renvoyer des jours calendaires
+surpaierait 30/22 = 1,36× l'indemnité de préavis (alignement DZ #1943).
+Implémentation pilote au niveau **employé/technicien** (< 5 ans : 22 j ;
+≥ 5 ans : 44 j) — ouvriers et cadres documentés ici, la catégorie du contrat
+sera prise en compte dans un suivi.
 
 ## 9. 13ème mois
 

@@ -16,7 +16,7 @@
 | CNPS famille patronal 7,0 % (plaf. 750 000) | ✅ implémentée (pilot) | CNPS | à valider |
 | CNPS AT patronal 2,0 % (non plafonné) | ✅ implémentée (pilot) | CNPS | à valider |
 | SMIG (41 875 XAF/mois) | ✅ implémentée (pilot) | Décret 2014 | à vérifier 2024 |
-| Préavis (15/30/60/90 j selon ancienneté) | ✅ implémentée (pilot) | Code du travail 92/007 art. 34 | à valider |
+| Préavis (11/22/44/66 j ouvrés selon ancienneté) | ✅ implémentée (pilot) | Code du travail 92/007 art. 34 | à valider |
 | Heures sup (+20 %/8 h, +30 % au-delà) | ✅ implémentée (pilot) | Code du travail 92/007 | à valider |
 | 13ème mois | ❌ non obligatoire légalement (pratique conventionnelle) | — | — |
 | Congés (1,5 j/mois 5 ans, 2 j 6-10 ans, 2,5 j > 10 ans) | 📝 à documenter/test | Code du travail 92/007 | — |
@@ -71,12 +71,17 @@ Assiette plafonnée : `min(brut, 750 000)` pour vieillesse et famille ; AT sur l
 
 ## 5. Préavis (Code du travail 92/007, art. 34)
 
-| Ancienneté | Préavis |
+| Ancienneté | Préavis (jours OUVRÉS, #2219) |
 |---|---|
-| < 6 mois | 15 jours |
-| 6 mois – 5 ans | 1 mois (30 j) |
-| 5 – 10 ans | 2 mois (60 j) |
-| > 10 ans | 3 mois (90 j) |
+| < 6 mois | 11 j (15 j calendaires) |
+| 6 mois – 5 ans | 22 j (1 mois) |
+| 5 – 10 ans | 44 j (2 mois) |
+| > 10 ans | 66 j (3 mois) |
+
+⚠️ Issue #2219 : `noticePeriodDays()` renvoie des **jours ouvrés** (le moteur
+divise par les jours ouvrés du mois, ~22) — renvoyer des jours calendaires
+(15/30/60/90) surpaierait 30/22 = 1,36× l'indemnité de préavis (alignement
+sur le correctif DZ #1943).
 
 ## 6. Jours fériés fixes CM
 

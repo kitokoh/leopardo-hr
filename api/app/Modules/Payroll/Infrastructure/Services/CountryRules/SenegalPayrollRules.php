@@ -148,10 +148,15 @@ class SenegalPayrollRules extends AbstractCountryRules
      */
     public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
+        // Issue #2219 : JOURS OUVRÉS (alignement DZ #1943) — le moteur divise
+        // par les jours ouvrés du mois (22) ; les durées calendaires
+        // (8/30/90) surpaiement 8/6=1,33× / 30/22=1,36× / 90/66=1,36×.
+        // Conversion calendaire → ouvré (≈22 j ouvrés/mois) : 8 j → 6 ·
+        // 1 mois → 22 · 3 mois → 66.
         return match (strtolower((string) $category)) {
-            'cadre' => 90.0,
-            'ouvrier', 'worker' => 8.0,
-            default => 30.0, // employés / techniciens (1 mois)
+            'cadre' => 66.0,
+            'ouvrier', 'worker' => 6.0,
+            default => 22.0, // employés / techniciens (1 mois)
         };
     }
 

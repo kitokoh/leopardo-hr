@@ -235,14 +235,16 @@ class GoldenCmPayrollTest extends TestCase
     public static function seniorityProvider(): array
     {
         // [ancienneté en années, préavis légal en jours]
+        // Issue #2219 : JOURS OUVRÉS (15 j calendaires = 11 j ouvrés,
+        // 1 mois = 22 · 2 mois = 44 · 3 mois = 66).
         return [
-            'moins de 6 mois'    => [0.25, 15.0],
-            '6 mois (borne)'     => [0.5, 30.0],
-            '3 ans'              => [3.0, 30.0],
-            '5 ans (borne)'      => [5.0, 60.0],
-            '7 ans'              => [7.0, 60.0],
-            '10 ans (borne)'     => [10.0, 90.0],
-            '15 ans'             => [15.0, 90.0],
+            'moins de 6 mois'    => [0.25, 11.0],
+            '6 mois (borne)'     => [0.5, 22.0],
+            '3 ans'              => [3.0, 22.0],
+            '5 ans (borne)'      => [5.0, 44.0],
+            '7 ans'              => [7.0, 44.0],
+            '10 ans (borne)'     => [10.0, 66.0],
+            '15 ans'             => [15.0, 66.0],
         ];
     }
 
@@ -286,17 +288,19 @@ class GoldenCmPayrollTest extends TestCase
     public function test_golden_cm_end_of_contract_notice_1_month(): void
     {
         // Calcul manuel (CM_COMPLIANCE.md §8 + §11) — fin de contrat à 3 ans
-        // (< 5 ans) : préavis 1 mois → indemnité compensatrice = 200 000 XAF.
-        $this->assertSame(30.0, $this->cm()->noticePeriodDays(3.0));
-        $this->assertSame(200000.0, round($this->cm()->noticePeriodDays(3.0) / 30.0 * 200000.0, 2));
+        // (< 5 ans) : préavis 1 mois = 22 j ouvrés (#2219) → indemnité
+        // compensatrice = 22/22 × 200 000 = 200 000 XAF.
+        $this->assertSame(22.0, $this->cm()->noticePeriodDays(3.0));
+        $this->assertSame(200000.0, round($this->cm()->noticePeriodDays(3.0) / 22.0 * 200000.0, 2));
     }
 
     public function test_golden_cm_end_of_contract_notice_3_months(): void
     {
         // Calcul manuel (CM_COMPLIANCE.md §8 + §11) — fin de contrat à 12 ans
-        // (> 10 ans) : préavis 3 mois → indemnité compensatrice = 600 000 XAF.
-        $this->assertSame(90.0, $this->cm()->noticePeriodDays(12.0));
-        $this->assertSame(600000.0, round($this->cm()->noticePeriodDays(12.0) / 30.0 * 200000.0, 2));
+        // (> 10 ans) : préavis 3 mois = 66 j ouvrés (#2219) → indemnité
+        // compensatrice = 66/22 × 200 000 = 600 000 XAF.
+        $this->assertSame(66.0, $this->cm()->noticePeriodDays(12.0));
+        $this->assertSame(600000.0, round($this->cm()->noticePeriodDays(12.0) / 22.0 * 200000.0, 2));
     }
 
     public function test_golden_cm_working_days_with_holiday_month(): void

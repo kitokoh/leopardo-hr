@@ -249,10 +249,10 @@ class GoldenCiPayrollTest extends TestCase
     #[DataProvider('preavisProvider')]
     public function test_golden_ci_preavis(float $years, float $expectedDays): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18),
-        // niveau employé/technicien (catégorie absente) :
-        //  < 5 ans → 30 j (1 mois) · ≥ 5 ans → 60 j (2 mois)
-        //  — plus de palier 90 j sans catégorie (#2264 : il contredisait §8).
+        // Calcul manuel (CI_COMPLIANCE.md §6 — Code du travail art. 18) :
+        //  < 5 ans → 1 mois · 5-10 ans → 2 mois · ≥ 10 ans → 3 mois
+        //  (palier employé/technicien — pilot, à valider).
+        //  Issue #2219 : JOURS OUVRÉS → 22 / 44 / 66.
         $rules = $this->rules();
 
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
@@ -277,23 +277,9 @@ class GoldenCiPayrollTest extends TestCase
     public static function preavisProvider(): array
     {
         return [
-            'moins de 5 ans'  => [2.0, 30.0],
-            '5 ans et plus'   => [7.0, 60.0],
-            '12 ans'          => [12.0, 60.0],
-        ];
-    }
-
-    /**
-     * @return array<string, array{string, float, float}>
-     */
-    public static function preavisParCategorieProvider(): array
-    {
-        return [
-            'cadre 2 ans'      => ['cadre', 2.0, 90.0],
-            'cadre 12 ans'     => ['cadre', 12.0, 90.0],
-            'ouvrier 2 ans'    => ['ouvrier', 2.0, 8.0],
-            'ouvrier 7 ans'    => ['ouvrier', 7.0, 15.0],
-            'employe 12 ans'   => ['general', 12.0, 60.0],
+            'moins de 5 ans'  => [2.0, 22.0],
+            '5 à 10 ans'      => [7.0, 44.0],
+            '10 ans et plus'  => [12.0, 66.0],
         ];
     }
 

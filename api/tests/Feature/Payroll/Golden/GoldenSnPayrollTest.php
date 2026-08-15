@@ -267,28 +267,29 @@ class GoldenSnPayrollTest extends TestCase
     public function test_golden_sn_preavis_employe(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §8) : préavis employé/technicien =
-        // 1 mois = 30 jours (défaut, catégorie inconnue ou 'general').
+        // 1 mois = 22 jours OUVRÉS (#2219, défaut, catégorie inconnue ou
+        // 'general') — le moteur divise par les jours ouvrés du mois (22).
         $rules = $this->rules();
 
-        $this->assertSame(30.0, $rules->noticePeriodDays(1.0));
-        $this->assertSame(30.0, $rules->noticePeriodDays(10.0));
-        $this->assertSame(30.0, $rules->noticePeriodDays(5.0, 'general'));
-        $this->assertSame(30.0, $rules->noticePeriodDays(5.0, null));
+        $this->assertSame(22.0, $rules->noticePeriodDays(1.0));
+        $this->assertSame(22.0, $rules->noticePeriodDays(10.0));
+        $this->assertSame(22.0, $rules->noticePeriodDays(5.0, 'general'));
+        $this->assertSame(22.0, $rules->noticePeriodDays(5.0, null));
     }
 
     public function test_golden_sn_preavis_par_categorie(): void
     {
         // Calcul manuel (SN_COMPLIANCE.md §8 — Code du travail Sénégal,
         // issue #2123) : la durée dépend de la catégorie du contrat
-        // (employees.ipres_category) :
-        //   ouvriers → 8 jours · employés/techniciens → 1 mois (30 j) ·
-        //   cadres → 3 mois (90 j)
+        // (employees.ipres_category) — issue #2219 : JOURS OUVRÉS :
+        //   ouvriers → 8 j calendaires = 6 j ouvrés ·
+        //   employés/techniciens → 1 mois = 22 · cadres → 3 mois = 66
         $rules = $this->rules();
 
-        $this->assertSame(8.0, $rules->noticePeriodDays(5.0, 'ouvrier'));
-        $this->assertSame(8.0, $rules->noticePeriodDays(5.0, 'worker'));
-        $this->assertSame(30.0, $rules->noticePeriodDays(5.0, 'general'));
-        $this->assertSame(90.0, $rules->noticePeriodDays(5.0, 'cadre'));
+        $this->assertSame(6.0, $rules->noticePeriodDays(5.0, 'ouvrier'));
+        $this->assertSame(6.0, $rules->noticePeriodDays(5.0, 'worker'));
+        $this->assertSame(22.0, $rules->noticePeriodDays(5.0, 'general'));
+        $this->assertSame(66.0, $rules->noticePeriodDays(5.0, 'cadre'));
     }
 
     public function test_golden_sn_minimum_wage_currency_timezone(): void
