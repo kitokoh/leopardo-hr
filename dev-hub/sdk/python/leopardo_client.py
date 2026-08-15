@@ -840,16 +840,8 @@ class LeopardoClient:
         """Historique des exports du portail manager (issue #2199) - manager uniquement"""
         return self.request("GET", "/export/history", **kwargs)
 
-    def get_export_history(self, **kwargs):
-        """Historique des exports"""
-        return self.request("GET", "/export/history", **kwargs)
-
     def exportpayslips(self, **kwargs):
         """Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement"""
-        return self.request("GET", "/export/pay-slips", **kwargs)
-
-    def get_export_pay_slips(self, **kwargs):
-        """Exporter les bulletins"""
         return self.request("GET", "/export/pay-slips", **kwargs)
 
     def get_export_payroll_journal(self, **kwargs):
@@ -1296,17 +1288,17 @@ class LeopardoClient:
         """Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", **kwargs)
 
-    def downloadcnsscgdeclaration(self, **kwargs):
-        """Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155)"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", **kwargs)
+    def downloadcnssbfdeclaration(self, **kwargs):
+        """Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", **kwargs)
 
     def downloadcnsscideclaration(self, **kwargs):
         """Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", **kwargs)
 
-    def downloadcnssgadeclaration(self, **kwargs):
-        """Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155)"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", **kwargs)
+    def downloadinpsmldeclaration(self, **kwargs):
+        """Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/inps-ml", **kwargs)
 
     def downloadipressndeclaration(self, **kwargs):
         """Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"""

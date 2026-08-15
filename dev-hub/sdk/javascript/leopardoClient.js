@@ -1025,18 +1025,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/export/history", options);
     },
 
-    /** Historique des exports */
-    getExportHistory(options = {}) {
-      return request("GET", "/export/history", options);
-    },
-
     /** Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement */
     exportPaySlips(options = {}) {
-      return request("GET", "/export/pay-slips", options);
-    },
-
-    /** Exporter les bulletins */
-    getExportPaySlips(options = {}) {
       return request("GET", "/export/pay-slips", options);
     },
 
@@ -1595,9 +1585,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", options);
     },
 
-    /** Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155) */
-    downloadCnssCgDeclaration(options = {}) {
-      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", options);
+    /** Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158) */
+    downloadCnssBfDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", options);
     },
 
     /** Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830) */
@@ -1605,9 +1595,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", options);
     },
 
-    /** Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155) */
-    downloadCnssGaDeclaration(options = {}) {
-      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", options);
+    /** Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158) */
+    downloadInpsMlDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/inps-ml", options);
     },
 
     /** Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830) */

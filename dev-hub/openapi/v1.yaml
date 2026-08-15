@@ -1798,48 +1798,6 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
-  /admin/users:
-    get:
-      tags: ["Platform Admin"]
-      summary: "Liste reelle des utilisateurs plateforme"
-      description: "Agregat super-admin depuis shared_tenants.employees joint a public.companies. Alimente la vue Users du cockpit admin (remplacement des donnees mock). Ajoute en vague QA 2026-08-14."
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: per_page
-          in: query
-          required: false
-          schema: { type: integer, default: 25 }
-        - name: search
-          in: query
-          required: false
-          schema: { type: string }
-      responses:
-        "200":
-          description: "Utilisateurs pagines"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id: { type: integer }
-                        name: { type: string }
-                        email: { type: string, nullable: true }
-                        status: { type: string }
-                        company_id: { type: string, nullable: true }
-                        company_name: { type: string, nullable: true }
-                        created_at: { type: string }
-                  meta:
-                    $ref: "#/components/schemas/PaginationMeta"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-
   /admin/dashboard/activities:
     get:
       tags: ["Platform"]
@@ -7433,36 +7391,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /me/vehicles:
-    get:
-      tags: ["Me"]
-      summary: "Mes vehicules (employee)"
-      description: "Vehicules assignes a l'employe courant (assigned_driver_id) avec derniere position Traccar best-effort."
-      responses:
-        "200":
-          description: "Liste des vehicules de l'employe"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        vehicle_id: { type: integer }
-                        id: { type: integer }
-                        plate_number: { type: string }
-                        brand: { type: string, nullable: true }
-                        model: { type: string, nullable: true }
-                        latitude: { type: number, nullable: true }
-                        longitude: { type: number, nullable: true }
-                        speed: { type: number, nullable: true }
-                        updated_at: { type: string, nullable: true }
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /me/trainings/{session}/enroll:
     post:
       tags: ["Me"]
@@ -7931,12 +7859,12 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
-  /payroll-runs/{payrollRun}/declarations/cnss-ga:
+  /payroll-runs/{payrollRun}/declarations/cnss-bf:
     get:
       tags: ["Payroll Engine"]
-      summary: "Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155)"
-      description: "CSV gabonais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XAF, retraite salariale/patronale 2,5 %/5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas GA."
-      operationId: downloadCnssGaDeclaration
+      summary: "Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"
+      description: "CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale 7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas BF."
+      operationId: downloadCnssBfDeclaration
       parameters:
         - name: payrollRun
           in: path
@@ -7944,7 +7872,7 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "Fichier CSV CNSS GA"
+          description: "Fichier CSV CNSS BF"
           content:
             text/csv:
               schema:
@@ -7958,12 +7886,12 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /payroll-runs/{payrollRun}/declarations/cnss-cg:
+  /payroll-runs/{payrollRun}/declarations/inps-ml:
     get:
       tags: ["Payroll Engine"]
-      summary: "Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155)"
-      description: "CSV congolais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 2 500 000 XAF, retraite salariale/patronale 4,0 %/8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas CG."
-      operationId: downloadCnssCgDeclaration
+      summary: "Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"
+      description: "CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale 4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas ML."
+      operationId: downloadInpsMlDeclaration
       parameters:
         - name: payrollRun
           in: path
@@ -7971,7 +7899,7 @@ paths:
           schema: { type: integer }
       responses:
         "200":
-          description: "Fichier CSV CNSS CG"
+          description: "Fichier CSV INPS ML"
           content:
             text/csv:
               schema:
@@ -9408,13 +9336,6 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
     post:
-      parameters:
-        - name: payrollRun
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: "Identifiant du cycle de paie"
       tags: ["Payroll"]
       summary: "Creer un export bancaire pour un run valide/paye (asynchrone)"
       requestBody:
@@ -12274,15 +12195,6 @@ paths:
         "201": { description: "Demande créée" }
         "422": { $ref: "#/components/responses/Error422" }
 
-  /growth/partner/dashboard:
-    get:
-      tags: ["Growth"]
-      summary: "Tableau de bord partenaire connecté"
-      security: [{ BearerAuth: [] }]
-      responses:
-        "200": { description: "Vue d'ensemble parrainages et commissions" }
-        "401": { $ref: "#/components/responses/Error401" }
-
   /platform/growth/partners:
     get:
       tags: ["Growth", "Platform Admin"]
@@ -12607,51 +12519,6 @@ paths:
                         description: "true si l'entreprise impose une photo a chaque pointage mobile (arrivee/depart)."
         "401":
           $ref: "#/components/responses/Error401"
-
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Lire la configuration du mode de pointage de l'entreprise"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Configuration actuelle (data null si aucune configuration)"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    nullable: true
-                    allOf:
-                      - $ref: "#/components/schemas/AttendanceModeSettings"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour la configuration GPS (admin)"
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AttendanceModeSettingsRequest"
-      responses:
-        "200":
-          description: "Configuration mise à jour"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: "#/components/schemas/AttendanceModeSettings"
-        "422":
-          $ref: "#/components/responses/Validation422"
 
   /smart-attendance/preferences:
     put:
@@ -14202,15 +14069,6 @@ components:
           type: boolean
           description: "Passer a true remet failure_count a 0."
 
-    PlatformUser:
-      type: object
-      properties:
-        id: { type: integer }
-        name: { type: string }
-        email: { type: string, format: email }
-        status: { type: string, enum: [active, deactivated, suspended] }
-        last_login_at: { type: string, format: date-time, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
 
     WebhookDelivery:
       type: object
@@ -17738,6 +17596,7 @@ components:
           type: object
           allOf:
             - $ref: "#/components/schemas/Compliance"
+          type: object
           nullable: true
           description: >-
             Bloc conformité (issue #2116) — null quand le pays du run n'est
@@ -18227,6 +18086,40 @@ components:
               tax: { type: number }
         net: { type: number }
         total_cost: { type: number }
+    TrainingEnrollment:
+      type: object
+      description: "Inscription a une session de formation (TrainingEnrollmentResource) — liste globale GET /training/enrollments."
+      properties:
+        id: { type: integer }
+        training_session_id: { type: integer }
+        employee_id: { type: integer }
+        status: { type: string }
+        score: { type: number, nullable: true }
+        feedback: { type: string, nullable: true }
+        completed_at: { type: string, format: date-time, nullable: true }
+        course_title: { type: string, nullable: true }
+        session_date: { type: string, nullable: true }
+        progress: { type: integer, nullable: true }
+        employee: { type: object, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+
+    TrainingSession:
+      type: object
+      description: "Session de formation (TrainingSessionResource) — liste globale GET /training/sessions."
+      properties:
+        id: { type: integer }
+        training_course_id: { type: integer }
+        trainer_id: { type: integer, nullable: true }
+        external_trainer: { type: string, nullable: true }
+        start_date: { type: string, format: date, nullable: true }
+        end_date: { type: string, format: date, nullable: true }
+        location: { type: string, nullable: true }
+        status: { type: string }
+        notes: { type: string, nullable: true }
+        trainer: { type: object, nullable: true }
+        enrollments: { type: array, nullable: true, items: { $ref: "#/components/schemas/TrainingEnrollment" } }
+        created_at: { type: string, format: date-time, nullable: true }
+
     TaxSlabInput:
       type: object
       required: [country_code, name, min_amount, rate, effective_from]
