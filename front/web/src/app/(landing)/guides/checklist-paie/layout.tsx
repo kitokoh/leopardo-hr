@@ -1,7 +1,9 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
+import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Checklist Paie 2024 | Télécharger Gratuitement',
+export const metadata: Metadata = generateSEOMetadata({
+  title: 'Checklist Paie 2026 | Télécharger Gratuitement',
   description:
     'Checklist complète pour votre paie. Vérifications et conformité. Téléchargez gratuitement en PDF.',
   keywords: [
@@ -10,7 +12,10 @@ export const metadata: Metadata = {
     'conformité paie',
     'gestion paie',
   ],
-};
+  ogImage: `${SITE_URL}/og/guides-checklist-paie.png`,
+  ogType: 'article',
+  canonical: `${SITE_URL}/guides/checklist-paie`,
+});
 
 export default function GuidesChecklistPaieLayout({
   children,

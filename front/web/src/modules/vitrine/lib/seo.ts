@@ -259,6 +259,32 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
   },
 
+  guides: {
+    title: "Guides & Ressources RH | Téléchargements Gratuits",
+    description:
+      "Téléchargez nos guides gratuits : Guide RH Startup, Checklist Paie 2026, Modèle Planning Employés.",
+    keywords: [
+      "guides gratuits",
+      "ressources RH",
+      "templates RH",
+      "téléchargements",
+    ],
+    ogImage: `${siteUrl}/og/guides.png`,
+  },
+
+  demo: {
+    title: "Demander une Démo | Leopardo RH",
+    description:
+      "Planifiez une démo gratuite de Leopardo RH. Découvrez la gestion RH automatisée : paie multi-pays, pointage, absences, formations.",
+    keywords: [
+      "demo Leopardo RH",
+      "démo logiciel RH",
+      "planifier démo SaaS",
+      "gestion RH automatisée",
+    ],
+    ogImage: `${siteUrl}/og/demo.png`,
+  },
+
   faq: {
     title: "Questions Frequentes | FAQ Leopardo RH",
     description:
