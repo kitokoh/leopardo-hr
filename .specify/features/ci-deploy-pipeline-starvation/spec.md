@@ -2,7 +2,7 @@
 
 **Feature Branch**: `fix/ci-deploy-pipeline-starvation`
 **Created**: 2026-08-15 | **Status**: Draft
-**Constat source**: F8-01 (session QA expert 8, 2026-08-15) — voir `.specify/features/qa-expert8-2026-08-15/findings-registry.md`
+**Constat source**: F8-01 (session QA expert 9, 2026-08-15) — voir `.specify/features/qa-expert9-2026-08-15/findings-registry.md`
 **Issues liées (symptômes, déjà ouvertes)**: #2632, #2627, #2812, #2813, #3259
 
 ## Problème

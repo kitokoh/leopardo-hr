@@ -1,4 +1,4 @@
-# Findings Registry — QA expert 8 — 2026-08-15
+# Findings Registry — QA expert 9 — 2026-08-15
 
 | ID | Surface | Sévérité | Constat | Résolution |
 |----|---------|----------|---------|------------|

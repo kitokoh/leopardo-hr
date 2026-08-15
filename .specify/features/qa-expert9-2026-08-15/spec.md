@@ -1,4 +1,4 @@
-# Feature Specification: Session QA expert 8 — 2026-08-15 (audit 360° + forensique déploiement)
+# Feature Specification: Session QA expert 9 — 2026-08-15 (audit 360° + forensique déploiement)
 
 **Branch**: `docs/qa-expert8-session-2026-08-15`
 **Created**: 2026-08-15 | **Status**: Audit terminé — 1 constat P1 nouveau, 5 surfaces revérifiées saines

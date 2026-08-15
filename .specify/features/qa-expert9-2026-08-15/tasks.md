@@ -1,4 +1,4 @@
-# Tasks — QA expert 8 — 2026-08-15
+# Tasks — QA expert 9 — 2026-08-15
 
 - [x] T1 Probes live API production (health, docs, demo-users, sso, trial, marketing leads, api-explorer)
 - [x] T2 Probes live vitrine (20 routes, liens, mojibake) + admin Pages
