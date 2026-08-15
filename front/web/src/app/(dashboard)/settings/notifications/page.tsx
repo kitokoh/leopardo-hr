@@ -31,8 +31,8 @@ const CHANNELS = [
 const CATEGORIES = [
   { key: 'hr', label: 'RH' },
   { key: 'payroll', label: 'Paie' },
-  { key: 'security', label: 'Securite' },
-  { key: 'system', label: 'Systeme' },
+  { key: 'security', label: 'Sécurité' },
+  { key: 'system', label: 'Système' },
   { key: 'marketing', label: 'Conseils produit' },
 ] as const;
 
@@ -197,7 +197,7 @@ export default function NotificationSettingsPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-black text-slate-950">Categories</h2>
+          <h2 className="text-xl font-black text-slate-950">Catégories</h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {CATEGORIES.map((category) => {
               const enabled = preferences.categories?.[category.key] ?? true;
