@@ -57,6 +57,7 @@
 
 - **fix(admin): erreurs de chargement dashboard et prédictions rendues visibles (Closes #3274).** La santé commence à `unknown`, le shell signale les KPI incomplets et chaque panneau prédictif affiche son échec API.
 - **refactor(admin): cartes legacy migrées vers le design system (Closes #3278).** Exports, Leaves, Predictions, Reports, Webhooks et plusieurs modales utilisent désormais les tokens `card`/`glass-card`.
+- **fix(api): health compagnie expose slug et created_at pour CompanyDetailView (Closes #3273).** Le contrat admin ne laisse plus les champs d’identité technique vides.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
 ### Fixed
