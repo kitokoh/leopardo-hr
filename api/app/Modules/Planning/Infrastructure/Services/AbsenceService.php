@@ -13,6 +13,7 @@ use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -60,6 +61,19 @@ class AbsenceService
             'proof_path' => $proofPath,
         ]);
 
+        if ($type->deducts_leave) {
+            // Snapshot leave_balances (served by /me/leave-balances) : a
+            // pending request reserves the days (issue #2329).
+            $this->adjustLeaveBalanceSnapshot(
+                $employee->id,
+                $employee->company_id,
+                $type->id,
+                $data['start_date'],
+                'pending',
+                (float) $daysCount
+            );
+        }
+
         AbsenceRequested::dispatch($absence);
 
         return $absence;
@@ -96,6 +110,24 @@ class AbsenceService
                     'absence_approved',
                     $absence->id,
                     $newBalance
+                );
+
+                // Snapshot leave_balances : pending → used (issue #2329).
+                $this->adjustLeaveBalanceSnapshot(
+                    $absence->employee_id,
+                    $absence->company_id,
+                    $type->id,
+                    (string) $absence->start_date,
+                    'pending',
+                    -(float) $absence->days_count
+                );
+                $this->adjustLeaveBalanceSnapshot(
+                    $absence->employee_id,
+                    $absence->company_id,
+                    $type->id,
+                    (string) $absence->start_date,
+                    'used',
+                    (float) $absence->days_count
                 );
             }
 
@@ -136,6 +168,26 @@ class AbsenceService
                     $absence->id,
                     $newBalance
                 );
+
+                // Snapshot leave_balances : used restored (issue #2329).
+                $this->adjustLeaveBalanceSnapshot(
+                    $absence->employee_id,
+                    $absence->company_id,
+                    $absence->absenceType->id,
+                    (string) $absence->start_date,
+                    'used',
+                    -(float) $absence->days_count
+                );
+            } elseif ($absence->status === 'pending' && $absence->absenceType->deducts_leave) {
+                // Snapshot leave_balances : pending released (issue #2329).
+                $this->adjustLeaveBalanceSnapshot(
+                    $absence->employee_id,
+                    $absence->company_id,
+                    $absence->absenceType->id,
+                    (string) $absence->start_date,
+                    'pending',
+                    -(float) $absence->days_count
+                );
             }
 
             $absence->update([
@@ -157,7 +209,22 @@ class AbsenceService
             throw new AbsenceNotPendingException;
         }
 
-        $absence->update(['status' => 'cancelled']);
+        DB::transaction(function () use ($absence): void {
+            if ($absence->absenceType->deducts_leave) {
+                // Snapshot leave_balances : pending released on cancel
+                // (issue #2329).
+                $this->adjustLeaveBalanceSnapshot(
+                    $absence->employee_id,
+                    $absence->company_id,
+                    $absence->absenceType->id,
+                    (string) $absence->start_date,
+                    'pending',
+                    -(float) $absence->days_count
+                );
+            }
+
+            $absence->update(['status' => 'cancelled']);
+        });
 
         return $absence->fresh();
     }
@@ -195,5 +262,41 @@ class AbsenceService
             'reference_id' => $referenceId,
             'balance_after' => $balanceAfter,
         ]);
+    }
+
+    /**
+     * Keep the leave_balances snapshot (served by /me/leave-balances) in sync
+     * with the leave_balance_logs chain of truth (issue #2329).
+     *
+     * The snapshot is keyed per (company, employee, absence_type, year of the
+     * absence start). `pending`/`used` are clamped at 0 so a snapshot row
+     * created after the fact (e.g. historical absence approved before this
+     * sync existed) never goes negative.
+     */
+    private function adjustLeaveBalanceSnapshot(
+        int $employeeId,
+        int|string|null $companyId,
+        int $absenceTypeId,
+        string $startDate,
+        string $column,
+        float $delta
+    ): void {
+        if ($delta == 0.0) {
+            return;
+        }
+
+        $balance = LeaveBalance::firstOrCreate(
+            [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'absence_type_id' => $absenceTypeId,
+                'year' => (int) Carbon::parse($startDate)->format('Y'),
+            ],
+            ['balance' => 0, 'used' => 0, 'pending' => 0]
+        );
+
+        $current = (float) $balance->getAttribute($column);
+        $balance->setAttribute($column, max(0.0, $current + $delta));
+        $balance->save();
     }
 }
