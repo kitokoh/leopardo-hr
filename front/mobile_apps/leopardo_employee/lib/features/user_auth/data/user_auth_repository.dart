@@ -191,6 +191,8 @@ class UserAuthRepository {
         preferredLanguage: lang,
         isRtl: isRtl,
       );
+      // Header Accept-Language gere par l'intercepteur core (api_client.dart)
+      // a partir de _preferences.preferredLanguage — pas de mutation globale.
     }
 
     return user;
