@@ -14,6 +14,9 @@ export interface BlogPost {
   category: string;
   readingTime: number;
   tags: string[];
+  /** QA 2026-08-15 (#2657) : contenu daté (2023/2024) conservé mais marqué
+   *  comme archivé — les dates de publication restent fidèles au contenu. */
+  archived?: boolean;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -66,7 +69,8 @@ Pour garder vos meilleurs talents:
 
 Une bonne gestion RH est la clé du succès d'une startup. En suivant ces étapes, vous pouvez construire une équipe forte et engagée.`,
     image: '/blog/startup-rh.svg',
-    date: new Date('2026-01-15'),
+    date: new Date('2024-01-15'),
+    archived: true,
     author: {
       name: 'Ahmed Benali',
       avatar: '/avatars/ahmed.svg',
@@ -128,7 +132,8 @@ Assurez-vous que votre équipe:
 
 La migration de Excel vers un logiciel de paie peut sembler intimidante, mais avec une bonne planification, c'est un processus fluide qui vous fera gagner du temps et réduira les erreurs.`,
     image: '/blog/paie-excel.svg',
-    date: new Date('2026-01-10'),
+    date: new Date('2024-01-10'),
+    archived: true,
     author: {
       name: 'Jean Martin',
       avatar: '/avatars/jean.svg',
@@ -139,9 +144,9 @@ La migration de Excel vers un logiciel de paie peut sembler intimidante, mais av
   },
   {
     slug: 'tendances-rh-2024',
-    title: 'Les Tendances RH à Surveiller en 2026',
-    excerpt: 'Découvrez les tendances RH qui façonneront le monde du travail en 2026.',
-    content: `# Les Tendances RH à Surveiller en 2026
+    title: 'Les Tendances RH à Surveiller en 2024',
+    excerpt: 'Découvrez les tendances RH qui façonneront le monde du travail en 2024.',
+    content: `# Les Tendances RH à Surveiller en 2024
 
 ## 1. Travail Hybride et Flexible
 
@@ -173,23 +178,24 @@ Les compétences changent rapidement:
 
 ## 5. Automatisation RH
 
-La technologie transformé la RH:
+La technologie transforme la RH:
 - Automatiser les tâches répétitives
 - Utiliser l'IA pour les décisions
 - Améliorer l'expérience employé
 
 ## Conclusion
 
-2026 sera une année de transformation pour la RH. Les entreprises qui s'adaptent à ces tendances seront mieux positionnées pour le succès.`,
+2024 sera une année de transformation pour la RH. Les entreprises qui s'adaptent à ces tendances seront mieux positionnées pour le succès.`,
     image: '/blog/tendances-rh.svg',
-    date: new Date('2026-01-05'),
+    date: new Date('2024-01-05'),
+    archived: true,
     author: {
       name: 'Sophie Bernard',
       avatar: '/avatars/sophie.svg',
     },
     category: 'Tendances',
     readingTime: 7,
-    tags: ['tendances', 'RH', '2026', 'futur'],
+    tags: ['tendances', 'RH', '2024', 'futur'],
   },
   {
     slug: 'productivite-5-conseils-economiser-temps',
@@ -237,6 +243,7 @@ La technologie est votre allié:
 En suivant ces conseils, vous pouvez économiser des heures chaque semaine et vous concentrer sur les tâches stratégiques.`,
     image: '/blog/productivite.svg',
     date: new Date('2023-12-28'),
+    archived: true,
     author: {
       name: 'Fatima Dupont',
       avatar: '/avatars/fatima.svg',
@@ -246,7 +253,7 @@ En suivant ces conseils, vous pouvez économiser des heures chaque semaine et vo
     tags: ['productivité', 'temps', 'efficacité', 'conseils'],
   },
   {
-    slug: 'conformité-rgpd-données-employes',
+    slug: 'conformite-rgpd-donnees-employes',
     title: 'Conformité RGPD: Protéger les Données de Vos Employés',
     excerpt: 'Guide complet pour assurer la conformité RGPD dans votre gestion des données employés.',
     content: `# Conformité RGPD: Protéger les Données de Vos Employés
@@ -292,6 +299,7 @@ Les employés ont le droit de:
 La conformité RGPD est essentielle. En mettant en place les bonnes mesures, vous protégez vos employés et votre entreprise.`,
     image: '/blog/rgpd.svg',
     date: new Date('2023-12-20'),
+    archived: true,
     author: {
       name: 'Jean Martin',
       avatar: '/avatars/jean.svg',
@@ -347,6 +355,7 @@ Vous pouvez mesurer la culture par:
 Une bonne culture d'entreprise est un investissement qui paie. Elle crée un environnement où les employés veulent travailler et où l'entreprise prospère.`,
     image: '/blog/culture.svg',
     date: new Date('2023-12-15'),
+    archived: true,
     author: {
       name: 'Sophie Bernard',
       avatar: '/avatars/sophie.svg',
@@ -356,7 +365,7 @@ Une bonne culture d'entreprise est un investissement qui paie. Elle crée un env
     tags: ['culture', 'engagement', 'employés', 'valeurs'],
   },
   {
-    slug: 'pointage-biométrique-avantages',
+    slug: 'pointage-biometrique-avantages',
     title: 'Pointage Biométrique: Avantages et Implémentation',
     excerpt: 'Découvrez comment le pointage biométrique peut améliorer votre gestion RH.',
     content: `# Pointage Biométrique: Avantages et Implémentation
@@ -404,8 +413,9 @@ Les coûts incluent:
 ## Conclusion
 
 Le pointage biométrique est une solution moderne qui améliore la sécurité et l'efficacité. Avec une bonne implémentation, c'est un investissement rentable.`,
-    image: '/blog/biométrique.svg',
+    image: '/blog/biometrique.svg',
     date: new Date('2023-12-10'),
+    archived: true,
     author: {
       name: 'Ahmed Benali',
       avatar: '/avatars/ahmed.svg',
@@ -465,6 +475,7 @@ Vous devez:
 Une gestion efficace des absences améliore la satisfaction des employés et réduit les erreurs administratives.`,
     image: '/blog/absences.svg',
     date: new Date('2023-12-05'),
+    archived: true,
     author: {
       name: 'Fatima Dupont',
       avatar: '/avatars/fatima.svg',
@@ -525,6 +536,7 @@ Optimisez votre processus:
 Le recrutement digital est essentiel pour attirer les meilleurs talents. En utilisant les bons canaux et stratégies, vous pouvez construire une équipe exceptionnelle.`,
     image: '/blog/recrutement.svg',
     date: new Date('2023-11-30'),
+    archived: true,
     author: {
       name: 'Sophie Bernard',
       avatar: '/avatars/sophie.svg',
@@ -585,6 +597,7 @@ Mesurez l'impact:
 Investir dans la formation de vos employés est un investissement dans l'avenir de votre entreprise. Cela crée une équipe plus compétente et engagée.`,
     image: '/blog/formation.svg',
     date: new Date('2023-11-25'),
+    archived: true,
     author: {
       name: 'Ahmed Benali',
       avatar: '/avatars/ahmed.svg',
@@ -700,7 +713,7 @@ Managers need team data without asking HR for every report.
 
 Track delays, errors and manual workload, then automate the highest-volume workflows first.`,
     },
-    'conformité-rgpd-données-employes': {
+    'conformite-rgpd-donnees-employes': {
       title: 'GDPR compliance: protecting employee data',
       excerpt: 'A practical guide to secure sensitive HR data with clear governance.',
       category: 'Security',
@@ -744,7 +757,7 @@ Engagement grows when employees understand goals, receive feedback and see consi
 
 Strong culture is built through repeatable habits, not occasional speeches.`,
     },
-    'pointage-biométrique-avantages': {
+    'pointage-biometrique-avantages': {
       title: 'Biometric attendance: benefits and safeguards',
       excerpt: 'Understand where biometric attendance helps and which privacy controls must be in place.',
       category: 'Attendance',
@@ -923,7 +936,7 @@ Net onaylar kaybolan talepleri ve mesaj trafigini azaltir.
 
 En cok tekrar eden akislar otomatiklestiginde IK stratejik ise daha fazla zaman ayirir.`,
     },
-    'conformité-rgpd-données-employes': {
+    'conformite-rgpd-donnees-employes': {
       title: 'KVKK/GDPR: calisan verilerini koruma',
       excerpt: 'Hassas IK verilerini net yonetisim ve guvenlik kontrolleriyle koruyun.',
       category: 'Guvenlik',
@@ -967,7 +980,7 @@ Baglilik, hedefler net oldugunda, geri bildirim duzenli verildiginde ve yonetim 
 
 Guclu kultur tek seferlik mesajlarla degil, tekrarlanabilir aliskanliklarla kurulur.`,
     },
-    'pointage-biométrique-avantages': {
+    'pointage-biometrique-avantages': {
       title: 'Biyometrik devam takibi: faydalar ve korumalar',
       excerpt: 'Biyometrik takibin nerede deger kattigini ve hangi gizlilik kontrollerinin gerektigini anlayin.',
       category: 'Devam',
@@ -1146,7 +1159,7 @@ Egitim, roller ve performansla baglandiginda stratejik hale gelir.`,
 
 عندما تتم أتمتة أكثر الأعمال تكرارا يستطيع فريق الموارد البشرية التركيز على العمل الاستراتيجي.`,
     },
-    'conformité-rgpd-données-employes': {
+    'conformite-rgpd-donnees-employes': {
       title: 'الامتثال للخصوصية وحماية بيانات الموظفين',
       excerpt: 'دليل عملي لحماية بيانات الموارد البشرية الحساسة بحوكمة واضحة.',
       category: 'الأمان',
@@ -1190,7 +1203,7 @@ Egitim, roller ve performansla baglandiginda stratejik hale gelir.`,
 
 الثقافة القوية تبنى بالعادات المتكررة وليس بالخطابات فقط.`,
     },
-    'pointage-biométrique-avantages': {
+    'pointage-biometrique-avantages': {
       title: 'الحضور البيومتري: الفوائد والضوابط',
       excerpt: 'افهم أين يفيد الحضور البيومتري وما ضوابط الخصوصية المطلوبة.',
       category: 'الحضور',

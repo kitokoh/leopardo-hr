@@ -1,4 +1,7 @@
 name: Web CI - Leopardo Admin
+# NOTE (issue #2757) : ce workflow « web » est en réalité la CI du SUPER-ADMIN
+# front/admin-dashboard (lint + build + Playwright). La CI de la VITRINE
+# (front/web) vit dans web-marketing-ci.yml. Ne pas confondre.
 
 on:
   workflow_dispatch:

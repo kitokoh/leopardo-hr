@@ -1,6 +1,6 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
-import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.videos.title,
@@ -8,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.videos.keywords,
   ogImage: pageMetadata.videos.ogImage,
   ogType: 'website',
-  canonical: `${getSiteUrl()}/videos`,
+  canonical: `${SITE_URL}/videos`,
 });
 
 export default function VideosLayout({

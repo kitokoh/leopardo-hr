@@ -6,6 +6,8 @@
       <div class="relative h-72 w-72 rounded-full border border-blue-300/30 bg-blue-500/10 shadow-[0_0_80px_rgba(59,130,246,0.35)]">
         <div class="absolute inset-6 rounded-full border border-emerald-300/20"></div>
         <div class="absolute inset-14 rounded-full border border-indigo-300/20"></div>
+        <!-- Issue #2696 (QA 2026-08-15) — plus de points fictifs : seuls les
+             points réels reçus par socket sont affichés. -->
         <div
           v-for="point in activePoints"
           :key="point.id"
@@ -16,13 +18,13 @@
       </div>
     </div>
 
-    <div class="absolute right-4 top-4">
-      <button
-        class="rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-        @click="refreshPoints"
-      >
-        Actualiser
-      </button>
+    <div
+      v-if="activePoints.length === 0"
+      class="absolute inset-x-0 top-1/2 mt-2 flex justify-center"
+    >
+      <p class="rounded-md bg-slate-900/80 px-4 py-2 text-xs font-medium text-slate-400">
+        Aucune activité temps réel — en attente de données du socket.
+      </p>
     </div>
 
     <div class="absolute bottom-4 left-4 rounded-lg bg-white/90 p-3 shadow-sm">
@@ -44,19 +46,15 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRealtimeStore } from '@/stores/realtime'
 
 const realtimeStore = useRealtimeStore()
-const fallbackPoints = ref([
-  { id: 1, city: 'Paris', country: 'France', x: 48, y: 35 },
-  { id: 2, city: 'Istanbul', country: 'Turkiye', x: 58, y: 42 },
-  { id: 3, city: 'Casablanca', country: 'Maroc', x: 43, y: 52 },
-])
 
+// Issue #2696 — source de vérité = socket uniquement ; plus de fallback
+// fictif (Paris/Istanbul/Casablanca) ni de « Actualiser » qui re-randomise.
 const activePoints = computed(() => {
-  const points = realtimeStore.globePoints?.length ? realtimeStore.globePoints : fallbackPoints.value
-  return points.map((point, index) => ({
+  return (realtimeStore.globePoints || []).map((point, index) => ({
     id: point.id ?? `${point.city}-${index}`,
     city: point.city ?? 'Ville',
     country: point.country ?? 'Pays',
@@ -66,12 +64,4 @@ const activePoints = computed(() => {
 })
 
 const countries = computed(() => new Set(activePoints.value.map(point => point.country)))
-
-function refreshPoints() {
-  fallbackPoints.value = fallbackPoints.value.map((point, index) => ({
-    ...point,
-    x: 25 + ((point.x + 13 + index * 5) % 52),
-    y: 22 + ((point.y + 9 + index * 7) % 54),
-  }))
-}
 </script>

@@ -1,7 +1,7 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { pageMetadata } from '@/modules/vitrine/lib/seo';
-import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.about.title,
@@ -9,7 +9,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.about.keywords,
   ogImage: pageMetadata.about.ogImage,
   ogType: 'website',
-  canonical: `${getSiteUrl()}/about`,
+  canonical: `${SITE_URL}/about`,
 });
 
 export default function AboutLayout({

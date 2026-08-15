@@ -33,6 +33,14 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
 
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
 
+// The component is localized via useVitrineLocale(); the test environment
+// defaults to navigator.language (en-US). Pin the locale to French so the
+// assertions on the FR copy stay deterministic (issue #2648).
+beforeAll(() => {
+  window.localStorage.setItem('preferred_locale', 'fr');
+});
+
+
 describe('SignupForm Component', () => {
   describe('Rendering', () => {
     it('should render signup form', () => {
@@ -52,7 +60,7 @@ describe('SignupForm Component', () => {
 
     it('should render submit button', () => {
       render(<SignupForm />);
-      expect(screen.getByRole('button', { name: /recevoir mon code de verification/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /recevoir mon code de vérification/i })).toBeInTheDocument();
     });
   });
 
@@ -61,7 +69,7 @@ describe('SignupForm Component', () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'invalid-email');
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
       
       await waitFor(() => {
         expect(screen.getByText(/email invalide|valid email/i)).toBeInTheDocument();
@@ -70,7 +78,7 @@ describe('SignupForm Component', () => {
 
     it('should show error for empty email', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
@@ -82,7 +90,7 @@ describe('SignupForm Component', () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
@@ -95,13 +103,13 @@ describe('SignupForm Component', () => {
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
-      await userEvent.type(screen.getByRole('textbox', { name: /telephone/i }), 'not-a-phone');
+      await userEvent.type(screen.getByRole('textbox', { name: /téléphone/i }), 'not-a-phone');
 
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
       await userEvent.click(submitButton);
       
       await waitFor(() => {
-        expect(screen.getByText(/numero de telephone invalide/i)).toBeInTheDocument();
+        expect(screen.getByText(/numéro de téléphone invalide/i)).toBeInTheDocument();
       });
     });
   });
@@ -113,7 +121,7 @@ describe('SignupForm Component', () => {
       await userEvent.type(emailInput, 'test@example.com');
       await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
 
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
       expect(submitButton).not.toBeDisabled();
     });
   });
@@ -160,35 +168,35 @@ describe('SignupForm Component', () => {
       mockedSubmitSignupForm.mockResolvedValue({
         success: true,
         provisioned: false,
-        message: "Demande d'essai recue. Notre equipe vous contacte sous 24h ouvrables.",
+        message: "Demande d'essai reçue. Notre équipe vous contacte sous 24h ouvrables.",
         data: { nextStep: 'contact_under_24h' },
       });
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: /demande d'essai recue/i })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /demande d'essai reçue/i })).toBeInTheDocument();
       });
-      expect(screen.getByText(/notre equipe vous contacte sous 24h ouvrables/i)).toBeInTheDocument();
-      expect(screen.queryByText(/verifiez votre email/i)).not.toBeInTheDocument();
+      expect(screen.getByText(/notre équipe vous contacte sous 24h ouvrables/i)).toBeInTheDocument();
+      expect(screen.queryByText(/vérifiez votre email/i)).not.toBeInTheDocument();
     });
 
     it('shows the OTP verification step when provisioned is true (default backend path)', async () => {
       mockedSubmitSignupForm.mockResolvedValue({
         success: true,
         provisioned: true,
-        message: 'Code de verification envoye.',
+        message: 'Code de vérification envoyé.',
         data: {},
       });
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
       });
     });
   });
@@ -213,36 +221,36 @@ describe('SignupForm Component', () => {
       mockedSubmitSignupForm.mockResolvedValue({
         success: true,
         provisioned: true,
-        message: 'Code de verification envoye.',
+        message: 'Code de vérification envoyé.',
         data: { provisioning_token: 'a'.repeat(64) },
       });
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
       });
-      expect(screen.getByRole('button', { name: /suivre l'etat de mon espace/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /suivre l'état de mon espace/i })).toBeInTheDocument();
     });
 
     it('does not show the tracking link without a provisioning token', async () => {
       mockedSubmitSignupForm.mockResolvedValue({
         success: true,
         provisioned: true,
-        message: 'Code de verification envoye.',
+        message: 'Code de vérification envoyé.',
         data: {},
       });
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
 
       await waitFor(() => {
-        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
       });
-      expect(screen.queryByRole('button', { name: /suivre l'etat de mon espace/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /suivre l'état de mon espace/i })).not.toBeInTheDocument();
     });
 
     it('polls pending → ready and shows the access link', async () => {
@@ -252,7 +260,7 @@ describe('SignupForm Component', () => {
         mockedSubmitSignupForm.mockResolvedValue({
           success: true,
           provisioned: true,
-          message: 'Code de verification envoye.',
+          message: 'Code de vérification envoyé.',
           data: { provisioning_token: 'b'.repeat(64) },
         });
         (fetchTrialStatus as jest.Mock)
@@ -269,20 +277,20 @@ describe('SignupForm Component', () => {
         await user.selectOptions(selects[0], 'founder');
         await user.selectOptions(selects[1], '1-10');
         await user.click(screen.getByRole('checkbox'));
-        await user.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
-        await screen.findByText(/verifiez votre email/i);
+        await user.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+        await screen.findByText(/vérifiez votre email/i);
 
-        await user.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+        await user.click(screen.getByRole('button', { name: /suivre l'état de mon espace/i }));
 
         // premier poll immédiat : pending → spinner
-        expect(await screen.findByText(/preparation de votre espace/i)).toBeInTheDocument();
+        expect(await screen.findByText(/préparation de votre espace/i)).toBeInTheDocument();
 
         // second poll après 5 s : ready → lien d'accès
         await act(async () => {
           jest.advanceTimersByTime(5000);
         });
-        expect(await screen.findByText(/votre espace est pret/i)).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /acceder a mon espace/i })).toHaveAttribute(
+        expect(await screen.findByText(/votre espace est prêt/i)).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /accéder à mon espace/i })).toHaveAttribute(
           'href',
           'https://demo.leopardo.app/access?t=123'
         );
@@ -303,7 +311,7 @@ describe('SignupForm Component', () => {
 
     it('should show loading state during submission', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de verification/i });
+      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
       
       expect(submitButton).not.toHaveAttribute('disabled');
     });

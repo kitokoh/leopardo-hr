@@ -302,8 +302,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   function addNotification(notification) {
     const { silent, ...rest } = notification
+    // Issue #2707 — id synthétique uniquement si le payload socket n'en
+    // fournit pas (sinon PATCH /v1/notifications/{id}/read → 404).
     const newNotification = {
-      id: Date.now() + Math.random(),
+      id: rest.id ?? Date.now() + Math.random(),
       read: false,
       ...rest
     }
@@ -335,7 +337,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // Issue #2239 — persister côté backend (PATCH /notifications/{id}/read).
     // Best-effort : un échec réseau ne doit pas casser l'UX locale.
     try {
-      await api.patch(`/v1/notifications/${notificationId}/read`)
+      // Issue #2705 — _skipAuthRedirect : en super-admin ces routes tenant
+      // répondent 401 ; sans ce flag l'intercepteur détruisait la session.
+      await api.patch(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist notification read state', err)
     }
@@ -345,7 +349,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     notifications.value.forEach(n => n.read = true)
     // Issue #2239 — persister côté backend (POST /notifications/mark-all-read).
     try {
-      await api.post('/v1/notifications/mark-all-read')
+      await api.post('/v1/notifications/mark-all-read', null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist mark-all-read', err)
     }

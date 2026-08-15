@@ -1,7 +1,7 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { blogPosts } from '@/modules/vitrine/data/blog';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { getSiteUrl } from '@/lib/site';
 
 interface BlogArticleLayoutProps {
   params: Promise<{
@@ -29,7 +29,7 @@ export async function generateMetadata({
     keywords: post.tags,
     ogImage: post.image,
     ogType: 'article',
-    canonical: `${getSiteUrl()}/blog/${post.slug}`,
+    canonical: `${SITE_URL}/blog/${post.slug}`,
     publishedTime: post.date.toISOString(),
     author: post.author.name,
   });

@@ -31,7 +31,7 @@ const docCategories = [
     items: [
       { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
       { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
-      { title: 'Inviter votre équipe', desc: 'Ajouter des managers et des employes', href: '/docs#api-quickstart' },
+      { title: 'Inviter votre equipe', desc: 'Ajouter des managers et des employes', href: '/docs#api-quickstart' },
       { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
     ],
   },
@@ -40,10 +40,10 @@ const docCategories = [
     icon: LayoutDashboard,
     color: 'blue',
     items: [
-      { title: 'Tableau de bord', desc: 'KPIs, alertes, activité recente', href: '/docs#api-quickstart' },
+      { title: 'Tableau de bord', desc: 'KPIs, alertes, activite recente', href: '/docs#api-quickstart' },
       { title: 'Gestion des absences', desc: 'Demandes, approbations, soldes', href: '/docs#webhooks-overview' },
-      { title: 'Paie & bulletins', desc: 'Lancer une paie, générer les bulletins PDF', href: '/docs#webhooks-overview' },
-      { title: 'Contrats & documents', desc: 'Gestion documentaire sécurisée', href: '/docs#api-quickstart' },
+      { title: 'Paie & bulletins', desc: 'Lancer une paie, generer les bulletins PDF', href: '/docs#webhooks-overview' },
+      { title: 'Contrats & documents', desc: 'Gestion documentaire securisee', href: '/docs#api-quickstart' },
     ],
   },
   {
@@ -52,8 +52,9 @@ const docCategories = [
     color: 'violet',
     items: [
       { title: 'Leopardo Employee', desc: 'Pointage, demandes, bulletin, notifications push', href: '/docs#sdk-overview' },
-      { title: 'Leopardo Manager', desc: 'Équipe, horaires, tâches, approbations', href: '/docs#sdk-overview' },
+      { title: 'Leopardo Manager', desc: 'Equipe, horaires, taches, approbations', href: '/docs#sdk-overview' },
       { title: 'Platform Admin', desc: 'Super-admin : creation tenant, supervision', href: '/docs#sdk-overview' },
+      { title: 'Installer les applications', desc: 'Android / iOS, distribution, versions', href: '/docs#mobile-install' },
       { title: 'Notifications push (FCM)', desc: 'Configurer Firebase Cloud Messaging', href: '/docs#sdk-overview' },
     ],
   },
@@ -73,10 +74,10 @@ const docCategories = [
     icon: Webhook,
     color: 'pink',
     items: [
-      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-intro' },
+      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-overview' },
       { title: 'Evenements disponibles', desc: 'attendance.*, leave.*, salary_advance.*, payroll.*', href: '/docs#webhooks-events' },
-      { title: 'Sécurité & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-overview' },
-      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-testing' },
+      { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-security' },
+      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-overview' },
     ],
   },
   {
@@ -108,7 +109,7 @@ const docCategories = [
     items: [
       { title: 'Roles & permissions', desc: 'Principal, RH, Employe, Super Admin, RBAC', href: '/docs#api-quickstart' },
       { title: 'Multi-tenant', desc: 'Architecture par schema PostgreSQL', href: '/docs#api-quickstart' },
-      { title: 'Sécurité & RGPD', desc: 'Chiffrement, audit trail, conformité', href: '/docs#api-quickstart' },
+      { title: 'Securite & RGPD', desc: 'Chiffrement, audit trail, conformite', href: '/docs#security' },
       { title: 'Deploiement', desc: 'Docker, Render, Vercel, variables env', href: '/docs#api-quickstart' },
     ],
   },
@@ -120,7 +121,7 @@ const docCategories = [
       { title: 'ZKTeco', desc: 'Configuration des bornes biometriques', href: '/docs#kiosk' },
       { title: 'Calendrier (CalDAV)', desc: 'Synchronisation agenda', href: '/docs#api-quickstart' },
       { title: 'Exports bancaires', desc: 'SEPA, CCP, CSV', href: '/docs#api-quickstart' },
-      { title: 'Guide partenaire API', desc: "Guide d'intégration pour ISV et partenaires", href: '/docs#api-quickstart' },
+      { title: 'Guide partenaire API', desc: "Guide d'integration pour ISV et partenaires", href: '/docs#api-quickstart' },
     ],
   },
 ];
@@ -214,7 +215,7 @@ export default function DocsPage() {
           </h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-8">
             Guides, references API REST, webhooks, SDK mobiles, playground interactif et bonnes pratiques pour
-            intégrer et etendre votre Mobile-First Company OS.
+            integrer et etendre votre Mobile-First Company OS.
           </p>
 
           {/* Search */}
@@ -290,7 +291,7 @@ export default function DocsPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400">Recevez les evenements RH directement dans vos systemes</p>
             </div>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div id="webhooks-events" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { group: 'Pointage', events: ['attendance.checked_in', 'attendance.checked_out', 'attendance.auto_closed'] },
               { group: 'Absences', events: ['leave.requested', 'leave.approved', 'leave.rejected'] },
@@ -333,7 +334,7 @@ export default function DocsPage() {
               },
               {
                 name: 'leopardo_manager',
-                desc: "App manager : équipe, horaires, tâches, validation avances, paie",
+                desc: "App manager : equipe, horaires, taches, validation avances, paie",
                 color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
               },
               {
@@ -363,7 +364,7 @@ export default function DocsPage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pointage depuis le kiosque (ZKTeco)</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Borne d&apos;entrée biometrie/QR + bridge desktop local offline-first</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Borne d&apos;entree biometrie/QR + bridge desktop local offline-first</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -371,7 +372,7 @@ export default function DocsPage() {
               <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">Installation</h3>
               <ol className="list-decimal list-inside space-y-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 <li>Copier <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">config.example.json</code> en <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">config.json</code></li>
-                <li>Renseigner <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">apiBaseUrl</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">deviceCode</code> et <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">kioskToken</code> (générés depuis l&apos;app manager)</li>
+                <li>Renseigner <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">apiBaseUrl</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">deviceCode</code> et <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">kioskToken</code> (generes depuis l&apos;app manager)</li>
                 <li>Lancer <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">python desktop-bridge/bridge.py</code> sur le PC/mini-PC local</li>
                 <li>Ouvrir la borne sur <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">http://127.0.0.1:8037/index.html</code></li>
               </ol>
@@ -382,7 +383,7 @@ export default function DocsPage() {
                 <li>Empreinte, visage ou QR/matricule en fallback clavier HID</li>
                 <li>Mode hors-ligne : file locale SQLite, synchronisation automatique au retour reseau</li>
                 <li>Admin local (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">admin.html</code>) pour forcer une synchronisation manuelle</li>
-                <li>Le matching biométrique brut reste gere par le terminal/SDK ZKTeco</li>
+                <li>Le matching biometrique brut reste gere par le terminal/SDK ZKTeco</li>
               </ul>
             </div>
           </div>

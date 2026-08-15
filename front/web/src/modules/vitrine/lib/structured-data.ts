@@ -1,4 +1,3 @@
-import { getSiteUrl } from '@/lib/site';
 
 const safeLog = (..._args: unknown[]) => {};
 /**
@@ -6,7 +5,7 @@ const safeLog = (..._args: unknown[]) => {};
  * Validates: Requirements 2.1, 2.2
  */
 
-const siteUrl = getSiteUrl();;
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 const siteName = 'Leopardo';
 
 /**
@@ -30,9 +29,9 @@ export function generateOrganizationSchema() {
       availableLanguage: ['fr', 'en'],
     },
     sameAs: [
-      'https://x.com/leopardo_hr',
+      'https://twitter.com/leopardo',
       'https://linkedin.com/company/leopardo',
-      'https://www.facebook.com/leopardo_hr',
+      'https://facebook.com/leopardo',
     ],
     address: {
       '@type': 'PostalAddress',
@@ -231,9 +230,9 @@ export function generateLocalBusinessSchema() {
     telephone: '+33-1-XX-XX-XX-XX',
     url: siteUrl,
     sameAs: [
-      'https://x.com/leopardo_hr',
+      'https://twitter.com/leopardo',
       'https://linkedin.com/company/leopardo',
-      'https://www.facebook.com/leopardo_hr',
+      'https://facebook.com/leopardo',
     ],
   };
 }

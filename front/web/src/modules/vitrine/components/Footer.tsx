@@ -5,9 +5,10 @@ import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
 const SOCIAL_LINKS = [
-  { label: 'X', href: 'https://x.com/leopardo_hr', title: 'X (Twitter)' },
-  { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
+  // Compte X/Twitter @leopardo_hr inexistant (404 constaté 2026-08-15, session
+  // QA expert) — remplacé par GitHub pour garder un lien social vivant.
   { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
+  { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
 ]
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'

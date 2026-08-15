@@ -1,5 +1,9 @@
 import type { AppLocale } from '@/lib/i18n'
 
+// Issue #2726 — témoignages de DÉMO : aucune citation client réelle
+// (le code l'admet : « no real customer photos exist yet »). Le composant
+// d'affichage doit les marquer comme démo / ne pas les présenter comme réels.
+export const TESTIMONIALS_ARE_DEMO = true
 export type Testimonial = {
   name: string
   role: string

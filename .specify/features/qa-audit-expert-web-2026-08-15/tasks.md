@@ -1,35 +1,38 @@
-# Tasks: Audit Expert Web — Cohérence Vitrine & Admin Dashboard — 2026-08-15
+# Tasks: Audit expert Web & Vitrine — 2026-08-15
 
 **Input**: spec.md + plan.md
 
 **Prerequisites**: plan.md (required), spec.md (required)
 
-## Phase 1 — US1 Dashboard web (P1) — issues #2602-#2603
+> Conversion en issues GitHub : label `qa-audit-2026-08-15`, méthode Spec Kit taskstoissues.
+> **Sessions précédentes (canoniques, à ne pas dupliquer)** : série web #2602-#2613 — T001 edge-nodes page, T002 quick-action links, T003 script accents, T004 i18n pages (about/careers/contact/faq), T005 lint/build, T006 SITE_URL (#2607), T007 robots (#2643, PR #2664), T008 blog mort (#2609). Checkout sandbox = #2628 (PR #2665). Mes T058/T059/T072 (doublons) fermés ; T065/T070 rescopés.
 
-- [x] T001 [US1] Retirer la page edge-nodes du dashboard client : nav (`(dashboard)/layout.tsx` ou composant nav), route `(dashboard)/edge-nodes/`, entrée `sitemap.ts` — l'edge est une surface super-admin (`/platform/edge/nodes`, `api/routes/api.php:289-313`), pas de modèle company (`front/web/src/app/(dashboard)/edge-nodes/page.tsx` supprimée)
-- [x] T002 [P] [US1] Corriger les liens d'action rapide `/dashboard/employees|absences|reports` → `/employees`, `/absences`, `/reports` (`(dashboard)/dashboard/page.tsx:611-614`)
+## Phase 1 — P1 (US C1)
 
-## Phase 2 — US2 Qualité texte (P2) — issues #2604-#2606
+- [x] T058 [P1] C1 Checkout sandbox — **doublon fermé** : canonique #2628 (PR #2665 en cours). (issue #2717)
 
-- [x] T003 [US2] Script Python de correction d'accents (table mot→mot connue, FR uniquement) dans `dev-hub/tools/` + application sur `front/web/src` (data/blog.ts, data/faq.ts, data/testimonials.ts, legal-content.ts, seo.ts, lib/i18n.ts clés FR, pages dashboard settings/dashboard, SignupForm, pages landing) — jamais sur slugs, paths, clés EN/TR/AR
-- [x] T004 [US2] i18n des pages /about, /careers, /contact, /faq : contenu déplacé en données par locale (`data/about.ts`, `data/careers.ts`, `data/contact.ts` + `data/faq.ts` existant) et rendu via `useVitrineLocale` ; libellés navbar FR accentués (`Navbar.tsx:79-104`)
-- [x] T005 [P] [US2] Vérification : `npm run lint` + `npm run build` verts, `npm run check:mojibake` vert, diff manuel (0 faux positif)
+## Phase 2 — P2 (US C2, C3, C4)
 
-## Phase 3 — US3 SEO & domaines (P2) — issues #2607-#2609
+- [x] T059 [P2] C2 SITE_URL — **doublon fermé** : canonique #2607 (T006 web). (issue #2718)
+- [x] T060 [P2] C2 `lang`/`dir` par requête au SSR (fini `lang="fr"` codé en dur). (issue #2719)
+- [x] T061 [P2] C2 Retirer le stat « Live: 18 » codé en dur du dashboard. (issue #2720)
+- [x] T062 [P2] C2 Meta description pricing alignée sur les plans réels (Free/Pilot/Operations/Enterprise, essai 30 j). (issue #2721)
+- [x] T063 [P2] C3 OG images : route générée `/opengraph-image` (fini les 404 `/og/*.png`). (issue #2722)
+- [x] T064 [P2] C3 `sw.js` : précache = routes réelles (`/`, `/offline`, …) — installation PWA réparée. (issue #2723)
+- [x] T065 [P2] C3 Manifest : essai 30 jours + icône existante (robots traités dans #2643/PR #2664). (issue #2724)
+- [x] T066 [P2] C4 Checkout : bouton Google OAuth → proxy same-origin `/api/v1/auth/google` (pattern login, fix QA #2277). (issue #2725)
+- [x] T067 [P2] C2 Témoignages : marquer démo ou retirer (plus de citations fabriquées). (issue #2726)
 
-- [x] T006 [P] [US3] Centraliser `SITE_URL` (`lib/site.ts`, défaut `https://leopardo-rh.com`) + remplacer `gestionemployer-backend.vercel.app` (`sitemap.ts:11`, `robots.ts:4`) et canonicals durs + aligner proxy backend/CORS (`next.config.ts:45`, `api-client.ts:17`, `api/v1/[...path]/route.ts:105-106`) sur un défaut cohérent surchargeable
-- [x] T007 [P] [US3] Supprimer `src/app/api/robots/route.ts` (legacy) ; ajouter `/blog`, `/signup`, `/checkout`, `/offline`, `/share` au sitemap ; `sameAs` JSON-LD → x.com/leopardo_hr + github org (`seo.ts:372-374`, `structured-data.ts`)
-- [x] T008 [P] [US3] Supprimer le contenu mort (`src/content/blog/*.md` ×10, `content/blog/*.mdx` ×3 — vérifier 0 import avant) ; dates blog 2024 → 2026 (`data/blog.ts` tendances-rh-2024, automatiser-paie-2024) ; lier /about, /branding, /videos, /mobile dans footer/nav (`Footer.tsx:15-49`)
+## Phase 3 — P3 (US C5, C6)
 
-## Phase 4 — US4 Admin dashboard (P2) — issues #2610-#2613
+- [x] T068 [P3] C5 `SignupForm` : wizard localisé (labels, rôles, OTP, succès). (issue #2727)
+- [x] T069 [P3] C5 Checkout/logout/login bannière : textes via catalogue i18n + `locale` réel dans le POST d'inscription. (issue #2728)
+- [x] T070 [P3] C5 Typos arabes dans les chaînes livrées (« مساد المطور », « الردود الويب », « إلعاء », « الجمارافي ») → relecture (i18n pages traité dans #2605). (issue #2729)
+- [x] T071 [P3] C6 Modale démo login : rendue uniquement si `/demo-users` répond (fini le fallback `password123`). (issue #2730)
+- [x] T072 [P3] C6 Blog périmé — **doublon fermé** : canonique #2609 (T008 web). (issue #2731)
+- [x] T073 [P3] C6 `vercel.json` : redirect mort supprimé + CSP en un seul endroit. (issue #2732)
+- [x] T074 [P3] C6 Section apps mobiles : liens store réels ou retrait (fini « Bientôt disponible » + fallback signup). (issue #2733)
 
-- [x] T009 [P] [US4] `EditUserModal.vue` : retirer les boutons simulés `resetPassword`/`sendWelcomeEmail`/`forceLogout` (`:330-357`) et « Changer l'avatar » sans @click (`:35`) — aucun endpoint admin correspondant ; nettoyer les handlers morts
-- [x] T010 [P] [US4] Header search : filtrage client de la navigation (remplace le stub `console.log`, `Header.vue:237-241`) + retrait des console.log (`stores/realtime.js:72,80`)
-- [x] T011 [P] [US4] Supprimer les composants orphelins (`RevenueForecastWidget.vue`, `CreateTaskModal.vue`, `BackupManagement.vue`, `ApiTestingTools.vue`, `SecurityMonitoring.vue`, `SystemConfiguration.vue`, `ResourceUsageWidget.vue`, `RealTimeMetricsChart.vue`, `ImportConfigModal.vue` — 0 référence vérifiée par rg avant suppression)
-- [x] T012 [P] [US4] Ajouter les clés i18n `users.errors.password_min` + `users.toast.bulkDone` aux 4 locales ; vérifier `UsersView.vue:435` ↔ route backend impersonation (dépendance T011 feature backend)
+## Convergence
 
-## Dependencies & Execution Order
-
-- Phase 1 frontend indépendante ; Phase 2 indépendante ; Phase 3 indépendante ; Phase 4 T012 dépend du fix backend impersonation (feature backend T011).
-- PR : `fix/qa-<n>-web-coherence` + `fix/qa-<n>-admin-actions` — chacune avec `Closes #<issue>`.
-- Ne pas toucher aux 14 pages marketing restées en FR dur (documentées, tâches futures) ni aux 12 vues `requiresTenant` du router admin (choix d'architecture documenté).
+- [ ] T075 Mettre à jour `.specify/memory/project-state.md`, `CHANGELOG.md`, `AGENTS.md`, cocher les tâches après merge.

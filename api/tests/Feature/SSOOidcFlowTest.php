@@ -35,8 +35,10 @@ class SSOOidcFlowTest extends TestCase
         $this->setUpMvpSchema();
         Cache::flush();
 
+        /** @var Company $this->company */
         $this->company = Company::factory()->create();
 
+        /** @var Employee $this->manager */
         $this->manager = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',

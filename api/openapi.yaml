@@ -194,6 +194,246 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthResponse"
 
+  /health/live:
+    get:
+      tags: ["Health"]
+      summary: "Liveness probe — processus API vivant (sans dépendances)"
+      security: []
+      responses:
+        "200":
+          description: "API vivante"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+
+  /health/ready:
+    get:
+      tags: ["Health"]
+      summary: "Readiness probe — base de données disponible"
+      security: []
+      responses:
+        "200":
+          description: "API prête"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+                  checks:
+                    type: object
+                    additionalProperties: true
+
+  /trial/signup:
+    post:
+      tags: ["Billing"]
+      summary: "Demande d'essai guidé / auto-service (onboarding)"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, company, country]
+              properties:
+                email: { type: string, format: email }
+                company: { type: string, maxLength: 120 }
+                country: { type: string, minLength: 2, maxLength: 2, description: "Code ISO pays supporté (DZ, MA, TN, SN…)" }
+                first_name: { type: string }
+                last_name: { type: string }
+                role: { type: string, enum: [founder, manager, hr, operations, other] }
+                employees: { type: string, enum: ["1-10", "11-50", "51-200", "201-500", "500+"] }
+                phone: { type: string }
+                plan: { type: string }
+                source: { type: string }
+                referral_code: { type: string }
+                requestedWorkflow: { type: string, enum: [guided_trial, self_service] }
+      responses:
+        "200":
+          description: "Demande reçue (guided_trial : provisioning lancé)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string }
+                  data:
+                    type: object
+                    properties:
+                      email: { type: string }
+                      status: { type: string, example: provisioning_sandbox }
+                      provisioning_token: { type: string }
+        "409":
+          description: "Email déjà enregistré"
+        "422":
+          description: "Validation échouée (pays non supporté…)"
+
+  /trial/verify:
+    post:
+      tags: ["Billing"]
+      summary: "Vérifie le code OTP et provisionne l'espace d'essai"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, code]
+              properties:
+                email: { type: string, format: email }
+                code: { type: string, minLength: 6, maxLength: 6 }
+      responses:
+        "201":
+          description: "Espace d'essai créé (identifiants temporaires)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      company: { type: object }
+                      manager:
+                        type: object
+                        properties:
+                          email: { type: string }
+                          temp_password: { type: string }
+                      trial:
+                        type: object
+                        properties:
+                          days: { type: integer, example: 14 }
+                          ends_at: { type: string, format: date-time }
+        "400":
+          description: "Code invalide ou expiré"
+        "422":
+          description: "Pays invalide"
+
+  /trial/status:
+    get:
+      tags: ["Billing"]
+      summary: "Statut du provisioning d'un essai guidé (polling)"
+      security: []
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string, minLength: 64, maxLength: 64 }
+      responses:
+        "200":
+          description: "Statut du provisioning"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      status: { type: string, enum: [pending, ready, failed] }
+                      provisioned_at: { type: string, format: date-time, nullable: true }
+                      login_url: { type: string }
+                      message: { type: string }
+        "404":
+          description: "Token invalide"
+
+  /user/register:
+    post:
+      tags: ["User"]
+      summary: "Crée un compte utilisateur sans entreprise (parcours legacy mobile)"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, first_name, last_name]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                first_name: { type: string }
+                last_name: { type: string }
+      responses:
+        "201":
+          description: "Compte créé"
+        "422":
+          description: "Validation échouée"
+
+  /user/login:
+    post:
+      tags: ["User"]
+      summary: "Connexion utilisateur sans entreprise (parcours legacy mobile)"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        "200":
+          description: "Token d'accès"
+        "401":
+          description: "Identifiants invalides"
+
+  /user/me:
+    get:
+      tags: ["User"]
+      summary: "Profil de l'utilisateur connecté"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "Profil utilisateur"
+        "401":
+          description: "Non authentifié"
+
+  /payrolls:
+    get:
+      tags: ["Payroll"]
+      summary: "Liste des campagnes de paie (tenant)"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "Campagnes de paie paginées"
+    post:
+      tags: ["Payroll"]
+      summary: "Crée une campagne de paie"
+      security:
+        - bearerAuth: []
+      responses:
+        "201":
+          description: "Campagne créée"
+        "422":
+          description: "Validation échouée"
+
+  /metrics:
+    get:
+      tags: ["Platform"]
+      summary: "Métriques plateforme (super-admin)"
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "Métriques"
+        "401":
+          description: "Non autorisé"
+
+
   /auth/login:
     post:
       tags: ["Auth"]
@@ -9229,6 +9469,97 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/TaxRateChangeLog"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+
+  /admin/social-contributions:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les règles de cotisations sociales nationales (platform_admin) — issue #1815"
+      operationId: listAdminSocialContributions
+      parameters:
+        - name: country_code
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Règles de cotisations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+    post:
+      tags: ["Platform Admin"]
+      summary: "Créer une règle de cotisation nationale (platform_admin) — issue #1815"
+      operationId: storeAdminSocialContribution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialContributionInput"
+      responses:
+        "201":
+          description: "Règle créée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "422": { $ref: "#/components/responses/Validation422" }
+  /admin/social-contributions/{socialContribution}:
+    put:
+      tags: ["Platform Admin"]
+      summary: "Modifier une règle de cotisation nationale (platform_admin) — issue #1815"
+      operationId: updateAdminSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocialContributionInput"
+      responses:
+        "200":
+          description: "Règle modifiée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SocialContribution"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer une règle de cotisation nationale (platform_admin) — issue #1815"
+      operationId: destroyAdminSocialContribution
+      parameters:
+        - name: socialContribution
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204": { description: "Supprimé" }
         "401": { $ref: "#/components/responses/Error401" }
         "403": { $ref: "#/components/responses/Error403" }
         "404": { $ref: "#/components/responses/Error404" }

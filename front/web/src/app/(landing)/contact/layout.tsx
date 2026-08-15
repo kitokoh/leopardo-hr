@@ -1,6 +1,6 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
-import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.contact.title,
@@ -8,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.contact.keywords,
   ogImage: pageMetadata.contact.ogImage,
   ogType: 'website',
-  canonical: `${getSiteUrl()}/contact`,
+  canonical: `${SITE_URL}/contact`,
 });
 
 export default function ContactLayout({

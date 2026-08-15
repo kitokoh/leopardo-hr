@@ -126,6 +126,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '@/services/api';
+import { useToast } from 'vue-toastification';
+
+const toast = useToast();
 
 const currentTab = ref('partners');
 const loading = ref(true);
@@ -165,7 +168,10 @@ const approvePartner = async (partner) => {
   try {
     await api.patch(`/platform/growth/partners/${partner.id}/application`, { status: 'approved' });
     loadData();
-  } catch (e) { alert("Erreur: " + e.message); }
+  } catch (e) {
+    console.error('Approve partner failed:', e)
+    toast.error(`Erreur : ${e?.response?.data?.message || e.message}`)
+  }
 };
 
 const updatePayout = async (payout, status) => {
@@ -174,7 +180,10 @@ const updatePayout = async (payout, status) => {
   try {
     await api.patch(`/platform/growth/payouts/${payout.id}`, { status, notes: reason });
     loadData();
-  } catch (e) { alert("Erreur: " + e.message); }
+  } catch (e) {
+    console.error('Update payout failed:', e)
+    toast.error(`Erreur : ${e?.response?.data?.message || e.message}`)
+  }
 };
 
 const getStatusClass = (status) => {
