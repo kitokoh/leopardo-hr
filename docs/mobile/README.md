@@ -12,6 +12,7 @@ The mobile app is the primary touchpoint for employees and on-site managers. It 
 ## 📱 Applications reelles
 La doc canonique par app vit dans [`front/mobile_apps/README.md`](../../front/mobile_apps/README.md) :
 `leopardo_core` (package partage), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`.
+- **leopardo_marketing** : app marketing/communication (vitrine mobile) — intégrée à melos/CI (QA 2026-08-15, #2661).
 Le mobile historique (`front/mobile/`) a ete retire du depot.
 
 ## 📶 Fiabilité mobile employee (F-21, #1551)

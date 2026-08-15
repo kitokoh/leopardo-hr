@@ -44,6 +44,7 @@ interface LangCopy {
   android: string;
   ios: string;
   soon: string;
+  beta: string;
   waitingPrefix: string;
   installGuide: string;
   demoCta: string;
@@ -62,6 +63,7 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'Bientôt disponible',
+    beta: 'Bêta',
     waitingPrefix: 'En attendant, demandez une démo ou consultez notre',
     installGuide: "guide d'installation",
     demoCta: 'Demander une démo',
@@ -78,6 +80,7 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'Coming soon',
+    beta: 'Beta',
     waitingPrefix: 'In the meantime, request a demo or check out our',
     installGuide: 'installation guide',
     demoCta: 'Request a demo',
@@ -94,6 +97,7 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'Çok yakında',
+    beta: 'Beta',
     waitingPrefix: 'Bu arada bir demo talep edin veya',
     installGuide: 'kurulum kılavuzumuza',
     demoCta: 'Demo talep et',
@@ -110,6 +114,7 @@ const copy: Record<Lang, LangCopy> = {
     android: 'Google Play',
     ios: 'App Store',
     soon: 'قريباً',
+    beta: 'نسخة تجريبية',
     waitingPrefix: 'في الوقت الحالي، اطلب عرضاً توضيحياً أو اطّلع على',
     installGuide: 'دليل التركيب',
     demoCta: 'اطلب عرضاً توضيحياً',
@@ -437,7 +442,7 @@ export default function MobilePage() {
                   <app.icon className={`w-5 h-5 ${c.icon}`} />
                   <div className="text-start">
                     <p className="text-sm font-bold text-slate-900 dark:text-white">{app.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.soon}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.beta}</p>
                   </div>
                 </div>
               );
@@ -445,7 +450,6 @@ export default function MobilePage() {
           </div>
 
           <p className="mt-8 text-sm text-slate-400 dark:text-slate-500">
-            {/* TODO: replace placeholders with real store links */}
             {t.waitingPrefix}{' '}
             <Link href="/docs#sdk-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">
               {t.installGuide}

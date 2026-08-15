@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 
 export async function GET() {
   const robotsTxt = `# Robots.txt for Leopardo
@@ -41,7 +41,6 @@ Disallow: /
 
 # Sitemap location
 Sitemap: ${siteUrl}/sitemap.xml
-Sitemap: ${siteUrl}/api/sitemap
 
 # Cache control
 Cache-control: max-age=86400

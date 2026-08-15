@@ -4,40 +4,67 @@ import { z } from "zod";
  * Validation schemas for all forms.
  */
 
-export const signupFormSchema = z.object({
-  email: z
-    .string()
-    .email("Email invalide")
-    .min(5, "Email trop court")
-    .max(255, "Email trop long"),
-  company: z
-    .string()
-    .min(2, "Le nom de l'entreprise doit contenir au moins 2 caracteres")
-    .max(120, "Le nom de l'entreprise est trop long"),
-  role: z
-    .enum(["founder", "manager", "hr", "operations", "other"], {
-      message: "Selectionnez votre role",
-    })
-    .optional(),
-  employees: z
-    .enum(["1-10", "11-50", "51-200", "201-500", "500+"], {
-      message: "Selectionnez une taille d'equipe",
-    })
-    .optional(),
-  phone: z
-    .string()
-    .regex(
-      /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
-      "Numero de telephone invalide"
-    )
-    .optional()
-    .or(z.literal("")),
-  agreeToTerms: z.boolean().refine((val) => val === true, {
-    message: "Vous devez accepter les conditions d'utilisation",
-  }),
-});
+import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 
-export type SignupFormData = z.infer<typeof signupFormSchema>;
+/**
+ * Validation messages for the guided-trial signup form, localized.
+ * The form is a 4-locale surface (FR/EN/TR/AR); the zod schema must
+ * produce messages in the active locale (issue #2648).
+ */
+function buildSignupValidationMessages(locale: AppLocale) {
+  return {
+    emailInvalid: t(locale, 'signup.validation.emailInvalid'),
+    emailTooShort: t(locale, 'signup.validation.emailTooShort'),
+    emailTooLong: t(locale, 'signup.validation.emailTooLong'),
+    companyTooShort: t(locale, 'signup.validation.companyTooShort'),
+    companyTooLong: t(locale, 'signup.validation.companyTooLong'),
+    roleRequired: t(locale, 'signup.validation.roleRequired'),
+    employeesRequired: t(locale, 'signup.validation.employeesRequired'),
+    phoneInvalid: t(locale, 'signup.validation.phoneInvalid'),
+    agreeTerms: t(locale, 'signup.validation.agreeTerms'),
+  };
+}
+
+export function signupFormSchema(locale: AppLocale) {
+  const m = buildSignupValidationMessages(locale);
+
+  return z.object({
+    email: z
+      .string()
+      .email(m.emailInvalid)
+      .min(5, m.emailTooShort)
+      .max(255, m.emailTooLong),
+    company: z
+      .string()
+      .min(2, m.companyTooShort)
+      .max(120, m.companyTooLong),
+    role: z
+      .enum(['founder', 'manager', 'hr', 'operations', 'other'], {
+        message: m.roleRequired,
+      })
+      .optional(),
+    employees: z
+      .enum(['1-10', '11-50', '51-200', '201-500', '500+'], {
+        message: m.employeesRequired,
+      })
+      .optional(),
+    phone: z
+      .string()
+      .regex(
+        /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
+        m.phoneInvalid
+      )
+      .optional()
+      .or(z.literal('')),
+    agreeToTerms: z.boolean().refine((val) => val === true, {
+      message: m.agreeTerms,
+    }),
+  });
+}
+
+export type SignupFormData = z.infer<ReturnType<typeof signupFormSchema>>;
+
 
 export const demoFormSchema = z.object({
   name: z
