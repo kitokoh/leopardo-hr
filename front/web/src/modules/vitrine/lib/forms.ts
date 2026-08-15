@@ -52,6 +52,12 @@ export interface FormSubmissionResponse {
    * NOT treat this the same as a normal OTP-sent success.
    */
   provisioned?: boolean;
+  /**
+   * #2469 : jeton de suivi du provisioning de l'essai guidé (64 caractères,
+   * émis par POST /api/v1/trial/signup). Permet de poller GET /trial/status
+   * via le proxy same-origin /api/forms/trial-status sans exposer l'email.
+   */
+  provisioningToken?: string;
 }
 
 /**
@@ -104,6 +110,9 @@ export async function submitSignupForm(
       message: result.message || "Code de verification envoye.",
       data: result.data,
       provisioned: result.provisioned !== false,
+      // #2469 : token de suivi du provisioning (essai guidé), stocké en
+      // sessionStorage par SignupForm pour le polling GET /trial/status.
+      provisioningToken: result.data?.provisioningToken,
     };
   } catch (error) {
     safeLog("Signup form error:", error);
@@ -156,6 +165,57 @@ export async function submitVerifyForm(
       success: false,
       message: "Erreur lors de la verification",
       error: error instanceof Error ? error.message : "Erreur inconnue",
+    };
+  }
+}
+
+/**
+ * Trial provisioning status (guided trial, #2469)
+ *
+ * Proxy same-origin GET /api/forms/trial-status → backend
+ * GET /api/v1/trial/status?token=... Le token ne quitte jamais le client
+ * autrement que par ce proxy (jamais d'email ni d'URL visible).
+ */
+export interface TrialStatus {
+  status: 'pending' | 'ready' | 'failed';
+  login_url?: string;
+}
+
+export async function fetchTrialStatus(token: string): Promise<
+  | { success: true; data: TrialStatus }
+  | { success: false; error?: string; message?: string }
+> {
+  try {
+    const response = await fetch(
+      `/api/forms/trial-status?token=${encodeURIComponent(token)}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      }
+    );
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      return {
+        success: true,
+        data: {
+          status: result.data?.status ?? 'pending',
+          login_url: result.data?.login_url,
+        },
+      };
+    }
+
+    return {
+      success: false,
+      error: result.error || 'TRIAL_STATUS_ERROR',
+      message: result.message,
+    };
+  } catch (error) {
+    safeLog("Trial status error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.name : 'NETWORK_ERROR',
     };
   }
 }

@@ -110,15 +110,28 @@ export default function PayrollPage() {
   }, []);
 
   const openDetail = useCallback(async (slip: PaySlip) => {
-    setDetailSlip(slip);
+    // Optimistic : la ligne porte déjà tous les champs requis de PaySlipDetail
+    // (id, employee_id, gross_salary, net_salary, status) — le modal affiche
+    // la ligne pendant le chargement du détail complet.
+    setDetailSlip({
+      id: slip.id,
+      employee_id: slip.employee_id,
+      employee_name: slip.employee_name ?? undefined,
+      period: slip.period ?? undefined,
+      gross_salary: slip.gross_salary,
+      net_salary: slip.net_salary,
+      status: slip.status,
+      created_at: slip.created_at,
+    });
     setDetailLoading(true);
     setDetailError(false);
     try {
       const res = await apiFetch(`/pay-slips/${slip.id}`);
       const payload = await res.json() as { data?: PaySlipDetail };
-      if (payload?.data) {
+      const detail = payload.data;
+      if (detail) {
         // Ne rouvre pas le modal si l'utilisateur l'a ferme pendant le chargement.
-        setDetailSlip((current) => (current?.id === slip.id ? payload.data : current));
+        setDetailSlip((current) => (current?.id === slip.id ? detail : current));
       }
     } catch {
       // Repli sur les donnees de la ligne deja chargees.

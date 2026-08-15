@@ -1,12 +1,13 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SignupForm } from '../SignupForm';
-import { submitSignupForm } from '@/modules/vitrine/lib/forms';
+import { submitSignupForm, fetchTrialStatus } from '@/modules/vitrine/lib/forms';
 
 // Mock the form submission
 jest.mock('@/modules/vitrine/lib/forms', () => ({
   submitSignupForm: jest.fn(),
+  fetchTrialStatus: jest.fn(),
   initialFormState: {
     isSubmitting: false,
     isSuccess: false,
@@ -31,6 +32,16 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
 }));
 
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
+const mockedFetchTrialStatus = fetchTrialStatus as jest.Mock;
+
+async function fillValidForm() {
+  await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+  await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+  const selects = screen.getAllByRole('combobox');
+  await userEvent.selectOptions(selects[0], 'founder');
+  await userEvent.selectOptions(selects[1], '1-10');
+  await userEvent.click(screen.getByRole('checkbox'));
+}
 
 describe('SignupForm Component', () => {
   describe('Rendering', () => {
@@ -146,15 +157,6 @@ describe('SignupForm Component', () => {
       mockedSubmitSignupForm.mockReset();
     });
 
-    async function fillValidForm() {
-      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
-      const selects = screen.getAllByRole('combobox');
-      await userEvent.selectOptions(selects[0], 'founder');
-      await userEvent.selectOptions(selects[1], '1-10');
-      await userEvent.click(screen.getByRole('checkbox'));
-    }
-
     it('shows the "we will contact you" pending screen instead of a fake OTP step when provisioned is false', async () => {
       mockedSubmitSignupForm.mockResolvedValue({
         success: true,
@@ -188,6 +190,113 @@ describe('SignupForm Component', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Trial provisioning tracking (#2469)', () => {
+    beforeEach(() => {
+      mockedFetchTrialStatus.mockReset();
+      window.sessionStorage.clear();
+    });
+
+    const submitWithToken = async (token = 'a'.repeat(64)) => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de verification envoye.',
+        provisioningToken: token,
+        data: { provisioningToken: token },
+      });
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+      await waitFor(() => {
+        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+      });
+    };
+
+    it('persists the provisioning token to sessionStorage and shows the tracking link on the OTP step', async () => {
+      const token = 'b'.repeat(64);
+      await submitWithToken(token);
+
+      expect(window.sessionStorage.getItem('leopardo_trial_token')).toBe(token);
+      expect(screen.getByRole('button', { name: /suivre l'etat de mon espace/i })).toBeInTheDocument();
+    });
+
+    it('does not show the tracking link when no token was returned', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de verification envoye.',
+        data: {},
+      });
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+      });
+      expect(screen.queryByRole('button', { name: /suivre l'etat de mon espace/i })).not.toBeInTheDocument();
+    });
+
+    it('shows the access link as soon as the first poll returns ready', async () => {
+      await submitWithToken();
+
+      mockedFetchTrialStatus.mockResolvedValue({
+        success: true,
+        data: { status: 'ready', login_url: '/sandbox/demo-login' },
+      });
+
+      await userEvent.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /votre espace est pret/i })).toBeInTheDocument();
+      });
+      expect(screen.getByRole('link', { name: /acceder a mon espace/i })).toHaveAttribute(
+        'href',
+        '/sandbox/demo-login'
+      );
+    });
+
+    it('shows the pending spinner first, then the access link when polling turns ready', async () => {
+      await submitWithToken();
+
+      mockedFetchTrialStatus
+        .mockResolvedValueOnce({ success: true, data: { status: 'pending' } })
+        .mockResolvedValue({ success: true, data: { status: 'ready', login_url: '/sandbox/demo-login' } });
+
+      await userEvent.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: /creation de votre espace/i })).toBeInTheDocument();
+      });
+
+      // deuxième poll (intervalle réel de 5 s) → ready
+      await waitFor(
+        () => {
+          expect(screen.getByRole('heading', { name: /votre espace est pret/i })).toBeInTheDocument();
+        },
+        { timeout: 7000 }
+      );
+      expect(screen.getByRole('link', { name: /acceder a mon espace/i })).toHaveAttribute(
+        'href',
+        '/sandbox/demo-login'
+      );
+    }, 20000);
+
+    it('shows a generic failure message when provisioning fails', async () => {
+      await submitWithToken();
+
+      mockedFetchTrialStatus.mockResolvedValue({ success: true, data: { status: 'failed' } });
+
+      await userEvent.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { name: /creation de l'espace interrompue/i })
+        ).toBeInTheDocument();
       });
     });
   });

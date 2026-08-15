@@ -141,6 +141,10 @@ export async function POST(request: NextRequest) {
             id: lead.id,
             email: signupResult.email,
             status: signupResult.status,
+            // #2469 : le provisioning_token est transmis au client pour le
+            // suivi du provisioning (polling GET /trial/status). Stocké en
+            // sessionStorage côté client, jamais exposé dans l'URL.
+            provisioningToken: signupResult.provisioning_token || undefined,
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
           },
