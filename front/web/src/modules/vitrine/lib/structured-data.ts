@@ -5,7 +5,7 @@ const safeLog = (..._args: unknown[]) => {};
  * Validates: Requirements 2.1, 2.2
  */
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL as siteUrl } from '@/lib/site-url';
 const siteName = 'Leopardo';
 
 /**

@@ -43,7 +43,7 @@ export function getEnvConfig(): EnvironmentConfig {
     sendgridApiKey: process.env.SENDGRID_API_KEY || "",
 
     // SEO
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    siteUrl: getSiteUrl(),
     siteName: process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo",
 
     // Feature flags
