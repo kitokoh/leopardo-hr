@@ -7019,15 +7019,6 @@ paths:
                           remaining: { type: number, format: float }
                           overtime_hours: { type: number, format: float }
                           overtime_pay: { type: number, format: float }
-                      compliance:
-                        type: object
-                        description: "Bloc conformite paie (niveau de confiance + avertissement localise) — issue #2144. Vide si pays non resoluble."
-                        properties:
-                          level: { type: string, enum: [production, pilot, placeholder, unknown] }
-                          warning: { type: string }
-                          warning_key: { type: string }
-                          source: { type: string }
-                          verification_date: { type: [string, "null"] }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
