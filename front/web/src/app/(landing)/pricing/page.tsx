@@ -644,7 +644,7 @@ export default function PricingPage() {
     // Free plan → direct account creation, no payment
     if (plan.price === '0') return '/checkout?plan=free';
     // Enterprise → contact
-    if (!showsCurrency(plan.price)) return '/contact?type=enterprise';
+    if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment
     if (plan.popular) return '/checkout?plan=business';
     // Pilot → essai guidé 30 jours (aucun paiement à l'inscription) : le
@@ -717,7 +717,7 @@ export default function PricingPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Link>
             <Link
-              href="/contact?type=enterprise"
+              href="/contact?topic=enterprise"
               className="group flex items-center gap-2.5 px-8 py-4 bg-white/10 text-white font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm"
             >
               <MessageCircle className="w-5 h-5" />
@@ -1245,7 +1245,7 @@ export default function PricingPage() {
               </span>
             </Link>
             <Link
-              href="/contact?type=enterprise"
+              href="/contact?topic=enterprise"
               className="group flex items-center gap-2.5 px-10 py-4 bg-white/10 text-white font-bold rounded-2xl border border-white/20 hover:bg-white/20 transition-all duration-300 backdrop-blur-sm text-base"
             >
               <Building2 className="w-5 h-5" />

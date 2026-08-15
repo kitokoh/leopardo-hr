@@ -54,7 +54,7 @@ export function ArticleJsonLd({
           name: 'Leopardo RH',
           logo: {
             '@type': 'ImageObject',
-            url: `${SITE_URL}/logo.png`,
+            url: `${SITE_URL}/icon.svg`,
           },
         },
       }}
