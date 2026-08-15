@@ -27,20 +27,16 @@ on:
         description: "Also run the progressive attendance punch scale test (10/20/50/100 VUs)"
         required: false
         default: "false"
-      attendance_punch_mode:
-        description: "attendance-punch-scale.js mode: manual or path"
+      attendance_stage_duration:
+        description: "Duration of each attendance-punch-scale.js stage"
         required: false
-        default: "manual"
+        default: "30s"
       run_payroll_progressive_scale:
         description: "Also run the progressive payroll load test (10/20/50/100 VUs, PA2-QA-005)"
         required: false
         default: "false"
-      # Issue #3612 : GitHub limite workflow_dispatch à 10 inputs (11 avant ce
-      # fix). attendance_stage_duration et payroll_stage_duration sont
-      # fusionnés — les deux scénarios progressifs partagent le même défaut
-      # (30s) et sont mutuellement exclusifs dans l'usage courant.
-      stage_duration:
-        description: "Duration of each stage for attendance-punch-scale.js / payroll-progressive-scale.js"
+      payroll_stage_duration:
+        description: "Duration of each payroll-progressive-scale.js stage"
         required: false
         default: "30s"
       payroll_allow_mutations:
@@ -134,8 +130,8 @@ jobs:
         env:
           BASE_URL: ${{ github.event.inputs.base_url }}
           EMPLOYEE_TOKENS: ${{ secrets.K6_EMPLOYEE_TOKENS }}
-          PUNCH_MODE: ${{ github.event.inputs.attendance_punch_mode }}
-          STAGE_DURATION: ${{ github.event.inputs.stage_duration }}
+          PUNCH_MODE: manual
+          STAGE_DURATION: ${{ github.event.inputs.attendance_stage_duration }}
         run: |
           set -euo pipefail
           if [[ -z "${EMPLOYEE_TOKENS}" ]]; then
@@ -181,7 +177,7 @@ jobs:
           MANAGER_TOKENS: ${{ secrets.K6_MANAGER_TOKENS }}
           PAYROLL_RUN_IDS: ${{ secrets.K6_PAYROLL_RUN_IDS }}
           ALLOW_PAYROLL_MUTATIONS: ${{ github.event.inputs.payroll_allow_mutations }}
-          STAGE_DURATION: ${{ github.event.inputs.stage_duration }}
+          STAGE_DURATION: ${{ github.event.inputs.payroll_stage_duration }}
         run: |
           set -euo pipefail
           if [[ -z "${MANAGER_TOKENS}" ]]; then

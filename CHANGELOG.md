@@ -7,6 +7,8 @@
 ## [Unreleased]
 - **fix(api): N+1 sur GET /v1/training/enrollments et /v1/admin/training/enrollments (Closes #3598).** `session.course` n'etait pas eager-loade alors que `TrainingEnrollmentResource` accede a `$this->session?->course?->title` — une requete supplementaire par ligne. Ajout de `'session.course:id,title'` dans les `with()` des deux controleurs (TrainingController + PlatformAdminTrainingController).
 
+- **fix(ci): k6-load-smoke.yml — 11 inputs workflow_dispatch ramenés à 10 (Closes #3612).** `attendance_punch_mode` retiré du bloc `inputs` (limite GitHub Actions = 10, règle actionlint `events` introduite en 1.7.7) ; le job `attendance-punch-scale` reçoit désormais `PUNCH_MODE: manual` en environnement — comportement identique au défaut précédent. Le dispatch manuel du workflow n'est plus refusé ni partiellement ignoré par l'API GitHub.
+
 - **fix(ops): render.yaml — scheduler sans MAIL_* corrigé (Closes #3594).** Le service `leopardo-scheduler` (tâches planifiées) ne définissait aucun `MAIL_*` → tout email synchrone émis par `schedule:run` retombait sur `127.0.0.1:25` (défaut `config/mail.php`) et échouait en silence. Le bloc mail du web service (`smtp`, port 587, TLS, `noreply@leopardo-rh.com`, secrets en `sync: false`) est maintenant dupliqué sur le scheduler.
 
 - **docs(qa): session expert 6 2026-08-15 — constats neufs + implémentation + merges.** Bilan : 12 constats nouveaux (#3205, #3427-#3437) selon méthode Spec Kit (issues + `.specify/features/qa-expert6-wave-2026-08-15/`), 8 issues de backlog implémentées (#3485/#3487/#3488/#3497/#3520/#3521/#3523/#3565), 2 P1 corrigés (régression manifeste mobile #3205, authz Edge #3427), 9 PRs mergées, 2 issues fermées avec preuve code (#3431/#3496).
