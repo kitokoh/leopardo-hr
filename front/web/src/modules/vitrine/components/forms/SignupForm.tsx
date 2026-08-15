@@ -94,7 +94,7 @@ export function SignupForm({
     }
   };
 
-  // â”€â”€ Step 1: Submit signup form â”€â”€
+  // ── Step 1: Submit signup form ──
   const onSubmit = async (data: SignupFormData) => {
     dispatch({ type: 'SUBMIT_START' });
 
@@ -144,7 +144,7 @@ export function SignupForm({
     }
   };
 
-  // â”€â”€ OTP input handlers â”€â”€
+  // ── OTP input handlers ──
   const handleOtpChange = useCallback((index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
 
@@ -178,7 +178,7 @@ export function SignupForm({
     otpRefs.current[focusIdx]?.focus();
   }, [otpValues]);
 
-  // â”€â”€ Step 2: Verify OTP â”€â”€
+  // ── Step 2: Verify OTP ──
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
@@ -207,13 +207,13 @@ export function SignupForm({
     }
   };
 
-  // â”€â”€ Render â”€â”€
+  // ── Render ──
   return (
     <Card className={`p-6 md:p-8 ${className}`}>
       <AnimatePresence mode="wait">
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {/* STEP 1: Signup Form                     */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {currentStep === 'form' && (
           <motion.div
             key="step-form"
@@ -385,9 +385,9 @@ export function SignupForm({
           </motion.div>
         )}
 
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {/* STEP 2: OTP Verification                */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {currentStep === 'otp' && (
           <motion.div
             key="step-otp"
@@ -475,9 +475,9 @@ export function SignupForm({
           </motion.div>
         )}
 
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {/* STEP 2b: Pending (cold-start fallback)   */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {currentStep === 'pending' && (
           <motion.div
             key="step-pending"
@@ -518,9 +518,9 @@ export function SignupForm({
           </motion.div>
         )}
 
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {/* STEP 3: Success                         */}
-        {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+        {/* ═══════════════════════════════════════ */}
         {currentStep === 'success' && (
           <motion.div
             key="step-success"
@@ -593,7 +593,7 @@ export function SignupForm({
                     <span className="font-bold text-emerald-600">
                       {provisionedData.trial.days} jours
                     </span>{' '}
-                    â€” aucune carte bancaire requise.
+                    — aucune carte bancaire requise.
                   </p>
                 )}
 

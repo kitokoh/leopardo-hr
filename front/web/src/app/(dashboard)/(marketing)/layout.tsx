@@ -5,14 +5,14 @@ import { usePathname } from 'next/navigation';
 import { CalendarDays, ListChecks } from 'lucide-react';
 
 /**
- * Module Marketing â€” Phase 4 (PA2-MKT-011).
+ * Module Marketing — Phase 4 (PA2-MKT-011).
  *
  * Dedicated layout for the Marketing surfaces nested under the
  * authenticated dashboard shell (`(dashboard)/layout.tsx` still handles
- * auth guard, sidebar and the feature-locked panel â€” this layout only
+ * auth guard, sidebar and the feature-locked panel — this layout only
  * adds the Marketing-specific sub-navigation shared by:
- *  - `/social` â€” the new calendar view (this issue's main deliverable).
- *  - `/social-marketing` â€” the existing account-connect + list view.
+ *  - `/social` — the new calendar view (this issue's main deliverable).
+ *  - `/social-marketing` — the existing account-connect + list view.
  *
  * Both routes share the same underlying API (`/marketing/social-*`), so
  * this tab bar lets a marketer switch between "plan visually" (calendar)

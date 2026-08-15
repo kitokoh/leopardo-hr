@@ -348,7 +348,7 @@ export default function DashboardLayout({
                 onChange={(e) => void handleLanguageChange(e.target.value)}
               >
                 <option value="fr">Francais</option>
-                <option value="ar">Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©</option>
+                <option value="ar">العربية</option>
                 <option value="tr">Turkce</option>
                 <option value="en">English</option>
               </select>

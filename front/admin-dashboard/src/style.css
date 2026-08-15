@@ -11,7 +11,7 @@
     @apply antialiased;
   }
 }
-/* Composants personnalisÃ©s */
+/* Composants personnalisés */
 @layer components {
   .btn-primary {
     @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl shadow-md text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
@@ -55,19 +55,19 @@
   .sidebar-nav-item:not(.active) {
     @apply text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200;
   }
-  /* W7 â€” Improved contrast for borders and icons (WCAG 1.4.11 non-text contrast 3:1) */
+  /* W7 — Improved contrast for borders and icons (WCAG 1.4.11 non-text contrast 3:1) */
   .border-accessible {
     @apply border-gray-300 dark:border-gray-600;
   }
   .icon-accessible {
     @apply text-gray-500 dark:text-gray-400;
   }
-  /* W2 â€” Focus visible ring for all interactive elements (WCAG 2.4.7) */
+  /* W2 — Focus visible ring for all interactive elements (WCAG 2.4.7) */
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
   }
 }
-/* Animations personnalisÃ©es */
+/* Animations personnalisées */
 @layer utilities {
   .animate-pulse-dot {
     animation: pulse-dot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -118,7 +118,7 @@
   height: 600px;
   position: relative;
 }
-/* Styles pour les notifications temps rÃ©el */
+/* Styles pour les notifications temps réel */
 .notification-badge {
   @apply absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center;
 }

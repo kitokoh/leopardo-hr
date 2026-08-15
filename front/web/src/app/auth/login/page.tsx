@@ -224,7 +224,7 @@ function LoginInner() {
               : locale === 'tr'
                 ? `Sunucu baslatiliyor, deneme ${attempt + 1}/4...`
                 : locale === 'ar'
-                  ? `...${attempt + 1}/4 Ø§Ù„Ø®Ø§Ø¯Ù… ÙŠØ³ØªÙŠÙ‚Ø¸ØŒ Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©`
+                  ? `...${attempt + 1}/4 الخادم يستيقظ، المحاولة`
                   : `Server is waking up, attempt ${attempt + 1}/4...`,
           );
         },
@@ -490,7 +490,7 @@ function LoginInner() {
                   : locale === 'tr'
                     ? 'Google ile devam et'
                     : locale === 'ar'
-                      ? 'Ø§Ù„Ù…ØªØ§Ø¨Ø¹Ø© Ø¹Ø¨Ø± Google'
+                      ? 'المتابعة عبر Google'
                       : 'Continue with Google'}
               </a>
 
@@ -502,7 +502,7 @@ function LoginInner() {
                       : locale === 'tr'
                         ? 'Demo sunucusu uyaniyor, 60 saniye kadar surebilir...'
                         : locale === 'ar'
-                          ? '...Ø®Ø§Ø¯Ù… Ø§Ù„Ø¹Ø±Ø¶ ÙŠØ³ØªÙŠÙ‚Ø¸ØŒ Ù‚Ø¯ ÙŠØ³ØªØºØ±Ù‚ Ø­ØªÙ‰ 60 Ø«Ø§Ù†ÙŠØ©'
+                          ? '...خادم العرض يستيقظ، قد يستغرق حتى 60 ثانية'
                           : 'Demo server is waking up, this may take up to 60 seconds...'}
                   </p>
                   {retryAttempt > 0 && (

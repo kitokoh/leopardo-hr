@@ -119,7 +119,7 @@
               <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ selectedTicket.subject }}</h2>
                 <p class="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  {{ selectedTicket.company?.name }} Â· {{ selectedTicket.created_by?.name || 'Contact inconnu' }}
+                  {{ selectedTicket.company?.name }} · {{ selectedTicket.created_by?.name || 'Contact inconnu' }}
                 </p>
               </div>
               <div class="flex flex-wrap gap-2">
@@ -163,7 +163,7 @@
               >
                 <p class="whitespace-pre-wrap leading-relaxed">{{ message.body }}</p>
                 <p :class="['mt-1 text-[10px] font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-400']">
-                  {{ message.author_name || (message.from_platform ? 'Ã‰quipe Leopardo' : 'Client') }} Â· {{ formatDate(message.created_at) }}
+                  {{ message.author_name || (message.from_platform ? 'Équipe Leopardo' : 'Client') }} · {{ formatDate(message.created_at) }}
                 </p>
               </div>
             </div>
@@ -328,11 +328,11 @@ async function applyTriage() {
       status: triageStatus.value,
       priority: triagePriority.value,
     })
-    toast.success('Ticket mis Ã  jour.')
+    toast.success('Ticket mis à jour.')
     await loadTickets()
   } catch (error) {
     console.error('Failed to triage ticket:', error)
-    toast.error('Mise Ã  jour du ticket impossible.')
+    toast.error('Mise à jour du ticket impossible.')
   } finally {
     isTriaging.value = false
   }

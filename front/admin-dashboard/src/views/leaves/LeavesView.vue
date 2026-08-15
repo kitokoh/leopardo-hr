@@ -160,7 +160,7 @@ function formatDays(row) {
 function formatPolicyDetail(policy) {
   const amt = policy.accrual_amount ?? '-'
   const typ = policy.accrual_type ?? '-'
-  const carry = policy.carry_forward ? ' Â· Report autorise' : ''
+  const carry = policy.carry_forward ? ' · Report autorise' : ''
   return `${amt} j (${typ})${carry}`
 }
 

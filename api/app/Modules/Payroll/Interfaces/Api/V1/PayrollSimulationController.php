@@ -9,7 +9,6 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
-use App\Modules\Payroll\Domain\Exceptions\CountryRulesContextMismatchException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AbstractCountryRules;
@@ -228,7 +227,10 @@ class PayrollSimulationController extends Controller
         $input = ['gross_salary' => $gross, 'has_slabs_override' => $hasSlabsOverride];
 
         try {
-            return $this->payrollCalculator->getRules($countryCode);
+            // Appel direct au résolveur (comme CotisationSimulationController) :
+            // `getRules()` masque l'exception de contexte pour PHPStan (dead catch
+            // catch.neverThrown) alors que `resolve()` la déclare explicitement.
+            return $this->payrollCalculator->rulesResolver()->resolve($countryCode);
         } catch (UnsupportedCountryRulesException $exception) {
             $this->auditRecorder->recordSimulation(
                 $correlationId,
@@ -237,17 +239,6 @@ class PayrollSimulationController extends Controller
                 $input,
                 null,
                 PayrollCalculationAudit::STATUS_RULE_MISSING
-            );
-
-            throw $exception;
-        } catch (CountryRulesContextMismatchException $exception) {
-            $this->auditRecorder->recordSimulation(
-                $correlationId,
-                $companyId,
-                $countryCode,
-                $input,
-                null,
-                PayrollCalculationAudit::STATUS_VALIDATION_ERROR
             );
 
             throw $exception;
