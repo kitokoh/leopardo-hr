@@ -152,29 +152,6 @@ paths:
                   data:
                     type: array
 
-  /trial/status:
-    get:
-      tags: ["Trial"]
-      summary: "Statut de provisioning du guided trial"
-      description: "Statut de l'essai guide + jeton de provisioning (issue #2437)."
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Statut du trial"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status: { type: string }
-                      provisioning_token: { type: string, nullable: true }
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /health:
     get:
       tags: ["Health"]
@@ -226,6 +203,314 @@ paths:
                   checks:
                     type: object
                     additionalProperties: true
+
+  # ─── EdgeSync — installation et telechargements (public) ─────────────
+
+  /api/v1/edge/health:
+    get:
+      tags: ["Health"]
+      summary: "Healthcheck edge (public, machine-to-cloud)"
+      description: "Sonde de sante de l'API pour les nœuds edge (throttle 300/min)."
+      security: []
+      responses:
+        "200":
+          description: "API edge disponible"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/v1/edge/install.sh:
+    get:
+      tags: ["Health"]
+      summary: "Script d'installation du nœud edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Script shell"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Script introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/docker-compose.yml:
+    get:
+      tags: ["Health"]
+      summary: "docker-compose.yml de reference pour le nœud edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Fichier docker-compose"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Fichier introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/env-example:
+    get:
+      tags: ["Health"]
+      summary: "Exemple de fichier d'environnement pour le nœud edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Fichier .env.example"
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/edge/license-public-key:
+    get:
+      tags: ["Health"]
+      summary: "Cle publique de verification des licences edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Cle publique"
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/edge/heartbeat:
+    post:
+      tags: ["Health"]
+      summary: "Heartbeat machine-to-cloud d'un nœud edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Heartbeat enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  # ─── EdgeSync — gestion des nœuds (tenant authentifie) ───────────────
+
+  /api/v1/edge:
+    get:
+      tags: ["Edge"]
+      summary: "Lister les nœuds edge du tenant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste des nœuds edge"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Edge"]
+      summary: "Enregistrer un nœud edge"
+      security:
+        - BearerAuth: []
+      responses:
+        "201":
+          description: "Nœud enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /api/v1/edge/{nodeId}:
+    get:
+      tags: ["Edge"]
+      summary: "Detail d'un nœud edge du tenant"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Nœud edge"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /api/v1/edge/{nodeId}/sync:
+    post:
+      tags: ["Edge"]
+      summary: "Declencher la synchronisation d'un nœud edge"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Synchronisation declenchee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /api/v1/edge/{nodeId}/license:
+    post:
+      tags: ["Edge"]
+      summary: "Emettre une licence pour un nœud edge"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Licence emise"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  # ─── EdgeSync — routes machine du nœud (X-Kiosk-Token / throttle) ────
+
+  /api/v1/edge-node/{nodeId}/push:
+    post:
+      tags: ["Edge"]
+      summary: "Pousser les donnees du nœud edge vers le cloud"
+      security: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Donnees poussees"
+          content:
+            application/json:
+              schema:
+                type: object
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /api/v1/edge-node/{nodeId}/pull:
+    get:
+      tags: ["Edge"]
+      summary: "Recuperer le delta de synchronisation pour le nœud edge"
+      security: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Delta de synchronisation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+
+  /api/v1/edge-node/{nodeId}/heartbeat:
+    post:
+      tags: ["Edge"]
+      summary: "Heartbeat d'un nœud edge (machine-to-cloud)"
+      security: []
+      parameters:
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Heartbeat enregistre"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/v1/edge-node/validate-license:
+    post:
+      tags: ["Edge"]
+      summary: "Valider une licence edge (machine-to-cloud)"
+      security: []
+      responses:
+        "200":
+          description: "Licence validee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+        "403":
+          $ref: "#/components/responses/Error403"
 
   /trial/signup:
     post:
@@ -320,6 +605,7 @@ paths:
     get:
       tags: ["Billing"]
       summary: "Statut du provisioning d'un essai guidé (polling)"
+      description: "Route publique pollee par la vitrine (throttle dedie 60/min). Verifie le token de provisioning de 64 caracteres."
       security: []
       parameters:
         - name: token
@@ -340,10 +626,16 @@ paths:
                     properties:
                       status: { type: string, enum: [pending, ready, failed] }
                       provisioned_at: { type: string, format: date-time, nullable: true }
-                      login_url: { type: string }
-                      message: { type: string }
         "404":
           description: "Token invalide"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: "PROVISIONING_TOKEN_INVALID" }
+                  message: { type: string }
 
   /user/register:
     post:
@@ -394,7 +686,7 @@ paths:
       tags: ["User"]
       summary: "Profil de l'utilisateur connecté"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Profil utilisateur"
@@ -406,7 +698,7 @@ paths:
       tags: ["Payroll"]
       summary: "Liste des campagnes de paie (tenant)"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Campagnes de paie paginées"
@@ -414,7 +706,7 @@ paths:
       tags: ["Payroll"]
       summary: "Crée une campagne de paie"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "201":
           description: "Campagne créée"
@@ -426,7 +718,7 @@ paths:
       tags: ["Platform"]
       summary: "Métriques plateforme (super-admin)"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Métriques"
@@ -2441,6 +2733,25 @@ paths:
           description: "Session terminee"
         "404":
           $ref: "#/components/responses/Error404"
+
+  /admin/training/courses:
+    get:
+      tags: ["Platform"]
+      summary: "Formations cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des formations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
 
   /admin/training/sessions:
     get:
@@ -5395,9 +5706,10 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /notifications/read-all:
-    put:
+    post:
       tags: ["Notifications"]
       summary: "Marquer toutes les notifications comme lues"
+      description: "Verbe canonique POST (issue #2674) — ne pas utiliser PUT."
       responses:
         "200":
           description: "Notifications marquees comme lues"
@@ -5440,9 +5752,10 @@ paths:
           $ref: "#/components/responses/Error404"
 
   /notifications/{notification}/read:
-    put:
+    patch:
       tags: ["Notifications"]
       summary: "Marquer une notification comme lue"
+      description: "Verbe canonique PATCH (issue #2674) — ne pas utiliser PUT."
       parameters:
         - $ref: "#/components/parameters/NotificationId"
       responses:
@@ -5485,6 +5798,485 @@ paths:
           $ref: "#/components/responses/Error403"
         "404":
           $ref: "#/components/responses/Error404"
+
+  # ─── Company announcements (PA2-COMM-004 / PA2-COMM-011) ─────────────
+
+  /announcements:
+    get:
+      tags: ["Notifications"]
+      summary: "Lister les annonces de l'entreprise"
+      description: "Un employe ne voit que les annonces publiees qui lui sont adressees (audience entreprise, departement ou employe) ; les managers principal/rh moderent aussi les brouillons et annonces planifiees."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [draft, scheduled, published, cancelled]
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des annonces"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Notifications"]
+      summary: "Creer une annonce d'entreprise (manager)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body, audience_type]
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                body:
+                  type: string
+                  maxLength: 5000
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                audience_type:
+                  type: string
+                  enum: [company, department, employee]
+                audience_department_id:
+                  type: integer
+                  nullable: true
+                audience_employee_id:
+                  type: integer
+                  nullable: true
+                status:
+                  type: string
+                  enum: [draft, scheduled, published]
+                scheduled_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+                expires_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        "201":
+          description: "Annonce creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /announcements/{announcement}:
+    delete:
+      tags: ["Notifications"]
+      summary: "Supprimer une annonce d'entreprise"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: announcement
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Annonce supprimee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /announcements/{announcement}/publish:
+    post:
+      tags: ["Notifications"]
+      summary: "Publier immediatement une annonce (moderation PA2-COMM-011)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: announcement
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Annonce publiee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /announcements/{announcement}/cancel:
+    post:
+      tags: ["Notifications"]
+      summary: "Annuler une annonce programmee ou publiee (moderation PA2-COMM-011)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: announcement
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Annonce annulee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  # ─── Conversations employe/manager (PA2-COMM-002) ─────────────────────
+
+  /conversations:
+    get:
+      tags: ["Notifications"]
+      summary: "Lister les conversations de l'employe courant"
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des conversations"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Notifications"]
+      summary: "Ouvrir une conversation (fil de discussion)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                body:
+                  type: string
+                  maxLength: 2000
+                subject_type:
+                  type: string
+                  nullable: true
+                subject_id:
+                  type: integer
+                  nullable: true
+                recipient_id:
+                  type: integer
+                  nullable: true
+                attachment:
+                  type: string
+                  format: binary
+                  nullable: true
+      responses:
+        "201":
+          description: "Conversation creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /conversations/{thread}:
+    get:
+      tags: ["Notifications"]
+      summary: "Detail d'une conversation avec ses messages"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: thread
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Conversation et messages"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /conversations/{thread}/messages:
+    post:
+      tags: ["Notifications"]
+      summary: "Repondre dans une conversation"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: thread
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body:
+                  type: string
+                  maxLength: 2000
+                attachment:
+                  type: string
+                  format: binary
+                  nullable: true
+      responses:
+        "201":
+          description: "Message ajoute"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /conversations/{thread}/messages/{message}/attachment:
+    get:
+      tags: ["Notifications"]
+      summary: "Telecharger la piece jointe d'un message de conversation"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: thread
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: message
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Fichier joint"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  # ─── Support tickets tenant (PA2-COMM-012) ────────────────────────────
+
+  /support-tickets:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les tickets de support ouverts par le tenant"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: priority
+          in: query
+          required: false
+          schema:
+            type: string
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des tickets"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                  meta:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Platform"]
+      summary: "Ouvrir un ticket de support (employe/manager)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subject, category, message]
+              properties:
+                subject:
+                  type: string
+                  maxLength: 200
+                category:
+                  type: string
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                message:
+                  type: string
+                  maxLength: 5000
+      responses:
+        "201":
+          description: "Ticket cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /support-tickets/{supportTicket}:
+    get:
+      tags: ["Platform"]
+      summary: "Detail d'un ticket de support (tenant)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: supportTicket
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Ticket avec messages"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /support-tickets/{supportTicket}/reply:
+    post:
+      tags: ["Platform"]
+      summary: "Repondre a un ticket de support (tenant)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: supportTicket
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  maxLength: 5000
+      responses:
+        "200":
+          description: "Reponse ajoutee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   # ─── Vehicle Tracking ───────────────────────────────────────────────
 
@@ -11688,6 +12480,24 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /cabinet/stats:
+    get:
+      tags: ["Cabinet"]
+      summary: "Statistiques de stockage du placard de l'employe courant"
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: "Statistiques de stockage (documents, taille utilisee...)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /cabinet/documents:
     get:
       tags: ["Cabinet"]
@@ -13363,6 +14173,26 @@ paths:
         "403": { $ref: "#/components/responses/Error403" }
 
   # ── Onboarding Setup ─────────────────────────────────────────────────────────
+  /onboarding/steps:
+    get:
+      tags: ["Onboarding"]
+      summary: "Checklist d'onboarding (alias /onboarding-setup/checklist)"
+      description: "Alias attendu par les clients mobile/web : meme reponse que GET /onboarding-setup/checklist."
+      security: [{ BearerAuth: [] }]
+      responses:
+        "200":
+          description: "Checklist avec statut de chaque étape"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401": { $ref: "#/components/responses/Error401" }
+
   /onboarding-setup/checklist:
     get:
       tags: ["Onboarding"]
@@ -14119,6 +14949,465 @@ paths:
       responses:
         "200":
           description: "Statistiques de régularité"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # ─── Platform announcements (PA2-COMM-005, super-admin) ──────────────
+
+  /platform/announcements:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les annonces plateforme (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des annonces plateforme"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Platform Admin"]
+      summary: "Creer une annonce plateforme (maintenance, feature, incident, action requise)"
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                body:
+                  type: string
+                  maxLength: 5000
+                category:
+                  type: string
+                  nullable: true
+                severity:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                  nullable: true
+                audience_type:
+                  type: string
+                  enum: [all, companies]
+                  nullable: true
+                company_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  nullable: true
+                expires_at:
+                  type: string
+                  format: date-time
+                  nullable: true
+      responses:
+        "201":
+          description: "Annonce creee et diffusee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/announcements/{announcement}:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Detail d'une annonce plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: announcement
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Annonce plateforme"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Supprimer une annonce plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: announcement
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Annonce supprimee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  # ─── Impersonation super-admin (PA2-ADM-006) ─────────────────────────
+
+  /platform/impersonations:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les sessions d'impersonation (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: active_only
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des sessions d'impersonation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                  meta:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Platform Admin"]
+      summary: "Creer une session d'impersonation (login en tant que)"
+      description: "Motif obligatoire, duree limitee (30 min par defaut, 120 min max), session entierement auditee."
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_id, employee_id, reason]
+              properties:
+                company_id:
+                  type: string
+                  format: uuid
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                  minLength: 5
+                  maxLength: 500
+                ttl_minutes:
+                  type: integer
+                  minimum: 1
+                  maximum: 120
+                  default: 30
+      responses:
+        "201":
+          description: "Session creee avec token d'impersonation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: "Bearer"
+                  expires_at:
+                    type: string
+                    format: date-time
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/impersonations/{session}:
+    delete:
+      tags: ["Platform Admin"]
+      summary: "Terminer une session d'impersonation"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: session
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Session terminee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  # ─── Support center super-admin (PA2-COMM-012) ───────────────────────
+
+  /platform/support-tickets:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister tous les tickets de support (super-admin, cross-tenant)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: priority
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: company_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des tickets avec compteurs par statut"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                  meta:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/support-tickets/{supportTicket}:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Detail d'un ticket de support (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: supportTicket
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Ticket avec messages"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /platform/support-tickets/{supportTicket}/reply:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Repondre a un ticket (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: supportTicket
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  maxLength: 5000
+      responses:
+        "200":
+          description: "Reponse ajoutee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/support-tickets/{supportTicket}/triage:
+    patch:
+      tags: ["Platform Admin"]
+      summary: "Trier un ticket (statut, priorite, assignation)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: supportTicket
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  nullable: true
+                priority:
+                  type: string
+                  nullable: true
+                assign_to_me:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: "Ticket trie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  # ─── Observabilite super-admin (PA2-QA-006 / PA2-ADM-005) ────────────
+
+  /platform/observability/queues:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Profondeur des queues Redis et jobs echoues (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Snapshot des queues (profondeur, failed jobs, dernier run planifie)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/observability/notifications:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Taux d'echec de notifications cross-tenant sur 24h (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Snapshot observabilite notifications avec liens runbook"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  # ─── Pipeline CRM super-admin (PA2-ADM-004) ──────────────────────────
+
+  /platform/crm/pipeline:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Pipeline CRM des demandes clients (leads, essais, actifs, rejetes)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Pipeline avec buckets leads/trials/active/rejected et resume de conversion"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leads:
+                    type: array
+                  trials:
+                    type: array
+                  active:
+                    type: array
+                  rejected:
+                    type: array
+                  summary:
+                    type: object
         "401":
           $ref: "#/components/responses/Error401"
 

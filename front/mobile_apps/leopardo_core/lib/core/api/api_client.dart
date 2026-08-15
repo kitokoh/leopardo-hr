@@ -159,7 +159,10 @@ class ApiClient {
         );
         if (useUserSession) {
           // Consommé par l'intercepteur pour choisir le jeton user_api.
-          requestOptions.headers['X-User-Session'] = 'true';
+          requestOptions.headers = {
+            ...?requestOptions.headers,
+            'X-User-Session': 'true',
+          };
         }
         final response = await _dio.request<T>(
           path,

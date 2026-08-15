@@ -76,6 +76,7 @@ class EdgeNodeSyncRouteTest extends TestCase
 
     public function test_manual_sync_route_works_for_tenant_owner(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create([
             'slug' => 'sync-owner-'.uniqid(),
             'schema_name' => 'shared_tenants',
@@ -83,6 +84,7 @@ class EdgeNodeSyncRouteTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -104,8 +106,11 @@ class EdgeNodeSyncRouteTest extends TestCase
             'finished_at' => now(),
         ]);
 
+        /** @var SyncEngineService&\Mockery\MockInterface $fake */
         $fake = \Mockery::mock(SyncEngineService::class);
-        $fake->shouldReceive('sync')->once()->with(\Mockery::on(
+        /** @var \Mockery\Expectation $syncExpectation */
+        $syncExpectation = $fake->shouldReceive('sync');
+        $syncExpectation->once()->with(\Mockery::on(
             fn (EdgeNode $n): bool => $n->id === $node->id
         ))->andReturn($log);
         $this->app->instance(SyncEngineService::class, $fake);
@@ -119,6 +124,7 @@ class EdgeNodeSyncRouteTest extends TestCase
 
     public function test_manual_sync_is_tenant_scoped(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
         $companyA = Company::factory()->create([
             'slug' => 'sync-a-'.uniqid(),
             'schema_name' => 'shared_tenants',
@@ -126,6 +132,7 @@ class EdgeNodeSyncRouteTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
         $companyB = Company::factory()->create([
             'slug' => 'sync-b-'.uniqid(),
             'schema_name' => 'shared_tenants',
@@ -133,6 +140,7 @@ class EdgeNodeSyncRouteTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $employeeB */
         $employeeB = Employee::factory()->create([
             'company_id' => $companyB->id,
             'role' => 'manager',
@@ -146,6 +154,7 @@ class EdgeNodeSyncRouteTest extends TestCase
             'status' => 'active',
         ]);
 
+        /** @var SyncEngineService&\Mockery\MockInterface $fake */
         $fake = \Mockery::mock(SyncEngineService::class);
         $fake->shouldNotReceive('sync');
         $this->app->instance(SyncEngineService::class, $fake);

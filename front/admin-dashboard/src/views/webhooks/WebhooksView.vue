@@ -18,7 +18,7 @@
       :rows="webhooks"
       :loading="loading"
       :error="error"
-      :search-keys="['url', 'description']"
+      :search-keys="['url']"
       search-placeholder="Rechercher un webhook..."
       default-sort="created_at"
       default-sort-dir="desc"
@@ -40,13 +40,18 @@
           </span>
         </div>
       </template>
-      <template #cell-is_active="{ value }">
+      <template #cell-active="{ value }">
         <span :class="value ? 'text-green-600' : 'text-gray-400'" class="text-sm font-medium">
           {{ value ? 'Actif' : 'Inactif' }}
         </span>
       </template>
-      <template #cell-last_delivery_status="{ value }">
-        <StatusBadge v-if="value" :status="value" :map="deliveryStatusMap" />
+      <template #cell-failure_count="{ value }">
+        <span :class="value > 0 ? 'text-red-600' : 'text-gray-400'" class="text-sm font-medium">
+          {{ value || 0 }}
+        </span>
+      </template>
+      <template #cell-last_triggered_at="{ value }">
+        <span v-if="value" class="text-xs text-gray-500">{{ formatDate(value) }}</span>
         <span v-else class="text-xs text-gray-400">Jamais</span>
       </template>
       <template #row-actions="{ row }">
@@ -80,10 +85,6 @@
             <input v-model="form.url" type="url" required class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://..." />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
-            <input v-model="form.description" type="text" class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" />
-          </div>
-          <div>
             <label class="block text-sm font-medium text-gray-700">Evenements</label>
             <div class="mt-2 grid grid-cols-2 gap-2">
               <label v-for="ev in availableEvents" :key="ev" class="flex items-center gap-2 text-sm text-gray-700">
@@ -94,7 +95,7 @@
           </div>
           <div>
             <label class="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" v-model="form.is_active" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+              <input type="checkbox" v-model="form.active" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
               Actif
             </label>
           </div>
@@ -113,11 +114,14 @@
 </template>
 
 <script setup>
+const toast = useToast()
 import { ref, onMounted } from 'vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
+import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
-import StatusBadge from '@/components/common/StatusBadge.vue'
+import { toIntlLocale } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
 
 const loading = ref(false)
 const saving = ref(false)
@@ -127,15 +131,15 @@ const companies = ref([])
 const showCreateModal = ref(false)
 const editingWebhook = ref(null)
 
-const form = ref({ company_id: null, url: '', description: '', events: [], is_active: true })
+const form = ref({ company_id: null, url: '', events: [], active: true })
 
 const columns = [
   { key: 'company_name', label: 'Societe', sortable: true },
   { key: 'url', label: 'URL', sortable: true },
-  { key: 'description', label: 'Description' },
   { key: 'events', label: 'Evenements' },
-  { key: 'is_active', label: 'Statut', sortable: true },
-  { key: 'last_delivery_status', label: 'Dernier envoi', sortable: true },
+  { key: 'active', label: 'Statut', sortable: true },
+  { key: 'failure_count', label: 'Echecs', sortable: true },
+  { key: 'last_triggered_at', label: 'Dernier envoi', sortable: true },
 ]
 
 const availableEvents = [
@@ -145,10 +149,12 @@ const availableEvents = [
   'applicant.hired', 'training.completed',
 ]
 
-const deliveryStatusMap = {
-  success: { label: 'Succes', color: 'green' },
-  failed: { label: 'Echec', color: 'red' },
-  pending: { label: 'En attente', color: 'yellow' },
+
+
+const localeStore = useLocaleStore()
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString(toIntlLocale(localeStore.current), { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 async function fetchData() {
@@ -175,14 +181,14 @@ async function fetchCompanies() {
 
 function editWebhook(wh) {
   editingWebhook.value = wh
-  form.value = { company_id: wh.company_id ?? null, url: wh.url, description: wh.description || '', events: [...(wh.events || [])], is_active: wh.is_active }
+  form.value = { company_id: wh.company_id ?? null, url: wh.url, events: [...(wh.events || [])], active: wh.active }
   showCreateModal.value = true
 }
 
 function closeModal() {
   showCreateModal.value = false
   editingWebhook.value = null
-  form.value = { company_id: null, url: '', description: '', events: [], is_active: true }
+  form.value = { company_id: null, url: '', events: [], active: true }
 }
 
 async function saveWebhook() {
@@ -195,8 +201,10 @@ async function saveWebhook() {
     }
     closeModal()
     fetchData()
+    toast.success('Webhook enregistré')
   } catch (err) {
     console.warn('Failed to save webhook', err)
+    toast.error("Erreur lors de l'enregistrement du webhook")
   } finally {
     saving.value = false
   }
@@ -205,8 +213,10 @@ async function saveWebhook() {
 async function testWebhook(id) {
   try {
     await api.post(`/admin/webhooks/${id}/test`) // #2634
+    toast.success('Webhook testé')
   } catch (err) {
     console.warn('Failed to test webhook', err)
+    toast.error('Erreur lors du test du webhook')
   }
 }
 
@@ -215,8 +225,10 @@ async function deleteWebhook(id) {
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()
+    toast.success('Webhook supprimé')
   } catch (err) {
     console.warn('Failed to delete webhook', err)
+    toast.error('Erreur lors de la suppression du webhook')
   }
 }
 

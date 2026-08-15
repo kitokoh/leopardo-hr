@@ -53,7 +53,7 @@ type FaqItem = {
 
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
-  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
+  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string; freeBadge: string; freePriceLabel: string; freeNoCard: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
@@ -84,6 +84,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
       trialNote: '14 jours offerts · Aucune CB requise',
+      freeBadge: '100% Gratuit',
+      freePriceLabel: 'Gratuit',
+      freeNoCard: 'Sans carte bancaire · Pour toujours',
     },
     currency: {
       label: 'Afficher les prix en',
@@ -194,6 +197,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
       trialNote: '14 days free · No credit card required',
+      freeBadge: '100% Free',
+      freePriceLabel: 'Free',
+      freeNoCard: 'No credit card · Forever',
     },
     currency: {
       label: 'Show prices in',
@@ -269,7 +275,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Is the Free plan really free?', answer: 'Yes, 100% free. No credit card ever required. Immediate access for up to 5 employees. Upgrade to a paid plan anytime.', category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
         { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
-        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 14 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 30 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
         { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 30 more days. No automatic billing without your consent.', category: 'Trial' },
         { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
@@ -304,6 +310,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
       trialNote: '14 gün ücretsiz · Kredi kartı gerekmez',
+      freeBadge: '%100 Ücretsiz',
+      freePriceLabel: 'Ücretsiz',
+      freeNoCard: 'Kredi kartı gerekmez · Her zaman',
     },
     currency: {
       label: 'Fiyatları şu para birimiyle göster',
@@ -413,7 +422,10 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'حسب الطلب',
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
-      trialNote: '14 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
+      trialNote: '30 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
+      freeBadge: 'مجاني 100%',
+      freePriceLabel: 'مجاني',
+      freeNoCard: 'بدون بطاقة ائتمان · للأبد',
     },
     currency: {
       label: 'عرض الأسعار بعملة',
@@ -489,8 +501,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
         { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
-        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
+        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 30 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 30 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
         { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Pilot: بريد إلكتروني خلال 48 ساعة. Operations: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
@@ -864,7 +876,7 @@ export default function PricingPage() {
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg">
                           <Gift className="w-3 h-3" />
-                          100% Gratuit
+                          {copy.plans.freeBadge}
                         </div>
                       </div>
                     )}
@@ -883,7 +895,7 @@ export default function PricingPage() {
                       <div className="flex items-baseline gap-1.5">
                         {isFree ? (
                           <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                            Gratuit
+                            {copy.plans.freePriceLabel}
                           </span>
                         ) : hasNumericPrice ? (
                           <>
@@ -902,7 +914,7 @@ export default function PricingPage() {
                       </div>
                       {isFree ? (
                         <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-                          Sans carte bancaire · Pour toujours
+                          {copy.plans.freeNoCard}
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
