@@ -66,7 +66,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/signup', today, 'monthly', 0.6),
     page('/checkout', today, 'monthly', 0.5),
     page('/offline', today, 'monthly', 0.4),
-    page('/share', today, 'monthly', 0.4),
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
