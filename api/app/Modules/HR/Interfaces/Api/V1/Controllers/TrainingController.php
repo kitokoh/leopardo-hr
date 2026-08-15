@@ -30,7 +30,7 @@ class TrainingController extends Controller
             $query->where('category', $request->input('category'));
         }
 
-        return TrainingCourseResource::collection($query->orderBy('title')->paginate(min(100, $request->integer('per_page', 15))))
+        return TrainingCourseResource::collection($query->orderBy('title')->paginate(max(1, min(100, $request->integer('per_page', 15)))))
             ->response();
     }
 
@@ -118,7 +118,7 @@ class TrainingController extends Controller
             ->where('company_id', $user->company_id)
             ->with(['course:id,title', 'trainer:id,first_name,last_name'])
             ->orderByDesc('start_date')
-            ->paginate(min(100, $request->integer('per_page', 20)));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingSessionResource::collection($sessions)->response();
     }
@@ -132,6 +132,32 @@ class TrainingController extends Controller
 
         return TrainingSessionResource::collection($trainingCourse->sessions()->with('trainer:id,first_name,last_name')->orderByDesc('start_date')->get())
             ->response();
+    }
+
+    /**
+     * GET /training/sessions — liste globale (toutes formations) scopée tenant,
+     * paginée. QA wave 2026-08-14 — T003 (#2228) : l'admin SPA (TrainingView.vue)
+     * appelait cet endpoint sans route derriere → onglet Sessions vide.
+     */
+    public function indexSessionsAll(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $query = TrainingSession::query()
+            ->with('trainer:id,first_name,last_name')
+            ->where('company_id', $actor->company_id);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+        if ($request->filled('course_id')) {
+            $query->where('training_course_id', $request->integer('course_id'));
+        }
+
+        return TrainingSessionResource::collection(
+            $query->orderByDesc('start_date')->paginate(max(1, min(100, $request->integer('per_page', 15))))
+        )->response();
     }
 
     /**
@@ -156,7 +182,7 @@ class TrainingController extends Controller
         }
 
         return TrainingEnrollmentResource::collection(
-            $query->orderByDesc('created_at')->paginate(min(100, $request->integer('per_page', 15)))
+            $query->orderByDesc('created_at')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 
