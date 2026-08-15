@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { Star, Building2, Users, Quote } from 'lucide-react';
@@ -76,12 +77,12 @@ const stats = [
 ];
 
 export default function TestimonialsPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <HeroSection
         headline="Ils nous font confiance"
@@ -108,6 +109,9 @@ export default function TestimonialsPage() {
               </motion.div>
             ))}
           </div>
+          <p className="mt-8 text-center text-emerald-100/80 text-xs">
+            Chiffres de démonstration — données fictives à titre d&apos;illustration.
+          </p>
         </div>
       </section>
 

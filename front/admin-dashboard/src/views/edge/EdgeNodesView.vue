@@ -18,6 +18,15 @@
       </button>
     </div>
 
+    <!-- Error banner (QA 2026-08-15, #2658) -->
+    <div
+      v-if="loadError"
+      class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-300"
+      role="alert"
+    >
+      {{ loadError }}
+    </div>
+
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
@@ -46,7 +55,6 @@
             <th class="px-4 py-3 font-medium">Statut</th>
             <th class="px-4 py-3 font-medium">Licence</th>
             <th class="px-4 py-3 font-medium">Dernière sync</th>
-            <th class="px-4 py-3 font-medium">En attente</th>
             <th class="px-4 py-3 font-medium">Actions</th>
           </tr>
         </thead>
@@ -57,7 +65,7 @@
             class="hover:glass-bg dark:hover:bg-gray-700/30 transition-colors"
           >
             <td class="px-4 py-3">
-              <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">{{ node.node_id }}</div>
+              <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">{{ node.id }}</div>
               <div class="text-xs text-gray-400 mt-0.5">{{ node.company_name }}</div>
             </td>
 
@@ -73,14 +81,14 @@
                 <span :class="['w-1.5 h-1.5 rounded-full', node.is_online ? 'bg-green-500' : 'bg-gray-400']" />
                 {{ node.is_online ? 'En ligne' : 'Hors ligne' }}
               </span>
-              <div v-if="node.silent_since && !node.is_online" class="text-xs text-red-400 mt-0.5">
-                Silencieux depuis {{ formatDuration(node.silent_since) }}
+              <div v-if="!node.is_online && node.last_seen_at" class="text-xs text-red-400 mt-0.5">
+                Vu {{ formatRelative(node.last_seen_at) }}
               </div>
             </td>
 
             <td class="px-4 py-3">
-              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', licenseClass(node.license_status)]">
-                {{ licenseLabel(node.license_status) }}
+              <span :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', licenseClass(node.license_valid)]">
+                {{ licenseLabel(node.license_valid) }}
               </span>
               <div v-if="node.license_expires_at" class="text-xs text-gray-400 mt-0.5">
                 Exp. {{ formatDate(node.license_expires_at) }}
@@ -89,12 +97,6 @@
 
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">
               {{ node.last_sync_at ? formatRelative(node.last_sync_at) : '—' }}
-            </td>
-
-            <td class="px-4 py-3">
-              <span :class="['text-sm font-medium', node.pending_records > 0 ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-400']">
-                {{ node.pending_records }}
-              </span>
             </td>
 
             <td class="px-4 py-3">
@@ -129,6 +131,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import EdgeStatCard from '@/components/edge/EdgeStatCard.vue';
 import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
 import { useEdgeNodesStore } from '@/stores/edgeNodes';
@@ -139,6 +142,10 @@ const store = useEdgeNodesStore();
 const localeStore = useLocaleStore();
 const loading = ref(false);
 const syncingNodeId = ref(null);
+// QA 2026-08-15 (#2658) : état d'erreur visible (avant : rejections non
+// gérées, aucun retour utilisateur).
+const loadError = ref(null);
+const toast = useToast();
 const selectedNode = ref(null);
 let refreshTimer = null;
 
@@ -147,13 +154,19 @@ const stats = computed(() => ({
   total: nodes.value.length,
   online: nodes.value.filter((n) => n.is_online).length,
   offline: nodes.value.filter((n) => !n.is_online).length,
-  licenseExpired: nodes.value.filter((n) => n.license_status === 'expired').length,
+  licenseExpired: nodes.value.filter((n) => n.license_expires_at && new Date(n.license_expires_at) < new Date() && !n.license_valid).length,
 }));
 
 async function refresh() {
   loading.value = true;
+  loadError.value = null;
   try {
     await store.fetchNodes();
+  } catch (err) {
+    loadError.value = err?.response?.data?.localized_message
+      || err?.message
+      || 'Erreur lors du chargement des nodes Edge.';
+    toast.error(loadError.value);
   } finally {
     loading.value = false;
   }
@@ -161,9 +174,16 @@ async function refresh() {
 
 async function triggerSync(node) {
   syncingNodeId.value = node.id;
+  loadError.value = null;
   try {
     await store.triggerSync(node.id);
     await refresh();
+    toast.success(`Synchronisation lancée pour ${node.name || node.id}`);
+  } catch (err) {
+    loadError.value = err?.response?.data?.localized_message
+      || err?.message
+      || 'Erreur lors du déclenchement de la synchronisation.';
+    toast.error(loadError.value);
   } finally {
     syncingNodeId.value = null;
   }
@@ -173,24 +193,14 @@ function viewNode(node) {
   selectedNode.value = node;
 }
 
-function licenseClass(status) {
-  const map = {
-    active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    expiring_soon: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-    expired: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    revoked: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400',
-  };
-  return map[status] ?? 'bg-gray-100 text-gray-600';
+function licenseClass(valid) {
+  return valid
+    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
 }
 
-function licenseLabel(status) {
-  const map = {
-    active: 'Active',
-    expiring_soon: 'Expire bientôt',
-    expired: 'Expirée',
-    revoked: 'Révoquée',
-  };
-  return map[status] ?? status;
+function licenseLabel(valid) {
+  return valid ? 'Valide' : 'Invalide';
 }
 
 function formatDate(iso) {

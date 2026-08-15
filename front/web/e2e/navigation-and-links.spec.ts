@@ -184,8 +184,9 @@ test.describe('Navigation and Links E2E Tests', () => {
       if (await hamburger.isVisible()) {
         await hamburger.click();
 
-        // Check if menu is visible
-        const mobileMenu = page.locator('nav[aria-label*="mobile"], nav[class*="mobile"]').first();
+        // Check if menu is visible — issue #3503 : le menu mobile est un
+        // motion.div (Navbar.tsx, aria-label="Menu mobile"), pas un <nav>.
+        const mobileMenu = page.locator('[aria-label="Menu mobile"]').first();
         await expect(mobileMenu).toBeVisible({ timeout: 5000 });
       }
     });
@@ -290,14 +291,18 @@ test.describe('Navigation and Links E2E Tests', () => {
 
   test.describe('Keyboard Navigation', () => {
     test('should navigate using Tab key', async ({ page }) => {
-      // Press Tab multiple times
-      for (let i = 0; i < 5; i++) {
+      // Issue #3503 : le focus initial reste sur <body> dans chromium
+      // headless-shell — presser Tab jusqu'à ce que le focus bouge.
+      let focusedTag = await page.evaluate(() => document.activeElement?.tagName ?? 'BODY');
+      let presses = 0;
+      while (focusedTag === 'BODY' && presses < 10) {
         await page.keyboard.press('Tab');
+        focusedTag = await page.evaluate(() => document.activeElement?.tagName ?? 'BODY');
+        presses += 1;
       }
 
       // Should be able to focus on elements
-      const focusedElement = await page.evaluate(() => document.activeElement?.tagName);
-      expect(['A', 'BUTTON', 'INPUT']).toContain(focusedElement);
+      expect(['A', 'BUTTON', 'INPUT']).toContain(focusedTag);
     });
 
     test('should navigate using Enter key on links', async ({ page }) => {

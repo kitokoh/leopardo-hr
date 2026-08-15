@@ -21,6 +21,7 @@ use App\Http\Middleware\Web\EnsureEmployeeMiddleware;
 use App\Http\Middleware\Web\EnsureManagerMiddleware;
 use App\Http\Middleware\Web\EnsureManagerRoleMiddleware;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
@@ -102,6 +103,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // MULTI-PAYS (#1867) : pays légal du tenant obligatoire et supporté
             // avant toute opération RH/paie sensible.
             'tenant.country' => RequireTenantCountry::class,
+            // #3368 : restaure le search_path après chaque requête kiosque
+            // (les handlers basculent vers le schéma tenant sans try/finally).
+            'kiosk.search_path' => \App\Http\Middleware\EnsureKioskSearchPathReset::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.
@@ -210,5 +214,40 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return $response;
+        });
+
+        // QA 2026-08-15 (#2653) : une requête non authentifiée sur /api/*
+        // doit répondre 401 JSON conforme au contrat, quel que soit le client
+        // (avec ou sans header `Accept: application/json`). Sans ce renderer,
+        // Laravel redirige vers /login en HTML — inutilisable pour kiosk,
+        // edge et scripts.
+        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => 'UNAUTHENTICATED',
+                'message' => 'UNAUTHENTICATED',
+                'localized_message' => __('errors.UNAUTHENTICATED'),
+            ], 401);
+        });
+
+        // QA 2026-08-15 (#2653) : dernier filet — toute exception non mappée
+        // sur /api/* rend un 500 conforme au contrat (error/localized_message),
+        // loggué et remonté à Sentry, sans jamais exposer le message interne.
+        // Enregistré en dernier pour laisser les renderers spécifiques gagner.
+        $exceptions->render(function (Throwable $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            report($exception);
+
+            return new JsonResponse([
+                'error' => 'INTERNAL_ERROR',
+                'message' => 'INTERNAL_ERROR',
+                'localized_message' => __('errors.SERVER_ERROR'),
+            ], 500);
         });
     })->create();

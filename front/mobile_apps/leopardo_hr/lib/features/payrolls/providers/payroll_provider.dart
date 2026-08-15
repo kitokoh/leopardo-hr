@@ -6,7 +6,9 @@ import 'package:leopardo_core/models/payroll_balance.dart';
 
 final payrollsProvider = FutureProvider<List<Payroll>>((ref) async {
   final repo = ref.watch(payrollRepositoryProvider);
-  return await repo.getMyPayrolls();
+  // #2769 : /payrolls est manager-scope ; le bulletin « mon » passe par
+  // /me/pay-slips (même endpoint que l'app Employee).
+  return await repo.getMyPaySlips();
 });
 
 final payrollMobileSummaryProvider = FutureProvider<PayrollMobileSummary>((

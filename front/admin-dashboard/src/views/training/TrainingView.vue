@@ -243,10 +243,12 @@ async function fetchData() {
   loading.value = true
   error.value = ''
   try {
+    // QA #3491 : les catch individuels avalaient les échecs (liste vide muette).
+    // Les rejets remontent au catch global → error alimenté + bandeau affiché.
     const [coursesRes, sessionsRes, enrollRes] = await Promise.all([
-      api.get('/v1/training/courses'),
-      api.get('/v1/training/sessions').catch(() => ({ data: { data: [] } })),
-      api.get('/v1/training/enrollments').catch(() => ({ data: { data: [] } })),
+      api.get('/admin/training/courses'),
+      api.get('/admin/training/sessions'),
+      api.get('/admin/training/enrollments'),
     ])
     courses.value = coursesRes.data.data || coursesRes.data || []
     sessions.value = sessionsRes.data.data || sessionsRes.data || []

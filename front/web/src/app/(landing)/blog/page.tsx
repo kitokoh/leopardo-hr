@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
+import { useSearchParams } from 'next/navigation';
 import {
   Navbar,
   HeroSection,
@@ -35,7 +37,7 @@ const blogCopy: Record<AppLocale, {
     },
     grid: {
       title: 'Nos articles',
-      subtitle: 'Conseils pratiques pour equipes RH ambitieuses',
+      subtitle: 'Conseils pratiques pour équipes RH ambitieuses',
       badge: 'Ressources',
       all: 'Tous',
       previous: 'Precedent',
@@ -54,7 +56,7 @@ const blogCopy: Record<AppLocale, {
     },
     cta: {
       headline: 'Besoin d un avis expert ?',
-      subheadline: 'Contactez notre equipe pour cadrer vos priorites RH et digitales.',
+      subheadline: 'Contactez notre équipe pour cadrer vos priorites RH et digitales.',
       primary: 'Nous contacter',
       secondary: 'Essai gratuit',
     },
@@ -167,28 +169,34 @@ const blogCopy: Record<AppLocale, {
 };
 
 export default function BlogPage() {
-  const [isDark, setIsDark] = useState(false);
+  const searchParams = useSearchParams();
+  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   const copy = blogCopy[locale] ?? blogCopy.fr;
   const posts = getBlogPosts(locale);
   useScrollReveal();
 
-  const blogCards = posts.map((post) => ({
-    slug: post.slug,
-    title: post.title,
-    excerpt: post.excerpt,
-    image: post.image,
-    date: post.date,
-    author: post.author,
-    category: post.category,
-    readingTime: post.readingTime,
-  }));
+  const blogCards = [...posts]
+    // #3263 : les posts archivés (2023-2024) ne doivent pas passer pour du
+    // contenu frais — ils sont triés en fin de liste et badgeés « Archivé ».
+    .sort((a, b) => Number(Boolean(a.archived)) - Number(Boolean(b.archived)))
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      image: post.image,
+      date: post.date,
+      author: post.author,
+      category: post.category,
+      readingTime: post.readingTime,
+      archived: post.archived,
+    }));
 
   const categories = Array.from(new Set(posts.map((post) => post.category)));
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <HeroSection
         headline={copy.hero.headline}
@@ -201,6 +209,7 @@ export default function BlogPage() {
         title={copy.grid.title}
         subtitle={copy.grid.subtitle}
         posts={blogCards}
+        initialCategory={searchParams.get('category')}
         categories={categories}
         itemsPerPage={9}
         showPagination

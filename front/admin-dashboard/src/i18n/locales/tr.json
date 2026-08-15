@@ -1,378 +1,239 @@
 {
+  "app": {
+    "title": "Leopardo IK"
+  },
+  "signup": {
+    "failedTitle": "Oluşturma kesintiye uğradı",
+    "placeholderPhone": "+90 555 000 0000",
+    "subtitle": "Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.",
+    "codeHint": "Kimliğinizi doğrulamak için e-postanıza 6 haneli bir kod gönderilecek.",
+    "placeholderCompany": "Şirketinizin adı",
+    "labelPhone": "Telefon (isteğe bağlı)",
+    "trialNote": "Ücretsiz deneme:",
+    "otpVerifyError": "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+    "verifyingLabel": "Doğrulanıyor...",
+    "successTitle": "Alanınız hazır!",
+    "roleOperations": "Saha operasyonları",
+    "statusFor": "İçin:",
+    "title": "Leopardo'yu şirketinizle deneyin",
+    "validation": {
+      "roleRequired": "Rolünüzü seçin",
+      "companyTooLong": "Şirket adı çok uzun",
+      "phoneInvalid": "Geçersiz telefon numarası",
+      "emailInvalid": "Geçersiz e-posta",
+      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz",
+      "employeesRequired": "Bir ekip boyutu seçin",
+      "companyTooShort": "Şirket adı en az 2 karakter olmalıdır",
+      "emailTooShort": "E-posta çok kısa",
+      "emailTooLong": "E-posta çok uzun"
+    },
+    "submitLabel": "Doğrulama kodumu al",
+    "otpInvalidCode": "Geçersiz veya süresi dolmuş kod.",
+    "teamPlaceholder": "Seçin",
+    "accessCta": "Alanıma eriş",
+    "operationsNote": "Sahaya odaklı bir kurulum hazırlayacağız: yoklama, görevler, kiosk ve ekip takibi.",
+    "timeoutBody": "Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.",
+    "otpTitle": "E-postanızı doğrulayın",
+    "copied": "Kopyalandı!",
+    "trialNoteSuffix": "kredi kartı gerekmez",
+    "defaultError": "Bir hata oluştu",
+    "roleOther": "Diğer",
+    "roleHr": "İK",
+    "changePasswordNote": "İlk girişte parolanızı değiştirin.",
+    "otpInvalidLength": "Lütfen kodun 6 hanesini girin.",
+    "emailVerified": "E-posta adresiniz doğrulandı.",
+    "agreeSuffix": "ve",
+    "credsLabel": "Giriş bilgileri",
+    "pendingNote": "Anlık alan oluşturma hizmetimiz geçici olarak kullanılamıyor (sunucu yeniden başlatıldı). Talebiniz kaydedildi: Leopardo ekibinden biri 24 iş saati içinde size uygun erişimle e-posta gönderecek.",
+    "submittingLabel": "Kod gönderiliyor...",
+    "pendingFallback": "Deneme talebi alındı. Ekibimiz 24 iş saati içinde sizinle iletişime geçecek.",
+    "preparingBody": "Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.",
+    "privacyLink": "gizlilik politikası",
+    "linkCopied": "Bağlantı kopyalandı!",
+    "linkEmailed": "Erişim bağlantınız e-postayla da gönderildi.",
+    "statusEvery5s": "Durum her 5 saniyede bir kontrol edilir.",
+    "codeValidity": "Kod 30 dakika geçerlidir. Bulamazsanız spam klasörünü kontrol edin.",
+    "copyLink": "Bağlantıyı kopyala",
+    "refreshStatus": "Durumu yenile",
+    "trialDaysUnit": "gün",
+    "back": "Geri",
+    "downloadApp": "Uygulamayı indir",
+    "preparingTitle": "Alanınız hazırlanıyor",
+    "haveAccount": "Zaten hesabınız var mı?",
+    "readySubtitle": "Demo sandbox hazır. Doğrudan erişin:",
+    "timeoutTitle": "Oluşturma hâlâ sürüyor",
+    "credsEmailed": "Giriş bilgileriniz e-postayla gönderildi.",
+    "labelTeamSize": "Ekip boyutu",
+    "labelCompany": "Şirket",
+    "fieldPassword": "Parola",
+    "copyPasswordTitle": "Parolayı kopyala",
+    "agreePrefix": "Kabul ediyorum:",
+    "placeholderEmail": "siz@sirket.com",
+    "pendingTitle": "Deneme talebi alındı",
+    "badge": "14 günlük ücretsiz deneme",
+    "failedBody": "Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.",
+    "readyTitle": "Alanınız hazır!",
+    "labelEmail": "İş e-postası",
+    "fieldEmail": "E-posta",
+    "roleManager": "Yönetici",
+    "loginCta": "Giriş yap",
+    "credsSentByEmail": "Bu bilgiler e-postayla da gönderildi:",
+    "verifyLabel": "Doğrula ve alanımı oluştur",
+    "labelRole": "Rolünüz",
+    "otpSentTo": "6 haneli doğrulama kodunu şu adrese gönderdik:",
+    "termsLink": "kullanım koşulları",
+    "roleFounder": "Kurucu / Yönetici",
+    "trackStatus": "Alanımın durumunu takip et",
+    "rolePlaceholder": "Seçin"
+  },
+  "tax_rates": {
+    "history_error": "Geçmiş yüklenemedi.",
+    "history_rejected": "Reddedildi",
+    "history_empty": "Geçmiş kaydı yok.",
+    "subtitle": "Maaş motorunun kullandığı vergi dilimleri ve sosyal katkılar. Her değişiklik, değişmez bir denetim iziyle iki adımlı onay akışından (muhasebeci → platform yöneticisi) geçer.",
+    "rates_subtitle": "Yalnızca aktif satırlar maaş bordrolarında kullanılır.",
+    "th_actor": "Kullanıcı",
+    "status_pending": "🟡 Beklemede",
+    "cancel": "İptal",
+    "title": "Yasal oranlar — onay",
+    "approve": "Onayla",
+    "history_created": "Oluşturuldu",
+    "propose": "Değişiklik öner",
+    "th_action": "İşlem",
+    "status_active": "🟢 Aktif",
+    "modal_title": "Oran değişikliği öner",
+    "reject_error": "Değişiklik reddedilemedi.",
+    "th_type": "Tür",
+    "reject_modal_title": "Değişikliği reddet",
+    "history_submitted": "Gönderildi",
+    "history_title": "Değişiklik geçmişi",
+    "submit_error": "Değişiklik gönderilemedi.",
+    "pending_title": "Onay bekliyor",
+    "status_superseded": "🔴 Değiştirildi",
+    "type_slab": "Dilim",
+    "th_rate": "Oran",
+    "reject": "Reddet",
+    "pending_empty": "Onay bekleyen değişiklik yok.",
+    "th_country": "Ülke",
+    "history": "Geçmiş",
+    "saving": "Kaydediliyor…",
+    "rejected": "Değişiklik reddedildi (taslağa döndü).",
+    "saved": "Öneri kaydedildi.",
+    "th_reason": "Neden",
+    "legal_ref": "Yasal referans",
+    "approve_error": "Değişiklik onaylanamadı.",
+    "approved": "Değişiklik onaylandı ve aktif.",
+    "status_draft": "⚪ Taslak",
+    "history_approved": "Onaylandı",
+    "save": "Kaydet",
+    "reject_reason": "Ret nedeni (zorunlu)",
+    "submit": "Gönder",
+    "th_status": "Durum",
+    "th_name": "Başlık",
+    "th_actions": "İşlemler",
+    "type_contribution": "Katkı",
+    "legal_ref_required": "Yasal referans zorunludur (geçmişe işlenir).",
+    "submitted": "Değişiklik onaya gönderildi.",
+    "rates_empty": "Kayıtlı oran yok.",
+    "history_superseded": "Değiştirildi",
+    "th_effective": "Geçerlilik",
+    "close": "Kapat",
+    "status_only": "Salt okuma (tenant işlemi)",
+    "th_date": "Tarih",
+    "load_error": "Oranlar yüklenemedi.",
+    "save_error": "Öneri kaydedilemedi.",
+    "rates_title": "Yürürlükteki oranlar"
+  },
+  "payroll": {
+    "confidence": {
+      "unknown": {
+        "message": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."
+      },
+      "level_production": "Üretim",
+      "placeholder": {
+        "message": "{country} için değersiz taslak: vergi ve sosyal güvenlik katkı tutarları henüz belgelenmemiştir ve değiştirilene kadar gerçek maaş döngülerinde kullanılmamalıdır."
+      },
+      "level_unknown": "Bilinmiyor",
+      "level_placeholder": "Taslak",
+      "label": "Maaş kuralları güven düzeyi",
+      "pilot": {
+        "message": "{country} için pilot kurallar: genel kamu kaynaklarından (iş kanunu) alınan ancak yerelde henüz yasal olarak doğrulanmamış tutarlar. Yasal yükümlülükleriniz için bu rakamlara (vergi dilimleri, sosyal güvenlik katkıları, fazla mesai eşikleri) dayanmadan önce yerel bir hukuk veya vergi danışmanına danışın."
+      },
+      "production": {
+        "message": "{country} için doğrulanmış ve üretimde kullanılan kurallar. Yasal bildirimler için bu tutarlara dayanmadan önce güncel oranları her zaman yerel bir danışmanla teyit edin."
+      },
+      "level_pilot": "Pilot"
+    }
+  },
+  "_updated_at": "2026-08-14T18:45:00Z",
+  "auth": {
+    "manager_login_subtitle": "Yonetici / IK girisi",
+    "password_required": "Sifre zorunlu",
+    "employee": {
+      "invitation": {
+        "access": "Calisan erisimi (davet)"
+      }
+    },
+    "back_tooltip": "Geri",
+    "employee_login_subtitle": "Calisan girisi",
+    "continue_with_google": "Google ile devam et",
+    "password_label": "Sifre",
+    "password_too_short": "Sifre cok kisa",
+    "email_label": "E-posta",
+    "two_factor_required": "2FA kodu gereklidir.",
+    "email_required": "E-posta zorunlu",
+    "activate_invitation": "Davetimi etkinlestir",
+    "activate_manager_access": "Yonetici erisimimi etkinlestir",
+    "login": {
+      "title": "Giris yap"
+    },
+    "personal_account": {
+      "create": "Kisisel hesap olustur",
+      "explanation": "Kisisel hesap: belgelerinizi duzenleyin, sonra alaninizdan bir sirket olusturun veya katilin."
+    },
+    "email_professional_label": "Is e-postasi",
+    "try_demo_account": "Demo hesabini dene",
+    "personal_account_link": "Kisisel hesap",
+    "email_invalid": "Gecersiz e-posta"
+  },
   "welcome": {
-    "brand": {
-      "subtitle": "Sohbet odakli, mobil oncelikli, moduler."
+    "story": {
+      "clarity": {
+        "body": "Leopardo IK birkac net eylemle baslar: giris yapmak, ayi takip etmek ve onemli bilgilere ulasmak.",
+        "title": "Bogmadan once konusan bir ana ekran"
+      },
+      "modules": {
+        "body": "Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar.",
+        "title": "Aktif moduller, gorunur yol haritasi"
+      },
+      "field": {
+        "body": "Telefon calisanin ana yuzeyidir. Puantajiniz, izinleriniz ve belgeleriniz burada yasar.",
+        "title": "Saha ekipleri icin mobil oncelikli"
+      }
     },
     "hero": {
       "title": "Is gununuz burada baslar, arka ofiste degil.",
       "description": "Puantaj, kisisel takip ve aktif IK modulleri once telefonda acilir; deneyim sade ve okunabilir kalir."
     },
-    "story": {
-      "clarity": {
-        "title": "Bogmadan once konusan bir ana ekran",
-        "body": "Leopardo IK birkac net eylemle baslar: giris yapmak, ayi takip etmek ve onemli bilgilere ulasmak."
-      },
-      "modules": {
-        "title": "Aktif moduller, gorunur yol haritasi",
-        "body": "Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar."
-      },
-      "field": {
-        "title": "Saha ekipleri icin mobil oncelikli",
-        "body": "Telefon calisanin ana yuzeyidir. Puantajiniz, izinleriniz ve belgeleriniz burada yasar."
-      }
+    "brand": {
+      "subtitle": "Sohbet odakli, mobil oncelikli, moduler."
     }
   },
   "modules": {
     "cabinet": "Belge kasasi",
-    "notifications": "Bildirimler",
     "attendance": "Puantaj",
     "payroll": "Bordro",
-    "evaluations": "Degerlendirmeler"
-  },
-  "_updated_at": "2026-08-14T18:45:00Z",
-  "ai_chat": {
-    "back_tooltip": "Geri",
-    "empty_state_title": "IK sorularinizi sorun",
-    "input_hint": "Mesajinizi yazin...",
-    "send_tooltip": "Gonder",
-    "error_message": "Hata: asistana ulasilamadi.",
-    "title": "Yapay Zeka Asistani"
-  },
-  "signup": {
-    "badge": "14 günlük ücretsiz deneme",
-    "title": "Leopardo'yu şirketinizle deneyin",
-    "subtitle": "Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.",
-    "labelEmail": "İş e-postası",
-    "placeholderEmail": "siz@sirket.com",
-    "labelCompany": "Şirket",
-    "placeholderCompany": "Şirketinizin adı",
-    "labelRole": "Rolünüz",
-    "rolePlaceholder": "Seçin",
-    "roleFounder": "Kurucu / Yönetici",
-    "roleManager": "Yönetici",
-    "roleHr": "İK",
-    "roleOperations": "Saha operasyonları",
-    "roleOther": "Diğer",
-    "labelTeamSize": "Ekip boyutu",
-    "teamPlaceholder": "Seçin",
-    "labelPhone": "Telefon (isteğe bağlı)",
-    "placeholderPhone": "+90 555 000 0000",
-    "operationsNote": "Sahaya odaklı bir kurulum hazırlayacağız: yoklama, görevler, kiosk ve ekip takibi.",
-    "agreePrefix": "Kabul ediyorum:",
-    "termsLink": "kullanım koşulları",
-    "privacyLink": "gizlilik politikası",
-    "agreeSuffix": "ve",
-    "submitLabel": "Doğrulama kodumu al",
-    "submittingLabel": "Kod gönderiliyor...",
-    "codeHint": "Kimliğinizi doğrulamak için e-postanıza 6 haneli bir kod gönderilecek.",
-    "haveAccount": "Zaten hesabınız var mı?",
-    "loginCta": "Giriş yap",
-    "back": "Geri",
-    "otpTitle": "E-postanızı doğrulayın",
-    "otpSentTo": "6 haneli doğrulama kodunu şu adrese gönderdik:",
-    "otpInvalidLength": "Lütfen kodun 6 hanesini girin.",
-    "otpInvalidCode": "Geçersiz veya süresi dolmuş kod.",
-    "otpVerifyError": "Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.",
-    "verifyLabel": "Doğrula ve alanımı oluştur",
-    "verifyingLabel": "Doğrulanıyor...",
-    "codeValidity": "Kod 30 dakika geçerlidir. Bulamazsanız spam klasörünü kontrol edin.",
-    "trackStatus": "Alanımın durumunu takip et",
-    "pendingTitle": "Deneme talebi alındı",
-    "pendingFallback": "Deneme talebi alındı. Ekibimiz 24 iş saati içinde sizinle iletişime geçecek.",
-    "pendingNote": "Anlık alan oluşturma hizmetimiz geçici olarak kullanılamıyor (sunucu yeniden başlatıldı). Talebiniz kaydedildi: Leopardo ekibinden biri 24 iş saati içinde size uygun erişimle e-posta gönderecek.",
-    "readyTitle": "Alanınız hazır!",
-    "readySubtitle": "Demo sandbox hazır. Doğrudan erişin:",
-    "accessCta": "Alanıma eriş",
-    "copyLink": "Bağlantıyı kopyala",
-    "linkCopied": "Bağlantı kopyalandı!",
-    "linkEmailed": "Erişim bağlantınız e-postayla da gönderildi.",
-    "failedTitle": "Oluşturma kesintiye uğradı",
-    "failedBody": "Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.",
-    "timeoutTitle": "Oluşturma hâlâ sürüyor",
-    "timeoutBody": "Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.",
-    "refreshStatus": "Durumu yenile",
-    "preparingTitle": "Alanınız hazırlanıyor",
-    "preparingBody": "Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.",
-    "statusFor": "İçin:",
-    "statusEvery5s": "Durum her 5 saniyede bir kontrol edilir.",
-    "successTitle": "Alanınız hazır!",
-    "emailVerified": "E-posta adresiniz doğrulandı.",
-    "credsLabel": "Giriş bilgileri",
-    "fieldEmail": "E-posta",
-    "fieldPassword": "Parola",
-    "copyPasswordTitle": "Parolayı kopyala",
-    "copied": "Kopyalandı!",
-    "credsSentByEmail": "Bu bilgiler e-postayla da gönderildi:",
-    "credsEmailed": "Giriş bilgileriniz e-postayla gönderildi.",
-    "trialNote": "Ücretsiz deneme:",
-    "trialDaysUnit": "gün",
-    "trialNoteSuffix": "kredi kartı gerekmez",
-    "downloadApp": "Uygulamayı indir",
-    "changePasswordNote": "İlk girişte parolanızı değiştirin.",
-    "defaultError": "Bir hata oluştu",
-    "validation": {
-      "emailInvalid": "Geçersiz e-posta",
-      "emailTooShort": "E-posta çok kısa",
-      "emailTooLong": "E-posta çok uzun",
-      "companyTooShort": "Şirket adı en az 2 karakter olmalıdır",
-      "companyTooLong": "Şirket adı çok uzun",
-      "roleRequired": "Rolünüzü seçin",
-      "employeesRequired": "Bir ekip boyutu seçin",
-      "phoneInvalid": "Geçersiz telefon numarası",
-      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
-    }
-  },
-  "tax_rates": {
-    "history_submitted": "Gönderildi",
-    "pending_empty": "Onay bekleyen değişiklik yok.",
-    "save": "Kaydet",
-    "status_superseded": "🔴 Değiştirildi",
-    "th_actions": "İşlemler",
-    "th_action": "İşlem",
-    "status_draft": "⚪ Taslak",
-    "history_approved": "Onaylandı",
-    "saved": "Öneri kaydedildi.",
-    "th_type": "Tür",
-    "status_only": "Salt okuma (tenant işlemi)",
-    "pending_title": "Onay bekliyor",
-    "saving": "Kaydediliyor…",
-    "history_rejected": "Reddedildi",
-    "rates_title": "Yürürlükteki oranlar",
-    "reject_modal_title": "Değişikliği reddet",
-    "legal_ref_required": "Yasal referans zorunludur (geçmişe işlenir).",
-    "submitted": "Değişiklik onaya gönderildi.",
-    "subtitle": "Maaş motorunun kullandığı vergi dilimleri ve sosyal katkılar. Her değişiklik, değişmez bir denetim iziyle iki adımlı onay akışından (muhasebeci → platform yöneticisi) geçer.",
-    "th_rate": "Oran",
-    "title": "Yasal oranlar — onay",
-    "close": "Kapat",
-    "status_active": "🟢 Aktif",
-    "approve_error": "Değişiklik onaylanamadı.",
-    "modal_title": "Oran değişikliği öner",
-    "cancel": "İptal",
-    "status_pending": "🟡 Beklemede",
-    "propose": "Değişiklik öner",
-    "history_error": "Geçmiş yüklenemedi.",
-    "rates_empty": "Kayıtlı oran yok.",
-    "load_error": "Oranlar yüklenemedi.",
-    "rejected": "Değişiklik reddedildi (taslağa döndü).",
-    "th_reason": "Neden",
-    "history_empty": "Geçmiş kaydı yok.",
-    "th_country": "Ülke",
-    "th_effective": "Geçerlilik",
-    "th_actor": "Kullanıcı",
-    "type_slab": "Dilim",
-    "approved": "Değişiklik onaylandı ve aktif.",
-    "legal_ref": "Yasal referans",
-    "submit_error": "Değişiklik gönderilemedi.",
-    "reject": "Reddet",
-    "history_superseded": "Değiştirildi",
-    "reject_reason": "Ret nedeni (zorunlu)",
-    "submit": "Gönder",
-    "approve": "Onayla",
-    "th_status": "Durum",
-    "history_created": "Oluşturuldu",
-    "type_contribution": "Katkı",
-    "save_error": "Öneri kaydedilemedi.",
-    "history": "Geçmiş",
-    "history_title": "Değişiklik geçmişi",
-    "th_name": "Başlık",
-    "reject_error": "Değişiklik reddedilemedi.",
-    "th_date": "Tarih",
-    "rates_subtitle": "Yalnızca aktif satırlar maaş bordrolarında kullanılır."
-  },
-  "tax_slabs": {
-    "empty": "Bu ülke için kayıtlı dilim yok.",
-    "edit": "Düzenle",
-    "save": "Kaydet",
-    "created": "Dilim oluşturuldu.",
-    "scope": "Kapsam",
-    "reset_done": "Dilim sıfırlandı.",
-    "th_actions": "İşlemler",
-    "th_deduction": "Sabit kesinti",
-    "sim_base": "Matrah",
-    "saved": "Dilim güncellendi.",
-    "sim_social": "Katkılar (çalışan)",
-    "sim_tax": "Vergi",
-    "national_note": "ulusal kapsam — şirket istisnaları kiracı tarafında kalır",
-    "saving": "Kaydediliyor…",
-    "simulator_subtitle": "Brüt maaş girin: hesaplama (katkılar, matrah, dilim başına vergi, net, işveren maliyeti) gerçek maaş motoruyla çalışır — hiçbir şey kaydedilmez.",
-    "th_min": "Min",
-    "reset_confirm": "Yasal varsayılan değerlere sıfırlansın mı? Mevcut dilimler değiştirilecek.",
-    "subtitle": "Maaş motorunun kullandığı IRG/IRPP/ITSAS dilimleri. Ulusal yönetim (platform yöneticisi), gerçek zamanlı etki simülatörü — hiçbir şey kaydedilmez.",
-    "sim_error": "Simülasyon yapılamadı.",
-    "th_rate": "Oran",
-    "sim_run": "Simüle et",
-    "sim_gross": "Brüt maaş",
-    "title": "Ülkeye göre vergi dilimleri",
-    "edit_title": "Dilimi düzenle",
-    "reset_error": "Sıfırlanamadı.",
-    "default_name": "{country} yasal dilimi",
-    "cancel": "İptal",
-    "delete_confirm": "«{name}» dilimi silinsin mi?",
-    "load_error": "Vergi dilimi yüklenemedi.",
-    "delete_error": "Silinemedi.",
-    "scope_company": "Şirkete özel",
-    "reset": "Yasal varsayılanlara sıfırla",
-    "th_country": "Ülke",
-    "add": "Dilim ekle",
-    "th_effective": "Geçerlilik",
-    "scope_national": "Ulusal",
-    "sim_net": "Net",
-    "add_title": "Dilim ekle",
-    "legal_ref": "Yasal referans",
-    "deleted": "Dilim silindi.",
-    "sim_running": "Hesaplanıyor…",
-    "sim_slab_tax": "Dilim vergisi",
-    "th_max": "Maks",
-    "sim_compare": "Karşılaştırılacak maaş",
-    "simulator_title": "Etki simülatörü",
-    "save_error": "Dilim kaydedilemedi.",
-    "delete": "Sil"
-  },
-  "_version": "1.0.0",
-  "profile": {
-    "back_tooltip": "Geri",
-    "department_label": "Departman",
-    "value_unset": "Belirtilmedi",
-    "open_settings": "Hesap ayarlarini ac",
-    "job_title_unset": "Unvan belirtilmedi",
-    "details_title": "Bilgiler",
-    "subtitle": "Kisisel bilgiler ve dil",
-    "language_updated": "Dil guncellendi.",
-    "language_save": "Dili guncelle",
-    "email_label": "E-posta",
-    "matricule_label": "Personel numarasi",
-    "loading": "Profil yukleniyor...",
-    "language_saving": "Guncelleniyor...",
-    "title": "Profilim",
-    "job_title_label": "Unvan"
-  },
-  "emails": {
-    "reset_password": {
-      "greeting": "Merhaba :name,",
-      "action": "Sifreyi sifirla",
-      "footer": "Bu islemi siz istemediyseniz bu e-postayi yok sayin.",
-      "subject": "Sifrenizi sifirlayin",
-      "body": "Sifrenizi sifirlamak icin asagidaki baglantiya tiklayin."
-    },
-    "invitation": {
-      "greeting": "Merhaba :name,",
-      "action": "Hesabimi etkinlestir",
-      "footer": "Bu islemi siz istemediyseniz bu e-postayi yok sayin.",
-      "subject": ":company sirketine Leopardo IK uzerinden katilmaniz icin davet edildiniz",
-      "body": ":company sirketine katilmaniz icin davet edildiniz. Hesabinizi etkinlestirmek icin asagidaki baglantiya tiklayin."
-    },
-    "absence_approved": {
-      "greeting": "Merhaba :name,",
-      "action": "Talebi gor",
-      "footer": "Takim plani guncellendi.",
-      "subject": "Izin talebiniz onaylandi",
-      "body": ":period donemi icin izin talebiniz onaylandi."
-    },
-    "payroll_ready": {
-      "greeting": "Merhaba :name,",
-      "action": "Maas pusulasini gor",
-      "footer": "Muhasebe aktarimindan once bilgilerinizi kontrol edin.",
-      "subject": "Maas pusulaniz hazir",
-      "body": ":period donemi icin maas pusulaniz hazir. Leopardo IK icinde inceleyebilirsiniz."
-    },
-    "absence_rejected": {
-      "greeting": "Merhaba :name,",
-      "action": "Talebi gor",
-      "footer": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun.",
-      "subject": "Izin talebiniz reddedildi",
-      "body": ":period donemi icin izin talebiniz reddedildi."
-    }
-  },
-  "platform_login": {
-    "submitting": "Giris yapiliyor...",
-    "subtitle": "Platform yonetimine ayrilmis mobil kokpit.",
-    "email_label": "Super yonetici e-postasi",
-    "email_required": "E-posta zorunlu",
-    "use_demo_account": "Demo hesabini kullan",
-    "2fa_notice": "Bu hesap platformu korur: kimlik dogrulama uygulamanizdaki 2FA kodunu girin.",
-    "2fa_label": "Etkinse 2FA kodu",
-    "title": "Leopardo Platform",
-    "password_required": "Sifre zorunlu"
-  },
-  "social_contrib": {
-    "edit_title": "Katkıyı düzenle",
-    "empty": "Bu ülke için kayıtlı katkı yok.",
-    "edit": "Düzenle",
-    "type_all": "Tümü",
-    "cancel": "İptal",
-    "save": "Kaydet",
-    "created": "Katkı oluşturuldu.",
-    "delete_confirm": "«{name}» silinsin mi?",
-    "th_cap": "Tavan",
-    "load_error": "Katkılar yüklenemedi.",
-    "th_actions": "İşlemler",
-    "delete_error": "Silinemedi.",
-    "sim_subtitle": "Brüt maaş girin: iki ülke için yan yana çalışan/işveren dökümü, vergi ve toplam işveren maliyeti (yasal tavanla veya tavansız).",
-    "type_employee": "Çalışan",
-    "saved": "Katkı güncellendi.",
-    "th_country": "Ülke",
-    "add": "Katkı ekle",
-    "sim_employer": "İşveren katkıları",
-    "th_effective": "Geçerlilik",
-    "sim_employee": "Çalışan katkıları",
-    "sim_tax": "Vergi",
-    "total_cost": "Toplam işveren maliyeti",
-    "th_type": "Tür",
-    "add_title": "Katkı ekle",
-    "th_code": "Kod",
-    "deleted": "Katkı silindi.",
-    "saving": "Kaydediliyor…",
-    "save_error": "Katkı kaydedilemedi.",
-    "subtitle": "CNPS, CNSS, IPRES, CNAS… — ülke başına oranlar, tavanlar ve türler (çalışan/işveren). Ulusal yönetim + tavanlı/tavansız simülatör ve 2 ülke karşılaştırıcı.",
-    "delete": "Sil",
-    "type_employer": "İşveren",
-    "th_org": "Kurum",
-    "th_rate": "Oran",
-    "sim_title": "Simülatör ve karşılaştırıcı",
-    "sim_gross": "Brüt maaş",
-    "compare_country": "Karşılaştırılan ülke",
-    "ignore_caps": "Yasal tavan olmadan",
-    "title": "Ülkeye göre sosyal katkılar"
+    "evaluations": "Degerlendirmeler",
+    "notifications": "Bildirimler"
   },
   "_locale": "tr",
-  "common": {
-    "language": {
-      "variants": {
-        "fr-CA": "Fransizca (Kanada)",
-        "fr-FR": "Fransizca (Fransa)",
-        "fr-BE": "Fransizca (Belcika)",
-        "ar-MA": "Arapca (Fas)",
-        "en-GB": "Ingilizce (Birlesik Krallik)",
-        "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
-        "ar-SA": "Arapca (Suudi Arabistan)",
-        "tr-TR": "Turkce (Turkiye)"
-      },
-      "label": "Dil"
-    },
-    "countries": {
-      "CM": "Kamerun",
-      "GA": "Gabon",
-      "CG": "Kongo",
-      "ML": "Mali",
-      "TN": "Tunus",
-      "BF": "Burkina Faso",
-      "MA": "Fas",
-      "TR": "Türkiye",
-      "SN": "Senegal",
-      "CI": "Fildişi Sahili",
-      "FR": "Fransa",
-      "DZ": "Cezayir"
-    },
-    "or": "veya"
-  },
-  "companies": {
-    "toast": {
-      "load_failed": "Şirket detayları yüklenemedi.",
-      "tickets_failed": "Destek talepleri yüklenemedi.",
-      "subscription_failed": "Abonelik güncellenemedi.",
-      "features_failed": "Modül ayarları kaydedilemedi."
-    }
+  "ai_chat": {
+    "send_tooltip": "Gonder",
+    "title": "Yapay Zeka Asistani",
+    "empty_state_title": "IK sorularinizi sorun",
+    "back_tooltip": "Geri",
+    "error_message": "Hata: asistana ulasilamadi.",
+    "input_hint": "Mesajinizi yazin..."
   },
   "navigation": {
     "dashboard": "Gösterge Paneli",
@@ -402,35 +263,172 @@
     "system": "Sistem",
     "mainMenu": "Ana menü"
   },
-  "payroll": {
-    "confidence": {
-      "pilot": {
-        "message": "{country} için pilot kurallar: genel kamu kaynaklarından (iş kanunu) alınan ancak yerelde henüz yasal olarak doğrulanmamış tutarlar. Yasal yükümlülükleriniz için bu rakamlara (vergi dilimleri, sosyal güvenlik katkıları, fazla mesai eşikleri) dayanmadan önce yerel bir hukuk veya vergi danışmanına danışın."
-      },
-      "level_pilot": "Pilot",
-      "level_placeholder": "Taslak",
-      "placeholder": {
-        "message": "{country} için değersiz taslak: vergi ve sosyal güvenlik katkı tutarları henüz belgelenmemiştir ve değiştirilene kadar gerçek maaş döngülerinde kullanılmamalıdır."
-      },
-      "unknown": {
-        "message": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."
-      },
-      "label": "Maaş kuralları güven düzeyi",
-      "production": {
-        "message": "{country} için doğrulanmış ve üretimde kullanılan kurallar. Yasal bildirimler için bu tutarlara dayanmadan önce güncel oranları her zaman yerel bir danışmanla teyit edin."
-      },
-      "level_unknown": "Bilinmiyor",
-      "level_production": "Üretim"
+  "companies": {
+    "toast": {
+      "tickets_failed": "Destek talepleri yüklenemedi.",
+      "subscription_failed": "Abonelik güncellenemedi.",
+      "load_failed": "Şirket detayları yüklenemedi.",
+      "features_failed": "Modül ayarları kaydedilemedi."
     }
   },
+  "marketing": {
+    "oauth": {
+      "save": "Kaydet",
+      "nav_title": "Pazarlama OAuth",
+      "title": "Pazarlama OAuth Ayarları",
+      "subtitle": "Ayrshare aracılığıyla sosyal medya hesaplarınızı bağlayın",
+      "fields": {
+        "placeholder_uri": "https://example.com/oauth/callback",
+        "secret_hint": "(mevcut değeri korumak için boş bırakın)",
+        "client_secret": "İstemci Sırrı",
+        "client_id": "İstemci Kimliği",
+        "placeholder_secret": "Yeni sır (isteğe bağlı)",
+        "redirect_uri": "Yönlendirme URI",
+        "placeholder_id": "İstemci Kimliğiniz"
+      },
+      "saved_ok": "{provider} yapılandırması kaydedildi",
+      "providers": {
+        "facebook": {
+          "label": "Facebook / Meta",
+          "description": "Facebook Graph API bağlantısı"
+        },
+        "twitter": {
+          "label": "X (Twitter)",
+          "description": "Twitter API v2 bağlantısı"
+        },
+        "linkedin": {
+          "label": "LinkedIn",
+          "description": "LinkedIn Marketing API bağlantısı"
+        }
+      },
+      "ayrshare_info": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır."
+    }
+  },
+  "emails": {
+    "absence_approved": {
+      "greeting": "Merhaba :name,",
+      "action": "Talebi gor",
+      "subject": "Izin talebiniz onaylandi",
+      "body": ":period donemi icin izin talebiniz onaylandi.",
+      "footer": "Takim plani guncellendi."
+    },
+    "payroll_ready": {
+      "greeting": "Merhaba :name,",
+      "action": "Maas pusulasini gor",
+      "subject": "Maas pusulaniz hazir",
+      "body": ":period donemi icin maas pusulaniz hazir. Leopardo IK icinde inceleyebilirsiniz.",
+      "footer": "Muhasebe aktarimindan once bilgilerinizi kontrol edin."
+    },
+    "invitation": {
+      "greeting": "Merhaba :name,",
+      "action": "Hesabimi etkinlestir",
+      "subject": ":company sirketine Leopardo IK uzerinden katilmaniz icin davet edildiniz",
+      "body": ":company sirketine katilmaniz icin davet edildiniz. Hesabinizi etkinlestirmek icin asagidaki baglantiya tiklayin.",
+      "footer": "Bu islemi siz istemediyseniz bu e-postayi yok sayin."
+    },
+    "reset_password": {
+      "greeting": "Merhaba :name,",
+      "action": "Sifreyi sifirla",
+      "subject": "Sifrenizi sifirlayin",
+      "body": "Sifrenizi sifirlamak icin asagidaki baglantiya tiklayin.",
+      "footer": "Bu islemi siz istemediyseniz bu e-postayi yok sayin."
+    },
+    "absence_rejected": {
+      "greeting": "Merhaba :name,",
+      "action": "Talebi gor",
+      "subject": "Izin talebiniz reddedildi",
+      "body": ":period donemi icin izin talebiniz reddedildi.",
+      "footer": "Ek bilgiye ihtiyaciniz varsa yoneticinizle gorusun."
+    }
+  },
+  "profile": {
+    "value_unset": "Belirtilmedi",
+    "loading": "Profil yukleniyor...",
+    "matricule_label": "Personel numarasi",
+    "subtitle": "Kisisel bilgiler ve dil",
+    "back_tooltip": "Geri",
+    "department_label": "Departman",
+    "email_label": "E-posta",
+    "language_save": "Dili guncelle",
+    "title": "Profilim",
+    "job_title_unset": "Unvan belirtilmedi",
+    "job_title_label": "Unvan",
+    "open_settings": "Hesap ayarlarini ac",
+    "language_updated": "Dil guncellendi.",
+    "details_title": "Bilgiler",
+    "language_saving": "Guncelleniyor..."
+  },
+  "platform_login": {
+    "title": "Leopardo Platform",
+    "password_required": "Sifre zorunlu",
+    "submitting": "Giris yapiliyor...",
+    "2fa_notice": "Bu hesap platformu korur: kimlik dogrulama uygulamanizdaki 2FA kodunu girin.",
+    "subtitle": "Platform yonetimine ayrilmis mobil kokpit.",
+    "email_required": "E-posta zorunlu",
+    "use_demo_account": "Demo hesabini kullan",
+    "email_label": "Super yonetici e-postasi",
+    "2fa_label": "Etkinse 2FA kodu"
+  },
   "users": {
-    "bulkPanel": {
-      "export": "Disa Aktar",
-      "selectedCount": ":count secildi",
-      "cancel": "Vazgec",
-      "suspend": "Askiya al",
-      "deactivate": "Devre disi birak",
-      "activate": "Etkinlestir"
+    "filters": {
+      "role": {
+        "all": "Tum roller",
+        "employee": "Calisan",
+        "admin": "Yonetici",
+        "manager": "Mudur",
+        "label": "Rol",
+        "hr": "IK"
+      },
+      "advanced": {
+        "hide": "Gelismis filtreleri gizle",
+        "show": "Gelismis filtreleri goster"
+      },
+      "segment": {
+        "champions": "Sadikler",
+        "all": "Tum segmentler",
+        "potential": "Potansiyel",
+        "loyal": "Bagli",
+        "atRisk": "Risk altinda",
+        "new": "Yeni",
+        "label": "Segment"
+      },
+      "registrationDate": {
+        "all": "Tum tarihler",
+        "today": "Bugun",
+        "quarter": "Bu ceyrek",
+        "label": "Kayit tarihi",
+        "month": "Bu ay",
+        "week": "Bu hafta"
+      },
+      "status": {
+        "all": "Tum durumlar",
+        "suspended": "Askiya alindi",
+        "pending": "Beklemede",
+        "active": "Aktif",
+        "label": "Durum",
+        "inactive": "Pasif"
+      },
+      "search": {
+        "label": "Ara",
+        "placeholder": "Ad, e-posta, sirket..."
+      },
+      "lastLogin": {
+        "all": "Tumu",
+        "today": "Bugun",
+        "label": "Son giris",
+        "never": "Hic giris yapmadi",
+        "month": "Bu ay",
+        "week": "Bu hafta"
+      },
+      "company": {
+        "all": "Tum sirketler",
+        "label": "Sirket"
+      }
+    },
+    "errors": {
+      "password_required": "Şifre gereklidir.",
+      "name_required": "Ad soyad gereklidir.",
+      "fix_fields": "Lütfen kırmızı alanları düzeltin"
     },
     "impersonation": {
       "title": "Bir çalışanı taklit et",
@@ -449,93 +447,41 @@
       "done": "Tamam",
       "employee": "Bağlı çalışan #:id"
     },
-    "toast": {
-      "deleted": "Kullanici silindi",
-      "updated": "Kullanici guncellendi",
-      "exportDone": "Disa aktarim tamamlandi",
-      "bulkActivated": ":count kullanici etkinlestirildi",
-      "impersonating": ":name olarak giris yapiliyor",
-      "loadError": "Kullanicilar yuklenirken hata olustu",
-      "bulkSuspended": ":count kullanici askiya alindi",
-      "selectionExportDone": "Secim disa aktarimi tamamlandi",
-      "exportInProgress": "Disa aktarim yapiliyor...",
-      "deleteError": "Kullanici silinirken hata olustu",
-      "exportError": "Disa aktarim basarisiz oldu",
-      "created": "Kullanici basariyla olusturuldu",
-      "bulkDeactivated": ":count kullanici devre disi birakildi",
-      "bulkError": "Toplu islem basarisiz oldu"
-    },
-    "actions": {
-      "export": "Disa Aktar",
-      "new": "Yeni",
-      "bulk": "Islemler (:count)"
-    },
-    "filters": {
-      "search": {
-        "label": "Ara",
-        "placeholder": "Ad, e-posta, sirket..."
-      },
-      "role": {
-        "employee": "Calisan",
-        "label": "Rol",
-        "admin": "Yonetici",
-        "manager": "Mudur",
-        "all": "Tum roller",
-        "hr": "IK"
-      },
-      "company": {
-        "all": "Tum sirketler",
-        "label": "Sirket"
-      },
-      "advanced": {
-        "show": "Gelismis filtreleri goster",
-        "hide": "Gelismis filtreleri gizle"
-      },
-      "segment": {
-        "potential": "Potansiyel",
-        "champions": "Sadikler",
-        "loyal": "Bagli",
-        "label": "Segment",
-        "new": "Yeni",
-        "all": "Tum segmentler",
-        "atRisk": "Risk altinda"
-      },
-      "status": {
-        "pending": "Beklemede",
-        "active": "Aktif",
-        "label": "Durum",
-        "suspended": "Askiya alindi",
-        "all": "Tum durumlar",
-        "inactive": "Pasif"
-      },
-      "registrationDate": {
-        "today": "Bugun",
-        "quarter": "Bu ceyrek",
-        "month": "Bu ay",
-        "label": "Kayit tarihi",
-        "week": "Bu hafta",
-        "all": "Tum tarihler"
-      },
-      "lastLogin": {
-        "today": "Bugun",
-        "never": "Hic giris yapmadi",
-        "month": "Bu ay",
-        "label": "Son giris",
-        "week": "Bu hafta",
-        "all": "Tumu"
-      }
-    },
-    "errors": {
-      "name_required": "Ad soyad gereklidir.",
-      "fix_fields": "Lütfen kırmızı alanları düzeltin",
-      "password_required": "Şifre gereklidir."
-    },
-    "page": {
-      "summary": ":count kullanici - :active aktif - :newToday bugun yeni",
-      "title": "Kullanici Yonetimi"
-    },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
+    },
+    "toast": {
+      "deleted": "Kullanici silindi",
+      "exportError": "Disa aktarim basarisiz oldu",
+      "selectionExportDone": "Secim disa aktarimi tamamlandi",
+      "exportDone": "Disa aktarim tamamlandi",
+      "bulkSuspended": ":count kullanici askiya alindi",
+      "bulkActivated": ":count kullanici etkinlestirildi",
+      "impersonating": ":name olarak giris yapiliyor",
+      "updated": "Kullanici guncellendi",
+      "bulkError": "Toplu islem basarisiz oldu",
+      "deleteError": "Kullanici silinirken hata olustu",
+      "created": "Kullanici basariyla olusturuldu",
+      "exportInProgress": "Disa aktarim yapiliyor...",
+      "loadError": "Kullanicilar yuklenirken hata olustu",
+      "bulkDeactivated": ":count kullanici devre disi birakildi"
+    },
+    "bulkPanel": {
+      "cancel": "Vazgec",
+      "activate": "Etkinlestir",
+      "deactivate": "Devre disi birak",
+      "export": "Disa Aktar",
+      "selectedCount": ":count secildi",
+      "suspend": "Askiya al"
+    },
+    "actions": {
+      "new": "Yeni",
+      "bulk": "Islemler (:count)",
+      "export": "Disa Aktar"
+    },
+    "page": {
+      "title": "Kullanici Yonetimi",
+      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
     }
   },
   "seo": {
@@ -543,208 +489,262 @@
       "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
   },
-  "auth": {
-    "password_label": "Sifre",
-    "manager_login_subtitle": "Yonetici / IK girisi",
-    "email_required": "E-posta zorunlu",
-    "personal_account_link": "Kisisel hesap",
-    "activate_invitation": "Davetimi etkinlestir",
-    "email_professional_label": "Is e-postasi",
-    "personal_account": {
-      "create": "Kisisel hesap olustur",
-      "explanation": "Kisisel hesap: belgelerinizi duzenleyin, sonra alaninizdan bir sirket olusturun veya katilin."
-    },
-    "continue_with_google": "Google ile devam et",
-    "employee_login_subtitle": "Calisan girisi",
-    "back_tooltip": "Geri",
-    "login": {
-      "title": "Giris yap"
-    },
-    "email_invalid": "Gecersiz e-posta",
-    "password_too_short": "Sifre cok kisa",
-    "email_label": "E-posta",
-    "employee": {
-      "invitation": {
-        "access": "Calisan erisimi (davet)"
-      }
-    },
-    "activate_manager_access": "Yonetici erisimimi etkinlestir",
-    "try_demo_account": "Demo hesabini dene",
-    "two_factor_required": "2FA kodu gereklidir.",
-    "password_required": "Sifre zorunlu"
+  "_version": "1.0.0",
+  "social_contrib": {
+    "sim_employee": "Çalışan katkıları",
+    "th_code": "Kod",
+    "th_org": "Kurum",
+    "subtitle": "CNPS, CNSS, IPRES, CNAS… — ülke başına oranlar, tavanlar ve türler (çalışan/işveren). Ulusal yönetim + tavanlı/tavansız simülatör ve 2 ülke karşılaştırıcı.",
+    "th_country": "Ülke",
+    "compare_country": "Karşılaştırılan ülke",
+    "saving": "Kaydediliyor…",
+    "delete": "Sil",
+    "cancel": "İptal",
+    "saved": "Katkı güncellendi.",
+    "title": "Ülkeye göre sosyal katkılar",
+    "type_all": "Tümü",
+    "empty": "Bu ülke için kayıtlı katkı yok.",
+    "delete_error": "Silinemedi.",
+    "total_cost": "Toplam işveren maliyeti",
+    "type_employer": "İşveren",
+    "sim_subtitle": "Brüt maaş girin: iki ülke için yan yana çalışan/işveren dökümü, vergi ve toplam işveren maliyeti (yasal tavanla veya tavansız).",
+    "type_employee": "Çalışan",
+    "ignore_caps": "Yasal tavan olmadan",
+    "sim_tax": "Vergi",
+    "delete_confirm": "«{name}» silinsin mi?",
+    "deleted": "Katkı silindi.",
+    "sim_title": "Simülatör ve karşılaştırıcı",
+    "save": "Kaydet",
+    "add": "Katkı ekle",
+    "th_type": "Tür",
+    "edit_title": "Katkıyı düzenle",
+    "add_title": "Katkı ekle",
+    "th_actions": "İşlemler",
+    "edit": "Düzenle",
+    "sim_gross": "Brüt maaş",
+    "th_effective": "Geçerlilik",
+    "sim_employer": "İşveren katkıları",
+    "load_error": "Katkılar yüklenemedi.",
+    "created": "Katkı oluşturuldu.",
+    "save_error": "Katkı kaydedilemedi.",
+    "th_cap": "Tavan",
+    "th_rate": "Oran"
   },
-  "app": {
-    "title": "Leopardo IK"
+  "tax_slabs": {
+    "scope": "Kapsam",
+    "th_max": "Maks",
+    "subtitle": "Maaş motorunun kullandığı IRG/IRPP/ITSAS dilimleri. Ulusal yönetim (platform yöneticisi), gerçek zamanlı etki simülatörü — hiçbir şey kaydedilmez.",
+    "reset_error": "Sıfırlanamadı.",
+    "delete": "Sil",
+    "th_min": "Min",
+    "cancel": "İptal",
+    "title": "Ülkeye göre vergi dilimleri",
+    "national_note": "ulusal kapsam — şirket istisnaları kiracı tarafında kalır",
+    "deleted": "Dilim silindi.",
+    "add": "Dilim ekle",
+    "edit_title": "Dilimi düzenle",
+    "add_title": "Dilim ekle",
+    "reset_done": "Dilim sıfırlandı.",
+    "sim_net": "Net",
+    "reset_confirm": "Yasal varsayılan değerlere sıfırlansın mı? Mevcut dilimler değiştirilecek.",
+    "sim_gross": "Brüt maaş",
+    "default_name": "{country} yasal dilimi",
+    "reset": "Yasal varsayılanlara sıfırla",
+    "created": "Dilim oluşturuldu.",
+    "th_rate": "Oran",
+    "sim_slab_tax": "Dilim vergisi",
+    "sim_error": "Simülasyon yapılamadı.",
+    "th_country": "Ülke",
+    "sim_social": "Katkılar (çalışan)",
+    "saving": "Kaydediliyor…",
+    "scope_national": "Ulusal",
+    "saved": "Dilim güncellendi.",
+    "empty": "Bu ülke için kayıtlı dilim yok.",
+    "delete_error": "Silinemedi.",
+    "legal_ref": "Yasal referans",
+    "simulator_subtitle": "Brüt maaş girin: hesaplama (katkılar, matrah, dilim başına vergi, net, işveren maliyeti) gerçek maaş motoruyla çalışır — hiçbir şey kaydedilmez.",
+    "sim_compare": "Karşılaştırılacak maaş",
+    "th_deduction": "Sabit kesinti",
+    "sim_running": "Hesaplanıyor…",
+    "sim_run": "Simüle et",
+    "sim_tax": "Vergi",
+    "delete_confirm": "«{name}» dilimi silinsin mi?",
+    "save": "Kaydet",
+    "th_actions": "İşlemler",
+    "edit": "Düzenle",
+    "simulator_title": "Etki simülatörü",
+    "scope_company": "Şirkete özel",
+    "sim_base": "Matrah",
+    "th_effective": "Geçerlilik",
+    "load_error": "Vergi dilimi yüklenemedi.",
+    "save_error": "Dilim kaydedilemedi."
   },
   "attendance": {
     "retry_after_failure": "{label}. Lütfen tekrar deneyin.",
     "sending_to_server": "{label} sunucuya gönderiliyor..."
   },
   "holidays": {
-    "page_title": "Ülkeye göre resmî tatiller",
-    "empty": "{country} / {year} için resmî tatil yok.",
-    "edit": "Düzenle",
-    "save": "Kaydet",
-    "islamic": {
-      "modal_title": "{name} düzenle",
-      "empty": "{year} için kayıtlı İslami bayram yok.",
-      "edit": "Düzenle",
-      "delete_confirm_dialog": "“{name}” silinsin mi?",
-      "confirm_dialog": "{year} için tüm İslami tarihler onaylansın mı?",
-      "confirm_error": "Tarihler onaylanırken hata oluştu.",
-      "th_countries": "Ülkeler",
-      "label_date": "Miladi tarih",
-      "confirm": "{year} onayla",
-      "load_error": "İslami takvim yüklenirken hata oluştu.",
-      "th_actions": "İşlemler",
-      "saved": "İslami bayram kaydedildi.",
-      "status_confirmed": "Onaylı",
-      "label_duration": "Süre (gün)",
-      "banner_unconfirmed": "{year} için {count} doğrulanmamış İslami bayram — maaş kapanışından önce tarihleri kontrol edin.",
-      "th_status": "Durum",
-      "status_approximate": "Yaklaşık",
-      "confirm_year_success": "{count} tarih onaylandı.",
-      "save_error": "Kaydederken hata oluştu.",
-      "duration_days": "{count} gün",
-      "subtitle": "Hicri takvimin hareketli tarihleri (Kurban, Mevlid, Tamkharit…) yıllık girilir; CEMAC/ECOWAS ülkeleri + DZ/MA/TN için otomatik uygulanır.",
-      "th_name": "Bayram",
-      "label_confirmed": "Onaylı (resmi) tarih",
-      "th_duration": "Süre",
-      "th_date": "Miladi tarih",
-      "title": "İslami bayramlar"
-    },
+    "recurring": "Her yıl tekrarlanır",
     "scope": {
       "national": "Ulusal",
       "company": "Şirkete özel"
     },
+    "th_scope": "Kapsam",
     "confirm": {
       "delete": "« :name » silinsin mi?"
     },
-    "th_actions": "İşlemler",
-    "saved": "Resmî tatil kaydedildi.",
-    "modal": {
-      "editTitle": "Resmi tatili düzenle",
-      "newTitle": "Yeni resmi tatil"
-    },
-    "page_subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.",
-    "th_type": "Tür",
-    "th": {
-      "date": "Tarih",
-      "name": "Ad",
-      "actions": "İşlemler",
-      "type": "Tür",
-      "scope": "Kapsam"
-    },
-    "saving": "Kaydediliyor…",
-    "country": "Ülke",
     "type": {
+      "fixed": "Sabit",
+      "islamic": "İslami",
       "custom": "Özel",
       "label": "Tür",
-      "christian": "Hristiyan",
-      "islamic": "İslami",
-      "fixed": "Sabit"
+      "christian": "Hristiyan"
     },
-    "errors": {
-      "load": "Resmi tatiller yüklenemedi.",
-      "delete": "Silinemedi.",
-      "save": "Resmi tatil kaydedilemedi."
+    "year": "Yıl",
+    "th": {
+      "date": "Tarih",
+      "scope": "Kapsam",
+      "name": "Ad",
+      "type": "Tür",
+      "actions": "İşlemler"
     },
-    "page": {
-      "subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı resmi tatil takvimi (issue #1811). Ulusal tatiller paylaşılır; şirket tatilleri yalnızca şirketinize özeldir.",
-      "title": "Ülkelere göre resmi tatiller"
-    },
-    "recurring": "Her yıl tekrarlanır",
-    "type_islamic": "İslami",
-    "edit_title": "Resmî tatili düzenle",
-    "date": {
-      "label": "Tarih"
-    },
+    "delete": "Sil",
     "cancel": "İptal",
-    "nav": {
-      "title": "Resmi tatiller"
+    "country": "Ülke",
+    "name": {
+      "label": "Ad"
     },
-    "type_custom": "Özel",
-    "load_error": "Resmî tatiller yüklenemedi.",
-    "delete_error": "Silinemedi.",
+    "type_fixed": "Sabit",
     "success": {
       "deleted": "Resmi tatil silindi.",
       "saved": "Resmi tatil kaydedildi."
     },
-    "scope_company": "Şirket",
-    "type_fixed": "Sabit",
-    "year": "Yıl",
-    "add": "Resmî tatil ekle",
-    "scope_national": "Ulusal",
-    "add_title": "Yeni resmî tatil",
     "deleted": "Resmî tatil silindi.",
-    "save_error": "Resmî tatil kaydedilemedi.",
-    "delete": "Sil",
-    "th_scope": "Kapsam",
-    "name": {
-      "label": "Ad"
+    "add": "Resmî tatil ekle",
+    "th_type": "Tür",
+    "edit_title": "Resmî tatili düzenle",
+    "add_title": "Yeni resmî tatil",
+    "page_title": "Ülkeye göre resmî tatiller",
+    "modal": {
+      "editTitle": "Resmi tatili düzenle",
+      "newTitle": "Yeni resmi tatil"
     },
+    "nav": {
+      "title": "Resmi tatiller"
+    },
+    "type_christian": "Hristiyan",
+    "saving": "Kaydediliyor…",
+    "page": {
+      "title": "Ülkelere göre resmi tatiller",
+      "subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı resmi tatil takvimi (issue #1811). Ulusal tatiller paylaşılır; şirket tatilleri yalnızca şirketinize özeldir."
+    },
+    "scope_national": "Ulusal",
+    "type_islamic": "İslami",
+    "saved": "Resmî tatil kaydedildi.",
+    "empty": "{country} / {year} için resmî tatil yok.",
+    "delete_error": "Silinemedi.",
+    "errors": {
+      "load": "Resmi tatiller yüklenemedi.",
+      "save": "Resmi tatil kaydedilemedi.",
+      "delete": "Silinemedi."
+    },
+    "save": "Kaydet",
+    "th_name": "Ad",
+    "edit": "Düzenle",
+    "th_actions": "İşlemler",
+    "type_custom": "Özel",
+    "date": {
+      "label": "Tarih"
+    },
+    "scope_company": "Şirket",
+    "islamic": {
+      "th_duration": "Süre",
+      "th_countries": "Ülkeler",
+      "confirm_error": "Tarihler onaylanırken hata oluştu.",
+      "subtitle": "Hicri takvimin hareketli tarihleri (Kurban, Mevlid, Tamkharit…) yıllık girilir; CEMAC/ECOWAS ülkeleri + DZ/MA/TN için otomatik uygulanır.",
+      "confirm": "{year} onayla",
+      "confirm_year_success": "{count} tarih onaylandı.",
+      "saved": "İslami bayram kaydedildi.",
+      "status_approximate": "Yaklaşık",
+      "title": "İslami bayramlar",
+      "status_confirmed": "Onaylı",
+      "empty": "{year} için kayıtlı İslami bayram yok.",
+      "modal_title": "{name} düzenle",
+      "th_status": "Durum",
+      "label_date": "Miladi tarih",
+      "th_name": "Bayram",
+      "th_actions": "İşlemler",
+      "edit": "Düzenle",
+      "label_duration": "Süre (gün)",
+      "duration_days": "{count} gün",
+      "delete_confirm_dialog": "“{name}” silinsin mi?",
+      "label_confirmed": "Onaylı (resmi) tarih",
+      "banner_unconfirmed": "{year} için {count} doğrulanmamış İslami bayram — maaş kapanışından önce tarihleri kontrol edin.",
+      "th_date": "Miladi tarih",
+      "load_error": "İslami takvim yüklenirken hata oluştu.",
+      "save_error": "Kaydederken hata oluştu.",
+      "confirm_dialog": "{year} için tüm İslami tarihler onaylansın mı?"
+    },
+    "page_subtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.",
+    "th_date": "Tarih",
+    "load_error": "Resmî tatiller yüklenemedi.",
+    "save_error": "Resmî tatil kaydedilemedi.",
     "countries": {
+      "SN": "Senegal",
+      "TN": "Tunus",
       "CM": "Kamerun",
       "CI": "Fildişi Sahili",
-      "TN": "Tunus",
-      "DZ": "Cezayir",
       "MA": "Fas",
-      "SN": "Senegal"
-    },
-    "th_name": "Ad",
-    "th_date": "Tarih",
-    "type_christian": "Hristiyan"
-  },
-  "marketing": {
-    "oauth": {
-      "subtitle": "Ayrshare aracılığıyla sosyal medya hesaplarınızı bağlayın",
-      "saved_ok": "{provider} yapılandırması kaydedildi",
-      "save": "Kaydet",
-      "providers": {
-        "facebook": {
-          "description": "Facebook Graph API bağlantısı",
-          "label": "Facebook / Meta"
-        },
-        "linkedin": {
-          "description": "LinkedIn Marketing API bağlantısı",
-          "label": "LinkedIn"
-        },
-        "twitter": {
-          "description": "Twitter API v2 bağlantısı",
-          "label": "X (Twitter)"
-        }
-      },
-      "fields": {
-        "placeholder_uri": "https://example.com/oauth/callback",
-        "redirect_uri": "Yönlendirme URI",
-        "placeholder_secret": "Yeni sır (isteğe bağlı)",
-        "client_id": "İstemci Kimliği",
-        "placeholder_id": "İstemci Kimliğiniz",
-        "client_secret": "İstemci Sırrı",
-        "secret_hint": "(mevcut değeri korumak için boş bırakın)"
-      },
-      "nav_title": "Pazarlama OAuth",
-      "title": "Pazarlama OAuth Ayarları",
-      "ayrshare_info": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır."
+      "DZ": "Cezayir"
     }
   },
   "dashboard": {
-    "company": "Şirket",
-    "presence_today_summary": "Bugün {active} aktif çalışandan {present} giriş yaptı",
-    "launch_readiness": "Lansman Hazırlığı",
-    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.",
-    "leo_announcements_count": "Şirketinizde {count} duyuru yayınlandı.",
-    "priority_actions": "Öncelikli Eylemler",
-    "presence_today_title": "Bugünkü katılım",
-    "recent_activity_hint": "Ekibinizin son eylemleri",
-    "leo_ia_announcement_title": "Tebrikler ekip",
-    "presence_today_empty": "Katılım verisi mevcut değil.",
-    "active_employees": "Aktif",
-    "upgrade": "Yükselt",
-    "recent_activity": "Son Etkinlik",
-    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
-    "leo_presence_empty": "Şu anda katılım verisi yok. Yine de ekibe bir tebrik mesajı göndermek ister misiniz?",
     "leo_presence_insight": "Bugün {active} aktif çalışandan {today} giriş yaptı. Ekibe bir tebrik mesajı göndermek ister misiniz?",
-    "title": "Kontrol Paneli"
+    "priority_actions": "Öncelikli Eylemler",
+    "recent_activity_hint": "Ekibinizin son eylemleri",
+    "presence_today_title": "Bugünkü katılım",
+    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.",
+    "active_employees": "Aktif",
+    "presence_today_empty": "Katılım verisi mevcut değil.",
+    "leo_presence_empty": "Şu anda katılım verisi yok. Yine de ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
+    "launch_readiness": "Lansman Hazırlığı",
+    "company": "Şirket",
+    "leo_ia_announcement_title": "Tebrikler ekip",
+    "title": "Kontrol Paneli",
+    "recent_activity": "Son Etkinlik",
+    "leo_announcements_count": "Şirketinizde {count} duyuru yayınlandı.",
+    "presence_today_summary": "Bugün {active} aktif çalışandan {present} giriş yaptı",
+    "upgrade": "Yükselt"
+  },
+  "common": {
+    "language": {
+      "variants": {
+        "fr-BE": "Fransizca (Belcika)",
+        "fr-FR": "Fransizca (Fransa)",
+        "en-GB": "Ingilizce (Birlesik Krallik)",
+        "ar-SA": "Arapca (Suudi Arabistan)",
+        "fr-CA": "Fransizca (Kanada)",
+        "ar-MA": "Arapca (Fas)",
+        "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
+        "tr-TR": "Turkce (Turkiye)"
+      },
+      "label": "Dil"
+    },
+    "or": "veya",
+    "countries": {
+      "BF": "Burkina Faso",
+      "CG": "Kongo",
+      "FR": "Fransa",
+      "CM": "Kamerun",
+      "MA": "Fas",
+      "SN": "Senegal",
+      "TN": "Tunus",
+      "TR": "Türkiye",
+      "GA": "Gabon",
+      "CI": "Fildişi Sahili",
+      "ML": "Mali",
+      "DZ": "Cezayir"
+    }
   }
 }

@@ -104,7 +104,7 @@ class LaunchReadinessController extends Controller
             $this->check('employee_base', 'Base collaborateurs exploitable', true, $activeEmployees >= 2, [
                 'active_employees' => $activeEmployees,
             ]),
-            $this->check('communication_governance', 'Preferences et audit communication prets', true, $preferencesConfigured >= $activeEmployees && $communicationFailures7d === 0, [
+            $this->check('communication_governance', 'Preferences et audit communication prets', true, $activeEmployees > 0 && $preferencesConfigured >= $activeEmployees && $communicationFailures7d === 0, [
                 'preferences_configured' => $preferencesConfigured,
                 'communication_failures_7d' => $communicationFailures7d,
             ]),
