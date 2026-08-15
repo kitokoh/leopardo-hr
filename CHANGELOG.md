@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(mobile): hygiène — mojibake UTF-8, écrans morts, retries POST, Sentry borné, parse null-safe (Closes #2738, #2763, #2742, #2766, #2767).** 12 fichiers ré-encodés (« Aucune Ã©valuation » → « Aucune évaluation ») ; `company_request_screen.dart` morts supprimés (×2) ; `POST /salary-advances` sans retries auto (fini les doublons) ; `tracesSampleRate` 1.0 → 0.2 ; `DateTime.tryParse` sur `requested_check_in`.
 - **fix(admin): navigation morte — palette filtrée, carte dashboard retargetée (Closes #2703, #2704).**
 - **fix(admin): UsersView — pagination réelle, filtre pending retiré, CSV échappé, mapping honnête, deactivate au lieu de DELETE (Closes #2698, #2699, #2700, #2701, #2714).**
 - **fix(admin): vague QA omnichannel 2026-08-15 — impersonation réelle, alertes visibles, recherche fonctionnelle, pays centralisés (Closes #2785-#2793).** (1) Impersonation : `POST /platform/impersonations` (contrat réel — la feature #2518 fonctionne enfin). (2) Header : panneau « Alertes critiques » rendu (bouton sans effet corrigé) + overlay click-outside. (3) Recherche globale : filtre réel des routes du router (plus de `console.log`). (4) Pays supportés : source unique `GET /supported-countries` via `composables/useSupportedCountries` (les 4 écrans paramètres — plus de tableaux en dur incohérents 6/12/7/10). (5) 401 : `localized_message` affiché + navigation SPA (plus de reload + clé brute). (6) `RevenueForecastWidget` : historique déterministe (plus de `Math.random()`). (7) Messages API accentués (« Session expirée », « Données invalides »…).
