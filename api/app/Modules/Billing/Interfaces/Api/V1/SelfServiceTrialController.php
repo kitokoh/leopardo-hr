@@ -96,26 +96,10 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $otpSent = $this->requestTrialSignup->execute($validated);
-
-        if ($otpSent === false) {
-            // #3057 : le lead est capturé mais aucun code n'a pu partir —
-            // réponse honnête (provisioned=false → l'UI affiche l'état
-            // « demande reçue, contact sous 24 h » au lieu d'un écran OTP).
-            return new JsonResponse([
-                'success' => true,
-                'provisioned' => false,
-                'message' => 'Votre demande a bien été enregistrée. Notre équipe vous contacte sous 24 h ouvrables.',
-                'data' => [
-                    'email' => $email,
-                    'status' => 'pending_fallback',
-                ],
-            ], 200);
-        }
+        $this->requestTrialSignup->execute($validated);
 
         return new JsonResponse([
             'success' => true,
-            'provisioned' => true,
             'message' => 'Code de vérification envoyé.',
             'data' => [
                 'email' => $email,
@@ -233,10 +217,8 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
-                    // Offre canonique 30 jours (spec #2909, vitrine #2972) :
-                    // la réponse doit refléter le provisioning réel (#3012).
-                    'days' => 30,
-                    'ends_at' => now()->addDays(30)->toIso8601String(),
+                    'days' => 14,
+                    'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [
                     'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',

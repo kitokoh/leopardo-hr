@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 /// Ecran "Mon mois" — l'employe voit :
 ///  - ses heures travaillees du mois
@@ -40,7 +41,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
   Widget build(BuildContext context) {
     final async = ref.watch(monthlySummaryProvider(_month));
     final employee = ref.watch(authProvider).employee;
-    final monthLabel = DateFormat.yMMMM('fr_FR').format(_month);
+    final monthLabel = DateFormat.yMMMM(deviceIntlDateLocale).format(_month);
 
     return Scaffold(
       appBar: AppBar(
@@ -117,11 +118,11 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
     String? employeeName,
   ) {
     final currencyFormat = NumberFormat.currency(
-      locale: 'fr_FR',
+      locale: deviceIntlDateLocale,
       symbol: summary.currency,
       decimalDigits: 2,
     );
-    final dateFormat = DateFormat('dd/MM', 'fr_FR');
+    final dateFormat = DateFormat('dd/MM', deviceIntlDateLocale);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

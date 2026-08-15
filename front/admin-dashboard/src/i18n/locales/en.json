@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "User Management",
-      "summary": ":count user(s) - :active active - :newToday new today"
+      "summary": ":count user(s)"
     },
     "actions": {
       "bulk": "Actions (:count)",
