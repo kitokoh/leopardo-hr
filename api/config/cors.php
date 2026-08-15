@@ -39,11 +39,21 @@ return [
         'https://www.leopardo-rh.com',
         'https://app.leopardo-rh.com',
         'https://admin.leopardo-rh.com',
+        // Admin dashboard hosted on Cloudflare Pages (issue #2333) — the live
+        // panel runs at https://leo-admin.pages.dev while the custom domain
+        // admin.leopardo-rh.com may not be wired yet on the environment.
+        'https://leo-admin.pages.dev',
         env('ADMIN_DASHBOARD_URL'),
         env('CORS_EXTRA_ORIGIN'),
     ]),
 
-    'allowed_origins_patterns' => [],
+    // Cloudflare Pages preview deployments (one per PR/branch) use random
+    // subdomains of pages.dev; wildcard pattern keeps previews usable while
+    // keeping the explicit allow-list above as the source of truth for
+    // production origins. See docs/security/AUDIT_API_2026-07-19.md §4.
+    'allowed_origins_patterns' => [
+        'https://*.pages.dev',
+    ],
 
     // Explicit allow-list instead of '*': defence-in-depth so that a future
     // debug-time addition of '*' to allowed_origins (a classic CORS-debugging
