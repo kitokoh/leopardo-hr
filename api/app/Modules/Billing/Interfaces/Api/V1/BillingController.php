@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\InvoiceResource;
 use App\Http\Resources\Api\V1\SubscriptionResource;
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
@@ -48,7 +49,7 @@ class BillingController extends Controller
         }
 
         $validated = $request->validate([
-            'plan' => 'required|in:starter,business,enterprise',
+            'plan' => ['required', \Illuminate\Validation\Rule::in(PlanCode::values())],
             'payment_method' => 'nullable|in:stripe,bank_transfer,manual',
         ]);
 
@@ -185,7 +186,7 @@ class BillingController extends Controller
         $company = Company::findOrFail($user->company_id);
 
         $validated = $request->validate([
-            'plan' => 'required|in:starter,business,enterprise',
+            'plan' => ['required', \Illuminate\Validation\Rule::in(PlanCode::values())],
             'success_url' => 'required|url|max:500',
             'cancel_url' => 'required|url|max:500',
         ]);
