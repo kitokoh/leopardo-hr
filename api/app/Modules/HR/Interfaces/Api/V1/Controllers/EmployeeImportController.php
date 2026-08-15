@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -142,9 +143,14 @@ class EmployeeImportController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
 
+            Log::error('hr.employee_import.failed', [
+                'company_id' => $companyId,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'message' => 'Erreur lors de l\'import.',
-                'error' => $e->getMessage(),
+                'error' => 'EMPLOYEE_IMPORT_FAILED',
             ], 500);
         }
 
