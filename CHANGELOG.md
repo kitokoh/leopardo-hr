@@ -7,6 +7,8 @@
 ## [Unreleased]
 
 ### Fixed
+
+- **fix(billing): webhook Stripe — erreurs de traitement en 500 (retry Stripe), fin de la perte silencieuse d'événements (Closes #2668).** 200 uniquement pour signature valide + traitement OK ; erreur de traitement → 500 (Stripe retente) ; signature invalide → 400 (pas de retry).
 - **fix(api): bouton « Tester » webhook synchrone + QaHardeningEndpointsTest aligné (review #2548/#2572).** Restaure l'implémentation synchrone de `WebhookController::test()` (#2353) : envoi HTTP réel, signature HMAC, anti-SSRF, trace `webhook_deliveries`, réponse `{message, status, http_status, duration_ms, delivery}`. `QaHardeningEndpointsTest::test_principal_can_test_a_webhook_endpoint` mis à jour du contrat async (202 + Queue::assertPushed) vers le contrat synchrone (200 + Http::fake + assertDatabaseHas webhook_deliveries) — les deux suites se contredisaient (review responsable projet).
 - **fix(payroll): garde-fou anti-collision `correlation_id` par run (Closes #2583).** Si un autre run porte déjà l'id dérivé du header (2 runs dans la même requête HTTP avec le même X-Correlation-ID, futur endpoint multi-runs), le run suffixe l'id d'un UUID : préfixe = header d'origine (traçabilité #1874 conservée) + unicité garantie par run (contrainte `payroll_runs_correlation_id_unique`).
 - **fix(test): réconciliation SN — CSS famille 7 % dans le calcul manuel (Closes #2590).** `BulletinDeclarationReconciliationTest` calculait le patronal déclaré avec CSS famille à 3 % alors que #2486 a porté le taux à 7 % (CIPRES/CLEISS) dans le moteur et le générateur (#2568) → 58 626 vs 61 146. Le calcul manuel passe à `$cssCap * 7.0 / 100` — la réconciliation moteur↔CSV fonctionne, c'était le golden du test qui était périmé.
