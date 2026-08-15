@@ -34,7 +34,7 @@ class AbsenceService
         $daysCount = $startDate->diffInDays($endDate) + 1;
 
         if ($type->deducts_leave) {
-            $balance = $this->currentBalance($employee);
+            $balance = $this->currentAvailableBalance($employee, (int) $type->id, (int) $startDate->format('Y'));
             if ($balance < $daysCount) {
                 throw new InsufficientLeaveBalanceException($balance, $daysCount);
             }
@@ -187,6 +187,40 @@ class AbsenceService
             ->first();
 
         return $lastLog ? (float) $lastLog->balance_after : 0.0;
+    }
+
+    /**
+     * Issue #2418 — solde DISPONIBLE pour une nouvelle demande : le contrôle
+     * de création doit réserver les jours `pending` (demandes en attente non
+     * encore approuvées), sinon deux demandes parallèles peuvent passer la
+     * garde et sur-réserver le solde.
+     *
+     * Source primaire : le snapshot `leave_balances` (balance − used −
+     * pending, synchronisé par #2329) ; fallback chaîne `leave_balance_logs`
+     * moins les absences pending pour les données héritées sans snapshot.
+     */
+    public function currentAvailableBalance(Employee $employee, int $absenceTypeId, int $year): float
+    {
+        $snapshot = LeaveBalance::query()
+            ->where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->where('absence_type_id', $absenceTypeId)
+            ->where('year', $year)
+            ->first();
+
+        if ($snapshot !== null) {
+            return max(0.0, (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending);
+        }
+
+        $available = $this->currentBalance($employee);
+
+        $pendingDays = (float) Absence::query()
+            ->where('employee_id', $employee->id)
+            ->where('absence_type_id', $absenceTypeId)
+            ->where('status', 'pending')
+            ->sum('days_count');
+
+        return max(0.0, $available - $pendingDays);
     }
 
     private function hasDateConflict(Employee $employee, string $startDate, string $endDate, ?int $excludeId = null): bool
