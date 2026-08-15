@@ -1,18 +1,15 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
+import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 
-export const metadata: Metadata = {
-  alternates: { canonical: `${SITE_URL}/guides` },
-  title: 'Guides & Ressources | Téléchargements Gratuits',
-  description:
-    'Téléchargez nos guides gratuits: Guide RH Startup, Checklist Paie 2026, Modèle Planning Employés.',
-  keywords: [
-    'guides gratuits',
-    'ressources RH',
-    'templates',
-    'téléchargements',
-  ],
-};
+export const metadata: Metadata = generateSEOMetadata({
+  title: pageMetadata.guides.title,
+  description: pageMetadata.guides.description,
+  keywords: pageMetadata.guides.keywords,
+  ogImage: pageMetadata.guides.ogImage,
+  ogType: 'website',
+  canonical: `${SITE_URL}/guides`,
+});
 
 export default function GuidesLayout({
   children,
