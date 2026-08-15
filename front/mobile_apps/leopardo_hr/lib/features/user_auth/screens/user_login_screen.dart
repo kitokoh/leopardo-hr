@@ -53,7 +53,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
       final account = await googleSignIn.authenticate();
 
       final ok = await ref.read(userAuthProvider.notifier).googleSignIn(
-            idToken: account.idToken ?? '',
+            idToken: account.authentication.idToken ?? '',
           );
 
       if (ok && mounted) {
