@@ -46,55 +46,30 @@ import api from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
-const toast = useToast()
 
-// Issue #2269 : détail réel via GET /admin/users/{id} — plus de dépendance
-// au store mock (le crash « dashboardStore.users » est éliminé).
+// QA #2238 : le crash venait de `dashboardStore.users` (store inexistant).
+// Le détail est désormais chargé depuis l'API réelle /platform/users/{id}.
 const selectedUser = ref(null)
-const isLoading = ref(false)
-const errorMessage = ref('')
 
-onMounted(loadUser)
-
-async function loadUser() {
-  isLoading.value = true
-  errorMessage.value = ''
-
+onMounted(async () => {
+  const id = Number(route.params.id)
   try {
-    const id = Number(route.params.id)
-    if (!Number.isInteger(id) || id <= 0) {
-      errorMessage.value = 'Identifiant utilisateur invalide.'
-      return
-    }
-
-    const response = await api.get(`/admin/users/${id}`)
-    const user = response.data?.data
-    if (!user) {
-      errorMessage.value = 'Utilisateur introuvable.'
-      return
-    }
-
-    selectedUser.value = {
-      ...user,
-      avatar: null,
-      status: user.is_active ? 'active' : 'inactive',
-      role: user.roles?.[0]?.role || null,
-      segment: null,
-      lastLoginAt: user.last_login_at,
-      createdAt: user.created_at
+    const res = await api.get(`/platform/users/${id}`)
+    const user = res.data?.data ?? null
+    if (user) {
+      selectedUser.value = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        status: user.status,
+        createdAt: user.created_at,
+        lastLoginAt: user.last_login_at
+      }
     }
   } catch (error) {
     console.error('Failed to load user detail:', error)
-    errorMessage.value = error?.response?.status === 404
-      ? 'Utilisateur introuvable.'
-      : 'Impossible de charger le detail utilisateur.'
-    if (error?.response?.status === 404) {
-      toast.error('Utilisateur introuvable.')
-    }
-  } finally {
-    isLoading.value = false
   }
-}
+})
 
 function goBack() {
   router.push('/users')
