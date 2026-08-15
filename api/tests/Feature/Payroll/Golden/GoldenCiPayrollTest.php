@@ -501,19 +501,19 @@ class GoldenCiPayrollTest extends TestCase
     public function test_golden_ci_ricf_parts_max_brut_3m(): void
     {
         // Calcul manuel (#2117) : brut 3 000 000, 5 parts (plafond légal) :
-        //   CNSS salariale = 3 000 000 × 3,2 % = 96 000 (plafond retraite
-        //     1 647 315 non atteint)
+        //   CNSS salariale = min(3 000 000, 1 647 315) × 3,2 % = 52 714,08
+        //     (le plafond retraite 1 647 315 EST atteint — #1913)
         //   ITS brut 2024 = 165 000×16 % + 560 000×21 % + 1 600 000×24 %
         //     + 600 000×28 % = 696 000
         //   RICF (art. 120) = 44 000 (plafond)
         //   ITS net = 696 000 − 44 000 = 652 000
-        //   Net = 3 000 000 − 96 000 − 652 000 = 2 252 000
+        //   Net = 3 000 000 − 52 714,08 − 652 000 = 2 295 285,92
         $rules = $this->rules();
 
         $breakdown = (new PayrollCalculator)->computeNetBreakdown(3000000.0, $rules, 5.0);
 
         $this->assertSame(652000.0, $breakdown['income_tax']);
-        $this->assertSame(2252000.0, $breakdown['net_salary']);
+        $this->assertSame(2295285.92, $breakdown['net_salary']);
     }
 
     public function test_golden_ci_ricf_default_1_part_no_change(): void
