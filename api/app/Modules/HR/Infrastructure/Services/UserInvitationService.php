@@ -83,6 +83,11 @@ class UserInvitationService
             abort_if($invitation->expires_at?->isPast(), 410, 'INVITATION_EXPIRED');
 
             $company = Company::query()->findOrFail($invitation->company_id);
+
+            // Sécurité #2637 : une invitation d'une société suspendue/expirée ne
+            // peut plus être activée.
+            abort_if(in_array($company->status, ['suspended', 'expired'], true), 403, 'COMPANY_SUSPENDED');
+
             $this->tenantManager->setTenant($company);
 
             try {

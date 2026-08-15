@@ -52,6 +52,9 @@ class SalaryAdvanceRepository {
       method: 'POST',
       data: data,
       timeoutOverride: proofFilePath == null ? null : _uploadTimeout,
+      // Issue #2742 — POST non idempotent : un retry automatique après
+      // timeout créerait une demande d'avance en DOUBLE.
+      maxRetriesOverride: 0,
     );
     return SalaryAdvance.fromJson(extractDataMap(response.data));
   }

@@ -21,7 +21,7 @@ describe('Form Validation Schemas', () => {
         employees: '11-50',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema.parse(data)).not.toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
     });
 
     it('should reject invalid email', () => {
@@ -30,7 +30,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema.parse(data)).toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject empty company', () => {
@@ -39,7 +39,7 @@ describe('Form Validation Schemas', () => {
         company: '',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema.parse(data)).toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should reject invalid phone when provided', () => {
@@ -49,7 +49,7 @@ describe('Form Validation Schemas', () => {
         phone: 'not-a-phone',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema.parse(data)).toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should accept empty optional phone', () => {
@@ -59,7 +59,7 @@ describe('Form Validation Schemas', () => {
         phone: '',
         agreeToTerms: true,
       };
-      expect(() => signupFormSchema.parse(data)).not.toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
     });
 
     it('should reject when terms not agreed', () => {
@@ -68,7 +68,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         agreeToTerms: false,
       };
-      expect(() => signupFormSchema.parse(data)).toThrow();
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
     it('should accept various valid emails', () => {
@@ -85,7 +85,7 @@ describe('Form Validation Schemas', () => {
           company: 'Acme Corp',
           agreeToTerms: true,
         };
-        expect(() => signupFormSchema.parse(data)).not.toThrow();
+        expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
       });
     });
   });
@@ -349,7 +349,7 @@ describe('Form Validation Schemas', () => {
       };
 
       try {
-        signupFormSchema.parse(data);
+        signupFormSchema('fr').parse(data);
       } catch (error) {
         if (error instanceof z.ZodError) {
           expect(error.issues.length).toBeGreaterThan(0);

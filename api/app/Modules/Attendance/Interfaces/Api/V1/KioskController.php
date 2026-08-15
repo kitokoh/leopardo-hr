@@ -372,32 +372,41 @@ class KioskController extends Controller
 
     private function resolveAuthorizedKiosk(Request $request, string $deviceCode): AttendanceKiosk
     {
+        // Issue #2689 (QA 2026-08-15) — le SET search_path doit être annulé
+        // (try/finally) pour ne pas laisser l'état de connexion PostgreSQL
+        // pointer vers shared_tenants sur les requêtes suivantes du même
+        // worker (pattern RequestTrialSignup).
+        $previous = (string) DB::selectOne('SHOW search_path')?->search_path ?? 'public,shared_tenants';
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $kiosk = AttendanceKiosk::query()
-            ->where('device_code', strtoupper($deviceCode))
-            ->where('status', 'active')
-            ->firstOrFail();
+        try {
+            $kiosk = AttendanceKiosk::query()
+                ->where('device_code', strtoupper($deviceCode))
+                ->where('status', 'active')
+                ->firstOrFail();
 
-        if ($kiosk->company_id !== null) {
-            $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
+            if ($kiosk->company_id !== null) {
+                $kiosk->setRelation('company', PlatformCompanyLookup::findOrFail((string) $kiosk->company_id));
+            }
+
+            $token = (string) $request->header('X-Kiosk-Token', '');
+            if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {
+                // PA2-API-005: security-relevant event, logged to the dedicated
+                // 'audit' channel so brute-force attempts against a kiosk device
+                // token are visible independently of the per-minute throttle.
+                Log::channel('audit')->warning('kiosk_auth.failed', [
+                    'device_code' => $kiosk->device_code,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+
+                abort(401, 'INVALID_KIOSK_TOKEN');
+            }
+
+            return $kiosk;
+        } finally {
+            DB::statement('SET search_path TO '.$previous);
         }
-
-        $token = (string) $request->header('X-Kiosk-Token', '');
-        if ($token === '' || ! Hash::check($token, (string) $kiosk->sync_token_hash)) {
-            // PA2-API-005: security-relevant event, logged to the dedicated
-            // 'audit' channel so brute-force attempts against a kiosk device
-            // token are visible independently of the per-minute throttle.
-            Log::channel('audit')->warning('kiosk_auth.failed', [
-                'device_code' => $kiosk->device_code,
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
-
-            abort(401, 'INVALID_KIOSK_TOKEN');
-        }
-
-        return $kiosk;
     }
 
     private function setTenantSearchPath(?Company $company): void
