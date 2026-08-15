@@ -34,6 +34,7 @@
 - **fix(edge-sync): web-offline utilise le health endpoint versionné et un précache PWA tolérant (Closes #3719).** Les champs de santé absents affichent `—`, l’ancien appel inexistant de sync est retiré au profit d’un bouton honnêtement désactivé sans authentification Edge, et un asset 404 ne bloque plus l’installation du service worker.
 
 - **fix(web): CTA pricing alignés sur les clés checkout canoniques (Closes #3718).** Les plans Starter et Business ne retombent plus sur `free` : ils routent respectivement vers `pilot` et `operations`, tandis qu’Enterprise reste `enterprise`.
+- **fix(ops): registre canonique des domaines et defaults API réalignés (Closes #3706).** `docs/ops/DOMAINS.md` distingue les endpoints actuellement joignables des domaines de production réservés ; `api/.env.example` ne pointe plus par défaut vers les domaines NXDOMAIN `api.leopardo-rh.com` et `app.leopardo-rh.com`.
 
 - **fix(admin/api): UsersView utilise le contrat super-admin pour le détail et l’impersonation (Closes #3268).** `/platform/users` expose la liaison société/employé par email canonique et le dashboard n’interroge plus `/admin/users` avec un ID `super_admins`.
 
