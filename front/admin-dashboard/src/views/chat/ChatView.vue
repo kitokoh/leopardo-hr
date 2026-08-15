@@ -33,14 +33,14 @@
         <h2 class="text-sm font-semibold text-gray-900">
           {{ activeConversation?.title || 'Assistant IA Leopardo' }}
         </h2>
-        <p class="text-xs text-gray-500">Posez vos questions RH, paie, recrutement...</p>
+        <p class="text-xs text-gray-500">Consultation des conversations IA des tenants (lecture seule).</p>
       </div>
 
       <div ref="messagesContainer" class="flex-1 space-y-4 overflow-y-auto p-6">
         <div v-if="messages.length === 0" class="flex h-full items-center justify-center">
           <div class="text-center">
             <ChatBubbleLeftRightIcon class="mx-auto h-12 w-12 text-gray-300" />
-            <p class="mt-2 text-sm text-gray-500">Commencez une conversation avec l'assistant IA.</p>
+            <p class="mt-2 text-sm text-gray-500">Sélectionnez une conversation pour consulter son historique.</p>
           </div>
         </div>
         <div
@@ -62,30 +62,17 @@
             </p>
           </div>
         </div>
-        <div v-if="streaming" class="flex justify-start">
-          <div class="rounded-lg bg-gray-100 px-4 py-3 text-sm text-gray-500">
-            <span class="inline-block animate-pulse">Reflexion en cours...</span>
-          </div>
-        </div>
       </div>
 
       <div class="border-t border-gray-200 p-4">
-        <form class="flex gap-2" @submit.prevent="sendMessage">
-          <input
-            v-model="inputMessage"
-            type="text"
-            placeholder="Tapez votre message..."
-            class="flex-1 rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-            :disabled="streaming"
-          />
-          <button
-            type="submit"
-            class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-            :disabled="!inputMessage.trim() || streaming"
-          >
-            Envoyer
-          </button>
-        </form>
+        <div
+          class="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800"
+          role="status"
+        >
+          Le chat assistant n'est pas disponible pour la plateforme super-admin : cette console
+          affiche les conversations IA des tenants en lecture seule. Aucune réponse ne peut être
+          envoyée depuis ce poste.
+        </div>
       </div>
     </div>
   </div>
@@ -102,8 +89,6 @@ const localeStore = useLocaleStore()
 const conversations = ref([])
 const activeConversation = ref(null)
 const messages = ref([])
-const inputMessage = ref('')
-const streaming = ref(false)
 const messagesContainer = ref(null)
 
 function formatDate(date) {
@@ -147,47 +132,6 @@ async function selectConversation(conv) {
 function newConversation() {
   activeConversation.value = null
   messages.value = []
-  inputMessage.value = ''
-}
-
-async function sendMessage() {
-  const text = inputMessage.value.trim()
-  if (!text) return
-
-  const userMsg = { id: Date.now(), role: 'user', content: text, created_at: new Date().toISOString() }
-  messages.value.push(userMsg)
-  inputMessage.value = ''
-  scrollToBottom()
-  streaming.value = true
-
-  try {
-    const payload = {
-      message: text,
-      conversation_id: activeConversation.value?.id || null,
-    }
-    const res = await api.post('/v1/ai/chat', payload)
-    const reply = res.data
-    if (!activeConversation.value && reply.conversation_id) {
-      activeConversation.value = { id: reply.conversation_id, title: text.slice(0, 50) }
-      fetchConversations()
-    }
-    messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: reply.response || reply.message || reply.content || '',
-      created_at: new Date().toISOString(),
-    })
-  } catch {
-    messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: 'Desole, une erreur est survenue. Veuillez reessayer.',
-      created_at: new Date().toISOString(),
-    })
-  } finally {
-    streaming.value = false
-    scrollToBottom()
-  }
 }
 
 onMounted(fetchConversations)
