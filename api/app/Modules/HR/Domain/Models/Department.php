@@ -33,7 +33,7 @@ class Department extends Model
 
     const CREATED_AT = 'created_at';
 
-    protected $fillable = ['company_id', 'name', 'manager_id'];
+    protected $fillable = [ 'name', 'manager_id'];
 
     protected $casts = ['created_at' => 'datetime'];
 

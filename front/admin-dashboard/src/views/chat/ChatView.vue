@@ -70,18 +70,24 @@
       </div>
 
       <div class="border-t border-gray-200 p-4">
+        <div
+          v-if="chatUnavailable"
+          class="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700"
+        >
+          Chat IA plateforme indisponible (contrat 501 ADMIN_CHAT_UNAVAILABLE). Le service reviendra quand le backend sera branché.
+        </div>
         <form class="flex gap-2" @submit.prevent="sendMessage">
           <input
             v-model="inputMessage"
             type="text"
             placeholder="Tapez votre message..."
             class="flex-1 rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-            :disabled="streaming"
+            :disabled="streaming || chatUnavailable"
           />
           <button
             type="submit"
             class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-            :disabled="!inputMessage.trim() || streaming"
+            :disabled="!inputMessage.trim() || streaming || chatUnavailable"
           >
             Envoyer
           </button>
@@ -104,6 +110,9 @@ const activeConversation = ref(null)
 const messages = ref([])
 const inputMessage = ref('')
 const streaming = ref(false)
+// Contrat backend : POST /admin/ai/chat retourne 501 ADMIN_CHAT_UNAVAILABLE
+// tant que le service n'est pas branché (#3390) — on désactive le composer.
+const chatUnavailable = ref(false)
 const messagesContainer = ref(null)
 
 function formatDate(date) {
@@ -177,13 +186,23 @@ async function sendMessage() {
       content: reply.response || reply.message || reply.content || '',
       created_at: new Date().toISOString(),
     })
-  } catch {
-    messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: 'Desole, une erreur est survenue. Veuillez reessayer.',
-      created_at: new Date().toISOString(),
-    })
+  } catch (err) {
+    if (err?.response?.status === 501) {
+      chatUnavailable.value = true
+      messages.value.push({
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: 'Le chat IA plateforme est indisponible (ADMIN_CHAT_UNAVAILABLE). Reessayez plus tard.',
+        created_at: new Date().toISOString(),
+      })
+    } else {
+      messages.value.push({
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: 'Desole, une erreur est survenue. Veuillez reessayer.',
+        created_at: new Date().toISOString(),
+      })
+    }
   } finally {
     streaming.value = false
     scrollToBottom()

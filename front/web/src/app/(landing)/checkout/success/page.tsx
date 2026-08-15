@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -99,14 +100,14 @@ function SuccessInner() {
 
   const isSandbox = searchParams.get('sandbox') === '1';
   const sessionId = searchParams.get('session_id') || '';
-  const plan = searchParams.get('plan') || 'Operations';
+  const plan = searchParams.get('plan') || 'Business';
   const billing = searchParams.get('billing') || 'monthly';
   const email = searchParams.get('email') || '';
   const company = searchParams.get('company') || '';
   const amount = searchParams.get('amount');
   const price = amount ? (parseInt(amount, 10) / 100).toFixed(2) : null;
 
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(true);
 
@@ -136,7 +137,7 @@ function SuccessInner() {
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
     >
       {showConfetti && <Confetti />}
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <main className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Background glow */}
@@ -175,7 +176,7 @@ function SuccessInner() {
 
             <p className="text-xl text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed">
               {company ? `${company} — ` : ''} Plan <strong className="text-slate-900 dark:text-white">{plan}</strong>
-              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 30 jours offerts, aucune carte débitée aujourd&apos;hui.
+              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 14 jours offerts, aucune carte débitée aujourd&apos;hui.
             </p>
           </motion.div>
 
@@ -209,7 +210,7 @@ function SuccessInner() {
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400">Période d&apos;essai</span>
-                <span className="text-sm font-bold text-emerald-600">30 jours gratuits</span>
+                <span className="text-sm font-bold text-emerald-600">14 jours gratuits</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400">Débité aujourd&apos;hui</span>

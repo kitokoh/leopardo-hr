@@ -19,9 +19,17 @@ import { NextResponse, type NextRequest } from 'next/server';
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
 export function middleware(request: NextRequest) {
-  const hasSession = request.cookies.has(SESSION_COOKIE_NAME);
+  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
 
-  if (!hasSession) {
+  // NOTE (issue #3522): this is a cosmetic/UX gate only, meant to avoid
+  // serving dashboard HTML/JS to obviously unauthenticated visitors before
+  // the client-side app mounts. It is NOT a security boundary: a valid
+  // shape here does not mean a valid session. Real authentication and
+  // authorization are enforced server-side by the API on every request.
+  const isValidToken =
+    !!token && token.length >= 20 && /^[A-Za-z0-9._-]+$/.test(token);
+
+  if (!isValidToken) {
     const loginUrl = new URL('/auth/login', request.url);
     return NextResponse.redirect(loginUrl);
   }
@@ -37,7 +45,6 @@ export const config = {
     '/billing/:path*',
     '/contracts/:path*',
     '/employees/:path*',
-    '/edge-nodes/:path*',
     '/partner/:path*',
     '/payroll/:path*',
     '/reports/:path*',

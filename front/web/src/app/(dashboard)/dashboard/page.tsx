@@ -66,6 +66,14 @@ type LaunchReadiness = {
   next_actions?: Array<{ key: string; label: string; required: boolean }>;
 };
 
+// Interpolation légère pour les clés i18n à trous ({placeholder}) du
+// dashboard — le catalogue JSON ne fait pas d'interpolation lui-même.
+function formatMessage(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in values ? String(values[name]) : match
+  );
+}
+
 const AnimatedNumber = ({ value, suffix = '' }: { value: number; suffix?: string }) => {
   const [count, setCount] = useState(0);
 
@@ -117,6 +125,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [leoCardDismissed, setLeoCardDismissed] = useState(false);
+  const [announcementsCount, setAnnouncementsCount] = useState<number | null>(null);
   const [announcementSending, setAnnouncementSending] = useState(false);
   const [announcementSent, setAnnouncementSent] = useState(false);
   const [announcementError, setAnnouncementError] = useState<string | null>(null);
@@ -240,11 +249,16 @@ export default function DashboardPage() {
       setLoadError(null);
 
       try {
-        const [summaryResponse, activityResponse, readinessPayload] = await Promise.all([
+        const [summaryResponse, activityResponse, readinessPayload, announcementsResponse] = await Promise.all([
           apiFetch('/dashboard/summary'),
           apiFetch('/dashboard/recent-activity?limit=5'),
           apiFetch('/launch-readiness')
             .then((response) => response.json() as Promise<{ data?: LaunchReadiness }>)
+            .catch(() => null),
+          // #3027 : compteur réel d'annonces entreprise (PA2-COMM-004) —
+          // alimente la carte « Leo IA » sans pourcentage fabriqué.
+          apiFetch('/announcements?per_page=1')
+            .then((response) => response.json() as Promise<{ data?: unknown[]; meta?: { total?: number } }>)
             .catch(() => null),
         ]);
 
@@ -262,6 +276,10 @@ export default function DashboardPage() {
         });
         setActivities(Array.isArray(activityPayload.data) ? activityPayload.data : []);
         setReadiness(readinessPayload?.data ?? null);
+        const announcementsPayload = announcementsResponse as { data?: unknown[]; meta?: { total?: number } } | null;
+        setAnnouncementsCount(
+          Number(announcementsPayload?.meta?.total ?? announcementsPayload?.data?.length ?? 0)
+        );
         trackDashboardLoaded({
           surface: 'manager',
           employees_active: Number(summaryPayload.data?.employees_active ?? 0),
@@ -291,7 +309,7 @@ export default function DashboardPage() {
 
   const stats: DashboardStat[] = [
     {
-      title: 'Employes actifs',
+      title: 'Employés actifs',
       value: summary?.employees_active ?? 0,
       change: `${summary?.employees_total ?? 0} total`,
       trend: 'up',
@@ -320,7 +338,7 @@ export default function DashboardPage() {
       bgColor: 'bg-finance-light',
     },
     {
-      title: 'Departements',
+      title: 'Départements',
       value: summary?.departments ?? 0,
       change: 'actifs',
       trend: 'up',
@@ -333,7 +351,7 @@ export default function DashboardPage() {
   const activityRows = activities.length > 0
     ? activities.map((activity) => ({
         key: String(activity.id),
-        name: activity.auditable_type?.split('\\').pop() ?? 'Systeme',
+        name: activity.auditable_type?.split('\\').pop() ?? 'Système',
         action: activity.action,
         time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString(toIntlLocale(locale), { hour: '2-digit', minute: '2-digit' }) : '--:--',
         avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
@@ -413,7 +431,7 @@ export default function DashboardPage() {
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{i18nT(locale, 'dashboard.priority_actions', 'Actions prioritaires')}</p>
           <div className="mt-4 grid gap-3 text-sm">
             <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
-            <PriorityAction label="Verifier les presences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
+            <PriorityAction label="Vérifier les présences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
           </div>
         </div>
       </section>
@@ -481,8 +499,8 @@ export default function DashboardPage() {
                   <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity', 'Activite recente')}</h3>
-                  <p className="text-sm text-slate-500">{i18nT(locale, 'dashboard.recent_activity_hint', 'Dernieres actions de votre equipe')}</p>
+                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity', 'Activité recente')}</h3>
+                  <p className="text-sm text-slate-500">{i18nT(locale, 'dashboard.recent_activity_hint', 'Dernières actions de votre équipe')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -512,7 +530,7 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {activityRows.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
-                  Aucune activite recente a afficher pour ce tenant.
+                  Aucune activité recente a afficher pour ce tenant.
                 </div>
               ) : activityRows.map((activity, index) => (
                 <motion.div
@@ -539,7 +557,7 @@ export default function DashboardPage() {
             </div>
 
             <Link
-              href="/dashboard/reports"
+              href="/reports"
               className="mt-4 flex w-full items-center justify-center rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
             >
               Voir toute l&apos;activite
@@ -562,15 +580,34 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="mb-4 rounded-xl bg-white/50 p-4">
-                  <p className="text-sm leading-relaxed text-slate-700">
-                    &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
-                  </p>
+                  {/* #3027 : plus d'« insight » fabriqué (ex. « retards en
+                      baisse de 15% ») — uniquement des chiffres réels issus de
+                      /dashboard/summary et du compteur d'annonces réel. */}
+                  {summary && summary.employees_active > 0 ? (
+                    <p className="text-sm leading-relaxed text-slate-700">
+                      {formatMessage(i18nT(locale, 'dashboard.leo_presence_insight'), {
+                        today: summary.today_attendance,
+                        active: summary.employees_active,
+                      })}
+                    </p>
+                  ) : (
+                    <p className="text-sm leading-relaxed text-slate-700">
+                      {i18nT(locale, 'dashboard.leo_presence_empty')}
+                    </p>
+                  )}
+                  {announcementsCount !== null && (
+                    <p className="mt-2 text-xs font-medium text-slate-500">
+                      {formatMessage(i18nT(locale, 'dashboard.leo_announcements_count'), {
+                        count: announcementsCount,
+                      })}
+                    </p>
+                  )}
                 </div>
 
                 {announcementSent ? (
                   <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
-                    Message envoye a l&apos;equipe
+                    Message envoyé à l&apos;équipe
                   </div>
                 ) : (
                   <>
@@ -608,10 +645,10 @@ export default function DashboardPage() {
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/dashboard/employees' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/dashboard/absences' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/dashboard/reports' },
-                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/dashboard/reports' },
+                  { icon: Users, label: 'Nouvel employé', color: 'bg-security', href: '/employees' },
+                  { icon: Calendar, label: 'Congés', color: 'bg-rh', href: '/absences' },
+                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
+                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
                 ].map((action) => (
                   <Link
                     key={action.label}
@@ -631,24 +668,41 @@ export default function DashboardPage() {
           <GlassCard delay={0.7}>
             <div className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h4 className="font-bold text-slate-950">Presence hebdo</h4>
-                <span className="text-xs font-bold text-emerald-600">+12%</span>
+                <h4 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.presence_today_title')}</h4>
+                {summary && summary.employees_active > 0 ? (
+                  <span className="text-xs font-bold text-emerald-600">
+                    {Math.round((summary.today_attendance / summary.employees_active) * 100)}%
+                  </span>
+                ) : null}
               </div>
-              <div className="flex h-32 items-end gap-2">
-                {[65, 80, 75, 90, 85, 70, 88].map((height, index) => (
-                  <div key={index} className="flex flex-1 flex-col items-center gap-1">
+              {/* #3027 : les barres hebdo et le « +12% » étaient codés en dur
+                  (aucun endpoint ne les fournit). Le taux affiché est calculé
+                  depuis /dashboard/summary (données réelles) ; sans donnée, un
+                  état vide honnête remplace le graphique fictif. */}
+              {summary && summary.employees_active > 0 ? (
+                <>
+                  <div className="h-4 w-full overflow-hidden rounded-full bg-slate-100">
                     <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: `${height}%` }}
-                      transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-                      className={`w-full rounded-t-lg ${
-                        height > 80 ? 'bg-emerald-500' : height > 70 ? 'bg-emerald-400' : 'bg-emerald-300'
-                      }`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, Math.round((summary.today_attendance / summary.employees_active) * 100))}%` }}
+                      transition={{ delay: 0.8, duration: 0.5 }}
+                      className="h-full rounded-full bg-emerald-500"
                     />
-                    <span className="text-xs text-slate-400">{['L', 'M', 'M', 'J', 'V', 'S', 'D'][index]}</span>
                   </div>
-                ))}
-              </div>
+                  <p className="mt-3 text-sm text-slate-500">
+                    {formatMessage(i18nT(locale, 'dashboard.presence_today_summary'), {
+                      present: summary.today_attendance,
+                      active: summary.employees_active,
+                    })}
+                  </p>
+                </>
+              ) : (
+                <div className="flex h-20 items-center justify-center rounded-xl bg-slate-50">
+                  <p className="text-sm text-slate-500">
+                    {i18nT(locale, 'dashboard.presence_today_empty')}
+                  </p>
+                </div>
+              )}
             </div>
           </GlassCard>
         </div>
@@ -680,7 +734,7 @@ function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
   return (
     <div className="space-y-6 p-6">
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Espace employe</p>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Espace employé</p>
         <h1 className="mt-3 text-3xl font-black text-slate-950">Bonjour {getDisplayName(user)}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
           Retrouvez vos actions utiles sans passer par les vues manager : pointage, absences, bulletins et langue.

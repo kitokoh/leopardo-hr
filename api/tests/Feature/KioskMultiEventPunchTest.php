@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -189,11 +190,14 @@ class KioskMultiEventPunchTest extends TestCase
         [$manager, $employee] = $this->seedCompanyManagerAndBiometricEmployee();
         [$deviceCode, $syncToken] = $this->registerKiosk($manager);
 
-        $qrData = base64_encode(json_encode(['matricule' => 'EMP-001']));
+        // #3365 : le QR punch exige le jeton signé+expirant émis par
+        // /me/qr-profile (OnboardingQrService) — plus de payload forgeable.
+        $qrToken = app(OnboardingQrInterface::class)
+            ->employeeProfilePayload($employee)['token'];
 
         $this->withHeader('X-Kiosk-Token', $syncToken)
             ->postJson('/api/v1/kiosks/'.$deviceCode.'/qr-punch', [
-                'qr_data' => $qrData,
+                'qr_data' => $qrToken,
                 'action' => 'check_in',
                 'work_type' => 'travel',
             ])
@@ -205,6 +209,27 @@ class KioskMultiEventPunchTest extends TestCase
             'employee_id' => $employee->id,
             'work_type' => 'travel',
         ]);
+    }
+
+    public function test_kiosk_qr_punch_rejects_unsigned_payload(): void
+    {
+        [$manager] = $this->seedCompanyManagerAndBiometricEmployee();
+        [$deviceCode, $syncToken] = $this->registerKiosk($manager);
+
+        // #3365 : un payload JSON base64 nu (forgeable, aucun client légitime
+        // ne l'émet) doit être rejeté — pas de pointage sans signature.
+        $qrData = base64_encode(json_encode(['matricule' => 'EMP-001']));
+
+        $this->withHeader('X-Kiosk-Token', $syncToken)
+            ->postJson('/api/v1/kiosks/'.$deviceCode.'/qr-punch', [
+                'qr_data' => $qrData,
+                'action' => 'check_in',
+            ])
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'INVALID_QR_TOKEN');
+
+        DB::statement('SET search_path TO shared_tenants,public');
+        $this->assertDatabaseCount('attendance_logs', 0);
     }
 
     /**

@@ -213,7 +213,12 @@ class SyncEngine:
     def __init__(self, config: dict, store: LocalStore) -> None:
         self.config = config
         self.store = store
-        self.api_base_url = config.get("apiBaseUrl", "").rstrip("/")
+        # Normalisation miroir de app.js (issue #3590) : une config sans
+        # suffixe /api/v1 fonctionne pour l'UI mais 404 toute la sync bridge.
+        base = config.get("apiBaseUrl", "").rstrip("/")
+        if base and not base.endswith("/api/v1"):
+            base = f"{base}/api/v1"
+        self.api_base_url = base
         self.device_code = config.get("deviceCode", "")
         self.kiosk_token = config.get("kioskToken", "")
 
@@ -281,8 +286,10 @@ class SyncEngine:
         }
 
     def online_status(self) -> tuple[bool, str]:
+        # Issue #3590 : la sonde de connectivité ne doit pas télécharger le
+        # roster complet (pollé toutes les 15 s par l'UI) — /health suffit.
         try:
-            self._request("GET", f"/kiosks/{self.device_code}/roster")
+            self._request("GET", "/health")
             return True, ""
         except Exception as error:
             return False, str(error)
@@ -385,6 +392,29 @@ class BridgeHandler(BaseHTTPRequestHandler):
             content_type = "application/json; charset=utf-8"
 
         body = target.read_bytes()
+
+        # Issue #2750 — injecter la config cloud dans les pages HTML servies :
+        # `app.js` lit `window.__KIOSK_API_BASE / __KIOSK_DEVICE_CODE /
+        # __KIOSK_TOKEN`. Sans injection, le device code est vide et les
+        # fonctions cloud (employee-info, announcements, leave-balance,
+        # qr-punch) appellent `/api/v1/kiosks//…` → 404 (déploiement
+        # documenté http://127.0.0.1:8037/index.html).
+        if target.suffix == ".html":
+            injected = (
+                "<script>\n"
+                "window.__KIOSK_API_BASE = "
+                + json.dumps(CONFIG.get("apiBaseUrl", ""))
+                + ";\n"
+                "window.__KIOSK_DEVICE_CODE = "
+                + json.dumps(CONFIG.get("deviceCode", ""))
+                + ";\n"
+                "window.__KIOSK_TOKEN = "
+                + json.dumps(CONFIG.get("kioskToken", ""))
+                + ";\n"
+                "</script>"
+            ).encode("utf-8")
+            body = body.replace(b"</head>", injected + b"</head>", 1)
+
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))

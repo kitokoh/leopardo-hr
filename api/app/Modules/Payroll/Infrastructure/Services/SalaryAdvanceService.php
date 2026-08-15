@@ -34,12 +34,17 @@ class SalaryAdvanceService
         // managers get "qui quoi combien pourquoi et pieces" for advances too.
         $proofPath = $proof?->store('salary_advances/proofs/'.$employee->company_id, 'local');
 
-        return SalaryAdvance::create([
+        $advance = SalaryAdvance::create([
             'company_id' => $employee->company_id, 'employee_id' => $employee->id,
             'amount' => $amount, 'currency' => $currency, 'reason' => $data['reason'] ?? null,
-            'status' => 'pending', 'repayment_months' => $months, 'amount_remaining' => $amount,
+            'repayment_months' => $months, 'amount_remaining' => $amount,
             'proof_path' => $proofPath,
         ]);
+        // Issue #3597 : status non mass-assignable — assignation explicite.
+        $advance->status = 'pending';
+        $advance->save();
+
+        return $advance;
     }
 
     public function approve(SalaryAdvance $advance, Employee $approver, array $data = []): SalaryAdvance
