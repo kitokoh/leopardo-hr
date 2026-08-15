@@ -83,6 +83,15 @@ async function mockDashboard(page: Page) {
     });
   });
 
+  await page.route('**/api/v1/announcements**', async (route) => {
+    // #3027 : le dashboard lit /announcements?per_page=1 — 401 réel → redirect login.
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
+
   await page.route('**/api/v1/client-events', async (route) => {
     await route.fulfill({
       status: 202,

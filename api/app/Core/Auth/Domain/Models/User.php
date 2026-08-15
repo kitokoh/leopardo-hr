@@ -65,7 +65,6 @@ class User extends Authenticatable
         'avatar_url',
         'provider',
         'preferred_language',
-        'status',
         'email_verified_at',
         'last_login_at',
         'failed_login_attempts',

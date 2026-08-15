@@ -112,7 +112,7 @@ test.describe('Client web feature gates', () => {
     await page.goto('/employees', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/employees$/);
-    await expect(page.locator('body')).toContainText('Total equipe');
+    await expect(page.locator('body')).toContainText('Total équipe');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
   });
 
@@ -164,7 +164,7 @@ test.describe('Client web feature gates', () => {
 
     await expect(page).toHaveURL(/\/reports$/);
     await expect(page.getByText('Trial').first()).toBeVisible();
-    await expect(page.locator('body')).toContainText('Generez et telechargez vos rapports RH');
+    await expect(page.locator('body')).toContainText('Générez et téléchargez vos rapports RH');
   });
 
   test('employee role cannot open manager payroll even if the feature exists', async ({ page }) => {

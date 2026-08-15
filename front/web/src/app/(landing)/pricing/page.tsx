@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { Fragment, useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -619,7 +620,7 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
    PAGE
 ───────────────────────────────────────────── */
 export default function PricingPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [isAnnual, setIsAnnual] = useState(true);
   const [openFaqId, setOpenFaqId] = useState<string | null>('free-plan');
   const [faqCategory, setFaqCategory] = useState<string | null>(null);
@@ -661,7 +662,7 @@ export default function PricingPage() {
       dir={direction}
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* ── HERO ───────────────────────────────── */}
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden pt-24 pb-20">

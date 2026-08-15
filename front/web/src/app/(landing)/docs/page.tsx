@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
@@ -173,7 +174,7 @@ Authorization: Bearer <token>`,
 ];
 
 export default function DocsPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [search, setSearch] = useState('');
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   useScrollReveal();
@@ -198,7 +199,7 @@ export default function DocsPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* Hero */}
       <section id="intro" className="pt-32 pb-16 px-4">

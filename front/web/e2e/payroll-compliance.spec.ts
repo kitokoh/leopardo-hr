@@ -172,7 +172,7 @@ test.describe('Client web — conformité paie par niveau de confiance (#2116)',
     await expect(page).toHaveURL(/\/payroll$/);
 
     // Colonne conformité présente (clé localisée FR).
-    await expect(page.locator('body')).toContainText('Conformite');
+    await expect(page.locator('body')).toContainText('Conformité');
 
     // Badge « pilot » (CI) — niveau localisé + source en sous-texte.
     const pilotRow = page.locator('tr', { hasText: 'Nadia Kaci' });

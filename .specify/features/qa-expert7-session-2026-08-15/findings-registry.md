@@ -1,39 +1,43 @@
 # Registre des manquements — Session QA Expert 7 2026-08-15
 
-> Session de test de la plateforme Leopardo RH (repo kitokoh/leopardo-hr).
-> Mission : tester la vitrine, le web, l'admin, les mobiles, les workflows, les APIs, les
-> logiques, l'onboarding et la cohérence — tout manquement → spec + tasks + issues (méthode
-> Spec Kit) puis implémentation. Anti-doublon (#2400) : constats déjà couverts par les vagues
-> QA existantes (#2600–#3434) exclus ou référencés ; une seule branche par issue.
+> Session de test exhaustive (vitrine, web, admin, mobiles, workflows, APIs, logiques,
+> onboarding, cohérence) — méthode Spec Kit. Anti-doublon (#2400) respecté.
 
 ## A. Vérifications runtime effectuées (prod live)
 
-- [x] **Vitrine `leopardo-rh.com` → DOWN** : `getent hosts leopardo-rh.com` = NO DNS ;
-      Google DNS (`dns.google/resolve`) → **Status 3 NXDOMAIN** pour `leopardo-rh.com`,
-      `www.leopardo-rh.com` (A + NS). Aucun enregistrement DNS → la vitrine entière est
-      injoignable à son domaine canonique. (constat nouveau — cf. #2632 build Vercel failure,
-      #3251 divergence sitemap)
-- [x] API Render live (`gestionemployerbackend.onrender.com`, version **4.23.5**) :
-      `/api/v1/health` 200 · `/api/v1/health/live` 200 · `/api/v1/i18n/catalog/fr` **500** ·
-      `/api/v1/supported-countries` **404** · `/api/v1/trial/status` **404** ·
-      `/api/v1/api-explorer` **404** · `/api/v1/dashboard/kpi` 302 (auth) ·
-      POST `/api/v1/auth/login` demo → **401 INVALID_CREDENTIALS** (demo mode off, cf. #2646).
-      → déploiement Render obsolète vs main (#2627/#2632, déjà tracés — non dupliqué).
-- [x] Admin `leo-admin.pages.dev` : **200** (login servable).
+- [x] **Vitrine `leopardo-rh.com` → DOWN (NXDOMAIN)** : Google DNS Status 3 pour
+      `leopardo-rh.com` + `www` (A/NS vides). → **Issue #3452** (P1 ops).
+- [x] API Render live v4.23.5 (stale vs main) : /health 200 · /i18n/catalog/fr 500 ·
+      /supported-countries 404 · /trial/status 404 · /api-explorer 404 · login demo 401.
+      (tracé #2627/#2632 — non dupliqué).
+- [x] Admin `leo-admin.pages.dev` : 200.
 
-## B. Findings — Audit statique main (SHA au début de session : 4d66521c)
+## B. Findings
 
-| ID | Sév | Constat | Preuve | Statut |
-|----|-----|---------|--------|--------|
-| E7-01 | P1 | Vitrine DOWN : `leopardo-rh.com` NXDOMAIN (A/NS vides) — 0 visiteur possible | Google DNS Status 3 | Ouvert → issue |
-| E7-02 | P2 | `front/web/package.json` — dépendance `next` vs `react` versions incohérentes à vérifier au build | `npm run build` | À vérifier |
-| E7-03 | P3 | (réservé — complété au fil de l'audit) | — | — |
+| ID | Sév | Constat | Statut |
+|----|-----|---------|--------|
+| E7-01 | P1 | Vitrine DOWN — leopardo-rh.com NXDOMAIN | Issue #3452 |
+| E7-02 | P1 | Régression MERGE #3561 : `getIllustrativeExampleLabel` écrasé de vitrine-locale.ts (crash runtime + test RTL rouge) | Fix #3630 |
+| E7-03 | P2 | `pageMetadata.integrations` manquant dans seo.ts (4 erreurs tsc sur main) | Fix #3630 |
+| E7-04 | P3 | SignupForm FR residues — déjà corrigé sur main | Fermée avec preuve (#3330) |
+| E7-05 | P3 | read-all admin POST→405 — déjà corrigé | Fermée (#3391) |
+| E7-06 | P3 | CSV PayrollView injection — déjà corrigé (PR #3441) | Fermée (#3436) |
+| E7-07 | P3 | TrackingSync dedup — corrigé (commit ac01b9c8) | Fermée (#3369) |
+| E7-08 | P3 | Edge licence forgeable + garde rôle — corrigés (PR #3444) | Déjà fermées (#3317/#3319) |
+| E7-09 | P3 | Kiosk search_path try/finally — corrigé | Déjà fermée (#3368) |
+| E7-10 | P3 | Onboarding guard — corrigé (ac01b9c8) | Déjà fermée (#3430) |
 
-## C. Actions session (branches/PRs)
+## C. Actions session (PRs — toutes mergées sauf #3630)
 
-- [ ] Branche `docs/qa-expert7-session-2026-08-15` : spec + findings-registry + tasks → PR.
-- [ ] Issues implémentées : voir `tasks.md` (branches `fix/<issue>-*`).
+- #3449 docs session (mergée) · #3456 #3388 (mergée) · #3460 #3401 (fermée — direction PUT
+  anti-canonique, contrat = POST, voir mémoire) · #3466 #3393/#3394/#3437 (mergée) ·
+  #3471 #3434 (mergée) · #3480 #3414/#3416 (mergée) · #3514 #3363/#3367/#3370 (mergée) ·
+  #3539 #3409 (mergée) · #3561 #3372/#3410 (mergée) · #3609 #3378 (mergée) · **#3630
+  régression illustrative-label + pageMetadata.integrations (ouverte)**.
 
 ## D. Décisions & constats post-session
 
-_(complété en fin de session)_
+- Contrat notifications read-all verrouillé = **POST** (+ alias legacy mark-all-read),
+  jamais PUT (#3524) — voir `memory/wiki/github-notifications-read-all-contract.md`.
+- Le merge #3561 a écrasé le bloc #3246 : leçon = re-vérifier le diff complet d'un PR qui
+  touche un fichier partagé (vitrine-locale.ts) avant merge, et lancer jest localement.

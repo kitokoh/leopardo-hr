@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -57,18 +58,18 @@ const copy: Record<AppLocale, {
   faq: Array<{ question: string; answer: string }>;
 }> = {
   fr: {
-    badge: 'Application Desktop',
-    headline: 'Leopardo pour Windows',
-    subheadline: 'Le client lourd pour synchroniser vos pointeuses ZKTeco, gerer le mode hors-ligne, et superviser vos sites depuis le bureau.',
+    badge: 'Accès Desktop en préparation',
+    headline: 'Leopardo Desktop — demander un accès pilote',
+    subheadline: 'Le client desktop Windows/macOS n’est pas encore distribué publiquement. Demandez un accès pilote pour discuter de votre besoin ZKTeco et de la feuille de route.',
     downloadCta: 'Être contacté',
     ctaNote: 'Aucun installateur public n\'est encore disponible. Notre équipe vous contacte pour préparer votre installation.',
     features: [
       { icon: <Fingerprint className="w-6 h-6" />, title: 'Synchronisation ZKTeco', description: 'Connexion directe aux bornes biometriques ZKTeco. Push/pull des pointages en temps reel via TCP/IP ou USB.' },
       { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez a travailler sans internet. Les pointages sont stockes localement et synchronises automatiquement au retour du reseau.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Supervision multi-sites', description: "Surveillez plusieurs sites depuis un seul poste. Alertes en temps reel pour les anomalies d'acces." },
-      { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les données biometriques restent sur le terminal, seuls les hash d'identification transitent." },
-      { icon: <Zap className="w-6 h-6" />, title: 'Installation rapide', description: "Installateur MSI silencieux. Déploiement GPO/SCCM possible pour les grandes organisations." },
-      { icon: <HardDrive className="w-6 h-6" />, title: 'Logs et audit', description: "Journal complet des operations. Export CSV pour conformité RGPD et audit interne." },
+      { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les donnees biometriques restent sur le terminal, seuls les hash d'identification transitent." },
+      { icon: <Zap className="w-6 h-6" />, title: 'Accès pilote accompagné', description: "Notre équipe prépare l’installation avec vous ; aucun installateur MSI public n’est encore distribué." },
+      { icon: <HardDrive className="w-6 h-6" />, title: 'Logs et audit', description: "Journal complet des operations. Export CSV pour conformite RGPD et audit interne." },
     ],
     requirements: [
       { label: 'OS', value: 'Windows 10 / 11 (64-bit)' },
@@ -80,21 +81,21 @@ const copy: Record<AppLocale, {
     howItWorks: {
       title: 'Comment ca marche',
       steps: [
-        { step: '01', title: 'Installez', description: 'Téléchargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
+        { step: '01', title: 'Installez', description: 'Telechargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
         { step: '02', title: 'Connectez', description: 'Entrez l\'adresse IP de vos bornes ZKTeco. Detection automatique sur le reseau local.' },
         { step: '03', title: 'Synchronisez', description: 'Les pointages remontent automatiquement vers Leopardo RH dans le cloud. Temps reel ou par batch.' },
       ],
     },
     faq: [
-      { question: 'Le client Windows est-il gratuit ?', answer: 'Oui, le client desktop est inclus dans tous les plans Leopardo RH (Free, Pilot, Operations, Enterprise).' },
+      { question: 'Le client Windows est-il déjà disponible ?', answer: 'Pas encore. Aucun installateur public n’est distribué ; contactez-nous pour demander un accès pilote et connaître la feuille de route.' },
       { question: 'Quelles bornes sont supportees ?', answer: 'Toutes les bornes ZKTeco (iClock, SpeedFace, ProFace, uFace). Support etendu pour d\'autres fabricants prevu en 2026.' },
-      { question: 'Peut-on déployer via GPO ?', answer: 'Oui, l\'installateur MSI supporte le deploiement silencieux. Documentation disponible dans le guide d\'administration.' },
+      { question: 'Le déploiement GPO est-il déjà disponible ?', answer: 'Pas encore publiquement. Cette capacité fait partie de la préparation du pilote ; contactez-nous pour en discuter.' },
     ],
   },
   en: {
-    badge: 'Desktop Application',
-    headline: 'Leopardo for Windows',
-    subheadline: 'The desktop client to sync your ZKTeco terminals, manage offline mode, and supervise your sites from your workstation.',
+    badge: 'Desktop access in preparation',
+    headline: 'Leopardo Desktop — request pilot access',
+    subheadline: 'The Windows/macOS desktop client is not publicly distributed yet. Request pilot access to discuss your ZKTeco needs and roadmap.',
     downloadCta: 'Get in touch',
     ctaNote: 'No public installer is available yet. Our team will contact you to prepare your setup.',
     features: [
@@ -102,7 +103,7 @@ const copy: Record<AppLocale, {
       { icon: <WifiOff className="w-6 h-6" />, title: 'Offline Mode', description: 'Keep working without internet. Attendance data is stored locally and synced automatically when connectivity returns.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Multi-Site Supervision', description: 'Monitor multiple sites from a single workstation. Real-time alerts for access anomalies.' },
       { icon: <Shield className="w-6 h-6" />, title: 'Encrypted & Secure', description: 'TLS 1.3 encrypted communication. Biometric data stays on the terminal — only identification hashes transit.' },
-      { icon: <Zap className="w-6 h-6" />, title: 'Quick Setup', description: 'Silent MSI installer. GPO/SCCM deployment for enterprise-scale rollouts.' },
+      { icon: <Zap className="w-6 h-6" />, title: 'Guided pilot access', description: 'Our team prepares the setup with you; no public MSI installer is distributed yet.' },
       { icon: <HardDrive className="w-6 h-6" />, title: 'Logs & Audit', description: 'Complete operation journal. CSV export for GDPR compliance and internal audit.' },
     ],
     requirements: [
@@ -121,15 +122,15 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Is the Windows client free?', answer: 'Yes, the desktop client is included in all Leopardo RH plans (Free, Pilot, Operations, Enterprise).' },
+      { question: 'Is the Windows client publicly available?', answer: 'Not yet. There is no public installer; contact us to request pilot access and discuss the roadmap.' },
       { question: 'Which terminals are supported?', answer: 'All ZKTeco terminals (iClock, SpeedFace, ProFace, uFace). Extended support for other manufacturers planned for 2026.' },
-      { question: 'Can it be deployed via GPO?', answer: 'Yes, the MSI installer supports silent deployment. Documentation available in the admin guide.' },
+      { question: 'Is GPO deployment already available?', answer: 'Not publicly yet. This capability is part of pilot preparation; contact us to discuss it.' },
     ],
   },
   tr: {
-    badge: 'Masaustu Uygulamasi',
-    headline: 'Windows icin Leopardo',
-    subheadline: 'ZKTeco terminallerinizi senkronize etmek, cevrimdisi modu yonetmek ve is istasyonunuzdan sitelerinizi denetlemek icin masaustu istemcisi.',
+    badge: 'Masaustu erisimi hazirlaniyor',
+    headline: 'Leopardo Desktop — pilot erisim talebi',
+    subheadline: 'Windows/macOS masaustu istemcisi henuz herkese acik olarak dagitilmiyor. ZKTeco ihtiyacinizi ve yol haritasini gorusmek icin pilot erisim talep edin.',
     downloadCta: 'Iletisime gecin',
     ctaNote: 'Henuz halka acik bir yukleyici yok. Ekibimiz kurulumunuz icin sizinle iletisime gecer.',
     features: [
@@ -137,7 +138,7 @@ const copy: Record<AppLocale, {
       { icon: <WifiOff className="w-6 h-6" />, title: 'Cevrimdisi Mod', description: 'Internet olmadan calismaya devam edin. Yoklama verileri yerel olarak saklanir ve otomatik senkronize edilir.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Coklu Site Denetimi', description: 'Tek bir is istasyonundan birden fazla siteyi izleyin. Erisim anomalileri icin gercek zamanli uyarilar.' },
       { icon: <Shield className="w-6 h-6" />, title: 'Sifreli ve Guvenli', description: 'TLS 1.3 sifreli iletisim. Biyometrik veriler terminalde kalir.' },
-      { icon: <Zap className="w-6 h-6" />, title: 'Hizli Kurulum', description: 'Sessiz MSI yukleyici. Kurumsal olcekli dagitimlar icin GPO/SCCM destegi.' },
+      { icon: <Zap className="w-6 h-6" />, title: 'Pilot erisimiyle kurulum', description: 'Ekibimiz kurulumu sizinle hazirlar; halka acik bir MSI yukleyici henuz dagitilmiyor.' },
       { icon: <HardDrive className="w-6 h-6" />, title: 'Gunlukler ve Denetim', description: 'Eksiksiz islem gunlugu. KVKK uyumlulugu ve ic denetim icin CSV aktarimi.' },
     ],
     requirements: [
@@ -156,15 +157,15 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Windows istemcisi ucretsiz mi?', answer: 'Evet, masaustu istemcisi Free, Pilot, Operations ve Enterprise dahil tum Leopardo RH planlarinda yer alir.' },
+      { question: 'Windows istemcisi herkese acik mi?', answer: 'Henuz degil. Halka acik bir yukleyici yok; pilot erisim ve yol haritasi icin bizimle iletisime gecin.' },
       { question: 'Hangi terminaller destekleniyor?', answer: 'Tum ZKTeco terminalleri (iClock, SpeedFace, ProFace, uFace). Diger ureticiler icin genisletilmis destek 2026\'da planlanmaktadir.' },
-      { question: 'GPO ile dagitilabilir mi?', answer: 'Evet, MSI yukleyici sessiz dagitimi destekler.' },
+      { question: 'GPO dagitimi hazir mi?', answer: 'Henuz herkese acik degil. Bu yetenek pilot hazirliginin bir parcasi; gorusmek icin bizimle iletisime gecin.' },
     ],
   },
   ar: {
-    badge: 'تطبيق سطح المكتب',
-    headline: 'ليوباردو لويندوز',
-    subheadline: 'عميل سطح المكتب لمواكبة أجهزة ZKTeco وإدارة وضع عدم الاتصال والإشراف على مواقعك.',
+    badge: 'وصول سطح المكتب قيد التحضير',
+    headline: 'ليوباردو لسطح المكتب — اطلب وصولاً تجريبياً',
+    subheadline: 'لا يتم توزيع تطبيق سطح المكتب لنظامي Windows وmacOS بشكل عام بعد. اطلب وصولاً تجريبياً لمناقشة احتياجات ZKTeco وخارطة الطريق.',
     downloadCta: 'اتصل بنا',
     ctaNote: 'لا يوجد مثبّت عام متاح بعد. سيتواصل معك فريقنا لتجهيز التثبيت.',
     features: [
@@ -172,7 +173,7 @@ const copy: Record<AppLocale, {
       { icon: <WifiOff className="w-6 h-6" />, title: 'وضع عدم الاتصال', description: 'استمر في العمل بدون إنترنت. يتم تخزين بيانات الحضور محلياً ومزامنتها تلقائياً.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'إشراف متعدد المواقع', description: 'راقب عدة مواقع من محطة عمل واحدة. تنبيهات فورية لحالات الشذوذ.' },
       { icon: <Shield className="w-6 h-6" />, title: 'مشفر وآمن', description: 'اتصال مشفر TLS 1.3. البيانات البيومترية تبقى على الجهاز.' },
-      { icon: <Zap className="w-6 h-6" />, title: 'إعداد سريع', description: 'مثبت MSI صامت. نشر GPO/SCCM للمؤسسات الكبيرة.' },
+      { icon: <Zap className="w-6 h-6" />, title: 'إعداد تجريبي بمساعدة الفريق', description: 'يجهز فريقنا التثبيت معك؛ لا يتم توزيع مثبت MSI عام بعد.' },
       { icon: <HardDrive className="w-6 h-6" />, title: 'سجلات ومراجعة', description: 'سجل عمليات كامل. تصدير CSV للامتثال والمراجعة الداخلية.' },
     ],
     requirements: [
@@ -191,9 +192,9 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'هل عميل ويندوز مجاني؟', answer: 'نعم، عميل سطح المكتب مضمن في جميع خطط Leopardo RH (Free وPilot وOperations وEnterprise).' },
+      { question: 'هل عميل ويندوز متاح للعامة؟', answer: 'ليس بعد. لا يوجد مثبت عام؛ تواصل معنا لطلب وصول تجريبي ومناقشة خارطة الطريق.' },
       { question: 'ما الأجهزة المدعومة؟', answer: 'جميع أجهزة ZKTeco (iClock, SpeedFace, ProFace, uFace).' },
-      { question: 'هل يمكن نشره عبر GPO؟', answer: 'نعم، مثبت MSI يدعم النشر الصامت.' },
+      { question: 'هل نشر GPO متاح الآن؟', answer: 'ليس للعامة بعد. هذه القدرة جزء من إعداد البرنامج التجريبي؛ تواصل معنا لمناقشتها.' },
     ],
   },
 };
@@ -218,14 +219,14 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Pointage mobile, demandes de congé, fiche de paie et notifications RH pour les collaborateurs.',
+        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',
         androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
       {
         slug: 'manager',
         name: 'Leopardo Manager',
-        description: 'Gestion des équipes, planification des horaires, approbation des demandes et suivi des presences.',
+        description: 'Gestion des equipes, planification des horaires, approbation des demandes et suivi des presences.',
         androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
@@ -335,18 +336,18 @@ type KioskCopy = {
 const kioskCopy: Record<AppLocale, KioskCopy> = {
   fr: {
     sectionTitle: 'Kiosk terrain (borne ZKTeco)',
-    sectionSubtitle: 'Une borne d\'entrée biometrie/QR pour les équipes qui pointent sur site, sans smartphone obligatoire.',
+    sectionSubtitle: 'Une borne d\'entree biometrie/QR pour les equipes qui pointent sur site, sans smartphone obligatoire.',
     bullets: [
       'Pointage par empreinte, visage ou QR/matricule en fallback',
       'Fonctionne hors-ligne : les pointages sont mis en file locale puis synchronises au retour du reseau',
       'Bridge desktop local (Python) + interface tactile plein ecran, deployable sur PC ou mini-PC',
-      'Provisionne depuis l\'app manager : code appareil et token de synchronisation générés en quelques secondes',
+      'Provisionne depuis l\'app manager : code appareil et token de synchronisation generes en quelques secondes',
     ],
     ctaSetup: 'Guide d\'installation kiosk',
     ctaSetupHref: '/docs#kiosk',
     ctaContact: 'Etre accompagne pour l\'installation',
     ctaContactHref: '/contact?topic=download-kiosk',
-    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est nécessaire.',
+    note: 'Le kiosk est fourni avec le code source du bridge local ; aucune borne a acheter separement, seul un lecteur ZKTeco ou une tablette est necessaire.',
   },
   en: {
     sectionTitle: 'Field Kiosk (ZKTeco terminal)',
@@ -397,33 +398,33 @@ const kioskCopy: Record<AppLocale, KioskCopy> = {
 
 const platformLabels: Record<AppLocale, Array<{ platform: string; title: string; description: string; href: string }>> = {
   fr: [
-    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Synchronisation ZKTeco, mode hors-ligne et supervision site.', href: '/contact?topic=download-windows' },
-    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les équipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
+    { platform: 'Windows', title: 'Accès pilote Desktop Windows', description: 'Le client n’est pas distribué publiquement. Demandez un accès pilote.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'Accès pilote Desktop macOS', description: 'Le client n’est pas distribué publiquement. Demandez un accès pilote.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/download#mobile-apps'},
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employés sur iPhone.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/download#mobile-apps'},
   ],
   en: [
-    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco sync, offline mode and site supervision.', href: '/contact?topic=download-windows' },
-    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Desktop client for field teams and administrators.', href: '/contact?topic=download-macos' },
+    { platform: 'Windows', title: 'Windows desktop pilot access', description: 'The client is not publicly distributed. Request pilot access.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'macOS desktop pilot access', description: 'The client is not publicly distributed. Request pilot access.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobile attendance, HR requests and employee notifications.', href: '/download#mobile-apps'},
     { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Mobile experience for managers and employees on iPhone.', href: '/download#mobile-apps'},
   ],
   tr: [
-    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco senkronizasyonu, cevrimdisi mod ve saha denetimi.', href: '/contact?topic=download-windows' },
-    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Saha ekipleri ve yoneticiler icin masaustu istemcisi.', href: '/contact?topic=download-macos' },
+    { platform: 'Windows', title: 'Windows masaustu pilot erisimi', description: 'Istemci herkese acik olarak dagitilmiyor. Pilot erisim talep edin.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'macOS masaustu pilot erisimi', description: 'Istemci herkese acik olarak dagitilmiyor. Pilot erisim talep edin.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Mobil yoklama, IK talepleri ve calisan bildirimleri.', href: '/download#mobile-apps'},
     { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'iPhone uzerinde yonetici ve calisan deneyimi.', href: '/download#mobile-apps'},
   ],
   ar: [
-    { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'مزامنة ZKTeco ووضع عدم الاتصال وإشراف المواقع.', href: '/contact?topic=download-windows' },
-    { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'عميل مكتبي لفرق الميدان والمسؤولين.', href: '/contact?topic=download-macos' },
+    { platform: 'Windows', title: 'وصول تجريبي لسطح مكتب Windows', description: 'التطبيق غير موزع للعامة. اطلب وصولاً تجريبياً.', href: '/contact?topic=download-windows' },
+    { platform: 'macOS', title: 'وصول تجريبي لسطح مكتب macOS', description: 'التطبيق غير موزع للعامة. اطلب وصولاً تجريبياً.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'الحضور عبر الهاتف وطلبات الموارد البشرية والإشعارات.', href: '/download#mobile-apps'},
     { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'تجربة موبايل للمديرين والموظفين على iPhone.', href: '/download#mobile-apps'},
   ],
 };
 
 export default function DownloadPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { locale, direction } = useVitrineLocale();
   const c = copy[locale as AppLocale] ?? copy.fr;
@@ -433,7 +434,7 @@ export default function DownloadPage() {
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />
@@ -596,6 +597,8 @@ export default function DownloadPage() {
               const androidTarget = mobileDownloadTarget(app.slug, 'android');
               const iosTarget = mobileDownloadTarget(app.slug, 'ios');
               const currentLocale = locale as AppLocale;
+              const androidLabel = mobileDownloadLabel(androidTarget, app.androidLabel, currentLocale);
+              const iosLabel = mobileDownloadLabel(iosTarget, app.iosLabel, currentLocale);
 
               return (
                 <motion.div
@@ -617,24 +620,24 @@ export default function DownloadPage() {
                   <a
                     href={androidTarget.href}
                     className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-700 transition-colors text-sm font-semibold"
-                    aria-label={`${app.name} - Google Play`}
+                    aria-label={`${app.name} - ${androidLabel}`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M3.18 23.76c.31.17.67.18.99.04l12.45-7.2-2.88-2.87-10.56 10.03zM.8 1.4C.3 1.88 0 2.64 0 3.65v16.7c0 1.01.3 1.77.81 2.25l.12.11 9.35-9.35v-.22L.92 3.29.8 1.4zM20.67 10.4l-2.82-1.63-3.22 3.22 3.22 3.22 2.85-1.65c.81-.47.81-1.23-.03-1.7v-.06zM3.18.24L15.63 7.43l-2.88 2.87L2.19.27C2.5.13 2.87.07 3.18.24z"/>
                     </svg>
-                    <span>{mobileDownloadLabel(androidTarget, app.androidLabel, currentLocale)}</span>
+                    <span>{androidLabel}</span>
                   </a>
 
                   {/* App Store button */}
                   <a
                     href={iosTarget.href}
                     className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white hover:bg-emerald-700 transition-colors text-sm font-semibold"
-                    aria-label={`${app.name} - App Store`}
+                    aria-label={`${app.name} - ${iosLabel}`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                     </svg>
-                    <span>{mobileDownloadLabel(iosTarget, app.iosLabel, currentLocale)}</span>
+                    <span>{iosLabel}</span>
                   </a>
                 </div>
               </motion.div>

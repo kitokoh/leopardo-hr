@@ -1,6 +1,7 @@
 'use client';
 
 import { use, useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, useScrollReveal, BlogArticle } from '@/modules/vitrine';
 import { getBlogPost, getBlogPosts } from '@/modules/vitrine/data/blog';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
@@ -51,7 +52,7 @@ const articleCopy: Record<AppLocale, {
 };
 
 export default function BlogArticlePage({ params }: BlogArticlePageProps) {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   const copy = articleCopy[locale] ?? articleCopy.fr;
   useScrollReveal();
@@ -69,7 +70,7 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {post.archived && (
         <div className="mx-auto max-w-3xl px-4 pt-6">

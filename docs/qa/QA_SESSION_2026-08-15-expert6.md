@@ -57,3 +57,42 @@ référencées par PRs mergées restées ouvertes (#2597, #2605, #2627, #2632, #
 - **5 issues fermées avec preuve code** : #3224 (migrations déjà corrigées), #3323 (faux positif OpenAPI), #3332 (sitemap /share via #3355), #3331 (via #3397), #3252 (via #3355).
 - Merge campaign : 179 runs orphelins annulés ; boucle de merge active.
 - Token propriétaire : à révoquer en fin de session (jamais persisté hors env).
+
+---
+
+# Addendum — Vague constats expert 6 (issues #3427–#3437) — même session
+
+## Constats NOUVEAUX (vérifiés anti-doublon sur les 210 issues ouvertes)
+
+| Issue | Surface | Sev | Constat | Résolution |
+|---|---|---|---|---|
+| **#3427** | api | **P1** | Bootstrapping Edge node par tout employé → edge_token + pull PII/biométrie (face_encoding, biometric_id) | **PR #3444 MERGED** |
+| **#3428** | api | P2 | CameraPermission : employee_id cible non scoped tenant (FK cross-tenant) | **PR #3447 MERGED** |
+| **#3429** | api | P3 | SalaryAdvance markPaid TOCTOU → double ledger + double document | **PR #3450 MERGED** |
+| **#3430** | api | P3 | Onboarding complete/skip par tout employé (conflit test T118) | Arbitrage demandé (commentaire #3430) |
+| **#3431** | mobile | P2 | Statut avance `disputed` sans libellé mobile | Corrigé main — fermée avec preuve |
+| **#3432** | mobile | P2 | Contract.fromJson start_date nullable → TypeError | Corrigé main — fermée |
+| **#3433** | mobile | P3 | DateTime.parse résiduels core | Corrigé main — fermée |
+| **#3434** | web | P2 | FAQ TR « 30 tam gün » | Fix déjà main — PR fermée anti-doublon |
+| **#3435** | web | P2 | /case-studies/[slug] sans metadata ni sitemap | PR #3483 (swarm) |
+| **#3436** | admin | P3 | CSV PayrollView sans anti-injection | Fix déjà main — PR fermée |
+| **#3437** | admin | P3 | Libellés features bruts | **PR #3465 MERGED** |
+
+## Implémentation depuis le backlog (issues existantes)
+
+| Issue | Fix | PR |
+|---|---|---|
+| #3487 | Meta /pricing localisée via ?lang= | #3526 (CI) |
+| #3485 | SSO vendu inclus mais coming_soon → « bientôt disponible » ×4 | **#3547 MERGED** |
+| #3497 | Throttles callbacks SSO publics (XML non authentifié) | #3556 (CI) |
+| #3488 | MiniCaseStudies chiffres fictifs → disclaimer ×4 | **#3558 MERGED** |
+| #3523 | Proxy /api/v1 sans try/catch → 502 JSON + timeout 15 s | #3569 (CI) |
+| #3520/#3521 | Credentials démo en clair → variables + échec explicite | #3572 (CI) |
+| #3565 | sync_models_example.dart (12 print) → supprimé | #3575 (CI) |
+| #3496 | trial_days Enterprise 30 vs 14 | Fermée avec preuve (déjà #3516) |
+
+## Bilan
+
+- 9 PRs mergées (#3209, #3444, #3447, #3450, #3465, #3547, #3558 + swarm), 4 fermées anti-doublon avec renvoi, 5 en file CI.
+- Garde manifeste mobile réparée (#3209) ; OpenAPI 0 drift ; builds web/admin verts.
+- Points d'arbitrage : #3430 (onboarding), essai 14 vs 30 j (verrouiller via config billing.trial_days), #3452 (vitrine NXDOMAIN).
