@@ -1,0 +1,46 @@
+name: Actions Queue Cleanup
+# ============================================================
+# OPS-2413 : nettoie la file GitHub Actions des runs
+# queued/in_progress portes par des branches sans PR ouverte
+# (branches mergees, supersedees ou renommees). Une file
+# saturee laisse les checks requis a "queued" a vie et bloque
+# tous les merges (complète #2131).
+#
+# Idempotent et non destructif : la logique vit dans
+# dev-hub/tools/cancel-stale-action-runs.sh et ne cancelle que
+# des runs re-lancables, jamais main, jamais une branche avec
+# PR ouverte.
+# ============================================================
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */2 * * *"
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: actions-queue-cleanup
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    name: Cancel runs of branches without open PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Cancel stale queued/in-progress runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/cancel-stale-action-runs.sh
+          dev-hub/tools/cancel-stale-action-runs.sh "${{ github.repository }}"
