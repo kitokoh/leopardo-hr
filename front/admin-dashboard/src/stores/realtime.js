@@ -93,13 +93,15 @@ export const useRealtimeStore = defineStore('realtime', () => {
       pushUnavailable.value = false
       clearPushGraceTimer()
       stopPolling()
-      toast.success('Connexion temps réel établie')
+      // #3936 : pas de toast à chaque connexion/reconnexion (rafales sur
+      // réseau instable) — l'état est déjà visible via l'icône temps réel.
     })
 
     socket.value.on('disconnect', () => {
       // console.log removed (audit 2026-08-15) — WebSocket déconnecté
       isConnected.value = false
-      toast.warning('Connexion temps réel perdue')
+      // #3936 : pas de toast à chaque déconnexion (le polling de repli prend
+      // le relais silencieusement ; l'état reste visible dans l'UI).
       // Push dropped after being connected: switch to fallback polling
       // immediately instead of waiting silently for a reconnection.
       startPolling()
@@ -295,9 +297,8 @@ export const useRealtimeStore = defineStore('realtime', () => {
         priority: data.level
       })
 
-      if (data.level === 'critical') {
-        toast.error(`Alerte critique: ${data.message}`)
-      }
+      // #3936 : pas de toast dédié ici — addNotification() affiche déjà un
+      // toast unique pour priority critical (une alerte = une surface).
     })
 
     // Points du globe en temps réel
