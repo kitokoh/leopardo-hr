@@ -4,18 +4,68 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronRight, X, Users, Building, ShieldCheck } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { type StoredAuthUser, storeAuthSession } from '@/lib/i18n';
+
+// Issue #2642 (QA 2026-08-15) : l'onboarding était 100 % en français pour
+// tous les dashboards — localisé FR/EN/TR/AR (fallback FR).
+const onboardingCopy: Record<string, { steps: Array<{ title: string; desc: string }>; validating: string; finish: string; next: string }> = {
+  fr: {
+    steps: [
+      { title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.' },
+      { title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.' },
+      { title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.' },
+    ],
+    validating: 'Validation...',
+    finish: 'Terminer',
+    next: 'Suivant',
+  },
+  en: {
+    steps: [
+      { title: 'Welcome to Leopardo', desc: 'Discover your new HR workspace in a few steps.' },
+      { title: 'Add your teams', desc: 'Invite your employees to start clocking in.' },
+      { title: 'Finish the setup', desc: 'Your schedules and company rules are ready.' },
+    ],
+    validating: 'Validating...',
+    finish: 'Finish',
+    next: 'Next',
+  },
+  tr: {
+    steps: [
+      { title: 'Leopardo\'ya hoş geldiniz', desc: 'Yeni İK alanınızı birkaç adımda keşfedin.' },
+      { title: 'Ekiplerinizi ekleyin', desc: 'Çalışanlarınızı davet ederek puantaja başlayın.' },
+      { title: 'Kurulumu tamamlayın', desc: 'Planlarınız ve şirket kurallarınız hazır.' },
+    ],
+    validating: 'Doğrulanıyor...',
+    finish: 'Bitir',
+    next: 'İleri',
+  },
+  ar: {
+    steps: [
+      { title: 'مرحباً بك في Leopardo', desc: 'اكتشف مساحة الموارد البشرية الجديدة في خطوات قليلة.' },
+      { title: 'أضف فرقك', desc: 'ادعُ موظفيك لبدء تسجيل الحضور.' },
+      { title: 'أكمل الإعداد', desc: 'جداولك وقواعد شركتك جاهزة.' },
+    ],
+    validating: 'جارٍ التحقق...',
+    finish: 'إنهاء',
+    next: 'التالي',
+  },
+};
 
 export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; onComplete: () => void }) {
   const [isOpen, setIsOpen] = useState(true);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const steps = [
-    { id: 1, title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.', icon: Building },
-    { id: 2, title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.', icon: Users },
-    { id: 3, title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.', icon: ShieldCheck },
-  ];
+  const locale = useVitrineLocale().locale ?? 'fr';
+  const copy = onboardingCopy[locale] ?? onboardingCopy.fr;
+
+  const steps = copy.steps.map((stepCopy, index) => ({
+    id: index + 1,
+    title: stepCopy.title,
+    desc: stepCopy.desc,
+    icon: [Building, Users, ShieldCheck][index] ?? Building,
+  }));
 
   const handleNext = async () => {
     if (step < steps.length) {
@@ -103,7 +153,7 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
                 disabled={loading}
                 className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
               >
-                {loading ? 'Validation...' : step === steps.length ? 'Terminer' : 'Suivant'}
+                {loading ? copy.validating : step === steps.length ? copy.finish : copy.next}
                 {!loading && step < steps.length && <ChevronRight className="h-4 w-4" />}
               </button>
             </div>
