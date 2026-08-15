@@ -1,6 +1,6 @@
 # Feature Specification: Session QA expert 9 — 2026-08-15 (audit 360° + forensique déploiement)
 
-**Branch**: `docs/qa-expert8-session-2026-08-15`
+**Branch**: `docs/qa-expert9-session-2026-08-15`
 **Created**: 2026-08-15 | **Status**: Audit terminé — 1 constat P1 nouveau, 5 surfaces revérifiées saines
 **Input**: Mission propriétaire — audit 360° (vitrine, web, admin, mobiles, workflows, APIs, logiques,
 onboarding, cohérence UI/UX), ticketiser chaque manquement selon Spec Kit, puis consolider la dette
