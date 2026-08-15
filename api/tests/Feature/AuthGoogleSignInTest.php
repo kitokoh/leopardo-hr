@@ -37,7 +37,7 @@ class AuthGoogleSignInTest extends TestCase
         $response = $this->getJson('/api/v1/auth/google/callback?state=forged-state');
 
         $response->assertStatus(400)
-            ->assertJson(['error' => 'GOOGLE_OAUTH_STATE_MISMATCH']);
+            ->assertJson(['error' => 'INVALID_OAUTH_STATE']);
     }
 
     public function test_google_callback_with_valid_state_unknown_user_is_rejected(): void
