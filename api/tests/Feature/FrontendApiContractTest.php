@@ -155,6 +155,8 @@ class FrontendApiContractTest extends TestCase
             'manager cnps cm declaration' => ['GET', 'api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm'],
             'manager payroll run regularize' => ['POST', 'api/v1/payroll-runs/{payrollRun}/regularize'],
             'manager payroll run regularizations' => ['GET', 'api/v1/payroll-runs/{payrollRun}/regularizations'],
+            'manager bank exports list' => ['GET', 'api/v1/bank-exports'],
+            'manager bank export create' => ['POST', 'api/v1/bank-exports'],
         ];
     }
 

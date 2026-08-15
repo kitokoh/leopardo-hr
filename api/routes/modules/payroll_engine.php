@@ -119,6 +119,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // Bank Exports
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
+        // Issue #2267 : contrat OpenAPI GET/POST /bank-exports (liste + génération).
+        Route::get('/bank-exports', [BankExportController::class, 'index']);
+        Route::post('/bank-exports', [BankExportController::class, 'store']);
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
 

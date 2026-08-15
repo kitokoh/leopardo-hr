@@ -21,6 +21,76 @@ class BankExportController extends Controller
 {
     public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
 
+    /**
+     * Issue #2267 — GET /bank-exports : liste des exports bancaires du tenant
+     * (paginée, filtre payroll_run_id optionnel). Le schéma OpenAPI
+     * documentait cette route sans implémentation → clients générés en 404.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $query = BankExport::query()
+            ->with('payrollRun:id,period_start,period_end,status')
+            ->where('company_id', $actor->company_id)
+            ->orderByDesc('id');
+
+        if ($request->filled('payroll_run_id')) {
+            $query->where('payroll_run_id', $request->integer('payroll_run_id'));
+        }
+
+        $perPage = min(max($request->integer('per_page', 25), 1), 100);
+
+        return BankExportResource::collection($query->paginate($perPage))->response();
+    }
+
+    /**
+     * Issue #2267 — POST /bank-exports : génère un export bancaire (équivalent
+     * du POST /payroll-runs/{run}/bank-export, contrat OpenAPI déjà publié).
+     */
+    public function store(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $validated = $request->validate([
+            'payroll_run_id' => 'required|integer',
+            'format' => 'required|in:sepa_xml,ccp_dz,virement_ma,csv_generic',
+        ]);
+
+        /** @var PayrollRun|null $payrollRun */
+        $payrollRun = PayrollRun::query()->find($validated['payroll_run_id']);
+        if ($payrollRun === null || $payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+        if (! in_array($payrollRun->status, ['validated', 'paid'])) {
+            return response()->json(['message' => 'Payroll run must be validated before generating bank export.'], 422);
+        }
+
+        $export = BankExport::create([
+            'payroll_run_id' => $payrollRun->id,
+            'company_id' => $payrollRun->company_id,
+            'format' => $validated['format'],
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        GenerateBankExportJob::dispatch($export->id);
+
+        return (new BankExportResource($export))
+            ->response()
+            ->setStatusCode(202);
+    }
+
     public function generate(Request $request, PayrollRun $payrollRun): JsonResponse
     {
         /** @var Employee $actor */
