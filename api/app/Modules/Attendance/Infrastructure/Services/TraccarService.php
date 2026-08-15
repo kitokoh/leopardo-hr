@@ -15,13 +15,15 @@ class TraccarService
 
     public function __construct()
     {
-        /** @var string $url */
+        // QA pass 2026-08-14 (#2175) : quand TRACCAR_API_TOKEN n'est pas
+        // configuré, config('tracking.traccar_token') vaut null — l'affectation
+        // à une propriété `string` typée levait un TypeError → 500 sur
+        // /fleet/live-map et /vehicles/{id}/position|trips. Le tracking est
+        // optionnel (fail-open : données vides quand non configuré).
         $url = config('tracking.traccar_url', 'http://localhost:8082');
-        $this->baseUrl = rtrim($url, '/');
+        $this->baseUrl = rtrim((string) $url, '/');
 
-        /** @var string $token */
-        $token = config('tracking.traccar_token', '');
-        $this->token = $token;
+        $this->token = (string) config('tracking.traccar_token', '');
     }
 
     /**
@@ -146,6 +148,10 @@ class TraccarService
      */
     private function get(string $path, array $params = []): array
     {
+        if ($this->token === '') {
+            return [];
+        }
+
         $response = Http::withToken($this->token)
             ->timeout(15)
             ->get("{$this->baseUrl}{$path}", $params);
@@ -163,6 +169,10 @@ class TraccarService
      */
     private function post(string $path, array $data): array
     {
+        if ($this->token === '') {
+            return [];
+        }
+
         $response = Http::withToken($this->token)
             ->timeout(15)
             ->post("{$this->baseUrl}{$path}", $data);
@@ -176,6 +186,10 @@ class TraccarService
      */
     private function put(string $path, array $data): array
     {
+        if ($this->token === '') {
+            return [];
+        }
+
         $response = Http::withToken($this->token)
             ->timeout(15)
             ->put("{$this->baseUrl}{$path}", $data);
@@ -185,10 +199,12 @@ class TraccarService
 
     private function delete(string $path): void
     {
+        if ($this->token === '') {
+            return;
+        }
+
         Http::withToken($this->token)
             ->timeout(15)
             ->delete("{$this->baseUrl}{$path}");
     }
 }
-
-

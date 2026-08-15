@@ -40,7 +40,7 @@
       </div>
 
       <p class="text-[10px] font-black uppercase tracking-widest text-slate-600">
-        Â© 2026 Leopardo Systems â€¢ Sécurité Approuvée
+        © 2026 Leopardo Systems ”¢ Sécurité Approuvée
       </p>
     </div>
   </div>
