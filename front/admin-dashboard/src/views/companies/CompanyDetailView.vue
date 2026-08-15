@@ -388,8 +388,9 @@ const supportTickets = ref([])
 const supportSummary = ref({ open_count: 0 })
 
 const scoreColor = computed(() => {
-  if (healthScore.value >= 75) return 'green'
-  if (healthScore.value >= 50) return 'yellow'
+  const healthScore = health.value?.adoption?.health_score ?? 0
+  if (healthScore >= 75) return 'green'
+  if (healthScore >= 50) return 'yellow'
   return 'red'
 })
 
