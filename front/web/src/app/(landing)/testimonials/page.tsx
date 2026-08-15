@@ -108,6 +108,9 @@ export default function TestimonialsPage() {
               </motion.div>
             ))}
           </div>
+          <p className="mt-8 text-center text-emerald-100/80 text-xs">
+            Chiffres de démonstration — données fictives à titre d&apos;illustration.
+          </p>
         </div>
       </section>
 

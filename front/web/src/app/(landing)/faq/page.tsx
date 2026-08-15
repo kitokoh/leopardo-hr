@@ -39,12 +39,12 @@ const faqItems: FaqItem[] = [
     answer: 'Leopardo RH s\'integre avec les bornes ZKTeco pour le pointage par empreinte digitale, reconnaissance faciale ou QR code. Les pointages sont synchronises en temps reel avec le serveur central, avec support du mode offline.',
   },
   {
-    category: 'Fonctionnalites',
+    category: 'Fonctionnalités',
     question: 'Peut-on generer des bulletins de paie multi-pays ?',
-    answer: 'Oui, Leopardo RH supporte la paie pour 6 pays (France, Algerie, Turquie, Senegal, Maroc, Tunisie) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
+    answer: 'Oui, Leopardo RH supporte la paie multi-pays (Algérie, Maroc, Tunisie, France, Turquie, Sénégal, Canada + zones CEMAC et CEDEAO) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
   },
   {
-    category: 'Fonctionnalites',
+    category: 'Fonctionnalités',
     question: 'L\'application mobile est-elle disponible ?',
     answer: 'Oui, l\'application mobile Leopardo RH est disponible pour iOS et Android. Elle permet aux employés de pointer, consulter leurs fiches de paie, demander des congés, voir l\'organigramme et recevoir des notifications push.',
   },
@@ -54,7 +54,7 @@ const faqItems: FaqItem[] = [
     answer: 'Toutes les donnees sont chiffrees en transit (TLS 1.3) et au repos. L\'architecture multi-tenant utilise des schemas PostgreSQL isoles par entreprise. Nous appliquons les bonnes pratiques OWASP et effectuons des audits de sécurité reguliers.',
   },
   {
-    category: 'Securite',
+    category: 'Sécurité',
     question: 'Etes-vous conforme au RGPD ?',
     answer: 'Oui, Leopardo RH est conforme au RGPD. Les donnees sont hebergees en Europe, et nous offrons des outils d\'export et de suppression des donnees personnelles conformes aux exigences reglementaires.',
   },
@@ -71,7 +71,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Integration',
     question: 'Peut-on exporter les donnees vers des logiciels comptables ?',
-    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV compatible avec les principaux logiciels comptables (Sage, QuickBooks, etc.).',
+    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV, compatible avec la plupart des logiciels comptables. Les connecteurs dedies Sage et QuickBooks arrivent prochainement.',
   },
 ];
 

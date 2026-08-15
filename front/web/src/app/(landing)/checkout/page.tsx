@@ -48,9 +48,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 0,
     employeeLimit: '1-5 employés',
-    perSeat: undefined,
-    includedSeats: undefined,
     isFree: true,
+    quoteOnly: false,
   },
   pilot: {
     label: 'Pilot',
@@ -73,6 +72,7 @@ const PLAN_CONFIG = {
     perSeat: '+ 2 EUR/employé actif',
     includedSeats: '10 employés inclus',
     isFree: false,
+    quoteOnly: false,
   },
   operations: {
     label: 'Operations',
@@ -95,27 +95,31 @@ const PLAN_CONFIG = {
     perSeat: '+ 4 EUR/employé actif',
     includedSeats: '40 employés inclus',
     isFree: false,
+    quoteOnly: false,
   },
   enterprise: {
     label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
-    priceMonthly: 299,
-    priceAnnual: 239,
-    savings: 720,
+    // #3328 : Enterprise est « Sur devis » — pas de tarif fixe au checkout.
+    // Le pricing vitrine affiche « Sur devis » (500+ employés) ; ce plan passe
+    // par le contact commercial (/contact?topic=enterprise), jamais par la
+    // carte bancaire. Les montants 299/239 € (historiques) sont retirés.
+    priceMonthly: 0,
+    priceAnnual: 0,
+    savings: 0,
+    quoteOnly: true,
     features: [
       'Tout Operations inclus',
       'Multi-pays & multi-devises',
-      'SSO SAML/OIDC',
+      'SSO SAML/OIDC (bientot disponible)',
       'Audit trail immuable',
       'Schema PostgreSQL isolé',
       'Account manager dédié',
     ],
     trialDays: 14,
-    employeeLimit: '250+ employés',
-    perSeat: undefined,
-    includedSeats: undefined,
+    employeeLimit: '500+ employés',
     isFree: false,
   },
 } as const;
@@ -1146,12 +1150,15 @@ function CheckoutInner() {
   // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
   const rawPlan = (searchParams.get('plan') || 'starter') as string;
   const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
-  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'starter') as PlanKey;
+  // #3326 : fallback sur 'free' (clé réelle) — 'starter' n'existe pas dans
+  // PLAN_CONFIG et provoquait un TypeError (page blanche) sur plan inconnu.
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'free') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 
   const cfg = PLAN_CONFIG[plan];
   const isFree = cfg.isFree;
+  const router = useRouter();
   const totalSteps = isFree ? 2 : 3;
   const stepLabels = isFree
     ? ['Récapitulatif', 'Créer mon compte']
@@ -1174,40 +1181,16 @@ function CheckoutInner() {
     if (rawBilling) setBilling(rawBilling);
   }, [rawBilling]);
 
-  // #3374 : Enterprise est vendu « sur devis » (cf. /pricing) — le checkout
-  // ne doit ni l'afficher à un prix arbitraire (299€) ni le provisionner à 0€
-  // en sandbox (api/billing/checkout). Redirection douce vers le contact.
-  if (plan === 'enterprise') {
+  // #3328 : Enterprise = « Sur devis » → contact commercial, jamais de
+  // checkout avec carte (harmonisé avec pricing.ts : Sur devis, 500+ employés).
+  useEffect(() => {
+    if (cfg.quoteOnly) router.replace('/contact?topic=enterprise');
+  }, [cfg.quoteOnly, router]);
+
+  if (cfg.quoteOnly) {
     return (
-      <div
-        dir={direction}
-        className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}
-      >
-        <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
-        <main className="py-24 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-xl mx-auto text-center">
-            <Building2 className="w-14 h-14 mx-auto text-violet-500 mb-4" />
-            <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-              Enterprise — sur devis
-            </h1>
-            <p className="mt-3 text-slate-600 dark:text-slate-300">
-              Le plan Enterprise (multi-pays, SSO, audit trail, schéma PostgreSQL
-              isolé) est vendu sur devis. Contactez notre équipe pour un
-              accompagnement dédié.
-            </p>
-            <Link
-              href="/contact?topic=enterprise"
-              className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-8 py-4 font-black text-white hover:bg-violet-700 transition-colors"
-            >
-              Contacter l&apos;équipe <ArrowRight className="w-5 h-5" />
-            </Link>
-            <p className="mt-6">
-              <Link href="/pricing" className="text-sm text-slate-500 hover:text-slate-700 underline underline-offset-2">
-                Retour aux tarifs
-              </Link>
-            </p>
-          </div>
-        </main>
+      <div dir={direction} className="min-h-screen flex items-center justify-center text-slate-500 dark:text-slate-400">
+        Redirection vers la demande de devis…
       </div>
     );
   }

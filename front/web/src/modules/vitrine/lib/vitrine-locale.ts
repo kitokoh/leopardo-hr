@@ -455,7 +455,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'IK Platformu',
     },
     hero: {
-      badge: 'Leo IA 2.0 hazir',
+      badge: 'Saha ekipleri icin mobil oncelikli isletim sistemi',
       badgeNew: 'Yeni',
       titleTop: 'Sirketinizi',
       titleBottom: 'tek uygulamadan yonetin.',
@@ -599,7 +599,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'منصة الموارد البشرية',
     },
     hero: {
-      badge: 'Leo IA 2.0 متاح الان',
+      badge: 'نظام تشغيل متحرك أولاً لفرق الميدان',
       badgeNew: 'جديد',
       titleTop: 'نظام تشغيل الشركة',
       titleBottom: 'المتحرك بالجوال.',
@@ -614,8 +614,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       stats: [
         { value: 3, suffix: '', label: 'تطبيقات جوال' },
         { value: 2, suffix: '', label: 'تطبيقات ويب' },
-        { value: 14, suffix: 'ي', label: 'تجربة مجانية' },
-        { value: 7, suffix: 'ي', label: 'تشغيل ميداني' },
+        { value: 14, suffix: 'يومًا', label: 'تجربة مجانية' },
+        { value: 7, suffix: 'أيام', label: 'تشغيل ميداني' },
       ],
     },
     heroQuickTrial: {

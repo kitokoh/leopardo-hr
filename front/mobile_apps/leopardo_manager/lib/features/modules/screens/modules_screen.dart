@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
+import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/leopardo_badge.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
@@ -351,7 +352,7 @@ class _SalaryAdvancesTab extends ConsumerWidget {
               return GlassCard(
                 child: ListTile(
                   contentPadding: const EdgeInsets.all(16),
-                  title: Text('${item.amount?.toStringAsFixed(0) ?? '-'} FCFA'),
+                  title: Text('${item.amount?.toStringAsFixed(0) ?? '-'}${currencySuffix(item.currency)}'),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Column(
