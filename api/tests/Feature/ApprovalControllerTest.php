@@ -118,4 +118,46 @@ class ApprovalControllerTest extends TestCase
 
         $this->assertSame('rejected', $pending2->fresh()?->status);
     }
+
+    public function test_employee_cannot_approve_pending_request(): void
+    {
+        $request = $this->makeApprovalRequest('pending');
+
+        $this->actingAs($this->employee)
+            ->postJson("/api/v1/approvals/{$request->id}/approve", ['comment' => 'ok'])
+            ->assertForbidden();
+    }
+
+    public function test_employee_cannot_reject_pending_request(): void
+    {
+        $request = $this->makeApprovalRequest('pending');
+
+        $this->actingAs($this->employee)
+            ->postJson("/api/v1/approvals/{$request->id}/reject", ['comment' => 'non'])
+            ->assertForbidden();
+    }
+
+    public function test_manager_can_approve_pending_request(): void
+    {
+        $request = $this->makeApprovalRequest('pending');
+
+        $this->actingAs($this->manager)
+            ->postJson("/api/v1/approvals/{$request->id}/approve", ['comment' => 'valide'])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'approved');
+    }
+
+    public function test_manager_cannot_approve_request_of_other_company(): void
+    {
+        $request = $this->makeApprovalRequest('pending');
+
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create();
+        /** @var Employee $otherManager */
+        $otherManager = Employee::factory()->manager()->create(['company_id' => $otherCompany->id]);
+
+        $this->actingAs($otherManager)
+            ->postJson("/api/v1/approvals/{$request->id}/approve", ['comment' => 'x'])
+            ->assertNotFound();
+    }
 }

@@ -105,6 +105,8 @@ class ApprovalController extends Controller
 
     public function pending(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', ApprovalRequest::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -128,6 +130,7 @@ class ApprovalController extends Controller
         if ($approvalRequest->status !== 'pending') {
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
+        $this->authorize('approve', $approvalRequest);
 
         $validated = $request->validate([
             'comment' => 'nullable|string|max:500',
@@ -168,6 +171,7 @@ class ApprovalController extends Controller
         if ($approvalRequest->status !== 'pending') {
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
+        $this->authorize('reject', $approvalRequest);
 
         $validated = $request->validate([
             'comment' => 'required|string|max:500',
