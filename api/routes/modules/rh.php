@@ -44,7 +44,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/employees', [EmployeeController::class, 'index']);
     // MULTI-PAYS (#1867) : création/modification d'employé refusées si le pays
     // légal du tenant est absent ou non supporté.
-    Route::post('/employees', [EmployeeController::class, 'store'])->middleware('tenant.country');
+    Route::post('/employees', [EmployeeController::class, 'store'])->middleware(['api.manager', 'tenant.country']);
     Route::get('/employees/{employee}', [EmployeeController::class, 'show'])->whereNumber('employee');
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
     Route::patch('/employees/{employee}', [EmployeeController::class, 'update'])->whereNumber('employee')->middleware('tenant.country');
@@ -53,7 +53,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/employees/{employee}/certificate-of-employment', [EndOfContractController::class, 'certificate'])->whereNumber('employee');
     // MULTI-PAYS (#1952) : l'import d'employés crée des écritures RH — même
     // garde pays que store/update (#1867).
-    Route::post('/employees/import', [EmployeeImportController::class, 'import'])->middleware('tenant.country');
+    Route::post('/employees/import', [EmployeeImportController::class, 'import'])->middleware(['api.manager', 'tenant.country']);
     Route::get('/employees/import-template', [EmployeeImportController::class, 'template']);
     Route::get('/me/qr-profile', [OnboardingQrController::class, 'employeeProfile']);
     Route::get('/company/qr-onboarding', [OnboardingQrController::class, 'companyOnboarding']);
@@ -87,9 +87,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
     Route::get('/attendance/corrections', [AttendanceController::class, 'corrections']);
-    Route::put('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction');
-    Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction');
-    Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog');
+    Route::put('/attendance/corrections/{correction}/approve', [AttendanceController::class, 'approveCorrection'])->whereNumber('correction')->middleware('api.manager');
+    Route::put('/attendance/corrections/{correction}/reject', [AttendanceController::class, 'rejectCorrection'])->whereNumber('correction')->middleware('api.manager');
+    Route::put('/attendance/{attendanceLog}', [AttendanceController::class, 'update'])->whereNumber('attendanceLog')->middleware('api.manager');
     Route::get('/attendance/{attendanceLog}/punch-photo', [AttendanceController::class, 'punchPhoto'])->whereNumber('attendanceLog')->name('attendance.punch-photo');
 
     // ── Invitations ───────────────────────────────────────────────────────────
@@ -127,7 +127,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     // ── Module 3 — Payrolls ───────────────────────────────────────────────────
     Route::get('/payrolls', [PayrollController::class, 'index']);
-    Route::post('/payrolls', [PayrollController::class, 'store']);
+    Route::post('/payrolls', [PayrollController::class, 'store'])->middleware('api.manager');
     Route::get('/payrolls/{payroll}', [PayrollController::class, 'show'])->whereNumber('payroll');
     Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
     Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
@@ -136,31 +136,29 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     // ── Module 4 — HR Referentials ────────────────────────────────────────────
     Route::get('/departments', [DepartmentController::class, 'index']);
-    Route::post('/departments', [DepartmentController::class, 'store']);
+    Route::post('/departments', [DepartmentController::class, 'store'])->middleware('api.manager');
     Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::get('/departments/{department}', [DepartmentController::class, 'show'])->whereNumber('department');
-    // Audit expert 2026-08-15 (issue #2594) : organigramme par département (mobile).
-    Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::put('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::patch('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->whereNumber('department');
 
     Route::get('/positions', [PositionController::class, 'index']);
-    Route::post('/positions', [PositionController::class, 'store']);
+    Route::post('/positions', [PositionController::class, 'store'])->middleware('api.manager');
     Route::get('/positions/{position}', [PositionController::class, 'show'])->whereNumber('position');
     Route::put('/positions/{position}', [PositionController::class, 'update'])->whereNumber('position');
     Route::patch('/positions/{position}', [PositionController::class, 'update'])->whereNumber('position');
     Route::delete('/positions/{position}', [PositionController::class, 'destroy'])->whereNumber('position');
 
     Route::get('/sites', [SiteController::class, 'index']);
-    Route::post('/sites', [SiteController::class, 'store']);
+    Route::post('/sites', [SiteController::class, 'store'])->middleware('api.manager');
     Route::get('/sites/{site}', [SiteController::class, 'show'])->whereNumber('site');
     Route::put('/sites/{site}', [SiteController::class, 'update'])->whereNumber('site');
     Route::patch('/sites/{site}', [SiteController::class, 'update'])->whereNumber('site');
     Route::delete('/sites/{site}', [SiteController::class, 'destroy'])->whereNumber('site');
 
     Route::get('/schedules', [ScheduleController::class, 'index']);
-    Route::post('/schedules', [ScheduleController::class, 'store']);
+    Route::post('/schedules', [ScheduleController::class, 'store'])->middleware('api.manager');
     Route::get('/schedules/{schedule}', [ScheduleController::class, 'show'])->whereNumber('schedule');
     Route::put('/schedules/{schedule}', [ScheduleController::class, 'update'])->whereNumber('schedule');
     Route::patch('/schedules/{schedule}', [ScheduleController::class, 'update'])->whereNumber('schedule');
@@ -174,8 +172,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // Issue #2674 — verbes canoniques alignés sur dashboard.php :
     // POST mark-all-read / PATCH {id}/read. Ces chemins alias restent pour
     // rétro-compat (anciens clients mobile), mêmes verbes que le canonique.
-    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
-    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
+    Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
     Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);
@@ -191,7 +189,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // ── Module 5 (complement) — Company announcements (PA2-COMM-004) ──────────
     // PA2-COMM-011 — Moderation: publish/cancel a draft or scheduled announcement.
     Route::get('/announcements', [AnnouncementController::class, 'index']);
-    Route::post('/announcements', [AnnouncementController::class, 'store']);
+    Route::post('/announcements', [AnnouncementController::class, 'store'])->middleware('api.manager');
     Route::post('/announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])->whereNumber('announcement');
     Route::post('/announcements/{announcement}/cancel', [AnnouncementController::class, 'cancel'])->whereNumber('announcement');
     Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->whereNumber('announcement');
@@ -216,7 +214,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
     // ── Module 7 (complément) — Evaluations ──────────────────────────────────
     Route::get('/evaluations', [EvaluationController::class, 'index']);
-    Route::post('/evaluations', [EvaluationController::class, 'store']);
+    Route::post('/evaluations', [EvaluationController::class, 'store'])->middleware('api.manager');
     Route::get('/evaluations/{evaluation}', [EvaluationController::class, 'show'])->whereNumber('evaluation');
     Route::put('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation');
     Route::patch('/evaluations/{evaluation}', [EvaluationController::class, 'update'])->whereNumber('evaluation');

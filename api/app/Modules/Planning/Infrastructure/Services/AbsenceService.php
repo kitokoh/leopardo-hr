@@ -15,12 +15,18 @@ use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AbsenceService
 {
+    public function __construct(
+        private readonly PublicHolidayService $publicHolidays,
+    ) {
+    }
+
     public function create(Employee $employee, array $data, ?UploadedFile $proof = null): Absence
     {
         $type = AbsenceType::findOrFail($data['absence_type_id']);
@@ -31,7 +37,21 @@ class AbsenceService
 
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
-        $daysCount = $startDate->diffInDays($endDate) + 1;
+
+        // Issue #2671 (T010) : days_count = JOURS OUVRÉS (week-ends et fériés
+        // du pays de l'entreprise exclus) au lieu des jours calendaires — un
+        // congé vendredi→lundi consommait 4 jours. Convention documentée :
+        // la déduction de solde et l'indemnité portent sur les jours ouvrés
+        // (calendrier entreprise via PublicHolidayService, fallback week-ends
+        // seuls quand le pays est inconnu ou qu'aucun férié n'est configuré).
+        $countryCode = $employee->company->country ?? null;
+        $daysCount = $this->publicHolidays->workingDaysBetween(
+            $startDate,
+            $endDate,
+            (string) ($countryCode ?? ''),
+            null,
+            $employee->company_id !== null ? (string) $employee->company_id : null,
+        );
 
         // Issue #2676 (QA 2026-08-15) — la garde de solde était en
         // check-then-insert sans verrou : deux demandes simultanées pouvaient
