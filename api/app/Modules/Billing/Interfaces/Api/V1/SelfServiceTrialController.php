@@ -105,20 +105,6 @@ class SelfServiceTrialController extends Controller
                     ],
                 ], 200);
             }
-                return new JsonResponse([
-                    'success' => true,
-                    'message' => __('billing.trial_signup_received'),
-                    'data' => [
-                        'email' => $email,
-                        'status' => 'provisioning_sandbox',
-<<<<<<< HEAD
-                        'provisioning_token' => Str::random(64),
-=======
-                        'provisioning_token' => $existingPending->provisioning_token,
->>>>>>> d4dba580 (fix(api): trial/signup guided_trial — dédup provisionings pending, plus de double tenant (Closes #3951))
-                    ],
-                ], 200);
-            }
 
             // MULTI-PAYS (#1950) : le pays validé du signup est transmis au job
             // (plus de fallback silencieux DZ — invariant 10 de la spec).

@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): SelfServiceTrialController — marqueurs de conflit retirés (régression #4074).** Le merge #4074 (dédup trial #3951) a atterri sur main avec un bloc de conflit git non résolu (`<<<<<<< HEAD`/`>>>>>>>`) + un return orphelin hors `if ($existingPending)` → erreur de parse PHP sur tout le contrôleur (signup trial 500). Bloc orphelin et marqueurs supprimés ; la logique combinée (anti-énumération #3945 → idempotence pending #3951 → création + catch 23505) est conservée.
 
 - **fix(api): pagination sur 3 listes non bornées (Closes #3948).** `DepartmentController::index`, `TrainingController::indexSessions` et `WebhookController::index` (Billing) utilisent désormais `paginate(per_page)` au lieu de `->get()` — alignés sur le contrat pagination existant (`data` + meta). ScheduleController conserve son cache (retour Collection, non paginable).
 - **fix(api): comptes ordinaires sans entreprise — gardes de statut appliquées (Closes #3942).** TenantMiddleware laissait passer un employé `role: ordinary` suspendu/archivé (branche $next sans les checks) → accès API conservé. Désormais 403 EMPLOYEE_SUSPENDED/EMPLOYEE_ARCHIVED, comme les employés liés.
