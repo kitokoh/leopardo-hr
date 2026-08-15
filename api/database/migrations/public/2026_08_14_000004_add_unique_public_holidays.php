@@ -55,7 +55,7 @@ return new class extends Migration
         // pas les contraintes — re-exécuter la migration (tests « artisan
         // migrate is idempotent ») dupliquait la contrainte → 42P07.
         $constraintExists = DB::selectOne(
-            "SELECT 1 FROM pg_constraint c JOIN pg_namespace n ON n.oid = c.connamespace WHERE c.conname = ? AND n.nspname = ?",
+            'SELECT 1 FROM pg_constraint c JOIN pg_namespace n ON n.oid = c.connamespace WHERE c.conname = ? AND n.nspname = ?',
             ['public_holidays_country_year_date_company_unique', $schema]
         ) !== null;
 

@@ -6,8 +6,8 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
@@ -52,7 +52,7 @@ class PayrollCalculator
         $this->resolver = new CountryRulesResolver($countryRules);
         // Issue #1874 — audit des calculs : jamais null (repli direct si le
         // conteneur n'injecte pas le service, ex. app(PayrollCalculator::class)).
-        $this->auditRecorder = $auditRecorder ?? new PayrollCalculationAuditRecorder();
+        $this->auditRecorder = $auditRecorder ?? new PayrollCalculationAuditRecorder;
     }
 
     /**

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Http\Controllers\Controller;
+use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
-use App\Modules\HR\Infrastructure\Services\UserInvitationService;
 use App\Support\CountryDefaults;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -405,7 +405,6 @@ class PlatformCompanyController extends Controller
             ->with('status', 'Pays du tenant mis a jour.');
     }
 
-
     /**
      * Renvoie l invitation du manager principal de la societe.
      * Utile quand l email initial n est jamais arrive ou que le lien a expire.
@@ -454,4 +453,3 @@ class PlatformCompanyController extends Controller
         return back()->with('status', 'Invitation manager renvoyee.');
     }
 }
-
