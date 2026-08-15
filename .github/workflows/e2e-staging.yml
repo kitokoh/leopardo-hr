@@ -31,7 +31,12 @@ env:
   DEFAULT_WEB_STAGING_URL: https://gestionemployer-backend.vercel.app
 
 concurrency:
-  group: e2e-staging-${{ github.ref }}
+  # Issue #2131 : groupe par SHA du déploiement déclencheur (et non par ref) —
+  # avec `ref` (refs/heads/main), chaque nouveau merge annulait le run e2e du
+  # merge précédent (cascade de cancels à chaque push). Par SHA : un seul run
+  # par déploiement ; les runs de commits différents ne se marchent pas dessus.
+  # cancel-in-progress:true conserve la dédup d'un même déploiement (rerun).
+  group: e2e-staging-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: true
 
 jobs:

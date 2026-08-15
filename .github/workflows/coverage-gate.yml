@@ -32,7 +32,14 @@ env:
 
 concurrency:
   group: coverage-gate-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : sur main, un push ne doit JAMAIS annuler le run en cours —
+  # ce workflow porte le check REQUIS « Backend Coverage (PHP 8.4 + PostgreSQL
+  # 16) » ; avec cancel-in-progress:true, chaque nouveau merge annulait le run
+  # du commit précédent → le dernier commit de main restait sans check requis
+  # terminé (pending) pendant 20+ min (constat #2131, même piège que tests.yml).
+  # Les runs PR gardent l'annulation (feedback rapide sur une même branche) ;
+  # les runs merge_group ne sont jamais annulés (file de merge, aucune churn).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 # Pour activer comme required check :
 # Settings > Branches > Protection > Required status checks

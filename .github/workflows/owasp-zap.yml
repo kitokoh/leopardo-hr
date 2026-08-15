@@ -21,7 +21,9 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: owasp-zap-${{ github.ref }}
+  # Issue #2131 : groupe par SHA du déploiement déclencheur (et non par ref) —
+  # même anti-cascade que e2e-staging.yml (cf. commentaire là-bas).
+  group: owasp-zap-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: true
 
 jobs:

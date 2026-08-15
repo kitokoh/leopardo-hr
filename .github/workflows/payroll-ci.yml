@@ -35,7 +35,10 @@ env:
 
 concurrency:
   group: payroll-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : sur main, ne jamais annuler le run du commit précédent
+  # (chaque merge relançait l'annulation en cascade des runs paie utiles).
+  # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   golden:

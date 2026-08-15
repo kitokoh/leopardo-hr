@@ -44,7 +44,9 @@ env:
 
 concurrency:
   group: mobile-apps-ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : sur main, ne jamais annuler le run du commit précédent
+  # (builds Flutter longs relancés en cascade). Runs PR annulés.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   mobile-apps-guard:
