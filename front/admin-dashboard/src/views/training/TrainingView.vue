@@ -13,7 +13,7 @@
         :key="tab.key"
         :class="[
           'rounded-md px-4 py-2 text-sm font-medium',
-          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 hover:glass-bg'
+          activeTab === tab.key ? 'bg-indigo-600 text-white' : 'glass-card text-gray-700 ring-1 ring-gray-300 glass-bg-hover'
         ]"
         @click="activeTab = tab.key"
       >
@@ -90,7 +90,7 @@
 
     <!-- Course Detail Panel -->
     <div v-if="selectedCourse" class="fixed inset-0 z-50 overflow-hidden" @click.self="closeDetail">
-      <div class="absolute inset-0 glass-bg/50 transition-opacity" @click="closeDetail" />
+      <div class="absolute inset-0 bg-black/50 transition-opacity" @click="closeDetail" />
       <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
         <div class="w-screen max-w-lg">
           <div class="flex h-full flex-col overflow-y-auto shadow-xl">

@@ -95,7 +95,7 @@
             </label>
           </div>
           <div class="flex justify-end gap-2 pt-2">
-            <button type="button" class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:glass-bg" @click="closeModal">
+            <button type="button" class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 glass-bg-hover" @click="closeModal">
               Annuler
             </button>
             <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50" :disabled="saving">

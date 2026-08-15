@@ -14,7 +14,7 @@
           v-for="conv in conversations"
           :key="conv.id"
           :class="[
-            'cursor-pointer border-b border-gray-100 px-4 py-3 transition hover:glass-bg',
+            'cursor-pointer border-b border-gray-100 px-4 py-3 transition glass-bg-hover',
             activeConversation?.id === conv.id ? 'bg-indigo-50' : ''
           ]"
           @click="selectConversation(conv)"

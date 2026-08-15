@@ -50,7 +50,7 @@
 
       <table v-else class="w-full text-sm">
         <thead>
-          <tr class="glass-bg dark:bg-gray-700/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+          <tr class="glass-bg dark:bg-slate-800/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             <th class="px-4 py-3 font-medium">Node</th>
             <th class="px-4 py-3 font-medium">Statut</th>
             <th class="px-4 py-3 font-medium">Licence</th>
@@ -62,7 +62,7 @@
           <tr
             v-for="node in nodes"
             :key="node.id"
-            class="hover:glass-bg dark:hover:bg-gray-700/30 transition-colors"
+            class="glass-bg-hover dark:hover:bg-slate-700/40 transition-colors"
           >
             <td class="px-4 py-3">
               <div class="font-medium text-gray-900 dark:text-white font-mono text-xs">{{ node.id }}</div>
