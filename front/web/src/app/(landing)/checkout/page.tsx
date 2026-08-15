@@ -175,6 +175,12 @@ const PLAN_CONFIG = {
 type PlanKey = keyof typeof PLAN_CONFIG;
 
 /* ─────────────────────────────────────────────
+   CHECKOUT MODE (sandbox = explicit opt-in via NEXT_PUBLIC_CHECKOUT_SANDBOX=true)
+   In production the test card UI is never shown: payment must be real (#2628).
+───────────────────────────────────────────── */
+const CHECKOUT_SANDBOX = process.env.NEXT_PUBLIC_CHECKOUT_SANDBOX === 'true';
+
+/* ─────────────────────────────────────────────
    SANDBOX TEST CARD
 ───────────────────────────────────────────── */
 const SANDBOX_CARD = {
@@ -897,9 +903,9 @@ function StepPayment({
   const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
 
-  const [cardNumber, setCardNumber] = useState(SANDBOX_CARD.number);
-  const [expiry, setExpiry] = useState(SANDBOX_CARD.expiry);
-  const [cvc, setCvc] = useState(SANDBOX_CARD.cvc);
+  const [cardNumber, setCardNumber] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.number : '');
+  const [expiry, setExpiry] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.expiry : '');
+  const [cvc, setCvc] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.cvc : '');
   const [cardName, setCardName] = useState(
     account.firstName ? `${account.firstName} ${account.lastName}` : SANDBOX_CARD.name,
   );
@@ -997,7 +1003,8 @@ function StepPayment({
         Informations de paiement
       </h2>
 
-      {/* Sandbox notice */}
+      {/* Sandbox notice (dev/staging only — never shown in production, #2628) */}
+      {CHECKOUT_SANDBOX && (
       <div className="mt-3 mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-xl bg-amber-400/20 flex items-center justify-center flex-shrink-0">
@@ -1027,6 +1034,7 @@ function StepPayment({
           </div>
         </div>
       </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Card number */}
@@ -1040,7 +1048,7 @@ function StepPayment({
               type="text"
               value={cardNumber}
               onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-              placeholder="4242 4242 4242 4242"
+              placeholder={CHECKOUT_SANDBOX ? '4242 4242 4242 4242' : '1234 5678 9012 3456'}
               maxLength={19}
               className={`${inputBase} pl-10 font-mono ${isSandboxCard ? 'border-amber-400 ring-amber-500/10' : ''}`}
             />
