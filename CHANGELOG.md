@@ -156,6 +156,8 @@
 - **chore(deps): bump github-actions-dependencies — 5 actions (#1754).** Dependabot : `github/codeql-action` v4, `actions/github-script` v9, `dorny/paths-filter` v4.0.2 → v4.0.3, `actions/download-artifact` v7 → v8.0.1 (SHA pinnées actualisées dans 8 workflows).
 
 ### Fixed
+
+- **fix(mobile): navigation cabinet de l'app Manager réparée (Closes #2735).** Route `/cabinet/:folderId` → `/cabinet/folder/:folderId` (alignée sur employee/HR) — fini le GoRouter no-match à l'ouverture d'un dossier.
 - **fix(web): dashboard client — badge « Live: 18 » codé en dur retiré (Closes #2927).** Le header de l'espace connecté affichait un compteur de présences « Live: 18 » fabriqué (aucune source) présenté comme temps réel. Badge remplacé par un indicateur neutre localisé (clé `dashboard.live` fr/en/tr/ar dans `i18n.ts`) — règle « jamais de données fabriquées » appliquée au dashboard client comme au cockpit admin.
 
 - **fix(admin): formatage monétaire selon la locale active (Closes #2715).**
