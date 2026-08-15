@@ -11,7 +11,7 @@ import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 
 /// Dedicated employee profile screen: photo, identity, role, and quick
 /// language switcher. Reads the current [Employee] straight from
-/// [authProvider] â€” no mocked data. Follows the ConsumerWidget +
+/// [authProvider] — no mocked data. Follows the ConsumerWidget +
 /// FutureProvider pattern already used across `features/settings`.
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

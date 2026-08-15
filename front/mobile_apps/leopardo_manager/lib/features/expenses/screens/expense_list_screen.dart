@@ -196,13 +196,13 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
                         title: Text(
-                          '${claim.category} â€” ${claim.amount.toStringAsFixed(2)} ${claim.currency}',
+                          '${claim.category} — ${claim.amount.toStringAsFixed(2)} ${claim.currency}',
                           style: AppTypography.subtitle.copyWith(
                             color: AppColors.textDark,
                           ),
                         ),
                         subtitle: Text(
-                          '${claim.date}${claim.description != null ? " â€¢ ${claim.description}" : ""}',
+                          '${claim.date}${claim.description != null ? " "¢ ${claim.description}" : ""}',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMutedDark,
                           ),
