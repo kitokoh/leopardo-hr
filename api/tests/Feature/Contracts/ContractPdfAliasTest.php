@@ -47,7 +47,7 @@ class ContractPdfAliasTest extends TestCase
             ->assertHeader('Content-Type', 'application/pdf')
             ->assertHeader('Content-Disposition', 'inline; filename="contract_'.$contract->id.'.pdf"');
 
-        $this->assertStringStartsWith('%PDF', $response->getContent());
+        $this->assertStringStartsWith('%PDF', (string) $response->getContent());
     }
 
     public function test_pdf_alias_is_404_for_cross_tenant_contract(): void
