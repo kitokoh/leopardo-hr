@@ -529,7 +529,7 @@ class AttendanceCorrection {
   final int id;
   final String employeeName;
   final String date;
-  final DateTime requestedCheckIn;
+  final DateTime? requestedCheckIn;
   final DateTime? requestedCheckOut;
   final String reason;
   final String status;

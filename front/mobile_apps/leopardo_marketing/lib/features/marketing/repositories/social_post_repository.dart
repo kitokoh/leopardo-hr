@@ -8,7 +8,9 @@ class SocialPostRepository {
 
   Future<List<Map<String, dynamic>>> getPosts() async {
     final response = await apiClient.requestWithRetry('/marketing/posts');
-    return extractDataList(response.data);
+    return extractDataList(response.data)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
   }
 
   Future<Map<String, dynamic>> createPost(Map<String, dynamic> data) async {
