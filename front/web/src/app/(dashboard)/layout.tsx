@@ -358,7 +358,9 @@ export default function DashboardLayout({
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
               </div>
-              Live: 18 {labels.dashboard.present}
+              {/* Issue #2720 — statistique « Live » codée en dur retirée :
+                  aucun endpoint ne la fournit (honnêteté des données). */}
+              {labels.dashboard.present}
             </div>
           </div>
         </header>

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { useLocaleStore } from '@/stores/locale'
-import { translate } from '@/i18n'
 import NProgress from 'nprogress'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
 import 'nprogress/nprogress.css'
 
 // Configuration NProgress
@@ -220,7 +220,7 @@ const routes = [
         meta: {
           title: 'Formations',
           icon: 'AcademicCapIcon',
-          // #2634 : désormais supporté cross-tenant via /admin/training/* (console super-admin).
+          requiresTenant: true
         }
       },
       {
@@ -250,7 +250,7 @@ const routes = [
         meta: {
           title: 'Webhooks',
           icon: 'LinkIcon',
-          // #2634 : désormais supporté cross-tenant via /admin/webhooks* (console super-admin).
+          requiresTenant: true
         }
       },
       {
@@ -400,13 +400,13 @@ router.beforeEach(async (to, from, next) => {
 
   // Mettre à jour le titre de la page
   if (to.meta.title) {
-    // #2639 : le meta.title peut être une clé i18n (marketing.oauth.nav_title,
-    // holidays.nav.title) — la traduire avant de l'afficher dans l'onglet.
-    const rawTitle = to.meta.title || ''
-    const localeStore = useLocaleStore()
-    const title = rawTitle.includes('.')
-      ? translate(localeStore.current, rawTitle, rawTitle)
-      : rawTitle
+    // Issue #2708 — meta.title peut être une clé i18n brute
+    // (marketing.oauth.nav_title, holidays.nav.title) : on la traduit via la
+    // locale active si elle correspond à une clé connue.
+    const raw = String(to.meta.title)
+    const title = raw.includes('.')
+      ? translate(useLocaleStore().current, raw, raw)
+      : raw
     document.title = `${title} - Leopardo RH Admin`
   }
 

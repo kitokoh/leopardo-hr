@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\ExportHistory;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -263,7 +264,7 @@ class ExportController extends Controller
             $query->where('type', $validated['type']);
         }
 
-        /** @var \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, ExportHistory> $history */
+        /** @var LengthAwarePaginator<int, ExportHistory> $history */
         $history = $query->paginate((int) ($validated['per_page'] ?? 20));
 
         $items = collect($history->items())->map(static fn (ExportHistory $row): array => [
@@ -272,7 +273,7 @@ class ExportController extends Controller
             'format' => $row->format,
             'record_count' => $row->record_count,
             'filename' => $row->filename,
-            'created_at' => $row->created_at?->toIso8601String(),
+            'created_at' => $row->created_at->toIso8601String(),
         ])->all();
 
         return response()->json([
@@ -297,7 +298,7 @@ class ExportController extends Controller
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_journal']);
 
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
-            'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end'
+            'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end',
         ]);
 
         return $this->exportResponse($request, $records, 'payroll_journal');
@@ -315,9 +316,9 @@ class ExportController extends Controller
 
         // Summary representation for ledger
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
-            'payroll_run_id', 'gross_salary', 'net_salary'
+            'payroll_run_id', 'gross_salary', 'net_salary',
         ]);
-        
+
         // Group by payroll_run_id for the ledger
         $grouped = $records->groupBy('payroll_run_id')->map(function ($group, $runId): \stdClass {
             $row = new \stdClass;
@@ -343,43 +344,43 @@ class ExportController extends Controller
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'accounting_od']);
 
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
-            'payroll_run_id', 'gross_salary', 'net_salary', 'period_end'
+            'payroll_run_id', 'gross_salary', 'net_salary', 'period_end',
         ]);
-        
+
         $grouped = $records->groupBy('payroll_run_id');
         $odEntries = collect();
-        
+
         foreach ($grouped as $runId => $group) {
             $date = $group->first()->period_end ?? now()->toDateString();
             $totalGross = $group->sum('gross_salary');
             $totalNet = $group->sum('net_salary');
             $totalSocial = $totalGross - $totalNet;
-            
+
             // 641 - Remuneration du personnel (Debit)
-            $odEntries->push((object)[
+            $odEntries->push((object) [
                 'date' => $date,
                 'account' => '641000',
                 'label' => 'Rémunérations',
                 'debit' => $totalGross,
-                'credit' => 0
+                'credit' => 0,
             ]);
-            
+
             // 431 - Securite Sociale (Credit)
-            $odEntries->push((object)[
+            $odEntries->push((object) [
                 'date' => $date,
                 'account' => '431000',
                 'label' => 'Charges Sociales',
                 'debit' => 0,
-                'credit' => $totalSocial
+                'credit' => $totalSocial,
             ]);
-            
+
             // 421 - Personnel remu dues (Credit)
-            $odEntries->push((object)[
+            $odEntries->push((object) [
                 'date' => $date,
                 'account' => '421000',
                 'label' => 'Rémunérations Dues',
                 'debit' => 0,
-                'credit' => $totalNet
+                'credit' => $totalNet,
             ]);
         }
 

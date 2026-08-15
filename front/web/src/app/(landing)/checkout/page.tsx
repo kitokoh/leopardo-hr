@@ -23,7 +23,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
-import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
@@ -49,26 +49,6 @@ const PLAN_CONFIG = {
     trialDays: 0,
     employeeLimit: '1-5 employés',
     isFree: true,
-  },
-  pilot: {
-    label: 'Pilot',
-    icon: Rocket,
-    color: 'blue',
-    gradient: 'from-blue-500 to-indigo-600',
-    priceMonthly: 29,
-    priceAnnual: 24,
-    savings: 60,
-    features: [
-      'Pointage web & mobile',
-      'Absences & congés',
-      'Dossiers employés',
-      'Dashboard manager',
-      'Apps Employee & Manager',
-      'Support email 48h',
-    ],
-    trialDays: 30,
-    employeeLimit: '1-30 employés',
-    isFree: false,
   },
   starter: {
     label: 'Pilot',
@@ -110,48 +90,8 @@ const PLAN_CONFIG = {
     employeeLimit: '15-250 employés',
     isFree: false,
   },
-  operations: {
-    label: 'Operations',
-    icon: Zap,
-    color: 'emerald',
-    gradient: 'from-emerald-500 to-cyan-600',
-    priceMonthly: 99,
-    priceAnnual: 79,
-    savings: 240,
-    features: [
-      'Tout Pilot inclus',
-      'Paie automatisée',
-      'Biométrie ZKTeco',
-      'API & Webhooks',
-      'Exports comptables',
-      'Support prioritaire 24h',
-    ],
-    trialDays: 30,
-    employeeLimit: '15-250 employés',
-    isFree: false,
-  },
   enterprise: {
-    label: 'Scale',
-    icon: Building2,
-    color: 'violet',
-    gradient: 'from-violet-500 to-fuchsia-600',
-    priceMonthly: 299,
-    priceAnnual: 239,
-    savings: 720,
-    features: [
-      'Tout Operations inclus',
-      'Multi-pays & multi-devises',
-      'SSO SAML/OIDC',
-      'Audit trail immuable',
-      'Schema PostgreSQL isolé',
-      'Account manager dédié',
-    ],
-    trialDays: 30,
-    employeeLimit: '250+ employés',
-    isFree: false,
-  },
-  scale: {
-    label: 'Scale',
+    label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
@@ -175,6 +115,12 @@ const PLAN_CONFIG = {
 type PlanKey = keyof typeof PLAN_CONFIG;
 
 /* ─────────────────────────────────────────────
+   CHECKOUT MODE (sandbox = explicit opt-in via NEXT_PUBLIC_CHECKOUT_SANDBOX=true)
+   In production the test card UI is never shown: payment must be real (#2628).
+───────────────────────────────────────────── */
+const CHECKOUT_SANDBOX = process.env.NEXT_PUBLIC_CHECKOUT_SANDBOX === 'true';
+
+/* ─────────────────────────────────────────────
    SANDBOX TEST CARD
 ───────────────────────────────────────────── */
 const SANDBOX_CARD = {
@@ -188,12 +134,10 @@ const SANDBOX_CARD = {
    GOOGLE AUTH HREF
 ───────────────────────────────────────────── */
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-      ? directApi
-      : getApiBaseUrl();
-  return `${baseUrl}/auth/google`;
+  // Issue #2725 — même pattern que login (QA #2277) : passer par le proxy
+  // Next.js (même origine) pour que le cookie de session soit posé sur la
+  // vitrine, pas sur l'origine API directe.
+  return '/api/v1/auth/google';
 }
 
 /* ─────────────────────────────────────────────
@@ -716,7 +660,7 @@ function StepFreeAccount({
           phone: data.phone || undefined,
           employees: data.employees || undefined,
           plan: 'free',
-          locale: 'fr',
+          locale: getCurrentLocale(),
         }),
       });
 
@@ -897,9 +841,9 @@ function StepPayment({
   const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
 
-  const [cardNumber, setCardNumber] = useState(SANDBOX_CARD.number);
-  const [expiry, setExpiry] = useState(SANDBOX_CARD.expiry);
-  const [cvc, setCvc] = useState(SANDBOX_CARD.cvc);
+  const [cardNumber, setCardNumber] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.number : '');
+  const [expiry, setExpiry] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.expiry : '');
+  const [cvc, setCvc] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.cvc : '');
   const [cardName, setCardName] = useState(
     account.firstName ? `${account.firstName} ${account.lastName}` : SANDBOX_CARD.name,
   );
@@ -956,7 +900,7 @@ function StepPayment({
           last_name: account.lastName,
           phone: account.phone || undefined,
           employees: account.employees || undefined,
-          locale: 'fr',
+          locale: getCurrentLocale(),
           success_url: successUrl,
           cancel_url: cancelUrl,
         }),
@@ -997,7 +941,8 @@ function StepPayment({
         Informations de paiement
       </h2>
 
-      {/* Sandbox notice */}
+      {/* Sandbox notice (dev/staging only — never shown in production, #2628) */}
+      {CHECKOUT_SANDBOX && (
       <div className="mt-3 mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 rounded-xl bg-amber-400/20 flex items-center justify-center flex-shrink-0">
@@ -1027,6 +972,7 @@ function StepPayment({
           </div>
         </div>
       </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Card number */}
@@ -1040,7 +986,7 @@ function StepPayment({
               type="text"
               value={cardNumber}
               onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-              placeholder="4242 4242 4242 4242"
+              placeholder={CHECKOUT_SANDBOX ? '4242 4242 4242 4242' : '1234 5678 9012 3456'}
               maxLength={19}
               className={`${inputBase} pl-10 font-mono ${isSandboxCard ? 'border-amber-400 ring-amber-500/10' : ''}`}
             />

@@ -130,6 +130,10 @@ class PayrollWorkInputsTest extends TestCase
                 'employee_id' => $employee->id,
                 'date' => "2026-07-{$day}",
                 'status' => 'ontime',
+                // Issue #2669 — la session du 05 est FERMÉE avant la session 2
+                // (split-shift) : l'index unique partiel « une session ouverte
+                // par employé/jour » (2026_08_15_000004) l'exige.
+                'check_out' => $day === 5 ? '2026-07-05 17:00:00' : null,
             ]);
         }
         AttendanceLog::create([

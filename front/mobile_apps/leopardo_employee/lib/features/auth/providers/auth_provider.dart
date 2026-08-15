@@ -117,6 +117,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState(); // reset completely
   }
 
+  /// Issue #2737 (QA 2026-08-15) — session révoquée (401) : reset local
+  /// complet SANS appel API (l'intercepteur 401 a déjà supprimé le token ;
+  /// un logout() complet récurserait via l'intercepteur).
+  void handleSessionExpired() {
+    state = AuthState();
+  }
+
   Future<bool> updateProfile({
     required String firstName,
     required String lastName,
