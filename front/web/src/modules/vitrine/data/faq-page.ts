@@ -18,6 +18,7 @@ export type FaqPageContent = {
     subheadline: string
   }
   searchPlaceholder: string
+  searchLabel: string
   categories: Record<FaqPageCategory, string>
   allCategory: string
   noResults: string
@@ -37,6 +38,7 @@ const fr: FaqPageContent = {
     subheadline: 'Tout ce que vous devez savoir sur Leopardo RH',
   },
   searchPlaceholder: 'Rechercher une question…',
+  searchLabel: 'Rechercher dans la FAQ',
   categories: {
     general: 'Général',
     pricing: 'Tarification',
@@ -76,6 +78,7 @@ const en: FaqPageContent = {
     subheadline: 'Everything you need to know about Leopardo RH',
   },
   searchPlaceholder: 'Search a question…',
+  searchLabel: 'Search the FAQ',
   categories: {
     general: 'General',
     pricing: 'Pricing',
@@ -115,6 +118,7 @@ const tr: FaqPageContent = {
     subheadline: 'Leopardo RH hakkında bilmeniz gereken her şey',
   },
   searchPlaceholder: 'Bir soru arayın…',
+  searchLabel: 'SSS içinde ara',
   categories: {
     general: 'Genel',
     pricing: 'Fiyatlandırma',
@@ -154,6 +158,7 @@ const ar: FaqPageContent = {
     subheadline: 'كل ما تحتاج معرفته عن ليوباردو RH',
   },
   searchPlaceholder: 'ابحث عن سؤال…',
+  searchLabel: 'ابحث في الأسئلة الشائعة',
   categories: {
     general: 'عام',
     pricing: 'التسعير',
