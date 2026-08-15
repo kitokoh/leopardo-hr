@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(web): suppression de l'orphelin `structured-data.ts` (0 import) (Closes #3265).**- **fix(admin/mobile/api): vague hygiène — modal morte TaxRates, composables orphelins, routes RH mortes, N+1 (Closes #3144, #3145, #3148, #3151).** `TaxRatesView` : modale « historique » inatteignable retirée (+ historyBadge/historyLabel/formatDate morts) ; composables `useFocusTrap`/`useAnnouncer` supprimés (0 référence) ; app RH : routes GoRouter `/approvals`, `/manager/anomalies`, `/manager/corrections` (aucune entrée UI) retirées ; `PaymentBatchController::markPaid` eager-load `items.employee` et `FleetController::liveMap` utilise `TraccarService::getLastPositions` (un seul appel agrégé au lieu d'un par véhicule).
 ### Fixed
 - **fix(api): essai self-service — échec d'envoi OTP rapporté honnêtement (Closes #3057).** `RequestTrialSignup::execute()` renvoie maintenant si le mail est parti ; le contrôleur répond `provisioned=false` + `status=pending_fallback` (message « contact sous 24 h ») au lieu d'un 200 « Code envoyé » mensonger. Test ajouté (échec mail simulé).
 - **fix(web): pricing — libellés FR en dur remplacés par le copy localisé (Closes #3443).** `100% Gratuit` / `Gratuit` / `Sans carte bancaire · Pour toujours` étaient codés en dur dans le template (affichés aussi en EN/TR/AR) ; ajout de `plans.freeBadge/freePriceLabel/freeNoCard` dans les 4 locales.
