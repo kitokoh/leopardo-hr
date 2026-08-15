@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(admin): notifications temps réel — id de repli déterministe (Closes #3191).** `stores/realtime.js` : `socket-<timestamp>-<compteur>` au lieu de `Date.now()+Math.random()` (id non persistant, non corrélable).
 - **fix(admin): UsersView/UserTable company+dates réelles, UserDetailView états loading/erreur, HolidaysView interpolation i18n (Closes #2988, #2989, #2990).**
 - **fix(web+admin): notifications « tout marquer lu » — verbe HTTP réparé (régression #3133).** Le merge #3133 avait remplacé `POST /notifications/read-all` par `PUT` dans le dashboard web (`(dashboard)/layout.tsx`) et l'admin SPA (`stores/realtime.js`) — or le backend expose `Route::post('/notifications/read-all')` (rh.php) → **405 garanti** à chaque clic « tout marquer lu » (régression de la classe #3047). Retour à `POST` sur les 2 surfaces. La régression mobile (3 repos `notification_repository` en PUT) est corrigée par la vague mobile #3129.
 - **fix(admin): build console reparé — CommandPalette sans icône inexistante (Closes #3114).** `DocumentReportIcon` n'existe pas dans `@heroicons/vue/24/outline` → `vite build` rouge sur main (deploy Cloudflare bloque). Retrait des 4 entrées tenant de la palette (Flotte, Rapports RH, Journal d'audit, Predictions IA — routes `requiresTenant` #2272 qui rebondissaient silencieusement vers `/`) + nettoyage des 10 imports d'icônes devenus morts. Lint 0 warning, build vert.

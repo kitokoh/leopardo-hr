@@ -20,6 +20,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
   const isConnected = ref(false)
   const isPolling = ref(false)
   const notifications = ref([])
+
+  // #3191 : compteur d'événements socket pour ids de repli déterministes.
+  let socketEventCounter = 0
   const onlineUsers = ref([])
   const globePoints = ref([])
 
@@ -305,7 +308,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // Issue #2707 — id synthétique uniquement si le payload socket n'en
     // fournit pas (sinon PATCH /v1/notifications/{id}/read → 404).
     const newNotification = {
-      id: rest.id ?? Date.now() + Math.random(),
+      // #3191 : id de repli déterministe (évite Date.now()+Math.random()
+      // non persistant et non corrélable entre rafraîchissements).
+      id: rest.id ?? `socket-${Date.now()}-${++socketEventCounter}`,
       read: false,
       ...rest
     }
