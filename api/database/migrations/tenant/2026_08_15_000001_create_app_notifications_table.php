@@ -1,50 +1,52 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Table `app_notifications` — modèle AppNotification
- * (Modules/Notification). Aucune migration du repo ne créait cette table
- * (dette #1813) : NotificationDispatcher::dispatch() écrivait dans une
- * table inexistante sur base fraîche → les notifications in-app émises par
- * le chemin moderne (SendNotification/NotifyTaxRateValidation) étaient
- * silencieusement perdues (exception avalée par les try/catch best-effort).
+ * Issue #2398 (dette #1813) — la table `app_notifications` (chemin legacy
+ * de notification in-app : modèle AppNotification, NotificationDispatcher,
+ * SendNotification, NotifyTaxRateValidation) n'était créée par AUCUNE
+ * migration : `AppNotification::create(...)` échouait silencieusement en
+ * production (try/catch + Log::warning), les notifications in-app de
+ * validation de taux ne partaient jamais. Seuls les tests créaient la table
+ * à la main (TaxSlabValidationWorkflowTest, CommunicationServiceTest).
  *
- * Garde idempotente (hasTable) : certains environnements peuvent déjà
- * porter une table créée manuellement.
+ * Schéma identique à celui des tests (aucune colonne ajoutée) :
+ * id, user_id (indexé), type, title, body nullable, data jsonb,
+ * read bool, read_at nullable, action_url nullable, timestampsTz.
  */
 return new class extends Migration
 {
-    public $withinTransaction = false;
-
     public function up(): void
     {
-        if (Schema::hasTable('app_notifications')) {
+        // Schéma résolu via le search_path (convention issue #1613 / F-17).
+        if (schemaTableExists('app_notifications')) {
             return;
         }
 
-        Schema::create('app_notifications', function (Blueprint $table) {
+        Schema::create('app_notifications', function (Blueprint $table): void {
             $table->bigIncrements('id');
-            $table->uuid('company_id')->nullable()->index();
             $table->unsignedBigInteger('user_id')->index();
-            $table->string('type', 100)->index();
-            $table->string('title', 200);
+            $table->string('type', 80);
+            $table->string('title', 255);
             $table->text('body')->nullable();
             $table->jsonb('data')->nullable();
             $table->boolean('read')->default(false);
-            $table->timestampTz('read_at')->nullable();
+            $table->timestamp('read_at')->nullable();
             $table->string('action_url', 500)->nullable();
             $table->timestampsTz();
-
-            $table->index(['user_id', 'read']);
         });
     }
 
     public function down(): void
     {
-        // No destructive rollback: the table may contain production
-        // notifications history once the dispatcher is wired.
+        $schema = resolveTableSchema('app_notifications');
+        if ($schema !== null) {
+            Schema::dropIfExists("{$schema}.app_notifications");
+        }
     }
 };
