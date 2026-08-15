@@ -145,7 +145,7 @@ class TrainingController extends Controller
         $actor = $request->user();
 
         $query = TrainingEnrollment::query()
-            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status'])
+            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status', 'session.course:id,title'])
             ->where('company_id', $actor->company_id);
 
         if ($request->filled('status')) {
