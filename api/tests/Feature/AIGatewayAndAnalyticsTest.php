@@ -246,8 +246,9 @@ class AIGatewayAndAnalyticsTest extends TestCase
 
         $this->getJson('/api/v1/ai/agent/workflows')
             ->assertOk()
-            ->assertJsonCount(3, 'data')
-            ->assertJsonPath('data.0.id', 'prepare_payroll');
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.id', 'prepare_payroll')
+            ->assertJsonPath('data.1.id', 'weekly_report');
 
         $this->postJson('/api/v1/ai/agent/run', [
             'task' => 'Prepare le rapport hebdomadaire.',

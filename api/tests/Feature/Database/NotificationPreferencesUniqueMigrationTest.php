@@ -96,6 +96,9 @@ class NotificationPreferencesUniqueMigrationTest extends TestCase
         ]);
     }
 
+    /**
+     * @return object{id: int|string, company_id: string, employee_id: int, updated_at: string|null}
+     */
     private function preferencesForPair(int $companyIndex, int $employeeId): object
     {
         $row = DB::table('notification_preferences')
@@ -104,7 +107,7 @@ class NotificationPreferencesUniqueMigrationTest extends TestCase
             ->first();
         $this->assertNotNull($row, "aucune ligne pour la paire {$companyIndex}/{$employeeId}");
 
-        /** @var object $row */
+        /** @var object{id: int|string, company_id: string, employee_id: int, updated_at: string|null} $row */
         return $row;
     }
 
