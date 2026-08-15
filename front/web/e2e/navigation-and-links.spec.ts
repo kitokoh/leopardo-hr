@@ -184,9 +184,11 @@ test.describe('Navigation and Links E2E Tests', () => {
       if (await hamburger.isVisible()) {
         await hamburger.click();
 
-        // Check if menu is visible
-        const mobileMenu = page.locator('nav[aria-label*="mobile"], nav[class*="mobile"]').first();
-        await expect(mobileMenu).toBeVisible({ timeout: 5000 });
+        // Le menu mobile est un bloc div.lg:hidden (Navbar.tsx) — pas un
+        // nav[aria-label*=mobile] : on vérifie qu'un lien du menu étendu
+        // devient visible (test réaligné, issue #3503).
+        const mobileMenuLink = page.getByRole('link', { name: /pricing|tarifs/i }).first();
+        await expect(mobileMenuLink).toBeVisible({ timeout: 5000 });
       }
     });
 
@@ -199,14 +201,13 @@ test.describe('Navigation and Links E2E Tests', () => {
       if (await hamburger.isVisible()) {
         await hamburger.click();
 
-        // Click a link
-        const link = page.locator('nav a').first();
+        // Click a link from the expanded menu
+        const link = page.locator('div.lg\\:hidden a').first();
         if (await link.isVisible()) {
           await link.click();
 
-          // Menu should be closed
-          const mobileMenu = page.locator('nav[aria-label*="mobile"], nav[class*="mobile"]').first();
-          await expect(mobileMenu).not.toBeVisible({ timeout: 5000 });
+          // Menu should be closed (le lien redevient masqué)
+          await expect(link).not.toBeVisible({ timeout: 5000 });
         }
       }
     });

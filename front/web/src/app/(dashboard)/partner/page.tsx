@@ -142,7 +142,7 @@ export default function PartnerDashboard() {
             <Clock3 className="h-8 w-8 text-amber-600" aria-hidden="true" />
           </div>
           <h2 className="mb-2 text-2xl font-black text-slate-950">Candidature en cours</h2>
-          <p className="text-slate-500">Votre demande est en cours de validation par notre equipe commerciale. Vous recevrez un email des que votre acces sera active.</p>
+          <p className="text-slate-500">Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé.</p>
         </div>
       </div>
     );

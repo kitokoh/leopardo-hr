@@ -67,6 +67,17 @@ async function mockDashboardApis(page: Page) {
       }),
     });
   });
+
+  // #3027 : le dashboard appelle aussi /announcements?per_page=1 — sans mock,
+  // la vraie API renvoie 401 → apiFetch redirige vers /auth/login et casse
+  // tous les tests qui lisent le dashboard.
+  await page.route('**/api/v1/announcements**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
+    });
+  });
 }
 
 async function mockDemoUsers(page: Page) {
@@ -286,7 +297,7 @@ test.describe('Client web auth smoke', () => {
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/dashboard$/);
-    await expect(page.locator('body')).toContainText('Espace employe');
+    await expect(page.locator('body')).toContainText('Espace employé');
     await expect(page.locator('body')).toContainText('Pointage');
     await expect(page.locator('body')).toContainText('Bulletins');
 
@@ -298,6 +309,7 @@ test.describe('Client web auth smoke', () => {
 
   test('demo account selection emits an analytics event and hydrates credentials', async ({ page }) => {
     await captureAnalytics(page);
+    await mockDemoUsers(page);
 
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: /try a demo account|acces demo|accès démo|demo access/i }).click();

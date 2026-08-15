@@ -46,7 +46,7 @@ export default function EmployeesPage() {
           return;
         }
 
-        setError(err instanceof ApiError ? err.message : 'Impossible de charger les employes.');
+        setError(err instanceof ApiError ? err.message : 'Impossible de charger les employés.');
       } finally {
         if (active) {
           setLoading(false);
@@ -75,7 +75,7 @@ export default function EmployeesPage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Total equipe</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Total équipe</p>
           <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : total}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
@@ -94,7 +94,7 @@ export default function EmployeesPage() {
         </div>
         <div className="divide-y divide-app-border">
           {loading ? (
-            <div className="px-6 py-8 text-sm text-slate-500">Chargement de la liste equipe...</div>
+            <div className="px-6 py-8 text-sm text-slate-500">Chargement de la liste équipe...</div>
           ) : employees.length === 0 ? (
             <div className="px-6 py-8 text-sm text-slate-500">Aucun employe visible pour ce compte.</div>
           ) : (

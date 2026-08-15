@@ -131,7 +131,7 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             try {
                 $claimed = false;
                 try {
-                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', ['EX' => 21600, 'NX' => true]);
+                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
                 } catch (Throwable $redisError) {
                     // Redis indisponible : on traite sans garde (comportement
                     // historique) mais on le trace pour l'observabilité.

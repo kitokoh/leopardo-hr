@@ -1,6 +1,7 @@
 'use client';
 
 import { Sparkles, Play, Zap, Users, TrendingUp, Star } from 'lucide-react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useState } from 'react';
 import {
   Navbar,
@@ -39,8 +40,8 @@ const STAT_ICONS = [TrendingUp, Users, Zap, Star] as const;
 
 export default function LandingPage() {
   // Dark mode state — synced with DarkModeProvider via CSS class on root
-  const [isDark, setIsDark] = useState(false);
-  const toggleDarkMode = () => setIsDark((d) => !d);
+  const { isDark, toggleDarkMode } = useDarkMode();
+  
   useScrollReveal();
   const { locale, copy, direction } = useVitrineLocale();
 
