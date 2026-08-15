@@ -70,6 +70,13 @@ return [
         'api_base_url' => env('WHATSAPP_API_BASE_URL', 'https://graph.facebook.com/v19.0'),
     ],
 
+    'mail_bounce_webhook' => [
+        // Issue #3058 : le secret du webhook de rebond email n'était défini
+        // nulle part → 503 permanent (fail-closed #2616). Configurable via
+        // MAIL_BOUNCE_WEBHOOK_SECRET ; vide = webhook refusé (défensif).
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
+    ],
+
     'marketing_lead_webhook' => [
         // PA2-MKT-007 - Shared secret the public vitrine (front/web Next.js
         // API routes) sends in `X-Marketing-Lead-Token` (or as a Bearer
