@@ -23,9 +23,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // PA2-MOB-006: download the supporting document attached to a request.
         Route::get('/{absence}/proof', [AbsenceController::class, 'downloadProof'])->whereNumber('absence');
         Route::put('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
-        Route::post('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
         Route::put('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
-        Route::post('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
         Route::delete('/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
     });
 

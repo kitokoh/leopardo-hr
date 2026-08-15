@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { SITE_URL } from '@/lib/site-url'
 import {
   type AppLocale,
   applyDocumentLocale,
@@ -11,10 +12,9 @@ import {
 const LOCALE_EVENT = 'vitrine-locale-changed'
 
 // L'espace client réellement en ligne (issue #1775 : app.leopardo-rh.com ne
-// résout pas — DNS mort). Configurable via NEXT_PUBLIC_SITE_URL.
-const DEMO_APP_URL = process.env.NEXT_PUBLIC_SITE_URL
-  ? `${process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '')}/dashboard`
-  : 'https://gestionemployer-backend.vercel.app/dashboard'
+// résout pas — DNS mort). URL centralisée (src/lib/site-url.ts), priorité à
+// NEXT_PUBLIC_SITE_URL.
+const DEMO_APP_URL = `${SITE_URL}/dashboard`
 
 type LocaleOption = {
   value: AppLocale
@@ -729,7 +729,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
   },
 }
 
-function getCurrentLocale(): AppLocale {
+export function getCurrentLocale(): AppLocale {
   if (typeof window === 'undefined') {
     return 'fr'
   }

@@ -31,14 +31,21 @@ class EmailBounceWebhookController extends Controller
     {
         $configuredSecret = (string) config('services.mail_bounce_webhook.secret', '');
 
-        if ($configuredSecret !== '') {
-            $providedSecret = (string) $request->header('X-Bounce-Webhook-Secret', '');
+        if ($configuredSecret === '') {
+            // #2616 fail-closed : secret non configuré = webhook non
+            // authentifiable = on REFUSE (503). Un webhook sans secret ne
+            // doit jamais traiter un payload (fail-open = spooling/poisoning).
+            Log::error('Email bounce webhook: secret non configuré — webhook REJETÉ (fail-closed).');
 
-            if (! hash_equals($configuredSecret, $providedSecret)) {
-                Log::warning('Email bounce webhook: invalid or missing shared secret');
+            abort(503, 'Email bounce webhook not configured.');
+        }
 
-                return new JsonResponse(['error' => 'Invalid signature'], 400);
-            }
+        $providedSecret = (string) $request->header('X-Bounce-Webhook-Secret', '');
+
+        if (! hash_equals($configuredSecret, $providedSecret)) {
+            Log::warning('Email bounce webhook: invalid or missing shared secret');
+
+            return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
         $email = (string) $request->input('email', '');

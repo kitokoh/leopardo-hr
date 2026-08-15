@@ -136,16 +136,43 @@
           </div>
 
           <!-- System alerts indicator -->
-          <button
-            v-if="dashboardStore.criticalAlerts.length > 0"
-            @click="showAlerts = !showAlerts"
-            class="relative rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
-          >
-            <ExclamationTriangleIcon class="h-5 w-5" />
-            <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
-              {{ dashboardStore.criticalAlerts.length }}
-            </span>
-          </button>
+          <div class="relative">
+            <button
+              v-if="dashboardStore.criticalAlerts.length > 0"
+              @click="showAlerts = !showAlerts"
+              class="relative rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
+            >
+              <ExclamationTriangleIcon class="h-5 w-5" />
+              <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
+                {{ dashboardStore.criticalAlerts.length }}
+              </span>
+            </button>
+
+            <!-- System alerts dropdown -->
+            <div
+              v-if="showAlerts"
+              class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700 focus:outline-none"
+              @click.stop
+            >
+              <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">Alertes critiques</h3>
+              </div>
+              <div class="max-h-96 overflow-y-auto">
+                <div
+                  v-for="(alert, index) in dashboardStore.criticalAlerts"
+                  :key="alert.id ?? alert.title ?? index"
+                  class="px-4 py-3 border-b border-gray-100 dark:border-gray-700"
+                >
+                  <p class="text-sm font-medium text-red-600">{{ alert.title }}</p>
+                  <p v-if="alert.message" class="text-xs text-gray-500 mt-0.5">{{ alert.message }}</p>
+                  <p v-if="alert.level" class="text-xs text-gray-400 mt-0.5">Niveau : {{ alert.level }}</p>
+                </div>
+                <div v-if="dashboardStore.criticalAlerts.length === 0" class="px-4 py-6 text-center">
+                  <p class="text-sm text-gray-500">Aucune alerte critique</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Dark mode toggle -->
           <button
@@ -180,6 +207,13 @@
       class="fixed inset-0 z-0"
       @click="showNotifications = false"
     ></div>
+
+    <!-- Click outside to close system alerts -->
+    <div
+      v-if="showAlerts"
+      class="fixed inset-0 z-0"
+      @click="showAlerts = false"
+    ></div>
   </header>
 </template>
 
@@ -201,6 +235,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
+import { useRouter } from 'vue-router'
 import { toIntlLocale } from '@/i18n/index.js'
 
 defineEmits(['toggle-sidebar'])
@@ -235,9 +270,24 @@ onUnmounted(() => {
 
 // Methods
 function handleSearch() {
-  if (searchQuery.value.trim()) {
-    // Implement search functionality
-    console.log('Searching for:', searchQuery.value)
+  const query = searchQuery.value.trim()
+  if (!query) return
+
+  // Recherche réelle : filtre la navigation du router (chemin + titre + meta).
+  const router = useRouter()
+  const normalized = query.toLowerCase()
+  const matches = router.getRoutes().filter((route) => {
+    if (!route.path.startsWith('/') || route.path.includes(':') || route.path === '/') return false
+    const haystack = `${route.path} ${route.meta?.title ?? ''} ${route.name ?? ''}`.toLowerCase()
+    return haystack.includes(normalized)
+  })
+
+  if (matches.length > 0) {
+    router.push(matches[0].path)
+  } else {
+    // Aucune route : cible la vue liste la plus proche par mot-clé du path.
+    const fallback = router.getRoutes().find((r) => r.path.includes(normalized) && !r.path.includes(':'))
+    if (fallback) router.push(fallback.path)
   }
 }
 

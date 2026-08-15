@@ -21,10 +21,8 @@ POST /v1/ai/voice/transcribe
 POST /v1/ai/workflows/prepare-payroll
 
 ## api.php — 46 route(s)
-DELETE /v1/admin/social-contributions/{param}
 DELETE /v1/platform/announcements/{param}
 DELETE /v1/platform/impersonations/{param}
-GET /v1/admin/social-contributions
 GET /v1/auth/google
 GET /v1/auth/google/callback
 GET /v1/company-requests
@@ -48,7 +46,6 @@ GET /v1/support-tickets
 GET /v1/support-tickets/{param}
 PATCH /v1/platform/auth/profile
 PATCH /v1/platform/support-tickets/{param}/triage
-POST /v1/admin/social-contributions
 POST /v1/company-requests
 POST /v1/onboarding/invitation/{param}/activate
 POST /v1/platform/announcements
@@ -66,7 +63,6 @@ POST /v1/trial/verify
 POST /v1/webhooks/chargily
 POST /v1/webhooks/email-bounce
 POST /v1/webhooks/stripe
-PUT /v1/admin/social-contributions/{param}
 
 ## modules/absence.php — 4 route(s)
 GET /v1/absences/{param}/proof
@@ -214,3 +210,36 @@ POST /user/logout
 POST /v1/user/google-signin
 POST /v1/user/login
 POST /v1/user/register
+
+# ── QA 2026-08-15 (#2662) : routes de modules DDD désormais scannées par la
+# garde (EdgeSync + SmartAttendance, enregistrées via loadRoutesFrom hors
+# api/routes/). Non documentées dans openapi.yaml pour l'instant — à
+# documenter en priorité (chantier openapi, voir #2662). Forme composée
+# api/v1/... (chemins absolus des providers).
+GET /api/v1/edge
+GET /api/v1/edge/download/docker-compose.yml
+GET /api/v1/edge/download/env-example
+GET /api/v1/edge/health
+GET /api/v1/edge/install.sh
+GET /api/v1/edge/license-public-key
+GET /api/v1/edge-node/{param}/pull
+GET /api/v1/edge/{param}
+GET /api/v1/smart-attendance/config
+GET /api/v1/smart-attendance/dashboard
+GET /api/v1/smart-attendance/employees/{param}/preference
+GET /api/v1/smart-attendance/mode-settings
+GET /api/v1/smart-attendance/my-sessions
+GET /api/v1/smart-attendance/sessions
+GET /api/v1/smart-attendance/sessions/{param}
+POST /api/v1/edge
+POST /api/v1/edge/heartbeat
+POST /api/v1/edge-node/{param}/heartbeat
+POST /api/v1/edge-node/{param}/push
+POST /api/v1/edge-node/validate-license
+POST /api/v1/edge/{param}/license
+POST /api/v1/edge/{param}/sync
+POST /api/v1/smart-attendance/geo-events
+POST /api/v1/smart-attendance/sessions/{param}/approve
+POST /api/v1/smart-attendance/sessions/{param}/reject
+PUT /api/v1/smart-attendance/mode-settings
+PUT /api/v1/smart-attendance/preferences

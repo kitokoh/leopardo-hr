@@ -224,6 +224,22 @@ class LeopardoClient:
         """Lister les modifications de taux en attente de validation — issue #1813"""
         return self.request("GET", "/admin/rate-validation/pending", **kwargs)
 
+    def listadminsocialcontributions(self, **kwargs):
+        """Lister les règles de cotisations sociales nationales (platform_admin) — issue #1815"""
+        return self.request("GET", "/admin/social-contributions", **kwargs)
+
+    def storeadminsocialcontribution(self, **kwargs):
+        """Créer une règle de cotisation nationale (platform_admin) — issue #1815"""
+        return self.request("POST", "/admin/social-contributions", **kwargs)
+
+    def destroyadminsocialcontribution(self, **kwargs):
+        """Supprimer une règle de cotisation nationale (platform_admin) — issue #1815"""
+        return self.request("DELETE", "/admin/social-contributions/{socialContribution}", **kwargs)
+
+    def updateadminsocialcontribution(self, **kwargs):
+        """Modifier une règle de cotisation nationale (platform_admin) — issue #1815"""
+        return self.request("PUT", "/admin/social-contributions/{socialContribution}", **kwargs)
+
     def listadmintaxslabs(self, **kwargs):
         """Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814"""
         return self.request("GET", "/admin/tax-slabs", **kwargs)

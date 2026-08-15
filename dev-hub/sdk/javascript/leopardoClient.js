@@ -255,6 +255,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/rate-validation/pending", options);
     },
 
+    /** Lister les règles de cotisations sociales nationales (platform_admin) — issue #1815 */
+    listAdminSocialContributions(options = {}) {
+      return request("GET", "/admin/social-contributions", options);
+    },
+
+    /** Créer une règle de cotisation nationale (platform_admin) — issue #1815 */
+    storeAdminSocialContribution(options = {}) {
+      return request("POST", "/admin/social-contributions", options);
+    },
+
+    /** Supprimer une règle de cotisation nationale (platform_admin) — issue #1815 */
+    destroyAdminSocialContribution(options = {}) {
+      return request("DELETE", "/admin/social-contributions/{socialContribution}", options);
+    },
+
+    /** Modifier une règle de cotisation nationale (platform_admin) — issue #1815 */
+    updateAdminSocialContribution(options = {}) {
+      return request("PUT", "/admin/social-contributions/{socialContribution}", options);
+    },
+
     /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
     listAdminTaxSlabs(options = {}) {
       return request("GET", "/admin/tax-slabs", options);
