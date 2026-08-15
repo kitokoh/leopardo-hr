@@ -313,6 +313,8 @@
                   <dd class="text-xs font-bold text-brand-400">{{ formatDateTime(health.adoption.attendance.last_punch_at) }}</dd>
                 </div>
               </dl>
+
+              
             </div>
           </section>
         </aside>

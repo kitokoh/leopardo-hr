@@ -23,9 +23,13 @@ class TrainingEnrollmentResource extends JsonResource
             'score' => $this->score,
             'feedback' => $this->feedback,
             'completed_at' => $this->completed_at?->toIso8601String(),
+            // Champs additifs compatibles client mobile (TrainingEnrollment.fromJson)
+            // — session.course chargée par SelfServiceController@myTrainings / TrainingController@allEnrollments.
+            'course_title' => $this->whenLoaded('session', fn (): ?string => $this->session?->course?->title),
+            'session_date' => $this->whenLoaded('session', fn (): ?string => $this->session?->start_date?->toDateString()),
+            'progress' => $this->whenLoaded('session', fn (): int => (int) round((float) ($this->score ?? 0))),
             'employee' => $this->whenLoaded('employee'),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }
-

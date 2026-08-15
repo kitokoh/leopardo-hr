@@ -29,72 +29,205 @@
       "workflows": [
         {
           "name": "auth_session",
-          "routes": ["/welcome", "/login", "/register", "/settings"],
-          "endpoints": ["/auth/login", "/auth/me", "/auth/logout", "/auth/google/token", "/auth/change-password", "/auth/language"],
+          "routes": [
+            "/welcome",
+            "/login",
+            "/register",
+            "/settings"
+          ],
+          "endpoints": [
+            "/auth/login",
+            "/auth/me",
+            "/auth/logout",
+            "/auth/google/token",
+            "/auth/change-password",
+            "/auth/language"
+          ],
           "screenFiles": [
             "lib/features/auth/screens/login_screen.dart",
             "lib/features/settings/screens/settings_screen.dart"
           ],
-          "sourceTokens": ["loginWithGoogle", ".login(", ".logout()", "changePassword", "_saveLanguage"]
+          "sourceTokens": [
+            "loginWithGoogle",
+            ".login(",
+            ".logout()",
+            "changePassword",
+            "_saveLanguage"
+          ]
         },
         {
           "name": "attendance",
-          "routes": ["/attendance", "/history", "/me/monthly", "/settings"],
-          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance", "/me/monthly-summary", "/tasks/today"],
+          "routes": [
+            "/attendance",
+            "/history",
+            "/me/monthly",
+            "/settings"
+          ],
+          "endpoints": [
+            "/attendance/today",
+            "/attendance/check-in",
+            "/attendance/check-out",
+            "/attendance/corrections",
+            "/attendance",
+            "/me/monthly-summary",
+            "/tasks/today"
+          ],
           "screenFiles": [
             "lib/features/attendance/screens/attendance_screen.dart",
             "lib/features/attendance/screens/history_screen.dart",
             "lib/features/attendance/screens/monthly_summary_screen.dart"
           ],
-          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "_showCorrectionSheet", "Mon mois complet", "Aucun pointage sur ce mois"]
+          "sourceTokens": [
+            "_handlePunch",
+            "HapticFeedback.mediumImpact",
+            ".checkIn(",
+            ".checkOut(",
+            "requestCorrection",
+            "_showCorrectionSheet",
+            "Mon mois complet",
+            "Aucun pointage sur ce mois"
+          ]
         },
         {
           "name": "absences",
-          "routes": ["/absences"],
-          "endpoints": ["/absences", "/me/leave-balances"],
+          "routes": [
+            "/absences"
+          ],
+          "endpoints": [
+            "/absences",
+            "/me/leave-balances"
+          ],
           "screenFiles": [
             "lib/features/absences/screens/absence_list_screen.dart"
           ],
-          "sourceTokens": ["_showAbsenceRequestSheet", "requestAbsence", "cancelAbsence", "RefreshIndicator"]
+          "sourceTokens": [
+            "_showAbsenceRequestSheet",
+            "requestAbsence",
+            "cancelAbsence",
+            "RefreshIndicator"
+          ]
         },
         {
           "name": "salary_advances",
-          "routes": ["/salary-advances"],
-          "endpoints": ["/salary-advances", "/salary-advances/$advanceId/confirm-received"],
+          "routes": [
+            "/salary-advances"
+          ],
+          "endpoints": [
+            "/salary-advances",
+            "/salary-advances/$advanceId/confirm-received"
+          ],
           "screenFiles": [
             "lib/features/salary_advances/screens/salary_advance_list_screen.dart"
           ],
-          "sourceTokens": ["_showRequestSheet", "requestAdvance", "cancelAdvance", "confirmReceived", "RefreshIndicator"]
+          "sourceTokens": [
+            "_showRequestSheet",
+            "requestAdvance",
+            "cancelAdvance",
+            "confirmReceived",
+            "RefreshIndicator"
+          ]
         },
         {
           "name": "payrolls",
-          "routes": ["/payrolls"],
-          "endpoints": ["/me/pay-slips", "/me/balance", "/me/pay-slips/$payslipId/pdf", "/me/payment-documents", "/me/payment-documents/${document.id}/download"],
+          "routes": [
+            "/payrolls"
+          ],
+          "endpoints": [
+            "/me/pay-slips",
+            "/me/balance",
+            "/me/pay-slips/$payslipId/pdf",
+            "/me/payment-documents",
+            "/me/payment-documents/${document.id}/download"
+          ],
           "screenFiles": [
             "lib/features/payrolls/screens/payroll_list_screen.dart",
             "lib/features/payrolls/data/payroll_repository.dart"
           ],
-          "sourceTokens": ["_downloadPdf", "downloadPayslipPdf", "getMyBalance", "getPaymentDocuments", "downloadPaymentDocument", "Documents paiement", "RefreshIndicator"]
+          "sourceTokens": [
+            "_downloadPdf",
+            "downloadPayslipPdf",
+            "getMyBalance",
+            "getPaymentDocuments",
+            "downloadPaymentDocument",
+            "Documents paiement",
+            "RefreshIndicator"
+          ]
         },
         {
           "name": "notifications",
-          "routes": ["/notifications"],
-          "endpoints": ["/notifications", "/notifications/read-all", "/device-tokens"],
+          "routes": [
+            "/notifications"
+          ],
+          "endpoints": [
+            "/notifications",
+            "/notifications/read-all",
+            "/device-tokens"
+          ],
           "screenFiles": [
             "lib/features/notifications/screens/notification_list_screen.dart"
           ],
-          "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
+          "sourceTokens": [
+            "markAllAsRead",
+            "markAsRead",
+            "RefreshIndicator"
+          ]
         },
         {
           "name": "personal_space",
-          "routes": ["/company-request", "/cabinet"],
-          "endpoints": ["/user/company-requests", "/company-requests", "/cabinet/folders"],
+          "routes": [
+            "/company-request",
+            "/cabinet"
+          ],
+          "endpoints": [
+            "/user/company-requests",
+            "/company-requests",
+            "/cabinet/folders"
+          ],
           "screenFiles": [
             "lib/features/user_auth/screens/user_home_screen.dart",
             "lib/features/user_auth/screens/company_request_screen.dart",
             "lib/features/personal_space/screens/personal_space_screen.dart"
           ],
-          "sourceTokens": ["context.push('/company-request')", "_submit", "context.push('/cabinet')"]
+          "sourceTokens": [
+            "context.push('/company-request')",
+            "_submit",
+            "context.push('/cabinet')"
+          ]
+        },
+        {
+          "name": "training_enrollments",
+          "routes": [
+            "/training"
+          ],
+          "endpoints": [
+            "/me/training-enrollments",
+            "/me/trainings"
+          ],
+          "screenFiles": [
+            "lib/features/training/screens/training_screen.dart"
+          ],
+          "sourceTokens": [
+            "trainingEnrollmentsProvider",
+            "getMyEnrollments"
+          ]
+        },
+        {
+          "name": "my_vehicles",
+          "routes": [
+            "/vehicles"
+          ],
+          "endpoints": [
+            "/me/vehicles",
+            "/vehicles/{vehicleId}/position"
+          ],
+          "screenFiles": [
+            "lib/features/vehicle_position/screens/vehicle_map_screen.dart"
+          ],
+          "sourceTokens": [
+            "getMyVehicles",
+            "getPosition",
+            "vehiclePositionProvider"
+          ]
         }
       ]
     },
@@ -121,181 +254,215 @@
       "workflows": [
         {
           "name": "auth_session",
-          "routes": ["/welcome", "/login", "/register", "/settings"],
-          "endpoints": ["/auth/login", "/auth/me", "/auth/logout", "/auth/google/token", "/auth/change-password", "/auth/language"],
+          "routes": [
+            "/welcome",
+            "/login",
+            "/register",
+            "/settings"
+          ],
+          "endpoints": [
+            "/auth/login",
+            "/auth/me",
+            "/auth/logout",
+            "/auth/google/token",
+            "/auth/change-password",
+            "/auth/language"
+          ],
           "screenFiles": [
             "lib/features/auth/screens/login_screen.dart",
             "lib/features/settings/screens/settings_screen.dart"
           ],
-          "sourceTokens": ["loginWithGoogle", ".login(", ".logout()", "changePassword", "_saveLanguage"]
+          "sourceTokens": [
+            "loginWithGoogle",
+            ".login(",
+            ".logout()",
+            "changePassword",
+            "_saveLanguage"
+          ]
         },
         {
           "name": "team_management",
-          "routes": ["/team", "/schedules", "/tasks"],
-          "endpoints": ["/employees", "/invitations", "/schedules", "/tasks", "/tasks/today"],
+          "routes": [
+            "/team",
+            "/schedules",
+            "/tasks"
+          ],
+          "endpoints": [
+            "/employees",
+            "/invitations",
+            "/schedules",
+            "/tasks",
+            "/tasks/today"
+          ],
           "screenFiles": [
             "lib/features/team/screens/team_screen.dart",
             "lib/features/schedules/screens/schedule_list_screen.dart",
             "lib/features/tasks/screens/task_list_screen.dart"
           ],
-          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer la regle", "Assigner une tache", "templateKey"]
+          "sourceTokens": [
+            "_openCreateEmployeeSheet",
+            ".create(",
+            "archive(",
+            "resendInvitation",
+            "contractStart",
+            "salaryBase",
+            "hourlyRate",
+            "scheduleId",
+            "_showScheduleSheet",
+            "Creer la regle",
+            "Assigner une tache",
+            "templateKey"
+          ]
         },
         {
           "name": "manager_decisions",
-          "routes": ["/absences", "/salary-advances", "/approvals"],
-          "endpoints": ["/absences", "/salary-advances", "/salary-advances/$advanceId/manager-approve", "/salary-advances/$advanceId/mark-paid", "/approvals/pending", "/approvals/$id/approve", "/approvals/$id/reject"],
+          "routes": [
+            "/absences",
+            "/salary-advances",
+            "/approvals"
+          ],
+          "endpoints": [
+            "/absences",
+            "/salary-advances",
+            "/salary-advances/$advanceId/manager-approve",
+            "/salary-advances/$advanceId/mark-paid",
+            "/approvals/pending",
+            "/approvals/$id/approve",
+            "/approvals/$id/reject"
+          ],
           "screenFiles": [
             "lib/features/absences/screens/absence_list_screen.dart",
             "lib/features/salary_advances/screens/salary_advance_list_screen.dart",
             "lib/features/approvals/screens/approval_screen.dart"
           ],
-          "sourceTokens": ["approveAbsence", "rejectAbsence", "approveAdvance", "rejectAdvance", "markPaid", "_approve(", "_reject("]
+          "sourceTokens": [
+            "approveAbsence",
+            "rejectAbsence",
+            "approveAdvance",
+            "rejectAdvance",
+            "markPaid",
+            "_approve(",
+            "_reject("
+          ]
         },
         {
           "name": "payrolls",
-          "routes": ["/payrolls"],
-          "endpoints": ["/payrolls", "/payroll/mobile-summary", "/pay-slips/$payslipId/pdf", "/payments/$payrollRunId/documents", "/me/payment-documents/${document.id}/download"],
+          "routes": [
+            "/payrolls"
+          ],
+          "endpoints": [
+            "/payrolls",
+            "/payroll/mobile-summary",
+            "/pay-slips/$payslipId/pdf",
+            "/payments/$payrollRunId/documents",
+            "/me/payment-documents/${document.id}/download"
+          ],
           "screenFiles": [
             "lib/features/payrolls/screens/payroll_list_screen.dart",
             "lib/features/payrolls/data/payroll_repository.dart"
           ],
-          "sourceTokens": ["getMobileSummary", "getPaymentDocumentsForPayrollRun", "downloadPaymentDocument", "Solde equipe", "Documents paiement", "_downloadPdf", "RefreshIndicator"]
+          "sourceTokens": [
+            "getMobileSummary",
+            "getPaymentDocumentsForPayrollRun",
+            "downloadPaymentDocument",
+            "Solde equipe",
+            "Documents paiement",
+            "_downloadPdf",
+            "RefreshIndicator"
+          ]
         },
         {
           "name": "attendance",
-          "routes": ["/attendance", "/history", "/me/monthly", "/settings", "/manager/attendance", "/manager/anomalies", "/manager/corrections"],
-          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance/corrections/$correctionId/approve", "/attendance/corrections/$correctionId/reject", "/attendance/anomalies", "/attendance", "/me/monthly-summary"],
+          "routes": [
+            "/attendance",
+            "/history",
+            "/me/monthly",
+            "/settings",
+            "/manager/attendance",
+            "/manager/anomalies",
+            "/manager/corrections"
+          ],
+          "endpoints": [
+            "/attendance/today",
+            "/attendance/check-in",
+            "/attendance/check-out",
+            "/attendance/corrections",
+            "/attendance/corrections/$correctionId/approve",
+            "/attendance/corrections/$correctionId/reject",
+            "/attendance/anomalies",
+            "/attendance",
+            "/me/monthly-summary"
+          ],
           "screenFiles": [
             "lib/features/attendance/screens/attendance_screen.dart",
             "lib/features/attendance/screens/history_screen.dart",
             "lib/features/attendance/screens/monthly_summary_screen.dart",
             "lib/features/manager/screens/manager_attendance_monitoring_screen.dart"
           ],
-          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "updateCorrection", "ManagerAttendanceMonitoringScreen", "ManagerAnomaliesScreen", "ManagerCorrectionsScreen", "approveCorrection", "rejectCorrection"]
+          "sourceTokens": [
+            "_handlePunch",
+            "HapticFeedback.mediumImpact",
+            ".checkIn(",
+            ".checkOut(",
+            "requestCorrection",
+            "updateCorrection",
+            "ManagerAttendanceMonitoringScreen",
+            "ManagerAnomaliesScreen",
+            "ManagerCorrectionsScreen",
+            "approveCorrection",
+            "rejectCorrection"
+          ]
         },
         {
           "name": "notifications",
-          "routes": ["/notifications"],
-          "endpoints": ["/notifications", "/notifications/read-all", "/device-tokens"],
+          "routes": [
+            "/notifications"
+          ],
+          "endpoints": [
+            "/notifications",
+            "/notifications/read-all",
+            "/device-tokens"
+          ],
           "screenFiles": [
             "lib/features/notifications/screens/notification_list_screen.dart"
           ],
-          "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
+          "sourceTokens": [
+            "markAllAsRead",
+            "markAsRead",
+            "RefreshIndicator"
+          ]
         },
         {
           "name": "company_branding",
-          "routes": ["/company/branding"],
-          "endpoints": ["/company/branding"],
+          "routes": [
+            "/company/branding"
+          ],
+          "endpoints": [
+            "/company/branding"
+          ],
           "screenFiles": [
             "lib/features/company_branding/screens/company_branding_screen.dart",
             "lib/features/company_branding/data/company_branding_repository.dart"
           ],
-          "sourceTokens": ["CompanyBrandingScreen", "Identite entreprise", ".update(", "/company/branding"]
-        }
-      ]
-    },
-    {
-      "name": "hr",
-      "root": "front/mobile_apps/leopardo_hr",
-      "requiredBackendExperienceRoutes": [
-        "/attendance",
-        "/absences",
-        "/salary-advances",
-        "/payrolls",
-        "/evaluations",
-        "/notifications",
-        "/cabinet",
-        "/team",
-        "/schedules",
-        "/tasks",
-        "/company/branding",
-        "/me/monthly",
-        "/history",
-        "/modules",
-        "/settings"
-      ],
-      "workflows": [
-        {
-          "name": "auth_session",
-          "routes": ["/welcome", "/login", "/register", "/settings"],
-          "endpoints": ["/auth/login", "/auth/me", "/auth/logout", "/auth/google/token", "/auth/change-password", "/auth/language"],
-          "screenFiles": [
-            "lib/features/auth/screens/login_screen.dart",
-            "lib/features/settings/screens/settings_screen.dart"
-          ],
-          "sourceTokens": ["loginWithGoogle", ".login(", ".logout()", "changePassword", "_saveLanguage"]
-        },
-        {
-          "name": "team_management",
-          "routes": ["/team", "/schedules", "/tasks"],
-          "endpoints": ["/employees", "/invitations", "/schedules", "/tasks", "/tasks/today"],
-          "screenFiles": [
-            "lib/features/team/screens/team_screen.dart",
-            "lib/features/schedules/screens/schedule_list_screen.dart",
-            "lib/features/tasks/screens/task_list_screen.dart"
-          ],
-          "sourceTokens": ["_openCreateEmployeeSheet", ".create(", "archive(", "resendInvitation", "contractStart", "salaryBase", "hourlyRate", "scheduleId", "_showScheduleSheet", "Creer la regle", "Assigner une tache", "templateKey"]
-        },
-        {
-          "name": "manager_decisions",
-          "routes": ["/absences", "/salary-advances", "/approvals"],
-          "endpoints": ["/absences", "/salary-advances", "/salary-advances/$advanceId/manager-approve", "/salary-advances/$advanceId/mark-paid", "/approvals/pending", "/approvals/$id/approve", "/approvals/$id/reject"],
-          "screenFiles": [
-            "lib/features/absences/screens/absence_list_screen.dart",
-            "lib/features/salary_advances/screens/salary_advance_list_screen.dart",
-            "lib/features/approvals/screens/approval_screen.dart"
-          ],
-          "sourceTokens": ["approveAbsence", "rejectAbsence", "approveAdvance", "rejectAdvance", "markPaid", "_approve(", "_reject("]
-        },
-        {
-          "name": "payrolls",
-          "routes": ["/payrolls"],
-          "endpoints": ["/payrolls", "/payroll/mobile-summary", "/pay-slips/$payslipId/pdf", "/payments/$payrollRunId/documents", "/me/payment-documents/${document.id}/download"],
-          "screenFiles": [
-            "lib/features/payrolls/screens/payroll_list_screen.dart",
-            "lib/features/payrolls/data/payroll_repository.dart"
-          ],
-          "sourceTokens": ["getMobileSummary", "getPaymentDocumentsForPayrollRun", "downloadPaymentDocument", "Solde equipe", "Documents paiement", "_downloadPdf", "RefreshIndicator"]
-        },
-        {
-          "name": "attendance",
-          "routes": ["/attendance", "/history", "/me/monthly", "/settings", "/manager/attendance", "/manager/anomalies", "/manager/corrections"],
-          "endpoints": ["/attendance/today", "/attendance/check-in", "/attendance/check-out", "/attendance/corrections", "/attendance/corrections/$correctionId/approve", "/attendance/corrections/$correctionId/reject", "/attendance/anomalies", "/attendance", "/me/monthly-summary"],
-          "screenFiles": [
-            "lib/features/attendance/screens/attendance_screen.dart",
-            "lib/features/attendance/screens/history_screen.dart",
-            "lib/features/attendance/screens/monthly_summary_screen.dart",
-            "lib/features/manager/screens/manager_attendance_monitoring_screen.dart"
-          ],
-          "sourceTokens": ["_handlePunch", "HapticFeedback.mediumImpact", ".checkIn(", ".checkOut(", "requestCorrection", "updateCorrection", "ManagerAttendanceMonitoringScreen", "ManagerAnomaliesScreen", "ManagerCorrectionsScreen", "approveCorrection", "rejectCorrection"]
-        },
-        {
-          "name": "notifications",
-          "routes": ["/notifications"],
-          "endpoints": ["/notifications", "/notifications/read-all", "/device-tokens"],
-          "screenFiles": [
-            "lib/features/notifications/screens/notification_list_screen.dart"
-          ],
-          "sourceTokens": ["markAllAsRead", "markAsRead", "RefreshIndicator"]
-        },
-        {
-          "name": "company_branding",
-          "routes": ["/company/branding"],
-          "endpoints": ["/company/branding"],
-          "screenFiles": [
-            "lib/features/company_branding/screens/company_branding_screen.dart",
-            "lib/features/company_branding/data/company_branding_repository.dart"
-          ],
-          "sourceTokens": ["CompanyBrandingScreen", "Identite entreprise", ".update(", "/company/branding"]
+          "sourceTokens": [
+            "CompanyBrandingScreen",
+            "Identite entreprise",
+            ".update(",
+            "/company/branding"
+          ]
         },
         {
           "name": "manager_dashboard_placeholder",
-          "routes": ["/manager/dashboard"],
+          "routes": [
+            "/manager/dashboard"
+          ],
           "endpoints": [],
           "screenFiles": [
             "lib/features/manager/screens/manager_placeholder_screen.dart"
           ],
-          "sourceTokens": ["ManagerPlaceholderScreen"]
+          "sourceTokens": [
+            "ManagerPlaceholderScreen"
+          ]
         }
       ]
     },
@@ -321,35 +488,86 @@
       "workflows": [
         {
           "name": "platform_auth_session",
-          "routes": ["/platform/login", "/platform"],
-          "endpoints": ["/platform/auth/login", "/platform/auth/me", "/platform/auth/logout"],
+          "routes": [
+            "/platform/login",
+            "/platform"
+          ],
+          "endpoints": [
+            "/platform/auth/login",
+            "/platform/auth/me",
+            "/platform/auth/logout"
+          ],
           "screenFiles": [
             "lib/src/features/auth/platform_login_screen.dart",
             "lib/src/features/dashboard/platform_dashboard_screen.dart"
           ],
-          "sourceTokens": ["platformAuthControllerProvider", ".login(", ".logout()", "l10n.login"]
+          "sourceTokens": [
+            "platformAuthControllerProvider",
+            ".login(",
+            ".logout()",
+            "l10n.login"
+          ]
         },
         {
           "name": "platform_companies",
-          "routes": ["/platform", "/platform/companies", "/platform/companies/new", "/platform/companies/:companyId"],
-          "endpoints": ["/platform/metrics/overview", "/platform/plans", "/platform/country-defaults", "/platform/companies", "/platform/companies/$companyId/health", "/platform/companies/$companyId/subscription", "/platform/companies/$companyId/features"],
+          "routes": [
+            "/platform",
+            "/platform/companies",
+            "/platform/companies/new",
+            "/platform/companies/:companyId"
+          ],
+          "endpoints": [
+            "/platform/metrics/overview",
+            "/platform/plans",
+            "/platform/country-defaults",
+            "/platform/companies",
+            "/platform/companies/$companyId/health",
+            "/platform/companies/$companyId/subscription",
+            "/platform/companies/$companyId/features"
+          ],
           "screenFiles": [
             "lib/src/features/dashboard/platform_dashboard_screen.dart",
             "lib/src/features/companies/company_screen.dart",
             "lib/src/features/companies/company_create_screen.dart",
             "lib/src/features/companies/company_detail_screen.dart"
           ],
-          "sourceTokens": ["context.push('/platform/companies')", "context.push('/platform/companies/new')", "Uri.encodeComponent(company.id)", "createCompany", "platformCountryDefaultsProvider", "Creer le client", "Pays du client", "Activer immediatement", "companyHealth", "companySubscription", "companyFeatures", "plans", "updateCompanySubscription", "updateCompanyFeatures", "Modifier abonnement", "Modifier modules"]
+          "sourceTokens": [
+            "context.push('/platform/companies')",
+            "context.push('/platform/companies/new')",
+            "Uri.encodeComponent(company.id)",
+            "createCompany",
+            "platformCountryDefaultsProvider",
+            "Creer le client",
+            "Pays du client",
+            "Activer immediatement",
+            "companyHealth",
+            "companySubscription",
+            "companyFeatures",
+            "plans",
+            "updateCompanySubscription",
+            "updateCompanyFeatures",
+            "Modifier abonnement",
+            "Modifier modules"
+          ]
         },
         {
           "name": "platform_company_requests",
-          "routes": ["/platform/company-requests"],
-          "endpoints": ["/platform/company-requests"],
+          "routes": [
+            "/platform/company-requests"
+          ],
+          "endpoints": [
+            "/platform/company-requests"
+          ],
           "screenFiles": [
             "lib/src/features/dashboard/platform_dashboard_screen.dart",
             "lib/src/features/companies/company_requests_screen.dart"
           ],
-          "sourceTokens": ["context.push('/platform/company-requests')", "reviewCompanyRequest", "Approuver", "Refuser"]
+          "sourceTokens": [
+            "context.push('/platform/company-requests')",
+            "reviewCompanyRequest",
+            "Approuver",
+            "Refuser"
+          ]
         }
       ]
     },

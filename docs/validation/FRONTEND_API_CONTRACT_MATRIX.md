@@ -1,6 +1,6 @@
 # Frontend API Contract Matrix
 
-Derniere mise a jour : 2026-06-01
+Derniere mise a jour : 2026-08-14
 
 Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend Laravel. Toute nouvelle route critique doit avoir un endpoint backend, un role attendu et un test associe.
 
@@ -24,6 +24,12 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Mobile | Pointage du jour | `GET /api/v1/attendance/today` | employe/manager | `Attendance\TodayAndHistoryTest`, `FrontendApiContractTest` |
 | Mobile | Historique pointage | `GET /api/v1/attendance` | employe/manager | `Attendance\TodayAndHistoryTest`, `ApiListQueryContractTest`, `FrontendApiContractTest` |
 | Mobile | Resume mensuel | `GET /api/v1/me/monthly-summary` | employe/manager | `FrontendApiContractTest` |
+| Mobile employee | Inscriptions formation | `GET /api/v1/me/training-enrollments` (alias `/me/trainings`) | employe | `QaHardeningEndpointsTest`, `FrontendApiContractTest` (vague QA 2026-08-14) |
+| Mobile employee | Mes vehicules assignes | `GET /api/v1/me/vehicles` | employe | `QaHardeningEndpointsTest`, `FrontendApiContractTest` (vague QA 2026-08-14) |
+| Admin cockpit | Liste utilisateurs plateforme | `GET /api/v1/admin/users` | super_admin | `QaHardeningEndpointsTest` (vague QA 2026-08-14) |
+| Admin cockpit | Sessions formation tenant | `GET /api/v1/training/sessions` | manager | `QaHardeningEndpointsTest` (vague QA 2026-08-14) |
+| Admin cockpit | Inscriptions formation tenant | `GET /api/v1/training/enrollments` | manager | `QaHardeningEndpointsTest` (vague QA 2026-08-14) |
+| Admin cockpit | Tester un webhook | `POST /api/v1/webhooks/{webhookEndpoint}/test` | manager principal | `QaHardeningEndpointsTest` (vague QA 2026-08-14) |
 | Mobile | Liste equipe RH + statuts operationnels | `GET /api/v1/employees` | manager principal/RH | `ApiListQueryContractTest`, `FrontendApiContractTest`, `EmployeesRbacTest`, `repository_contract_test.dart` |
 | Mobile | Creation employe RH + horaire | `POST /api/v1/employees` | manager principal/RH | `ScheduleControllerTest`, `repository_contract_test.dart` |
 | Mobile | Detail employe RH | `GET /api/v1/employees/{employee}` | manager principal/RH | `FrontendApiContractTest` |

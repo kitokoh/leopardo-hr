@@ -116,6 +116,19 @@
 
 ---
 
+## Vague QA Hardening 2026-08-14 (session test plateforme)
+
+| Élément | État | Issue |
+|---------|------|-------|
+| `GET /me/training-enrollments` (mobile employee, alias `/me/trainings` + shape enrichie) | ✅ | #2175 |
+| `GET /me/vehicles` (véhicules assignés à l'employé, position Traccar null-safe) | ✅ | #2176 |
+| `GET /training/sessions` + `GET /training/enrollments` (cockpit tenant) | ✅ | #2182 |
+| `POST /webhooks/{webhookEndpoint}/test` (événement `webhook.test`) | ✅ | #2183 |
+| `GET /admin/users` (agrégat super-admin, remplace mocks UsersView) | ✅ | #2184 |
+| Cockpit admin sur données réelles (Users, Analytics, System) — mocks supprimés | ✅ | #2185/#2186/#2187 |
+| `legal_reference` sur tax_slabs + social_contributions (migration additive) | ✅ | #2188 |
+| `.env.example` parité config/ (MAIL_URL, BIOMETRIC_RETENTION_MONTHS) | ✅ | #1487 |
+
 ## Conventions de mise à jour de ce fichier
 
 - À chaque merge qui change l'état d'un pays ou d'un module → mettre à jour ce registre
@@ -125,5 +138,5 @@
 
 ---
 
-**Dernière mise à jour :** 2026-08-14
+**Dernière mise à jour :** 2026-08-14 (vague QA hardening)
 **Mis à jour par :** Neo (Pulumi Agent)

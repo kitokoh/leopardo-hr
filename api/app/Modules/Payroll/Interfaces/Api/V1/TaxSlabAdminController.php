@@ -85,6 +85,7 @@ class TaxSlabAdminController extends Controller
                 'company_id' => null,
                 'country_code' => $countryCode,
                 'name' => $validated['name'],
+                'legal_reference' => $validated['legal_reference'] ?? null,
                 'min_amount' => $validated['min_amount'],
                 'max_amount' => $validated['max_amount'] ?? null,
                 'rate' => $validated['rate'],
@@ -264,7 +265,7 @@ class TaxSlabAdminController extends Controller
     }
 
     /**
-     * @return array{country_code: string, name: string, min_amount: float, max_amount?: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null}
+     * @return array{country_code: string, name: string, legal_reference?: string|null, min_amount: float, max_amount?: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null}
      */
     private function validatePayload(Request $request, bool $partial = false): array
     {
@@ -272,6 +273,7 @@ class TaxSlabAdminController extends Controller
             // #1951 : contrat partagé du moteur (plus de liste in: hardcodée).
             'country_code' => ['required', 'string', 'size:2', Rule::in($this->payrollCalculator->rulesResolver()->supportedCountryCodes())],
             'name' => ['required', 'string', 'max:150'],
+            'legal_reference' => ['nullable', 'string', 'max:200'],
             'min_amount' => ['required', 'numeric', 'min:0'],
             'max_amount' => ['nullable', 'numeric', 'min:0'],
             'rate' => ['required', 'numeric', 'min:0', 'max:100'],
@@ -286,7 +288,7 @@ class TaxSlabAdminController extends Controller
 
         $validated = $request->validate($rules);
 
-        /** @var array{country_code: string, name: string, min_amount: float, max_amount?: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null} $validated */
+        /** @var array{country_code: string, name: string, legal_reference?: string|null, min_amount: float, max_amount?: float|null, rate: float, fixed_deduction?: float, effective_from: string, effective_to?: string|null} $validated */
         return $validated;
     }
 
@@ -318,6 +320,7 @@ class TaxSlabAdminController extends Controller
             'company_id' => $slab->company_id,
             'country_code' => $slab->country_code,
             'name' => $slab->name,
+            'legal_reference' => $slab->legal_reference,
             'min_amount' => $slab->min_amount,
             'max_amount' => $slab->max_amount,
             'rate' => $slab->rate,

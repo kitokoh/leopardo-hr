@@ -29,7 +29,7 @@ const dashboardStore = useDashboardStore()
 
 const selectedUser = computed(() => {
   const id = Number(route.params.id)
-  return dashboardStore.users.find(user => user.id === id) || dashboardStore.users[0] || null
+  return dashboardStore.users.find(user => user.id === id) || null
 })
 
 function goBack() {

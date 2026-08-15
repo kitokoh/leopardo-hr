@@ -90,6 +90,7 @@ class SocialContributionAdminController extends Controller
                 'company_id' => null,
                 'country_code' => $countryCode,
                 'name' => $validated['name'],
+                'legal_reference' => $validated['legal_reference'] ?? null,
                 'code' => $validated['code'],
                 'type' => $validated['type'],
                 'rate' => $validated['rate'],
@@ -206,7 +207,7 @@ class SocialContributionAdminController extends Controller
     }
 
     /**
-     * @return array{country_code: string, name: string, code: string, type: string, rate: float, cap?: float|null, effective_from: string, effective_to?: string|null}
+     * @return array{country_code: string, name: string, legal_reference?: string|null, code: string, type: string, rate: float, cap?: float|null, effective_from: string, effective_to?: string|null}
      */
     private function validatePayload(Request $request, bool $partial = false): array
     {
@@ -214,6 +215,7 @@ class SocialContributionAdminController extends Controller
             // #1951 : contrat partagé du moteur (plus de liste in: hardcodée).
             'country_code' => ['required', 'string', 'size:2', Rule::in($this->payrollCalculator->rulesResolver()->supportedCountryCodes())],
             'name' => ['required', 'string', 'max:150'],
+            'legal_reference' => ['nullable', 'string', 'max:200'],
             'code' => ['required', 'string', 'max:50'],
             'type' => ['required', Rule::in(['employee', 'employer'])],
             'rate' => ['required', 'numeric', 'min:0', 'max:100'],
@@ -228,7 +230,7 @@ class SocialContributionAdminController extends Controller
 
         $validated = $request->validate($rules);
 
-        /** @var array{country_code: string, name: string, code: string, type: string, rate: float, cap?: float|null, effective_from: string, effective_to?: string|null} $validated */
+        /** @var array{country_code: string, name: string, legal_reference?: string|null, code: string, type: string, rate: float, cap?: float|null, effective_from: string, effective_to?: string|null} $validated */
         return $validated;
     }
 
@@ -252,6 +254,7 @@ class SocialContributionAdminController extends Controller
             'company_id' => $contribution->company_id,
             'country_code' => $contribution->country_code,
             'name' => $contribution->name,
+            'legal_reference' => $contribution->legal_reference,
             'code' => $contribution->code,
             'type' => $contribution->type,
             'rate' => $contribution->rate,

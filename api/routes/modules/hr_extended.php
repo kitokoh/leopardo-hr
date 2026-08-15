@@ -18,20 +18,19 @@ declare(strict_types=1);
 // ── Modules migrés ─────────────────────────────────────────────────────────────
 use App\Modules\Attendance\Interfaces\Api\V1\ApprovalController;
 use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
+use App\Modules\Fleet\Interfaces\Api\V1\VehicleController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\HrReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OrgChartController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\SelfServiceController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\TrainingController;
+use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
 use App\Modules\Planning\Interfaces\Api\V1\LeavePolicyController;
 use App\Modules\Recruitment\Interfaces\Api\V1\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\RecruitmentController;
-
-use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
-use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
-
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -42,9 +41,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/contract', [ContractController::class, 'myActiveContract']);
     Route::get('/me/career', [SelfServiceController::class, 'myCareer']);
     Route::get('/me/trainings', [SelfServiceController::class, 'myTrainings']);
+    // Alias compatible client mobile employee (TrainingEnrollment shape enrichie).
+    Route::get('/me/training-enrollments', [SelfServiceController::class, 'myTrainings']);
     Route::post('/me/trainings/{sessionId}/enroll', [SelfServiceController::class, 'selfEnroll'])->whereNumber('sessionId');
     Route::get('/me/loans', [SelfServiceController::class, 'myLoans']);
     Route::get('/me/loans/{loanId}/repayments', [SelfServiceController::class, 'myLoanRepayments'])->whereNumber('loanId');
+    Route::get('/me/vehicles', [VehicleController::class, 'myVehicles']);
 
     // ── Org Chart (all employees, read-only) ─────────────────────────────
     Route::get('/org-chart', [OrgChartController::class, 'index']);
@@ -61,9 +63,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/training/courses', [TrainingController::class, 'indexCourses']);
     Route::get('/training/courses/{trainingCourse}', [TrainingController::class, 'showCourse']);
     Route::get('/training/courses/{trainingCourse}/sessions', [TrainingController::class, 'indexSessions']);
-    // Listes globales (toutes formations) - QA wave 2026-08-14 T003 (#2228).
-    Route::get('/training/sessions', [TrainingController::class, 'indexSessionsAll']);
-    Route::get('/training/enrollments', [TrainingController::class, 'indexEnrollments']);
+    Route::get('/training/sessions', [TrainingController::class, 'allSessions']);
+    Route::get('/training/enrollments', [TrainingController::class, 'allEnrollments']);
     Route::post('/training/sessions/{trainingSession}/enroll', [TrainingController::class, 'enroll']);
 
     // ── Loan read (employees can see their loans) ────────────────────────

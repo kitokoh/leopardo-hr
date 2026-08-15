@@ -48,7 +48,7 @@
           </span>
         </div>
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
-          <div v-for="item in pipeline.leads" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 hover:border-brand-500 transition-colors cursor-pointer" @click="openRequest(item.id)">
+          <div v-for="item in pipeline.leads" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
             <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non précisé' }}</p>
             <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
@@ -217,10 +217,6 @@ function formatSource(source) {
   return SOURCE_LABELS[source] || source
 }
 
-function openRequest(id) {
-  // Carry the lead id so the support queue can focus the matching request.
-  router.push({ path: '/support', query: { request: id } })
-}
 
 function openCompany(companyId) {
   router.push(`/companies/${companyId}`)

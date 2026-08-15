@@ -457,6 +457,17 @@ Procedure recommandee :
 - Preferer recuperer uniquement les fichiers utiles avec `git checkout <branche> -- <fichier>` dans une branche federatrice propre creee depuis `origin/main`.
 - Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
 
+## Lecon 2026-08-14 — Vague QA hardening : endpoints reels, mocks cockpit, contrats
+
+- **Les vues admin appellent parfois des chemins `/v1/...` alors que le backend sert le cockpit sous `/admin/...`** (auth `super_admin_api`). Avant de déclarer une vue cassée, vérifier `php artisan route:list` et le mapping du client (`normalizeApiPath` ne touche que `/v1/`).
+- **Cockpit admin : ne jamais afficher de données fabriquées.** Users/Analytics/System ont été réécrits sur des endpoints réels (`/admin/users`, `/admin/dashboard/stats|activities|alerts`, `/health/live`, `/health/ready`). Les sections sans backend affichent un état « non disponible » explicite. Toute nouvelle vue cockpit doit consommer un endpoint réel ou un état vide honnête.
+- **Mobile employee : les écrans Formation et Véhicules appelaient `/me/training-enrollments` et `/me/vehicles` inexistants (404).** La règle : tout repository mobile doit être cross-checké contre `php artisan route:list` (extraire les chaînes `'/...'` des repositories Dart et vérifier chaque endpoint — pattern réutilisable, cf. `check-openapi-route-coverage.py`).
+- **`TrainingEnrollmentResource`** expose désormais `course_title`, `session_date`, `progress` (additif, charge `session.course`) — l'écran Formation employee attend cette shape.
+- **`/me/vehicles`** renvoie les véhicules `assigned_driver_id` = employé courant avec position Traccar best-effort (null-safe — ne jamais faire échouer la liste si le traqueur est hors ligne).
+- **Webhooks : `POST /webhooks/{webhookEndpoint}/test`** dispatche `webhook.test` (tracé dans `webhook_deliveries`), 403 hors `principal`, 404 cross-tenant.
+- **`legal_reference`** est maintenant une colonne nullable sur `tax_slabs` et `social_contributions` (migration additive) — le champ du formulaire TaxRates est réellement persisté.
+- **`.env.example`** : garder la parité avec `config/` (`check-env-example-parity.sh`), sinon le check CI rouge.
+
 ## Historique utile
 
 ### 2026-05-24 - Vitrine proxy API, pricing et plan Jules i18n

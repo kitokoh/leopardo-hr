@@ -63,6 +63,7 @@
                   >
                     Approuver
                   </button>
+                  <span class="text-xs font-semibold text-slate-400">Approuvé</span>
                 </td>
               </tr>
               <tr v-if="partners.length === 0">
