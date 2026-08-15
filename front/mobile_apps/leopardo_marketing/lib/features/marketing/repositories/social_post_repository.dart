@@ -12,11 +12,11 @@ class SocialPostRepository {
   }
 
   Future<Map<String, dynamic>> createPost(Map<String, dynamic> data) async {
-    final response = await apiClient.requestWithRetry('/marketing/posts', method: 'POST', data: data);
+    final response = await apiClient.requestWithRetry('/marketing/posts', method: 'POST', maxRetriesOverride: 0, data: data);
     return extractDataMap(response.data);
   }
 
   Future<void> publishPost(String postId) async {
-    await apiClient.requestWithRetry('/marketing/posts/$postId/publish', method: 'POST');
+    await apiClient.requestWithRetry('/marketing/posts/$postId/publish', method: 'POST', maxRetriesOverride: 0);
   }
 }

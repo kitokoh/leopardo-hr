@@ -22,6 +22,7 @@ class UserAuthRepository {
       '/user/register',
       method: 'POST',
       isLoginRequest: true,
+      maxRetriesOverride: 0,
       data: {
         'first_name': firstName,
         'last_name': lastName,
@@ -69,6 +70,7 @@ class UserAuthRepository {
       '/user/google-signin',
       method: 'POST',
       isLoginRequest: true,
+      maxRetriesOverride: 0,
       data: {
         'google_id': googleId,
         'email': email,

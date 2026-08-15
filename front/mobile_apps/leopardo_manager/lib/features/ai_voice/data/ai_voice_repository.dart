@@ -24,6 +24,7 @@ class AiVoiceRepository {
     final response = await apiClient.requestWithRetry(
       '/ai/voice/transcribe',
       method: 'POST',
+      maxRetriesOverride: 0,
       timeoutOverride: const Duration(seconds: 45),
       data: formData,
     );
@@ -34,6 +35,7 @@ class AiVoiceRepository {
     final response = await apiClient.requestWithRetry<List<int>>(
       '/ai/voice/synthesize',
       method: 'POST',
+      maxRetriesOverride: 0,
       data: {'text': text},
       timeoutOverride: const Duration(seconds: 45),
       options: Options(responseType: ResponseType.bytes),

@@ -118,7 +118,9 @@ class ApiClient {
   }
 
   /// Performs a request with automatic retry for cold-start (502/503/504)
-  /// and network errors. Uses extended timeouts for login requests.
+  /// and network errors only when the HTTP method is idempotent. Mutations
+  /// default to one attempt; callers may opt into a different policy only
+  /// with an explicit [maxRetriesOverride] and an idempotency guarantee.
   Future<Response<T>> requestWithRetry<T>(
     String path, {
     String method = 'GET',
@@ -130,9 +132,18 @@ class ApiClient {
     Duration? timeoutOverride,
     RetryCallback? onRetry,
   }) async {
+    // A response can be lost after the server has committed a mutation.
+    // Retrying POST/PATCH (and any future mutation method) can therefore
+    // duplicate accounts, AI charges or published content. Only methods with
+    // HTTP idempotency semantics keep the automatic transient-error retry.
+    final normalizedMethod = method.toUpperCase();
+    final isIdempotentMethod = const {'GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'}
+        .contains(normalizedMethod);
     final maxRetries =
         maxRetriesOverride ??
-        (isLoginRequest ? _loginMaxRetries : _defaultMaxRetries);
+        (isIdempotentMethod
+            ? (isLoginRequest ? _loginMaxRetries : _defaultMaxRetries)
+            : 0);
     final timeout =
         timeoutOverride ?? (isLoginRequest ? _loginTimeout : _defaultTimeout);
 

@@ -10,6 +10,7 @@ class AiChatRepository {
     final response = await apiClient.requestWithRetry(
       '/ai/chat',
       method: 'POST',
+      maxRetriesOverride: 0,
       timeoutOverride: const Duration(seconds: 30),
       data: {
         'message': message,
