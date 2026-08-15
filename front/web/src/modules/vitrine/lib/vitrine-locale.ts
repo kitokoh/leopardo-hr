@@ -102,6 +102,7 @@ type LandingCopy = {
     subtitle: string
     recommended: string
     currency: string
+    annualSavings: string
   }
   testimonials: {
     badge: string
@@ -266,6 +267,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employes actifs et vos besoins terrain.',
       recommended: 'Recommande',
       currency: 'EUR',
+      annualSavings: "Jusqu'a 17% d'economie",
     },
     testimonials: {
       badge: 'Temoignages',
@@ -426,6 +428,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Start with a free pilot, then pay based on active employees and field operations needs.',
       recommended: 'Recommended',
       currency: 'EUR',
+      annualSavings: "Save up to 17%",
     },
     testimonials: {
       badge: 'Testimonials',
@@ -586,6 +589,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Ucretsiz pilotla baslayin, sonra aktif calisan ve saha ihtiyaclarina gore odeyin.',
       recommended: 'Onerilen',
       currency: 'EUR',
+      annualSavings: "%17'ye varan tasarruf",
     },
     testimonials: {
       badge: 'Musteriler',
@@ -746,6 +750,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'ابدأ بتشغيل تجريبي مجاني ثم ادفع حسب الموظفين النشطين واحتياجات الميدان.',
       recommended: 'موصى به',
       currency: 'EUR',
+      annualSavings: 'وفّر حتى 17%',
     },
     testimonials: {
       badge: 'العملاء',
