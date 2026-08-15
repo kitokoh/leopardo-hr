@@ -53,7 +53,7 @@ type FaqItem = {
 
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
-  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
+  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string; freeBadge: string; freePriceLabel: string; freeNoCard: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
@@ -84,6 +84,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
       trialNote: '30 jours offerts · Aucune CB requise',
+      freeBadge: '100% Gratuit',
+      freePriceLabel: 'Gratuit',
+      freeNoCard: 'Sans carte bancaire · Pour toujours',
     },
     currency: {
       label: 'Afficher les prix en',
@@ -194,6 +197,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
       trialNote: '30 days free · No credit card required',
+      freeBadge: '100% Free',
+      freePriceLabel: 'Free',
+      freeNoCard: 'No credit card · Forever',
     },
     currency: {
       label: 'Show prices in',
@@ -304,6 +310,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
       trialNote: '30 gün ücretsiz · Kredi kartı gerekmez',
+      freeBadge: '%100 Ücretsiz',
+      freePriceLabel: 'Ücretsiz',
+      freeNoCard: 'Kredi kartı gerekmez · Her zaman',
     },
     currency: {
       label: 'Fiyatları şu para birimiyle göster',
@@ -414,6 +423,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
       trialNote: '30 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
+      freeBadge: 'مجاني 100%',
+      freePriceLabel: 'مجاني',
+      freeNoCard: 'بدون بطاقة ائتمان · للأبد',
     },
     currency: {
       label: 'عرض الأسعار بعملة',
@@ -864,7 +876,7 @@ export default function PricingPage() {
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg">
                           <Gift className="w-3 h-3" />
-                          100% Gratuit
+                          {copy.plans.freeBadge}
                         </div>
                       </div>
                     )}
@@ -883,7 +895,7 @@ export default function PricingPage() {
                       <div className="flex items-baseline gap-1.5">
                         {isFree ? (
                           <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                            Gratuit
+                            {copy.plans.freePriceLabel}
                           </span>
                         ) : hasNumericPrice ? (
                           <>
@@ -902,7 +914,7 @@ export default function PricingPage() {
                       </div>
                       {isFree ? (
                         <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-                          Sans carte bancaire · Pour toujours
+                          {copy.plans.freeNoCard}
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
