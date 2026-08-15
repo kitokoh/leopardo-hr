@@ -17,6 +17,8 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "desktop-bridge" / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+# Attendance data contains PII: never inherit a world-readable umask.
+DATA_DIR.chmod(0o700)
 DB_PATH = DATA_DIR / "kiosk.db"
 CONFIG_PATH = ROOT / "config.json"
 
@@ -74,7 +76,11 @@ RETRY_MAX_SECONDS = 900
 class LocalStore:
     def __init__(self, path: Path) -> None:
         self.path = path
+        if isinstance(path, Path) and path.exists():
+            path.chmod(0o600)
         self.conn = sqlite3.connect(path, check_same_thread=False)
+        if isinstance(path, Path):
+            path.chmod(0o600)
         self.conn.row_factory = sqlite3.Row
         self._init_schema()
 
