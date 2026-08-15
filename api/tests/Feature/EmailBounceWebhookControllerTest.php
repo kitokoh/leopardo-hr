@@ -39,6 +39,7 @@ class EmailBounceWebhookControllerTest extends TestCase
 
     public function test_hard_bounce_stamps_employee_and_records_audit_event(): void
     {
+        config()->set('services.mail_bounce_webhook.secret', 'super-secret');
         $employee = $this->employee();
         $this->bindLookupStub($employee);
 
@@ -46,7 +47,7 @@ class EmailBounceWebhookControllerTest extends TestCase
             'email' => $employee->email,
             'event' => 'bounce',
             'reason' => 'mailbox does not exist',
-        ]);
+        ], ['X-Bounce-Webhook-Secret' => 'super-secret']);
 
         $response->assertOk()->assertJsonPath('received', true);
 
@@ -65,13 +66,14 @@ class EmailBounceWebhookControllerTest extends TestCase
 
     public function test_delivered_event_is_recorded_without_stamping_a_bounce(): void
     {
+        config()->set('services.mail_bounce_webhook.secret', 'super-secret');
         $employee = $this->employee();
         $this->bindLookupStub($employee);
 
         $response = $this->postJson('/api/v1/webhooks/email-bounce', [
             'email' => $employee->email,
             'event' => 'delivered',
-        ]);
+        ], ['X-Bounce-Webhook-Secret' => 'super-secret']);
 
         $response->assertOk()->assertJsonPath('received', true);
         $this->assertNull($employee->fresh()->email_bounced_at);
@@ -85,12 +87,13 @@ class EmailBounceWebhookControllerTest extends TestCase
 
     public function test_unknown_email_is_acknowledged_without_side_effects(): void
     {
+        config()->set('services.mail_bounce_webhook.secret', 'super-secret');
         $this->bindLookupStub(null);
 
         $response = $this->postJson('/api/v1/webhooks/email-bounce', [
             'email' => 'unknown@example.test',
             'event' => 'bounce',
-        ]);
+        ], ['X-Bounce-Webhook-Secret' => 'super-secret']);
 
         $response->assertOk()->assertJsonPath('received', true);
         $this->assertSame(0, CommunicationEvent::query()->count());

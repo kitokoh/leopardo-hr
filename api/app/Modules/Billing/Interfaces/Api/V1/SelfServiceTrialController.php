@@ -96,7 +96,17 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $this->requestTrialSignup->execute($validated);
+        $otpSent = $this->requestTrialSignup->execute($validated);
+
+        if (! $otpSent) {
+            // #3057 : l'échec d'envoi OTP ne doit jamais être avalé — le
+            // prospect saurait « code envoyé » sans jamais recevoir le code.
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'OTP_SEND_FAILED',
+                'message' => __('billing.trial_otp_send_failed'),
+            ], 502);
+        }
 
         return new JsonResponse([
             'success' => true,
@@ -217,7 +227,7 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
-                    'days' => 30,
+                    'days' => 14,
                     'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [

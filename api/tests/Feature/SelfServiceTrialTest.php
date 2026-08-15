@@ -51,6 +51,32 @@ class SelfServiceTrialTest extends TestCase
         });
     }
 
+    public function test_signup_returns_502_when_otp_mail_fails(): void
+    {
+        // #3057 : un échec d'envoi OTP ne doit jamais répondre 200 « code
+        // envoyé » — le prospect doit savoir que le code n'est pas parti.
+        Mail::shouldReceive('to')
+            ->once()
+            ->andReturnSelf();
+        Mail::shouldReceive('send')
+            ->once()
+            ->andThrow(new \RuntimeException('SMTP down'));
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@retry.dz',
+            'company' => 'Retry Algeria',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+        ]);
+
+        $response->assertStatus(502)
+            ->assertJson([
+                'success' => false,
+                'error' => 'OTP_SEND_FAILED',
+            ]);
+    }
+
     public function test_can_verify_otp_and_provision_trial_tenant()
     {
         Mail::fake();
@@ -164,8 +190,11 @@ class SelfServiceTrialTest extends TestCase
             'country' => 'DZ',
         ])->assertStatus(200);
 
-        $otp = CompanyRequest::where('email', 'founder@existing.com')
-            ->where('status', 'pending')->first()->verification_token;
+        $companyRequest = CompanyRequest::where('email', 'founder@existing.com')
+            ->where('status', 'pending')->first();
+        $this->assertNotNull($companyRequest);
+        /** @var \App\Core\Tenant\Domain\Models\CompanyRequest $companyRequest */
+        $otp = $companyRequest->verification_token;
 
         $this->postJson('/api/v1/trial/verify', [
             'email' => 'founder@existing.com',
@@ -194,7 +223,7 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonValidationErrors(['email', 'company']);
     }
 
-    public function test_second_verify_with_same_otp_does_not_double_provision()
+    public function test_second_verify_with_same_otp_does_not_double_provision(): void
     {
         // QA #2996 — race double-provisioning : deux verify avec le même OTP
         // valide ne doivent créer qu'UN SEUL tenant/manager.
@@ -208,8 +237,11 @@ class SelfServiceTrialTest extends TestCase
             'country' => 'DZ',
         ])->assertStatus(200);
 
-        $otp = CompanyRequest::where('email', 'founder@race-test.dz')
-            ->where('status', 'pending')->first()->verification_token;
+        $companyRequest = CompanyRequest::where('email', 'founder@race-test.dz')
+            ->where('status', 'pending')->first();
+        $this->assertNotNull($companyRequest);
+        /** @var \App\Core\Tenant\Domain\Models\CompanyRequest $companyRequest */
+        $otp = $companyRequest->verification_token;
 
         // 1er verify → succès + provisioning
         $this->postJson('/api/v1/trial/verify', [
@@ -237,7 +269,7 @@ class SelfServiceTrialTest extends TestCase
         );
     }
 
-    public function test_verify_returns_409_when_request_already_claimed()
+    public function test_verify_returns_409_when_request_already_claimed(): void
     {
         // QA #2996 — une demande déjà claimée (statut processing, verrou
         // posé par une requête concurrente) → 409 ALREADY_PROCESSED, sans
@@ -252,6 +284,8 @@ class SelfServiceTrialTest extends TestCase
 
         $request = CompanyRequest::where('email', 'founder@claimed.dz')
             ->where('status', 'pending')->first();
+        $this->assertNotNull($request);
+        /** @var \App\Core\Tenant\Domain\Models\CompanyRequest $request */
         $otp = $request->verification_token;
 
         // Simule le claim d'une requête concurrente (fenêtre de provisioning)

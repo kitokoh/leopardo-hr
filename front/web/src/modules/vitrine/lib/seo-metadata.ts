@@ -24,7 +24,7 @@ export interface PageMetadata {
 export const landingMetadata: PageMetadata = {
   title: 'Gestion Employés, Paie & Documents | Plateforme Complète',
   description:
-    'Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 30 jours, sans carte bancaire.',
+    'Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 14 jours, sans carte bancaire.',
   keywords: [
     'gestion employés SaaS',
     'logiciel RH PME',

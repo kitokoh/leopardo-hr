@@ -20,8 +20,12 @@ class RequestTrialSignup
 {
     /**
      * @param  array<string, mixed>  $validated
+     *
+     * @return bool true si l'email OTP a été envoyé, false si l'envoi a échoué
+     *              (l'erreur est journalisée — l'appelant décide de la réponse
+     *              HTTP, cf. #3057 : plus jamais 200 « code envoyé » silencieux).
      */
-    public function execute(array $validated): void
+    public function execute(array $validated): bool
     {
         $email = strtolower(trim($validated['email']));
 
@@ -40,12 +44,15 @@ class RequestTrialSignup
             Mail::to($email)->send(
                 new TrialVerificationMail($managerName, $otp, strtolower($countryDefaults['language']))
             );
+
+            return true;
         } catch (\Throwable $e) {
             Log::error('SelfServiceTrial: Failed to send OTP email', [
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
-            // Allow testing in local/staging without mailer failing the request
+
+            return false;
         }
     }
 

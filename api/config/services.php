@@ -81,6 +81,14 @@ return [
         'secret' => env('MARKETING_LEAD_WEBHOOK_TOKEN'),
     ],
 
+    'mail_bounce_webhook' => [
+        // PA2-COMM-007 - Secret partagé du webhook entrant de rebonds email
+        // (Postmark/SES/Mailgun). Le contrôleur est fail-closed (#2616) :
+        // secret absent → 503. La clé n'existait dans aucune config ni dans
+        // .env.example (#3058) → la feature était morte en permanence.
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
+    ],
+
     'ayrshare' => [
         // Cle API primaire du compte Leopardo cote Ayrshare (Business/Enterprise
         // plan requis pour gerer des profils utilisateur par tenant).
