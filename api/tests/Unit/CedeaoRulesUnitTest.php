@@ -133,16 +133,16 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_ci_notice_period_employee_level(): void
     {
-        // CI_COMPLIANCE.md §8 — issue #2219/#2280 : JOURS OUVRÉS au niveau
-        // employé/technicien (pilot) — 1 mois = 22 j · 2 mois = 44 j.
-        // Cadres (3 mois) et ouvriers (8/15 j) restent en jours calendaires
-        // dans l'implémentation pilote (à valider expert — #2551 cause 7).
+        // CI_COMPLIANCE.md §8 — niveau employé/technicien (pilot) :
+        //   < 5 ans : 22 j · ≥ 5 ans : 44 j (JOURS OUVRÉS #2219, ex 30/60 cal.).
+        //   Cadres → 66 j (ex 90), ouvriers → 6/11 j (ex 8/15).
+        //   (catégorie passée par EndOfContractService via ipres_category).
         $this->assertSame(22.0, $this->rules()->noticePeriodDays(3.0));
         $this->assertSame(22.0, $this->rules()->noticePeriodDays(4.9));
         $this->assertSame(44.0, $this->rules()->noticePeriodDays(7.0));
         $this->assertSame(44.0, $this->rules()->noticePeriodDays(12.0));
-        $this->assertSame(90.0, $this->rules()->noticePeriodDays(12.0, 'cadre'));
-        $this->assertSame(8.0, $this->rules()->noticePeriodDays(3.0, 'ouvrier'));
+        $this->assertSame(66.0, $this->rules()->noticePeriodDays(12.0, 'cadre'));
+        $this->assertSame(6.0, $this->rules()->noticePeriodDays(3.0, 'ouvrier'));
     }
 
     public function test_ci_overtime_tiers(): void
@@ -171,9 +171,8 @@ class CedeaoRulesUnitTest extends TestCase
     public function test_other_uemoa_members_unaffected(): void
     {
         // ML/BF sont PILOT depuis #1829 (IUTS/ITS + CNSS/INPS sourcés) ;
-        // TG est PILOT depuis #2160 (onboarding pays #2121) ; BJ/NE restent
-        // placeholder.
-        foreach (['BJ', 'NE'] as $memberCode) {
+        // BJ/TG/NE restent placeholder.
+        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             // Placeholder intact : pas de barème légal, pas de CN, pas de
