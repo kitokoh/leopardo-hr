@@ -19,6 +19,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
   const socket = ref(null)
   const isConnected = ref(false)
   const isPolling = ref(false)
+  // #3932 : canal push déterminé indisponible (connect_error ou grace timeout)
+  // → état neutre « Push non configuré » au lieu d'une fausse alerte rouge.
+  const pushUnavailable = ref(false)
   const notifications = ref([])
   const onlineUsers = ref([])
   const globePoints = ref([])
@@ -77,12 +80,17 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // If the push channel hasn't connected within the grace period, assume
     // it is unavailable (blocked websocket, server down, ...) and fall back
     // to REST polling so the inbox keeps updating regardless.
+    // Nouvel essai de connexion : l'état « push indisponible » est réinitialisé
+    // jusqu'à preuve du contraire (connect_error / grace timeout).
+    pushUnavailable.value = false
+
     schedulePushGraceTimer()
 
     // Événements de connexion
     socket.value.on('connect', () => {
       // console.log removed (audit 2026-08-15) — WebSocket connecté
       isConnected.value = true
+      pushUnavailable.value = false
       clearPushGraceTimer()
       stopPolling()
       toast.success('Connexion temps réel établie')
@@ -100,6 +108,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     socket.value.on('connect_error', (error) => {
       console.error('Erreur de connexion WebSocket:', error)
       isConnected.value = false
+      // Le canal push est indisponible (serveur WS injoignable/bloqué) :
+      // état neutre, pas une panne de la plateforme (#3269/#3932).
+      pushUnavailable.value = true
       startPolling()
     })
 
@@ -111,6 +122,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
     clearPushGraceTimer()
     pushGraceTimer = setTimeout(() => {
       if (!isConnected.value) {
+        // Aucune connexion push dans le délai de grâce : le canal est
+        // considéré indisponible → état neutre (gris), polling de secours.
+        pushUnavailable.value = true
         startPolling()
       }
     }, PUSH_CONNECT_GRACE_MS)
@@ -393,6 +407,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     socket,
     isConnected,
     isPolling,
+    pushUnavailable,
     notifications,
     onlineUsers,
     globePoints,
