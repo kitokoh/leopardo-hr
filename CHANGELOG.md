@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(admin): feedbacks d'erreur honnêtes — exports réels, toasts, simulation gardée (Closes #2710, #2711, #2712).**
 - **fix(admin): titres d'onglets traduits via la locale active (Closes #2708).**
 - **fix(admin): MetricCard — prop trendLabel (fini les libellés dans trend) (Closes #2706).**
 - **fix(web): PWA — icônes PNG réelles (Closes #2756).** `PWAProvider` référençait `/icon-192.png` (absent), `layout.tsx` servait un apple-touch-icon SVG (ignoré par iOS) et `manifest.json` ne déclarait que des SVG. Génération depuis `icon.svg` (`rsvg-convert`) : `icon-192.png` (192), `icon-512.png` (512), `apple-touch-icon.png` (180) ; manifest déclare les PNG (any maskable), layout sert le PNG 180×180 pour iOS.
