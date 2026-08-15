@@ -25,9 +25,8 @@ class PlanSeederTrialDaysAlignmentTest extends TestCase
     {
         DB::statement('SET search_path TO public');
 
-        /** @var PlanSeeder $seeder */
-        $seeder = app(PlanSeeder::class);
-        $seeder->run();
+        $this->artisan('db:seed', ['--class' => PlanSeeder::class])
+            ->assertSuccessful();
 
         $expected = (int) config('billing.trial_days');
         $this->assertGreaterThan(0, $expected, 'config(billing.trial_days) doit être > 0');
