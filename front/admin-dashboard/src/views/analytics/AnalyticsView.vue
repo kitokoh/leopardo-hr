@@ -37,28 +37,31 @@
       <MetricCard
         title="Utilisateurs"
         :value="String(stats.totalUsers ?? 0)"
-        :trend="newUsersTrend"
+        :trend="(stats.newUsersToday ?? 0) > 0 ? 'up' : ((stats.newUsersToday ?? 0) < 0 ? 'down' : 'stable')"
+        :trend-label="`+${stats.newUsersToday ?? 0} aujourd'hui`"
         icon="UsersIcon"
         color="blue"
       />
       <MetricCard
         title="Entreprises"
         :value="String(stats.totalCompanies ?? 0)"
-        :trend="newCompaniesTrend"
+        :trend="(stats.newCompaniesToday ?? 0) > 0 ? 'up' : ((stats.newCompaniesToday ?? 0) < 0 ? 'down' : 'stable')"
+        :trend-label="`+${stats.newCompaniesToday ?? 0} aujourd'hui`"
         icon="BuildingOfficeIcon"
         color="green"
       />
       <MetricCard
         title="Abonnements actifs"
         :value="String(stats.activeSubscriptions ?? 0)"
-        :trend="monthlyRevenueLabel"
+        :trend="(stats.monthlyRevenue ?? 0) > 0 ? 'up' : null"
+        :trend-label="monthlyRevenueLabel || undefined"
         icon="CreditCardIcon"
         color="purple"
       />
       <MetricCard
         title="Tickets support ouverts"
         :value="String(stats.supportTickets ?? 0)"
-        :trend="systemHealthLabel"
+        :trend-label="systemHealthLabel || undefined"
         icon="LifebuoyIcon"
         color="amber"
       />
@@ -156,12 +159,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api.js'
-import { useLocaleStore } from '@/stores/locale'
 
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const toast = useToast()
-const localeStore = useLocaleStore()
 
 const isLoading = ref(false)
 const stats = reactive({
@@ -178,8 +179,6 @@ const activities = ref([])
 const alerts = ref([])
 
 const monthlyRevenueLabel = ref('')
-const newUsersTrend = computed(() => `+${stats.newUsersToday ?? 0} aujourd'hui`)
-const newCompaniesTrend = computed(() => `+${stats.newCompaniesToday ?? 0} aujourd'hui`)
 const systemHealthLabel = computed(() => (stats.systemHealth ? `Health: ${stats.systemHealth}` : ''))
 
 onMounted(loadAll)
