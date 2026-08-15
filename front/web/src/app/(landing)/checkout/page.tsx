@@ -24,7 +24,6 @@ import {
 } from 'lucide-react';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
    PLAN CONFIG
@@ -188,12 +187,9 @@ const SANDBOX_CARD = {
    GOOGLE AUTH HREF
 ───────────────────────────────────────────── */
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-      ? directApi
-      : getApiBaseUrl();
-  return `${baseUrl}/auth/google`;
+  // Same-origin Next.js proxy (#2277) : le cookie de session doit être posé
+  // sur le domaine vitrine, pas sur l'API.
+  return '/api/v1/auth/google';
 }
 
 /* ─────────────────────────────────────────────

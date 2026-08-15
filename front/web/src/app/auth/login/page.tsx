@@ -16,7 +16,6 @@ import {
   X,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import { getApiBaseUrl } from '@/lib/backend-url';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
   applyDocumentLocale,
@@ -133,12 +132,10 @@ function normalizeDemoCompanies(payload: DemoUsersPayload): DemoCompany[] {
 }
 
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl = process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-    ? directApi
-    : getApiBaseUrl();
-
-  return `${baseUrl}/auth/google`;
+  // Same-origin Next.js proxy (#2277) : le cookie de session doit être posé
+  // sur le domaine vitrine, pas sur l'API. Une URL Render directe contourne
+  // le proxy → session perdue au retour du flux OAuth Google.
+  return '/api/v1/auth/google';
 }
 
 function LoginInner() {
