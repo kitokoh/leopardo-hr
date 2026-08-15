@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(edge): HEALTHCHECK Dockerfile.publish aligné sur /api/v1/edge/health (Closes #3960).** La probe sondait encore `/api/edge/health` (pré-#3592) → 404 → conteneur « unhealthy » permanent et deadlock `depends_on: service_healthy` futur. Le docker-compose.yml était déjà corrigé (#3908) ; le Dockerfile standalone restait sur l'ancien chemin.
 - **fix(ci): release.yml — zéro check trouvé = release refusée + pagination des check-runs (Closes #3970).** L'ancien gate traitait « aucune check run trouvée » comme non bloquant → une release pouvait partir sans aucune vérification CI (nom dérivé, commit dispatché, pagination per_page=100). Désormais : échec dur si un check requis est absent, pagination jusqu'à 10 pages, agrégation multi-runs par check.
 - **fix(web-offline): garde CI — les icônes du manifest PWA doivent exister (Closes #3963).** Les icônes 192/512 existent désormais sur main (ajoutées en parallèle) ; ce PR verrouille la non-régression : le workflow web-offline échoue si `manifest.json` déclare une icône absente de `public/`.
 - **fix(web-offline): service worker — fallback offline pour les navigations (Closes #3962).** `fetch()` sans `.catch()` sur la branche statique → toute route non visitée hors-ligne affichait la page d'erreur navigateur. Fallback : `caches.match('/index.html')` (app shell pré-cachée) pour `mode === 'navigate'`, 503 gracieux sinon. Cache bumpé v1 → v2.
