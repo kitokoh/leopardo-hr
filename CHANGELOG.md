@@ -29,6 +29,7 @@
 
 - **refactor(mobile-hr): 9 routes GoRouter mortes retirées (Closes #3284).** `/notifications`, `/evaluations`, `/history`, `/modules/rh`, `/training`, `/expenses`, `/ai-chat`, `/ai-voice`, `/vehicle-map` n'avaient aucune entrée UI (`push`/`go`) ni manifest backend — surface de navigation morte + écrans orphelins (`ModulesScreen` inaccessible). Retrait des routes + imports dans `app.dart` (motif aligné sur le chantier manager #3285).
 - **fix(web): CTA pricing alignés sur les clés checkout canoniques (Closes #3718).** Les plans Starter et Business ne retombent plus sur `free` : ils routent respectivement vers `pilot` et `operations`, tandis qu’Enterprise reste `enterprise`.
+- **fix(web): trial-status accepte les provisioning tokens base62 (Closes #3717).** La route Next.js n’attend plus un token hexadécimal minuscule impossible à produire avec Laravel `Str::random(64)` ; la validation accepte exactement `A-Za-z0-9` sur 64 caractères et reste rejetée pour toute longueur ou caractère invalide.
 
 - **fix(admin/api): UsersView utilise le contrat super-admin pour le détail et l’impersonation (Closes #3268).** `/platform/users` expose la liaison société/employé par email canonique et le dashboard n’interroge plus `/admin/users` avec un ID `super_admins`.
 
