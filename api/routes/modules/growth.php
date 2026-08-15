@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 // Espace Partenaire (Web Client)
 // Access via the main dashboard requires the sanctum guard (Employee token).
 Route::prefix('growth')->group(function () {
-    Route::middleware(['auth:sanctum'])->prefix('partner')->group(function () {
+    Route::middleware(['auth:sanctum', 'throttle:api', 'throttle:api-plan'])->prefix('partner')->group(function () {
         Route::post('/apply', [PartnerDashboardController::class, 'apply']);
         Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
         Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);
@@ -17,7 +17,7 @@ Route::prefix('growth')->group(function () {
 });
 
 // Espace Administration (Super Admin)
-Route::middleware(['auth:super_admin_api'])->prefix('platform/growth')->group(function () {
+Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
     Route::get('/partners', [GrowthAdminController::class, 'partners']);
     Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate']);
     Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus']);

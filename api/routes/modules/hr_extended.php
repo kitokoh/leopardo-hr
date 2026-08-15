@@ -165,7 +165,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // ── Webhooks (module Billing gère les endpoints) ─────────────────
         Route::get('/webhooks/events', [WebhookController::class, 'events']);
-        Route::post('/webhooks/{webhookEndpoint}/test', [WebhookController::class, 'test']);
         Route::get('/webhooks', [WebhookController::class, 'index']);
         Route::post('/webhooks', [WebhookController::class, 'store']);
         Route::get('/webhooks/{webhookEndpoint}', [WebhookController::class, 'show']);
