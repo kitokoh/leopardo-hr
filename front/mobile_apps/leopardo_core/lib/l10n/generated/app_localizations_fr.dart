@@ -1401,7 +1401,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get signupBadge => 'Essai gratuit 30 jours';
+  String get signupBadge => 'Essai gratuit 14 jours';
 
   @override
   String get signupTitle => 'Tester Leopardo avec votre entreprise';

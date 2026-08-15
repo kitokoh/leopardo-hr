@@ -387,11 +387,6 @@ class PayrollCalculator
                 'total_employer_cost' => round($totalEmployerCost, 2),
                 'employee_count' => $run->paySlips()->count(),
                 'calculated_at' => now(),
-                // Issue #1874 : version/identifiant des règles EFFECTIVES persistés
-                // sur le run (colonnes 000009) pour l'audit et le re-calcul.
-                'rules_version' => $rulesVersion,
-                'rules_identifier' => $rulesIdentifier,
-                'rules_period' => $rulesPeriod,
             ]);
         });
 
@@ -643,6 +638,9 @@ class PayrollCalculator
      * Utilisé par calculateSlip() (bulletin standard) et par
      * calculateRegularizationRun() (valeur corrigée du différentiel).
      *
+     *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{
      *     gross_salary: float,
      *     total_deductions: float,
@@ -655,9 +653,6 @@ class PayrollCalculator
      *     has_attendance_data: bool,
      *     lines: list<array<string, mixed>>,
      * }
-     *
-     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
-     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      */
     private function computeSlipValues(
         PayrollRun $run,

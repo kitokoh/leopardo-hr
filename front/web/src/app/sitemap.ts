@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
+import { getAllCaseStudySlugs } from '@/modules/vitrine/lib/case-studies';
 
 const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -52,6 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/faq', today, 'monthly', 0.6),
     page('/testimonials', today, 'monthly', 0.6),
     page('/case-studies', today, 'monthly', 0.6),
+    ...getAllCaseStudySlugs().map((slug) => page(`/case-studies/${slug}`, today, 'monthly', 0.6)),
     page('/videos', today, 'monthly', 0.55),
     page('/branding', today, 'monthly', 0.5),
     page('/careers', today, 'monthly', 0.5),
@@ -66,7 +68,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/signup', today, 'monthly', 0.6),
     page('/checkout', today, 'monthly', 0.5),
     page('/offline', today, 'monthly', 0.4),
-    page('/share', today, 'monthly', 0.4),
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
