@@ -7,7 +7,7 @@ set -e
 
 NODE_ID=""
 TOKEN=""
-CLOUD_URL="https://api.leopardo-rh.com"
+CLOUD_URL="https://gestionemployerbackend.onrender.com"
 SYNC_INTERVAL=15
 
 # Parse args
