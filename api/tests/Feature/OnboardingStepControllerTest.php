@@ -37,10 +37,18 @@ class OnboardingStepControllerTest extends TestCase
 
         $response = $this->getJson('/api/v1/onboarding-setup/checklist');
 
+        // #3239 — shape canonique unifiée : data{ completed_steps,
+        // total_steps, progress_percent, go_live_ready, next_actions, steps }.
         $response->assertOk();
-        $response->assertJsonCount(10, 'data');
-        $response->assertJsonPath('data.0.step_key', 'company_info');
-        $response->assertJsonPath('data.0.required', true);
+        $response->assertJsonCount(10, 'data.steps');
+        $response->assertJsonPath('data.total_steps', 10);
+        $response->assertJsonPath('data.completed_steps', 0);
+        $response->assertJsonPath('data.progress_percent', 0);
+        $response->assertJsonPath('data.progress', 0);
+        $response->assertJsonPath('data.go_live_ready', false);
+        $response->assertJsonPath('data.next_actions.0.key', 'company_info');
+        $response->assertJsonPath('data.steps.0.step_key', 'company_info');
+        $response->assertJsonPath('data.steps.0.required', true);
         $this->assertSame(10, OnboardingStep::where('company_id', $company->id)->count());
     }
 
@@ -62,6 +70,8 @@ class OnboardingStepControllerTest extends TestCase
         $response->assertJsonPath('data.completed', 2);
         $response->assertJsonPath('data.total', 4);
         $response->assertJsonPath('data.progress', 50);
+        // #3239 — alias canonique progress_percent exposé par les deux moteurs.
+        $response->assertJsonPath('data.progress_percent', 50);
     }
 
     public function test_employee_can_access_own_onboarding_without_manager_role(): void

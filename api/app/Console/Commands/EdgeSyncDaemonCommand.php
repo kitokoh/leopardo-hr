@@ -27,18 +27,21 @@ class EdgeSyncDaemonCommand extends Command
     {
         $this->info('[EdgeSync Daemon] Starting...');
 
-        $nodeId  = config('edge.node_id') ?? env('EDGE_NODE_ID');
-        $token   = config('edge.edge_token') ?? env('EDGE_TOKEN');
-        $cloudApiUrl = config('edge.cloud_api_url') ?? env('CLOUD_API_URL');
-        $interval = (int) (config('edge.sync_interval_minutes') ?? env('CLOUD_SYNC_INTERVAL_MINUTES', 15));
-        $batchSize = (int) (config('edge.batch_size') ?? env('EDGE_SYNC_BATCH_SIZE', 100));
+        // Issue #3564 : env() lu UNIQUEMENT via config/edge.php — l'entrypoint
+        // edge exécute `php artisan config:cache`, après quoi env() renvoie
+        // null hors fichiers config (fallbacks `?? env(...)` morts).
+        $nodeId  = config('edge.node_id');
+        $token   = config('edge.edge_token');
+        $cloudApiUrl = config('edge.cloud_api_url');
+        $interval = (int) config('edge.sync_interval_minutes', 15);
+        $batchSize = (int) config('edge.batch_size', 100);
 
         if (!$nodeId || !$token || !$cloudApiUrl) {
             $this->error('[EdgeSync Daemon] EDGE_NODE_ID, EDGE_TOKEN or CLOUD_API_URL not set. Exiting.');
             return;
         }
 
-        if ((bool) (config('edge.force_offline') ?? env('FORCE_OFFLINE', false))) {
+        if ((bool) config('edge.force_offline', false)) {
             $this->warn('[EdgeSync Daemon] FORCE_OFFLINE is enabled — daemon will not contact the Cloud. Exiting.');
             return;
         }

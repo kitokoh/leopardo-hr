@@ -51,7 +51,7 @@ class SmartAttendanceRepository {
         'longitude': longitude,
         'accuracy': accuracy,
       },
-      maxRetriesOverride: 1,
+      maxRetriesOverride: 0,
       timeoutOverride: _writeTimeout,
     );
   }

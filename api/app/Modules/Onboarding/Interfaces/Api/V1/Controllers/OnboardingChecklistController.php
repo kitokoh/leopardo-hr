@@ -9,15 +9,38 @@ use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * Checklist d'onboarding calculée — moteur de référence (#3239).
+ *
+ * Shape canonique de la checklist (les deux endpoints doivent l'exposer) :
+ *   data: {
+ *     completed_steps: int,
+ *     total_steps: int,
+ *     progress_percent: int,   // champ canonique
+ *     progress: int,           // alias rétrocompatible (moteur DB)
+ *     go_live_ready: bool,
+ *     next_actions: [{ key, label }],
+ *     steps: [...],
+ *   }
+ *
+ * Lecture ouverte à tout utilisateur authentifié du tenant (les données
+ * restent scopées à sa société par le middleware tenant) ; les écritures
+ * (complete/skip) restent gouvernées par OnboardingStepController.
+ */
 class OnboardingChecklistController extends Controller
 {
     public function __invoke(): JsonResponse
     {
         /** @var Employee $actor */
         $actor = request()->user();
-        $company = currentCompany();
 
-        $this->authorize('viewAny', Employee::class);
+        // #3239 — plus de 403 : tout utilisateur authentifié du tenant peut
+        // lire sa propre checklist (remplace l'ancien authorize viewAny
+        // réservé aux managers). Garde simple : un utilisateur authentifié
+        // est forcément un Employee (auth:sanctum + middleware tenant).
+        abort_if(! $actor instanceof Employee, 401);
+
+        $company = currentCompany();
 
         $employeesCount = Employee::query()->where('company_id', $company->id)->count();
         $activeEmployeesCount = Employee::query()->where('company_id', $company->id)->where('status', 'active')->count();
@@ -55,6 +78,7 @@ class OnboardingChecklistController extends Controller
         ];
 
         $completed = collect($steps)->where('completed', true)->count();
+        $percent = (int) round(($completed / count($steps)) * 100);
         $nextActions = collect($steps)
             ->where('completed', false)
             ->take(3)
@@ -68,7 +92,8 @@ class OnboardingChecklistController extends Controller
             'data' => [
                 'completed_steps' => $completed,
                 'total_steps' => count($steps),
-                'progress_percent' => (int) round(($completed / count($steps)) * 100),
+                'progress_percent' => $percent,
+                'progress' => $percent,
                 'go_live_ready' => $completed >= count($steps) - 1,
                 'next_actions' => $nextActions,
                 'steps' => $steps,

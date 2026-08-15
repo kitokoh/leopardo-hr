@@ -25,7 +25,7 @@ class ExpenseClaim {
       reference: json['reference'] as String? ?? '',
       category: json['category'] as String? ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0,
-      currency: json['currency'] as String? ?? 'DZD',
+      currency: json['currency'] as String? ?? '',
       date: json['date'] as String? ?? '',
       description: json['description'] as String?,
       status: json['status'] as String? ?? 'pending',

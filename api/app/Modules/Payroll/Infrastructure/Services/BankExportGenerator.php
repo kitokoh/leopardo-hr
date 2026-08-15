@@ -21,7 +21,10 @@ use Throwable;
  */
 class BankExportGenerator
 {
-    public function generate(PayrollRun $run, string $format): string
+    /**
+     * @param  array{iban: string|null, bic: string|null}|array{name: string, iban: string|null, bic: string|null}|null  $companyBank  coordonnées débiteur pré-résolues (job), sinon résolues ici (contexte tenant)
+     */
+    public function generate(PayrollRun $run, string $format, ?array $companyBank = null): string
     {
         $slips = $run->paySlips()
             ->with('employee:id,first_name,last_name,iban,bank_account')
@@ -36,7 +39,7 @@ class BankExportGenerator
         $currency = CountryDefaults::for($run->country_code)['currency'];
 
         return match ($format) {
-            'sepa_xml' => $this->generateSepaExport($run, $slips, $currency),
+            'sepa_xml' => $this->generateSepaExport($run, $slips, $currency, $companyBank),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
             'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
             'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
@@ -86,9 +89,13 @@ class BankExportGenerator
     }
 
     /** @param Collection<int, PaySlip> $slips */
-    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency): string
+    /**
+     * @param  Collection<int, PaySlip>  $slips
+     * @param  array{iban: string|null, bic: string|null}|array{name: string, iban: string|null, bic: string|null}|null  $companyBank
+     */
+    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency, ?array $companyBank = null): string
     {
-        $bank = $this->companyBankDetails($run);
+        $bank = $companyBank ?? $this->companyBankDetails($run);
 
         if (! is_string($bank['iban']) || ! is_string($bank['bic'])) {
             throw new \RuntimeException(

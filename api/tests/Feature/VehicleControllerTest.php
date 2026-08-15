@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
@@ -27,7 +27,9 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_list_vehicles(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Vehicle::create([
@@ -49,7 +51,9 @@ class VehicleControllerTest extends TestCase
 
     public function test_per_page_is_capped_at_100(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Vehicle::create([
@@ -77,7 +81,11 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_create_vehicle(): void
     {
+        /** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -98,7 +106,9 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_update_vehicle(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $vehicle = Vehicle::create([
@@ -120,7 +130,9 @@ class VehicleControllerTest extends TestCase
 
     public function test_manager_can_delete_vehicle(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $vehicle = Vehicle::create([
@@ -136,7 +148,9 @@ class VehicleControllerTest extends TestCase
 
     public function test_filter_vehicles_by_status(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Vehicle::create(['company_id' => $company->id, 'plate_number' => 'A', 'status' => 'active']);
@@ -151,7 +165,11 @@ class VehicleControllerTest extends TestCase
 
     public function test_invalid_vehicle_type_returns_validation_error(): void
     {
+        /** @var Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -162,4 +180,3 @@ class VehicleControllerTest extends TestCase
         ])->assertStatus(422);
     }
 }
-

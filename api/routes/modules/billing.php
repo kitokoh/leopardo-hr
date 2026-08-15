@@ -23,8 +23,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // api.manager pour un employé non-manager).
     Route::get('/onboarding-setup/checklist', [OnboardingStepController::class, 'checklist']);
     Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
-    Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete']);
-    Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip']);
+    // #3430 : écritures d'état company-level réservées aux managers (api.manager) —
+    // un employé simple ne peut plus falsifier le progrès d'onboarding de l'entreprise.
+    Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete'])
+        ->middleware('api.manager');
+    Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
+        ->middleware('api.manager');
 
     // Alias expected by mobile/web clients: list onboarding steps.
     Route::get('/onboarding/steps', [OnboardingStepController::class, 'checklist']);
