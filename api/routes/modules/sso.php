@@ -23,7 +23,7 @@ Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallbac
 
 // Authenticated: SSO management (manager principal only)
 // #2635 : aligné sur le groupe standard (token.refresh + throttle:api-plan).
-Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:principal'])->group(function (): void {
     Route::get('/sso/status', [SSOController::class, 'status']);
     Route::post('/sso/configure', [SSOController::class, 'configure']);
     Route::delete('/sso/disable', [SSOController::class, 'disable']);
