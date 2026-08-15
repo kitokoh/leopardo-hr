@@ -151,7 +151,6 @@ import {
   DocumentArrowDownIcon,
   ArrowPathIcon,
   InformationCircleIcon,
-  ArrowPathIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'

@@ -186,10 +186,15 @@ const isLoadingObservability = ref(false)
 const notificationObservability = ref(null)
 const isLoadingNotificationObservability = ref(false)
 
-// System status
+// System status (alimenté par GET /admin/dashboard/stats + /health/live + /health/ready)
+const stats = ref(null)
+const lastUpdated = ref(null)
+const healthCheck = ref(null)
+const healthCheckTimestamp = ref(null)
+
 const systemStatus = reactive({
   overall: 'healthy',
-  overallDetails: 'Tous les services fonctionnent normalement',
+  overallDetails: 'Sonde agrégée DB + Redis opérationnelle.',
   database: 'healthy',
   databaseDetails: 'Connexions: 45/100 • Latence: 12ms',
   api: 'healthy',
@@ -197,6 +202,13 @@ const systemStatus = reactive({
   websocket: 'healthy',
   websocketDetails: '1,247 connexions actives',
   maintenanceMode: false
+})
+
+const globalHealthStatus = computed(() => {
+  const status = systemStatus.overall
+  if (status === 'healthy') return 'healthy'
+  if (status === 'degraded') return 'warning'
+  return 'error'
 })
 
 const globalHealthDetails = computed(() => {
@@ -212,19 +224,6 @@ const globalHealthDetails = computed(() => {
 const databaseStatus = computed(() => {
   if (!healthCheck.value) return 'unavailable'
   return healthCheck.value.checks?.database?.ok ? 'healthy' : 'error'
-})
-
-// Automated tasks
-const automatedTasks = ref([])
-const backups = ref([])
-const securityAlerts = ref([])
-const apiTests = ref([])
-
-// Security status
-const securityStatus = reactive({
-  level: 'high',
-  label: 'SÉCURISÉ',
-  score: 95
 })
 
 onMounted(async () => {
@@ -279,70 +278,6 @@ async function loadNotificationObservability() {
   }
 }
 
-async function loadAutomatedTasks() {
-  // Pas d'API de taches planifiees — liste vide honnete (vague QA 2026-08-14)
-  automatedTasks.value = []
-}
-
-async function loadBackups() {
-  // Pas d'API de sauvegardes — liste vide honnete (vague QA 2026-08-14)
-  backups.value = []
-}
-
-async function loadSecurityAlerts() {
-  // Pas d'API dediee — liste vide honnete (vague QA 2026-08-14)
-  securityAlerts.value = []
-}
-
-async function loadApiTests() {
-  // Pas d'API de tests — liste vide honnete (vague QA 2026-08-14)
-  apiTests.value = []
-}
-
-async function loadSystemConfig() {
-  // Pas d'API de configuration systeme — etat vide honnete (vague QA 2026-08-14)
-  systemConfig.value = null
-}
-
-async function loadLoadBalancerNodes() {
-  // Pas d'API de load balancer — liste vide honnete (vague QA 2026-08-14)
-  loadBalancerNodes.value = []
-}
-
-function startMetricsRefresh() {
-  // Update metrics every 5 seconds
-  metricsInterval = setInterval(updatePerformanceMetrics, 5000)
-}
-
-function updatePerformanceMetrics() {
-  const now = new Date()
-
-  // Generate realistic metrics
-  const cpu = Math.random() * 30 + 40 // 40-70%
-  const memory = Math.random() * 20 + 60 // 60-80%
-  const network = Math.random() * 40 + 10 // 10-50%
-
-  // Update performance metrics
-  performanceMetrics.value.cpu.push(cpu)
-  performanceMetrics.value.memory.push(memory)
-  performanceMetrics.value.network.push(network)
-  performanceMetrics.value.timestamps.push(now)
-
-  // Keep only last 20 points
-  if (performanceMetrics.value.cpu.length > 20) {
-    performanceMetrics.value.cpu.shift()
-    performanceMetrics.value.memory.shift()
-    performanceMetrics.value.network.shift()
-    performanceMetrics.value.timestamps.shift()
-  }
-
-  // Update resource usage
-  resourceUsage.cpu = Math.round(cpu)
-  resourceUsage.memory = Math.round(memory)
-  resourceUsage.network = Math.round(network)
-  resourceUsage.disk = Math.round(Math.random() * 20 + 30) // 30-50%
-}
-
 async function runHealthCheck() {
   isRunningHealthCheck.value = true
 
@@ -364,6 +299,10 @@ async function runHealthCheck() {
       ? 'Liveness + readiness OK'
       : `Liveness ${liveOk ? 'OK' : 'KO'} / Readiness ${readyOk ? 'OK' : 'KO'}`
 
+    // Persister le resultat du health check pour les cartes de statut
+    healthCheck.value = (ready?.data ?? ready) || { status: readyOk ? 'ok' : 'fail', checks: { database: { ok: readyOk } } }
+    healthCheckTimestamp.value = new Date()
+
     if (liveOk && readyOk) {
       toast.success('Health check terminé — tous les services sont opérationnels')
     } else {
@@ -379,172 +318,6 @@ async function runHealthCheck() {
     toast.error('Health check terminé — base de données injoignable')
   } finally {
     isRunningHealthCheck.value = false
-  }
-}
-
-async function toggleMaintenanceMode() {
-  // Pas d'endpoint backend de maintenance — etat honnete (vague QA 2026-08-14)
-  toast.warning('Action non disponible : aucun endpoint backend de maintenance n\'est exposé')
-}
-
-function refreshMetrics() {
-  updatePerformanceMetrics()
-  toast.success('Métriques actualisées')
-}
-
-// Task management
-function toggleTask(taskId) {
-  const task = automatedTasks.value.find(t => t.id === taskId)
-  if (task) {
-    task.enabled = !task.enabled
-    toast.success(`Tâche ${task.enabled ? 'activée' : 'désactivée'}`)
-  }
-}
-
-function editTask(task) {
-  toast.info(`Édition de la tâche: ${task.name}`)
-}
-
-function deleteTask(taskId) {
-  automatedTasks.value = automatedTasks.value.filter(t => t.id !== taskId)
-  toast.success('Tâche supprimée')
-}
-
-function handleTaskCreated(task) {
-  automatedTasks.value.push(task)
-  showCreateTaskModal.value = false
-  toast.success('Tâche créée avec succès')
-}
-
-// Backup management
-async function createBackup() {
-  isCreatingBackup.value = true
-
-  try {
-    await new Promise(resolve => setTimeout(resolve, 5000))
-
-    const newBackup = {
-      id: Date.now(),
-      name: `backup-${new Date().toISOString().split('T')[0]}-${new Date().toTimeString().split(' ')[0].replace(/:/g, '-')}`,
-      type: 'manual',
-      size: '2.1 GB',
-      createdAt: new Date(),
-      status: 'completed'
-    }
-
-    backups.value.unshift(newBackup)
-    toast.success('Sauvegarde créée avec succès')
-  } catch (error) {
-    console.error('Backup creation failed:', error)
-    toast.error('Erreur lors de la création de la sauvegarde')
-  } finally {
-    isCreatingBackup.value = false
-  }
-}
-
-function restoreBackup(backup) {
-  toast.warning(`Restauration de la sauvegarde: ${backup.name}`)
-}
-
-function deleteBackup(backupId) {
-  backups.value = backups.value.filter(b => b.id !== backupId)
-  toast.success('Sauvegarde supprimée')
-}
-
-function downloadBackup(backup) {
-  toast.info(`Téléchargement de: ${backup.name}`)
-}
-
-// Security
-function investigateAlert(alert) {
-  toast.info(`Investigation de l'alerte: ${alert.message}`)
-}
-
-function dismissSecurityAlert(alertId) {
-  securityAlerts.value = securityAlerts.value.filter(a => a.id !== alertId)
-  toast.success('Alerte fermée')
-}
-
-// Configuration
-function updateConfig(section, config) {
-  systemConfig.value[section] = { ...systemConfig.value[section], ...config }
-  toast.success('Configuration mise à jour')
-}
-
-function resetConfig(section) {
-  toast.warning(`Configuration ${section} réinitialisée`)
-}
-
-function exportConfig() {
-  const configBlob = new Blob([JSON.stringify(systemConfig.value, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(configBlob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'system-config.json'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-
-  toast.success('Configuration exportée')
-}
-
-function handleConfigImported(config) {
-  systemConfig.value = config
-  showImportModal.value = false
-  toast.success('Configuration importée')
-}
-
-// API Testing
-function runApiTest(test) {
-  toast.info(`Exécution du test: ${test.name}`)
-}
-
-function editApiTest(test) {
-  toast.info(`Édition du test: ${test.name}`)
-}
-
-function deleteApiTest(testId) {
-  apiTests.value = apiTests.value.filter(t => t.id !== testId)
-  toast.success('Test supprimé')
-}
-
-function handleApiTestCreated(test) {
-  apiTests.value.push(test)
-  showApiTesterModal.value = false
-  toast.success('Test API créé')
-}
-
-// Scaling
-function updateScalingConfig(config) {
-  Object.assign(scalingConfig, config)
-  toast.success('Configuration d\'auto-scaling mise à jour')
-}
-
-function manualScale(action) {
-  if (action === 'up') {
-    scalingMetrics.currentInstances++
-    toast.success('Instance ajoutée manuellement')
-  } else {
-    scalingMetrics.currentInstances--
-    toast.success('Instance supprimée manuellement')
-  }
-}
-
-// Load Balancer
-function toggleLoadBalancerNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = node.status === 'healthy' ? 'unhealthy' : 'healthy'
-    toast.success(`NÅ“ud ${node.name} ${node.status === 'healthy' ? 'activé' : 'désactivé'}`)
-  }
-}
-
-function drainNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = 'draining'
-    toast.info(`Drainage du nÅ“ud ${node.name} en cours`)
   }
 }
 </script>
