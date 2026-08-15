@@ -708,17 +708,17 @@
       "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
     }
   },
-  "seo": {
-    "pricing": {
-      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
-    }
-  },
   "companies": {
     "toast": {
       "load_failed": "Şirket detayları yüklenemedi.",
       "tickets_failed": "Destek talepleri yüklenemedi.",
       "subscription_failed": "Abonelik güncellenemedi.",
       "features_failed": "Modül ayarları kaydedilemedi."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
   }
 }
