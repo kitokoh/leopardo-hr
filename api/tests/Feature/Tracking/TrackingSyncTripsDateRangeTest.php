@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Tracking;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -25,8 +25,12 @@ class TrackingSyncTripsDateRangeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->company = Company::factory()->create();
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $this->company = $company;
+        $this->manager = $manager;
     }
 
     /** @test */

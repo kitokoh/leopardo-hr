@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Traits\BelongsToCompany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -13,14 +16,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string|null $location_label
  * @property string $device_code
+ * @property-read Company|null $company
+ *     Relation définie dynamiquement via setRelation() (lookup public,
+ *     jamais le search_path tenant).
  * @property string $status
  * @property string $biometric_mode
  * @property string|null $trusted_device_label
  * @property string|null $sync_token_hash
- * @property \Illuminate\Support\Carbon|null $last_seen_at
- * @property \Illuminate\Support\Carbon|null $last_sync_at
+ * @property Carbon|null $last_seen_at
+ * @property Carbon|null $last_sync_at
  *
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class AttendanceKiosk extends Model
 {
@@ -44,4 +50,3 @@ class AttendanceKiosk extends Model
         'last_sync_at' => 'datetime',
     ];
 }
-
