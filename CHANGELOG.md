@@ -8,6 +8,10 @@
 
 - **refactor(mobile-manager): suppression de six routes GoRouter sans UI ni manifest (Closes #3285).** Les deep-links contracts, training, expenses, ai-voice, onboarding et organigramme ne tombent plus sur une route morte.
 - **fix(mobile): les mutations non idempotentes ne sont plus retentées automatiquement (Closes #3286).** Le client partagé protège les comptes, appels IA et publications contre les doublons après réponse réseau perdue.
+- **fix(admin): `localeStore` déclaré dans AnalyticsView — crash runtime réparé (régression merge #3700).** Le merge des imports i18n a laissé `localeStore.current` utilisé sans `const localeStore = useLocaleStore()` : `ReferenceError` au rendu des métriques mensuelles. Ajout de la déclaration manquante (lint admin : 0 erreur).
+
+- **fix(admin): route morte /users/:id retirée du routeur — build vite réparé (régression merge 2026-08-15, Closes #3280).** La route `/users/:id` → `UserDetailView.vue` a été réintroduite par un merge de conflit alors que la vue n'existe plus (supprimée en 17541e5c) : `vite build` échouait sur `Could not load src/views/users/UserDetailView.vue` → déploiement admin bloqué. Le détail utilisateur vit dans `UserDetailModal` (UsersView), conformément au constat #3280.
+
 - **fix(admin): dates et nombres respectent la locale active (Closes #3277).** Analytics, barèmes fiscaux et modales recrutement/flotte n’imposent plus `fr-FR` pour l’affichage.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
