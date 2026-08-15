@@ -58,24 +58,12 @@ class UserAuthRepository {
     return {'user': user};
   }
 
-  Future<Map<String, dynamic>> googleSignIn({
-    required String googleId,
-    required String email,
-    required String firstName,
-    required String lastName,
-    String? avatarUrl,
-  }) async {
+  Future<Map<String, dynamic>> googleSignIn({required String idToken}) async {
     final response = await apiClient.requestWithRetry(
       '/user/google-signin',
       method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
-      data: {
-        'google_id': googleId,
-        'email': email,
-        'first_name': firstName,
-        'last_name': lastName,
-        if (avatarUrl != null) 'avatar_url': avatarUrl,
-      },
+      data: {'id_token': idToken},
     );
 
     final data = _authPayload(response.data);

@@ -34,151 +34,145 @@ export const publicChangelogReleases: PublicChangelogRelease[] = [
   {
     version: '4.23.4',
     isoDate: '2026-07-19',
-    title: 'Bug de compilation Dart dans leopardo_employee, leopardo_man',
+    title: 'Compilation Dart réparée sur les 3 apps mobiles + CI durcie',
     bullets: [
-      'Bug de compilation Dart dans leopardo_employee, leopardo_manager, leopardo_hr : void main() { ... await ... } : : les trois main.dart declaraient m...',
-      'CI/CD : durcissement supply-chain (P1) + deduplication setup PHP/Flutter (P2) : , suite a AUDIT_CICD_2026-07-19.md :'
+      'Les main.dart de leopardo_employee, leopardo_manager et leopardo_hr déclaraient main() sans async alors que le corps attend SentryFlutter.init — alignés sur Future<void> main() async (bloquait le job Flutter sur main).',
+      'CI/CD : durcissement supply-chain (pinning SHA des actions tierces) et déduplication du setup PHP/Flutter via des actions composites réutilisables (~360 lignes en moins).'
     ],
   },
   {
     version: '4.23.3',
     isoDate: '2026-07-19',
-    title: 'Resolution des 34 alertes Dependabot(11 high, 16 moderate, 7',
+    title: '34 alertes Dependabot résolues (11 high, 16 moderate, 7 low)',
     bullets: [
-      'Resolution des 34 alertes Dependabot : (11 high, 16 moderate, 7 low) ouvertes depuis l\'activation :',
-      '- api (composer) : symfony/yaml 8.0.8 -> 8.1.1 (ReDoS Parser::cleanup(), exponential memory allocation via alias recursion).'
+      'api (composer) : symfony/yaml 8.0.8 → 8.1.1 (ReDoS Parser::cleanup) ; form-data corrigé (injection CRLF).',
+      'Vitrine et admin : npm audit fix (form-data, ws, js-yaml), postcss fixé, vite 6.4.3 (SSRF dev-server, path traversal).',
+      'web-offline : Next.js 16.2.10 + ESLint 9 (SSRF, XSS, cache poisoning) ; audit npm/composer à 0 vulnérabilité résiduelle.'
     ],
   },
   {
     version: '4.23.2',
     isoDate: '2026-07-16',
-    title: 'CI/Securite : alertes CodeQL high sur deploy-main.yml: githu',
+    title: 'Sécurité CI : injection workflow_run corrigée, permissions explicites',
     bullets: [
-      'CI/Securite : alertes CodeQL high sur deploy-main.yml : : github.event.workflow_run.head_branch etait interpole directement dans un bloc run: shell...',
-      'CI : permissions GITHUB_TOKEN manquantes : : ajout d\'un bloc permissions: contents: read explicite sur architecture-check.yml, i18n-enterprise.yml...'
+      'deploy-main.yml : head_branch n\'est plus interpolé dans un bloc run: shell (variable d\'environnement) + vérification head_repository == github.repository.',
+      'Permissions GITHUB_TOKEN explicites (contents: read) sur les workflows manquants ; phpstan-modules.neon charge désormais Larastan (36 erreurs undefined method résolues).'
     ],
   },
   {
     version: '4.23.1',
     isoDate: '2026-07-16',
-    title: 'Module Marketing (Phase 1) : schema et modeles de base: crea',
+    title: 'Module Marketing (Phase 1) : schéma et modèles de base',
     bullets: [
-      'Module Marketing (Phase 1) : schema et modeles de base : : creation du module api/app/Modules/Marketing/ (Domain/Providers), suivant le pattern DDD...',
-      '- Migrations tenant create_social_accounts_table et create_social_posts_table.'
+      'Nouveau module DDD api/app/Modules/Marketing/ avec migrations tenant social_accounts et social_posts.',
+      'Aucun token OAuth brut stocké (référence chiffrée au profil agrégateur) ; modèles Eloquent scopés par tenant, tests Feature inclus.'
     ],
   },
   {
     version: '4.23.0',
     isoDate: '2026-07-16',
-    title: 'Role manager marketing invalidable via l\'API malgre le suppo',
+    title: 'Rôle manager marketing accepté par l\'API (Module Marketing — Phase 0)',
     bullets: [
-      'Role manager marketing invalidable via l\'API malgre le support modele existant (Module Marketing - Phase 0) : : la migration 2026_06_22_000001_add_...'
+      'StoreEmployeeRequest/UpdateEmployeeRequest validaient manager_role sans la valeur marketing — ajoutée à la liste autorisée (POST/PATCH /employees).'
     ],
   },
   {
     version: '4.22.8',
     isoDate: '2026-07-12',
-    title: 'Drip Email onboarding (Lot 2 - P2): SendTrialDripEmailJob di',
+    title: 'Drip email onboarding : 3 emails de nurturing automatiques',
     bullets: [
-      'Drip Email onboarding (Lot 2 - P2) : : SendTrialDripEmailJob dispatche automatiquement 3 emails de nurturing (J+1, J+3, J+7) dès qu\'une entreprise...',
-      'Modèle OnboardingProgress : : nouveau modèle Eloquent AppModulesHRDomainModelsOnboardingProgress avec migration 2026_07_12_115602_create_onboarding...'
+      'SendTrialDripEmailJob envoie J+1, J+3, J+7 après provisionnement trial (retries bornés, statut trial vérifié).',
+      'Nouveau modèle OnboardingProgress scopé par company_id + employee_id ; wizard onboarding mobile refactorisé (barre de progression, états requis/erreur).'
     ],
   },
   {
     version: '4.22.7',
     isoDate: '2026-07-05',
-    title: 'CI cassee sur main : ParseError PHP dans les regles de paie ',
+    title: 'ParseError paie corrigée + pause déduite des heures travaillées',
     bullets: [
-      'CI cassee sur main : ParseError PHP dans les regles de paie pays : : 7 fichiers sous api/app/Modules/Payroll/Infrastructure/Services/CountryRules/...',
-      'Bug metier : la pause (break_minutes) n\'etait jamais deduite des heures travaillees : : AttendanceLog a une colonne schedule_id (FK) mais aucune re...'
+      'ParseError PHP dans 7 fichiers CountryRules réparée (CI main débloquée).',
+      'Les minutes de pause (break_minutes) sont désormais déduites des heures travaillées (AttendanceLog).'
     ],
   },
   {
     version: '4.22.6',
     isoDate: '2026-07-05',
-    title: 'Gate CI "PHPStan — Modules Architecture" casse sur main: Abs',
+    title: 'PHPStan Modules Architecture réparé (scope Eloquent Absence)',
     bullets: [
-      'Gate CI "PHPStan — Modules Architecture" casse sur main : : AbsenceService::request() et LeavePolicyController::balances() (module Absence) accedai...'
+      'AbsenceService::request() et LeavePolicyController::balances() accédaient à des scopes Eloquent inconnus — typages corrigés, gate CI verte.'
     ],
   },
   {
     version: '4.22.5',
     isoDate: '2026-07-05',
-    title: 'Isolation multi-tenant des Jobs en file d\'attente: TenantMid',
+    title: 'Isolation multi-tenant des jobs en file d\'attente',
     bullets: [
-      'Isolation multi-tenant des Jobs en file d\'attente : : TenantMiddleware positionne correctement le search_path PostgreSQL et le binding current_comp...',
-      '- Nouvelle interface AppContractsQueueTenantScopedJob : tout job necessitant un contexte tenant declare tenantCompanyId().'
+      'TenantMiddleware positionne correctement le search_path PostgreSQL et le binding current_company pour les jobs.',
+      'Nouvelle interface App\Contracts\Queue\TenantScopedJob : tout job nécessitant un contexte tenant déclare tenantCompanyId().'
     ],
   },
   {
     version: '4.22.4',
     isoDate: '2026-07-04',
-    title: 'Suite du fix CI v4.22.3 : 136 echecs restants sur 899 tests ',
+    title: 'CI : 136 échecs restants résolus (company_id manquant)',
     bullets: [
-      'Suite du fix CI v4.22.3 : 136 echecs restants sur 899 tests (Backend) : :',
-      '- Meme bug que sur Absence/ExpenseClaim (cf 4.22.3), cette fois sur AppModulesAbsenceDomainModelsAbsenceType : company_id (NOT NULL sur absence_typ...'
+      'Même classe de bug qu\'en 4.22.3 sur AbsenceType : company_id (NOT NULL) absent des $fillable/casts du modèle canonique — corrigé, 899 tests verts.'
     ],
   },
   {
     version: '4.22.3',
     isoDate: '2026-07-04',
-    title: 'Suite du fix CI v4.22.2 : 160 echecs restants sur 899 tests ',
+    title: 'CI : 160 échecs restants résolus (modèles canoniques)',
     bullets: [
-      'Suite du fix CI v4.22.2 : 160 echecs restants sur 899 tests (Backend + Backend Coverage) : :',
-      '- Modele canonique AppModulesAbsenceDomainModelsAbsence (utilise via le shim AppModelsAbsence) ne declarait ni company_id (NOT NULL en base) dans $...'
+      'Le modèle canonique Absence (via le shim App\Models\Absence) ne déclarait ni company_id (NOT NULL) dans $fillable ni le cast approprié — aligné, 899 tests verts.'
     ],
   },
   {
     version: '4.22.2',
     isoDate: '2026-07-04',
-    title: 'CI casse sur main malgre le fix v4.21.1 (Backend + Backend C',
+    title: 'CI : shims app/Models réparés (class_alias + génération)',
     bullets: [
-      'CI casse sur main malgre le fix v4.21.1 (Backend + Backend Coverage toujours en echec, 633/902 tests) : :',
-      '75 fichiers shim app/Models/*.php : (aliases DDD generes en v4.22.0) : class_alias(AppModules...Foo::class, ...) resolvait le nom de classe cible r...'
+      '75 fichiers shim app/Models/*.php générés en v4.22.0 : class_alias résolvait un nom de classe incorrect — régénérés, Backend + Coverage repassent au vert.'
     ],
   },
   {
     version: '4.22.1',
     isoDate: '2026-07-02',
-    title: 'Nettoyage documentation projet (lisibilite/coherence, pas de',
+    title: 'Nettoyage documentation — mojibake et cohérence',
     bullets: [
-      'Nettoyage documentation projet (lisibilite/coherence, pas de changement fonctionnel) : :',
-      '- docs/dossierdeConception/19_diagrammes_uml/{01,02,03,04}_*.md : correction d\'un encodage casse (mojibake, ex. employe9s -> employés, de9tecte9 ->...'
+      'Correction d\'encodages cassés (mojibake) dans les diagrammes UML et autres docs — aucun changement fonctionnel.'
     ],
   },
   {
     version: '4.21.1',
     isoDate: '2026-07-01',
-    title: 'CI cassé sur main — bloquait tous les merges:',
+    title: 'CI débloqué : migration aux apostrophes échappées',
     bullets: [
-      'CI cassé sur main — bloquait tous les merges : :',
-      '- Migration 2026_06_29_000202_create_employee_attendance_preferences_table.php : apostrophes échappées en style PHP (\') dans un commentaire SQL Pos...'
+      'Apostrophes échappées en style PHP dans un commentaire SQL de la migration employee_attendance_preferences — le CI qui bloquait tous les merges repasse au vert.'
     ],
   },
   {
     version: '4.22.0',
     isoDate: '2026-07-01',
-    title: 'Nettoyage architectural Phase 2 — modèles, services, FormReq',
+    title: 'Nettoyage architectural Phase 2 — modèles, services, FormRequests',
     bullets: [
-      'Nettoyage architectural Phase 2 — modèles, services, FormRequests :',
-      '17 modèles orphelins : placés dans Core/Tenant/Domain/Models/, Core/Auth/Domain/Models/,'
+      '17 modèles orphelins repositionnés dans Core/Tenant/Domain/Models et Core/Auth/Domain/Models ; services et FormRequests réorganisés par module.'
     ],
   },
   {
     version: '4.21.0',
     isoDate: '2026-07-01',
-    title: 'Nettoyage architectural API — suppression des doublons legac',
+    title: 'Nettoyage architectural API — doublons legacy supprimés',
     bullets: [
-      'Nettoyage architectural API — suppression des doublons legacy :',
-      '90 controllers : dans app/Http/Controllers/Api/V1/ supprimés (doublons migrés dans app/Modules/*/Interfaces/Api/V1/). Restent : EdgeController, Edg...'
+      '90 controllers doublons supprimés de app/Http/Controllers/Api/V1 (migrés dans app/Modules/*/Interfaces/Api/V1).'
     ],
   },
   {
     version: '4.17.4',
     isoDate: '2026-07-04',
-    title: 'EdgeSync: Migre EdgeController et EdgeDownloadController de ',
+    title: 'EdgeSync : EdgeController migré vers le module DDD',
     bullets: [
-      'EdgeSync : : Migre EdgeController et EdgeDownloadController de AppHttpControllersApiV1 vers AppModulesEdgeSyncInterfacesApiV1. Routes gérées par Ed...',
-      'PHPStan modules : : Niveau relevé de 3 → 5 avec suppressions ciblées pour les modules en cours de migration.'
+      'EdgeController et EdgeDownloadController migrés de app/Http/Controllers/Api/V1 vers App\Modules\EdgeSync\Interfaces\Api\V1.',
+      'PHPStan modules relevé de niveau 3 → 5 avec suppressions ciblées pour les modules en migration.'
     ],
   },]

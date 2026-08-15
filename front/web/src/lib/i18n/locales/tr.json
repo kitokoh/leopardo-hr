@@ -778,12 +778,33 @@
     "system": "Sistem",
     "training": "Eğitimler",
     "users": "Kullanıcılar",
-    "webhooks": "Webhooklar"
+    "webhooks": "Webhooklar",
+    "login": "Giris",
+    "logout": "Cikis",
+    "companyDetail": "Sirket detayi",
+    "contributions": "Sosyal katkilar",
+    "taxBrackets": "Vergi dilimleri",
+    "legalRates": "Yasal oranlar",
+    "account": "Hesabim",
+    "notFound": "Sayfa bulunamadi"
   },
   "webhooks": {
     "confirm_delete": "Bu webhook silinsin mi?"
   },
   "a11y": {
     "skip_to_content": "Ana içeriğe geç"
+  },
+  "shell": {
+    "connected": "Bagli",
+    "fallbackPolling": "Yedek mod (polling)",
+    "pushUnconfigured": "Push yapilandirilmadi",
+    "disconnected": "Baglanti kesildi",
+    "search": "Ara",
+    "notifications": "Bildirimler",
+    "noNotifications": "Bildirim yok",
+    "criticalAlerts": "Kritik uyarilar",
+    "level": "Seviye:",
+    "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
+    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir"
   }
 }

@@ -5,13 +5,16 @@ namespace Tests\Unit;
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
 use App\Exceptions\AccountSuspendedException;
+use App\Exceptions\GoogleTokenInvalidException;
 use Illuminate\Support\Facades\Hash;
 use Tests\Support\CreatesMvpSchema;
+use Tests\Support\SignsGoogleIdTokens;
 use Tests\TestCase;
 
 class UserAuthServiceTest extends TestCase
 {
     use CreatesMvpSchema;
+    use SignsGoogleIdTokens;
 
     private UserAuthService $service;
 
@@ -93,16 +96,54 @@ class UserAuthServiceTest extends TestCase
 
     public function test_google_sign_in_rejects_suspended_existing_user(): void
     {
+        [$privateKey, $jwks] = $this->googleKeyPair();
+        $this->fakeGoogleJwks([$jwks]);
+
         User::query()->create([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
-            'google_id' => 'google-123',
+            'google_id' => 'google-sub-123',
             'provider' => 'google',
             'status' => 'suspended',
         ]);
 
+        $idToken = $this->googleIdToken($privateKey, ['email' => 'jean.dupont@example.com']);
+
         $this->expectException(AccountSuspendedException::class);
-        $this->service->googleSignIn('google-123', 'jean.dupont@example.com', 'Jean', 'Dupont');
+        $this->service->googleSignIn($idToken);
+    }
+
+    public function test_google_sign_in_rejects_forged_token(): void
+    {
+        [$privateKey, $jwks] = $this->googleKeyPair();
+        // JWKS servi = AUTRE clé que celle qui signe le token (signature invalide).
+        [$otherKey, $otherJwks] = $this->googleKeyPair();
+        $this->fakeGoogleJwks([$otherJwks]);
+
+        $idToken = $this->googleIdToken($privateKey);
+
+        $this->expectException(GoogleTokenInvalidException::class);
+        $this->service->googleSignIn($idToken);
+    }
+
+    public function test_google_sign_in_uses_verified_identity_only(): void
+    {
+        [$privateKey, $jwks] = $this->googleKeyPair();
+        $this->fakeGoogleJwks([$jwks]);
+
+        $idToken = $this->googleIdToken($privateKey, [
+            'email' => 'verified.user@example.com',
+            'name' => 'Jane Doe',
+        ]);
+
+        $result = $this->service->googleSignIn($idToken);
+
+        $this->assertArrayHasKey('token', $result);
+        $this->assertTrue($result['is_new']);
+        $this->assertSame('verified.user@example.com', $result['user']->email);
+        $this->assertSame('google-sub-123', $result['user']->google_id);
+        $this->assertSame('Jane', $result['user']->first_name);
+        $this->assertSame('Doe', $result['user']->last_name);
     }
 }

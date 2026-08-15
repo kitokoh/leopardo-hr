@@ -30,11 +30,16 @@ final class OidcIdTokenValidator
     private const JWKS_CACHE_TTL_SECONDS = 3600;
 
     /**
-     * @param  array{issuer: string, client_id: string, nonce: ?string, jwks_uri: string}  $expected
+     * @param  array{issuer: string, client_id: string, nonce: ?string, jwks_uri: string, audiences?: list<string>}  $expected
      * @return array<string, mixed> claims validés
      *
      * @throws \RuntimeException quand le token est invalide
      *         (signature, émetteur, audience, expiration ou nonce).
+     *
+     * Note : si `audiences` est fourni (liste de client_id acceptés), l'aud
+     * du token doit intersecter cette liste. Si `audiences` est une liste
+     * vide, le contrôle d'audience est sauté (mode dev — signature, iss et
+     * exp restent obligatoires). Issue #3941.
      */
     public function validate(string $idToken, array $expected): array
     {
@@ -66,7 +71,11 @@ final class OidcIdTokenValidator
 
         $aud = $claims['aud'] ?? [];
         $auds = is_array($aud) ? array_map('strval', $aud) : [(string) $aud];
-        if (! in_array((string) $expected['client_id'], $auds, true)) {
+        $allowedAudiences = array_values(array_filter(array_map(
+            'strval',
+            (array) ($expected['audiences'] ?? [(string) $expected['client_id']])
+        ), static fn (string $value): bool => $value !== ''));
+        if ($allowedAudiences !== [] && array_intersect($auds, $allowedAudiences) === []) {
             throw new \RuntimeException('OIDC id_token : audience (aud) invalide.');
         }
 

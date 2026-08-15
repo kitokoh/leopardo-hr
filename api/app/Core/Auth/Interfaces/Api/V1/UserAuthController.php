@@ -67,19 +67,13 @@ class UserAuthController extends Controller
     public function googleSignIn(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'google_id' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'avatar_url' => ['nullable', 'url', 'max:500'],
+            'id_token' => ['required', 'string'],
+            'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
         $result = $this->userAuthService->googleSignIn(
-            googleId: $validated['google_id'],
-            email: $validated['email'],
-            firstName: $validated['first_name'],
-            lastName: $validated['last_name'],
-            avatarUrl: $validated['avatar_url'] ?? null,
+            idToken: $validated['id_token'],
+            deviceName: $validated['device_name'] ?? null,
         );
 
         return new JsonResponse([
