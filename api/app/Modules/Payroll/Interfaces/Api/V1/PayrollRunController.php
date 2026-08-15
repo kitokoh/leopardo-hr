@@ -52,7 +52,7 @@ class PayrollRunController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $runs = $query->orderByDesc('period_start')->paginate($request->integer('per_page', 15));
+        $runs = $query->orderByDesc('period_start')->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return PayrollRunResource::collection($runs)->response();
     }

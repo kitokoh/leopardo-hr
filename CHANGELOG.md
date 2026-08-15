@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(api): `per_page` borné 1-100 sur les listes ExpenseClaim/LeaveAccrual/Payroll/SalaryAdvance/PayrollRun/PayrollAudit (Closes #2682).** Clamp `max(1, min(100, ...))` (pattern PayrollCycle) ; `PayrollRunController:129` `?->` → `->` (PHPStan strict).
 - **fix(api): `work_state_label` localisé — fin du français codé en dur (Closes #2681).** 6 clés ajoutées à `lang/{fr,en,ar,tr}/employees.php` ; `EmployeeController` utilise `__('employees.work_state_*')`.
 - **fix(payroll): heures supplémentaires — le taux horaire n'est plus arrondi avant les majorations 1.25/1.50 (Closes #2685).** Précision complète conservée jusqu'à l'arrondi final (sous-paiement systématique corrigé).
 - **fix(billing): webhook Stripe — erreurs de traitement en 500 (retry Stripe), fin de la perte silencieuse d'événements (Closes #2668).** 200 uniquement pour signature valide + traitement OK ; erreur de traitement → 500 (Stripe retente) ; signature invalide → 400 (pas de retry).
