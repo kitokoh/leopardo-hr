@@ -12,14 +12,17 @@ class HrSmartAttendanceRepository {
   static const _readTimeout = Duration(seconds: 8);
   static const _writeTimeout = Duration(seconds: 10);
 
-  /// GET /api/v1/smart-attendance/sessions?status=pending_validation
+  /// GET /api/v1/smart-attendance/sessions (status=pending_validation)
   Future<List<GeoAttendanceSession>> getPendingSessions() async {
     final response = await _apiClient.requestWithRetry(
-      '/smart-attendance/sessions?status=pending_validation&per_page=50',
+      '/smart-attendance/sessions',
+      queryParameters: {
+        'status': 'pending_validation',
+        'per_page': 50,
+      },
       timeoutOverride: _readTimeout,
     );
-    final raw = response.data;
-    final list = (raw is Map ? raw['data'] : raw) as List<dynamic>? ?? [];
+    final list = extractDataList(response.data);
     return list
         .map((e) => GeoAttendanceSession.fromJson(e as Map<String, dynamic>))
         .toList();
