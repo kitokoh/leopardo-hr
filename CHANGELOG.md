@@ -21,6 +21,7 @@
 
 > Toute PR ajoute son entrée ici sous la catégorie adaptée (issue #2417) :
 > `### Added` (features), `### Changed`, `### Fixed
+- **fix(mobile): fallback devise 'DZD' codé en dur retiré (Closes #2741).** Les écrans attendance, avances et team affichaient 'DZD' quand le payload tenant ne portait pas de devise — les entreprises FR/MA/SN voyaient des DZD. La devise vient désormais exclusivement du payload tenant (summary.currency / employee.currency) ; nouveau helper partagé `currencySuffix()` (leopardo_core) qui n'affiche aucun symbole quand la devise est inconnue. 8 fichiers, 20 occurrences.`, `### Removed`.
 - **fix(mobile): sessions sanctum/user_api séparées — fin de l'écrasement (Closes #2739).** Les deux systèmes d'auth (sanctum /api/v1 et user_api /user/*) partageaient la MÊME clé `auth_token` dans SecureStorage → se connecter à l'un déconnectait l'autre. Clés distinctes (`auth_token_employee` / `auth_token_user`) + migration de lecture (l'ancienne clé reste lue en fallback, purgée au logout). `ApiClient` choisit le jeton selon la session via le flag `useUserSession` (intercepteur + 401 ciblé) ; les 5 appels authentifiés de `user_auth_repository` (me, logout, company-requests ×2, profile) passent sur la session user dans les 3 apps.
 
 `, `### Removed`.
