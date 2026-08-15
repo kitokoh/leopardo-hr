@@ -90,7 +90,7 @@ const props = defineProps({
   status: {
     type: String,
     required: true,
-    validator: (value) => ['healthy', 'warning', 'error', 'maintenance'].includes(value)
+    validator: (value) => ['healthy', 'warning', 'error', 'maintenance', 'unavailable'].includes(value)
   },
   details: {
     type: String,
@@ -148,6 +148,11 @@ const statusColor = computed(() => {
       bg: 'bg-gradient-to-br from-slate-500 to-slate-600',
       icon: 'text-white',
       glow: 'bg-slate-500'
+    },
+    unavailable: {
+      bg: 'bg-gradient-to-br from-slate-300 to-slate-400',
+      icon: 'text-white',
+      glow: 'bg-slate-300'
     }
   }
   return colors[props.status] || colors.healthy
@@ -158,7 +163,8 @@ const statusIndicatorColor = computed(() => {
     healthy: 'bg-green-400',
     warning: 'bg-yellow-400',
     error: 'bg-red-400',
-    maintenance: 'bg-gray-400'
+    maintenance: 'bg-gray-400',
+    unavailable: 'bg-gray-300'
   }
   return colors[props.status] || 'bg-gray-400'
 })
@@ -168,7 +174,8 @@ const statusTextColor = computed(() => {
     healthy: 'text-green-600',
     warning: 'text-yellow-600',
     error: 'text-red-600',
-    maintenance: 'text-gray-600'
+    maintenance: 'text-gray-600',
+    unavailable: 'text-gray-500'
   }
   return colors[props.status] || 'text-gray-600'
 })
@@ -178,7 +185,8 @@ const statusLabel = computed(() => {
     healthy: 'Opérationnel',
     warning: 'Attention',
     error: 'Erreur',
-    maintenance: 'Maintenance'
+    maintenance: 'Maintenance',
+    unavailable: 'Non disponible'
   }
   return labels[props.status] || 'Inconnu'
 })
