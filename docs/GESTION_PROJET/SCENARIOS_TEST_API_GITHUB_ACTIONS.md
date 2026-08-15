@@ -431,6 +431,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - `POST /api/v1/training/courses/{id}/sessions` planifie une session
 - `POST /api/v1/training/sessions/{id}/enroll` inscrit un employe
 - `PUT /api/v1/training/enrollments/{id}` complete une inscription (score, feedback)
+- `GET /api/v1/training/sessions` + `GET /api/v1/training/enrollments` listent les sessions/inscriptions GLOBALES du tenant (groupe `api.manager`, cockpit admin — QA #2228 ; routes uniques depuis #2502, méthodes réelles `indexSessionsAll`/`indexEnrollments`)
 - Isolation : catalogue, details, sessions, trainers et enrollments refusent les ressources ou employees hors tenant.
 
 ### Module E â Prets employes
