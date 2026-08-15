@@ -58,7 +58,9 @@ test('platform administrator can sign in and reach the admin dashboard', async (
 
   await expect(page).toHaveURL(/\/$/)
   await expect(page.locator('body')).toContainText(/Tableau de bord|Dashboard/i)
-  await expect(page.locator('body')).toContainText(/Cockpit plateforme|Synthese commerciale/i)
+  // QA 2026-08-15 (#2658) : « Cockpit plateforme » n'est rendu qu'en état
+  // d'erreur (DashboardView) — le chemin nominal affiche les KPI cards.
+  await expect(page.locator('body')).toContainText(/Entreprises actives|MRR Plateforme|Demandes en attente/i)
   expect(loginRequestSeen).toBe(true)
 })
 

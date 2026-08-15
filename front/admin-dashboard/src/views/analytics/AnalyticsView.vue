@@ -156,12 +156,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api.js'
-import { useLocaleStore } from '@/stores/locale'
 
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const toast = useToast()
-const localeStore = useLocaleStore()
 
 const isLoading = ref(false)
 const stats = reactive({
