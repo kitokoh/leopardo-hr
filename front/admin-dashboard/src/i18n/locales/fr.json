@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "Gestion des Utilisateurs",
-      "summary": ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui"
+      "summary": ":count utilisateur(s) plateforme"
     },
     "actions": {
       "bulk": "Actions (:count)",
@@ -701,5 +701,8 @@
     "pricing": {
       "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
     }
+  },
+  "webhooks": {
+    "confirm_delete": "Supprimer ce webhook ?"
   }
 }

@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "إدارة المستخدمين",
-      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم"
+      "summary": ":count مستخدم على المنصة"
     },
     "actions": {
       "bulk": "إجراءات (:count)",
@@ -701,5 +701,8 @@
     "pricing": {
       "description": "تسعير شفاف: خطة مجانية، بايلوت 29 يورو شهريًا، عمليات 99 يورو شهريًا، المؤسسات حسب العرض. تجربة مجانية 14 يومًا."
     }
+  },
+  "webhooks": {
+    "confirm_delete": "حذف هذا ال webhook؟"
   }
 }
