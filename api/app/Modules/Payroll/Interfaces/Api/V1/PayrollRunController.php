@@ -112,12 +112,35 @@ class PayrollRunController extends Controller
             return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
         }
 
+        // Issue #2555 — un pays sans règles enregistrées (ex. 'ZZ') fait
+        // lever `UnsupportedCountryRulesException` ici, AVANT le try/catch :
+        // le run restait bloqué dans son statut précédent (ex. `calculated`)
+        // et n'était plus recalculable. Contrat : tout échec de calculate
+        // ramène le run à `draft` (recalculable), même l'échec de résolution
+        // des règles.
+        try {
+            $rules = $this->calculator->getRules($payrollRun->country_code);
+        } catch (\Throwable $e) {
+            $payrollRun->update(['status' => PayrollRun::STATUS_DRAFT]);
+            Log::error('payroll.run.calculation_failed', [
+                'run_id' => $payrollRun->id,
+                'company_id' => $payrollRun->company_id,
+                'country_code' => $payrollRun->country_code,
+                'period' => $payrollRun->period_start?->toDateString(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => __('payroll.calculation_failed'),
+            ], 422);
+        }
+
         // Issue #2332 — un pays en règle « placeholder » (aucune valeur légale
         // implémentée) expose des montants indicatifs : un run RÉEL ne doit
         // pas être calculé sans confirmation explicite. Même garde que les
         // simulations (#1872), placée AVANT tout changement de statut pour
         // ne jamais laisser le run bloqué en `calculating` sur un 422.
-        $rules = $this->calculator->getRules($payrollRun->country_code);
+        // (getRules est déjà résolu ci-dessus — ne pas re-résoudre.)
         if ($rules->confidenceLevel() === 'placeholder') {
             $acknowledged = $request->boolean('acknowledge_placeholder');
             if (! $acknowledged) {
