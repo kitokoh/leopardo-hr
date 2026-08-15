@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(api): config/queue.php ne doit pas appeler app() — composer install / package:discover réparés (régression #3693).** `'default' => env('QUEUE_CONNECTION', app()->environment('production') ? ...)` cassait TOUTE la CI backend : pendant le chargement des configs, le conteneur n'a pas encore de binding `env` → `Target class [env] does not exist` → post-autoload-dump en échec → Backend Coverage + PHPStan rouges sur chaque PR (même UI-only). Remplacement par `env('APP_ENV', 'production') === 'production'` (lecture directe de la variable, pas du conteneur). Vérifié : `php artisan package:discover` exit 0.
+
 - **refactor(mobile-manager): 11 routes GoRoute dupliquées supprimées (Closes #3746).** `/tasks`, `/salary-advances`, `/payrolls`, `/notifications`, `/modules`, `/me/monthly`, `/history`, `/evaluations`, `/attendance`, `/absences`, `/team` étaient déclarés 2× dans le même ShellRoute (artefact #3223/#3205 après #2801) — GoRouter n'utilisait que la 1ʳᵉ. Second bloc retiré, routes `/manager/*` et `/smart-attendance/*` conservées, aucun import mort.
 
 - **fix(admin): lint à 0 warning — imports et helpers inutilisés retirés (Closes #3751).** 9 warnings `no-unused-vars` sur main, dont 2 introduits par les merges #3699 (InformationCircleIcon dans SystemView) et #3701 (StatusBadge dans WebhooksView) : 5 icônes mortes dans CommandPalette, helpers morts formatDuration (EdgeNodesView) et formatDate (TaxRatesView). `npm run lint` → 0 warning, `npm run build` → vert.
