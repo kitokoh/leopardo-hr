@@ -98,6 +98,31 @@ class PayrollJournalGeneratorCoverageTest extends TestCase
         $this->assertStringNotContainsString('",=1+2', $csv);
     }
 
+    public function test_negative_amounts_stay_numeric_in_csv(): void
+    {
+        // Issue #2223 : les montants négatifs (bulletins de régularisation)
+        // ne doivent PAS être neutralisés par l'anti-injection — sinon ils
+        // deviennent du texte dans Excel et cassent les totaux comptables.
+        [$run, $employee] = $this->runWithSlips('validated');
+
+        /** @var PaySlip $slip */
+        $slip = $run->paySlips()->first();
+        $slip->update(['net_salary' => -1234.56, 'gross_salary' => -1500.00]);
+
+        $run->refresh();
+        $csv = (new PayrollJournalGenerator)->generate($run);
+
+        $this->assertStringContainsString('-1234.56', $csv);
+        $this->assertStringNotContainsString("'-1234.56", $csv);
+        $this->assertStringNotContainsString("'-1500.00", $csv);
+
+        // L'anti-injection reste actif sur les champs texte.
+        $employee->update(['matricule' => '=1+2']);
+        $run->refresh();
+        $csv2 = (new PayrollJournalGenerator)->generate($run);
+        $this->assertStringContainsString("'=1+2", $csv2);
+    }
+
     public function test_uses_employee_id_when_matricule_missing(): void
     {
         [$run, $employee] = $this->runWithSlips('validated');
