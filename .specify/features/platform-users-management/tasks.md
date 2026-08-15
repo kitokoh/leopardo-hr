@@ -1,0 +1,11 @@
+## Tâches
+- [ ] 1. Backend : créer `PlatformUsersController` (index/show/update) + routes sous le groupe `/admin` de `api/routes/api.php` (ou module platform).
+- [ ] 2. Backend : requête paginée + recherche + tri allowlisté + enrichment entreprise (user_employee_links, public.companies via PlatformCompanyLookup/DB qualifié).
+- [ ] 3. Backend : PATCH is_active + garde self-disable (422) + 404.
+- [ ] 4. Backend : tests Feature complets.
+- [ ] 5. Backend : openapi.yaml + FrontendApiContractTest si applicable + CHANGELOG.
+- [ ] 6. Admin : UsersView sur API réelle (table paginée, recherche debounced, toggle statut, états).
+- [ ] 7. Admin : UserDetailView sur API + fix crash.
+- [ ] 8. Admin : retirer modals/actions sans backend (ou les brancher) — aucun bouton mort.
+- [ ] 9. Admin : lint + build.
+- [ ] 10. PR `feat/2269-...` `Closes #2269`, CI verte, merge.
