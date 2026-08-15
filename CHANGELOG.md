@@ -15,6 +15,7 @@
 
 - **fix(admin): lint à 0 warning — imports et helpers inutilisés retirés (Closes #3751).** 9 warnings `no-unused-vars` sur main, dont 2 introduits par les merges #3699 (InformationCircleIcon dans SystemView) et #3701 (StatusBadge dans WebhooksView) : 5 icônes mortes dans CommandPalette, helpers morts formatDuration (EdgeNodesView) et formatDate (TaxRatesView). `npm run lint` → 0 warning, `npm run build` → vert.
 - **fix(ci): garde de protection de branche sans faux 403 horaires (Closes #3742).** Le cron utilisant `GITHUB_TOKEN` est retiré ; la vérification devient manuelle/PR et utilise uniquement `BRANCH_PROTECTION_TOKEN` lorsqu’un token admin `administration:read` est configuré, avec une notice explicite sinon.
+- **fix(ci): builds mobiles main dédupliqués (Closes #3743).** `mobile-distribute-main.yml` est désormais l’unique workflow sur push `main` ; `mobile-distribute.yml` reste réservé aux tags staging/prod et aux déclenchements manuels.
 
 - **docs(spec-kit): audit 360° 2026-08-15 — registre, spec, tasks et 23 issues (T001–T023, #3724–#3746).** Couverture API (OAuth auto-provision, erreurs brutes, race import CSV, scope fail-open), vitrine (e2e no-op, SW pages authentifiées, /mobile, OG guides, a11y FAQ, seo-metadata mort, footer, sync ?lang=), admin (notifications 405, palette, titre onglet, FleetView), mobile/kiosk/edge/CI (App ID HR, Caddyfile.edge, garde branch-protection 403, routes GoRouter dupliquées, builds doublés, perms kiosk.db, bornes bridge). Artifacts : `.specify/features/qa-360-audit-expert-2026-08-15/`.
 
