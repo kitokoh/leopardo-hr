@@ -6,8 +6,8 @@ use App\AI\DTOs\AIResponse;
 use App\AI\LLMClient;
 use App\AI\Models\AIConversation;
 use App\AI\Models\AIToolRegistryEntry;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
@@ -246,9 +246,11 @@ class AIGatewayAndAnalyticsTest extends TestCase
 
         $this->getJson('/api/v1/ai/agent/workflows')
             ->assertOk()
+            // 2 workflows réels (prepare_payroll, weekly_report) : le workflow
+            // fantôme new_employee_onboarding a été retiré (issue #2808,
+            // merge #2851) — le compteur suit le code, pas l'inverse.
             ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.0.id', 'prepare_payroll')
-            ->assertJsonPath('data.1.id', 'weekly_report');
+            ->assertJsonPath('data.0.id', 'prepare_payroll');
 
         $this->postJson('/api/v1/ai/agent/run', [
             'task' => 'Prepare le rapport hebdomadaire.',
@@ -354,4 +356,3 @@ class AIGatewayAndAnalyticsTest extends TestCase
         });
     }
 }
-
