@@ -19,7 +19,7 @@ export default function GuidesChecklistPaiePage() {
         badge="Guide Gratuit"
         ctaPrimary={{
           text: 'Télécharger la Checklist (PDF)',
-          href: '/downloads/checklist-paie-2024.pdf',
+          href: '/downloads/checklist-paie.pdf',
         }}
         ctaSecondary={{
           text: 'Essai Gratuit',
@@ -120,7 +120,7 @@ export default function GuidesChecklistPaiePage() {
         subheadline="Téléchargez la checklist et vérifiez chaque point"
         ctaPrimary={{
           text: 'Télécharger Maintenant',
-          href: '/downloads/checklist-paie-2024.pdf',
+          href: '/downloads/checklist-paie.pdf',
         }}
         ctaSecondary={{
           text: 'Automatiser avec Leopardo',
