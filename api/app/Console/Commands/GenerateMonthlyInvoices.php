@@ -36,7 +36,7 @@ class GenerateMonthlyInvoices extends Command
             try {
                 DB::transaction(function () use ($subscription, &$generated): void {
                     $plan = PlanCode::normalize((string) $subscription->plan)->value;
-                    $pricing = self::PLAN_PRICES[$plan] ?? self::PLAN_PRICES[PlanCode::Pilot->value];
+                    $pricing = self::PLAN_PRICES[$plan];
                     $year = now()->format('Y');
                     $seq = Invoice::where('company_id', $subscription->company_id)->count() + 1;
 

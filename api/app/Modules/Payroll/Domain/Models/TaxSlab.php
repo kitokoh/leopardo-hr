@@ -88,7 +88,7 @@ class TaxSlab extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForCountry(Builder $query, string $countryCode): Builder
@@ -103,7 +103,7 @@ class TaxSlab extends Model
      * a payroll run from a past period must use the tax slabs that were
      * effective *during that period*, not today's slabs.
      *
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @param  Carbon|\DateTimeInterface|string|null  $asOf
      * @return Builder<static>
      */

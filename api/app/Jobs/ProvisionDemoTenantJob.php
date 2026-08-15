@@ -51,9 +51,10 @@ class ProvisionDemoTenantJob implements ShouldQueue
                     ]);
             }
 
-            // Issue #2620 : magic link envoyé au manager après provisioning
-            // QA #3002 : issueDemoAccess() déjà appelé plus haut (l.42) — le 2e
-            // appel révoquait le hash du 1er token (2 emails, 1 lien mort).
+            // Issue #2620 : magic link envoyé au manager après provisioning.
+            // QA #3002 : un SEUL appel — un 2e appel révoquerait le hash du 1er
+            // token (2 emails, 1 lien mort).
+            $this->issueDemoAccess($result['manager']);
 
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 

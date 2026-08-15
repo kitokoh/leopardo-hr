@@ -62,7 +62,7 @@ class FeatureFlagController extends Controller
             ->latest()
             ->first();
 
-        return PlanCode::normalize($subscription?->plan ?? PlanCode::Free->value)->value;
+        return PlanCode::normalize($subscription->plan ?? PlanCode::Free->value)->value;
     }
 }
 
