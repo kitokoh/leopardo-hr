@@ -376,7 +376,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            aria-label="Menu mobile"
+            aria-label={copy.nav.menuLabel}
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">
@@ -405,6 +405,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                       transition={{ delay: index * 0.05 }}
                       className="w-full flex items-center justify-between px-4 py-3 text-lg font-semibold text-slate-900 dark:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       onClick={() => setOpenDropdown(openDropdown === entry.label ? null : entry.label)}
+                      aria-expanded={openDropdown === entry.label}
                     >
                       {entry.label}
                       <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === entry.label ? 'rotate-180' : ''}`} />

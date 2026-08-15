@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+- **fix(web/a11y): FAQ et Navbar mobile accessibles (#3732).** Ajout des labels de recherche, `aria-expanded`/`aria-controls` sur les accordéons et sous-menus, panneau FAQ nommé, et label du drawer localisé.
+
+- **chore(web): supprimer le module `seo-metadata.ts` mort et divergent (#3733).** `seo.ts` reste la source active unique ; aucune référence runtime ne subsiste dans `front/web/src`.
+
+- **fix(web): Footer sans fallback `#` silencieux (#3734).** Les routes inconnues ne sont plus rendues comme des liens morts ; les chemins canoniques existants et la désactivation du Blog restent inchangés.
+
 - **refactor(mobile-manager): 11 routes GoRoute dupliquées supprimées (Closes #3746).** `/tasks`, `/salary-advances`, `/payrolls`, `/notifications`, `/modules`, `/me/monthly`, `/history`, `/evaluations`, `/attendance`, `/absences`, `/team` étaient déclarés 2× dans le même ShellRoute (artefact #3223/#3205 après #2801) — GoRouter n'utilisait que la 1ʳᵉ. Second bloc retiré, routes `/manager/*` et `/smart-attendance/*` conservées, aucun import mort.
 
 - **fix(admin): lint à 0 warning — imports et helpers inutilisés retirés (Closes #3751).** 9 warnings `no-unused-vars` sur main, dont 2 introduits par les merges #3699 (InformationCircleIcon dans SystemView) et #3701 (StatusBadge dans WebhooksView) : 5 icônes mortes dans CommandPalette, helpers morts formatDuration (EdgeNodesView) et formatDate (TaxRatesView). `npm run lint` → 0 warning, `npm run build` → vert.

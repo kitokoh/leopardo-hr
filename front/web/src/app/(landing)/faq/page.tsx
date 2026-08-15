@@ -103,8 +103,10 @@ export default function FaqPage() {
       <section className="py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative mb-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <label htmlFor="faq-search" className="sr-only">Rechercher une question</label>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden="true" />
             <input
+              id="faq-search"
               type="text"
               placeholder="Rechercher une question..."
               value={search}
@@ -136,7 +138,10 @@ export default function FaqPage() {
                 className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden"
               >
                 <button
+                  id={`faq-trigger-${index}`}
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                  aria-expanded={openIndex === index}
+                  aria-controls={`faq-panel-${index}`}
                   className="w-full flex items-center justify-between p-5 text-left hover:bg-transparent dark:hover:bg-slate-800/50 transition-colors"
                 >
                   <span className="font-semibold text-slate-900 dark:text-white pr-4">{item.question}</span>
@@ -145,6 +150,9 @@ export default function FaqPage() {
                 <AnimatePresence>
                   {openIndex === index && (
                     <motion.div
+                      id={`faq-panel-${index}`}
+                      role="region"
+                      aria-labelledby={`faq-trigger-${index}`}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
