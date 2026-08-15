@@ -316,6 +316,10 @@ async function loadUsers() {
       company: null,
       createdAt: user.created_at ? new Date(user.created_at) : null,
       lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
+      // #3038 : UserTable lit created_at/last_login_at (snake_case) — alias
+      // pour que la colonne « Inscription » affiche la date réelle.
+      created_at: user.created_at ? new Date(user.created_at) : null,
+      last_login_at: user.last_login_at ? new Date(user.last_login_at) : null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
     }))
     // Issue #2698 — métadonnées de pagination renvoyées par l'API.

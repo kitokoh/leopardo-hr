@@ -77,8 +77,8 @@
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
                   <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Kiosk</dt>
                   <dd class="mt-2 flex items-center text-sm font-bold text-slate-900 dark:text-white">
-                    <div :class="['mr-2 h-2.5 w-2.5 rounded-full', health.adoption.kiosk.active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300']"></div>
-                    {{ health.adoption.kiosk.active ? 'Actif' : 'Inactif' }}
+                    <div :class="['mr-2 h-2.5 w-2.5 rounded-full', (health.adoption.kiosk?.active ?? false) ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-300']"></div>
+                    {{ (health.adoption.kiosk?.active ?? false) ? 'Actif' : 'Inactif' }}
                   </dd>
                 </div>
               </div>
@@ -298,7 +298,7 @@
                 </div>
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
                   <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Slug</dt>
-                  <dd class="text-xs font-bold">{{ health.company.slug }}</dd>
+                  <dd class="text-xs font-bold">{{ health.company.slug || '—' }}</dd>
                 </div>
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
                   <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Pays / Devise</dt>
@@ -306,7 +306,7 @@
                 </div>
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
                   <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Inscrit le</dt>
-                  <dd class="text-xs font-bold">{{ formatDate(health.company.created_at) }}</dd>
+                  <dd class="text-xs font-bold">{{ health.company.created_at ? formatDate(health.company.created_at) : '—' }}</dd>
                 </div>
                 <div class="flex justify-between items-center">
                   <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Dernière Activité</dt>
