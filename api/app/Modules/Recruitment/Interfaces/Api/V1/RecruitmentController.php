@@ -36,7 +36,7 @@ class RecruitmentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        return JobPostingResource::collection($query->orderByDesc('created_at')->paginate($request->integer('per_page', 15)))
+        return JobPostingResource::collection($query->orderByDesc('created_at')->paginate(max(1, min(100, $request->integer('per_page', 15)))))
             ->response();
     }
 
@@ -156,7 +156,7 @@ class RecruitmentController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        return ApplicantResource::collection($query->orderByDesc('applied_at')->paginate($request->integer('per_page', 15)))
+        return ApplicantResource::collection($query->orderByDesc('applied_at')->paginate(max(1, min(100, $request->integer('per_page', 15)))))
             ->response();
     }
 

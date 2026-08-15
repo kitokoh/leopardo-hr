@@ -37,7 +37,7 @@ concurrency:
   # par déploiement ; les runs de commits différents ne se marchent pas dessus.
   # cancel-in-progress:true conserve la dédup d'un même déploiement (rerun).
   group: e2e-staging-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   should-run:
