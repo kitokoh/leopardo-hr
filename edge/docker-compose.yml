@@ -24,12 +24,14 @@ services:
       DB_DATABASE: /var/leopardo/edge.sqlite
       EDGE_NODE_ID: "${EDGE_NODE_ID}"
       EDGE_TOKEN: "${EDGE_TOKEN}"
-      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo.app}"
+      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo-rh.com}"
       CLOUD_SYNC_INTERVAL_MINUTES: "${SYNC_INTERVAL:-15}"
       LICENSE_PUBLIC_KEY_PATH: /var/leopardo/license.pub
     volumes:
       - edge_data:/var/leopardo
-      - ./edge/license.pub:/var/leopardo/license.pub:ro
+      # Issue #2751 — chemins relatifs au fichier compose (edge/) :
+      # ./edge/license.pub résolvait edge/edge/license.pub (inexistant).
+      - ./license.pub:/var/leopardo/license.pub:ro
     ports:
       - "7878:80"       # http://leopardo.local:7878
     networks:
@@ -46,7 +48,8 @@ services:
     image: leopardo/edge-ui:latest
     build:
       # Audit #1711 : Dockerfile.edge créé dans front/web (image serveur prod).
-      context: ./front/web
+      # Issue #2751 — ./front/web résolvait edge/front/web (inexistant).
+      context: ../front/web
       dockerfile: Dockerfile.edge
     container_name: leopardo-edge-ui
     restart: unless-stopped
@@ -73,7 +76,7 @@ services:
       DB_DATABASE: /var/leopardo/edge.sqlite
       EDGE_NODE_ID: "${EDGE_NODE_ID}"
       EDGE_TOKEN: "${EDGE_TOKEN}"
-      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo.app}"
+      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo-rh.com}"
       CLOUD_SYNC_INTERVAL_MINUTES: "${SYNC_INTERVAL:-15}"
     volumes:
       - edge_data:/var/leopardo
@@ -90,7 +93,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./edge/Caddyfile.edge:/etc/caddy/Caddyfile:ro
+      # Issue #2751 — ./edge/Caddyfile.edge résolvait edge/edge/…
+      - ./Caddyfile.edge:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
     depends_on:
       - edge-api
