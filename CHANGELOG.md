@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+### Fixed
+- **fix(billing): durée d'essai unifiée 30 jours backend (Closes #3056, contribue #3012).** La réponse `POST /api/v1/trial/verify` annonçait `days=30` mais `ends_at=+14j` (incohérent) ; `ProvisionGuidedTrial` et `PlanSeeder` provisionnaient 14j alors que l'offre canonique est 30j (spec #2909, #2721). Aligné : verify `days=30/ends_at+30`, `trial_days=30` partout côté backend.
 - **fix(kiosk): état non configuré localisé quand apiBaseUrl ou deviceCode manque (Closes #2911).** La borne n’essaie plus d’appeler une URL `/api/v1/kiosks/` invalide : les actions distantes sont désactivées et un message d’installation est affiché en FR/EN/TR/AR.
 ### Added
 - **feat(admin): impersonation SPA câblée sur POST /admin/impersonations (Closes #2518).** Le backend PA2-ADM-006 existait (PlatformImpersonationController : session Sanctum 30-120 min, motif obligatoire, audit) mais aucun bouton UI — la PR #2466 avait même retiré l'émetteur `@impersonate`. (1) `UsersView` recharge le détail via `GET /admin/users/{id}` (seule source du lien employé `company.employee_id`, décision #2519) ; (2) modal d'impersonation : motif obligatoire ≥ 5 caractères, POST `/admin/impersonations` {company_id, employee_id, reason}, affichage du jeton + expiration + copie, erreurs API ; (3) `UserDetailModal` affiche entreprise/employé lié depuis le payload `company` ; (4) i18n `users.impersonation.*` dans les 4 locales. Au passage (artefacts merge #2469 signalés par #2517) : doublons `import api` + `deleteUser` + handlers de modales morts (`handleUserCreated`/`handleUserUpdated`/`generateTemporaryPassword`) supprimés — lint 0 erreur, build vert.
