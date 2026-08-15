@@ -315,10 +315,20 @@ export const useRealtimeStore = defineStore('realtime', () => {
     if (notification) {
       notification.read = true
     }
+    // #2239 : persistance serveur — l'état lu doit survivre au reload (et
+    // alimenter les analytics communication). Fail-open : si le backend ne
+    // répond pas, l'UI reste marquée localement, le prochain appel réessaie.
+    api.patch(`/notifications/${notificationId}/read`).catch((error) => {
+      console.warn('Marquage lu impossible côté serveur (id=' + notificationId + '):', error)
+    })
   }
 
   function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
+    // #2239 : persistance serveur du « tout lu ».
+    api.post('/notifications/mark-all-read').catch((error) => {
+      console.warn('Marquage tout-lu impossible côté serveur:', error)
+    })
   }
 
   function clearNotifications() {
