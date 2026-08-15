@@ -97,13 +97,13 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CedeaoPayrollRules)->forMemberCountry('CI');
 
-        // Brut 3 000 000 XOF > plafond retraite 1 647 315 ; #1913 (guide
-        // officiel CNPS) : plafonds par branche — famille/AT plafonnées
-        // séparément à 70 000 XOF/mois (aligné sur GoldenCiPayrollTest) :
+        // Brut 3 000 000 XOF > plafond 1 647 315 → retraite assise sur
+        // 1 647 315 ; famille et AT plafonnées séparément à 70 000 (#1913) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
-        //   patronale : 1 647 315 × 4,5 % (retraite) + 70 000 × 5,75 %
-        //               (famille) + 70 000 × 2,0 % (AT)
-        //             = 74 129,18 + 4 025,00 + 1 400,00 = 79 554,18
+        //   patronale : 1 647 315 × 4,5 % = 74 129,18
+        //             + 70 000 × 5,75 % = 4 025,00
+        //             + 70 000 × 2,0 % = 1 400,00
+        //             = 79 554,18
         $charges = $rules->calculateSocialCharges(3000000.0);
 
         $this->assertSame(52714.08, $charges['employee']);
