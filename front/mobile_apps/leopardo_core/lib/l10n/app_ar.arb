@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "تعذّر تحميل تفاصيل الشركة.",
   "companiesToastTicketsFailed": "تعذّر تحميل تذاكر الدعم.",
   "companiesToastSubscriptionFailed": "تعذّر تحديث الاشتراك.",
-  "companiesToastFeaturesFailed": "تعذّر حفظ إعدادات الوحدات."
+  "companiesToastFeaturesFailed": "تعذّر حفظ إعدادات الوحدات.",
+  "expenseSubmitFailed": "تعذّر إرسال ملاحظة المصاريف: {error}"
 }

@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr')
+    Locale('tr'),
   ];
 
   /// No description provided for @appTitle.
@@ -1146,6 +1146,12 @@ abstract class AppLocalizations {
   /// **'Export de la selection termine'**
   String get usersToastSelectionexportdone;
 
+  /// No description provided for @usersToastBulkdone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour effectuée'**
+  String get usersToastBulkdone;
+
   /// No description provided for @usersConfirmDelete.
   ///
   /// In fr, this message translates to:
@@ -1169,6 +1175,132 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Veuillez corriger les champs en rouge'**
   String get usersErrorsFixFields;
+
+  /// No description provided for @usersErrorsPasswordMin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le mot de passe doit contenir au moins 8 caractères'**
+  String get usersErrorsPasswordMin;
+
+  /// No description provided for @usersErrorsSearchNoMatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune page ne correspond à votre recherche'**
+  String get usersErrorsSearchNoMatch;
+
+  /// No description provided for @usersErrorsUpdateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour de l\'utilisateur'**
+  String get usersErrorsUpdateFailed;
+
+  /// No description provided for @usersImpersonationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impersonner un employé'**
+  String get usersImpersonationTitle;
+
+  /// No description provided for @usersImpersonationSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir une session au nom de :name'**
+  String get usersImpersonationSubtitle;
+
+  /// No description provided for @usersImpersonationReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif (obligatoire, 5 caractères minimum)'**
+  String get usersImpersonationReason;
+
+  /// No description provided for @usersImpersonationReasonmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif obligatoire (5 caractères minimum).'**
+  String get usersImpersonationReasonmin;
+
+  /// No description provided for @usersImpersonationNolink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun employé lié à ce compte — impersonation impossible.'**
+  String get usersImpersonationNolink;
+
+  /// No description provided for @usersImpersonationStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer la session'**
+  String get usersImpersonationStart;
+
+  /// No description provided for @usersImpersonationCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get usersImpersonationCancel;
+
+  /// No description provided for @usersImpersonationTokentitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton d\'impersonation (usage unique)'**
+  String get usersImpersonationTokentitle;
+
+  /// No description provided for @usersImpersonationExpires.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire le :date'**
+  String get usersImpersonationExpires;
+
+  /// No description provided for @usersImpersonationCopy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le jeton'**
+  String get usersImpersonationCopy;
+
+  /// No description provided for @usersImpersonationCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton copié'**
+  String get usersImpersonationCopied;
+
+  /// No description provided for @usersImpersonationCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session d\'impersonation créée'**
+  String get usersImpersonationCreated;
+
+  /// No description provided for @usersImpersonationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création de la session d\'impersonation'**
+  String get usersImpersonationError;
+
+  /// No description provided for @usersImpersonationDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminé'**
+  String get usersImpersonationDone;
+
+  /// No description provided for @usersImpersonationEmployee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employé #:id'**
+  String get usersImpersonationEmployee;
+
+  /// No description provided for @usersEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'utilisateur'**
+  String get usersEditTitle;
+
+  /// No description provided for @usersEditStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get usersEditStatus;
+
+  /// No description provided for @usersEditSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get usersEditSave;
 
   /// No description provided for @dashboardTitle.
   ///
@@ -1217,6 +1349,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dernieres actions de votre equipe'**
   String get dashboardRecentActivityHint;
+
+  /// No description provided for @dashboardLeoIaAnnouncementTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Felicitations equipe'**
+  String get dashboardLeoIaAnnouncementTitle;
+
+  /// No description provided for @dashboardLeoIaAnnouncementBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Felicitations a toute l\'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !'**
+  String get dashboardLeoIaAnnouncementBody;
+
+  /// No description provided for @dashboardLeoIaAnnouncementError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'envoyer le message. Reessayez dans quelques instants.'**
+  String get dashboardLeoIaAnnouncementError;
 
   /// No description provided for @marketingOauthNavTitle.
   ///
@@ -2687,6 +2837,510 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aucune règle de paie n\'est disponible pour {country} : le calcul de paie n\'est pas disponible pour ce pays.'**
   String payrollConfidenceUnknownMessage(Object country);
+
+  /// No description provided for @signupBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essai gratuit 30 jours'**
+  String get signupBadge;
+
+  /// No description provided for @signupTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tester Leopardo avec votre entreprise'**
+  String get signupTitle;
+
+  /// No description provided for @signupSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créez votre espace d\'essai en 2 minutes. Aucune carte bancaire requise.'**
+  String get signupSubtitle;
+
+  /// No description provided for @signupLabelemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email professionnel'**
+  String get signupLabelemail;
+
+  /// No description provided for @signupPlaceholderemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'vous@entreprise.com'**
+  String get signupPlaceholderemail;
+
+  /// No description provided for @signupLabelcompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise'**
+  String get signupLabelcompany;
+
+  /// No description provided for @signupPlaceholdercompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de votre entreprise'**
+  String get signupPlaceholdercompany;
+
+  /// No description provided for @signupLabelrole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre rôle'**
+  String get signupLabelrole;
+
+  /// No description provided for @signupRoleplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir'**
+  String get signupRoleplaceholder;
+
+  /// No description provided for @signupRolefounder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fondateur / dirigeant'**
+  String get signupRolefounder;
+
+  /// No description provided for @signupRolemanager.
+  ///
+  /// In fr, this message translates to:
+  /// **'Manager'**
+  String get signupRolemanager;
+
+  /// No description provided for @signupRolehr.
+  ///
+  /// In fr, this message translates to:
+  /// **'RH'**
+  String get signupRolehr;
+
+  /// No description provided for @signupRoleoperations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Opérations terrain'**
+  String get signupRoleoperations;
+
+  /// No description provided for @signupRoleother.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get signupRoleother;
+
+  /// No description provided for @signupLabelteamsize.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taille équipe'**
+  String get signupLabelteamsize;
+
+  /// No description provided for @signupTeamplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisir'**
+  String get signupTeamplaceholder;
+
+  /// No description provided for @signupLabelphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone (optionnel)'**
+  String get signupLabelphone;
+
+  /// No description provided for @signupPlaceholderphone.
+  ///
+  /// In fr, this message translates to:
+  /// **'+213 555 000 000'**
+  String get signupPlaceholderphone;
+
+  /// No description provided for @signupOperationsnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous préparerons un parcours axé terrain : pointage, tâches, kiosk et suivi d\'équipe.'**
+  String get signupOperationsnote;
+
+  /// No description provided for @signupAgreeprefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'accepte les'**
+  String get signupAgreeprefix;
+
+  /// No description provided for @signupTermslink.
+  ///
+  /// In fr, this message translates to:
+  /// **'conditions d\'utilisation'**
+  String get signupTermslink;
+
+  /// No description provided for @signupPrivacylink.
+  ///
+  /// In fr, this message translates to:
+  /// **'politique de confidentialité'**
+  String get signupPrivacylink;
+
+  /// No description provided for @signupAgreesuffix.
+  ///
+  /// In fr, this message translates to:
+  /// **'et la'**
+  String get signupAgreesuffix;
+
+  /// No description provided for @signupSubmitlabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir mon code de vérification'**
+  String get signupSubmitlabel;
+
+  /// No description provided for @signupSubmittinglabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi du code...'**
+  String get signupSubmittinglabel;
+
+  /// No description provided for @signupCodehint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un code à 6 chiffres sera envoyé à votre email pour confirmer votre identité.'**
+  String get signupCodehint;
+
+  /// No description provided for @signupHaveaccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous avez déjà un compte ?'**
+  String get signupHaveaccount;
+
+  /// No description provided for @signupLogincta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se connecter'**
+  String get signupLogincta;
+
+  /// No description provided for @signupBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get signupBack;
+
+  /// No description provided for @signupOtptitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifiez votre email'**
+  String get signupOtptitle;
+
+  /// No description provided for @signupOtpsentto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous avons envoyé un code de vérification à 6 chiffres à :'**
+  String get signupOtpsentto;
+
+  /// No description provided for @signupOtpinvalidlength.
+  ///
+  /// In fr, this message translates to:
+  /// **'Veuillez entrer les 6 chiffres du code.'**
+  String get signupOtpinvalidlength;
+
+  /// No description provided for @signupOtpinvalidcode.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code invalide ou expiré.'**
+  String get signupOtpinvalidcode;
+
+  /// No description provided for @signupOtpverifyerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la vérification. Veuillez réessayer.'**
+  String get signupOtpverifyerror;
+
+  /// No description provided for @signupVerifylabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier et créer mon espace'**
+  String get signupVerifylabel;
+
+  /// No description provided for @signupVerifyinglabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérification en cours...'**
+  String get signupVerifyinglabel;
+
+  /// No description provided for @signupCodevalidity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code est valide pendant 30 minutes. Vérifiez vos spams si vous ne le trouvez pas.'**
+  String get signupCodevalidity;
+
+  /// No description provided for @signupTrackstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivre l\'état de mon espace'**
+  String get signupTrackstatus;
+
+  /// No description provided for @signupPendingtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande d\'essai reçue'**
+  String get signupPendingtitle;
+
+  /// No description provided for @signupPendingfallback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande d\'essai reçue. Notre équipe vous contacte sous 24h ouvrables.'**
+  String get signupPendingfallback;
+
+  /// No description provided for @signupPendingnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notre système de création d\'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l\'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.'**
+  String get signupPendingnote;
+
+  /// No description provided for @signupReadytitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre espace est prêt !'**
+  String get signupReadytitle;
+
+  /// No description provided for @signupReadysubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le sandbox de démonstration est provisionné. Accédez-y directement :'**
+  String get signupReadysubtitle;
+
+  /// No description provided for @signupAccesscta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accéder à mon espace'**
+  String get signupAccesscta;
+
+  /// No description provided for @signupCopylink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le lien'**
+  String get signupCopylink;
+
+  /// No description provided for @signupLinkcopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien copié !'**
+  String get signupLinkcopied;
+
+  /// No description provided for @signupLinkemailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre lien d\'accès a également été envoyé par email.'**
+  String get signupLinkemailed;
+
+  /// No description provided for @signupFailedtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Création interrompue'**
+  String get signupFailedtitle;
+
+  /// No description provided for @signupFailedbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.'**
+  String get signupFailedbody;
+
+  /// No description provided for @signupTimeouttitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Création toujours en cours'**
+  String get signupTimeouttitle;
+
+  /// No description provided for @signupTimeoutbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre espace est en cours de préparation. Nous vous enverrons le lien d\'accès par email dès qu\'il sera prêt.'**
+  String get signupTimeoutbody;
+
+  /// No description provided for @signupRefreshstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rafraîchir le statut'**
+  String get signupRefreshstatus;
+
+  /// No description provided for @signupPreparingtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Préparation de votre espace'**
+  String get signupPreparingtitle;
+
+  /// No description provided for @signupPreparingbody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.'**
+  String get signupPreparingbody;
+
+  /// No description provided for @signupStatusfor.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour :'**
+  String get signupStatusfor;
+
+  /// No description provided for @signupStatusevery5s.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut vérifié toutes les 5 secondes.'**
+  String get signupStatusevery5s;
+
+  /// No description provided for @signupSuccesstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre espace est prêt !'**
+  String get signupSuccesstitle;
+
+  /// No description provided for @signupEmailverified.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre adresse email a bien été vérifiée.'**
+  String get signupEmailverified;
+
+  /// No description provided for @signupCredslabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifiants de connexion'**
+  String get signupCredslabel;
+
+  /// No description provided for @signupFieldemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email'**
+  String get signupFieldemail;
+
+  /// No description provided for @signupFieldpassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get signupFieldpassword;
+
+  /// No description provided for @signupCopypasswordtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le mot de passe'**
+  String get signupCopypasswordtitle;
+
+  /// No description provided for @signupCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copié !'**
+  String get signupCopied;
+
+  /// No description provided for @signupCredssentbyemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ces identifiants ont aussi été envoyés par email à'**
+  String get signupCredssentbyemail;
+
+  /// No description provided for @signupCredsemailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos identifiants de connexion viennent de vous être envoyés par email.'**
+  String get signupCredsemailed;
+
+  /// No description provided for @signupTrialnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essai gratuit de'**
+  String get signupTrialnote;
+
+  /// No description provided for @signupTrialnotesuffix.
+  ///
+  /// In fr, this message translates to:
+  /// **'aucune carte bancaire requise'**
+  String get signupTrialnotesuffix;
+
+  /// No description provided for @signupDownloadapp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Télécharger l\'app'**
+  String get signupDownloadapp;
+
+  /// No description provided for @signupChangepasswordnote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changez votre mot de passe dès la première connexion.'**
+  String get signupChangepasswordnote;
+
+  /// No description provided for @signupDefaulterror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue'**
+  String get signupDefaulterror;
+
+  /// No description provided for @signupValidationEmailinvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email invalide'**
+  String get signupValidationEmailinvalid;
+
+  /// No description provided for @signupValidationEmailtooshort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email trop court'**
+  String get signupValidationEmailtooshort;
+
+  /// No description provided for @signupValidationEmailtoolong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email trop long'**
+  String get signupValidationEmailtoolong;
+
+  /// No description provided for @signupValidationCompanytooshort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom de l\'entreprise doit contenir au moins 2 caractères'**
+  String get signupValidationCompanytooshort;
+
+  /// No description provided for @signupValidationCompanytoolong.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le nom de l\'entreprise est trop long'**
+  String get signupValidationCompanytoolong;
+
+  /// No description provided for @signupValidationRolerequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez votre rôle'**
+  String get signupValidationRolerequired;
+
+  /// No description provided for @signupValidationEmployeesrequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez une taille d\'équipe'**
+  String get signupValidationEmployeesrequired;
+
+  /// No description provided for @signupValidationPhoneinvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro de téléphone invalide'**
+  String get signupValidationPhoneinvalid;
+
+  /// No description provided for @signupValidationAgreeterms.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous devez accepter les conditions d\'utilisation'**
+  String get signupValidationAgreeterms;
+
+  /// No description provided for @companiesToastLoadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger la fiche entreprise.'**
+  String get companiesToastLoadFailed;
+
+  /// No description provided for @companiesToastTicketsFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les tickets support.'**
+  String get companiesToastTicketsFailed;
+
+  /// No description provided for @companiesToastSubscriptionFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la mise à jour de l\'abonnement.'**
+  String get companiesToastSubscriptionFailed;
+
+  /// No description provided for @companiesToastFeaturesFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la configuration des modules.'**
+  String get companiesToastFeaturesFailed;
+
+  /// No description provided for @expenseSubmitFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l\'envoi de la note de frais : {error}'**
+  String expenseSubmitFailed(Object error);
 }
 
 class _AppLocalizationsDelegate
@@ -2720,8 +3374,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

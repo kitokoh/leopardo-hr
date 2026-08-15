@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "Unable to load the company details.",
   "companiesToastTicketsFailed": "Unable to load the support tickets.",
   "companiesToastSubscriptionFailed": "Failed to update the subscription.",
-  "companiesToastFeaturesFailed": "Failed to save the module configuration."
+  "companiesToastFeaturesFailed": "Failed to save the module configuration.",
+  "expenseSubmitFailed": "Failed to submit the expense note: {error}"
 }

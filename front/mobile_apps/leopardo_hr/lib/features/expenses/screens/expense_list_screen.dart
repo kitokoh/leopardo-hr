@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
@@ -54,7 +55,7 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
       // visuel immédiat (l'exception se propageait sans catch).
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Echec de l envoi de la note de frais : $e')),
+          SnackBar(content: Text(context.l10n.expenseSubmitFailed(e.toString()))),
         );
       }
     } finally {

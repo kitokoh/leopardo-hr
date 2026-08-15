@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -554,6 +555,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usersToastSelectionexportdone => 'Selection export completed';
 
   @override
+  String get usersToastBulkdone => 'Update completed';
+
+  @override
   String get usersConfirmDelete => 'Are you sure you want to delete :name?';
 
   @override
@@ -564,6 +568,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'Please fix the highlighted fields';
+
+  @override
+  String get usersErrorsPasswordMin => 'Password must be at least 8 characters';
+
+  @override
+  String get usersErrorsSearchNoMatch => 'No page matches your search';
+
+  @override
+  String get usersErrorsUpdateFailed => 'Failed to update user';
+
+  @override
+  String get usersImpersonationTitle => 'Impersonate an employee';
+
+  @override
+  String get usersImpersonationSubtitle => 'Open a session as :name';
+
+  @override
+  String get usersImpersonationReason =>
+      'Reason (required, 5 characters minimum)';
+
+  @override
+  String get usersImpersonationReasonmin =>
+      'Reason is required (5 characters minimum).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'No linked employee on this account — impersonation unavailable.';
+
+  @override
+  String get usersImpersonationStart => 'Create session';
+
+  @override
+  String get usersImpersonationCancel => 'Cancel';
+
+  @override
+  String get usersImpersonationTokentitle => 'Impersonation token (single-use)';
+
+  @override
+  String get usersImpersonationExpires => 'Expires on :date';
+
+  @override
+  String get usersImpersonationCopy => 'Copy token';
+
+  @override
+  String get usersImpersonationCopied => 'Token copied';
+
+  @override
+  String get usersImpersonationCreated => 'Impersonation session created';
+
+  @override
+  String get usersImpersonationError =>
+      'Error creating the impersonation session';
+
+  @override
+  String get usersImpersonationDone => 'Done';
+
+  @override
+  String get usersImpersonationEmployee => 'Linked employee #:id';
+
+  @override
+  String get usersEditTitle => 'Edit user';
+
+  @override
+  String get usersEditStatus => 'Status';
+
+  @override
+  String get usersEditSave => 'Update';
 
   @override
   String get dashboardTitle => 'Dashboard';
@@ -588,6 +659,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardRecentActivityHint => 'Latest actions from your team';
+
+  @override
+  String get dashboardLeoIaAnnouncementTitle => 'Congratulations team';
+
+  @override
+  String get dashboardLeoIaAnnouncementBody =>
+      'Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!';
+
+  @override
+  String get dashboardLeoIaAnnouncementError =>
+      'Couldn\'t send the message. Please try again in a few moments.';
 
   @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
@@ -1376,5 +1458,277 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String payrollConfidenceUnknownMessage(Object country) {
     return 'No payroll rules are available for $country: payroll calculation is not available for this country.';
+  }
+
+  @override
+  String get signupBadge => 'Free 30-day trial';
+
+  @override
+  String get signupTitle => 'Try Leopardo with your company';
+
+  @override
+  String get signupSubtitle =>
+      'Create your trial workspace in 2 minutes. No credit card required.';
+
+  @override
+  String get signupLabelemail => 'Work email';
+
+  @override
+  String get signupPlaceholderemail => 'you@company.com';
+
+  @override
+  String get signupLabelcompany => 'Company';
+
+  @override
+  String get signupPlaceholdercompany => 'Your company name';
+
+  @override
+  String get signupLabelrole => 'Your role';
+
+  @override
+  String get signupRoleplaceholder => 'Select';
+
+  @override
+  String get signupRolefounder => 'Founder / CEO';
+
+  @override
+  String get signupRolemanager => 'Manager';
+
+  @override
+  String get signupRolehr => 'HR';
+
+  @override
+  String get signupRoleoperations => 'Field operations';
+
+  @override
+  String get signupRoleother => 'Other';
+
+  @override
+  String get signupLabelteamsize => 'Team size';
+
+  @override
+  String get signupTeamplaceholder => 'Select';
+
+  @override
+  String get signupLabelphone => 'Phone (optional)';
+
+  @override
+  String get signupPlaceholderphone => '+1 555 000 0000';
+
+  @override
+  String get signupOperationsnote =>
+      'We will prepare a field-focused setup: attendance, tasks, kiosk and team monitoring.';
+
+  @override
+  String get signupAgreeprefix => 'I accept the';
+
+  @override
+  String get signupTermslink => 'terms of use';
+
+  @override
+  String get signupPrivacylink => 'privacy policy';
+
+  @override
+  String get signupAgreesuffix => 'and the';
+
+  @override
+  String get signupSubmitlabel => 'Get my verification code';
+
+  @override
+  String get signupSubmittinglabel => 'Sending code...';
+
+  @override
+  String get signupCodehint =>
+      'A 6-digit code will be sent to your email to confirm your identity.';
+
+  @override
+  String get signupHaveaccount => 'Already have an account?';
+
+  @override
+  String get signupLogincta => 'Sign in';
+
+  @override
+  String get signupBack => 'Back';
+
+  @override
+  String get signupOtptitle => 'Verify your email';
+
+  @override
+  String get signupOtpsentto => 'We sent a 6-digit verification code to:';
+
+  @override
+  String get signupOtpinvalidlength => 'Please enter the 6 digits of the code.';
+
+  @override
+  String get signupOtpinvalidcode => 'Invalid or expired code.';
+
+  @override
+  String get signupOtpverifyerror =>
+      'An error occurred during verification. Please try again.';
+
+  @override
+  String get signupVerifylabel => 'Verify and create my workspace';
+
+  @override
+  String get signupVerifyinglabel => 'Verifying...';
+
+  @override
+  String get signupCodevalidity =>
+      'The code is valid for 30 minutes. Check your spam folder if you cannot find it.';
+
+  @override
+  String get signupTrackstatus => 'Track my workspace status';
+
+  @override
+  String get signupPendingtitle => 'Trial request received';
+
+  @override
+  String get signupPendingfallback =>
+      'Trial request received. Our team will contact you within 24 business hours.';
+
+  @override
+  String get signupPendingnote =>
+      'Our instant workspace provisioning is temporarily unavailable (server restart). Your request is recorded: a Leopardo team member will email you within 24 business hours with access suited to your context.';
+
+  @override
+  String get signupReadytitle => 'Your workspace is ready!';
+
+  @override
+  String get signupReadysubtitle =>
+      'The demo sandbox is provisioned. Access it directly:';
+
+  @override
+  String get signupAccesscta => 'Access my workspace';
+
+  @override
+  String get signupCopylink => 'Copy link';
+
+  @override
+  String get signupLinkcopied => 'Link copied!';
+
+  @override
+  String get signupLinkemailed => 'Your access link was also sent by email.';
+
+  @override
+  String get signupFailedtitle => 'Creation interrupted';
+
+  @override
+  String get signupFailedbody =>
+      'An error occurred while creating your workspace. Our team will contact you by email within 24 business hours with adapted access.';
+
+  @override
+  String get signupTimeouttitle => 'Still being created';
+
+  @override
+  String get signupTimeoutbody =>
+      'Your workspace is being prepared. We will email you the access link as soon as it is ready.';
+
+  @override
+  String get signupRefreshstatus => 'Refresh status';
+
+  @override
+  String get signupPreparingtitle => 'Preparing your workspace';
+
+  @override
+  String get signupPreparingbody =>
+      'We are provisioning your demo sandbox. This usually takes less than 30 seconds.';
+
+  @override
+  String get signupStatusfor => 'For:';
+
+  @override
+  String get signupStatusevery5s => 'Status checked every 5 seconds.';
+
+  @override
+  String get signupSuccesstitle => 'Your workspace is ready!';
+
+  @override
+  String get signupEmailverified => 'Your email address has been verified.';
+
+  @override
+  String get signupCredslabel => 'Sign-in credentials';
+
+  @override
+  String get signupFieldemail => 'Email';
+
+  @override
+  String get signupFieldpassword => 'Password';
+
+  @override
+  String get signupCopypasswordtitle => 'Copy password';
+
+  @override
+  String get signupCopied => 'Copied!';
+
+  @override
+  String get signupCredssentbyemail =>
+      'These credentials were also sent by email to';
+
+  @override
+  String get signupCredsemailed =>
+      'Your sign-in credentials were just sent by email.';
+
+  @override
+  String get signupTrialnote => 'Free trial of';
+
+  @override
+  String get signupTrialnotesuffix => 'no credit card required';
+
+  @override
+  String get signupDownloadapp => 'Download the app';
+
+  @override
+  String get signupChangepasswordnote =>
+      'Change your password on first sign-in.';
+
+  @override
+  String get signupDefaulterror => 'Something went wrong';
+
+  @override
+  String get signupValidationEmailinvalid => 'Invalid email';
+
+  @override
+  String get signupValidationEmailtooshort => 'Email too short';
+
+  @override
+  String get signupValidationEmailtoolong => 'Email too long';
+
+  @override
+  String get signupValidationCompanytooshort =>
+      'Company name must be at least 2 characters';
+
+  @override
+  String get signupValidationCompanytoolong => 'Company name is too long';
+
+  @override
+  String get signupValidationRolerequired => 'Select your role';
+
+  @override
+  String get signupValidationEmployeesrequired => 'Select a team size';
+
+  @override
+  String get signupValidationPhoneinvalid => 'Invalid phone number';
+
+  @override
+  String get signupValidationAgreeterms => 'You must accept the terms of use';
+
+  @override
+  String get companiesToastLoadFailed => 'Unable to load the company details.';
+
+  @override
+  String get companiesToastTicketsFailed =>
+      'Unable to load the support tickets.';
+
+  @override
+  String get companiesToastSubscriptionFailed =>
+      'Failed to update the subscription.';
+
+  @override
+  String get companiesToastFeaturesFailed =>
+      'Failed to save the module configuration.';
+
+  @override
+  String expenseSubmitFailed(Object error) {
+    return 'Failed to submit the expense note: $error';
   }
 }

@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "Şirket detayları yüklenemedi.",
   "companiesToastTicketsFailed": "Destek talepleri yüklenemedi.",
   "companiesToastSubscriptionFailed": "Abonelik güncellenemedi.",
-  "companiesToastFeaturesFailed": "Modül ayarları kaydedilemedi."
+  "companiesToastFeaturesFailed": "Modül ayarları kaydedilemedi.",
+  "expenseSubmitFailed": "Gider notu gönderilemedi: {error}"
 }

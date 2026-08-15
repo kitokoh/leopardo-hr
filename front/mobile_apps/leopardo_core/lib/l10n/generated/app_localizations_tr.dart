@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -551,6 +552,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get usersToastSelectionexportdone => 'Secim disa aktarimi tamamlandi';
 
   @override
+  String get usersToastBulkdone => 'Güncelleme tamamlandı';
+
+  @override
   String get usersConfirmDelete =>
       ':name kullanicisini silmek istediginizden emin misiniz?';
 
@@ -562,6 +566,73 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'Lütfen kırmızı alanları düzeltin';
+
+  @override
+  String get usersErrorsPasswordMin => 'Şifre en az 8 karakter olmalıdır';
+
+  @override
+  String get usersErrorsSearchNoMatch => 'Aramanızla eşleşen sayfa yok';
+
+  @override
+  String get usersErrorsUpdateFailed => 'Kullanıcı güncellenemedi';
+
+  @override
+  String get usersImpersonationTitle => 'Bir çalışanı taklit et';
+
+  @override
+  String get usersImpersonationSubtitle => ':name adına oturum aç';
+
+  @override
+  String get usersImpersonationReason => 'Gerekçe (zorunlu, en az 5 karakter)';
+
+  @override
+  String get usersImpersonationReasonmin =>
+      'Gerekçe zorunludur (en az 5 karakter).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'Bu hesaba bağlı çalışan yok — taklit edilemiyor.';
+
+  @override
+  String get usersImpersonationStart => 'Oturum oluştur';
+
+  @override
+  String get usersImpersonationCancel => 'İptal';
+
+  @override
+  String get usersImpersonationTokentitle =>
+      'Taklit belirteci (tek kullanımlık)';
+
+  @override
+  String get usersImpersonationExpires => ':date tarihinde sona erer';
+
+  @override
+  String get usersImpersonationCopy => 'Belirteci kopyala';
+
+  @override
+  String get usersImpersonationCopied => 'Belirteç kopyalandı';
+
+  @override
+  String get usersImpersonationCreated => 'Taklit oturumu oluşturuldu';
+
+  @override
+  String get usersImpersonationError =>
+      'Taklit oturumu oluşturulurken hata oluştu';
+
+  @override
+  String get usersImpersonationDone => 'Tamam';
+
+  @override
+  String get usersImpersonationEmployee => 'Bağlı çalışan #:id';
+
+  @override
+  String get usersEditTitle => 'Kullanıcıyı düzenle';
+
+  @override
+  String get usersEditStatus => 'Durum';
+
+  @override
+  String get usersEditSave => 'Güncelle';
 
   @override
   String get dashboardTitle => 'Kontrol Paneli';
@@ -586,6 +657,17 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get dashboardRecentActivityHint => 'Ekibinizin son eylemleri';
+
+  @override
+  String get dashboardLeoIaAnnouncementTitle => 'Tebrikler ekip';
+
+  @override
+  String get dashboardLeoIaAnnouncementBody =>
+      'Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!';
+
+  @override
+  String get dashboardLeoIaAnnouncementError =>
+      'Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.';
 
   @override
   String get marketingOauthNavTitle => 'Pazarlama OAuth';
@@ -1378,5 +1460,273 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String payrollConfidenceUnknownMessage(Object country) {
     return '$country için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor.';
+  }
+
+  @override
+  String get signupBadge => '30 günlük ücretsiz deneme';
+
+  @override
+  String get signupTitle => 'Leopardo\'yu şirketinizle deneyin';
+
+  @override
+  String get signupSubtitle =>
+      'Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.';
+
+  @override
+  String get signupLabelemail => 'İş e-postası';
+
+  @override
+  String get signupPlaceholderemail => 'siz@sirket.com';
+
+  @override
+  String get signupLabelcompany => 'Şirket';
+
+  @override
+  String get signupPlaceholdercompany => 'Şirketinizin adı';
+
+  @override
+  String get signupLabelrole => 'Rolünüz';
+
+  @override
+  String get signupRoleplaceholder => 'Seçin';
+
+  @override
+  String get signupRolefounder => 'Kurucu / Yönetici';
+
+  @override
+  String get signupRolemanager => 'Yönetici';
+
+  @override
+  String get signupRolehr => 'İK';
+
+  @override
+  String get signupRoleoperations => 'Saha operasyonları';
+
+  @override
+  String get signupRoleother => 'Diğer';
+
+  @override
+  String get signupLabelteamsize => 'Ekip boyutu';
+
+  @override
+  String get signupTeamplaceholder => 'Seçin';
+
+  @override
+  String get signupLabelphone => 'Telefon (isteğe bağlı)';
+
+  @override
+  String get signupPlaceholderphone => '+90 555 000 0000';
+
+  @override
+  String get signupOperationsnote =>
+      'Sahaya odaklı bir kurulum hazırlayacağız: yoklama, görevler, kiosk ve ekip takibi.';
+
+  @override
+  String get signupAgreeprefix => 'Kabul ediyorum:';
+
+  @override
+  String get signupTermslink => 'kullanım koşulları';
+
+  @override
+  String get signupPrivacylink => 'gizlilik politikası';
+
+  @override
+  String get signupAgreesuffix => 've';
+
+  @override
+  String get signupSubmitlabel => 'Doğrulama kodumu al';
+
+  @override
+  String get signupSubmittinglabel => 'Kod gönderiliyor...';
+
+  @override
+  String get signupCodehint =>
+      'Kimliğinizi doğrulamak için e-postanıza 6 haneli bir kod gönderilecek.';
+
+  @override
+  String get signupHaveaccount => 'Zaten hesabınız var mı?';
+
+  @override
+  String get signupLogincta => 'Giriş yap';
+
+  @override
+  String get signupBack => 'Geri';
+
+  @override
+  String get signupOtptitle => 'E-postanızı doğrulayın';
+
+  @override
+  String get signupOtpsentto =>
+      '6 haneli doğrulama kodunu şu adrese gönderdik:';
+
+  @override
+  String get signupOtpinvalidlength => 'Lütfen kodun 6 hanesini girin.';
+
+  @override
+  String get signupOtpinvalidcode => 'Geçersiz veya süresi dolmuş kod.';
+
+  @override
+  String get signupOtpverifyerror =>
+      'Doğrulama sırasında bir hata oluştu. Lütfen tekrar deneyin.';
+
+  @override
+  String get signupVerifylabel => 'Doğrula ve alanımı oluştur';
+
+  @override
+  String get signupVerifyinglabel => 'Doğrulanıyor...';
+
+  @override
+  String get signupCodevalidity =>
+      'Kod 30 dakika geçerlidir. Bulamazsanız spam klasörünü kontrol edin.';
+
+  @override
+  String get signupTrackstatus => 'Alanımın durumunu takip et';
+
+  @override
+  String get signupPendingtitle => 'Deneme talebi alındı';
+
+  @override
+  String get signupPendingfallback =>
+      'Deneme talebi alındı. Ekibimiz 24 iş saati içinde sizinle iletişime geçecek.';
+
+  @override
+  String get signupPendingnote =>
+      'Anlık alan oluşturma hizmetimiz geçici olarak kullanılamıyor (sunucu yeniden başlatıldı). Talebiniz kaydedildi: Leopardo ekibinden biri 24 iş saati içinde size uygun erişimle e-posta gönderecek.';
+
+  @override
+  String get signupReadytitle => 'Alanınız hazır!';
+
+  @override
+  String get signupReadysubtitle => 'Demo sandbox hazır. Doğrudan erişin:';
+
+  @override
+  String get signupAccesscta => 'Alanıma eriş';
+
+  @override
+  String get signupCopylink => 'Bağlantıyı kopyala';
+
+  @override
+  String get signupLinkcopied => 'Bağlantı kopyalandı!';
+
+  @override
+  String get signupLinkemailed =>
+      'Erişim bağlantınız e-postayla da gönderildi.';
+
+  @override
+  String get signupFailedtitle => 'Oluşturma kesintiye uğradı';
+
+  @override
+  String get signupFailedbody =>
+      'Alanınız oluşturulurken bir hata oluştu. Ekibimiz 24 iş saati içinde uygun erişimle e-posta gönderecek.';
+
+  @override
+  String get signupTimeouttitle => 'Oluşturma hâlâ sürüyor';
+
+  @override
+  String get signupTimeoutbody =>
+      'Alanınız hazırlanıyor. Hazır olduğunda erişim bağlantısını e-postayla göndereceğiz.';
+
+  @override
+  String get signupRefreshstatus => 'Durumu yenile';
+
+  @override
+  String get signupPreparingtitle => 'Alanınız hazırlanıyor';
+
+  @override
+  String get signupPreparingbody =>
+      'Demo sandbox sağlanıyor. Bu genellikle 30 saniyeden az sürer.';
+
+  @override
+  String get signupStatusfor => 'İçin:';
+
+  @override
+  String get signupStatusevery5s => 'Durum her 5 saniyede bir kontrol edilir.';
+
+  @override
+  String get signupSuccesstitle => 'Alanınız hazır!';
+
+  @override
+  String get signupEmailverified => 'E-posta adresiniz doğrulandı.';
+
+  @override
+  String get signupCredslabel => 'Giriş bilgileri';
+
+  @override
+  String get signupFieldemail => 'E-posta';
+
+  @override
+  String get signupFieldpassword => 'Parola';
+
+  @override
+  String get signupCopypasswordtitle => 'Parolayı kopyala';
+
+  @override
+  String get signupCopied => 'Kopyalandı!';
+
+  @override
+  String get signupCredssentbyemail => 'Bu bilgiler e-postayla da gönderildi:';
+
+  @override
+  String get signupCredsemailed => 'Giriş bilgileriniz e-postayla gönderildi.';
+
+  @override
+  String get signupTrialnote => 'Ücretsiz deneme:';
+
+  @override
+  String get signupTrialnotesuffix => 'kredi kartı gerekmez';
+
+  @override
+  String get signupDownloadapp => 'Uygulamayı indir';
+
+  @override
+  String get signupChangepasswordnote => 'İlk girişte parolanızı değiştirin.';
+
+  @override
+  String get signupDefaulterror => 'Bir hata oluştu';
+
+  @override
+  String get signupValidationEmailinvalid => 'Geçersiz e-posta';
+
+  @override
+  String get signupValidationEmailtooshort => 'E-posta çok kısa';
+
+  @override
+  String get signupValidationEmailtoolong => 'E-posta çok uzun';
+
+  @override
+  String get signupValidationCompanytooshort =>
+      'Şirket adı en az 2 karakter olmalıdır';
+
+  @override
+  String get signupValidationCompanytoolong => 'Şirket adı çok uzun';
+
+  @override
+  String get signupValidationRolerequired => 'Rolünüzü seçin';
+
+  @override
+  String get signupValidationEmployeesrequired => 'Bir ekip boyutu seçin';
+
+  @override
+  String get signupValidationPhoneinvalid => 'Geçersiz telefon numarası';
+
+  @override
+  String get signupValidationAgreeterms =>
+      'Kullanım koşullarını kabul etmelisiniz';
+
+  @override
+  String get companiesToastLoadFailed => 'Şirket detayları yüklenemedi.';
+
+  @override
+  String get companiesToastTicketsFailed => 'Destek talepleri yüklenemedi.';
+
+  @override
+  String get companiesToastSubscriptionFailed => 'Abonelik güncellenemedi.';
+
+  @override
+  String get companiesToastFeaturesFailed => 'Modül ayarları kaydedilemedi.';
+
+  @override
+  String expenseSubmitFailed(Object error) {
+    return 'Gider notu gönderilemedi: $error';
   }
 }

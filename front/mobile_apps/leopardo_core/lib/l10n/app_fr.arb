@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "Impossible de charger la fiche entreprise.",
   "companiesToastTicketsFailed": "Impossible de charger les tickets support.",
   "companiesToastSubscriptionFailed": "Échec de la mise à jour de l'abonnement.",
-  "companiesToastFeaturesFailed": "Échec de la configuration des modules."
+  "companiesToastFeaturesFailed": "Échec de la configuration des modules.",
+  "expenseSubmitFailed": "Échec de l'envoi de la note de frais : {error}"
 }

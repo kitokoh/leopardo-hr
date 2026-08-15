@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -549,6 +550,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get usersToastSelectionexportdone => 'تم تصدير التحديد';
 
   @override
+  String get usersToastBulkdone => 'تم التحديث';
+
+  @override
   String get usersConfirmDelete => 'هل انت متأكد من رغبتك في حذف :name؟';
 
   @override
@@ -559,6 +563,71 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'يرجى تصحيح الحقول المميزة';
+
+  @override
+  String get usersErrorsPasswordMin =>
+      'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل';
+
+  @override
+  String get usersErrorsSearchNoMatch => 'لا توجد صفحة تطابق بحثك';
+
+  @override
+  String get usersErrorsUpdateFailed => 'فشل تحديث المستخدم';
+
+  @override
+  String get usersImpersonationTitle => 'انتحال صفة موظف';
+
+  @override
+  String get usersImpersonationSubtitle => 'فتح جلسة باسم :name';
+
+  @override
+  String get usersImpersonationReason => 'السبب (إلزامي، 5 أحرف على الأقل)';
+
+  @override
+  String get usersImpersonationReasonmin => 'السبب إلزامي (5 أحرف على الأقل).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'لا يوجد موظف مرتبط بهذا الحساب — تعذر انتحال الصفة.';
+
+  @override
+  String get usersImpersonationStart => 'إنشاء الجلسة';
+
+  @override
+  String get usersImpersonationCancel => 'إلغاء';
+
+  @override
+  String get usersImpersonationTokentitle => 'رمز انتحال الصفة (استخدام واحد)';
+
+  @override
+  String get usersImpersonationExpires => 'تنتهي في :date';
+
+  @override
+  String get usersImpersonationCopy => 'نسخ الرمز';
+
+  @override
+  String get usersImpersonationCopied => 'تم نسخ الرمز';
+
+  @override
+  String get usersImpersonationCreated => 'تم إنشاء جلسة انتحال الصفة';
+
+  @override
+  String get usersImpersonationError => 'خطأ في إنشاء جلسة انتحال الصفة';
+
+  @override
+  String get usersImpersonationDone => 'تم';
+
+  @override
+  String get usersImpersonationEmployee => 'الموظف المرتبط #:id';
+
+  @override
+  String get usersEditTitle => 'تعديل المستخدم';
+
+  @override
+  String get usersEditStatus => 'الحالة';
+
+  @override
+  String get usersEditSave => 'تحديث';
 
   @override
   String get dashboardTitle => 'لوحة التحكم';
@@ -583,6 +652,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashboardRecentActivityHint => 'آخر إجراءات فريقك';
+
+  @override
+  String get dashboardLeoIaAnnouncementTitle => 'تهانينا للفريق';
+
+  @override
+  String get dashboardLeoIaAnnouncementBody =>
+      'تهانينا للفريق بأكمله: انخفض التأخير بنسبة 15٪ هذا الأسبوع. واصلوا هذه الديناميكية!';
+
+  @override
+  String get dashboardLeoIaAnnouncementError =>
+      'تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل.';
 
   @override
   String get marketingOauthNavTitle => 'تسويق OAuth';
@@ -1373,5 +1453,273 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String payrollConfidenceUnknownMessage(Object country) {
     return 'لا تتوفر قواعد رواتب لـ $country: حساب الرواتب غير متاح لهذا البلد.';
+  }
+
+  @override
+  String get signupBadge => 'تجربة مجانية لمدة 30 يومًا';
+
+  @override
+  String get signupTitle => 'جرّب Leopardo مع شركتك';
+
+  @override
+  String get signupSubtitle =>
+      'أنشئ مساحة تجربتك في دقيقتين. لا حاجة لبطاقة ائتمانية.';
+
+  @override
+  String get signupLabelemail => 'البريد المهني';
+
+  @override
+  String get signupPlaceholderemail => 'بريدك@company.com';
+
+  @override
+  String get signupLabelcompany => 'الشركة';
+
+  @override
+  String get signupPlaceholdercompany => 'اسم شركتك';
+
+  @override
+  String get signupLabelrole => 'دورك';
+
+  @override
+  String get signupRoleplaceholder => 'اختر';
+
+  @override
+  String get signupRolefounder => 'مؤسس / مدير عام';
+
+  @override
+  String get signupRolemanager => 'مدير';
+
+  @override
+  String get signupRolehr => 'موارد بشرية';
+
+  @override
+  String get signupRoleoperations => 'عمليات ميدانية';
+
+  @override
+  String get signupRoleother => 'أخرى';
+
+  @override
+  String get signupLabelteamsize => 'حجم الفريق';
+
+  @override
+  String get signupTeamplaceholder => 'اختر';
+
+  @override
+  String get signupLabelphone => 'الهاتف (اختياري)';
+
+  @override
+  String get signupPlaceholderphone => '+213 555 000 000';
+
+  @override
+  String get signupOperationsnote =>
+      'سنُعد مسارًا ميدانيًا: الحضور، المهام، الكشك ومتابعة الفريق.';
+
+  @override
+  String get signupAgreeprefix => 'أوافق على';
+
+  @override
+  String get signupTermslink => 'شروط الاستخدام';
+
+  @override
+  String get signupPrivacylink => 'سياسة الخصوصية';
+
+  @override
+  String get signupAgreesuffix => 'و';
+
+  @override
+  String get signupSubmitlabel => 'استلام رمز التحقق';
+
+  @override
+  String get signupSubmittinglabel => 'جارٍ إرسال الرمز...';
+
+  @override
+  String get signupCodehint =>
+      'سيتم إرسال رمز من 6 أرقام إلى بريدك لتأكيد هويتك.';
+
+  @override
+  String get signupHaveaccount => 'لديك حساب بالفعل؟';
+
+  @override
+  String get signupLogincta => 'تسجيل الدخول';
+
+  @override
+  String get signupBack => 'رجوع';
+
+  @override
+  String get signupOtptitle => 'تحقق من بريدك الإلكتروني';
+
+  @override
+  String get signupOtpsentto => 'أرسلنا رمز تحقق من 6 أرقام إلى:';
+
+  @override
+  String get signupOtpinvalidlength => 'يرجى إدخال الأرقام الستة للرمز.';
+
+  @override
+  String get signupOtpinvalidcode => 'رمز غير صالح أو منتهي الصلاحية.';
+
+  @override
+  String get signupOtpverifyerror =>
+      'حدث خطأ أثناء التحقق. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get signupVerifylabel => 'تحقق وأنشئ مساحتي';
+
+  @override
+  String get signupVerifyinglabel => 'جارٍ التحقق...';
+
+  @override
+  String get signupCodevalidity =>
+      'الرمز صالح لمدة 30 دقيقة. تحقق من البريد العشوائي إذا لم تجده.';
+
+  @override
+  String get signupTrackstatus => 'تتبع حالة مساحتي';
+
+  @override
+  String get signupPendingtitle => 'تم استلام طلب التجربة';
+
+  @override
+  String get signupPendingfallback =>
+      'تم استلام طلب التجربة. سيتواصل معك فريقنا خلال 24 ساعة عمل.';
+
+  @override
+  String get signupPendingnote =>
+      'خدمة الإنشاء الفوري غير متاحة مؤقتًا (إعادة تشغيل الخادم). تم تسجيل طلبك: سيتواصل معك أحد أعضاء فريق Leopardo عبر البريد خلال 24 ساعة عمل مع وصول مناسب لسياقك.';
+
+  @override
+  String get signupReadytitle => 'مساحتك جاهزة!';
+
+  @override
+  String get signupReadysubtitle => 'تم تجهيز بيئة العرض. يمكنك الوصول مباشرة:';
+
+  @override
+  String get signupAccesscta => 'الوصول إلى مساحتي';
+
+  @override
+  String get signupCopylink => 'نسخ الرابط';
+
+  @override
+  String get signupLinkcopied => 'تم نسخ الرابط!';
+
+  @override
+  String get signupLinkemailed =>
+      'تم أيضًا إرسال رابط الوصول عبر البريد الإلكتروني.';
+
+  @override
+  String get signupFailedtitle => 'تم إيقاف الإنشاء';
+
+  @override
+  String get signupFailedbody =>
+      'حدث خطأ أثناء إنشاء مساحتك. سيتواصل معك فريقنا عبر البريد خلال 24 ساعة عمل بوصول مناسب.';
+
+  @override
+  String get signupTimeouttitle => 'لا يزال الإنشاء جاريًا';
+
+  @override
+  String get signupTimeoutbody =>
+      'مساحتك قيد التجهيز. سنرسل لك رابط الوصول عبر البريد فور جاهزيته.';
+
+  @override
+  String get signupRefreshstatus => 'تحديث الحالة';
+
+  @override
+  String get signupPreparingtitle => 'تجهيز مساحتك';
+
+  @override
+  String get signupPreparingbody =>
+      'نقوم بتجهيز بيئة العرض. يستغرق هذا عادة أقل من 30 ثانية.';
+
+  @override
+  String get signupStatusfor => 'إلى:';
+
+  @override
+  String get signupStatusevery5s => 'يتم التحقق من الحالة كل 5 ثوانٍ.';
+
+  @override
+  String get signupSuccesstitle => 'مساحتك جاهزة!';
+
+  @override
+  String get signupEmailverified => 'تم التحقق من بريدك الإلكتروني بنجاح.';
+
+  @override
+  String get signupCredslabel => 'بيانات تسجيل الدخول';
+
+  @override
+  String get signupFieldemail => 'البريد الإلكتروني';
+
+  @override
+  String get signupFieldpassword => 'كلمة المرور';
+
+  @override
+  String get signupCopypasswordtitle => 'نسخ كلمة المرور';
+
+  @override
+  String get signupCopied => 'تم النسخ!';
+
+  @override
+  String get signupCredssentbyemail =>
+      'تم إرسال هذه البيانات أيضًا عبر البريد إلى';
+
+  @override
+  String get signupCredsemailed =>
+      'تم إرسال بيانات تسجيل الدخول إليك عبر البريد.';
+
+  @override
+  String get signupTrialnote => 'تجربة مجانية لمدة';
+
+  @override
+  String get signupTrialnotesuffix => 'لا حاجة لبطاقة ائتمانية';
+
+  @override
+  String get signupDownloadapp => 'تحميل التطبيق';
+
+  @override
+  String get signupChangepasswordnote => 'غيّر كلمة مرورك عند أول تسجيل دخول.';
+
+  @override
+  String get signupDefaulterror => 'حدث خطأ ما';
+
+  @override
+  String get signupValidationEmailinvalid => 'البريد الإلكتروني غير صالح';
+
+  @override
+  String get signupValidationEmailtooshort => 'البريد الإلكتروني قصير جدًا';
+
+  @override
+  String get signupValidationEmailtoolong => 'البريد الإلكتروني طويل جدًا';
+
+  @override
+  String get signupValidationCompanytooshort =>
+      'يجب أن يتكون اسم الشركة من حرفين على الأقل';
+
+  @override
+  String get signupValidationCompanytoolong => 'اسم الشركة طويل جدًا';
+
+  @override
+  String get signupValidationRolerequired => 'اختر دورك';
+
+  @override
+  String get signupValidationEmployeesrequired => 'اختر حجم الفريق';
+
+  @override
+  String get signupValidationPhoneinvalid => 'رقم الهاتف غير صالح';
+
+  @override
+  String get signupValidationAgreeterms => 'يجب عليك قبول شروط الاستخدام';
+
+  @override
+  String get companiesToastLoadFailed => 'تعذّر تحميل تفاصيل الشركة.';
+
+  @override
+  String get companiesToastTicketsFailed => 'تعذّر تحميل تذاكر الدعم.';
+
+  @override
+  String get companiesToastSubscriptionFailed => 'تعذّر تحديث الاشتراك.';
+
+  @override
+  String get companiesToastFeaturesFailed => 'تعذّر حفظ إعدادات الوحدات.';
+
+  @override
+  String expenseSubmitFailed(Object error) {
+    return 'تعذّر إرسال ملاحظة المصاريف: $error';
   }
 }

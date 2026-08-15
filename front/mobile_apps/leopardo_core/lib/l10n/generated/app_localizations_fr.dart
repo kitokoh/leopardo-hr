@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -558,6 +559,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get usersToastSelectionexportdone => 'Export de la selection termine';
 
   @override
+  String get usersToastBulkdone => 'Mise à jour effectuée';
+
+  @override
   String get usersConfirmDelete => 'Etes-vous sur de vouloir supprimer :name ?';
 
   @override
@@ -568,6 +572,77 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'Veuillez corriger les champs en rouge';
+
+  @override
+  String get usersErrorsPasswordMin =>
+      'Le mot de passe doit contenir au moins 8 caractères';
+
+  @override
+  String get usersErrorsSearchNoMatch =>
+      'Aucune page ne correspond à votre recherche';
+
+  @override
+  String get usersErrorsUpdateFailed =>
+      'Erreur lors de la mise à jour de l\'utilisateur';
+
+  @override
+  String get usersImpersonationTitle => 'Impersonner un employé';
+
+  @override
+  String get usersImpersonationSubtitle => 'Ouvrir une session au nom de :name';
+
+  @override
+  String get usersImpersonationReason =>
+      'Motif (obligatoire, 5 caractères minimum)';
+
+  @override
+  String get usersImpersonationReasonmin =>
+      'Motif obligatoire (5 caractères minimum).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'Aucun employé lié à ce compte — impersonation impossible.';
+
+  @override
+  String get usersImpersonationStart => 'Créer la session';
+
+  @override
+  String get usersImpersonationCancel => 'Annuler';
+
+  @override
+  String get usersImpersonationTokentitle =>
+      'Jeton d\'impersonation (usage unique)';
+
+  @override
+  String get usersImpersonationExpires => 'Expire le :date';
+
+  @override
+  String get usersImpersonationCopy => 'Copier le jeton';
+
+  @override
+  String get usersImpersonationCopied => 'Jeton copié';
+
+  @override
+  String get usersImpersonationCreated => 'Session d\'impersonation créée';
+
+  @override
+  String get usersImpersonationError =>
+      'Erreur lors de la création de la session d\'impersonation';
+
+  @override
+  String get usersImpersonationDone => 'Terminé';
+
+  @override
+  String get usersImpersonationEmployee => 'Employé #:id';
+
+  @override
+  String get usersEditTitle => 'Modifier l\'utilisateur';
+
+  @override
+  String get usersEditStatus => 'Statut';
+
+  @override
+  String get usersEditSave => 'Mettre à jour';
 
   @override
   String get dashboardTitle => 'Tableau de bord';
@@ -592,6 +667,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dashboardRecentActivityHint => 'Dernieres actions de votre equipe';
+
+  @override
+  String get dashboardLeoIaAnnouncementTitle => 'Felicitations equipe';
+
+  @override
+  String get dashboardLeoIaAnnouncementBody =>
+      'Felicitations a toute l\'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !';
+
+  @override
+  String get dashboardLeoIaAnnouncementError =>
+      'Impossible d\'envoyer le message. Reessayez dans quelques instants.';
 
   @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
@@ -1387,5 +1473,284 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String payrollConfidenceUnknownMessage(Object country) {
     return 'Aucune règle de paie n\'est disponible pour $country : le calcul de paie n\'est pas disponible pour ce pays.';
+  }
+
+  @override
+  String get signupBadge => 'Essai gratuit 30 jours';
+
+  @override
+  String get signupTitle => 'Tester Leopardo avec votre entreprise';
+
+  @override
+  String get signupSubtitle =>
+      'Créez votre espace d\'essai en 2 minutes. Aucune carte bancaire requise.';
+
+  @override
+  String get signupLabelemail => 'Email professionnel';
+
+  @override
+  String get signupPlaceholderemail => 'vous@entreprise.com';
+
+  @override
+  String get signupLabelcompany => 'Entreprise';
+
+  @override
+  String get signupPlaceholdercompany => 'Nom de votre entreprise';
+
+  @override
+  String get signupLabelrole => 'Votre rôle';
+
+  @override
+  String get signupRoleplaceholder => 'Choisir';
+
+  @override
+  String get signupRolefounder => 'Fondateur / dirigeant';
+
+  @override
+  String get signupRolemanager => 'Manager';
+
+  @override
+  String get signupRolehr => 'RH';
+
+  @override
+  String get signupRoleoperations => 'Opérations terrain';
+
+  @override
+  String get signupRoleother => 'Autre';
+
+  @override
+  String get signupLabelteamsize => 'Taille équipe';
+
+  @override
+  String get signupTeamplaceholder => 'Choisir';
+
+  @override
+  String get signupLabelphone => 'Téléphone (optionnel)';
+
+  @override
+  String get signupPlaceholderphone => '+213 555 000 000';
+
+  @override
+  String get signupOperationsnote =>
+      'Nous préparerons un parcours axé terrain : pointage, tâches, kiosk et suivi d\'équipe.';
+
+  @override
+  String get signupAgreeprefix => 'J\'accepte les';
+
+  @override
+  String get signupTermslink => 'conditions d\'utilisation';
+
+  @override
+  String get signupPrivacylink => 'politique de confidentialité';
+
+  @override
+  String get signupAgreesuffix => 'et la';
+
+  @override
+  String get signupSubmitlabel => 'Recevoir mon code de vérification';
+
+  @override
+  String get signupSubmittinglabel => 'Envoi du code...';
+
+  @override
+  String get signupCodehint =>
+      'Un code à 6 chiffres sera envoyé à votre email pour confirmer votre identité.';
+
+  @override
+  String get signupHaveaccount => 'Vous avez déjà un compte ?';
+
+  @override
+  String get signupLogincta => 'Se connecter';
+
+  @override
+  String get signupBack => 'Retour';
+
+  @override
+  String get signupOtptitle => 'Vérifiez votre email';
+
+  @override
+  String get signupOtpsentto =>
+      'Nous avons envoyé un code de vérification à 6 chiffres à :';
+
+  @override
+  String get signupOtpinvalidlength =>
+      'Veuillez entrer les 6 chiffres du code.';
+
+  @override
+  String get signupOtpinvalidcode => 'Code invalide ou expiré.';
+
+  @override
+  String get signupOtpverifyerror =>
+      'Erreur lors de la vérification. Veuillez réessayer.';
+
+  @override
+  String get signupVerifylabel => 'Vérifier et créer mon espace';
+
+  @override
+  String get signupVerifyinglabel => 'Vérification en cours...';
+
+  @override
+  String get signupCodevalidity =>
+      'Le code est valide pendant 30 minutes. Vérifiez vos spams si vous ne le trouvez pas.';
+
+  @override
+  String get signupTrackstatus => 'Suivre l\'état de mon espace';
+
+  @override
+  String get signupPendingtitle => 'Demande d\'essai reçue';
+
+  @override
+  String get signupPendingfallback =>
+      'Demande d\'essai reçue. Notre équipe vous contacte sous 24h ouvrables.';
+
+  @override
+  String get signupPendingnote =>
+      'Notre système de création d\'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l\'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.';
+
+  @override
+  String get signupReadytitle => 'Votre espace est prêt !';
+
+  @override
+  String get signupReadysubtitle =>
+      'Le sandbox de démonstration est provisionné. Accédez-y directement :';
+
+  @override
+  String get signupAccesscta => 'Accéder à mon espace';
+
+  @override
+  String get signupCopylink => 'Copier le lien';
+
+  @override
+  String get signupLinkcopied => 'Lien copié !';
+
+  @override
+  String get signupLinkemailed =>
+      'Votre lien d\'accès a également été envoyé par email.';
+
+  @override
+  String get signupFailedtitle => 'Création interrompue';
+
+  @override
+  String get signupFailedbody =>
+      'Une erreur est survenue lors de la création de votre espace. Notre équipe vous contactera par email sous 24h ouvrables avec un accès adapté.';
+
+  @override
+  String get signupTimeouttitle => 'Création toujours en cours';
+
+  @override
+  String get signupTimeoutbody =>
+      'Votre espace est en cours de préparation. Nous vous enverrons le lien d\'accès par email dès qu\'il sera prêt.';
+
+  @override
+  String get signupRefreshstatus => 'Rafraîchir le statut';
+
+  @override
+  String get signupPreparingtitle => 'Préparation de votre espace';
+
+  @override
+  String get signupPreparingbody =>
+      'Nous provisionnons votre sandbox de démonstration. Cela prend généralement moins de 30 secondes.';
+
+  @override
+  String get signupStatusfor => 'Pour :';
+
+  @override
+  String get signupStatusevery5s => 'Statut vérifié toutes les 5 secondes.';
+
+  @override
+  String get signupSuccesstitle => 'Votre espace est prêt !';
+
+  @override
+  String get signupEmailverified => 'Votre adresse email a bien été vérifiée.';
+
+  @override
+  String get signupCredslabel => 'Identifiants de connexion';
+
+  @override
+  String get signupFieldemail => 'Email';
+
+  @override
+  String get signupFieldpassword => 'Mot de passe';
+
+  @override
+  String get signupCopypasswordtitle => 'Copier le mot de passe';
+
+  @override
+  String get signupCopied => 'Copié !';
+
+  @override
+  String get signupCredssentbyemail =>
+      'Ces identifiants ont aussi été envoyés par email à';
+
+  @override
+  String get signupCredsemailed =>
+      'Vos identifiants de connexion viennent de vous être envoyés par email.';
+
+  @override
+  String get signupTrialnote => 'Essai gratuit de';
+
+  @override
+  String get signupTrialnotesuffix => 'aucune carte bancaire requise';
+
+  @override
+  String get signupDownloadapp => 'Télécharger l\'app';
+
+  @override
+  String get signupChangepasswordnote =>
+      'Changez votre mot de passe dès la première connexion.';
+
+  @override
+  String get signupDefaulterror => 'Une erreur est survenue';
+
+  @override
+  String get signupValidationEmailinvalid => 'Email invalide';
+
+  @override
+  String get signupValidationEmailtooshort => 'Email trop court';
+
+  @override
+  String get signupValidationEmailtoolong => 'Email trop long';
+
+  @override
+  String get signupValidationCompanytooshort =>
+      'Le nom de l\'entreprise doit contenir au moins 2 caractères';
+
+  @override
+  String get signupValidationCompanytoolong =>
+      'Le nom de l\'entreprise est trop long';
+
+  @override
+  String get signupValidationRolerequired => 'Sélectionnez votre rôle';
+
+  @override
+  String get signupValidationEmployeesrequired =>
+      'Sélectionnez une taille d\'équipe';
+
+  @override
+  String get signupValidationPhoneinvalid => 'Numéro de téléphone invalide';
+
+  @override
+  String get signupValidationAgreeterms =>
+      'Vous devez accepter les conditions d\'utilisation';
+
+  @override
+  String get companiesToastLoadFailed =>
+      'Impossible de charger la fiche entreprise.';
+
+  @override
+  String get companiesToastTicketsFailed =>
+      'Impossible de charger les tickets support.';
+
+  @override
+  String get companiesToastSubscriptionFailed =>
+      'Échec de la mise à jour de l\'abonnement.';
+
+  @override
+  String get companiesToastFeaturesFailed =>
+      'Échec de la configuration des modules.';
+
+  @override
+  String expenseSubmitFailed(Object error) {
+    return 'Échec de l\'envoi de la note de frais : $error';
   }
 }
