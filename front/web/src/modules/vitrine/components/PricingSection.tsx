@@ -14,10 +14,15 @@ function showsCurrency(price: string) {
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   if (!showsCurrency(price)) return '/contact?type=enterprise'
   const billing = isAnnual ? 'annual' : 'monthly'
-  // Map plan name to plan key
-  const planKey = (planName ?? '').toLowerCase().includes('operations') ? 'business'
-    : (planName ?? '').toLowerCase().includes('scale') ? 'enterprise'
-    : 'starter'
+  // #2907 : mappe le NOM de plan affiché vers la clé canonique du checkout.
+  // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :
+  // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
+  const name = (planName ?? '').toLowerCase()
+  const planKey = name.includes('free') ? 'free'
+    : name.includes('pilot') ? 'pilot'
+    : name.includes('operations') ? 'operations'
+    : name.includes('scale') || name.includes('enterprise') ? 'enterprise'
+    : 'pilot'
   return `/checkout?plan=${planKey}&billing=${billing}`
 }
 

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useReducer, useState, useRef, useCallback, useEffect } from 'react';
 import Link from 'next/link';
@@ -309,7 +309,7 @@ export function SignupForm({
           >
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
               <Sparkles className="h-3.5 w-3.5" />
-              Essai gratuit 30 jours
+              Essai gratuit 14 jours
             </div>
 
             <h2 className="mb-2 text-2xl font-black tracking-tight text-slate-950 dark:text-white md:text-3xl">

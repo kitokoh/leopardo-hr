@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Fragment, useState } from 'react';
 import Link from 'next/link';
@@ -83,7 +83,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       customPrice: 'Sur devis',
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
-      trialNote: '30 jours offerts · Aucune CB requise',
+      trialNote: '14 jours offerts · Aucune CB requise',
     },
     currency: {
       label: 'Afficher les prix en',
@@ -159,8 +159,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
         { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 30 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
-        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 30 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
+        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
         { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Starter : email sous 48h. Business : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
