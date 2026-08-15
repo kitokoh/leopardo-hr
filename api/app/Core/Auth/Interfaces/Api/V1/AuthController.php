@@ -24,6 +24,7 @@ use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
@@ -189,7 +190,12 @@ class AuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'GOOGLE_AUTH_FAILED', 'message' => $e->getMessage()], 422);
+            Log::error('auth.google.callback_failed', ['error' => $e->getMessage()]);
+
+            return new JsonResponse([
+                'error' => 'GOOGLE_AUTH_FAILED',
+                'message' => 'Authentification Google indisponible.',
+            ], 422);
         }
 
         /** @var Employee|null $employee */
@@ -243,7 +249,12 @@ class AuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->userFromToken($validated['access_token']);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'GOOGLE_TOKEN_INVALID', 'message' => $e->getMessage()], 422);
+            Log::error('auth.google.token_exchange_failed', ['error' => $e->getMessage()]);
+
+            return new JsonResponse([
+                'error' => 'GOOGLE_TOKEN_INVALID',
+                'message' => 'Le jeton Google est invalide ou expiré.',
+            ], 422);
         }
 
         /** @var Employee|null $employee */

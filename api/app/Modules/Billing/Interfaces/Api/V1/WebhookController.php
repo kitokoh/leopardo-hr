@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -222,8 +223,14 @@ class WebhookController extends Controller
                 'duration_ms' => $durationMs,
             ]);
 
+            Log::error('billing.webhook.delivery_failed', [
+                'webhook_endpoint_id' => $webhookEndpoint->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
-                'message' => 'Webhook delivery failed: '.$e->getMessage(),
+                'message' => 'Webhook delivery failed.',
+                'error' => 'WEBHOOK_DELIVERY_FAILED',
                 'status' => 'error',
                 'http_status' => 0,
                 'duration_ms' => $durationMs,

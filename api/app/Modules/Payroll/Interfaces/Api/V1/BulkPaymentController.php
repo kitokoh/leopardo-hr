@@ -10,6 +10,7 @@ use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
 
@@ -116,10 +117,15 @@ class BulkPaymentController extends Controller
         try {
             $raw = Redis::connection('default')->get($progressKey);
         } catch (Throwable $e) {
+            Log::error('payroll.bulk_payment.status_redis_failed', [
+                'payroll_run_id' => $payrollRun->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'payroll_run_id' => $payrollRun->id,
                 'status' => 'unknown',
-                'error' => 'Redis unavailable: '.$e->getMessage(),
+                'error' => 'BULK_PAYMENT_STATUS_UNAVAILABLE',
             ], 503);
         }
 
