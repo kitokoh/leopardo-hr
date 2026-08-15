@@ -27,7 +27,7 @@ class VehicleMaintenanceController extends Controller
         }
 
         $records = $query->orderByDesc('service_date')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return VehicleMaintenanceResource::collection($records)->response();
     }
