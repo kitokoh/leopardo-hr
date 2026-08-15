@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, CalendarCheck, FileText, ShieldCheck, Sparkles, UserPlus, Workflow } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
+import { getEnvConfig } from '../../lib/env';
 
 type ReadinessCopy = {
   badge: string;
   title: string;
   highlight: string;
   subtitle: string;
+  guidesCta: string;
   cards: Array<{
     title: string;
     text: string;
@@ -24,6 +26,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     title: 'Du premier clic au premier bulletin,',
     highlight: 'tout est relie.',
     subtitle: 'Leopardo RH transforme votre trafic marketing en espace client actif : demo, guide, inscription, dashboard, mobile et kiosque.',
+    guidesCta: 'Explorer les guides',
     cards: [
       { title: 'Voir le produit en action', text: 'Un parcours demo clair pour comprendre la valeur avant achat.', href: '/demo', cta: 'Planifier une demo' },
       { title: 'Lire les guides RH', text: 'Des contenus concrets pour attirer managers, RH et dirigeants.', href: '/blog', cta: 'Explorer le blog' },
@@ -36,6 +39,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     title: 'From first click to first pay slip,',
     highlight: 'everything is connected.',
     subtitle: 'Leopardo RH turns marketing traffic into an active client workspace: demo, guide, signup, dashboard, mobile, and kiosk.',
+    guidesCta: 'Explore the guides',
     cards: [
       { title: 'See the product live', text: 'A clear demo path to understand value before purchase.', href: '/demo', cta: 'Book a demo' },
       { title: 'Read HR guides', text: 'Practical content for managers, HR leaders, and founders.', href: '/blog', cta: 'Explore the blog' },
@@ -48,6 +52,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     title: 'Ilk tiklamadan ilk bordroya,',
     highlight: 'her sey bagli.',
     subtitle: 'Leopardo RH pazarlama trafigini aktif musteri deneyimine donusturur: demo, rehber, kayit, panel, mobil ve kiosk.',
+    guidesCta: 'Rehberleri kesfet',
     cards: [
       { title: 'Urunu canli gorun', text: 'Satinalmadan once degeri anlamak icin net demo akisi.', href: '/demo', cta: 'Demo planla' },
       { title: 'IK rehberlerini okuyun', text: 'Yoneticiler, IK ekipleri ve kurucular icin pratik icerik.', href: '/blog', cta: 'Blogu kesfet' },
@@ -60,6 +65,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
     title: 'من أول زيارة إلى أول كشف راتب،',
     highlight: 'كل شيء مترابط.',
     subtitle: 'يربط Leopardo RH العرض التجريبي، الأدلة، التسجيل، لوحة التحكم، الجوال والكشك في رحلة عميل واحدة.',
+    guidesCta: 'استكشف الأدلة',
     cards: [
       { title: 'شاهد المنتج', text: 'مسار عرض واضح قبل قرار الشراء.', href: '/demo', cta: 'احجز عرضا' },
       { title: 'اقرأ أدلة الموارد البشرية', text: 'موارد عملية للموارد البشرية والمديرين.', href: '/blog', cta: 'استكشف المدونة' },
@@ -72,7 +78,15 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
 const icons = [CalendarCheck, BookOpen, FileText, UserPlus];
 
 export function MarketingReadinessSection({ locale = 'fr' }: { locale?: AppLocale }) {
+  const { enableBlog } = getEnvConfig();
   const copy = copyByLocale[locale] ?? copyByLocale.fr;
+
+  // The blog is gated by NEXT_PUBLIC_ENABLE_BLOG (same rule as Navbar/Footer,
+  // issue #1305). When disabled, the "guides" card must not link to /blog (404).
+  const cards = copy.cards.map((card) => {
+    if (card.href !== '/blog' || enableBlog) return card;
+    return { ...card, href: '/guides/rh-startup', cta: copy.guidesCta };
+  });
 
   return (
     <section className="relative overflow-hidden bg-slate-950 py-24 text-white">
@@ -107,7 +121,7 @@ export function MarketingReadinessSection({ locale = 'fr' }: { locale?: AppLocal
           </motion.div>
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {copy.cards.map((card, index) => {
+            {cards.map((card, index) => {
               const Icon = icons[index] ?? Workflow;
 
               return (

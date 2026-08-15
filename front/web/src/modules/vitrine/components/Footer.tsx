@@ -5,7 +5,6 @@ import { Globe } from 'lucide-react'
 import { useVitrineLocale } from '../lib/vitrine-locale'
 
 const SOCIAL_LINKS = [
-  { label: 'X', href: 'https://x.com/leopardo_hr', title: 'X (Twitter)' },
   { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
   { label: 'Gh', href: 'https://github.com/kitokoh/leopardo-hr', title: 'GitHub' },
 ]
