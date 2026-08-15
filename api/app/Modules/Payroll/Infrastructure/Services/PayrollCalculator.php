@@ -937,7 +937,11 @@ class PayrollCalculator
             return 0.0;
         }
 
-        $hourlyRate = round($baseSalary / self::MONTHLY_HOURS, 2);
+        // Issue #2685 (QA 2026-08-15) — le taux horaire était arrondi à 2
+        // décimales AVANT les multiplicateurs 1.25/1.50 : sous-paiement
+        // systématique (ex. base 100 000 → taux 576,85 au lieu de 576,879…).
+        // La précision complète est conservée jusqu'à l'arrondi final.
+        $hourlyRate = $baseSalary / self::MONTHLY_HOURS;
         $standard = min($overtimeHours, (float) $standardRateHours);
         $premium = max(0.0, $overtimeHours - (float) $standardRateHours);
 
