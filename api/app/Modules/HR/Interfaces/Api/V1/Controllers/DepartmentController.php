@@ -41,7 +41,10 @@ class DepartmentController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
-        $dept = Department::create(['company_id' => $user->company_id, ...$request->validated()]);
+        // Issue #3597 : company_id non mass-assignable — assignation explicite.
+        $dept = Department::create($request->validated());
+        $dept->company_id = $user->company_id;
+        $dept->save();
 
         return (new DepartmentResource($dept))
             ->response()

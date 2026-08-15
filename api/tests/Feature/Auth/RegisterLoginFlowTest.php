@@ -103,14 +103,15 @@ class RegisterLoginFlowTest extends TestCase
 
     public function test_login_requires_active_status_for_pending_company_account(): void
     {
-        Employee::create([
+        $employee = Employee::create([
             'first_name' => 'Suspended',
             'last_name' => 'User',
             'email' => 'suspended.ordinary@example.com',
             'password_hash' => Hash::make('password123'),
-            'role' => 'ordinary',
-            'status' => 'suspended',
         ]);
+        $employee->role = 'ordinary';
+        $employee->status = 'suspended';
+        $employee->save();
 
         $this->postJson('/api/v1/auth/login', [
             'email' => 'suspended.ordinary@example.com',

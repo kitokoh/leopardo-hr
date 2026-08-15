@@ -147,7 +147,8 @@ readonly class AuthService
                 if ($this->supportsLoginLocking($employee)) {
                     $employee->increment('failed_login_attempts');
                     if ($employee->failed_login_attempts >= 5) {
-                        $employee->update(['locked_until' => now()->addMinutes(15)]);
+                        $employee->locked_until = now()->addMinutes(15);
+                        $employee->save();
                     }
                 }
                 throw new InvalidCredentialsException;
@@ -155,10 +156,9 @@ readonly class AuthService
 
             // Reset failed attempts on success
             if ($this->supportsLoginLocking($employee) && ($employee->failed_login_attempts > 0 || $employee->locked_until)) {
-                $employee->update([
-                    'failed_login_attempts' => 0,
-                    'locked_until' => null,
-                ]);
+                $employee->failed_login_attempts = 0;
+                $employee->locked_until = null;
+                $employee->save();
             }
 
             $company = $this->resolveCompanyForEmployee($employee);

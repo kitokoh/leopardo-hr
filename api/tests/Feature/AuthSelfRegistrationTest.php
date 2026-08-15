@@ -123,9 +123,10 @@ class AuthSelfRegistrationTest extends TestCase
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
             'password_hash' => 'secret',
-            'role' => 'ordinary',
-            'status' => 'active',
         ]);
+        $employee->role = 'ordinary';
+        $employee->status = 'active';
+        $employee->save();
 
         $response = $this->actingAs($employee, 'sanctum')
             ->postJson('/api/v1/company-requests', [
