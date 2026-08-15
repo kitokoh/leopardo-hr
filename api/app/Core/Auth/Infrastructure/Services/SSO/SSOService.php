@@ -219,8 +219,14 @@ class SSOService
     {
         try {
             return Crypt::decryptString($value);
-        } catch (Throwable) {
-            // Valeur legacy stockée en clair avant l'audit #1694.
+        } catch (Throwable $e) {
+            // Valeur legacy stockée en clair avant l'audit #1694 : on conserve
+            // le repli pour la migration, mais on le trace (#3243) pour ne
+            // plus traiter silencieusement une config non déchiffrable.
+            Log::warning('SSO secret non déchiffrable — repli valeur stockée', [
+                'error' => $e->getMessage(),
+            ]);
+
             return $value;
         }
     }

@@ -224,7 +224,18 @@ function formatFeatureLabel(feature) {
     tracking: 'Suivi',
     planning: 'Planning',
     training: 'Formations',
-    cabinet: 'Documents'
+    cabinet: 'Documents',
+    biometric: 'Biométrie',
+    tasks: 'Tâches',
+    advanced_reports: 'Rapports avancés',
+    excel_export: 'Export Excel',
+    bank_export: 'Export bancaire',
+    billing_auto: 'Facturation auto',
+    multi_managers: 'Multi-gérants',
+    photo_attendance: 'Pointage photo',
+    api_public: 'API publique',
+    evaluations: 'Évaluations',
+    schema_isolation: 'Isolation schéma',
   }
   return labels[feature] || feature.toUpperCase()
 }
