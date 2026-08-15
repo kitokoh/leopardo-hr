@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(admin): formatage monétaire selon la locale active (Closes #2715).**
 - **fix(admin): feedbacks d'erreur honnêtes — exports réels, toasts, simulation gardée (Closes #2710, #2711, #2712).**
 - **fix(admin): titres d'onglets traduits via la locale active (Closes #2708).**
 - **fix(admin): MetricCard — prop trendLabel (fini les libellés dans trend) (Closes #2706).**
