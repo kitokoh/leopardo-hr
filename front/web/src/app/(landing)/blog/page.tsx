@@ -168,7 +168,7 @@ const blogCopy: Record<AppLocale, {
 };
 
 export default function BlogPage() {
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const [isDark, setIsDark] = useState(false);
   const { locale, direction } = useVitrineLocale();
   const copy = blogCopy[locale] ?? blogCopy.fr;
