@@ -105,6 +105,41 @@ class TrainingController extends Controller
 
     // â”€â”€ Sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    /**
+     * Issue #2225 — liste TOUTES les sessions de formation de la société
+     * (indépendamment du cours), pour l'écran Training du dashboard admin.
+     */
+    public function indexAllSessions(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $sessions = TrainingSession::query()
+            ->where('company_id', $user->company_id)
+            ->with(['course:id,title', 'trainer:id,first_name,last_name'])
+            ->orderByDesc('start_date')
+            ->paginate($request->integer('per_page', 20));
+
+        return TrainingSessionResource::collection($sessions)->response();
+    }
+
+    /**
+     * Issue #2225 — liste les inscriptions aux formations de la société.
+     */
+    public function indexEnrollments(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $enrollments = TrainingEnrollment::query()
+            ->where('company_id', $user->company_id)
+            ->with(['session:id,start_date,status', 'employee:id,first_name,last_name'])
+            ->orderByDesc('created_at')
+            ->paginate($request->integer('per_page', 20));
+
+        return TrainingEnrollmentResource::collection($enrollments)->response();
+    }
+
     public function indexSessions(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
         /** @var Employee $user */
@@ -292,35 +327,5 @@ class TrainingController extends Controller
         $trainingEnrollment->update($validated);
 
         return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
-    }
-
-    // ── All sessions / enrollments (tenant scope, admin dashboard) ─────────
-
-    public function allSessions(Request $request): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        return TrainingSessionResource::collection(
-            TrainingSession::query()
-                ->where('company_id', $actor->company_id)
-                ->with(['course:id,title,category,type,duration_hours', 'trainer:id,first_name,last_name'])
-                ->orderByDesc('start_date')
-                ->paginate($request->integer('per_page', 15))
-        )->response();
-    }
-
-    public function allEnrollments(Request $request): JsonResponse
-    {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        return TrainingEnrollmentResource::collection(
-            TrainingEnrollment::query()
-                ->where('company_id', $actor->company_id)
-                ->with(['session.course:id,title,category,type,duration_hours', 'employee:id,first_name,last_name'])
-                ->orderByDesc('created_at')
-                ->paginate($request->integer('per_page', 15))
-        )->response();
     }
 }

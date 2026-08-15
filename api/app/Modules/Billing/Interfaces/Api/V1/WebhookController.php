@@ -120,6 +120,29 @@ class WebhookController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * Issue #2225 — envoie un événement de test au webhook (le client vérifie
+     * que son endpoint reçoit bien les payloads Leopardo).
+     */
+    public function test(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ((string) $webhookEndpoint->company_id !== (string) $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        DispatchWebhook::dispatch($webhookEndpoint, 'test', [
+            'message' => 'Webhook de test Leopardo RH',
+            'timestamp' => now()->toIso8601String(),
+        ]);
+
+        return response()->json(['message' => 'Webhook test event dispatched.']);
+    }
+
     public function events(): JsonResponse
     {
         return response()->json(['data' => self::AVAILABLE_EVENTS]);
