@@ -92,7 +92,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       employeeLimit: '500+ employes',
       features: [
         'Tout Operations, plus :',
-        'SSO SAML/OIDC et politiques avancees',
+        'SSO SAML/OIDC (bientot disponible) et politiques avancees',
         'SLA, accompagnement migration et formation',
         'Environnements dedies ou region cloud choisie',
         'Audit trail, exports compliance et support prioritaire',
@@ -179,7 +179,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       employeeLimit: '500+ employees',
       features: [
         'Everything in Operations, plus:',
-        'SAML/OIDC SSO and advanced policies',
+        'SAML/OIDC SSO (coming soon) and advanced policies',
         'SLA, migration guidance and training',
         'Dedicated environments or selected cloud region',
         'Audit trail, compliance exports and priority support',
@@ -266,7 +266,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       employeeLimit: '500+ calisan',
       features: [
         'Operations taki her sey, arti:',
-        'SAML/OIDC SSO ve gelismis politikalar',
+        'SAML/OIDC SSO (yakinda) ve gelismis politikalar',
         'SLA, gecis destegi ve egitim',
         'Ozel ortamlar veya secilen bulut bolgesi',
         'Denetim izi, uyumluluk dis aktarimlari ve oncelikli destek',
@@ -352,7 +352,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       employeeLimit: '500+ موظف',
       features: [
         'كل ما في Operations، بالإضافة إلى:',
-        'SSO عبر SAML/OIDC وسياسات متقدمة',
+        'SSO عبر SAML/OIDC (قريبًا) وسياسات متقدمة',
         'اتفاقية خدمة ومرافقة انتقال وتدريب',
         'بيئات مخصصة أو منطقة سحابية مختارة',
         'سجل تدقيق وتصديرات امتثال ودعم أولوية',

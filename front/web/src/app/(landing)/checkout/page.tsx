@@ -109,7 +109,7 @@ const PLAN_CONFIG = {
     features: [
       'Tout Operations inclus',
       'Multi-pays & multi-devises',
-      'SSO SAML/OIDC',
+      'SSO SAML/OIDC (bientot disponible)',
       'Audit trail immuable',
       'Schema PostgreSQL isolé',
       'Account manager dédié',
