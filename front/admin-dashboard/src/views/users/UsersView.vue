@@ -162,7 +162,6 @@ import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
-import api from '@/services/api'
 
 // Components
 import UserTable from '@/components/users/UserTable.vue'
@@ -187,6 +186,8 @@ const totalItems = ref(0)
 const isLoading = ref(false)
 const showBulkActions = ref(false)
 const showDetailModal = ref(false)
+const showCreateModal = ref(false)
+const showEditModal = ref(false)
 
 // Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
@@ -199,6 +200,21 @@ const companies = ref([])
 
 // Pagination (server-side)
 const paginatedUsers = computed(() => users.value)
+// #2481 : sélection « tout » basée sur la liste chargée (la recherche est
+// déjà server-side via /platform/users?search=…).
+const filteredUsers = computed(() => users.value)
+
+// #2481 : stats du résumé (totalItems alimenté par la réponse API).
+function updateStats() {
+  totalItems.value = users.value.length
+  totalPages.value = Math.max(1, Math.ceil(users.value.length / perPage.value))
+}
+
+// #2481 : export groupé = export client CSV de la page courante (aucun
+// endpoint d'export groupé côté API).
+function exportSelectedUsers() {
+  exportUsers()
+}
 const usersSummary = computed(() => {
   return t('users.page.summary', ':count utilisateur(s) plateforme')
     .replace(':count', String(totalItems.value))
@@ -318,12 +334,6 @@ async function bulkAction(action) {
 function viewUser(user) {
   selectedUser.value = user
   showDetailModal.value = true
-}
-
-function deleteUser() {
-  // Issue #2269 : pas d'endpoint de suppression utilisateur en v1 — l'action
-  // est désactivée honnêtement (aucun bouton mort, aucune fausse promesse).
-  toast.info(t('users.toast.deleteError', 'Suppression non disponible pour les utilisateurs plateforme en v1 — désactiver le compte à la place.'))
 }
 
 async function deleteUser(user) {
