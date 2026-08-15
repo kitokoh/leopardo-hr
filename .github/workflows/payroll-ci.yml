@@ -122,6 +122,17 @@ jobs:
           DB_PASSWORD: leopardo_pass_test
         run: php artisan test tests/Feature/Payroll --stop-on-failure
 
+  declaration-rates:
+    name: Déclarations ↔ moteur (issue #2539)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Garde anti-dérive taux déclarations vs règles pays
+        run: python3 dev-hub/tools/check-declaration-rates-vs-rules.py
+
   coverage:
     name: Coverage Payroll ≥ 80 %
     runs-on: ubuntu-latest

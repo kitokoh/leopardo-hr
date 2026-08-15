@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 
 /**
@@ -184,7 +185,7 @@ class IpresDeclarationGenerator
         $t1Pat = round($t1Base * self::RATE_T1_PAT / 100, 2);
         $t2Emp = round($t2Base * self::RATE_T2_EMP / 100, 2);
         $t2Pat = round($t2Base * self::RATE_T2_PAT / 100, 2);
-        $cssFamillePat = round(min($gross, self::CSS_FAMILLE_CAP) * self::RATE_CSS_FAMILLE_PAT / 100, 2);
+        $cssFamillePat = round(min($gross, $this->cssFamilyCap()) * $this->cssFamilyRate() / 100, 2);
         $totalPatronal = round($t1Pat + $t2Pat + $cssFamillePat, 2);
 
         return [
@@ -221,5 +222,39 @@ class IpresDeclarationGenerator
         }, $rows);
 
         return implode("\n", $lines)."\n";
+    }
+
+
+    /**
+     * Issue #2539 — taux CSS famille lu depuis le MOTEUR (SenegalPayrollRules
+     * ::socialContributions(), code CSS_SN_PAT_FAM) au lieu d'une constante
+     * dupliquée : un changement de taux dans les règles pays ne peut plus
+     * produire une déclaration fausse en silence (divergence #2473).
+     * Fallback sur la constante documentée si la contribution est absente.
+     */
+    private function cssFamilyRate(): float
+    {
+        foreach ((new SenegalPayrollRules)->socialContributions() as $contribution) {
+            if (($contribution['code'] ?? '') === 'CSS_SN_PAT_FAM') {
+                return (float) ($contribution['rate'] ?? self::RATE_CSS_FAMILLE_PAT);
+            }
+        }
+
+        return self::RATE_CSS_FAMILLE_PAT;
+    }
+
+    /**
+     * Issue #2539 — plafond CSS famille lu depuis le moteur (même source),
+     * fallback sur la constante documentée.
+     */
+    private function cssFamilyCap(): float
+    {
+        foreach ((new SenegalPayrollRules)->socialContributions() as $contribution) {
+            if (($contribution['code'] ?? '') === 'CSS_SN_PAT_FAM') {
+                return (float) ($contribution['cap'] ?? self::CSS_FAMILLE_CAP);
+            }
+        }
+
+        return self::CSS_FAMILLE_CAP;
     }
 }

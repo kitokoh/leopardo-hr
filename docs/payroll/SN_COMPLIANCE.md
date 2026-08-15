@@ -209,3 +209,15 @@ ré-évaluer).
 3. Mettre à jour ce fichier + les golden tests (`GoldenSnPayrollTest`).
 4. Faire valider par l'équipe (`php artisan test --filter=Payroll`).
 5. Passer `confidenceLevel()` de `pilot` à `production` une fois validé.
+
+## Pattern « le générateur lit le moteur » (issue #2539)
+
+Tout taux de cotisation social utilisé par un générateur de déclaration CSV
+(IPRES/CSS) doit être lu depuis `SenegalPayrollRules::socialContributions()`
+(code de contribution), **pas** depuis une constante dupliquée dans le
+générateur. La garde CI `dev-hub/tools/check-declaration-rates-vs-rules.py`
+(job « Déclarations ↔ moteur », payroll-ci.yml) compare statiquement les
+constantes des générateurs aux valeurs du moteur et échoue en cas de
+divergence (la divergence #2473 a vécu dans les deux fichiers sans être
+détectée). Règle : un changement de taux = mise à jour du moteur (les
+générateurs suivent automatiquement) + golden + CHANGELOG (constitution §III).
