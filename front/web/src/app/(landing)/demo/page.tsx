@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import {
   Navbar,
   HeroSection,
@@ -70,23 +71,23 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     },
     benefitsTitle: 'Ce que vous decouvrirez',
     benefits: [
-      { title: 'Gestion complete des employes', desc: 'Pointage, absences, contrats et documents dans une experience unifiee.' },
-      { title: 'Paie multi-pays automatisee', desc: 'Modeles DZ, MA, TN, FR et TR avec cotisations, IR et bulletins PDF.' },
+      { title: 'Gestion complete des employés', desc: 'Pointage, absences, contrats et documents dans une experience unifiee.' },
+      { title: 'Paie multi-pays automatisee', desc: '9 moteurs de regles (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie) avec cotisations, IR et bulletins PDF.' },
       { title: 'Dashboard temps reel', desc: 'KPIs, alertes et donnees operationnelles pour les RH et managers.' },
-      { title: 'Securite enterprise', desc: 'Isolation tenant, roles, audit trail, chiffrement et workflows controles.' },
+      { title: 'Sécurité enterprise', desc: 'Isolation tenant, roles, audit trail, chiffrement et workflows controles.' },
     ],
     formTitle: 'Planifiez votre demo',
     successTitle: 'Demande envoyee',
-    successMessage: 'Notre equipe vous contactera sous 24h pour organiser une demo adaptee a votre contexte.',
+    successMessage: 'Notre équipe vous contactera sous 24h pour organiser une demo adaptee a votre contexte.',
     submitError: 'Erreur lors de la soumission',
     fields: {
       name: 'Nom complet *',
       email: 'Email professionnel *',
       company: 'Entreprise *',
       phone: 'Telephone',
-      employees: 'Nombre d employes',
+      employees: 'Nombre d employés',
       employeesPlaceholder: 'Selectionnez',
-      employeeSuffix: 'employes',
+      employeeSuffix: 'employés',
       preferredDate: 'Date preferee',
       message: 'Message (optionnel)',
       messagePlaceholder: 'Decrivez vos besoins...',
@@ -110,7 +111,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'What you will discover',
     benefits: [
       { title: 'Complete employee management', desc: 'Attendance, leave, contracts and documents in one unified experience.' },
-      { title: 'Automated multi-country payroll', desc: 'DZ, MA, TN, FR and TR models with contributions, income tax and PDF pay slips.' },
+      { title: 'Automated multi-country payroll', desc: '9 rule engines (Algeria, Canada, ECOWAS, CEMAC, France, Morocco, Senegal, Tunisia, Turkey) with contributions, income tax and PDF pay slips.' },
       { title: 'Real-time dashboard', desc: 'KPIs, alerts and operational data for HR teams and managers.' },
       { title: 'Enterprise security', desc: 'Tenant isolation, roles, audit trail, encryption and controlled workflows.' },
     ],
@@ -149,7 +150,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'Neleri goreceksiniz',
     benefits: [
       { title: 'Tam calisan yonetimi', desc: 'Devam takibi, izinler, sozlesmeler ve belgeler tek deneyimde.' },
-      { title: 'Cok ulkeli otomatik bordro', desc: 'DZ, MA, TN, FR ve TR modelleri; kesintiler, gelir vergisi ve PDF bordro.' },
+      { title: 'Cok ulkeli otomatik bordro', desc: '9 kural motoru (Cezayir, Kanada, ECOWAS, CEMAC, Fransa, Fas, Senegal, Tunus, Turkiye); kesintiler, gelir vergisi ve PDF bordro.' },
       { title: 'Gercek zamanli panel', desc: 'IK ekipleri ve yoneticiler icin KPI, uyari ve operasyon verileri.' },
       { title: 'Kurumsal guvenlik', desc: 'Tenant izolasyonu, roller, denetim kaydi, sifreleme ve kontrollu is akislar.' },
     ],
@@ -188,7 +189,7 @@ const demoCopy: Record<AppLocale, DemoCopy> = {
     benefitsTitle: 'ما الذي ستكتشفه',
     benefits: [
       { title: 'إدارة كاملة للموظفين', desc: 'الحضور، الإجازات، العقود والمستندات في تجربة موحدة.' },
-      { title: 'رواتب آلية متعددة الدول', desc: 'نماذج DZ و MA و TN و FR و TR مع الاشتراكات والضريبة وقسائم PDF.' },
+      { title: 'رواتب آلية متعددة الدول', desc: '9 محركات قواعد (الجزائر، كندا، إكواس، سيماك، فرنسا، المغرب، السنغال، تونس، تركيا) مع الاشتراكات والضريبة وقسائم PDF.' },
       { title: 'لوحة بيانات فورية', desc: 'مؤشرات وتنبيهات وبيانات تشغيلية لفرق الموارد البشرية والمديرين.' },
       { title: 'أمان مؤسسي', desc: 'عزل الشركات، الأدوار، سجل التدقيق، التشفير ومسارات عمل مضبوطة.' },
     ],
@@ -227,7 +228,7 @@ const benefitIcons = [
 ];
 
 export default function DemoPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -290,7 +291,7 @@ export default function DemoPage() {
       dir={direction}
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <HeroSection
         headline={copy.hero.headline}

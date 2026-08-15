@@ -52,16 +52,16 @@ readonly class UserAuthService
         if (! Hash::check($password, $user->password_hash)) {
             $user->increment('failed_login_attempts');
             if ($user->failed_login_attempts >= 5) {
-                $user->update(['locked_until' => now()->addMinutes(15)]);
+                $user->locked_until = now()->addMinutes(15);
+                $user->save();
             }
             throw new InvalidCredentialsException;
         }
 
         if ($user->failed_login_attempts > 0 || $user->locked_until) {
-            $user->update([
-                'failed_login_attempts' => 0,
-                'locked_until' => null,
-            ]);
+            $user->failed_login_attempts = 0;
+            $user->locked_until = null;
+            $user->save();
         }
 
         return $this->issueToken($user, $deviceName ?? 'api');
@@ -102,8 +102,10 @@ readonly class UserAuthService
                 'google_id' => $googleId,
                 'avatar_url' => $avatarUrl,
                 'provider' => 'google',
-                'email_verified_at' => now(),
             ]);
+            // Issue #3597 : email_verified_at non mass-assignable — assignation explicite.
+            $user->email_verified_at = now();
+            $user->save();
         }
 
         $result = $this->issueToken($user, 'Google Sign-In');

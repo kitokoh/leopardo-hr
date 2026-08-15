@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_manager/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
@@ -15,7 +16,6 @@ import 'package:leopardo_manager/features/attendance/screens/attendance_screen.d
 import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_manager/features/home/screens/home_screen.dart';
-import 'package:leopardo_manager/features/modules/screens/modules_screen.dart';
 import 'package:leopardo_manager/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_manager/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_manager/features/salary_advances/screens/salary_advance_list_screen.dart';
@@ -25,6 +25,7 @@ import 'package:leopardo_manager/features/evaluations/screens/evaluation_list_sc
 import 'package:leopardo_manager/features/cabinet/screens/cabinet_screen.dart';
 import 'package:leopardo_manager/features/settings/screens/settings_screen.dart';
 import 'package:leopardo_manager/features/team/screens/team_screen.dart';
+import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
 import 'package:leopardo_manager/features/user_auth/screens/user_register_screen.dart';
 import 'package:leopardo_manager/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_manager/features/user_auth/screens/user_home_screen.dart';
@@ -103,17 +104,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-login',
         '/user-home',
         '/company-request',
+        '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
+      final isAuthorized = isAuth && (authState.employee!.isManager || authState.employee!.isHr);
 
       if (!isAuth && !onPublic) return '/welcome';
-      if (isAuth && onPublic) return '/';
-      if (isAuth &&
-          (!authState.employee!.isManager || authState.employee!.isHr) &&
-          !onPublic) {
-        // Redirection si l'utilisateur n'est pas un Manager pur dans l'app Manager
-        return '/welcome';
+      if (isAuth && !isAuthorized) {
+        // T116 : plus de boucle /welcome ↔ / — écran « accès refusé » explicite
+        // pour un utilisateur connecté sans le rôle de cette app.
+        return location == '/access-denied' ? null : '/access-denied';
       }
+      if (isAuth && onPublic) return '/';
 
       return null;
     },
@@ -122,6 +124,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/access-denied',
+        builder: (context, state) => const AccessDeniedScreen(),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
@@ -150,6 +156,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, child) => ManagerMainShell(child: child),
         routes: [
           GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          // Issue #3205 — routes modules/quick actions restaurées : le manifeste
+          // MobileExperienceService les sert toujours et l'UI les pousse
+          // (context.push sur module.route / action.route). La PR #3117 les
+          // avait retirées par erreur (régression #2212 — garde CI rouge).
           GoRoute(
             path: '/modules',
             builder: (context, state) => const ModulesHubScreen(),
@@ -192,28 +202,21 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const TaskListScreen(),
           ),
           GoRoute(
-            path: '/modules/rh',
-            builder: (context, state) => const ModulesScreen(),
-          ),
-          GoRoute(
             path: '/cabinet',
             builder: (context, state) => const CabinetScreen(),
-          ),
-          GoRoute(
-            path: '/cabinet/:folderId',
-            builder: (context, state) {
-              final folderId = int.parse(state.pathParameters['folderId']!);
-              final folderName = state.extra as String?;
-              return CabinetScreen(folderId: folderId, folderName: folderName);
-            },
           ),
           // Issue #2748 — l'écran Cabinet pousse /cabinet/folder/{id}
           // (même convention que employee/HR) : la route 3 segments
           // manquait ici → GoError au tap sur un dossier.
+          // T121/#3004 : garde int.tryParse — deep-link non numérique → écran
+          // vide plutôt qu'un crash FormatException (route déclarée UNE fois).
           GoRoute(
             path: '/cabinet/folder/:folderId',
             builder: (context, state) {
-              final folderId = int.parse(state.pathParameters['folderId']!);
+              final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
+              if (folderId == null) {
+                return const Scaffold(body: SizedBox.shrink());
+              }
               final folderName = state.extra as String?;
               return CabinetScreen(folderId: folderId, folderName: folderName);
             },
@@ -234,6 +237,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/approvals',
             builder: (context, state) => const ApprovalScreen(),
           ),
+
           GoRoute(
             path: '/schedules',
             builder: (context, state) => const ScheduleListScreen(),
@@ -241,6 +245,57 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/company/branding',
             builder: (context, state) => const CompanyBrandingScreen(),
+          ),
+          // Issue #3223 — le manifeste mobile (MobileExperienceService)
+          // sert ces routes aux quick actions/modules Manager : les écrans
+          // existent mais les déclarations GoRouter manquaient depuis le
+          // retrait des routes mortes (#2801) → écran d'erreur au tap.
+          GoRoute(
+            path: '/history',
+            builder: (context, state) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: '/modules',
+            builder: (context, state) => const ModulesHubScreen(),
+          ),
+          GoRoute(
+            path: '/team',
+            builder: (context, state) => const TeamScreen(),
+          ),
+          GoRoute(
+            path: '/tasks',
+            builder: (context, state) => const TaskListScreen(),
+          ),
+          // Issue #3223 (suite) — modules/quick actions « base » du manifeste :
+          // les screens + imports existent déjà, les déclarations GoRouter
+          // manquaient depuis la restructuration du ShellRoute (#2801).
+          GoRoute(
+            path: '/absences',
+            builder: (context, state) => const AbsenceListScreen(),
+          ),
+          GoRoute(
+            path: '/attendance',
+            builder: (context, state) => const AttendanceScreen(),
+          ),
+          GoRoute(
+            path: '/evaluations',
+            builder: (context, state) => const EvaluationListScreen(),
+          ),
+          GoRoute(
+            path: '/me/monthly',
+            builder: (context, state) => const MonthlySummaryScreen(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) => const NotificationListScreen(),
+          ),
+          GoRoute(
+            path: '/payrolls',
+            builder: (context, state) => const PayrollListScreen(),
+          ),
+          GoRoute(
+            path: '/salary-advances',
+            builder: (context, state) => const SalaryAdvanceListScreen(),
           ),
           GoRoute(
             path: '/manager/attendance',
@@ -334,7 +389,7 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

@@ -827,6 +827,8 @@ trait CreatesMvpSchema
             $table->string('name', 100);
             $table->string('email', 150)->unique();
             $table->string('password_hash', 255);
+            // Issue #2630 : statut de compte (migration 2026_08_15_000002).
+            $table->string('status', 20)->default('active');
             $table->string('two_fa_secret', 32)->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('created_at')->nullable();
@@ -1922,6 +1924,8 @@ trait CreatesMvpSchema
         if (! Schema::hasTable($this->moduleTable('calendar_events'))) {
             Schema::create($this->moduleTable('calendar_events'), function (Blueprint $table): void {
                 $table->id();
+                // Audit expert 2026-08-15 (issue #2623) : company_id NOT NULL.
+                $table->uuid('company_id');
                 $table->unsignedBigInteger('employee_id');
                 $table->string('external_event_id')->nullable();
                 $table->string('provider', 20)->default('google');

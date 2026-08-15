@@ -182,15 +182,6 @@ class AttendanceRepository {
     );
   }
 
-  Future<DailySummary> getDailySummary(int employeeId) async {
-    final response = await apiClient.requestWithRetry(
-      '/employees/$employeeId/daily-summary',
-      maxRetriesOverride: 0,
-      timeoutOverride: _readTimeout,
-    );
-    return DailySummary.fromJson(extractDataMap(response.data));
-  }
-
   Future<DailySummary> getMyDailySummary({DateTime? date}) async {
     final qp = <String, dynamic>{};
     if (date != null) {

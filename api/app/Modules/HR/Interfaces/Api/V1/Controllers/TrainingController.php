@@ -30,7 +30,7 @@ class TrainingController extends Controller
             $query->where('category', $request->input('category'));
         }
 
-        return TrainingCourseResource::collection($query->orderBy('title')->paginate($request->integer('per_page', 15)))
+        return TrainingCourseResource::collection($query->orderBy('title')->paginate(max(1, min(100, $request->integer('per_page', 15)))))
             ->response();
     }
 
@@ -118,7 +118,7 @@ class TrainingController extends Controller
             ->where('company_id', $user->company_id)
             ->with(['course:id,title', 'trainer:id,first_name,last_name'])
             ->orderByDesc('start_date')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingSessionResource::collection($sessions)->response();
     }
@@ -156,7 +156,7 @@ class TrainingController extends Controller
         }
 
         return TrainingSessionResource::collection(
-            $query->orderByDesc('start_date')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('start_date')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 
@@ -171,7 +171,7 @@ class TrainingController extends Controller
         $actor = $request->user();
 
         $query = TrainingEnrollment::query()
-            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status'])
+            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status', 'session.course:id,title'])
             ->where('company_id', $actor->company_id);
 
         if ($request->filled('status')) {
@@ -182,7 +182,7 @@ class TrainingController extends Controller
         }
 
         return TrainingEnrollmentResource::collection(
-            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('created_at')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 

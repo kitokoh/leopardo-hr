@@ -225,7 +225,7 @@ class PayrollCalculator
             // même process → deux runs avec le même ID → violation de la
             // contrainte unique payroll_runs.correlation_id (#2551 cause 8).
             $header = request()->header('X-Correlation-ID') ?: request()->header('X-Request-Id');
-            $correlationId = is_string($header) && $header !== '' ? $header : (string) \Illuminate\Support\Str::uuid();
+            $correlationId = is_string($header) && $header !== '' ? $header : (string) Str::uuid();
             $run->forceFill(['correlation_id' => $correlationId])->save();
         }
         // Corrélation des logs de ce calcul (issue #1874).
@@ -315,6 +315,12 @@ class PayrollCalculator
         /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
 
+        // Issue #2687 (T026) : agrégats BATCH (attendance + congés) pour tous
+        // les employés en ~3 requêtes au lieu de ~5 par employé (1000 employés
+        // ≈ 15 requêtes au lieu de 5000+). Les méthodes par-employé restent
+        // inchangées quand l'agrégat n'est pas fourni (repli identique).
+        [$attendanceAgg, $leaveAgg] = $this->aggregateWorkInputs($run, $employees);
+
         DB::transaction(function () use (
             $run,
             $employees,
@@ -323,7 +329,9 @@ class PayrollCalculator
             $rules,
             $rulesVersion,
             $rulesIdentifier,
-            $rulesPeriod
+            $rulesPeriod,
+            $attendanceAgg,
+            $leaveAgg
         ) {
             $run->paySlips()->delete();
 
@@ -353,7 +361,9 @@ class PayrollCalculator
                     $rules,
                     $rulesVersion,
                     $rulesIdentifier,
-                    $rulesPeriod
+                    $rulesPeriod,
+                    $attendanceAgg[$employee->id] ?? null,
+                    $leaveAgg[$employee->id] ?? null
                 );
 
                 $totalGross += (float) $slip->gross_salary;
@@ -577,6 +587,10 @@ class PayrollCalculator
         }
     }
 
+    /**
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
+     */
     private function calculateSlip(
         PayrollRun $run,
         Employee $employee,
@@ -584,9 +598,11 @@ class PayrollCalculator
         CountryRulesContract $rules,
         string $rulesVersion,
         string $rulesIdentifier,
-        string $rulesPeriod
+        string $rulesPeriod,
+        ?array $attendanceAgg = null,
+        ?array $leaveAgg = null
     ): PaySlip {
-        $values = $this->computeSlipValues($run, $employee, $structure, $rules);
+        $values = $this->computeSlipValues($run, $employee, $structure, $rules, $attendanceAgg, $leaveAgg);
 
         /** @var PaySlip $slip */
         $slip = PaySlip::create([
@@ -622,6 +638,9 @@ class PayrollCalculator
      * Utilisé par calculateSlip() (bulletin standard) et par
      * calculateRegularizationRun() (valeur corrigée du différentiel).
      *
+     *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{
      *     gross_salary: float,
      *     total_deductions: float,
@@ -639,11 +658,13 @@ class PayrollCalculator
         PayrollRun $run,
         Employee $employee,
         SalaryStructure $structure,
-        CountryRulesContract $rules
+        CountryRulesContract $rules,
+        ?array $attendanceAgg = null,
+        ?array $leaveAgg = null
     ): array {
         $baseSalary = $structure->base_salary;
-        $worked = $this->computeWorkedDays($run, $employee);
-        $inputs = $this->collectWorkInputs($run, $employee);
+        $worked = $this->computeWorkedDays($run, $employee, $attendanceAgg);
+        $inputs = $this->collectWorkInputs($run, $employee, $attendanceAgg, $leaveAgg);
 
         // Jours d'absence (payés ou non) retirés des jours travaillés ;
         // les congés payés sont compensés par l'indemnité (F-07).
@@ -937,7 +958,11 @@ class PayrollCalculator
             return 0.0;
         }
 
-        $hourlyRate = round($baseSalary / self::MONTHLY_HOURS, 2);
+        // Issue #2685 (QA 2026-08-15) — le taux horaire était arrondi à 2
+        // décimales AVANT les multiplicateurs 1.25/1.50 : sous-paiement
+        // systématique (ex. base 100 000 → taux 576,85 au lieu de 576,879…).
+        // La précision complète est conservée jusqu'à l'arrondi final.
+        $hourlyRate = $baseSalary / self::MONTHLY_HOURS;
         $standard = min($overtimeHours, (float) $standardRateHours);
         $premium = max(0.0, $overtimeHours - (float) $standardRateHours);
 
@@ -959,9 +984,10 @@ class PayrollCalculator
      * contrat quand aucun log valide n'existe (comportement historique).
      * has_attendance_data indique quelle source a été utilisée.
      *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
      * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
-    public function computeWorkedDays(PayrollRun $run, Employee $employee): array
+    public function computeWorkedDays(PayrollRun $run, Employee $employee, ?array $attendanceAgg = null): array
     {
         // Issue #1811 : jours ouvrés dynamiques par pays (fériés + jours de
         // repos hebdomadaire) au lieu de la constante 22. Fallback 22 si le
@@ -1008,7 +1034,10 @@ class PayrollCalculator
         // répondait faux à tort → repli silencieux sur le prorata du contrat
         // et `actual_days_worked` faux sans aucun signal (revue lead #1862).
         $distinctDays = 0;
-        if (schemaTableExists('attendance_logs')) {
+        if ($attendanceAgg !== null && isset($attendanceAgg['distinct_days'])) {
+            // Issue #2687 : valeur pré-agrégée en batch (executeCalculateRun).
+            $distinctDays = (int) $attendanceAgg['distinct_days'];
+        } elseif (schemaTableExists('attendance_logs')) {
             try {
                 $distinctDays = (int) AttendanceLog::query()
                     ->where('company_id', $run->company_id)
@@ -1115,7 +1144,10 @@ class PayrollCalculator
         $slips = PaySlip::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
-            ->where('status', 'validated')
+            // Issue #2679 — les runs créent des bulletins 'calculated' (non
+            // encore validés) : une entreprise qui ne valide jamais retombait
+            // en silence sur base×12. Les deux statuts comptent.
+            ->whereIn('status', ['calculated', 'validated'])
             ->where('period_start', '>=', $twelveMonthsAgo)
             ->where('period_start', '<', $run->period_start)
             ->get(['gross_salary', 'period_start']);
@@ -1193,10 +1225,26 @@ class PayrollCalculator
      *  - Absence approuvées (status=approved), ventilées payées (is_paid) /
      *    non payées via AbsenceType.
      *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
      */
-    public function collectWorkInputs(PayrollRun $run, Employee $employee): array
-    {
+    public function collectWorkInputs(
+        PayrollRun $run,
+        Employee $employee,
+        ?array $attendanceAgg = null,
+        ?array $leaveAgg = null
+    ): array {
+        if ($attendanceAgg !== null && $leaveAgg !== null) {
+            // Issue #2687 : agrégats batch (executeCalculateRun) — mêmes
+            // valeurs que les requêtes par-employé ci-dessous.
+            return [
+                'overtime_hours' => (float) ($attendanceAgg['overtime_hours'] ?? 0.0),
+                'paid_leave_days' => (float) ($leaveAgg['paid_leave_days'] ?? 0.0),
+                'unpaid_leave_days' => (float) ($leaveAgg['unpaid_leave_days'] ?? 0.0),
+            ];
+        }
+
         $overtimeHours = AttendanceLog::query()
             ->where('company_id', $run->company_id)
             ->where('employee_id', $employee->id)
@@ -1215,9 +1263,114 @@ class PayrollCalculator
         ];
     }
 
+    /**
+     * Issue #2687 (T026) — agrégats groupés pour TOUS les employés du run :
+     * jours de présence distincts + heures sup (attendance_logs) et congés
+     * approuvés payés/non payés (absences, clipping période identique à
+     * sumApprovedLeaveDays). ~3 requêtes au total au lieu de ~5 par employé.
+     *
+     * @param  Collection<int, Employee>  $employees
+     * @return array{0: array<int, array{distinct_days?: int, overtime_hours?: float}>, 1: array<int, array{paid_leave_days?: float, unpaid_leave_days?: float}>}
+     */
+    private function aggregateWorkInputs(PayrollRun $run, Collection $employees): array
+    {
+        $attendance = [];
+        $leave = [];
+
+        if (schemaTableExists('attendance_logs')) {
+            try {
+                $distinct = AttendanceLog::query()
+                    ->selectRaw('employee_id, COUNT(DISTINCT date) AS distinct_days')
+                    ->where('company_id', $run->company_id)
+                    ->whereBetween('date', [$run->period_start, $run->period_end])
+                    ->whereNotIn('status', ['absent', 'leave', 'holiday', 'incomplete'])
+                    ->groupBy('employee_id')
+                    ->get();
+
+                foreach ($distinct as $row) {
+                    $attendance[(int) $row->employee_id]['distinct_days'] = (int) $row->distinct_days;
+                }
+
+                $overtime = AttendanceLog::query()
+                    ->selectRaw('employee_id, COALESCE(SUM(overtime_hours), 0) AS overtime_hours')
+                    ->where('company_id', $run->company_id)
+                    ->whereBetween('date', [$run->period_start, $run->period_end])
+                    ->where('overtime_hours', '>', 0)
+                    ->whereNotIn('status', ['cancelled', 'rejected', 'incomplete'])
+                    ->groupBy('employee_id')
+                    ->get();
+
+                foreach ($overtime as $row) {
+                    $attendance[(int) $row->employee_id]['overtime_hours'] = (float) $row->overtime_hours;
+                }
+            } catch (QueryException $e) {
+                // Repli par-employé (les méthodes gardent leur try/catch).
+                Log::warning('aggregateWorkInputs: repli par-employé — attendance_logs en échec', [
+                    'company_id' => $run->company_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        try {
+            $absences = Absence::query()
+                ->where('company_id', $run->company_id)
+                ->where('status', 'approved')
+                ->whereDate('start_date', '<=', $run->period_end)
+                ->whereDate('end_date', '>=', $run->period_start)
+                ->with('absenceType:id,is_paid')
+                ->get(['id', 'employee_id', 'absence_type_id', 'start_date', 'end_date', 'days_count']);
+
+            $periodStart = $run->period_start->copy()->startOfDay();
+            $periodEnd = $run->period_end->copy()->startOfDay();
+
+            foreach ($absences as $absence) {
+                if ($absence->end_date === null || $absence->absenceType === null) {
+                    continue;
+                }
+
+                $overlapStart = $absence->start_date->copy()->max($periodStart);
+                $overlapEnd = $absence->end_date->copy()->min($periodEnd);
+
+                if ($overlapEnd->lt($overlapStart)) {
+                    continue;
+                }
+
+                $overlapDays = $overlapStart->diffInDays($overlapEnd) + 1;
+                $totalSpanDays = $absence->start_date->diffInDays($absence->end_date) + 1;
+
+                $days = $totalSpanDays > 0
+                    ? (float) $absence->days_count * ($overlapDays / $totalSpanDays)
+                    : (float) $absence->days_count;
+
+                $key = (int) $absence->employee_id;
+                if ((bool) $absence->absenceType->is_paid) {
+                    $leave[$key]['paid_leave_days'] = ($leave[$key]['paid_leave_days'] ?? 0.0) + $days;
+                } else {
+                    $leave[$key]['unpaid_leave_days'] = ($leave[$key]['unpaid_leave_days'] ?? 0.0) + $days;
+                }
+            }
+        } catch (QueryException $e) {
+            Log::warning('aggregateWorkInputs: repli par-employé — absences en échec', [
+                'company_id' => $run->company_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // Préseed zéro pour TOUS les employés actifs : quand le batch a réussi,
+        // le chemin par-employé n'est plus sollicité (seul un échec du batch
+        // déclenche le repli, et alors les tableaux restent vides → null).
+        foreach ($employees as $employee) {
+            $attendance[$employee->id] ??= ['distinct_days' => 0, 'overtime_hours' => 0.0];
+            $leave[$employee->id] ??= ['paid_leave_days' => 0.0, 'unpaid_leave_days' => 0.0];
+        }
+
+        return [$attendance, $leave];
+    }
+
     private function sumApprovedLeaveDays(PayrollRun $run, Employee $employee, bool $paid): float
     {
-        return (float) Absence::query()
+        $absences = Absence::query()
             ->where('company_id', $run->company_id)
             ->where('employee_id', $employee->id)
             ->where('status', 'approved')
@@ -1226,7 +1379,38 @@ class PayrollCalculator
             ->whereHas('absenceType', function (Builder $q) use ($paid): void {
                 $q->where('is_paid', $paid);
             })
-            ->sum('days_count');
+            ->get(['start_date', 'end_date', 'days_count']);
+
+        $periodStart = $run->period_start->copy()->startOfDay();
+        $periodEnd = $run->period_end->copy()->startOfDay();
+        $total = 0.0;
+
+        foreach ($absences as $absence) {
+            // Issue #2672 (QA 2026-08-15) — clipping sur la période : une
+            // absence chevauchante (ex. 25 janv. → 5 févr.) était comptée en
+            // TOTALITÉ dans les runs de janvier ET février (double déduction
+            // dans le prorata). On ne compte que l'intersection avec la
+            // période, au prorata du days_count stocké.
+            if ($absence->end_date === null) {
+                continue;
+            }
+
+            $overlapStart = $absence->start_date->copy()->max($periodStart);
+            $overlapEnd = $absence->end_date->copy()->min($periodEnd);
+
+            if ($overlapEnd->lt($overlapStart)) {
+                continue;
+            }
+
+            $overlapDays = $overlapStart->diffInDays($overlapEnd) + 1;
+            $totalSpanDays = $absence->start_date->diffInDays($absence->end_date) + 1;
+
+            $total += $totalSpanDays > 0
+                ? (float) $absence->days_count * ($overlapDays / $totalSpanDays)
+                : (float) $absence->days_count;
+        }
+
+        return $total;
     }
 
     /**

@@ -113,7 +113,7 @@ class ApprovalController extends Controller
             ->with(['workflow:id,name', 'requester:id,first_name,last_name', 'approvable'])
             ->where('company_id', $actor->company_id)
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return ApprovalRequestResource::collection($requests)->response();
     }
@@ -128,6 +128,10 @@ class ApprovalController extends Controller
         if ($approvalRequest->status !== 'pending') {
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
+        // QA #3146 — la policy enregistrée n'était jamais invoquée : tout employé
+        // authentifié pouvait approuver/rejeter n'importe quelle demande. La policy
+        // exige manager + même société + statut pending.
+        $this->authorize('approve', $approvalRequest);
 
         $validated = $request->validate([
             'comment' => 'nullable|string|max:500',
@@ -168,6 +172,8 @@ class ApprovalController extends Controller
         if ($approvalRequest->status !== 'pending') {
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
+        // QA #3146 — même garde que approve (policy ApprovalRequestPolicy).
+        $this->authorize('reject', $approvalRequest);
 
         $validated = $request->validate([
             'comment' => 'required|string|max:500',
@@ -200,7 +206,7 @@ class ApprovalController extends Controller
             ->where('approver_id', $actor->id)
             ->with(['request:id,status,approvable_type,approvable_id,requester_id', 'request.requester:id,first_name,last_name'])
             ->orderByDesc('decided_at')
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return response()->json($decisions);
     }

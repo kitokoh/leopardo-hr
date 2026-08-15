@@ -136,6 +136,12 @@ class EmployeeController extends Controller
     }
 
     /**
+     * #3309 : la projection LISTE exclut les PII (personal_email,
+     * recovery_email, personal_phone, adresse, contacts d'urgence) et garde
+     * les champs salaire (salary_type/base/hourly_rate) nécessaires à l'écran
+     * équipe mobile manager (affichage + formulaire d'édition). Les PII
+     * restent disponibles sur le détail /employees/{id}.
+     *
      * @return list<string>
      */
     private function employeeIndexColumns(): array
@@ -150,9 +156,6 @@ class EmployeeController extends Controller
             'last_name',
             'preferred_name',
             'email',
-            'personal_email',
-            'recovery_email',
-            'personal_phone',
             'phone',
             'role',
             'manager_role',
@@ -160,10 +163,6 @@ class EmployeeController extends Controller
             'photo_path',
             'biometric_face_enabled',
             'biometric_fingerprint_enabled',
-            'address_line',
-            'postal_code',
-            'emergency_contact_name',
-            'emergency_contact_phone',
             'contract_start',
             'salary_type',
             'salary_base',
@@ -223,14 +222,14 @@ class EmployeeController extends Controller
         $employees->each(function (Employee $employee) use ($approvedAbsenceIds, $latestLogs): void {
             if ($employee->status !== 'active') {
                 $employee->setAttribute('work_state', 'offline');
-                $employee->setAttribute('work_state_label', 'Hors ligne');
+                $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
 
                 return;
             }
 
             if ($approvedAbsenceIds->has($employee->id)) {
                 $employee->setAttribute('work_state', 'leave');
-                $employee->setAttribute('work_state_label', 'En conge');
+                $employee->setAttribute('work_state_label', __('employees.work_state_leave'));
 
                 return;
             }
@@ -240,14 +239,14 @@ class EmployeeController extends Controller
 
             if (! $log) {
                 $employee->setAttribute('work_state', 'offline');
-                $employee->setAttribute('work_state_label', 'Hors ligne');
+                $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
 
                 return;
             }
 
             if ($log->status === 'absent') {
                 $employee->setAttribute('work_state', 'absent');
-                $employee->setAttribute('work_state_label', 'Absent');
+                $employee->setAttribute('work_state_label', __('employees.work_state_absent'));
 
                 return;
             }
@@ -260,16 +259,16 @@ class EmployeeController extends Controller
                 };
                 $employee->setAttribute('work_state', $state);
                 $employee->setAttribute('work_state_label', match ($state) {
-                    'break' => 'En pause',
-                    'mission' => 'En mission',
-                    default => 'Present',
+                    'break' => __('employees.work_state_break'),
+                    'mission' => __('employees.work_state_mission'),
+                    default => __('employees.work_state_present'),
                 });
 
                 return;
             }
 
             $employee->setAttribute('work_state', 'offline');
-            $employee->setAttribute('work_state_label', 'Hors ligne');
+            $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
         });
     }
 

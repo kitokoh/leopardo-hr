@@ -29,6 +29,7 @@ class PaymentDocumentControllerTest extends TestCase
             'status' => PaymentDocument::STATUS_PENDING,
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $other */
         $other = Employee::factory()->create(['company_id' => $company->id]);
         PaymentDocument::query()->create([
             'company_id' => $company->id,
@@ -116,6 +117,38 @@ class PaymentDocumentControllerTest extends TestCase
             ->assertNotFound();
     }
 
+    public function test_rh_manager_lists_documents_for_own_payroll_run(): void
+    {
+        // Issue #2749 — l'app RH (leopardo_hr) liste les documents de paie
+        // d'un run via /payments/{run}/documents : le rôle rh est désormais
+        // accepté sur cette lecture (principal, comptable, rh).
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $rh */
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => fake()->unique()->safeEmail(),
+        ]);
+        [$run, $slip] = $this->payrollSlip($company, $employee);
+        PaymentDocument::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'payroll_run_id' => $run->id,
+            'pay_slip_id' => $slip->id,
+            'document_type' => PaymentDocument::TYPE_PAYMENT_SLIP,
+            'status' => PaymentDocument::STATUS_AVAILABLE,
+        ]);
+
+        Sanctum::actingAs($rh);
+
+        $this->getJson("/api/v1/payments/{$run->id}/documents")
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    }
+
     public function test_mark_paid_dispatches_advance_receipt_document_job(): void
     {
         Queue::fake();
@@ -149,8 +182,11 @@ class PaymentDocumentControllerTest extends TestCase
      */
     private function actors(): array
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => fake()->unique()->safeEmail(),

@@ -10,6 +10,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -143,15 +144,22 @@ class HrController extends Controller
             'schedule_id'     => 'nullable|integer|exists:schedules,id',
         ]);
 
+        // Issue #3597 : role/manager_role/status/company_id/salary_base ne sont
+        // plus mass-assignables — assignation explicite (défense en profondeur).
+        $validatedForCreate = Arr::except($validated, ['company_id', 'role', 'manager_role', 'status', 'salary_base']);
         $employee = Employee::create([
-            ...$validated,
-            'company_id'        => $actor->company_id,
-            'role'              => 'employee',          // HR can only create regular employees
-            'manager_role'      => null,                // Only principal can assign manager roles
-            'status'            => 'active',
+            ...$validatedForCreate,
             'preferred_language' => 'fr',
             'password_hash'     => Hash::make(Str::random(32)), // Temporary â€” will be set via invitation
         ]);
+        $employee->company_id = $actor->company_id;
+        $employee->role = 'employee'; // HR can only create regular employees
+        $employee->manager_role = null; // Only principal can assign manager roles
+        $employee->status = 'active';
+        if (array_key_exists('salary_base', $validated)) {
+            $employee->salary_base = $validated['salary_base'];
+        }
+        $employee->save();
 
         return response()->json([
             'message' => 'Employee created successfully.',
