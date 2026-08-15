@@ -158,6 +158,7 @@
 
 ### Fixed
 
+- **fix(web): OAuth proxy, stat Live retiré, témoignages marqués démo (Closes #2725, #2720, #2726).** Checkout Google OAuth → proxy same-origin (régression QA #2277 corrigée) ; « Live: 18 » codé en dur retiré ; témoignages = démo explicite.
 - **fix(web): PWA — précache de routes réelles + manifest cohérent (Closes #2723, #2724).** Le SW précachait des routes inexistantes (installation cassée) ; manifest : essai 30 jours + icône `/icon.svg` (fini `/icon-192.png` inexistant).
 - **fix(web): OG images réelles + meta pricing alignée (Closes #2722, #2721).** Les OG images pointaient vers `/og/*.png` inexistants (404) → `/brand/opengraph.svg` ; meta description pricing alignée sur les plans réels (Free/Pilot 29€/Operations 99€/Enterprise) et l'essai 30 jours.
 - **fix(web): `lang`/`dir` calculés par requête au SSR (Closes #2719).** Fini le `lang="fr"` codé en dur pour les visiteurs en/tr/ar (LocaleSync ajuste ensuite côté client selon les préférences).

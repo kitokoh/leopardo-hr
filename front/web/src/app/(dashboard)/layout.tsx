@@ -353,15 +353,14 @@ export default function DashboardLayout({
                 <option value="en">English</option>
               </select>
             </label>
-            {/* Issue #2927 — le badge « Live: 18 » était codé en dur (données
-                fabriquées présentées comme temps réel). Retiré : un état
-                vide honnête vaut mieux qu'un chiffre faux. */}
             <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-600">
               <div className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
               </div>
-              {labels.dashboard.live}
+              {/* Issue #2720 — statistique « Live » codée en dur retirée :
+                  aucun endpoint ne la fournit (honnêteté des données). */}
+              {labels.dashboard.present}
             </div>
           </div>
         </header>

@@ -729,7 +729,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
   },
 }
 
-function getCurrentLocale(): AppLocale {
+export function getCurrentLocale(): AppLocale {
   if (typeof window === 'undefined') {
     return 'fr'
   }
