@@ -416,6 +416,7 @@ async function loadCompany() {
   } catch (error) {
     console.error('Failed to load company detail:', error)
     errorMessage.value = 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.'
+    toast.error('Impossible de charger la fiche entreprise.')
   } finally {
     isLoading.value = false
   }
@@ -438,6 +439,7 @@ async function loadSupportTickets() {
   } catch (error) {
     console.error('Failed to load support tickets for company:', error)
     supportTickets.value = []
+    toast.error('Impossible de charger les tickets support.')
   } finally {
     isSupportLoading.value = false
   }
@@ -453,6 +455,7 @@ async function saveSubscription() {
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
+    toast.error('Echec de la mise a jour de l\'abonnement.')
   } finally {
     isSavingSubscription.value = false
   }
@@ -470,6 +473,7 @@ async function saveFeatures() {
     originalFeatures.value = { ...featuresForm.value }
   } catch (error) {
     console.error('Failed to save features:', error)
+    toast.error('Echec de la configuration des modules.')
   } finally {
     isSavingFeatures.value = false
   }
