@@ -102,11 +102,25 @@ class PasswordResetController
             ], 422);
         }
 
-        // Consommation du jeton (idempotence).
-        DB::table('public.password_reset_tokens')
+        // Consommation ATOMIQUE du jeton (issue #3944) : l'UPDATE conditionnel
+        // (`used_at IS NULL` + non expiré) est la seule source de vérité —
+        // deux requêtes concurrentes avec le même jeton ne peuvent pas
+        // consommer le même enregistrement (l'une obtient 0 ligne affectée).
+        $consumed = DB::table('public.password_reset_tokens')
             ->where('email', $email)
             ->where('token_hash', $tokenHash)
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
             ->update(['used_at' => now()]);
+
+        if ($consumed === 0) {
+            // Perdu la course (déjà consommé par une requête concurrente)
+            // ou expiré entre le check et l'update → refus générique.
+            return new JsonResponse([
+                'message' => 'Jeton de réinitialisation invalide, expiré ou déjà utilisé.',
+                'error' => 'INVALID_RESET_TOKEN',
+            ], 422);
+        }
 
         // Mise à jour du mot de passe DANS le contexte tenant de l'employé
         // (un employé de tenant à schéma vit dans son schéma — le search_path
