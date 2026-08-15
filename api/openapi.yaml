@@ -5008,6 +5008,57 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/vehicles:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Vehicules assignes a l'employe connecte (self-service)"
+      description: "Liste les vehicules actifs assignes a l'employe authentifie (scopes au tenant courant), avec la derniere position Traccar le cas echeant. Consomme par l'app mobile employee (leopardo_employee)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Vehicules assignes avec position aplatie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        vehicle_id:
+                          type: integer
+                        plate_number:
+                          type: string
+                        brand:
+                          type: string
+                          nullable: true
+                        model:
+                          type: string
+                          nullable: true
+                        type:
+                          type: string
+                          nullable: true
+                        latitude:
+                          type: number
+                          format: double
+                          nullable: true
+                        longitude:
+                          type: number
+                          format: double
+                          nullable: true
+                        speed:
+                          type: number
+                          nullable: true
+                        updated_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /vehicle-trips:
     get:
       tags: ["Vehicle Tracking"]

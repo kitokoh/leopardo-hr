@@ -1410,6 +1410,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
+    /** Vehicules assignes a l'employe connecte (self-service) */
+    getMeVehicles(options = {}) {
+      return request("GET", "/me/vehicles", options);
+    },
+
     /** Lire les preferences de notification de l'utilisateur courant */
     getNotificationPreferences(options = {}) {
       return request("GET", "/notification-preferences", options);
