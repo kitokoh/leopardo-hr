@@ -437,7 +437,7 @@ export default function MobilePage() {
           <p className="mt-8 text-sm text-slate-400 dark:text-slate-500">
             {/* TODO: replace placeholders with real store links */}
             {t.waitingPrefix}{' '}
-            <Link href="/docs#mobile-install" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+            <Link href="/docs#sdk-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">
               {t.installGuide}
             </Link>
             .
