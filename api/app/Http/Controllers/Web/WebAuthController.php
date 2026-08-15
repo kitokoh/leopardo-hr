@@ -28,7 +28,9 @@ class WebAuthController extends Controller
         ]);
 
         /** @var Employee|null $employee */
-        $employee = Employee::query()
+        // #3727 : lookup pré-tenant volontairement cross-tenant (login par email
+        // avant toute connaissance du tenant) — opt-out explicite du scope.
+        $employee = Employee::withoutGlobalScopes()
             ->where('email', $validated['email'])
             ->first();
 

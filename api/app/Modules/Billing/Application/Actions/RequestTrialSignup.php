@@ -65,7 +65,9 @@ class RequestTrialSignup
                 DB::statement('SET search_path TO shared_tenants, public');
             }
 
-            return Employee::query()
+            // #3727 : recherche cross-tenant volontaire (avant création de la
+            // 1ʳᵉ compagnie — aucun contexte tenant possible) — opt-out explicite.
+            return Employee::withoutGlobalScopes()
                 ->where('email', $email)
                 ->where('role', 'manager')
                 ->first();
