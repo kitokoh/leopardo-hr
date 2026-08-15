@@ -315,6 +315,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
+    /** Lister les cours de formation (tous tenants) */
+    getAdminTrainingCourses(options = {}) {
+      return request("GET", "/admin/training/courses", options);
+    },
+
     /** Inscriptions aux formations cross-tenant (super-admin) */
     getAdminTrainingEnrollments(options = {}) {
       return request("GET", "/admin/training/enrollments", options);

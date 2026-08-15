@@ -272,6 +272,10 @@ class LeopardoClient:
         """Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"""
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
+    def get_admin_training_courses(self, **kwargs):
+        """Lister les cours de formation (tous tenants)"""
+        return self.request("GET", "/admin/training/courses", **kwargs)
+
     def get_admin_training_enrollments(self, **kwargs):
         """Inscriptions aux formations cross-tenant (super-admin)"""
         return self.request("GET", "/admin/training/enrollments", **kwargs)
