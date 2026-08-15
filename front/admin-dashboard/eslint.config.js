@@ -15,14 +15,40 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
+        // Navigateur (Web APIs) — avec no-undef réactivé, tout usage doit
+        // être déclaré ici ou importé (issue #2481).
         window: 'readonly',
         document: 'readonly',
         navigator: 'readonly',
         console: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        confirm: 'readonly',
+        alert: 'readonly',
+        prompt: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        requestAnimationFrame: 'readonly',
+        URL: 'readonly',
+        Blob: 'readonly',
+        EventSource: 'readonly',
+        CustomEvent: 'readonly',
+        // Environnement de build
         process: 'readonly',
         module: 'readonly',
         require: 'readonly',
         __dirname: 'readonly',
+        // Macros compilateur Vue (<script setup>) — auto-importées par le
+        // compilateur, jamais déclarées dans le script source.
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        defineExpose: 'readonly',
+        withDefaults: 'readonly',
+        defineModel: 'readonly',
+        defineOptions: 'readonly',
+        defineSlots: 'readonly',
       },
       parserOptions: {
         parser: babelParser,
@@ -37,7 +63,8 @@ export default [
       'no-implied-eval': 'error',
       'no-new-func': 'error',
       'no-script-url': 'error',
-      'no-undef': 'off',
+      // 'no-undef' réactivé (issue #2481)
+      'no-undef': 'error',
       'no-unused-vars': 'warn',
       'vue/no-mutating-props': 'warn',
       'vue/no-v-html': 'error',

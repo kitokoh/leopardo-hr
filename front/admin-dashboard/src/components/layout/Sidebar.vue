@@ -138,6 +138,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import {
@@ -190,6 +191,8 @@ const realtimeStore = useRealtimeStore()
 
 // Routes tenant-scopées (issue #2272) : masquées de la navigation de la
 // console super-admin (aucun contexte tenant → 401 systématique). Source de
+const router = useRouter()
+
 // vérité unique : le meta.requiresTenant déclaré sur le router.
 const tenantRouteNames = new Set(
   router.getRoutes()

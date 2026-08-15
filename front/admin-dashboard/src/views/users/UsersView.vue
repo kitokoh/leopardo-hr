@@ -162,7 +162,6 @@ import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
-import api from '@/services/api'
 
 // Components
 import UserTable from '@/components/users/UserTable.vue'
@@ -256,7 +255,6 @@ async function loadUsers() {
       lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
     }))
-    updateStats()
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -286,7 +284,7 @@ function handleUserSelect(userId, checked) {
 }
 
 function handleSelectAll(selected) {
-  selectedUsers.value = selected ? filteredUsers.value.map(u => u.id) : []
+  selectedUsers.value = selected ? users.value.map(u => u.id) : []
 }
 
 function clearSelection() {
@@ -297,14 +295,13 @@ function clearSelection() {
 async function bulkAction(action) {
   try {
     // QA #2238 : actions réelles via l'API /platform/users/{id}/{action}.
-    if (action !== 'export') {
-      await Promise.all(selectedUsers.value.map(id =>
-        api.post(`/platform/users/${id}/${action}`)
-      ))
-    } else {
+    if (action === 'export') {
       exportSelectedUsers()
       return
     }
+    await Promise.all(selectedUsers.value.map(id =>
+      api.post(`/platform/users/${id}/${action}`)
+    ))
 
     toast.success(t('users.toast.bulkDone', ':count utilisateur(s) mis à jour').replace(':count', String(selectedUsers.value.length)))
     clearSelection()
@@ -318,12 +315,6 @@ async function bulkAction(action) {
 function viewUser(user) {
   selectedUser.value = user
   showDetailModal.value = true
-}
-
-function deleteUser() {
-  // Issue #2269 : pas d'endpoint de suppression utilisateur en v1 — l'action
-  // est désactivée honnêtement (aucun bouton mort, aucune fausse promesse).
-  toast.info(t('users.toast.deleteError', 'Suppression non disponible pour les utilisateurs plateforme en v1 — désactiver le compte à la place.'))
 }
 
 async function deleteUser(user) {
@@ -340,49 +331,28 @@ async function deleteUser(user) {
   }
 }
 
-// Génère un mot de passe temporaire sûr (16 caractères) pour la création
-// d'un utilisateur plateforme (exigence API : ≥ 12 caractères).
-function generateTemporaryPassword() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*'
-  const bytes = new Uint32Array(16)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes, b => chars[b % chars.length]).join('')
-}
-
-async function handleUserCreated(user) {
+function exportSelectedUsers() {
   try {
-    // QA #2238 : création réelle via l'API /platform/users (mot de passe ≥ 12
-    // caractères requis côté API — généré ici si la modal a coché l'option).
-    await api.post('/platform/users', {
-      name: user.name,
-      email: user.email,
-      password: user.password || generateTemporaryPassword()
-    })
-    toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
-  } catch (error) {
-    console.error('Create failed:', error)
-    toast.error(t('users.toast.createError', "Erreur lors de la création"))
-    return
-  }
-  showCreateModal.value = false
-  loadUsers()
-}
+    const selected = users.value.filter(u => selectedUsers.value.includes(u.id))
+    const csvContent = "data:text/csv;charset=utf-8," +
+      "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
+      selected.map(user =>
+        `${user.name},${user.email},${user.status},${user.company?.name || ''},${user.created_at || ''},${user.last_login_at || ''}`
+      ).join('\n')
 
-async function handleUserUpdated(user) {
-  try {
-    // QA #2238 : mise à jour réelle via l'API.
-    const payload = { name: user.name, email: user.email }
-    if (user.password) payload.password = user.password
-    if (user.status) payload.status = user.status
-    await api.patch(`/platform/users/${user.id}`, payload)
-    toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", "users-export-selection.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    toast.success(t('users.toast.exportDone', 'Export terminé'))
   } catch (error) {
-    console.error('Update failed:', error)
-    toast.error(t('users.toast.updateError', 'Erreur lors de la mise à jour'))
-    return
+    console.error('Export failed:', error)
+    toast.error(t('users.toast.exportError', "Erreur lors de l'export"))
   }
-  showEditModal.value = false
-  loadUsers()
 }
 
 async function exportUsers() {

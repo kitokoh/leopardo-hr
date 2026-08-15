@@ -160,7 +160,6 @@ import api from '@/services/api.js'
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const toast = useToast()
-const localeStore = useLocaleStore()
 
 const isLoading = ref(false)
 const stats = reactive({

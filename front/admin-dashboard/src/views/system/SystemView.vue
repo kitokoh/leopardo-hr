@@ -160,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import {
   HeartIcon,
   InformationCircleIcon
@@ -186,22 +186,32 @@ const isLoadingObservability = ref(false)
 const notificationObservability = ref(null)
 const isLoadingNotificationObservability = ref(false)
 
-// GET /admin/dashboard/stats — agrégats plateforme (dont systemHealth)
+// Issue #2481 : toutes les refs du template DOIVENT être déclarées — le
+// gate no-undef réactivé empêche désormais une ref manquante de passer en
+// silencieux (ReferenceError au runtime, cf. #2297/#2316).
+
+// Stats système (GET /admin/dashboard/stats) — seule la date de dernière
+// collecte est exposée sur la carte « Statut Global ».
 const stats = ref(null)
 const lastUpdated = ref(null)
 
-// GET /health/ready — sonde DB réelle, déclenchée par le bouton Health Check
+// Health check réel (GET /health/live + /health/ready) — #2186.
 const healthCheck = ref(null)
 const healthCheckTimestamp = ref(null)
+const globalHealthStatus = ref('unavailable')
+const databaseDetails = ref('En attente du prochain health check…')
 
-// Statut global dérivé de stats.systemHealth (good | warning | error)
-const globalHealthStatus = computed(() => {
-  const map = {
-    good: 'healthy',
-    warning: 'warning',
-    error: 'error'
-  }
-  return map[stats.value?.systemHealth] || 'unavailable'
+// System status
+const systemStatus = reactive({
+  overall: 'unknown',
+  overallDetails: "Statut inconnu tant que le health check n'a pas tourné.",
+  database: 'unknown',
+  databaseDetails: 'En attente du prochain health check…',
+  api: 'unknown',
+  apiDetails: "Statut inconnu tant que le health check n'a pas tourné.",
+  websocket: 'unknown',
+  websocketDetails: 'Non mesuré — aucun endpoint dédié.',
+  maintenanceMode: false
 })
 
 const globalHealthDetails = computed(() => {
@@ -210,19 +220,13 @@ const globalHealthDetails = computed(() => {
     warning: 'Sonde agrégée : dégradation détectée.',
     error: 'Sonde agrégée : base de données injoignable.'
   }
-  return map[globalHealthStatus.value] || 'Non disponible — GET /admin/dashboard/stats'
+  return map[globalHealthStatus.value] || 'Non disponible — lancer le Health Check'
 })
 
 // Base de données : résultat réel du Health Check (GET /health/ready)
 const databaseStatus = computed(() => {
   if (!healthCheck.value) return 'unavailable'
   return healthCheck.value.checks?.database?.ok ? 'healthy' : 'error'
-})
-
-const databaseDetails = computed(() => {
-  const db = healthCheck.value?.checks?.database
-  if (!db) return 'Non disponible — lancez un Health Check.'
-  return db.ok ? `Latence: ${db.latency_ms} ms` : `Erreur: ${db.error || 'base injoignable'}`
 })
 
 onMounted(async () => {
@@ -233,15 +237,17 @@ onMounted(async () => {
   ])
 })
 
-// Méthodes
+// ── Méthodes ──
+
 async function loadSystemStats() {
   try {
     const response = await api.get('/admin/dashboard/stats')
     stats.value = response.data
     lastUpdated.value = new Date()
   } catch (error) {
+    // Endpoint indisponible : on ne casse pas le rendu, la carte reste en
+    // état « last check : — » (honnête).
     console.error('Failed to load system stats:', error)
-    toast.error('Erreur lors du chargement des stats système')
   }
 }
 
@@ -255,7 +261,7 @@ async function loadQueueObservability() {
     queueObservability.value = response.data?.data || null
   } catch (error) {
     console.error('Failed to load queue observability:', error)
-    toast.error('Erreur lors du chargement de l\'observabilité des jobs')
+    toast.error("Erreur lors du chargement de l'observabilité des jobs")
   } finally {
     isLoadingObservability.value = false
   }
@@ -271,7 +277,7 @@ async function loadNotificationObservability() {
     notificationObservability.value = response.data?.data || null
   } catch (error) {
     console.error('Failed to load notification observability:', error)
-    toast.error('Erreur lors du chargement de l\'observabilité des notifications')
+    toast.error("Erreur lors du chargement de l'observabilité des notifications")
   } finally {
     isLoadingNotificationObservability.value = false
   }
@@ -281,14 +287,34 @@ async function runHealthCheck() {
   isRunningHealthCheck.value = true
 
   try {
-    const response = await api.get('/health/ready')
-    healthCheck.value = response.data
-    healthCheckTimestamp.value = new Date()
+    // Health check reel (endpoints publics /health/live + /health/ready)
+    const [live, ready] = await Promise.all([
+      api.get('/health/live').catch(() => null),
+      api.get('/health/ready').catch(() => null)
+    ])
 
-    if (healthCheck.value?.checks?.database?.ok) {
-      toast.success('Health check terminé — base de données opérationnelle')
+    const liveOk = live !== null && live.status === 200
+    const readyOk = ready !== null && ready.status === 200
+
+    healthCheck.value = {
+      status: liveOk && readyOk ? 'ok' : 'fail',
+      checks: { database: { ok: readyOk } }
+    }
+    healthCheckTimestamp.value = new Date()
+    globalHealthStatus.value = liveOk && readyOk ? 'healthy' : 'warning'
+
+    systemStatus.overall = liveOk && readyOk ? 'healthy' : 'degraded'
+    systemStatus.api = liveOk ? 'healthy' : 'unreachable'
+    systemStatus.database = readyOk ? 'healthy' : 'degraded'
+    systemStatus.websocket = 'unknown'
+    systemStatus.overallDetails = liveOk && readyOk
+      ? 'Liveness + readiness OK'
+      : `Liveness ${liveOk ? 'OK' : 'KO'} / Readiness ${readyOk ? 'OK' : 'KO'}`
+
+    if (liveOk && readyOk) {
+      toast.success('Health check terminé — tous les services sont opérationnels')
     } else {
-      toast.error('Health check terminé — base de données en erreur')
+      toast.error('Health check : liveness/readiness en échec — voir détails ci-dessus')
     }
   } catch (error) {
     healthCheck.value = error.response?.data || {
@@ -296,6 +322,7 @@ async function runHealthCheck() {
       checks: { database: { ok: false } }
     }
     healthCheckTimestamp.value = new Date()
+    globalHealthStatus.value = 'error'
     console.error('Health check failed:', error)
     toast.error('Health check terminé — base de données injoignable')
   } finally {
