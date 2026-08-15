@@ -128,6 +128,8 @@ jobs:
             path: front/mobile_apps/leopardo_hr
           - name: leopardo_platform_admin
             path: front/mobile_apps/leopardo_platform_admin
+          - name: leopardo_marketing
+            path: front/mobile_apps/leopardo_marketing
 
     steps:
       - name: Checkout code
@@ -181,6 +183,8 @@ jobs:
             artifact: leopardo-hr-debug-apk
           - name: leopardo_platform_admin
             path: front/mobile_apps/leopardo_platform_admin
+          - name: leopardo_marketing
+            path: front/mobile_apps/leopardo_marketing
             artifact: leopardo-platform-admin-debug-apk
 
     steps:

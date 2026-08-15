@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Expense\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\ExpenseClaimResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use App\Modules\Planning\Domain\Models\ExpenseItem;
 use Illuminate\Http\JsonResponse;
@@ -35,7 +35,7 @@ class ExpenseClaimController extends Controller
         }
 
         return ExpenseClaimResource::collection(
-            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('created_at')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 
@@ -45,13 +45,13 @@ class ExpenseClaimController extends Controller
         $actor = $request->user();
 
         $validated = $request->validate([
-            'title'               => 'required|string|max:200',
-            'description'         => 'nullable|string',
-            'items'               => 'required|array|min:1',
-            'items.*.category'    => 'required|in:transport,meals,accommodation,office,communication,other',
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'items' => 'required|array|min:1',
+            'items.*.category' => 'required|in:transport,meals,accommodation,office,communication,other',
             'items.*.description' => 'required|string|max:255',
-            'items.*.amount'      => 'required|numeric|min:0.01',
-            'items.*.date'        => 'required|date',
+            'items.*.amount' => 'required|numeric|min:0.01',
+            'items.*.date' => 'required|date',
         ]);
 
         $claim = DB::transaction(function () use ($actor, $validated) {
@@ -63,22 +63,22 @@ class ExpenseClaimController extends Controller
             // 'DZD' remains only as a last-resort technical fallback for the
             // rare case where the company record has no currency set.
             $claim = ExpenseClaim::create([
-                'company_id'   => $actor->company_id,
-                'employee_id'  => $actor->id,
-                'title'        => $validated['title'],
-                'description'  => $validated['description'] ?? null,
-                'status'       => 'draft',
+                'company_id' => $actor->company_id,
+                'employee_id' => $actor->id,
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+                'status' => 'draft',
                 'total_amount' => $totalAmount,
-                'currency'     => $actor->company?->currency ?? 'DZD',
+                'currency' => $actor->company?->currency ?? 'DZD',
             ]);
 
             foreach ($validated['items'] as $item) {
                 ExpenseItem::create([
                     'expense_claim_id' => $claim->id,
-                    'category'         => $item['category'],
-                    'description'      => $item['description'],
-                    'amount'           => $item['amount'],
-                    'date'             => $item['date'],
+                    'category' => $item['category'],
+                    'description' => $item['description'],
+                    'amount' => $item['amount'],
+                    'date' => $item['date'],
                 ]);
             }
 
@@ -122,8 +122,13 @@ class ExpenseClaimController extends Controller
         abort_unless($expenseClaim->company_id === $actor->company_id, 404);
         abort_unless($actor->isManager(), 403);
 
+        // Issue #2677 (QA 2026-08-15) — garde de transition : seule une
+        // demande soumise peut être approuvée (un brouillon doit d'abord être
+        // soumis ; une demande déjà approuvée/rejetée est un état terminal).
+        abort_if($expenseClaim->status !== 'submitted', 422, 'EXPENSE_CLAIM_NOT_SUBMITTED');
+
         $expenseClaim->update([
-            'status'      => 'approved',
+            'status' => 'approved',
             'approved_by' => (string) $actor->id,
             'approved_at' => now(),
         ]);
@@ -139,14 +144,17 @@ class ExpenseClaimController extends Controller
         abort_unless($expenseClaim->company_id === $actor->company_id, 404);
         abort_unless($actor->isManager(), 403);
 
+        // Issue #2677 — garde de transition : on peut rejeter une demande
+        // soumise ou déjà approuvée, jamais un brouillon ou un rejet existant.
+        abort_if(! in_array($expenseClaim->status, ['submitted', 'approved'], true), 422, 'EXPENSE_CLAIM_NOT_REJECTABLE');
+
         $request->validate(['reason' => 'required|string|max:500']);
 
         $expenseClaim->update([
-            'status'           => 'rejected',
+            'status' => 'rejected',
             'rejection_reason' => $request->input('reason'),
         ]);
 
         return response()->json(['data' => (new ExpenseClaimResource($expenseClaim->fresh()))->resolve($request)]);
     }
 }
-

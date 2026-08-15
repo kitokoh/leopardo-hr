@@ -207,8 +207,15 @@ class ApiClient {
       message = "Fonction bientôt disponible";
       code = "NOT_IMPLEMENTED";
     } else if (e.response?.statusCode == 403) {
-      message = "Compte suspendu - contactez votre employeur";
-      code = "FORBIDDEN";
+      // Issue #2743 — un 403 n'est pas toujours une suspension : on distingue
+      // la suspension explicite (payload) du simple défaut de permission.
+      final data = e.response?.data;
+      final isSuspended = data is Map &&
+          (data['suspended'] == true || data['error'] == 'ACCOUNT_SUSPENDED');
+      message = isSuspended
+          ? "Compte suspendu - contactez votre employeur"
+          : "Action non autorisée pour votre profil";
+      code = isSuspended ? "ACCOUNT_SUSPENDED" : "FORBIDDEN";
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
         final data = (e.response?.data as Map).cast<dynamic, dynamic>();
