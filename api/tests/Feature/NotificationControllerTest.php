@@ -69,6 +69,16 @@ class NotificationControllerTest extends TestCase
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.title', 'Absence approved');
+
+        // #2331 : `unread=true` (contrat mobile v4.16.185) = alias de unread_only.
+        $this->getJson('/api/v1/notifications?unread=true')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.title', 'Absence approved');
+
+        $this->getJson('/api/v1/notifications?unread=false')
+            ->assertOk()
+            ->assertJsonCount(2, 'data'); // pas de filtre quand unread=false
     }
 
     public function test_unread_endpoint_returns_only_unread_notifications(): void
