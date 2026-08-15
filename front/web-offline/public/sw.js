@@ -1,7 +1,7 @@
 // Leopardo Edge — Service Worker
 // Stratégie : Cache First pour assets statiques, Network First pour /api/*
 
-const CACHE_NAME = 'leopardo-edge-v1';
+const CACHE_NAME = 'leopardo-edge-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -57,14 +57,24 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type === 'opaque') {
+            return response;
+          }
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
           return response;
-        }
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        return response;
-      });
+        })
+        .catch(() => {
+          // Issue #3962 — navigation hors-ligne vers une route non visitée :
+          // fetch() rejette → respondWith rejette → page d'erreur navigateur.
+          // Fallback : servir l'app shell pré-cachée (SPA offline-first).
+          if (event.request.mode === 'navigate') {
+            return caches.match('/index.html');
+          }
+          return new Response('Offline', { status: 503 });
+        });
     })
   );
 });
