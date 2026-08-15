@@ -1704,6 +1704,10 @@ class LeopardoClient:
         """Desactiver le SSO de l'entreprise"""
         return self.request("DELETE", "/sso/disable", **kwargs)
 
+    def get_sso_oidc_by_companyid_authorize(self, **kwargs):
+        """Demarrer le flux OIDC (redirection IdP)"""
+        return self.request("GET", "/sso/oidc/{companyId}/authorize", **kwargs)
+
     def get_sso_oidc_by_companyid_callback(self, **kwargs):
         """Callback OpenID Connect (IdP -> SP)"""
         return self.request("GET", "/sso/oidc/{companyId}/callback", **kwargs)

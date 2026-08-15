@@ -2105,6 +2105,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/sso/disable", options);
     },
 
+    /** Demarrer le flux OIDC (redirection IdP) */
+    getSsoOidcByCompanyIdAuthorize(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/authorize", options);
+    },
+
     /** Callback OpenID Connect (IdP -> SP) */
     getSsoOidcByCompanyIdCallback(options = {}) {
       return request("GET", "/sso/oidc/{companyId}/callback", options);

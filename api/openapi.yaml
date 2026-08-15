@@ -10573,11 +10573,32 @@ paths:
         "422":
           description: "Erreur de traitement de l'assertion"
 
+  /sso/oidc/{companyId}/authorize:
+    get:
+      tags: ["Platform"]
+      summary: "Demarrer le flux OIDC (redirection IdP)"
+      description: "QA #2231 — construit l'URL d'autorisation IdP (state en cache) et redirige. 302 vers l'IdP, ou 422 si OIDC non configure."
+      security: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: redirect_uri
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "302":
+          description: "Redirection vers l'IdP"
+        "422":
+          description: "OIDC non configure pour cette societe"
+
   /sso/oidc/{companyId}/callback:
     get:
       tags: ["Platform"]
       summary: "Callback OpenID Connect (IdP -> SP)"
-      description: "Endpoint public recevant le code/id_token OIDC. Stub — echange token a implementer."
+      description: "QA #2231 — echange du code au token endpoint, validation de l'ID token (JWKS iss/aud/exp), login employe par email, token Sanctum retourne."
       security: []
       parameters:
         - name: companyId
@@ -10595,11 +10616,13 @@ paths:
           schema: { type: string }
       responses:
         "200":
-          description: "Callback traite"
+          description: "Connexion reussie — token Sanctum + employe"
         "400":
           description: "Code ou id_token manquant"
+        "404":
+          description: "Aucun employe ne correspond a l'email du token"
         "422":
-          description: "Erreur d'echange de token"
+          description: "ID token invalide (signature/dates/iss/aud/state) ou echec d'echange"
 
   /sso/status:
     get:

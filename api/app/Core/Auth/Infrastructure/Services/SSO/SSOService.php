@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services\SSO;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Throwable;
 
 class SSOService
 {
+    public function __construct(
+        private readonly OidcJwtValidator $oidcValidator,
+    ) {}
+
     /**
      * Champs sensibles chiffrés au repos (audit #1694).
      *
@@ -98,14 +105,21 @@ class SSOService
             }
         }
 
-        // Audit #1694 : la validation des assertions SAML/OIDC n'est pas
-        // encore implémentée — ne JAMAIS marquer la config comme active
-        // (fausse garantie de sécurité). La config est conservée (chiffrée)
-        // pour permettre l'implémentation ultérieure.
+        // Audit #1694 : la validation des assertions SAML n'est pas encore
+        // implémentée — ne JAMAIS marquer une config SAML comme active.
+        // QA #2231 : une config OIDC COMPLÈTE (entity_id, sso_url, client_id,
+        // client_secret) est activable — la validation de l'ID token est
+        // désormais implémentée (OidcJwtValidator).
+        $oidcComplete = $provider === 'oidc'
+            && $config->entityId !== ''
+            && $config->ssoUrl !== ''
+            && $config->clientId !== null
+            && $config->clientSecret !== null;
+
         $payload = [
             'provider' => $provider,
             'config' => json_encode($stored),
-            'is_active' => false,
+            'is_active' => $oidcComplete,
             'updated_at' => now(),
         ];
 
@@ -121,10 +135,16 @@ class SSOService
             ]);
         }
 
-        Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
-            'company_id' => $companyId,
-            'provider' => $provider,
-        ]);
+        if ($oidcComplete) {
+            Log::info('OIDC SSO configured and activated', [
+                'company_id' => $companyId,
+            ]);
+        } else {
+            Log::warning('SSO configured but kept inactive (SAML non validé — audit #1694, ou config OIDC incomplète)', [
+                'company_id' => $companyId,
+                'provider' => $provider,
+            ]);
+        }
 
         return $config;
     }
@@ -158,23 +178,133 @@ class SSOService
     }
 
     /**
-     * @param  array<string, mixed>  $tokenData
+     * Valide l'ID token OIDC (iss/aud/exp + signature JWKS), vérifie l'état
+     * CSRF (state) et retourne l'email de l'utilisateur + les claims.
+     *
+     * @param  array<string, mixed>  $tokenData  (id_token, state)
      * @return array{user_email: string, claims: array<string, mixed>}
      */
     public function handleOIDCCallback(string $companyId, array $tokenData): array
     {
         $sso = $this->getCompanySSO($companyId);
 
-        if (! $sso['enabled'] || $sso['provider'] !== 'oidc') {
+        if (! $sso['enabled'] || $sso['provider'] !== 'oidc' || ! $sso['config'] instanceof SSOProviderConfig) {
             throw new \RuntimeException('OIDC SSO not configured for this company');
         }
 
-        // Audit #1694 : idem SAML — refus explicite (501) tant que la
-        // validation de l'ID token / l'échange de code ne sont pas
-        // implémentés.
-        throw new SSOValidationNotImplementedException(
-            'La validation OIDC n\'est pas encore implémentée — connexion refusée.'
-        );
+        $config = $sso['config'];
+        $idToken = (string) ($tokenData['id_token'] ?? '');
+        $state = (string) ($tokenData['state'] ?? '');
+
+        if ($idToken === '') {
+            throw new \RuntimeException('Missing id_token');
+        }
+
+        // Anti-CSRF : le state émis à l'authorize doit matcher.
+        if ($state !== '') {
+            $expectedState = Cache::get($this->stateCacheKey($companyId));
+            if ($expectedState === null || ! hash_equals((string) $expectedState, $state)) {
+                throw new \RuntimeException('OIDC state mismatch');
+            }
+            Cache::forget($this->stateCacheKey($companyId));
+        }
+
+        $discovered = $this->oidcValidator->discover($config->entityId);
+
+        /** @var array{issuer: string, audience: string, client_secret?: string|null, jwks_uri?: string|null} $expected */
+        $expected = [
+            'issuer' => $discovered['issuer'],
+            'audience' => (string) ($config->clientId ?? ''),
+            'client_secret' => $config->clientSecret,
+            'jwks_uri' => $discovered['jwks_uri'],
+        ];
+
+        $claims = $this->oidcValidator->validateIdToken($idToken, $expected);
+
+        $email = (string) ($claims['email'] ?? '');
+        if ($email === '') {
+            throw new \RuntimeException('OIDC ID token does not carry an email claim');
+        }
+
+        return [
+            'user_email' => mb_strtolower($email),
+            'claims' => $claims,
+        ];
+    }
+
+    /**
+     * Construit l'URL d'autorisation IdP (redirect + state en cache).
+     *
+     * @return array{url: string, state: string, nonce: string}
+     */
+    public function buildOidcAuthorizeUrl(string $companyId, string $redirectUri): array
+    {
+        $sso = $this->getCompanySSO($companyId);
+
+        if (! $sso['enabled'] || $sso['provider'] !== 'oidc' || ! $sso['config'] instanceof SSOProviderConfig) {
+            throw new \RuntimeException('OIDC SSO not configured for this company');
+        }
+
+        $config = $sso['config'];
+        $state = Str::random(40);
+        $nonce = Str::random(40);
+
+        Cache::put($this->stateCacheKey($companyId), $state, 600);
+
+        $params = http_build_query([
+            'response_type' => 'code',
+            'client_id' => $config->clientId,
+            'redirect_uri' => $redirectUri,
+            'scope' => 'openid email profile',
+            'state' => $state,
+            'nonce' => $nonce,
+        ]);
+
+        return [
+            'url' => $config->ssoUrl.(str_contains($config->ssoUrl, '?') ? '&' : '?').$params,
+            'state' => $state,
+            'nonce' => $nonce,
+        ];
+    }
+
+    /**
+     * Échange le code d'autorisation contre des tokens au token_endpoint
+     * (découverte OIDC) et retourne la réponse brute.
+     *
+     * @return array<string, mixed>
+     */
+    public function exchangeOidcCode(string $companyId, string $code, string $redirectUri): array
+    {
+        $sso = $this->getCompanySSO($companyId);
+
+        if (! $sso['enabled'] || $sso['provider'] !== 'oidc' || ! $sso['config'] instanceof SSOProviderConfig) {
+            throw new \RuntimeException('OIDC SSO not configured for this company');
+        }
+
+        $config = $sso['config'];
+        $discovered = $this->oidcValidator->discover($config->entityId);
+
+        $response = Http::timeout(15)->asForm()->post($discovered['token_endpoint'], [
+            'grant_type' => 'authorization_code',
+            'code' => $code,
+            'redirect_uri' => $redirectUri,
+            'client_id' => $config->clientId,
+            'client_secret' => $config->clientSecret,
+        ]);
+
+        if (! $response->successful()) {
+            throw new \RuntimeException('OIDC token exchange failed: '.$response->body());
+        }
+
+        /** @var array<string, mixed> $data */
+        $data = $response->json() ?? [];
+
+        return $data;
+    }
+
+    private function stateCacheKey(string $companyId): string
+    {
+        return 'oidc_state_'.$companyId;
     }
 
     /**

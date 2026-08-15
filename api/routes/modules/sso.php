@@ -13,6 +13,8 @@ Route::get('/sso/providers', [SSOController::class, 'providers']);
 
 // Public: SSO callbacks (no auth required — these receive IdP responses)
 Route::post('/sso/saml/{companyId}/callback', [SSOController::class, 'samlCallback']);
+// QA #2231 : flux OIDC complet (authorize → IdP → callback).
+Route::get('/sso/oidc/{companyId}/authorize', [SSOController::class, 'oidcAuthorize']);
 Route::get('/sso/oidc/{companyId}/callback', [SSOController::class, 'oidcCallback']);
 
 // Authenticated: SSO management (manager principal only)
