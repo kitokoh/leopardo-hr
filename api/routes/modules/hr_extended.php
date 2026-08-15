@@ -61,8 +61,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/training/courses', [TrainingController::class, 'indexCourses']);
     Route::get('/training/courses/{trainingCourse}', [TrainingController::class, 'showCourse']);
     Route::get('/training/courses/{trainingCourse}/sessions', [TrainingController::class, 'indexSessions']);
-    Route::get('/training/sessions', [TrainingController::class, 'allSessions']);
-    Route::get('/training/enrollments', [TrainingController::class, 'allEnrollments']);
     Route::post('/training/sessions/{trainingSession}/enroll', [TrainingController::class, 'enroll']);
 
     // ── Loan read (employees can see their loans) ────────────────────────
