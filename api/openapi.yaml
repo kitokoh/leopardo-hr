@@ -19089,6 +19089,25 @@ components:
               type: array
               items:
                 type: integer
+            skipped_count:
+              type: integer
+              description: >-
+                Nombre d'événements refusés (#3587) : le bridge kiosk les
+                isole en dead-letter au lieu de les marquer synchronisés.
+            skipped:
+              type: array
+              description: Détail des événements refusés (contrat #3587).
+              items:
+                type: object
+                properties:
+                  external_event_id:
+                    type: string
+                    nullable: true
+                  identifier:
+                    type: string
+                  reason:
+                    type: string
+                    enum: ["IDENTIFIER_REQUIRED", "EMPLOYEE_NOT_FOUND", "BIOMETRIC_NOT_APPROVED", "NO_OPEN_SESSION"]
             last_sync_at:
               type: string
               format: date-time
