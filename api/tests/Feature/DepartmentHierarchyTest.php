@@ -29,12 +29,14 @@ class DepartmentHierarchyTest extends TestCase
 
     public function test_manager_can_get_department_hierarchy(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $dept = Department::query()->create([
             'company_id' => $company->id,
             'name' => 'R&D',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
         $manager = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -45,6 +47,7 @@ class DepartmentHierarchyTest extends TestCase
         ]);
         $dept->update(['manager_id' => $manager->id]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $lead */
         $lead = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -73,7 +76,9 @@ class DepartmentHierarchyTest extends TestCase
 
     public function test_hierarchy_is_scoped_to_tenant(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
         $companyB = Company::factory()->create();
 
         $deptA = Department::query()->create([
@@ -81,6 +86,7 @@ class DepartmentHierarchyTest extends TestCase
             'name' => 'Dept A',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $managerB */
         $managerB = Employee::factory()->create([
             'company_id' => $companyB->id,
             'role' => 'manager',
@@ -97,12 +103,14 @@ class DepartmentHierarchyTest extends TestCase
 
     public function test_employee_cannot_access_hierarchy(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $dept = Department::query()->create([
             'company_id' => $company->id,
             'name' => 'Ops',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',

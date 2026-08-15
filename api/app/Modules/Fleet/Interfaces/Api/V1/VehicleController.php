@@ -33,7 +33,7 @@ class VehicleController extends Controller
         }
 
         $vehicles = $query->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return VehicleResource::collection($vehicles)->response();
     }
@@ -183,7 +183,7 @@ class VehicleController extends Controller
 
         $trips = $vehicle->trips()
             ->orderByDesc('start_time')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return VehicleTripResource::collection($trips)->response();
     }
@@ -196,7 +196,7 @@ class VehicleController extends Controller
 
         $alerts = $vehicle->alerts()
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return VehicleAlertResource::collection($alerts)->response();
     }
@@ -209,7 +209,7 @@ class VehicleController extends Controller
 
         $records = $vehicle->maintenances()
             ->orderByDesc('service_date')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return VehicleMaintenanceResource::collection($records)->response();
     }

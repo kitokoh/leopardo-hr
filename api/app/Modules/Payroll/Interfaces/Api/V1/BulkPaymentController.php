@@ -56,17 +56,29 @@ class BulkPaymentController extends Controller
         $paySlipIds = $validated['pay_slip_ids'] ?? null;
 
         // Prevent double-dispatch if already processing
+        // QA #2997 : garde ATOMIQUE (SET NX EX) — avant, un `get` puis
+        // `dispatch` (TOCTOU) laissait passer deux dispatches simultanés.
         $progressKey = "bulk_pay:run:{$payrollRun->id}";
+        $claimPayload = json_encode([
+            'status' => 'starting',
+            'started_at' => now()->toIso8601String(),
+            'triggered_by' => $actor->id,
+        ]);
         try {
-            $existing = Redis::connection('default')->get($progressKey);
-            if ($existing) {
-                $progress = json_decode($existing, true);
+            $acquired = Redis::connection('default')
+                ->set($progressKey, $claimPayload, 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
+
+            if (! $acquired) {
+                $existing = Redis::connection('default')->get($progressKey);
+                $progress = $existing ? json_decode($existing, true) : [];
                 if (in_array($progress['status'] ?? '', ['starting', 'processing'], true)) {
                     return response()->json([
                         'message' => 'Bulk payment already in progress.',
                         'progress' => $progress,
                     ], 409);
                 }
+                // Statut stale (completed*/crash) : on reprend la main.
+                Redis::connection('default')->set($progressKey, $claimPayload, 'EX', 21600); // @phpstan-ignore argument.type, arguments.count
             }
         } catch (Throwable) {
             // Redis unavailable — allow dispatch to continue

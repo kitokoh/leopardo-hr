@@ -56,6 +56,9 @@ class PlatformUsersApiTest extends TestCase
         Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function createUser(array $overrides = []): int
     {
         $id = DB::table('users')->insertGetId(array_merge([
@@ -75,6 +78,7 @@ class PlatformUsersApiTest extends TestCase
 
     private function linkUserToCompany(int $userId, ?string $companyId = null, string $linkStatus = 'active'): void
     {
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $companyId ?? $this->company->id]);
 
         DB::table('user_employee_links')->insert([
@@ -90,6 +94,7 @@ class PlatformUsersApiTest extends TestCase
 
     public function test_admin_users_require_super_admin_auth(): void
     {
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         Sanctum::actingAs($employee);
 
@@ -116,7 +121,10 @@ class PlatformUsersApiTest extends TestCase
                 'meta' => ['current_page', 'last_page', 'per_page', 'total'],
             ]);
 
-        $alice = collect($response->json('data'))->firstWhere('first_name', 'Alice');
+        /** @var array<int, array<string, mixed>> $usersData */
+        $usersData = $response->json('data') ?? [];
+        $alice = collect($usersData)->firstWhere('first_name', 'Alice');
+        $this->assertIsArray($alice);
         $this->assertSame('Tenant Test', $alice['company']['name']);
         $this->assertTrue($alice['is_active']);
     }

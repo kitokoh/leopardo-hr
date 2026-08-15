@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "إدارة المستخدمين",
-      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم"
+      "summary": ":count مستخدم"
     },
     "actions": {
       "bulk": "إجراءات (:count)",
@@ -255,8 +255,7 @@
       "exportInProgress": "التصدير قيد التنفيذ...",
       "exportDone": "تم التصدير",
       "exportError": "فشل التصدير",
-      "selectionExportDone": "تم تصدير التحديد",
-      "bulkDone": "تم التحديث"
+      "selectionExportDone": "تم تصدير التحديد"
     },
     "confirm": {
       "delete": "هل انت متأكد من رغبتك في حذف :name؟"
@@ -264,32 +263,7 @@
     "errors": {
       "name_required": "الاسم الكامل مطلوب.",
       "password_required": "كلمة المرور مطلوبة.",
-      "fix_fields": "يرجى تصحيح الحقول المميزة",
-      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
-      "search_no_match": "لا توجد صفحة تطابق بحثك",
-      "update_failed": "فشل تحديث المستخدم"
-    },
-    "impersonation": {
-      "title": "انتحال صفة موظف",
-      "subtitle": "فتح جلسة باسم :name",
-      "reason": "السبب (إلزامي، 5 أحرف على الأقل)",
-      "reasonMin": "السبب إلزامي (5 أحرف على الأقل).",
-      "noLink": "لا يوجد موظف مرتبط بهذا الحساب — تعذر انتحال الصفة.",
-      "start": "إنشاء الجلسة",
-      "cancel": "إلغاء",
-      "tokenTitle": "رمز انتحال الصفة (استخدام واحد)",
-      "expires": "تنتهي في :date",
-      "copy": "نسخ الرمز",
-      "copied": "تم نسخ الرمز",
-      "created": "تم إنشاء جلسة انتحال الصفة",
-      "error": "خطأ في إنشاء جلسة انتحال الصفة",
-      "done": "تم",
-      "employee": "الموظف المرتبط #:id"
-    },
-    "edit": {
-      "title": "تعديل المستخدم",
-      "status": "الحالة",
-      "save": "تحديث"
+      "fix_fields": "يرجى تصحيح الحقول المميزة"
     }
   },
   "dashboard": {
@@ -302,8 +276,14 @@
     "recent_activity": "النشاط الأخير",
     "recent_activity_hint": "آخر إجراءات فريقك",
     "leo_ia_announcement_title": "تهانينا للفريق",
-    "leo_ia_announcement_body": "تهانينا للفريق بأكمله: انخفض التأخير بنسبة 15٪ هذا الأسبوع. واصلوا هذه الديناميكية!",
-    "leo_ia_announcement_error": "تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل."
+    "leo_ia_announcement_body": "تهانينا للفريق بأكمله على التزامكم هذا الأسبوع. واصلوا هذه الديناميكية!",
+    "leo_ia_announcement_error": "تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل.",
+    "leo_presence_insight": "اليوم، {today} حضور من أصل {active} موظف نشط. هل ترغب في إرسال رسالة تهنئة إلى الفريق؟",
+    "leo_presence_empty": "لا توجد بيانات حضور متاحة حاليًا. هل ما زلت ترغب في إرسال رسالة تهنئة إلى الفريق؟",
+    "leo_announcements_count": "تم نشر {count} إعلان في شركتك.",
+    "presence_today_title": "الحضور اليوم",
+    "presence_today_summary": "{present} حضور من أصل {active} موظف نشط اليوم",
+    "presence_today_empty": "لا توجد بيانات حضور متاحة."
   },
   "marketing": {
     "oauth": {
@@ -625,16 +605,8 @@
       }
     }
   },
-  "companies": {
-    "toast": {
-      "load_failed": "تعذّر تحميل تفاصيل الشركة.",
-      "tickets_failed": "تعذّر تحميل تذاكر الدعم.",
-      "subscription_failed": "تعذّر تحديث الاشتراك.",
-      "features_failed": "تعذّر حفظ إعدادات الوحدات."
-    }
-  },
   "signup": {
-    "badge": "تجربة مجانية لمدة 30 يومًا",
+    "badge": "تجربة مجانية لمدة 14 يومًا",
     "title": "جرّب Leopardo مع شركتك",
     "subtitle": "أنشئ مساحة تجربتك في دقيقتين. لا حاجة لبطاقة ائتمانية.",
     "labelEmail": "البريد المهني",
@@ -700,6 +672,7 @@
     "credsSentByEmail": "تم إرسال هذه البيانات أيضًا عبر البريد إلى",
     "credsEmailed": "تم إرسال بيانات تسجيل الدخول إليك عبر البريد.",
     "trialNote": "تجربة مجانية لمدة",
+    "trialDaysUnit": "أيام",
     "trialNoteSuffix": "لا حاجة لبطاقة ائتمانية",
     "downloadApp": "تحميل التطبيق",
     "changePasswordNote": "غيّر كلمة مرورك عند أول تسجيل دخول.",
@@ -714,6 +687,19 @@
       "employeesRequired": "اختر حجم الفريق",
       "phoneInvalid": "رقم الهاتف غير صالح",
       "agreeTerms": "يجب عليك قبول شروط الاستخدام"
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "تعذّر تحميل تفاصيل الشركة.",
+      "tickets_failed": "تعذّر تحميل تذاكر الدعم.",
+      "subscription_failed": "تعذّر تحديث الاشتراك.",
+      "features_failed": "تعذّر حفظ إعدادات الوحدات."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "تسعير شفاف: خطة مجانية، بايلوت 29 يورو شهريًا، عمليات 99 يورو شهريًا، المؤسسات حسب العرض. تجربة مجانية 14 يومًا."
     }
   }
 }

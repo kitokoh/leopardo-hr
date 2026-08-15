@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -50,7 +50,7 @@ const PLAN_CONFIG = {
     employeeLimit: '1-5 employés',
     isFree: true,
   },
-  starter: {
+  pilot: {
     label: 'Pilot',
     icon: Rocket,
     color: 'blue',
@@ -66,11 +66,11 @@ const PLAN_CONFIG = {
       'Apps Employee & Manager',
       'Support email 48h',
     ],
-    trialDays: 30,
+    trialDays: 14,
     employeeLimit: '1-30 employés',
     isFree: false,
   },
-  business: {
+  operations: {
     label: 'Operations',
     icon: Zap,
     color: 'emerald',
@@ -86,7 +86,7 @@ const PLAN_CONFIG = {
       'Exports comptables',
       'Support prioritaire 24h',
     ],
-    trialDays: 30,
+    trialDays: 14,
     employeeLimit: '15-250 employés',
     isFree: false,
   },
@@ -106,13 +106,20 @@ const PLAN_CONFIG = {
       'Schema PostgreSQL isolé',
       'Account manager dédié',
     ],
-    trialDays: 30,
+    trialDays: 14,
     employeeLimit: '250+ employés',
     isFree: false,
   },
 } as const;
 
 type PlanKey = keyof typeof PLAN_CONFIG;
+
+// Anciens slugs de plans (pré #2907) : redirigés vers les clés canoniques.
+const PLAN_ALIASES: Record<string, PlanKey> = {
+  starter: 'pilot',
+  business: 'operations',
+  scale: 'enterprise',
+};
 
 /* ─────────────────────────────────────────────
    CHECKOUT MODE (sandbox = explicit opt-in via NEXT_PUBLIC_CHECKOUT_SANDBOX=true)
@@ -1117,8 +1124,11 @@ function StepPayment({
 ───────────────────────────────────────────── */
 function CheckoutInner() {
   const searchParams = useSearchParams();
+  // #2907 : clés canoniques free/pilot/operations/enterprise ; les anciens
+  // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
   const rawPlan = (searchParams.get('plan') || 'business') as string;
-  const plan: PlanKey = (rawPlan in PLAN_CONFIG ? rawPlan : 'business') as PlanKey;
+  const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'operations') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 

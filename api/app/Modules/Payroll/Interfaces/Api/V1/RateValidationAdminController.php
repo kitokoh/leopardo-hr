@@ -11,6 +11,7 @@ use App\Modules\Payroll\Domain\Models\TaxRateChangeLog;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
 /**
@@ -64,6 +65,7 @@ class RateValidationAdminController extends Controller
         try {
             $this->validation->approve($model, $admin);
         } catch (\DomainException $e) {
+            Log::error('Approbation de taux refusée', ['table' => $table, 'id' => $id, 'error' => $e->getMessage()]);
             abort(422, $e->getMessage());
         }
 
@@ -88,6 +90,7 @@ class RateValidationAdminController extends Controller
         try {
             $this->validation->reject($model, $admin, $reason);
         } catch (\DomainException $e) {
+            Log::error('Rejet de taux refusé', ['table' => $table, 'id' => $id, 'error' => $e->getMessage()]);
             abort(422, $e->getMessage());
         }
 

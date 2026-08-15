@@ -180,6 +180,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/hr-reports", options);
     },
 
+    /** Lister les sessions d'impersonation super-admin */
+    getAdminImpersonations(options = {}) {
+      return request("GET", "/admin/impersonations", options);
+    },
+
+    /** Creer une session d'impersonation (login en tant que) */
+    postAdminImpersonations(options = {}) {
+      return request("POST", "/admin/impersonations", options);
+    },
+
+    /** Terminer une session d'impersonation */
+    deleteAdminImpersonationsBySession(options = {}) {
+      return request("DELETE", "/admin/impersonations/{session}", options);
+    },
+
     /** Lister les fêtes islamiques d'une année (super-admin) */
     listIslamicCalendar(options = {}) {
       return request("GET", "/admin/islamic-calendar", options);
@@ -300,6 +315,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
+    /** Formations cross-tenant (super-admin) */
+    getAdminTrainingCourses(options = {}) {
+      return request("GET", "/admin/training/courses", options);
+    },
+
+    /** Inscriptions aux formations cross-tenant (super-admin) */
+    getAdminTrainingEnrollments(options = {}) {
+      return request("GET", "/admin/training/enrollments", options);
+    },
+
+    /** Sessions de formation cross-tenant (super-admin) */
+    getAdminTrainingSessions(options = {}) {
+      return request("GET", "/admin/training/sessions", options);
+    },
+
     /** Lister les utilisateurs plateforme (super-admin) — issue #2269 */
     getAdminUsers(options = {}) {
       return request("GET", "/admin/users", options);
@@ -313,6 +343,56 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269 */
     patchAdminUsersByUser(options = {}) {
       return request("PATCH", "/admin/users/{user}", options);
+    },
+
+    /** Endpoints webhook cross-tenant (super-admin) */
+    getAdminWebhooks(options = {}) {
+      return request("GET", "/admin/webhooks", options);
+    },
+
+    /** Creer un endpoint webhook */
+    postAdminWebhooks(options = {}) {
+      return request("POST", "/admin/webhooks", options);
+    },
+
+    /** Supprimer un endpoint webhook */
+    deleteAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("DELETE", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Detail d'un endpoint webhook */
+    getAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("GET", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Mettre a jour partiellement un endpoint webhook */
+    patchAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("PATCH", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Mettre a jour un endpoint webhook */
+    putAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("PUT", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Livraisons webhook en echec (dead letters) */
+    getAdminWebhooksByWebhookEndpointDeadLetters(options = {}) {
+      return request("GET", "/admin/webhooks/{webhookEndpoint}/dead-letters", options);
+    },
+
+    /** Rejouer une livraison webhook en echec */
+    postAdminWebhooksByWebhookEndpointDeadLettersByDeliveryReplay(options = {}) {
+      return request("POST", "/admin/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay", options);
+    },
+
+    /** Dispatcher un evenement de test sur l'endpoint */
+    postAdminWebhooksByWebhookEndpointTest(options = {}) {
+      return request("POST", "/admin/webhooks/{webhookEndpoint}/test", options);
+    },
+
+    /** Evenements webhook disponibles */
+    getAdminWebhooksEvents(options = {}) {
+      return request("GET", "/admin/webhooks/events", options);
     },
 
     /** Couts IA par periode */
@@ -353,6 +433,106 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Liste des outils IA disponibles */
     getAiTools(options = {}) {
       return request("GET", "/ai/tools", options);
+    },
+
+    /** Lister les annonces de l'entreprise */
+    getAnnouncements(options = {}) {
+      return request("GET", "/announcements", options);
+    },
+
+    /** Creer une annonce d'entreprise (manager) */
+    postAnnouncements(options = {}) {
+      return request("POST", "/announcements", options);
+    },
+
+    /** Supprimer une annonce d'entreprise */
+    deleteAnnouncementsByAnnouncement(options = {}) {
+      return request("DELETE", "/announcements/{announcement}", options);
+    },
+
+    /** Annuler une annonce programmee ou publiee (moderation PA2-COMM-011) */
+    postAnnouncementsByAnnouncementCancel(options = {}) {
+      return request("POST", "/announcements/{announcement}/cancel", options);
+    },
+
+    /** Publier immediatement une annonce (moderation PA2-COMM-011) */
+    postAnnouncementsByAnnouncementPublish(options = {}) {
+      return request("POST", "/announcements/{announcement}/publish", options);
+    },
+
+    /** Lister les nœuds edge du tenant */
+    getApiV1Edge(options = {}) {
+      return request("GET", "/api/v1/edge", options);
+    },
+
+    /** Enregistrer un nœud edge */
+    postApiV1Edge(options = {}) {
+      return request("POST", "/api/v1/edge", options);
+    },
+
+    /** Heartbeat d'un nœud edge (machine-to-cloud) */
+    postApiV1EdgeNodeByNodeIdHeartbeat(options = {}) {
+      return request("POST", "/api/v1/edge-node/{nodeId}/heartbeat", options);
+    },
+
+    /** Recuperer le delta de synchronisation pour le nœud edge */
+    getApiV1EdgeNodeByNodeIdPull(options = {}) {
+      return request("GET", "/api/v1/edge-node/{nodeId}/pull", options);
+    },
+
+    /** Pousser les donnees du nœud edge vers le cloud */
+    postApiV1EdgeNodeByNodeIdPush(options = {}) {
+      return request("POST", "/api/v1/edge-node/{nodeId}/push", options);
+    },
+
+    /** Valider une licence edge (machine-to-cloud) */
+    postApiV1EdgeNodeValidateLicense(options = {}) {
+      return request("POST", "/api/v1/edge-node/validate-license", options);
+    },
+
+    /** Detail d'un nœud edge du tenant */
+    getApiV1EdgeByNodeId(options = {}) {
+      return request("GET", "/api/v1/edge/{nodeId}", options);
+    },
+
+    /** Emettre une licence pour un nœud edge */
+    postApiV1EdgeByNodeIdLicense(options = {}) {
+      return request("POST", "/api/v1/edge/{nodeId}/license", options);
+    },
+
+    /** Declencher la synchronisation d'un nœud edge */
+    postApiV1EdgeByNodeIdSync(options = {}) {
+      return request("POST", "/api/v1/edge/{nodeId}/sync", options);
+    },
+
+    /** docker-compose.yml de reference pour le nœud edge (public) */
+    getApiV1EdgeDownloadDockerComposeYml(options = {}) {
+      return request("GET", "/api/v1/edge/download/docker-compose.yml", options);
+    },
+
+    /** Exemple de fichier d'environnement pour le nœud edge (public) */
+    getApiV1EdgeDownloadEnvExample(options = {}) {
+      return request("GET", "/api/v1/edge/download/env-example", options);
+    },
+
+    /** Healthcheck edge (public, machine-to-cloud) */
+    getApiV1EdgeHealth(options = {}) {
+      return request("GET", "/api/v1/edge/health", options);
+    },
+
+    /** Heartbeat machine-to-cloud d'un nœud edge (public) */
+    postApiV1EdgeHeartbeat(options = {}) {
+      return request("POST", "/api/v1/edge/heartbeat", options);
+    },
+
+    /** Script d'installation du nœud edge (public) */
+    getApiV1EdgeInstallSh(options = {}) {
+      return request("GET", "/api/v1/edge/install.sh", options);
+    },
+
+    /** Cle publique de verification des licences edge (public) */
+    getApiV1EdgeLicensePublicKey(options = {}) {
+      return request("GET", "/api/v1/edge/license-public-key", options);
     },
 
     /** Lister les workflows d'approbation */
@@ -490,6 +670,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/auth/change-password", options);
     },
 
+    /** Demander un lien de reinitialisation de mot de passe */
+    postAuthForgotPassword(options = {}) {
+      return request("POST", "/auth/forgot-password", options);
+    },
+
     /** Connexion Google OAuth */
     postAuthGoogleToken(options = {}) {
       return request("POST", "/auth/google/token", options);
@@ -528,6 +713,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Inscription employe */
     postAuthRegister(options = {}) {
       return request("POST", "/auth/register", options);
+    },
+
+    /** Reinitialiser le mot de passe avec le jeton recu par email */
+    postAuthResetPassword(options = {}) {
+      return request("POST", "/auth/reset-password", options);
     },
 
     /** Lister les exports bancaires du tenant (pagine) */
@@ -668,6 +858,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier un dossier */
     putCabinetFoldersByCabinetFolder(options = {}) {
       return request("PUT", "/cabinet/folders/{cabinetFolder}", options);
+    },
+
+    /** Statistiques de stockage du placard de l'employe courant */
+    getCabinetStats(options = {}) {
+      return request("GET", "/cabinet/stats", options);
     },
 
     /** Lister les cameras */
@@ -845,6 +1040,31 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/contracts/expiring", options);
     },
 
+    /** Lister les conversations de l'employe courant */
+    getConversations(options = {}) {
+      return request("GET", "/conversations", options);
+    },
+
+    /** Ouvrir une conversation (fil de discussion) */
+    postConversations(options = {}) {
+      return request("POST", "/conversations", options);
+    },
+
+    /** Detail d'une conversation avec ses messages */
+    getConversationsByThread(options = {}) {
+      return request("GET", "/conversations/{thread}", options);
+    },
+
+    /** Repondre dans une conversation */
+    postConversationsByThreadMessages(options = {}) {
+      return request("POST", "/conversations/{thread}/messages", options);
+    },
+
+    /** Telecharger la piece jointe d'un message de conversation */
+    getConversationsByThreadMessagesByMessageAttachment(options = {}) {
+      return request("GET", "/conversations/{thread}/messages/{message}/attachment", options);
+    },
+
     /** Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager) */
     simulateCotisations(options = {}) {
       return request("POST", "/cotisation-simulation", options);
@@ -873,6 +1093,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Comptes demo publics pour la documentation QA */
     getDemoUsers(options = {}) {
       return request("GET", "/demo-users", options);
+    },
+
+    /** Organigramme d'un departement (arbre department/teams/managers/employees, scope tenant) */
+    getDepartmentsByDepartmentHierarchy(options = {}) {
+      return request("GET", "/departments/{department}/hierarchy", options);
     },
 
     /** Supprimer le token FCM du device courant au logout */
@@ -1026,13 +1251,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Rejeter une note de frais */
-    postExpenseClaimsByExpenseClaimReject(options = {}) {
-      return request("POST", "/expense-claims/{expenseClaim}/reject", options);
+    putExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/reject", options);
     },
 
     /** Soumettre une note de frais */
-    postExpenseClaimsByExpenseClaimSubmit(options = {}) {
-      return request("POST", "/expense-claims/{expenseClaim}/submit", options);
+    putExpenseClaimsByExpenseClaimSubmit(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/submit", options);
     },
 
     /** Exporter les absences */
@@ -1521,13 +1746,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Marquer une notification comme lue */
-    putNotificationsByNotificationRead(options = {}) {
-      return request("PUT", "/notifications/{notification}/read", options);
+    patchNotificationsByNotificationRead(options = {}) {
+      return request("PATCH", "/notifications/{notification}/read", options);
     },
 
     /** Marquer toutes les notifications comme lues */
-    putNotificationsReadAll(options = {}) {
-      return request("PUT", "/notifications/read-all", options);
+    postNotificationsReadAll(options = {}) {
+      return request("POST", "/notifications/read-all", options);
     },
 
     /** Marquer une étape comme complète */
@@ -1548,6 +1773,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Progression globale de l'onboarding */
     getOnboardingSetupProgress(options = {}) {
       return request("GET", "/onboarding-setup/progress", options);
+    },
+
+    /** Checklist d'onboarding (alias /onboarding-setup/checklist) */
+    getOnboardingSteps(options = {}) {
+      return request("GET", "/onboarding/steps", options);
     },
 
     /** Organigramme complet */
@@ -1805,6 +2035,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/planning/weekly-optimization", options);
     },
 
+    /** Lister les annonces plateforme (super-admin) */
+    getPlatformAnnouncements(options = {}) {
+      return request("GET", "/platform/announcements", options);
+    },
+
+    /** Creer une annonce plateforme (maintenance, feature, incident, action requise) */
+    postPlatformAnnouncements(options = {}) {
+      return request("POST", "/platform/announcements", options);
+    },
+
+    /** Supprimer une annonce plateforme */
+    deletePlatformAnnouncementsByAnnouncement(options = {}) {
+      return request("DELETE", "/platform/announcements/{announcement}", options);
+    },
+
+    /** Detail d'une annonce plateforme */
+    getPlatformAnnouncementsByAnnouncement(options = {}) {
+      return request("GET", "/platform/announcements/{announcement}", options);
+    },
+
     /** Connexion super-admin */
     postPlatformAuthLogin(options = {}) {
       return request("POST", "/platform/auth/login", options);
@@ -1885,6 +2135,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/platform/country-defaults", options);
     },
 
+    /** Pipeline CRM des demandes clients (leads, essais, actifs, rejetes) */
+    getPlatformCrmPipeline(options = {}) {
+      return request("GET", "/platform/crm/pipeline", options);
+    },
+
     /** Lister les nœuds edge de la plateforme (super-admin) */
     getPlatformEdgeNodes(options = {}) {
       return request("GET", "/platform/edge/nodes", options);
@@ -1930,14 +2185,59 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/platform/growth/payouts/{payout}", options);
     },
 
+    /** Lister les sessions d'impersonation (super-admin) */
+    getPlatformImpersonations(options = {}) {
+      return request("GET", "/platform/impersonations", options);
+    },
+
+    /** Creer une session d'impersonation (login en tant que) */
+    postPlatformImpersonations(options = {}) {
+      return request("POST", "/platform/impersonations", options);
+    },
+
+    /** Terminer une session d'impersonation */
+    deletePlatformImpersonationsBySession(options = {}) {
+      return request("DELETE", "/platform/impersonations/{session}", options);
+    },
+
     /** Agregats business du cockpit super-admin */
     getPlatformMetricsOverview(options = {}) {
       return request("GET", "/platform/metrics/overview", options);
     },
 
+    /** Taux d'echec de notifications cross-tenant sur 24h (super-admin) */
+    getPlatformObservabilityNotifications(options = {}) {
+      return request("GET", "/platform/observability/notifications", options);
+    },
+
+    /** Profondeur des queues Redis et jobs echoues (super-admin) */
+    getPlatformObservabilityQueues(options = {}) {
+      return request("GET", "/platform/observability/queues", options);
+    },
+
     /** Lister le catalogue des plans SaaS */
     getPlatformPlans(options = {}) {
       return request("GET", "/platform/plans", options);
+    },
+
+    /** Lister tous les tickets de support (super-admin, cross-tenant) */
+    getPlatformSupportTickets(options = {}) {
+      return request("GET", "/platform/support-tickets", options);
+    },
+
+    /** Detail d'un ticket de support (super-admin) */
+    getPlatformSupportTicketsBySupportTicket(options = {}) {
+      return request("GET", "/platform/support-tickets/{supportTicket}", options);
+    },
+
+    /** Repondre a un ticket (super-admin) */
+    postPlatformSupportTicketsBySupportTicketReply(options = {}) {
+      return request("POST", "/platform/support-tickets/{supportTicket}/reply", options);
+    },
+
+    /** Trier un ticket (statut, priorite, assignation) */
+    patchPlatformSupportTicketsBySupportTicketTriage(options = {}) {
+      return request("PATCH", "/platform/support-tickets/{supportTicket}/triage", options);
     },
 
     /** Lister les utilisateurs plateforme (super-admins) */
@@ -2435,6 +2735,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/sso/status", options);
     },
 
+    /** Lister les tickets de support ouverts par le tenant */
+    getSupportTickets(options = {}) {
+      return request("GET", "/support-tickets", options);
+    },
+
+    /** Ouvrir un ticket de support (employe/manager) */
+    postSupportTickets(options = {}) {
+      return request("POST", "/support-tickets", options);
+    },
+
+    /** Detail d'un ticket de support (tenant) */
+    getSupportTicketsBySupportTicket(options = {}) {
+      return request("GET", "/support-tickets/{supportTicket}", options);
+    },
+
+    /** Repondre a un ticket de support (tenant) */
+    postSupportTicketsBySupportTicketReply(options = {}) {
+      return request("POST", "/support-tickets/{supportTicket}/reply", options);
+    },
+
     /** Registre des pays supportes */
     listSupportedCountries(options = {}) {
       return request("GET", "/supported-countries", options);
@@ -2585,13 +2905,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/trial/signup", options);
     },
 
-    /** Statut de provisioning du guided trial */
-    getTrialStatus(options = {}) {
-      return request("GET", "/trial/status", options);
-    },
-
     /** Statut du provisioning d'un essai guidé (polling) */
-    getTrialStatus2(options = {}) {
+    getTrialStatus(options = {}) {
       return request("GET", "/trial/status", options);
     },
 
