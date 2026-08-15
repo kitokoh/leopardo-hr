@@ -99,7 +99,7 @@ class FrancePayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official French public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'FR fixed public holidays (Code du travail art. L3133-1, seed PublicHolidaySeeder, issue #2255): 1er jan, 1er mai, 8 mai, 14 juil, 15 août, 1er nov, 11 nov, 25 déc + mobiles (lundi de Pâques, Ascension, lundi de Pentecôte) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

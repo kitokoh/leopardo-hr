@@ -30,11 +30,22 @@ class PublicHolidayIslamicSeederTest extends TestCase
     {
         (new PublicHolidaySeeder)->run();
 
-        foreach (['DZ', 'CM', 'CI', 'SN'] as $countryCode) {
+        // Issue #2255 : calendriers fixes officiels étendus à FR, MA, TN, TR,
+        // CA, ML, GA, CG (BF volontairement absent : réforme légale 2026).
+        foreach (['DZ', 'CM', 'CI', 'SN', 'FR', 'MA', 'TN', 'TR', 'CA', 'ML', 'GA', 'CG'] as $countryCode) {
             $this->assertGreaterThan(
                 0,
                 PublicHoliday::where('country_code', $countryCode)->count(),
                 "Aucun férié fixe seedé pour {$countryCode}"
+            );
+        }
+
+        // Dates repères par pays (fériés fixes officiels).
+        foreach (['FR' => '07-14', 'MA' => '07-30', 'TN' => '03-20', 'TR' => '10-29', 'CA' => '07-01', 'ML' => '09-22', 'GA' => '08-17', 'CG' => '08-15'] as $countryCode => $monthDay) {
+            $this->assertGreaterThan(
+                0,
+                PublicHoliday::where('country_code', $countryCode)->where('month_day', $monthDay)->count(),
+                "Férié {$monthDay} manquant pour {$countryCode}"
             );
         }
 

@@ -103,7 +103,7 @@ class AlgeriaPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Algerian public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'DZ fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 1er mai, 5 juil, 1er nov + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, Aïd el-Mawlid, 1er Moharrem) via calendrier islamique #1812 — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

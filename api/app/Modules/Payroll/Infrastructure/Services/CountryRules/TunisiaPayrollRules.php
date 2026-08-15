@@ -100,7 +100,7 @@ class TunisiaPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Tunisian public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'TN fixed public holidays (décrets, seed PublicHolidaySeeder, issue #2255): 1er jan, 14 jan, 20 mars, 9 avr, 1er mai, 25 juil, 13 août, 15 oct, 17 déc + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, Aïd el-Mawlid) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

@@ -386,6 +386,14 @@ class CemacPayrollRules extends AbstractCountryRules
             return 'CM fixed public holidays: 1er jan, 11 fév, 1er mai, 20 mai, 15 août, 25 déc (CM_COMPLIANCE.md §6) + mobile Islamic holidays (Eid etc.) — Islamic calendar wiring pending.';
         }
 
+        if ($this->memberCountryCode === 'GA') {
+            return 'GA fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 12 mars, 17 avr, 1er mai, 15 août, 17 août, 1er nov, 25 déc + mobiles (Pâques, Aïds) — PA2-COUNTRY-012.';
+        }
+
+        if ($this->memberCountryCode === 'CG') {
+            return 'CG fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 15 mars, 1er mai, 10 juin, 15 août, 1er nov, 25 déc + mobiles (Pâques, Aïds) — PA2-COUNTRY-012.';
+        }
+
         return 'placeholder: no official CEMAC member-state public-holiday calendar wired in yet; '.
             'national/religious holidays must be entered manually per company '.
             'until PA2-COUNTRY-012 delivers a real source.';

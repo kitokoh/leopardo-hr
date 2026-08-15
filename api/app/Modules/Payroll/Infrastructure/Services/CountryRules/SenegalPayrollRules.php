@@ -189,7 +189,7 @@ class SenegalPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Senegalese public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'SN fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string
