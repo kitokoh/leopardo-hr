@@ -31,4 +31,4 @@
 
 ## Convergence
 
-- [ ] T014 Mettre à jour `.specify/memory/project-state.md` (nouveaux endpoints), `CHANGELOG.md`, `AGENTS.md` (leçons QA), et cocher les tâches T001-T014 dans ce fichier après merge.
+- [x] T014 Mettre à jour `.specify/memory/project-state.md` (nouveaux endpoints), `CHANGELOG.md`, `AGENTS.md` (leçons QA), et cocher les tâches T001-T014 dans ce fichier après merge.
