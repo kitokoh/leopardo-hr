@@ -22,7 +22,8 @@ export interface SEOMetadata {
  */
 export function generateMetadata(seo: SEOMetadata): Metadata {
   const url = seo.canonical || siteUrl;
-  const image = seo.ogImage || `${siteUrl}/og-image.png`;
+  // Issue #2752 — /og-image.png n'existait pas : fallback sur l'asset réel.
+  const image = seo.ogImage || `${siteUrl}/og/default.png`;
   const path = (() => {
     try {
       const parsed = new URL(url, siteUrl);
@@ -82,7 +83,7 @@ export const pageMetadata = {
   landing: {
     title: "Gestion Employés, Paie & Documents | Plateforme Complète",
     description:
-      "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 14 jours, sans carte bancaire.",
+      "Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 30 jours, sans carte bancaire.",
     keywords: [
       "gestion employés SaaS",
       "logiciel RH PME",
@@ -90,7 +91,7 @@ export const pageMetadata = {
       "pointage numérique",
       "gestion absences",
     ],
-    ogImage: `${siteUrl}/og/landing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   employes: {
@@ -104,7 +105,7 @@ export const pageMetadata = {
       "logiciel RH",
       "paie employés",
     ],
-    ogImage: `${siteUrl}/og/employes.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   documents: {
@@ -118,7 +119,7 @@ export const pageMetadata = {
       "archivage conformité",
       "RGPD documents",
     ],
-    ogImage: `${siteUrl}/og/documents.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   comptabilite: {
@@ -132,7 +133,7 @@ export const pageMetadata = {
       "bulletins de paie",
       "conformité paie",
     ],
-    ogImage: `${siteUrl}/og/comptabilite.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   marketing: {
@@ -146,20 +147,20 @@ export const pageMetadata = {
       "campagnes email",
       "marketing automation",
     ],
-    ogImage: `${siteUrl}/og/marketing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      "Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 14 jours.",
+      "Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 30 jours.",
     keywords: [
       "prix logiciel RH",
       "tarification paie",
       "coût gestion employés",
       "plans pricing",
     ],
-    ogImage: `${siteUrl}/og/pricing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   about: {
@@ -167,7 +168,7 @@ export const pageMetadata = {
     description:
       "Découvrez notre mission, équipe et valeurs. Nous aidons les PME à gérer leurs employés simplement.",
     keywords: ["à propos", "équipe", "mission", "valeurs"],
-    ogImage: `${siteUrl}/og/about.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   blog: {
@@ -181,7 +182,7 @@ export const pageMetadata = {
       "tendances RH",
       "automatisation RH",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   changelog: {
@@ -194,7 +195,7 @@ export const pageMetadata = {
       "releases logiciel paie",
       "notes de version",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   docs: {
@@ -207,7 +208,7 @@ export const pageMetadata = {
       "webhooks paie",
       "API gestion employes",
     ],
-    ogImage: `${siteUrl}/og/docs.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   download: {
@@ -220,7 +221,7 @@ export const pageMetadata = {
       "client desktop ZKTeco",
       "app RH Android iOS",
     ],
-    ogImage: `${siteUrl}/og/download.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   contact: {
@@ -233,7 +234,7 @@ export const pageMetadata = {
       "demande commerciale",
       "assistance logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/contact.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   faq: {
@@ -246,7 +247,7 @@ export const pageMetadata = {
       "aide gestion employes",
       "support paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/faq.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   testimonials: {
@@ -259,7 +260,7 @@ export const pageMetadata = {
       "retours utilisateurs paie SaaS",
       "case success RH PME",
     ],
-    ogImage: `${siteUrl}/og/testimonials.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   caseStudies: {
@@ -272,7 +273,7 @@ export const pageMetadata = {
       "cas client Leopardo RH",
       "ROI logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/case-studies.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   videos: {
@@ -285,7 +286,7 @@ export const pageMetadata = {
       "tutoriel pointage biometrique",
       "demonstration paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/videos.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   branding: {
@@ -298,7 +299,7 @@ export const pageMetadata = {
       "logo entreprise application RH",
       "theme personnalise paie",
     ],
-    ogImage: `${siteUrl}/og/branding.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   careers: {
@@ -311,7 +312,7 @@ export const pageMetadata = {
       "recrutement startup SaaS",
       "offres emploi tech RH",
     ],
-    ogImage: `${siteUrl}/og/careers.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   mobile: {
@@ -324,7 +325,7 @@ export const pageMetadata = {
       "app manager RH",
       "app employe pointage",
     ],
-    ogImage: `${siteUrl}/og/mobile.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   signup: {
@@ -337,7 +338,7 @@ export const pageMetadata = {
       "sandbox logiciel RH",
       "inscription essai paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/signup.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
 
@@ -351,7 +352,7 @@ export const pageMetadata = {
       "checkout SaaS RH",
       "paiement plan paie",
     ],
-    ogImage: `${siteUrl}/og/checkout.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
 };
