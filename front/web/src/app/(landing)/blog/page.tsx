@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Navbar,
   HeroSection,
@@ -167,6 +168,7 @@ const blogCopy: Record<AppLocale, {
 };
 
 export default function BlogPage() {
+  const [searchParams] = useSearchParams();
   const [isDark, setIsDark] = useState(false);
   const { locale, direction } = useVitrineLocale();
   const copy = blogCopy[locale] ?? blogCopy.fr;
@@ -201,6 +203,7 @@ export default function BlogPage() {
         title={copy.grid.title}
         subtitle={copy.grid.subtitle}
         posts={blogCards}
+        initialCategory={searchParams.get('category')}
         categories={categories}
         itemsPerPage={9}
         showPagination
