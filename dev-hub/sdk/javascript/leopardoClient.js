@@ -280,19 +280,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
-    /** Lister les utilisateurs plateforme (super-admin) — issue #2269 */
+    /** Liste reelle des utilisateurs plateforme */
     getAdminUsers(options = {}) {
       return request("GET", "/admin/users", options);
-    },
-
-    /** Détail d'un utilisateur plateforme (super-admin) — issue #2269 */
-    getAdminUsersByUser(options = {}) {
-      return request("GET", "/admin/users/{user}", options);
-    },
-
-    /** Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269 */
-    patchAdminUsersByUser(options = {}) {
-      return request("PATCH", "/admin/users/{user}", options);
     },
 
     /** Couts IA par periode */
@@ -508,6 +498,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Inscription employe */
     postAuthRegister(options = {}) {
       return request("POST", "/auth/register", options);
+    },
+
+    /** Lister les exports bancaires du tenant (pagine) */
+    getBankExports(options = {}) {
+      return request("GET", "/bank-exports", options);
+    },
+
+    /** Creer un export bancaire pour un run valide/paye (asynchrone) */
+    postBankExports(options = {}) {
+      return request("POST", "/bank-exports", options);
     },
 
     /** Détail d'un export bancaire */
@@ -1000,6 +1000,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/export/absences", options);
     },
 
+    /** Exporter l'ordre de virement (OD) */
+    getExportAccountingOd(options = {}) {
+      return request("GET", "/export/accounting-od", options);
+    },
+
     /** Exporter le pointage */
     getExportAttendance(options = {}) {
       return request("GET", "/export/attendance", options);
@@ -1020,9 +1025,29 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/export/history", options);
     },
 
+    /** Historique des exports */
+    getExportHistory(options = {}) {
+      return request("GET", "/export/history", options);
+    },
+
     /** Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement */
     exportPaySlips(options = {}) {
       return request("GET", "/export/pay-slips", options);
+    },
+
+    /** Exporter les bulletins */
+    getExportPaySlips(options = {}) {
+      return request("GET", "/export/pay-slips", options);
+    },
+
+    /** Exporter le journal de paie */
+    getExportPayrollJournal(options = {}) {
+      return request("GET", "/export/payroll-journal", options);
+    },
+
+    /** Exporter le grand livre de paie */
+    getExportPayrollLedger(options = {}) {
+      return request("GET", "/export/payroll-ledger", options);
     },
 
     /** Exporter les formations */
@@ -1110,8 +1135,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/growth/partner/companies", options);
     },
 
-    /** Tableau de bord de l'espace partenaire */
+    /** Tableau de bord partenaire connecté */
     getGrowthPartnerDashboard(options = {}) {
+      return request("GET", "/growth/partner/dashboard", options);
+    },
+
+    /** Tableau de bord de l'espace partenaire */
+    getGrowthPartnerDashboard2(options = {}) {
       return request("GET", "/growth/partner/dashboard", options);
     },
 
@@ -1128,11 +1158,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Healthcheck live + ready */
     getHealth(options = {}) {
       return request("GET", "/health", options);
-    },
-
-    /** Catalogue de traductions (locales disponibles) */
-    getI18nCatalog(options = {}) {
-      return request("GET", "/i18n/catalog", options);
     },
 
     /** Traductions pour une locale */
@@ -1405,6 +1430,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/me/quick-estimate", options);
     },
 
+    /** Mes inscriptions formation (alias mobile employee) */
+    getMeTrainingEnrollments(options = {}) {
+      return request("GET", "/me/training-enrollments", options);
+    },
+
     /** Mes formations */
     getMeTrainings(options = {}) {
       return request("GET", "/me/trainings", options);
@@ -1415,7 +1445,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
-    /** Vehicules assignes a l'employe connecte (mobile) */
+    /** Mes vehicules (employee) */
     getMeVehicles(options = {}) {
       return request("GET", "/me/vehicles", options);
     },
@@ -1548,11 +1578,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Rapport d'anomalies pre-cloture (F-20) */
     getPayrollRunsByPayrollRunAnomalies(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/anomalies", options);
-    },
-
-    /** Generer un export bancaire */
-    postPayrollRunsByPayrollRunBankExport(options = {}) {
-      return request("POST", "/payroll-runs/{payrollRun}/bank-export", options);
     },
 
     /** Calculer la paie */
@@ -2200,6 +2225,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/smart-attendance/mode-settings", options);
     },
 
+    /** Mettre à jour la config mode géolocalisation (principal) */
+    putSmartAttendanceModeSettings2(options = {}) {
+      return request("PUT", "/smart-attendance/mode-settings", options);
+    },
+
+    /** Sessions GPS de l'employé courant */
+    getSmartAttendanceMySessions(options = {}) {
+      return request("GET", "/smart-attendance/my-sessions", options);
+    },
+
     /** Mettre à jour les préférences de pointage */
     putSmartAttendancePreferences(options = {}) {
       return request("PUT", "/smart-attendance/preferences", options);
@@ -2425,7 +2460,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/courses/{trainingCourse}/sessions", options);
     },
 
-    /** Lister toutes les inscriptions formation (tenant scope) */
+    /** Toutes les inscriptions formation du tenant */
     getTrainingEnrollments(options = {}) {
       return request("GET", "/training/enrollments", options);
     },
@@ -2435,7 +2470,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/training/enrollments/{trainingEnrollment}", options);
     },
 
-    /** Lister toutes les sessions de formation (toutes formations, tenant scope) */
+    /** Toutes les sessions de formation du tenant */
     getTrainingSessions(options = {}) {
       return request("GET", "/training/sessions", options);
     },
@@ -2590,7 +2625,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", options);
     },
 
-    /** Tester un webhook (payload de test synchrone) */
+    /** Tester un endpoint webhook */
     postWebhooksByWebhookTest(options = {}) {
       return request("POST", "/webhooks/{webhook}/test", options);
     },
