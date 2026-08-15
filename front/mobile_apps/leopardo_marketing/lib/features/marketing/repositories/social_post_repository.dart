@@ -8,16 +8,19 @@ class SocialPostRepository {
 
   Future<List<Map<String, dynamic>>> getPosts() async {
     final response = await apiClient.requestWithRetry('/marketing/posts');
-    return extractDataList(response.data);
+    return extractDataList(response.data)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
   }
 
   Future<Map<String, dynamic>> createPost(Map<String, dynamic> data) async {
-    final response = await apiClient.requestWithRetry('/marketing/posts', method: 'POST', data: data);
+    // QA #3007 : POST non-idempotent — 0 retry (évite les doublons sur timeout).
+    final response = await apiClient.requestWithRetry('/marketing/posts', method: 'POST', data: data, maxRetriesOverride: 0);
     return extractDataMap(response.data);
   }
 
   Future<void> publishPost(String postId) async {
-    await apiClient.requestWithRetry('/marketing/posts/$postId/publish', method: 'POST');
+    await apiClient.requestWithRetry('/marketing/posts/$postId/publish', method: 'POST', maxRetriesOverride: 0);
   }
 
   /// Agrégation réelle des statistiques marketing à partir de
