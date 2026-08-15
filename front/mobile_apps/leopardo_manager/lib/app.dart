@@ -29,15 +29,9 @@ import 'package:leopardo_manager/features/user_auth/screens/user_register_screen
 import 'package:leopardo_manager/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_manager/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_manager/features/user_auth/screens/company_request_screen.dart';
-import 'package:leopardo_manager/features/contracts/screens/contract_screen.dart';
-import 'package:leopardo_manager/features/training/screens/training_screen.dart';
-import 'package:leopardo_manager/features/expenses/screens/expense_list_screen.dart';
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:leopardo_manager/features/ai_voice/screens/ai_voice_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
-import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.dart';
-import 'package:leopardo_manager/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
 import 'package:leopardo_manager/features/tasks/screens/task_list_screen.dart';
@@ -229,24 +223,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const SettingsScreen(),
           ),
           GoRoute(
-            path: '/contracts',
-            builder: (context, state) => const ContractScreen(),
-          ),
-          GoRoute(
-            path: '/training',
-            builder: (context, state) => const TrainingScreen(),
-          ),
-          GoRoute(
-            path: '/expenses',
-            builder: (context, state) => const ExpenseListScreen(),
-          ),
-          GoRoute(
             path: '/ai-chat',
             builder: (context, state) => const AiChatScreen(),
-          ),
-          GoRoute(
-            path: '/ai-voice',
-            builder: (context, state) => const AiVoiceScreen(),
           ),
           GoRoute(
             path: '/vehicle-map',
@@ -255,14 +233,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/approvals',
             builder: (context, state) => const ApprovalScreen(),
-          ),
-          GoRoute(
-            path: '/onboarding',
-            builder: (context, state) => const OnboardingScreen(),
-          ),
-          GoRoute(
-            path: '/organigramme',
-            builder: (context, state) => const OrganigrammeScreen(),
           ),
           GoRoute(
             path: '/schedules',
