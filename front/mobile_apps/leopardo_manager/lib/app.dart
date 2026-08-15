@@ -35,7 +35,6 @@ import 'package:leopardo_manager/features/training/screens/training_screen.dart'
 import 'package:leopardo_manager/features/expenses/screens/expense_list_screen.dart';
 import 'package:leopardo_manager/features/ai_voice/screens/ai_voice_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
-import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_manager/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_manager/features/manager/screens/manager_attendance_monitoring_screen.dart';
 import 'package:leopardo_manager/features/schedules/screens/schedule_list_screen.dart';
@@ -204,10 +203,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/approvals',
             builder: (context, state) => const ApprovalScreen(),
           ),
-          GoRoute(
-            path: '/onboarding',
-            builder: (context, state) => const OnboardingScreen(),
-          ),
+
           GoRoute(
             path: '/organigramme',
             builder: (context, state) => const OrganigrammeScreen(),
