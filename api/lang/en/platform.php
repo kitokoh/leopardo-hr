@@ -12,6 +12,7 @@ return [
     'activity_support_ticket' => 'Support ticket: :subject',
     'activity_edge_sync' => 'Edge sync: :name',
     'activity_user_signup' => 'New user: :name (:email)',
+    'admin_chat_unavailable' => 'The AI assistant is configured per tenant: the platform console cannot answer on behalf of a tenant. Sign in to the tenant workspace to use the assistant.',
     'conversation_not_found' => 'Conversation not found.',
     'oauth_save_failed' => 'Unable to save the configuration.',
 ];

@@ -165,7 +165,7 @@ async function sendMessage() {
       message: text,
       conversation_id: activeConversation.value?.id || null,
     }
-    const res = await api.post('/v1/ai/chat', payload)
+    const res = await api.post('/v1/admin/ai/chat', payload)
     const reply = res.data
     if (!activeConversation.value && reply.conversation_id) {
       activeConversation.value = { id: reply.conversation_id, title: text.slice(0, 50) }
