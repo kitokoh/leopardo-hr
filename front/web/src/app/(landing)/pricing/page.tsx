@@ -830,6 +830,10 @@ export default function PricingPage() {
               const Icon = planIcons[index % planIcons.length];
               const iconColor = planIconColors[index % planIconColors.length];
               const displayPrice = isAnnual ? plan.annualPrice : plan.price;
+              // #3023 — le vrai period du plan (avec surcoût par employé actif
+              // pour Pilot/Operations), sinon le libellé générique localisé.
+              const displayPeriod = (isAnnual ? plan.annualPeriod : plan.period)
+                || (isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly);
               const isFree = plan.price === '0';
               const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
               const ctaHref = getPlanHref(plan);
@@ -907,7 +911,7 @@ export default function PricingPage() {
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
                           <p className="text-sm text-slate-500">
-                            {isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly}
+                            {displayPeriod}
                           </p>
                           {isAnnual && (
                             <p className="text-xs text-slate-400 dark:text-slate-600">
