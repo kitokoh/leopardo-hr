@@ -13,6 +13,7 @@ use App\Jobs\SendTrialDripEmailJob;
 use App\Mail\TrialWelcomeMail;
 use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Support\CountryDefaults;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -216,73 +217,88 @@ class VerifyTrialSignup
      */
     private function provisionTrialCompany(array $payload): array
     {
-        return DB::transaction(function () use ($payload): array {
-            $slug = $this->resolveUniqueSlug($payload['slug']);
+        // #3895 : resolveUniqueSlug() (while-exists) n'est pas sérialisé entre
+        // deux signups simultanés au même nom — la violation d'unicité
+        // companies.slug (23505) est rattrapée par un retry borné avec un
+        // nouveau candidat au lieu d'un 500 (rare mais réel sous charge).
+        $attempts = 0;
 
-            $company = Company::query()->create([
-                'name' => $payload['name'],
-                'slug' => $slug,
-                'sector' => $payload['sector'],
-                'country' => $payload['country'],
-                'city' => $payload['city'],
-                'email' => $payload['email'],
-                'phone' => $payload['phone'],
-                'plan_id' => $payload['plan_id'],
-                'schema_name' => 'shared_tenants',
-                'tenancy_type' => 'shared',
-                'status' => 'trial',
-                'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
-                'language' => $payload['language'],
-                'timezone' => $payload['timezone'],
-                'currency' => $payload['currency'],
-                'metadata' => [
-                    'provisioned_by' => 'self_service_trial',
-                    'employees_range' => $payload['employees_range'],
-                ],
-            ]);
-
-            if (! empty($payload['referral_code'])) {
-                $this->partnerService->attributeCompanyToPartner($company, $payload['referral_code']);
-            }
-
-            if (DB::getDriverName() === 'pgsql') {
-                DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
-            }
-            $this->tenantManager->setTenant($company);
-
+        do {
             try {
-                /** @var Employee $manager */
-                $manager = Employee::query()->create([
-                    'company_id' => $company->id,
-                    'first_name' => $payload['manager_first_name'],
-                    'last_name' => $payload['manager_last_name'],
-                    'email' => $payload['manager_email'],
-                    'phone' => $payload['manager_phone'],
-                    'password_hash' => Hash::make($payload['temp_password']),
-                    'role' => 'manager',
-                    'manager_role' => 'principal',
-                    'status' => 'active',
-                    'contract_type' => 'CDI',
-                    'contract_start' => now()->toDateString(),
-                    'salary_type' => 'fixed',
-                    'salary_base' => 0,
-                    'biometric_face_enabled' => false,
-                    'biometric_fingerprint_enabled' => false,
-                    'extra_data' => [
-                        'job_title' => 'Manager principal',
-                        'self_service_trial' => true,
-                    ],
-                ]);
-            } finally {
-                $this->tenantManager->resetToPrevious();
-            }
+                return DB::transaction(function () use ($payload): array {
+                    $slug = $this->resolveUniqueSlug($payload['slug']);
 
-            return [
-                'company' => $company,
-                'manager' => $manager,
-            ];
-        });
+                    $company = Company::query()->create([
+                        'name' => $payload['name'],
+                        'slug' => $slug,
+                        'sector' => $payload['sector'],
+                        'country' => $payload['country'],
+                        'city' => $payload['city'],
+                        'email' => $payload['email'],
+                        'phone' => $payload['phone'],
+                        'plan_id' => $payload['plan_id'],
+                        'schema_name' => 'shared_tenants',
+                        'tenancy_type' => 'shared',
+                        'status' => 'trial',
+                        'subscription_start' => now()->toDateString(),
+                        'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
+                        'language' => $payload['language'],
+                        'timezone' => $payload['timezone'],
+                        'currency' => $payload['currency'],
+                        'metadata' => [
+                            'provisioned_by' => 'self_service_trial',
+                            'employees_range' => $payload['employees_range'],
+                        ],
+                    ]);
+
+                    if (! empty($payload['referral_code'])) {
+                        $this->partnerService->attributeCompanyToPartner($company, $payload['referral_code']);
+                    }
+
+                    if (DB::getDriverName() === 'pgsql') {
+                        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+                    }
+                    $this->tenantManager->setTenant($company);
+
+                    try {
+                        /** @var Employee $manager */
+                        $manager = Employee::query()->create([
+                            'company_id' => $company->id,
+                            'first_name' => $payload['manager_first_name'],
+                            'last_name' => $payload['manager_last_name'],
+                            'email' => $payload['manager_email'],
+                            'phone' => $payload['manager_phone'],
+                            'password_hash' => Hash::make($payload['temp_password']),
+                            'role' => 'manager',
+                            'manager_role' => 'principal',
+                            'status' => 'active',
+                            'contract_type' => 'CDI',
+                            'contract_start' => now()->toDateString(),
+                            'salary_type' => 'fixed',
+                            'salary_base' => 0,
+                            'biometric_face_enabled' => false,
+                            'biometric_fingerprint_enabled' => false,
+                            'extra_data' => [
+                                'job_title' => 'Manager principal',
+                                'self_service_trial' => true,
+                            ],
+                        ]);
+                    } finally {
+                        $this->tenantManager->resetToPrevious();
+                    }
+
+                    return [
+                        'company' => $company,
+                        'manager' => $manager,
+                    ];
+                });
+            } catch (QueryException $e) {
+                if ($e->getCode() !== '23505' || ++$attempts >= 5) {
+                    throw $e;
+                }
+                Log::warning('trial.signup.slug_collision_retry', ['attempt' => $attempts, 'base_slug' => $payload['slug']]);
+            }
+        } while (true);
     }
 
     private function resolveTrialPlan(): ?object
