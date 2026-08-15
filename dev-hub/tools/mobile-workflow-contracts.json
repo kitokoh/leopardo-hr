@@ -200,11 +200,12 @@
             "/training"
           ],
           "endpoints": [
-            "/me/training-enrollments",
-            "/me/trainings"
+            "/me/training-enrollments"
           ],
           "screenFiles": [
-            "lib/features/training/screens/training_screen.dart"
+            "lib/features/training/screens/training_screen.dart",
+            "lib/features/training/providers/training_provider.dart",
+            "lib/features/training/data/training_repository.dart"
           ],
           "sourceTokens": [
             "trainingEnrollmentsProvider",
@@ -214,19 +215,21 @@
         {
           "name": "my_vehicles",
           "routes": [
-            "/vehicles"
+            "/vehicle-map"
           ],
           "endpoints": [
             "/me/vehicles",
-            "/vehicles/{vehicleId}/position"
+            "/vehicles/$vehicleId/position"
           ],
           "screenFiles": [
-            "lib/features/vehicle_position/screens/vehicle_map_screen.dart"
+            "lib/features/vehicle_position/screens/vehicle_map_screen.dart",
+            "lib/features/vehicle_position/providers/vehicle_position_provider.dart",
+            "lib/features/vehicle_position/data/vehicle_position_repository.dart"
           ],
           "sourceTokens": [
             "getMyVehicles",
             "getPosition",
-            "vehiclePositionProvider"
+            "myVehiclesProvider"
           ]
         }
       ]
@@ -449,19 +452,6 @@
             "Identite entreprise",
             ".update(",
             "/company/branding"
-          ]
-        },
-        {
-          "name": "manager_dashboard_placeholder",
-          "routes": [
-            "/manager/dashboard"
-          ],
-          "endpoints": [],
-          "screenFiles": [
-            "lib/features/manager/screens/manager_placeholder_screen.dart"
-          ],
-          "sourceTokens": [
-            "ManagerPlaceholderScreen"
           ]
         }
       ]

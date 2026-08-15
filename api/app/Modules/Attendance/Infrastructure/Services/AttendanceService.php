@@ -22,7 +22,10 @@ use Illuminate\Support\Facades\Schema;
 class AttendanceService
 {
     /** @var array<int, string> */
-    private const NON_WORK_TYPES = ['break'];
+    // Issue #2686 (QA 2026-08-15) — les types non travaillés ne doivent pas
+    // compter dans hours_worked/overtime : `resume` marque la fin d'une pause
+    // (pas une session de travail), au même titre que `break`.
+    private const NON_WORK_TYPES = ['break', 'resume'];
 
     public function __construct(
         private readonly AttendanceGeofenceService $geofenceService,
