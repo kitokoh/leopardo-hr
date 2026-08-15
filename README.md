@@ -55,7 +55,7 @@ AI-native insights, **open source from day one**.
 - 🤖 **AI-native** — predictive workforce analytics, anomaly detection, LLM-driven HR insights.
 - 💰 **Automated payroll engine** — one-click multi-country payroll (DZ, MA, FR, TR), validation, PDFs, compliance-first.
 - 🕒 **Biometric attendance** — ZKTeco cloud bridge, on-prem edge kiosk, GPS-fenced mobile check-in.
-- 📱 **Omnichannel** — 5 native apps (Employee, Manager, HR, Platform Admin) + web dashboards + PWA offline.
+- 📱 **Omnichannel** — 5 native apps Flutter (Employee, Manager, HR, Marketing, Platform Admin) + web dashboards + PWA offline + kiosk biometrique web (`front/zkteco-kiosk`).
 - 🔐 **Security-first** — RBAC matrix, SSO SAML/OIDC, encrypted-at-rest sensitive data, GDPR / law 18-07 posture, Secret Scanning + full-history secret audit (Spec A-2).
 
 ---

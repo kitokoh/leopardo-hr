@@ -21,7 +21,7 @@ class NotificationRepository {
 
   Future<void> markAllAsRead() async {
     await apiClient.requestWithRetry<void>(
-      '/notifications/mark-all-read',
+      '/notifications/read-all',
       method: 'POST',
       timeoutOverride: const Duration(seconds: 12),
     );

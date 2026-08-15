@@ -169,7 +169,10 @@ class AuthController extends Controller
         $state = \Illuminate\Support\Str::random(40);
         session(['google_oauth_state' => $state]);
 
-        return Socialite::driver('google')->with(['state' => $state])->redirect();
+        /** @var \Laravel\Socialite\Two\GoogleProvider $google */
+        $google = Socialite::driver('google');
+
+        return $google->with(['state' => $state])->redirect();
     }
 
     public function handleGoogleCallback(Request $request): JsonResponse
@@ -193,15 +196,15 @@ class AuthController extends Controller
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
-            /** @var Employee $employee */
-            $employee = Employee::create([
-                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name' => $googleUser->offsetGet('family_name') ?? '',
-                'email' => $googleUser->getEmail(),
-                'password_hash' => Hash::make(str()->random(24)),
-                'role' => 'ordinary',
-                'status' => 'active',
-            ]);
+            // QA #2998 (variante #2636) : NE PLUS créer d'employé tenantless.
+            // L'ancien comportement créait un employé orphelin (sans
+            // company_id) puis émettait un token → compte inutilisable + probe
+            // cross-tenant possible. Un email Google inconnu est refusé
+            // explicitement : le compte doit être provisionné par un tenant.
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'Aucun compte Leopardo n\'est associé à cet email Google.',
+            ], 401);
         }
 
         // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)

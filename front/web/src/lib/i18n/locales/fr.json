@@ -74,18 +74,27 @@
     },
     "or": "ou",
     "countries": {
-      "DZ": "Algérie",
-      "CM": "Cameroun",
-      "CI": "Côte d'Ivoire",
-      "SN": "Sénégal",
-      "MA": "Maroc",
-      "TN": "Tunisie",
-      "FR": "France",
-      "TR": "Turquie",
-      "CG": "Congo",
-      "GA": "Gabon",
       "BF": "Burkina Faso",
-      "ML": "Mali"
+      "BJ": "Bénin",
+      "CA": "Canada",
+      "CF": "République centrafricaine",
+      "CG": "Congo",
+      "CI": "Côte d'Ivoire",
+      "CM": "Cameroun",
+      "DZ": "Algérie",
+      "FR": "France",
+      "GA": "Gabon",
+      "GB": "Royaume-Uni",
+      "GQ": "Guinée équatoriale",
+      "MA": "Maroc",
+      "ML": "Mali",
+      "NE": "Niger",
+      "SN": "Sénégal",
+      "TD": "Tchad",
+      "TG": "Togo",
+      "TN": "Tunisie",
+      "TR": "Turquie",
+      "US": "États-Unis"
     }
   },
   "modules": {
@@ -255,7 +264,8 @@
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
       "exportError": "Erreur lors de l'export",
-      "selectionExportDone": "Export de la selection termine"
+      "selectionExportDone": "Export de la selection termine",
+      "bulkDone": "Mise à jour effectuée"
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
@@ -263,7 +273,32 @@
     "errors": {
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
-      "fix_fields": "Veuillez corriger les champs en rouge"
+      "fix_fields": "Veuillez corriger les champs en rouge",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères",
+      "search_no_match": "Aucune page ne correspond à votre recherche",
+      "update_failed": "Erreur lors de la mise à jour de l'utilisateur"
+    },
+    "impersonation": {
+      "title": "Impersonner un employé",
+      "subtitle": "Ouvrir une session au nom de :name",
+      "reason": "Motif (obligatoire, 5 caractères minimum)",
+      "reasonMin": "Motif obligatoire (5 caractères minimum).",
+      "noLink": "Aucun employé lié à ce compte — impersonation impossible.",
+      "start": "Créer la session",
+      "cancel": "Annuler",
+      "tokenTitle": "Jeton d'impersonation (usage unique)",
+      "expires": "Expire le :date",
+      "copy": "Copier le jeton",
+      "copied": "Jeton copié",
+      "created": "Session d'impersonation créée",
+      "error": "Erreur lors de la création de la session d'impersonation",
+      "done": "Terminé",
+      "employee": "Employé #:id"
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur",
+      "status": "Statut",
+      "save": "Mettre à jour"
     }
   },
   "dashboard": {
@@ -276,8 +311,14 @@
     "recent_activity": "Activite recente",
     "recent_activity_hint": "Dernieres actions de votre equipe",
     "leo_ia_announcement_title": "Felicitations equipe",
-    "leo_ia_announcement_body": "Felicitations a toute l'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !",
-    "leo_ia_announcement_error": "Impossible d'envoyer le message. Reessayez dans quelques instants."
+    "leo_ia_announcement_body": "Felicitations a toute l'equipe pour votre engagement de cette semaine. Continuez sur cette dynamique !",
+    "leo_ia_announcement_error": "Impossible d'envoyer le message. Reessayez dans quelques instants.",
+    "leo_presence_insight": "Aujourd'hui, {today} presence(s) sur {active} employe(s) actif(s). Souhaitez-vous envoyer un message de felicitations a l'equipe ?",
+    "leo_presence_empty": "Aucune donnee de presence disponible pour le moment. Souhaitez-vous quand meme envoyer un message de felicitations a l'equipe ?",
+    "leo_announcements_count": "{count} annonce(s) publiee(s) dans votre entreprise.",
+    "presence_today_title": "Presence aujourd hui",
+    "presence_today_summary": "{present} presence(s) sur {active} employe(s) actif(s) aujourd hui",
+    "presence_today_empty": "Aucune donnee de presence disponible."
   },
   "marketing": {
     "oauth": {
@@ -666,6 +707,7 @@
     "credsSentByEmail": "Ces identifiants ont aussi été envoyés par email à",
     "credsEmailed": "Vos identifiants de connexion viennent de vous être envoyés par email.",
     "trialNote": "Essai gratuit de",
+    "trialDaysUnit": "jours",
     "trialNoteSuffix": "aucune carte bancaire requise",
     "downloadApp": "Télécharger l'app",
     "changePasswordNote": "Changez votre mot de passe dès la première connexion.",
@@ -680,6 +722,19 @@
       "employeesRequired": "Sélectionnez une taille d'équipe",
       "phoneInvalid": "Numéro de téléphone invalide",
       "agreeTerms": "Vous devez accepter les conditions d'utilisation"
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Impossible de charger la fiche entreprise.",
+      "tickets_failed": "Impossible de charger les tickets support.",
+      "subscription_failed": "Échec de la mise à jour de l'abonnement.",
+      "features_failed": "Échec de la configuration des modules."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours."
     }
   }
 }

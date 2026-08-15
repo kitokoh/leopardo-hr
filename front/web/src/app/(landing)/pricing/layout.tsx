@@ -1,16 +1,45 @@
+import { headers } from 'next/headers';
+import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/site-url';
-import { Metadata } from 'next';
-import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
+import {
+  generateMetadata as generateSEOMetadata,
+  pageMetadata,
+  generateFAQSchema,
+} from '@/modules/vitrine/lib/seo';
+import { t } from '@/lib/i18n/locale-catalog';
+import type { AppLocale } from '@/lib/i18n';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.pricing.title,
-  description: pageMetadata.pricing.description,
-  keywords: pageMetadata.pricing.keywords,
-  ogImage: pageMetadata.pricing.ogImage,
-  ogType: 'website',
-  canonical: `${SITE_URL}/pricing`,
-  robots: 'index, follow',
-});
+// #3487 — la meta description pricing est localisée par requête (Accept-Language
+// SSR, même logique que le root layout #2719) au lieu de t('fr', …) codé en dur.
+function resolveSsrLang(acceptLanguage: string | null): AppLocale {
+  const base = (acceptLanguage ?? '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .slice(0, 2);
+
+  return (['fr', 'en', 'ar', 'tr'] as const).includes(base as AppLocale)
+    ? (base as AppLocale)
+    : 'fr';
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const locale = resolveSsrLang(headerList.get('accept-language'));
+
+  return generateSEOMetadata({
+    title: pageMetadata.pricing.title,
+    description:
+      locale === 'fr'
+        ? pageMetadata.pricing.description
+        : t(locale, 'seo.pricing.description', pageMetadata.pricing.description),
+    keywords: pageMetadata.pricing.keywords,
+    ogImage: pageMetadata.pricing.ogImage,
+    ogType: 'website',
+    canonical: `${SITE_URL}/pricing`,
+    robots: 'index, follow',
+  });
+}
 
 export default function PricingLayout({
   children,
@@ -36,7 +65,7 @@ export default function PricingLayout({
     {
       question: 'Support client disponible?',
       answer:
-        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Business et Enterprise.',
+        'Oui, nous offrons un support email pour tous les plans et un support prioritaire pour les plans Operations et Enterprise.',
     },
     {
       question: 'Données sécurisées?',

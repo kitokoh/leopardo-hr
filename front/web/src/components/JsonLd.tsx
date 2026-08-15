@@ -77,8 +77,10 @@ export function OrganizationJsonLd() {
         offers: {
           '@type': 'AggregateOffer',
           priceCurrency: 'EUR',
-          lowPrice: '0',
-          highPrice: '99',
+          // #3247 : 3 plans backend (PlanSeeder) — Starter 29€, Business 79€,
+          // Enterprise 199€/mois. Essai gratuit 14 jours non compté comme offre.
+          lowPrice: '29',
+          highPrice: '199',
           offerCount: '3',
         },
         creator: {

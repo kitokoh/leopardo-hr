@@ -37,11 +37,12 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
         ]);
         $this->superAdmin = $superAdmin;
 
-        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+        Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');
     }
 
     public function test_admin_training_sessions_is_cross_tenant(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
         $course = TrainingCourse::query()->create([
             'company_id' => $company->id,
@@ -63,6 +64,7 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
 
     public function test_admin_webhooks_list_is_cross_tenant(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 
         WebhookEndpoint::query()->create([
@@ -85,6 +87,7 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
             'events' => ['employee.created'],
         ])->assertUnprocessable();
 
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 
         $this->postJson('/api/v1/admin/webhooks', [
@@ -97,6 +100,7 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
 
     public function test_admin_webhook_test_dispatches_event(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 
         $webhook = WebhookEndpoint::query()->create([
@@ -114,6 +118,7 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
 
     public function test_admin_webhook_delete_returns_204(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 
         $webhook = WebhookEndpoint::query()->create([

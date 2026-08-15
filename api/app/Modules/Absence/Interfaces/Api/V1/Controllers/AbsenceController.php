@@ -28,6 +28,7 @@ class AbsenceController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
         $query = Absence::query()
+            ->where('company_id', $actor->company_id)
             ->select([
                 'id', 'company_id', 'employee_id', 'absence_type_id',
                 'start_date', 'end_date', 'days_count', 'status', 'reason',

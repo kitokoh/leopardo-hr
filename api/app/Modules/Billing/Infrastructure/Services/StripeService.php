@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
@@ -35,8 +36,8 @@ class StripeService
         $this->secretKey = (string) config('services.stripe.secret');
         $this->webhookSecret = (string) config('services.stripe.webhook_secret');
         $this->priceIds = [
-            'starter' => (string) config('services.stripe.price_starter'),
-            'business' => (string) config('services.stripe.price_business'),
+            'pilot' => (string) config('services.stripe.price_pilot'),
+            'operations' => (string) config('services.stripe.price_operations'),
             'enterprise' => (string) config('services.stripe.price_enterprise'),
         ];
     }
@@ -182,7 +183,7 @@ class StripeService
     private function handleCheckoutCompleted(array $session): void
     {
         $companyId = $session['metadata']['company_id'] ?? $session['client_reference_id'] ?? null;
-        $plan = $session['metadata']['plan'] ?? 'starter';
+        $plan = PlanCode::normalize((string) ($session['metadata']['plan'] ?? PlanCode::Pilot->value))->value;
         $subscriptionId = $session['subscription'] ?? null;
         $customerId = $session['customer'] ?? null;
 
