@@ -11,6 +11,7 @@ use App\Http\Resources\Api\V1\BankExportResource;
 use App\Jobs\GenerateBankExportJob;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Support\CompanyBankDetails;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,20 @@ class BankExportController extends Controller
         ]);
 
         $format = $validated['format'];
+
+        // Issue #2198 — SEPA requires the company's own IBAN (debtor account).
+        // Reject synchronously instead of creating a BankExport row that the
+        // job would fail on: no placeholder must ever reach the file.
+        if ($format === 'sepa_xml') {
+            $companyBank = CompanyBankDetails::forCompany((string) $payrollRun->company_id);
+
+            if ($companyBank['iban'] === null) {
+                return response()->json([
+                    'message' => 'Company IBAN is required for SEPA export. Set companies.metadata.company_iban.',
+                    'error' => 'MISSING_COMPANY_IBAN',
+                ], 422);
+            }
+        }
 
         // PA2-PAY-014: the file itself (SEPA XML / CCP Algerie / CPA/BNA /
         // CSV) is never rendered inside the HTTP request anymore — it does
