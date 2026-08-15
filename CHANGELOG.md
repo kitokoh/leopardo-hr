@@ -24,6 +24,7 @@
 
 > Toute PR ajoute son entrée ici sous la catégorie adaptée (issue #2417) :
 > `### Added` (features), `### Changed`, `### Fixed
+- **fix(api): POST /employees/link-user — employee_id validé dans la société de l'acteur (Closes #3065).** Un manager pouvait lier un utilisateur à un employé d'une AUTRE entreprise (lien cross-tenant). Le contrôleur vérifie désormais que l'employé appartient à la société du manager (404 anti-fuite). Tests : lien cross-tenant refusé + lien intra-société 201.
 - **fix(web): og:image — 20 références vers des PNG inexistants remplacées par /og/default.png (Closes #3021).** `seo.ts` (fichier vivant, importé par les layouts landing) référençait `og/{page}.png` pour 20 pages alors que seul `public/og/default.png` existe (le fix #2752 n'avait touché que `seo-metadata.ts`, mort). Toutes les pages retombent sur l'image réelle — plus de 404 OG.
 - **fix(web): checkout — fallback plan 'starter' (Pilot) au lieu de 'business' (Operations) (Closes #2975).** Sans paramètre ?plan= valide, le checkout affichait le plan Operations (99€) par défaut — piège de conversion. Fallback sur le plan d'entrée payant ; PLAN_CONFIG reste canonique (free/starter/business/enterprise).
 - **fix(test): SignupForm.test.tsx réparé — 16 suites, 305 tests verts (Closes #2979).** Le mock du module forms ne fournissait pas `getLeadSource`/`submitVerifyForm` (ajoutés par #2845) → `onSubmit` levait un TypeError silencieux et le flow OTP ne s'affichait jamais. Mock aligné ; suite complète jest repasse (305/305).
