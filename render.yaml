@@ -284,6 +284,26 @@ services:
         sync: false
       - key: QUEUE_CONNECTION
         value: redis
+      # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
+      # alertes, notifications planifiées). Sans MAIL_* il retombe sur
+      # config/mail.php 'host' => 127.0.0.1:25 et tout envoi échoue en silence.
+      # Bloc aligné sur le web service (mêmes valeurs/sync: false).
+      - key: MAIL_MAILER
+        value: smtp
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@leopardo-rh.com
+      - key: MAIL_FROM_NAME
+        value: "Leopardo RH"
 
 databases:
   - name: leopardo-db
