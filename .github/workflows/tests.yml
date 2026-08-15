@@ -619,6 +619,9 @@ jobs:
       - name: Self-test mojibake guard (#1612)
         run: pwsh dev-hub/tools/check-governance-mojibake-test.ps1
 
+      - name: APP_VERSION sync guard (#3528)
+        run: bash dev-hub/tools/check-app-version-sync.sh api
+
   dependency-review:
     name: Dependency Review (PR Security)
     runs-on: ubuntu-latest
