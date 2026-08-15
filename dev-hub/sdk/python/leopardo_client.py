@@ -660,6 +660,10 @@ class LeopardoClient:
         """Donnees PDF du contrat"""
         return self.request("GET", "/contracts/{contract}/generate-pdf", **kwargs)
 
+    def get_contracts_by_contract_pdf(self, **kwargs):
+        """Alias PDF du contrat (issue #2226)"""
+        return self.request("GET", "/contracts/{contract}/pdf", **kwargs)
+
     def post_contracts_by_contract_renew(self, **kwargs):
         """Renouveler un contrat"""
         return self.request("POST", "/contracts/{contract}/renew", **kwargs)
@@ -695,6 +699,10 @@ class LeopardoClient:
     def get_dashboard_summary(self, **kwargs):
         """Resume dashboard"""
         return self.request("GET", "/dashboard/summary", **kwargs)
+
+    def get_demo_users(self, **kwargs):
+        """Comptes demo publics pour la documentation QA"""
+        return self.request("GET", "/demo-users", **kwargs)
 
     def delete_device_tokens(self, **kwargs):
         """Supprimer le token FCM du device courant au logout"""
@@ -944,6 +952,10 @@ class LeopardoClient:
         """Healthcheck live + ready"""
         return self.request("GET", "/health", **kwargs)
 
+    def get_i18n_catalog(self, **kwargs):
+        """Catalogue de traductions complet"""
+        return self.request("GET", "/i18n/catalog", **kwargs)
+
     def get_i18n_catalog_by_locale(self, **kwargs):
         """Traductions pour une locale"""
         return self.request("GET", "/i18n/catalog/{locale}", **kwargs)
@@ -1047,6 +1059,10 @@ class LeopardoClient:
     def put_loans_by_employeeloan_disburse(self, **kwargs):
         """Decaisser un pret"""
         return self.request("PUT", "/loans/{employeeLoan}/disburse", **kwargs)
+
+    def post_marketing_leads(self, **kwargs):
+        """Persister un lead marketing (vitrine)"""
+        return self.request("POST", "/marketing/leads", **kwargs)
 
     def get_marketing_social_account(self, **kwargs):
         """Compte social connecte du tenant"""
@@ -1276,6 +1292,10 @@ class LeopardoClient:
         """Rapport d'anomalies pre-cloture (F-20)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/anomalies", **kwargs)
 
+    def post_payroll_runs_by_payrollrun_bank_export(self, **kwargs):
+        """Generer un export bancaire pour un run valide (alias chemin)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
+
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/calculate", **kwargs)
@@ -1292,9 +1312,17 @@ class LeopardoClient:
         """Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", **kwargs)
 
+    def downloadcnsscgdeclaration(self, **kwargs):
+        """Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", **kwargs)
+
     def downloadcnsscideclaration(self, **kwargs):
         """Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", **kwargs)
+
+    def downloadcnssgadeclaration(self, **kwargs):
+        """Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", **kwargs)
 
     def downloadinpsmldeclaration(self, **kwargs):
         """Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"""
@@ -1315,10 +1343,6 @@ class LeopardoClient:
     def listpayrollrunpayslips(self, **kwargs):
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
-
-    def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
-        """Documents de paiement d'un cycle paie"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/payment-documents", **kwargs)
 
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
@@ -1423,18 +1447,6 @@ class LeopardoClient:
     def get_platform_country_defaults(self, **kwargs):
         """Lister les pays supportes et leurs defaults"""
         return self.request("GET", "/platform/country-defaults", **kwargs)
-
-    def get_platform_edge_nodes_2(self, **kwargs):
-        """Alias SPA — lister les nœuds edge (super-admin)"""
-        return self.request("GET", "/platform/edge-nodes", **kwargs)
-
-    def post_platform_edge_nodes_by_nodeid_revoke(self, **kwargs):
-        """Alias SPA — révoquer un nœud edge"""
-        return self.request("POST", "/platform/edge-nodes/{nodeId}/revoke", **kwargs)
-
-    def post_platform_edge_nodes_by_nodeid_sync_2(self, **kwargs):
-        """Alias SPA — forcer la synchronisation d'un nœud edge"""
-        return self.request("POST", "/platform/edge-nodes/{nodeId}/sync", **kwargs)
 
     def get_platform_edge_nodes(self, **kwargs):
         """Lister les nœuds edge de la plateforme (super-admin)"""
@@ -1992,6 +2004,10 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def get_trial_status(self, **kwargs):
+        """Statut de provisioning du guided trial"""
+        return self.request("GET", "/trial/status", **kwargs)
+
     def get_vehicle_alerts(self, **kwargs):
         """Liste de toutes les alertes vehicules"""
         return self.request("GET", "/vehicle-alerts", **kwargs)
@@ -2131,6 +2147,10 @@ class LeopardoClient:
     def updatezktecodevice(self, **kwargs):
         """Modifier une pointeuse ZKTeco (manager)"""
         return self.request("PUT", "/zkteco/devices/{id}", **kwargs)
+
+    def post_zkteco_devices_by_id_regenerate_token(self, **kwargs):
+        """Regenerer le jeton d'une pointeuse (manager)"""
+        return self.request("POST", "/zkteco/devices/{id}/regenerate-token", **kwargs)
 
     def listzktecosynclogs(self, **kwargs):
         """Lister l'historique de synchronisation d'une pointeuse (manager)"""

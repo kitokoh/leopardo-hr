@@ -136,6 +136,45 @@ paths:
         "404":
           description: "Employe introuvable (isolation tenant)"
 
+  /demo-users:
+    get:
+      tags: ["Auth"]
+      summary: "Comptes demo publics pour la documentation QA"
+      description: "Contrat public de documentation QA (AGENTS.md v4.16.128) : personas demo employee/manager/super-admin. Throttle 10/min."
+      responses:
+        "200":
+          description: "Personas de demonstration"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+
+  /trial/status:
+    get:
+      tags: ["Trial"]
+      summary: "Statut de provisioning du guided trial"
+      description: "Statut de l'essai guide + jeton de provisioning (issue #2437)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statut du trial"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status: { type: string }
+                      provisioning_token: { type: string, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /health:
     get:
       tags: ["Health"]
@@ -6477,6 +6516,56 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/vehicles:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Vehicules assignes a l'employe connecte (mobile)"
+      description: "Liste des vehicules actifs assignes au conducteur connecte, avec la derniere position Traccar aplatie (shape alignee sur le modele mobile VehiclePosition)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Vehicules de l'employe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        vehicle_id: { type: integer }
+                        plate_number: { type: string }
+                        brand: { type: string, nullable: true }
+                        model: { type: string, nullable: true }
+                        type: { type: string, nullable: true }
+                        latitude: { type: number, format: double, nullable: true }
+                        longitude: { type: number, format: double, nullable: true }
+                        speed: { type: number, format: double, nullable: true }
+                        updated_at: { type: string, format: date-time, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /contracts/{contract}/pdf:
+    get:
+      tags: ["Contracts"]
+      summary: "Alias PDF du contrat (issue #2226)"
+      description: "Alias retro-compatible de GET /contracts/{contract}/generate-pdf — meme generateur, meme shape."
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Donnees contrat pour generation PDF"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/contracts:
     get:
       tags: ["Me"]
@@ -7181,33 +7270,6 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
-  /payroll-runs/{payrollRun}/payment-documents:
-    get:
-      tags: ["Payroll"]
-      summary: "Documents de paiement d'un cycle paie"
-      parameters:
-        - in: path
-          name: payrollRun
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Documents du cycle"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PaymentDocument"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
   /payment-batches:
     get:
       tags: ["Payroll"]
@@ -7820,6 +7882,60 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cnss-ga:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155)"
+      description: "CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 2,5 % / patronale 5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnee, plafond 3 000 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run GA."
+      operationId: downloadCnssGaDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS GA"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/cnss-cg:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155)"
+      description: "CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 4,0 % / patronale 8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnee, plafond 2 500 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CG."
+      operationId: downloadCnssCgDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CG"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/declarations/cnss-bf:
     get:
       tags: ["Payroll Engine"]
@@ -7960,6 +8076,43 @@ paths:
           description: "Totaux et statistiques"
         "401":
           $ref: "#/components/responses/Error401"
+
+  /payroll-runs/{payrollRun}/bank-export:
+    post:
+      tags: ["Payroll"]
+      summary: "Generer un export bancaire pour un run valide (alias chemin)"
+      description: "Variante chemin du POST /bank-exports (body payroll_run_id + format) : genere une ligne BankExport pending traitee par job."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format]
+              properties:
+                format:
+                  type: string
+                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+      responses:
+        "202":
+          description: "Export cree (generation asynchrone)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BankExport"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   /payroll-runs/{payrollRun}/pay-slips:
     get:
@@ -12081,6 +12234,23 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /i18n/catalog:
+    get:
+      tags: ["Admin"]
+      summary: "Catalogue de traductions complet"
+      responses:
+        "200":
+          description: "Catalogue de traductions (toutes locales)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /i18n/catalog/{locale}:
     get:
       tags: ["Admin"]
@@ -12185,6 +12355,33 @@ paths:
         "200": { description: "Liste des paiements partenaires" }
 
   # ── Marketing (Ayrshare / reseaux sociaux) ─────────────────────────────────────
+  /marketing/leads:
+    post:
+      tags: ["Marketing"]
+      summary: "Persister un lead marketing (vitrine)"
+      description: "Appele par captureMarketingLead() (vitrine) avec le secret partage MARKETING_LEAD_WEBHOOK_TOKEN. Fire-and-forget cote vitrine."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+                source: { type: string }
+                company_name: { type: string }
+                role: { type: string }
+                company_size: { type: string }
+                phone: { type: string, nullable: true }
+      responses:
+        "201":
+          description: "Lead persiste"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /marketing/social-account:
     get:
       tags: ["Marketing"]
@@ -12781,6 +12978,35 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /zkteco/devices/{id}/regenerate-token:
+    post:
+      tags: ["ZKTeco"]
+      summary: "Regenerer le jeton d'une pointeuse (manager)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Appareil avec nouveau jeton (device_token a usage unique)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ZktecoDevice"
+                  device_token:
+                    type: string
+                    description: "Nouveau jeton en clair — a transmettre au terminal"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /zkteco/devices/{id}/sync-logs:
     get:
       tags: ["ZKTeco"]
@@ -13125,54 +13351,6 @@ paths:
     delete:
       tags: ["Edge"]
       summary: "Révoquer un nœud edge (super-admin)"
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: nodeId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: "Nœud révoqué"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /platform/edge-nodes:
-    get:
-      tags: ["Edge"]
-      summary: "Alias SPA — lister les nœuds edge (super-admin)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Liste des nœuds edge"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /platform/edge-nodes/{nodeId}/sync:
-    post:
-      tags: ["Edge"]
-      summary: "Alias SPA — forcer la synchronisation d'un nœud edge"
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: nodeId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: "Synchronisation déclenchée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /platform/edge-nodes/{nodeId}/revoke:
-    post:
-      tags: ["Edge"]
-      summary: "Alias SPA — révoquer un nœud edge"
       security:
         - BearerAuth: []
       parameters:
@@ -18498,8 +18676,6 @@ components:
           type: string
           nullable: true
 
-
-
     TrainingCourse:
       type: object
       properties:
@@ -18526,8 +18702,6 @@ components:
         created_at:
           type: string
           format: date-time
-
-
 
 
     StoreTrainingCourseRequest:
@@ -18774,4 +18948,3 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
-

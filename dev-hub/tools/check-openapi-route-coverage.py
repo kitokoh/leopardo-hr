@@ -112,8 +112,12 @@ def parse_routes() -> list[dict]:
 
     def parse_file(file: Path, inherited: list[tuple[int, str]] | None = None) -> None:
         rel = file.relative_to(ROUTES_DIR).as_posix()
-        prefix_stack: list[tuple[int, str]] = []
-        current_prefixes: list[str] = []
+        # Issue #2489 (régression #2431) : le contexte de préfixe hérité du
+        # `require` dans api.php (groupe `v1` englobant) doit amorcer la pile —
+        # sinon les routes des modules sont comparées sans le préfixe de
+        # version et l'allowlist ne matche plus (drift faux positif massif).
+        prefix_stack: list[tuple[int, str]] = list(inherited or [])
+        current_prefixes = [p for _, p in prefix_stack]
         pending_prefix: str | None = None
 
         for raw in file.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -157,7 +161,10 @@ def parse_routes() -> list[dict]:
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
 
-            base = "".join(current_prefixes)
+            # Issue #2489 (régression #2431) : jointure avec '/' via
+            # _build_base (fix #2233) — la concaténation brute produisait
+            # `v1ai/...` au lieu de `v1/ai/...`, incomparable à openapi.yaml.
+            base = _build_base(current_prefixes)
 
             m = ROUTE_RE.search(line)
             if m:
