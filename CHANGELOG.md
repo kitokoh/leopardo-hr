@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(api): token.refresh applique aux 16 groupes de routes modules (Closes #3889).** Le middleware `TokenAutoRefreshMiddleware` (refresh silencieux des tokens Sanctum expirants) etait applique au groupe principal + growth/sso/user, mais absent de absence, billing, cabinet, cameras, dashboard, expense, hr_app, hr_extended, integrations, marketing, payroll_engine, planning, rh, tracking, user et ai → les clients mobiles recevaient un 401 a l'expiration au lieu du refresh silencieux (deconnexions forcees).
+
 - **fix(admin): état réel du canal push — `pushUnavailable` défini dans le store (Closes #3932).** Référencé par `SystemAlertsOverlay` et `Header` mais jamais assigné, l'état était toujours falsy → la bannière rouge « Connexion temps réel perdue » s'affichait en permanence pour tout super-admin sans WS, l'état neutre « Push non configuré » (#3269) étant inatteignable. `pushUnavailable` est désormais un ref du store : réinitialisé à chaque `connect()`, passé à `true` sur `connect_error` et au grace timeout de 8 s (fallback polling PA2-COMM-013), repassé à `false` à la connexion. Spec : `docs/specifications/ISSUE_3932_PUSH_UNAVAILABLE.md`.
 - **fix(api): casts Eloquent manquants sur 3 modèles (Closes #3893).** `BiometricEnrollmentRequest` (booléens `requested_face_enabled`/`requested_fingerprint_enabled`, `submitted_at`/`approved_at`/`rejected_at`), `KioskAnnouncement` (`is_active`, `starts_at`, `expires_at`) et `ZktecoDevice` (`port`, capacités, `capabilities` JSON, `last_heartbeat_at`/`last_sync_at`) retournaient des chaînes au lieu de bool/Carbon/array → comparaisons silencieusement fausses côté API.
 
