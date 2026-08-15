@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SignupForm } from '../SignupForm';
 import { submitSignupForm, fetchTrialStatus } from '@/modules/vitrine/lib/forms';
@@ -7,7 +7,6 @@ import { submitSignupForm, fetchTrialStatus } from '@/modules/vitrine/lib/forms'
 // Mock the form submission
 jest.mock('@/modules/vitrine/lib/forms', () => ({
   submitSignupForm: jest.fn(),
-  submitVerifyForm: jest.fn(),
   fetchTrialStatus: jest.fn(),
   initialFormState: {
     isSubmitting: false,
@@ -192,6 +191,99 @@ describe('SignupForm Component', () => {
       await waitFor(() => {
         expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Guided trial tracking (#2469)', () => {
+    beforeEach(() => {
+      mockedSubmitSignupForm.mockReset();
+      (fetchTrialStatus as jest.Mock).mockReset();
+      sessionStorage.clear();
+    });
+
+    async function fillValidForm() {
+      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      const selects = screen.getAllByRole('combobox');
+      await userEvent.selectOptions(selects[0], 'founder');
+      await userEvent.selectOptions(selects[1], '1-10');
+      await userEvent.click(screen.getByRole('checkbox'));
+    }
+
+    it('shows the "Suivre l\'etat de mon espace" link on the OTP screen when a provisioning token is returned', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de verification envoye.',
+        data: { provisioning_token: 'a'.repeat(64) },
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+      });
+      expect(screen.getByRole('button', { name: /suivre l'etat de mon espace/i })).toBeInTheDocument();
+    });
+
+    it('does not show the tracking link without a provisioning token', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de verification envoye.',
+        data: {},
+      });
+
+      render(<SignupForm />);
+      await fillValidForm();
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/verifiez votre email/i)).toBeInTheDocument();
+      });
+      expect(screen.queryByRole('button', { name: /suivre l'etat de mon espace/i })).not.toBeInTheDocument();
+    });
+
+    it('polls pending → ready and shows the access link', async () => {
+      jest.useFakeTimers();
+      try {
+        mockedSubmitSignupForm.mockResolvedValue({
+          success: true,
+          provisioned: true,
+          message: 'Code de verification envoye.',
+          data: { provisioning_token: 'b'.repeat(64) },
+        });
+        (fetchTrialStatus as jest.Mock)
+          .mockResolvedValueOnce({ success: true, data: { status: 'pending' } })
+          .mockResolvedValueOnce({
+            success: true,
+            data: { status: 'ready', login_url: 'https://demo.leopardo.app/access?t=123' },
+          });
+
+        render(<SignupForm />);
+        await fillValidForm();
+        await fireEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+        await screen.findByText(/verifiez votre email/i);
+
+        await fireEvent.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+
+        // premier poll immédiat : pending → spinner
+        expect(await screen.findByText(/preparation de votre espace/i)).toBeInTheDocument();
+
+        // second poll après 5 s : ready → lien d'accès
+        await act(async () => {
+          jest.advanceTimersByTime(5000);
+        });
+        expect(await screen.findByText(/votre espace est pret/i)).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: /acceder a mon espace/i })).toHaveAttribute(
+          'href',
+          'https://demo.leopardo.app/access?t=123'
+        );
+      } finally {
+        jest.useRealTimers();
+      }
     });
   });
 
