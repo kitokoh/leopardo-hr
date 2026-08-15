@@ -126,15 +126,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::put('/salary-advances/{salaryAdvance}/resolve-dispute', [SalaryAdvanceController::class, 'resolveDispute'])->whereNumber('salaryAdvance');
 
     // ── Module 3 — Payrolls ───────────────────────────────────────────────────
-    // QA expert5 #3305 : les écritures payroll suivent la policy produit
-    // principal/comptable (alignement payroll_engine.php) — résiduel #3150.
     Route::get('/payrolls', [PayrollController::class, 'index']);
-    Route::post('/payrolls', [PayrollController::class, 'store'])->middleware('api.manager:principal,comptable');
+    Route::post('/payrolls', [PayrollController::class, 'store'])->middleware('api.manager');
     Route::get('/payrolls/{payroll}', [PayrollController::class, 'show'])->whereNumber('payroll');
-    Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->middleware('api.manager:principal,comptable')->whereNumber('payroll');
-    Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->middleware('api.manager:principal,comptable')->whereNumber('payroll');
-    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validatePayroll'])->middleware('api.manager:principal,comptable')->whereNumber('payroll');
-    Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->middleware('api.manager:principal,comptable')->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
+    Route::patch('/payrolls/{payroll}', [PayrollController::class, 'update'])->whereNumber('payroll');
+    Route::put('/payrolls/{payroll}/validate', [PayrollController::class, 'validatePayroll'])->whereNumber('payroll');
+    Route::delete('/payrolls/{payroll}', [PayrollController::class, 'destroy'])->whereNumber('payroll');
 
     // ── Module 4 — HR Referentials ────────────────────────────────────────────
     Route::get('/departments', [DepartmentController::class, 'index']);
@@ -227,9 +225,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 });
 
 // ── Kiosk — auth par X-Kiosk-Token ────────────────────────────────────────────
-// #3367 : bucket dédié kiosk-punch (par device_code) — borne anti brute-force
-// du device_code sans épuiser le quota IP anonyme partagé.
-Route::middleware(['throttle:kiosk-punch'])->group(function (): void {
+// #3367 : bucket dédié par device_code (kiosk-punch).
+Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function (): void {
     Route::get('/kiosks/{deviceCode}/roster', [KioskController::class, 'roster']);
     Route::post('/kiosks/{deviceCode}/punch', [KioskController::class, 'punch']);
     Route::post('/kiosks/{deviceCode}/sync', [KioskController::class, 'sync']);
