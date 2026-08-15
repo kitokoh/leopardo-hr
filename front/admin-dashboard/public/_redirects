@@ -1,0 +1,6 @@
+# Cloudflare Pages SPA fallback (issue #2334).
+# Le router vue-router utilise createWebHistory() : un accès direct ou un
+# hard refresh sur une sous-route (ex. /companies) doit servir index.html
+# pour que l'app démarre et laisse le router rendre la bonne vue.
+# Avec `base: '/'` (vite.config.js), les assets se résolvent en /assets/*.
+/* /index.html 200

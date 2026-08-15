@@ -3,7 +3,11 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
 
 export default defineConfig({
-  base: './',
+  // Issue #2334 : `base: './'` cassait le hard refresh / deep link sur
+  // Cloudflare Pages (assets relatifs résolus sous le chemin courant →
+  // /companies/assets/*.js servait index.html en text/html). Le SPA est
+  // déployé à la racine du domaine (leo-admin.pages.dev) : base absolue.
+  base: '/',
   plugins: [vue()],
   resolve: {
     alias: {
