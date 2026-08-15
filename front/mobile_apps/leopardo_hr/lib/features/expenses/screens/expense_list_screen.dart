@@ -49,6 +49,14 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
         ref.invalidate(expenseClaimsProvider);
         Navigator.of(context).pop();
       }
+    } catch (e) {
+      // #2596 : un échec d'envoi ne doit pas rester silencieux — retour
+      // visuel immédiat (l'exception se propageait sans catch).
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Echec de l envoi de la note de frais : $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
