@@ -67,6 +67,16 @@ readonly class AuthService
             }
 
             if (! $employee) {
+                // #2652 : le search_path peut être resté pointé sur un schéma
+                // fantôme (lookup périmé) — le réinitialiser sur la valeur par
+                // défaut AVANT le fallback, sinon la requête lève une
+                // QueryException et le login dégrade en 401 au lieu de
+                // retrouver l'employé dans le schéma partagé.
+                $defaultPath = (string) config('database.connections.pgsql.search_path', 'shared_tenants,public');
+                DB::statement('SET search_path TO '.$this->formatSearchPath(
+                    array_map('trim', explode(',', $defaultPath))
+                ));
+
                 /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->with('company')
