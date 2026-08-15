@@ -1,5 +1,6 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { canonicalUrl, generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.testimonials.title,
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.testimonials.keywords,
   ogImage: pageMetadata.testimonials.ogImage,
   ogType: 'website',
-  canonical: canonicalUrl('/testimonials'),
+  canonical: `${SITE_URL}/testimonials`,
 });
 
 export default function TestimonialsLayout({

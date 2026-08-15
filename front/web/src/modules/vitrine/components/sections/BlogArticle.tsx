@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import { SocialShare } from '@/components/SocialShare';
 import { ArticleJsonLd } from '@/components/JsonLd';
+import { SITE_URL } from '@/lib/site-url';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BlogPost } from '@/modules/vitrine/data/blog';
@@ -94,7 +95,7 @@ export function BlogArticle({
       });
   };
 
-  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL || '';
+  const siteOrigin = typeof window !== 'undefined' ? window.location.origin : SITE_URL;
   const localeQuery = locale && locale !== 'fr' ? `?lang=${locale}` : '';
   const articleUrl = `${siteOrigin}/blog/${post.slug}${localeQuery}`;
   const articleImageUrl = new URL(post.image, siteOrigin).toString();

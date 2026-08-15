@@ -1,6 +1,7 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { canonicalUrl, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { pageMetadata } from '@/modules/vitrine/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.docs.title,
@@ -8,7 +9,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.docs.keywords,
   ogImage: pageMetadata.docs.ogImage,
   ogType: 'website',
-  canonical: canonicalUrl('/docs'),
+  canonical: `${SITE_URL}/docs`,
 });
 
 export default function DocsLayout({

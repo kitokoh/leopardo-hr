@@ -4,4 +4,9 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Issue #2762 — build DEBUG uniquement : autorise l'URL de dev
+         documentée http://10.0.2.2:8000 (Android 9+ bloque le clair par
+         défaut). Jamais en release. -->
+    <application android:usesCleartextTraffic="true" tools:ignore="MissingApplicationIcon"
+        xmlns:tools="http://schemas.android.com/tools"/>
 </manifest>

@@ -1,5 +1,6 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { canonicalUrl, generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.branding.title,
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.branding.keywords,
   ogImage: pageMetadata.branding.ogImage,
   ogType: 'website',
-  canonical: canonicalUrl('/branding'),
+  canonical: `${SITE_URL}/branding`,
 });
 
 export default function BrandingLayout({

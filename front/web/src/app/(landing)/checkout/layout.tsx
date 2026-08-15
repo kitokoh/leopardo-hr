@@ -1,5 +1,6 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { canonicalUrl, generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.checkout.title,
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.checkout.keywords,
   ogImage: pageMetadata.checkout.ogImage,
   ogType: 'website',
-  canonical: canonicalUrl('/checkout'),
+  canonical: `${SITE_URL}/checkout`,
   robots: pageMetadata.checkout.robots,
 });
 

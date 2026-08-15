@@ -17,9 +17,9 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  Future<void> _complete(int stepId) async {
+  Future<void> _complete(String stepKey) async {
     try {
-      await ref.read(onboardingRepositoryProvider).completeStep(stepId);
+      await ref.read(onboardingRepositoryProvider).completeStep(stepKey);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -33,9 +33,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  Future<void> _skip(int stepId) async {
+  Future<void> _skip(String stepKey) async {
     try {
-      await ref.read(onboardingRepositoryProvider).skipStep(stepId);
+      await ref.read(onboardingRepositoryProvider).skipStep(stepKey);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -209,7 +209,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                         color: MobileSurface.muted,
                                       ),
                                       tooltip: 'Passer',
-                                      onPressed: () => _skip(step.id),
+                                      onPressed: () => _skip(step.key),
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
@@ -222,7 +222,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                           color: AppColors.success,
                                         ),
                                         tooltip: 'Terminer',
-                                        onPressed: () => _complete(step.id),
+                                        onPressed: () => _complete(step.key),
                                       ),
                                     ),
                                   ],

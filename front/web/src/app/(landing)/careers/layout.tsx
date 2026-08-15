@@ -1,5 +1,6 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
-import { canonicalUrl, generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { generateMetadata as generateSEOMetadata, pageMetadata } from '@/modules/vitrine/lib/seo';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.careers.title,
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.careers.keywords,
   ogImage: pageMetadata.careers.ogImage,
   ogType: 'website',
-  canonical: canonicalUrl('/careers'),
+  canonical: `${SITE_URL}/careers`,
 });
 
 export default function CareersLayout({

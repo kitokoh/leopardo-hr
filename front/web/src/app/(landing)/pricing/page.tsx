@@ -647,7 +647,9 @@ export default function PricingPage() {
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment
     if (plan.popular) return '/checkout?plan=business';
-    return '/checkout?plan=starter';
+    // Pilot → essai guidé 30 jours (aucun paiement à l'inscription) : le
+    // checkout ne doit pas être présenté comme « gratuit » (#2649).
+    return '/signup?source=pricing_pilot';
   }
 
   const filteredFaq = faqCategory

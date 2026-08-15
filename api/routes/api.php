@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
@@ -35,6 +36,8 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminFleetAlertController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyHealthController;
@@ -75,6 +78,9 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
         Route::post('/auth/register', [AuthController::class, 'register']);
+        // Issue #2626 : réinitialisation de mot de passe (usage unique, 60 min).
+        Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
         Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
         Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
@@ -98,8 +104,11 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
-        Route::get('/trial/status', [SelfServiceTrialController::class, 'status']);
     });
+
+    // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req/5 s)
+    // — limit dédié 60/min (hors throttle:5,15 qui 429erait le polling).
+    Route::middleware(['throttle:trial-status'])->get('/trial/status', [SelfServiceTrialController::class, 'status']);
 
     // PA2-MKT-007 - Public vitrine lead capture (signup/demo/contact/
     // newsletter), called server-to-server from front/web's Next.js API
@@ -299,6 +308,13 @@ Route::prefix('v1')->group(function (): void {
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
     // création côté API des routes manquantes (décision produit).
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+        // Issue #2624 : impersonation super-admin aussi sous /admin (le SPA
+        // admin-dashboard consomme /admin/*) — réutilise le contrôleur
+        // platform existant (PA2-ADM-006).
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
+
         Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
         Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
         Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);
@@ -320,6 +336,21 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 
         Route::get('/hr-reports', [PlatformHrReportController::class, 'generate']);
+
+        // Issue #2634 : équivalents /admin des vues Training et Webhooks
+        // (les routes tenant /training/* et /webhooks* sont api.manager → 401 super-admin).
+        Route::get('/training/sessions', [PlatformAdminTrainingController::class, 'indexSessions']);
+        Route::get('/training/enrollments', [PlatformAdminTrainingController::class, 'indexEnrollments']);
+        Route::get('/webhooks', [PlatformAdminWebhookController::class, 'index']);
+        Route::get('/webhooks/events', [PlatformAdminWebhookController::class, 'events']);
+        Route::post('/webhooks', [PlatformAdminWebhookController::class, 'store']);
+        Route::get('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'show'])->whereNumber('webhookEndpoint');
+        Route::put('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'update'])->whereNumber('webhookEndpoint');
+        Route::patch('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'update'])->whereNumber('webhookEndpoint');
+        Route::delete('/webhooks/{webhookEndpoint}', [PlatformAdminWebhookController::class, 'destroy'])->whereNumber('webhookEndpoint');
+        Route::post('/webhooks/{webhookEndpoint}/test', [PlatformAdminWebhookController::class, 'test'])->whereNumber('webhookEndpoint');
+        Route::get('/webhooks/{webhookEndpoint}/dead-letters', [PlatformAdminWebhookController::class, 'deadLetters'])->whereNumber('webhookEndpoint');
+        Route::post('/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay', [PlatformAdminWebhookController::class, 'replayDeadLetter'])->whereNumber('webhookEndpoint')->whereNumber('delivery');
 
         Route::get('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'index']);
         Route::put('/platform/marketing/oauth-config', [PlatformMarketingOAuthConfigController::class, 'update']);

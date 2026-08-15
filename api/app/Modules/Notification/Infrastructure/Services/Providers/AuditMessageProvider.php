@@ -15,15 +15,15 @@ class AuditMessageProvider implements MessageProviderInterface
      */
     public function send(Employee $employee, string $title, string $body, array $metadata = []): string
     {
-        Log::info('Communication provider audit-only dispatch', [
+        Log::warning('Communication provider audit-only — message NOT delivered', [
             'employee_id' => $employee->id,
             'title' => $title,
             'metadata' => $metadata,
             'body_length' => strlen($body),
         ]);
 
-        return 'queued';
+        // Statut explicite de non-délivrance : les appelants ne doivent pas
+        // interpréter ceci comme un envoi réussi (cf. T131 — fallback audit).
+        return 'undelivered';
     }
 }
-
-

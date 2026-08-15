@@ -14,5 +14,6 @@ return [
     'activity_user_signup' => 'Nouvel utilisateur : :name (:email)',
     'admin_chat_unavailable' => "L'assistant IA est configuré par tenant : la console plateforme ne peut pas répondre au nom d'un tenant. Connectez-vous à l'espace du tenant pour utiliser l'assistant.",
     'conversation_not_found' => 'Conversation introuvable.',
+    'conversations_unavailable' => 'Conversations indisponibles.',
     'oauth_save_failed' => 'Impossible d\'enregistrer la configuration.',
 ];

@@ -1,7 +1,8 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
-import { canonicalUrl, pageMetadata } from '@/modules/vitrine/lib/seo';
+import { pageMetadata } from '@/modules/vitrine/lib/seo';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 
 export const metadata: Metadata = generateSEOMetadata({
@@ -10,7 +11,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.blog.keywords,
   ogImage: pageMetadata.blog.ogImage,
   ogType: 'website',
-  canonical: canonicalUrl('/blog'),
+  canonical: `${SITE_URL}/blog`,
 });
 
 export default function BlogLayout({
