@@ -115,16 +115,22 @@ Codes : `CNSS_CI_RET_EMP`, `CNSS_CI_RET_PAT`, `CNSS_CI_FAM_PAT`,
 
 ## 8. Préavis (art. 18)
 
-| Catégorie | < 5 ans | ≥ 5 ans |
-|---|---|---|
-| Ouvriers | 8 jours | 15 jours |
-| Employés / Techniciens | 1 mois | 2 mois |
-| Cadres | 3 mois | 3 mois |
+| Catégorie | < 5 ans | 5 à < 10 ans | ≥ 10 ans |
+|---|---|---|---|
+| Ouvriers | 8 jours | 15 jours | 15 jours |
+| Employés / Techniciens | 1 mois | 2 mois | 2 mois |
+| Cadres | 3 mois | 3 mois | 3 mois |
 
-⚠️ L'interface `noticePeriodDays(yearsOfService)` n'expose que l'ancienneté :
-implémentation pilote au niveau **employé/technicien** (< 5 ans : 30 j ;
-≥ 5 ans : 60 j) — ouvriers et cadres documentés ici, la catégorie du contrat
-sera prise en compte dans un suivi.
+⚠️ **Implémentation pilote (issue #2264)** : `CedeaoPayrollRules::noticePeriodDays()`
+(membre CI) expose trois paliers d'ancienneté — `< 5 ans : 30 j ; 5 à < 10 ans :
+60 j ; ≥ 10 ans : 90 j` — au niveau **employé/technicien** (la catégorie du
+contrat n'est pas encore prise en compte, suivi séparé). Le palier **90 j pour
+≥ 10 ans n'existe dans aucune source légale** : la matrice §8 plafonne
+l'employé/technicien à 2 mois, et seul le cadre bénéficie de 3 mois. Ce palier
+est donc une **divergence pilot à valider par l'expert-comptable OHADA-CI**
+(option 1 : ramener employé/technicien ≥ 10 ans à 60 j ; option 2 : implémenter
+la matrice complète par catégorie, ouvrier 8/15 j, employé 60 j max, cadre 90 j)
+avant tout passage `production` — suivi expert #1904.
 
 ## 9. 13ème mois
 
