@@ -8,6 +8,9 @@
 
 ### Fixed
 ### Fixed
+- **fix(test): PayrollCalculatorUnitTest — `use` dupliqué supprimé : fatal PHP, gate couverture cassé (Closes #2415).** Artifact de merge de PRs concurrentes : `use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;` déclaré DEUX fois (lignes 7 et 17) → `PHP Fatal error: name already in use` → le run `php artisan test --coverage-clover` mourait avant d'écrire `clover.xml` → le gate « Backend Coverage » reportait `Coverage clover file not found, defaulting to 0%` puis échouait (`0% < 65%`) sur main ET sur toutes les PRs (constat #2415). La couverture réelle n'était jamais mesurée. Suppression de l'import dupliqué (grep global : seul fichier concerné).
+
+### Fixed
 - **fix(api): openapi.yaml — YAML valide, lint Redocly 0 erreur (doublons Training + compliance) (suite #2480).** Les merges concurrents des PRs #2489/#2493/#2495/#2503 ont laissé main avec un YAML cassé : `type: object` dupliqué dans le bloc `compliance` (/me/balance, ligne ~17524) et 4 copies de `TrainingSession`/`TrainingEnrollment` dans `components/schemas`. Les blocs redondants sont supprimés (la copie principale + les 13 schémas uniques du cluster sont conservés). Vérifié : parseur YAML strict 0 doublon, `redocly lint` **valide 0 erreur** (510 warnings pré-existants), SDK/miroir régénérés.
 
 ### Fixed
