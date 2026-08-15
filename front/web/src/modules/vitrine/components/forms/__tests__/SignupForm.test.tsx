@@ -247,6 +247,7 @@ describe('SignupForm Component', () => {
 
     it('polls pending → ready and shows the access link', async () => {
       jest.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
       try {
         mockedSubmitSignupForm.mockResolvedValue({
           success: true,
@@ -262,11 +263,16 @@ describe('SignupForm Component', () => {
           });
 
         render(<SignupForm />);
-        await fillValidForm();
-        await fireEvent.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
+        await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+        await user.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+        const selects = screen.getAllByRole('combobox');
+        await user.selectOptions(selects[0], 'founder');
+        await user.selectOptions(selects[1], '1-10');
+        await user.click(screen.getByRole('checkbox'));
+        await user.click(screen.getByRole('button', { name: /recevoir mon code de verification/i }));
         await screen.findByText(/verifiez votre email/i);
 
-        await fireEvent.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
+        await user.click(screen.getByRole('button', { name: /suivre l'etat de mon espace/i }));
 
         // premier poll immédiat : pending → spinner
         expect(await screen.findByText(/preparation de votre espace/i)).toBeInTheDocument();
