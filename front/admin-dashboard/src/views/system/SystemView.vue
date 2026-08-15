@@ -216,7 +216,6 @@ const databaseStatus = computed(() => {
 
 // Automated tasks
 const automatedTasks = ref([])
-const backups = ref([])
 const securityAlerts = ref([])
 const apiTests = ref([])
 
@@ -282,11 +281,6 @@ async function loadNotificationObservability() {
 async function loadAutomatedTasks() {
   // Pas d'API de taches planifiees — liste vide honnete (vague QA 2026-08-14)
   automatedTasks.value = []
-}
-
-async function loadBackups() {
-  // Pas d'API de sauvegardes — liste vide honnete (vague QA 2026-08-14)
-  backups.value = []
 }
 
 async function loadSecurityAlerts() {
@@ -414,45 +408,6 @@ function handleTaskCreated(task) {
   automatedTasks.value.push(task)
   showCreateTaskModal.value = false
   toast.success('Tâche créée avec succès')
-}
-
-// Backup management
-async function createBackup() {
-  isCreatingBackup.value = true
-
-  try {
-    await new Promise(resolve => setTimeout(resolve, 5000))
-
-    const newBackup = {
-      id: Date.now(),
-      name: `backup-${new Date().toISOString().split('T')[0]}-${new Date().toTimeString().split(' ')[0].replace(/:/g, '-')}`,
-      type: 'manual',
-      size: '2.1 GB',
-      createdAt: new Date(),
-      status: 'completed'
-    }
-
-    backups.value.unshift(newBackup)
-    toast.success('Sauvegarde créée avec succès')
-  } catch (error) {
-    console.error('Backup creation failed:', error)
-    toast.error('Erreur lors de la création de la sauvegarde')
-  } finally {
-    isCreatingBackup.value = false
-  }
-}
-
-function restoreBackup(backup) {
-  toast.warning(`Restauration de la sauvegarde: ${backup.name}`)
-}
-
-function deleteBackup(backupId) {
-  backups.value = backups.value.filter(b => b.id !== backupId)
-  toast.success('Sauvegarde supprimée')
-}
-
-function downloadBackup(backup) {
-  toast.info(`Téléchargement de: ${backup.name}`)
 }
 
 // Security
