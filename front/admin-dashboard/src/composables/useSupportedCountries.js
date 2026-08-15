@@ -19,8 +19,8 @@ const FLAGS = {
 }
 
 const DEFAULT_COUNTRIES = [
-  { code: 'DZ', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
-  { code: 'FR', flag: '🇫🇷', labelKey: 'common.countries.FR' },
+  { code: 'DZ', country: 'DZ', label: 'Algérie', language: 'fr', currency: 'DZD', timezone: 'Africa/Algiers', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
+  { code: 'FR', country: 'FR', label: 'France', language: 'fr', currency: 'EUR', timezone: 'Europe/Paris', flag: '🇫🇷', labelKey: 'common.countries.FR' },
 ]
 
 const cache = ref(null)
@@ -32,6 +32,13 @@ async function load() {
     const items = data?.data ?? []
     cache.value = items.map((item) => ({
       code: item.country,
+      // Champs riches du registre canonique (issue #3940) : utilisés par
+      // CompaniesView pour le provisioning (langue/devise/fuseau).
+      country: item.country,
+      label: item.label,
+      language: item.language,
+      currency: item.currency,
+      timezone: item.timezone,
       labelKey: `common.countries.${item.country}`,
       flag: FLAGS[item.country] || '🌍',
       available: item.available,

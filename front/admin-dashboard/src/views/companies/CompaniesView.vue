@@ -256,6 +256,7 @@ import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
 
 const router = useRouter()
 const toast = useToast()
@@ -270,29 +271,11 @@ const activateImmediately = ref(false)
 // has not resolved yet (or fails). Mirrors App\Support\CountryDefaults on
 // the API and the mobile platform-admin app's fallback list so the create
 // form never regresses to a single country when the network is slow.
-const countryDefaults = ref([
-  { country: 'DZ', label: 'Algerie', language: 'fr', currency: 'DZD', timezone: 'Africa/Algiers' },
-  { country: 'MA', label: 'Maroc', language: 'fr', currency: 'MAD', timezone: 'Africa/Casablanca' },
-  { country: 'TN', label: 'Tunisie', language: 'fr', currency: 'TND', timezone: 'Africa/Tunis' },
-  { country: 'SN', label: 'Senegal', language: 'fr', currency: 'XOF', timezone: 'Africa/Dakar' },
-  { country: 'CI', label: 'Cote d Ivoire', language: 'fr', currency: 'XOF', timezone: 'Africa/Abidjan' },
-  { country: 'ML', label: 'Mali', language: 'fr', currency: 'XOF', timezone: 'Africa/Bamako' },
-  { country: 'BF', label: 'Burkina Faso', language: 'fr', currency: 'XOF', timezone: 'Africa/Ouagadougou' },
-  { country: 'BJ', label: 'Benin', language: 'fr', currency: 'XOF', timezone: 'Africa/Porto-Novo' },
-  { country: 'TG', label: 'Togo', language: 'fr', currency: 'XOF', timezone: 'Africa/Lome' },
-  { country: 'NE', label: 'Niger', language: 'fr', currency: 'XOF', timezone: 'Africa/Niamey' },
-  { country: 'CM', label: 'Cameroun', language: 'fr', currency: 'XAF', timezone: 'Africa/Douala' },
-  { country: 'GA', label: 'Gabon', language: 'fr', currency: 'XAF', timezone: 'Africa/Libreville' },
-  { country: 'CG', label: 'Congo', language: 'fr', currency: 'XAF', timezone: 'Africa/Brazzaville' },
-  { country: 'TD', label: 'Tchad', language: 'fr', currency: 'XAF', timezone: 'Africa/Ndjamena' },
-  { country: 'CF', label: 'Republique Centrafricaine', language: 'fr', currency: 'XAF', timezone: 'Africa/Bangui' },
-  { country: 'GQ', label: 'Guinee Equatoriale', language: 'fr', currency: 'XAF', timezone: 'Africa/Malabo' },
-  { country: 'FR', label: 'France', language: 'fr', currency: 'EUR', timezone: 'Europe/Paris' },
-  { country: 'TR', label: 'Turquie', language: 'tr', currency: 'TRY', timezone: 'Europe/Istanbul' },
-  { country: 'GB', label: 'Royaume-Uni', language: 'en', currency: 'GBP', timezone: 'Europe/London' },
-  { country: 'US', label: 'Etats-Unis', language: 'en', currency: 'USD', timezone: 'America/New_York' },
-  { country: 'CA', label: 'Canada', language: 'en', currency: 'CAD', timezone: 'America/Toronto' },
-])
+// Issue #3940 : source unique via useSupportedCountries (GET /supported-countries,
+// registre canonique #1867) — plus de liste de 21 pays dupliquée. Le composable
+// expose {country,label,language,currency,timezone} en plus de {code,labelKey,flag}.
+const supportedCountries = useSupportedCountries()
+const countryDefaults = computed(() => supportedCountries.value ?? [])
 const createForm = ref(defaultCreateForm())
 const summary = ref({
   companies: 0,
@@ -332,20 +315,6 @@ async function fetchPortfolio() {
   }
 }
 
-async function fetchCountryDefaults() {
-  try {
-    const response = await api.get('/platform/country-defaults')
-    const countries = response.data?.data || []
-    if (Array.isArray(countries) && countries.length > 0) {
-      countryDefaults.value = countries
-      if (!countries.some((country) => country.country === createForm.value.country)) {
-        createForm.value.country = countries[0].country
-      }
-    }
-  } catch (error) {
-    console.error('Failed to load country defaults:', error)
-  }
-}
 
 function defaultCreateForm() {
   return {
@@ -422,7 +391,6 @@ function riskClass(risk) {
 
 onMounted(() => {
   fetchPortfolio()
-  fetchCountryDefaults()
 })
 </script>
 
