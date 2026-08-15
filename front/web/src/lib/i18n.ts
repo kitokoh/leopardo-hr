@@ -358,11 +358,11 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion a Leopardo RH',
-      subtitle: 'Accedez a votre espace RH, suivez vos equipes et pilotez les modules actifs de votre entreprise.',
+      subtitle: 'Accedez a votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
       clientSpace: 'Espace client',
-      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque equipe.',
+      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque équipe.',
       heroCopy: 'Votre portail client reste connecte a l API Leopardo RH, avec permissions, langue et contexte tenant appliques des la connexion.',
-      secureBadge: 'Connexion securisee',
+      secureBadge: 'Connexion sécurisée',
       trustPoints: [
         'Session liee a votre tenant',
         'Permissions appliquees par role',
@@ -439,7 +439,7 @@ const copy: Record<AppLocale, CopyTree> = {
       detailTitle: 'Detail du bulletin',
       detailClose: 'Fermer',
       detailLoading: 'Chargement du detail...',
-      detailError: 'Detail indisponible pour le moment — affichage des donnees de la liste.',
+      detailError: 'Detail indisponible pour le moment — affichage des données de la liste.',
       detailDeductions: 'Deductions',
       detailEmployerContributions: 'Charges patronales',
       detailTotalCost: 'Cout total employeur',
@@ -450,7 +450,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
-      subtitle: 'Suivi intelligent de presence par geolocalisation — validation des sessions en attente et statistiques du jour.',
+      subtitle: 'Suivi intelligent de présence par geolocalisation — validation des sessions en attente et statistiques du jour.',
       allSessions: 'Toutes les sessions →',
       settings: 'Parametres',
       pendingSessionsTitle: 'Sessions en attente de validation',
@@ -493,7 +493,7 @@ const copy: Record<AppLocale, CopyTree> = {
       cancel: 'Annuler',
     },
     smartAttendanceSessionsPage: {
-      title: 'Sessions de presence',
+      title: 'Sessions de présence',
       subtitle: 'Liste complete des sessions Smart Attendance avec filtres avances et pagination.',
       backToDashboard: '← Tableau de bord',
       loadError: 'Impossible de charger les sessions.',
@@ -516,7 +516,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnDuration: 'Duree',
       columnStatus: 'Statut',
       columnDetail: 'Detail',
-      noSessions: 'Aucune session trouvee pour ces criteres.',
+      noSessions: 'Aucune session trouvee pour ces critères.',
       viewDetail: 'Voir →',
       employeeFallback: 'Employe',
       pageLabel: 'Page',
@@ -532,7 +532,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSessionDetailPage: {
       title: 'Detail de session',
-      subtitle: 'Informations completes de la session de presence geolocalisee.',
+      subtitle: 'Informations completes de la session de présence geolocalisee.',
       backToSessions: '← Retour aux sessions',
       loadError: 'Impossible de charger la session.',
       notFound: 'Session introuvable.',
@@ -648,7 +648,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noTokens: 'Aucune cle API creee pour le moment.',
       createdOn: 'Creee le {date}',
       unknownDate: 'Date inconnue',
-      lastUsedOn: ' · derniere utilisation le {date}',
+      lastUsedOn: ' · dernière utilisation le {date}',
       neverUsed: ' · jamais utilisee',
       revoke: 'Revoquer',
       tokenNamePlaceholder: 'Nom de la cle (ex: Production)',

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, CalendarCheck, FileText, ShieldCheck, Sparkles, UserPlus, Workflow } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
+import { getEnvConfig } from '@/modules/vitrine/lib/env';
 
 type ReadinessCopy = {
   badge: string;
@@ -74,6 +75,12 @@ const icons = [CalendarCheck, BookOpen, FileText, UserPlus];
 export function MarketingReadinessSection({ locale = 'fr' }: { locale?: AppLocale }) {
   const copy = copyByLocale[locale] ?? copyByLocale.fr;
 
+  // #2276 / #2904 : le blog est gated par NEXT_PUBLIC_ENABLE_BLOG (404 si off).
+  // La carte « blog » doit disparaître quand le flag est off — même logique
+  // que Navbar/Footer — sinon la home pointe vers /blog mort.
+  const { enableBlog } = getEnvConfig();
+  const cards = enableBlog ? copy.cards : copy.cards.filter((card) => card.href !== '/blog');
+
   return (
     <section className="relative overflow-hidden bg-slate-950 py-24 text-white">
       <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(16,185,129,0.14),transparent_36%,rgba(34,211,238,0.10)),linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[length:100%_100%,48px_48px,48px_48px]" />
@@ -107,7 +114,7 @@ export function MarketingReadinessSection({ locale = 'fr' }: { locale?: AppLocal
           </motion.div>
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {copy.cards.map((card, index) => {
+            {cards.map((card, index) => {
               const Icon = icons[index] ?? Workflow;
 
               return (

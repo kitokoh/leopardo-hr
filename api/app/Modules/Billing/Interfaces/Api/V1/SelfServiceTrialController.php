@@ -215,10 +215,9 @@ class SelfServiceTrialController extends Controller
                     'email' => $result['manager_email'],
                     'first_name' => $result['first_name'],
                     'last_name' => $result['last_name'],
-                    'temp_password' => $result['temp_password'],
                 ],
                 'trial' => [
-                    'days' => 14,
+                    'days' => 30,
                     'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [

@@ -69,7 +69,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
     // Événements de connexion
     socket.value.on('connect', () => {
-      console.log('WebSocket connecté')
+      // console.log removed (audit 2026-08-15) — WebSocket connecté
       isConnected.value = true
       clearPushGraceTimer()
       stopPolling()
@@ -77,7 +77,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     })
 
     socket.value.on('disconnect', () => {
-      console.log('WebSocket déconnecté')
+      // console.log removed (audit 2026-08-15) — WebSocket déconnecté
       isConnected.value = false
       toast.warning('Connexion temps réel perdue')
       // Push dropped after being connected: switch to fallback polling

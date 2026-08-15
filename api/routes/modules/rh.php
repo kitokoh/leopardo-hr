@@ -139,6 +139,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/departments', [DepartmentController::class, 'store']);
     Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::get('/departments/{department}', [DepartmentController::class, 'show'])->whereNumber('department');
+    // Audit expert 2026-08-15 (issue #2594) : organigramme par département (mobile).
+    Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::put('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::patch('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->whereNumber('department');
