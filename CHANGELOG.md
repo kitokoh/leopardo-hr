@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): \$fillable sensible — role/status/company_id/salary/2FA retires du mass-assignment (Closes #3597).** Employee: role, status, company_id, salary_base, hourly_rate retirés du \$fillable ; SuperAdmin: status, two_fa_secret ; User: status. Create/update calls dans HrController, AuthController, EmployeeImportController alignés (set explicite + save). Factories non affectées (Model::unguarded).
+
 ### Fixed
 - **fix(api): webhook email-bounce configurable (Closes #3058).** `services.mail_bounce_webhook.secret` n'était défini nulle part → 503 permanent malgré le fail-closed #2616. Ajout de la clé `config/services.php` (env `MAIL_BOUNCE_WEBHOOK_SECRET`) + entrée `.env.example` ; vide = refusé (défensif).
 

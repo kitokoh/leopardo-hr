@@ -145,13 +145,16 @@ class HrController extends Controller
 
         $employee = Employee::create([
             ...$validated,
-            'company_id'        => $actor->company_id,
-            'role'              => 'employee',          // HR can only create regular employees
-            'manager_role'      => null,                // Only principal can assign manager roles
-            'status'            => 'active',
             'preferred_language' => 'fr',
             'password_hash'     => Hash::make(Str::random(32)), // Temporary â€” will be set via invitation
         ]);
+
+        // Sensitive fields set explicitly (not mass-assignable, #3597)
+        $employee->company_id   = $actor->company_id;
+        $employee->role         = 'employee';          // HR can only create regular employees
+        $employee->manager_role = null;                // Only principal can assign manager roles
+        $employee->status       = 'active';
+        $employee->save();
 
         return response()->json([
             'message' => 'Employee created successfully.',
@@ -209,7 +212,15 @@ class HrController extends Controller
         // Ensure HR cannot escalate roles
         unset($validated['role'], $validated['manager_role']);
 
+        // Sensitive fields set explicitly — not mass-assignable (#3597)
+        $sensitiveFields = array_intersect_key($validated, array_flip(['salary_base', 'hourly_rate', 'status']));
+        $validated = array_diff_key($validated, $sensitiveFields);
+
         $employee->update($validated);
+        foreach ($sensitiveFields as $key => $value) {
+            $employee->{$key} = $value;
+        }
+        $employee->save();
 
         return response()->json([
             'message' => 'Employee updated successfully.',
