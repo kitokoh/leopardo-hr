@@ -90,7 +90,7 @@ class AbsenceRepository {
       return filePath;
     }
 
-    await apiClient.dio.download(
+    await apiClient.downloadWithRetry(
       '/absences/$absenceId/proof',
       filePath,
       options: Options(responseType: ResponseType.bytes),
