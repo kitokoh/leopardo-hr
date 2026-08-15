@@ -37,12 +37,6 @@ parameters:
 			path: app/Console/Commands/QueueHealthCheck.php
 
 		-
-			message: '#^Cannot call method copy\(\) on Illuminate\\Support\\Carbon\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Console/Commands/SendDripEmails.php
-
-		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
@@ -497,12 +491,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Web/InvitationManagementController.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Http/Controllers/Web/KioskController.php
 
 		-
 			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
@@ -1837,12 +1825,6 @@ parameters:
 			path: app/Modules/Attendance/Infrastructure/Services/CalendarSyncService.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Modules/Attendance/Infrastructure/Services/KioskAttendanceService.php
-
-		-
 			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\KioskAttendanceService\:\:syncPunches\(\) has parameter \$events with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1975,12 +1957,6 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/BiometricEnrollmentController.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$company\.$#'
-			identifier: property.notFound
-			count: 8
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
 			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeKiosk\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2008,12 +1984,6 @@ parameters:
 			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
 			identifier: notIdentical.alwaysTrue
 			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Unable to resolve the template type TInstance in call to method Illuminate\\Container\\Container\:\:instance\(\)$#'
-			identifier: argument.templateType
-			count: 6
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
 		-
@@ -4855,24 +4825,6 @@ parameters:
 			path: tests/Feature/Absences/AbsenceIndexTest.php
 
 		-
-			message: '#^Parameter \#1 \$value of function collect expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), mixed\>\|iterable\<\(int\|string\), mixed\>\|null, Illuminate\\Routing\\RouteCollectionInterface given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/AdminImpersonationEndpointsTest.php
-
-		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/AdminImpersonationEndpointsTest.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/AdminImpersonationEndpointsTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$department_id\.$#'
 			identifier: property.notFound
 			count: 2
@@ -4901,12 +4853,6 @@ parameters:
 			identifier: argument.templateType
 			count: 4
 			path: tests/Feature/AnnouncementControllerTest.php
-
-		-
-			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/ApiErrorContractTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -4955,12 +4901,6 @@ parameters:
 			identifier: offsetAccess.notFound
 			count: 2
 			path: tests/Feature/Attendance/AutoCloseAttendanceCommandTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\CalendarConnection\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Attendance/CalendarTenantScopingTest.php
 
 		-
 			message: '#^Cannot call method format\(\) on Illuminate\\Support\\Carbon\|null\.$#'
@@ -5057,6 +4997,36 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/Auth/RegisterLoginFlowTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:privateUrlPayloads\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:test_configure_rejects_private_or_local_endpoints\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Auth\\SsoConfigureSsrfGuardTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Auth/SsoConfigureSsrfGuardTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNull\(\) with string will always evaluate to false\.$#'
@@ -5167,12 +5137,6 @@ parameters:
 			path: tests/Feature/Cabinet/CabinetDocumentControllerTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Modules\\Attendance\\Domain\\Models\\CalendarConnection\:\:\$company_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/CalendarCompanyIdTest.php
-
-		-
 			message: '#^Property Tests\\Feature\\CalendarSyncControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -5225,18 +5189,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/CalendarSyncServiceTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Cameras\\CameraRtspSecurityTest\:\:authHeaders\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Cameras/CameraRtspSecurityTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Cameras\\CameraRtspSecurityTest\:\:createCompanyWithCameras\(\) has parameter \$features with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Cameras/CameraRtspSecurityTest.php
 
 		-
 			message: '#^Cannot access property \$last_used_at on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
@@ -5521,6 +5473,54 @@ parameters:
 			path: tests/Feature/CountryCurrencyPropagationTest.php
 
 		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$companyB \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$employeeA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$employeeB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$managerA \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\CrossTenantIndexIsolationTest\:\:\$managerB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 5
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 5
+			path: tests/Feature/CrossTenantIndexIsolationTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 27
@@ -5713,6 +5713,42 @@ parameters:
 			path: tests/Feature/Edge/EdgeLicenseExpiryTest.php
 
 		-
+			message: '#^Method Tests\\Feature\\Edge\\EdgeLicenseFailClosedTest\:\:signWithAppKey\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Edge/EdgeLicenseFailClosedTest.php
+
+		-
+			message: '#^Parameter \#1 \$data of function Tests\\Feature\\Edge\\base64url_encode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/Edge/EdgeLicenseFailClosedTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function base64_encode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/Edge/EdgeLicenseFailClosedTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseIssuanceGuardTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Edge/EdgeLicenseIssuanceGuardTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseIssuanceGuardTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Edge/EdgeLicenseIssuanceGuardTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Edge\\EdgeLicenseIssuanceGuardTest\:\:\$manager \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Edge/EdgeLicenseIssuanceGuardTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 4
@@ -5795,6 +5831,18 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: tests/Feature/Edge/EdgeNodeSyncRouteTest.php
+
+		-
+			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Feature/Edge/EdgeNodeSyncRouteTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -6307,6 +6355,18 @@ parameters:
 			path: tests/Feature/Growth/GrowthControllerTest.php
 
 		-
+			message: '#^Property Tests\\Feature\\Growth\\GrowthPartnerRaceTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Growth/GrowthPartnerRaceTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Growth\\GrowthPartnerRaceTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Growth/GrowthPartnerRaceTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6328,12 +6388,6 @@ parameters:
 			message: '#^Access to an undefined property Tests\\Feature\\GrowthModuleTest\:\:\$commissionService\.$#'
 			identifier: property.notFound
 			count: 4
-			path: tests/Feature/GrowthModuleTest.php
-
-		-
-			message: '#^Array has 2 duplicate keys with value ''country'' \(''country'', ''country''\)\.$#'
-			identifier: array.duplicateKey
-			count: 1
 			path: tests/Feature/GrowthModuleTest.php
 
 		-
@@ -8175,13 +8229,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 13
-			path: tests/Feature/VehicleControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 7
+			count: 9
 			path: tests/Feature/VehicleControllerTest.php
 
 		-
@@ -8261,18 +8309,6 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/AuthServiceTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Cameras\\TestRtspSsidGuardTest\:\:privateTargets\(\) return type has no value type specified in iterable type iterable\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Cameras/TestRtspSsidGuardTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Cameras\\TestRtspSsidGuardTest\:\:publicTargets\(\) return type has no value type specified in iterable type iterable\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Cameras/TestRtspSsidGuardTest.php
 
 		-
 			message: '#^Method Tests\\Unit\\CountryDefaultsTest\:\:acceptanceCriteriaCountryCodesProvider\(\) should return array\<int, array\{string\}\> but returns array\{''Algeria \(DZ\)''\: array\{''DZ''\}, ''Morocco \(MA\)''\: array\{''MA''\}, ''Tunisia \(TN\)''\: array\{''TN''\}, ''France \(FR\)''\: array\{''FR''\}, ''Turkey \(TR\)''\: array\{''TR''\}, ''Cameroon \(CM, CEMAC\)''\: array\{''CM''\}, ''Central African Republic \(CF, CEMAC\)''\: array\{''CF''\}, ''Chad \(TD, CEMAC\)''\: array\{''TD''\}, \.\.\.\}\.$#'
