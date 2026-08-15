@@ -200,6 +200,27 @@ class PartnerService
     {
         $oldStatus = $payout->status;
 
+        // #3859 : transitions de statut gardées (allowlist). Avant, le service
+        // acceptait n'importe quel changement de statut (ex. paid → pending),
+        // ce qui pouvait réouvrir une demande déjà payée. Le solde disponible
+        // (`requestPayout`) déduit les demandes pending/approved/paid — une
+        // demande repassée en pending serait donc comptée deux fois dans les
+        // demandes en attente sans verrou de transition.
+        $allowedTransitions = [
+            'pending' => ['paid', 'rejected', 'approved'],
+            'approved' => ['paid', 'rejected'],
+            'rejected' => ['pending'],
+            'paid' => [],
+        ];
+
+        if (! in_array($newStatus, $allowedTransitions[$oldStatus] ?? [], true)) {
+            throw new \App\Exceptions\DomainException(
+                "Transition de statut invalide: {$oldStatus} -> {$newStatus}.",
+                422,
+                'INVALID_PAYOUT_TRANSITION'
+            );
+        }
+
         DB::transaction(function () use ($payout, $newStatus, $adminId, $reason, $oldStatus) {
             $payout->update([
                 'status' => $newStatus,

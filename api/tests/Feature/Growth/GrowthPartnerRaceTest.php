@@ -98,6 +98,40 @@ class GrowthPartnerRaceTest extends TestCase
         $service->apply((int) $this->employee->id, ['type' => 'individual']);
     }
 
+    public function test_payout_status_transition_guard_rejects_invalid_moves(): void
+    {
+        // #3859 : transitions de statut gardées (allowlist). Un payout déjà
+        // payé ne peut pas repasser en pending (sinon le solde disponible le
+        // compterait deux fois en attente), et un statut inconnu est refusé.
+        $service = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
+        $partner = $this->createApprovedPartner(10000);
+
+        $payout = PartnerPayoutRequest::create([
+            'partner_id' => $partner->id,
+            'amount' => 8000,
+            'currency' => 'DZD',
+            'status' => 'pending',
+        ]);
+
+        // Transition valide : pending → paid
+        $service->updatePayoutStatus($payout, 'paid', (int) $this->employee->id, 'Paiement effectue');
+        $payout->refresh();
+        $this->assertSame('paid', $payout->status);
+
+        // Transition invalide : paid → pending → DomainException propre
+        try {
+            $service->updatePayoutStatus($payout, 'pending', (int) $this->employee->id, 'Reouverture');
+            $this->fail('La transition paid -> pending doit etre refusee.');
+        } catch (\App\Exceptions\DomainException $e) {
+            $this->assertSame(422, $e->statusCode());
+            $this->assertSame('INVALID_PAYOUT_TRANSITION', $e->errorCode());
+        }
+
+        // Le statut n'a pas bougé
+        $payout->refresh();
+        $this->assertSame('paid', $payout->status);
+    }
+
     private function createApprovedPartner(int $commissionsCents): Partner
     {
         $partner = Partner::create([
