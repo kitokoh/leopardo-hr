@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.faq.keywords,
   ogImage: pageMetadata.faq.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/faq',
+  canonical: `${SITE_URL}/faq`,
 });
 
 export default function FaqLayout({
@@ -18,7 +19,7 @@ export default function FaqLayout({
   const faqSchema = generateFAQSchema([
     {
       question: 'Leopardo RH propose-t-il un essai gratuit ?',
-      answer: 'Oui, un essai guide gratuit de 14 jours est disponible sans carte bancaire.',
+      answer: 'Oui, un essai guide gratuit de 30 jours est disponible sans carte bancaire.',
     },
     {
       question: 'Mes donnees sont-elles securisees ?',

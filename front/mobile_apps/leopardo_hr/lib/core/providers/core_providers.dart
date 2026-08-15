@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/location/attendance_location_service.dart';
 import 'package:leopardo_core/core/services/offline_sync_service.dart';
 import 'package:leopardo_core/core/services/push_notification_service.dart';
@@ -39,7 +40,12 @@ final appPreferencesProvider = Provider<AppPreferences>((ref) {
 final apiClientProvider = Provider<ApiClient>((ref) {
   final storage = ref.watch(secureStorageProvider);
   final preferences = ref.watch(appPreferencesProvider);
-  return ApiClient(storage, preferences);
+  // Issue #2737 — un 401 (session révoquée, mot de passe changé) doit sortir
+  // l'utilisateur de l'état « authentifié » fantôme. Lecture différée du
+  // notifier pour éviter la dépendance circulaire apiClient ↔ authProvider.
+  return ApiClient(storage, preferences, onUnauthorized: () {
+    ref.read(authProvider.notifier).handleSessionExpired();
+  });
 });
 
 final pushNotificationServiceProvider = Provider<PushNotificationService>((
