@@ -148,7 +148,7 @@ export default function CaseStudiesPage() {
       <CTASection
         title="Votre entreprise pourrait être la prochaine"
         description="Rejoignez 500+ entreprises qui ont choisi Leopardo RH"
-        primaryCta={{ text: 'Essai gratuit 30 jours', href: '/signup' }}
+        primaryCta={{ text: 'Essai gratuit 14 jours', href: '/signup' }}
         secondaryCta={{ text: 'Demander une démo', href: '/demo' }}
       />
 

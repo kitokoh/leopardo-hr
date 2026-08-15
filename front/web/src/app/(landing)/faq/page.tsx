@@ -16,7 +16,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'General',
     question: 'Qu\'est-ce que Leopardo RH ?',
-    answer: 'Leopardo RH est une plateforme SaaS multi-tenant de gestion des ressources humaines qui couvre la paie, les conges, le pointage, le recrutement, la formation et bien plus. Elle est disponible en version web, mobile (Flutter) et borne kiosk (ZKTeco).',
+    answer: 'Leopardo RH est une plateforme SaaS multi-tenant de gestion des ressources humaines qui couvre la paie, les congés, le pointage, le recrutement, la formation et bien plus. Elle est disponible en version web, mobile (Flutter) et borne kiosk (ZKTeco).',
   },
   {
     category: 'General',
@@ -34,7 +34,7 @@ const faqItems: FaqItem[] = [
     answer: 'Oui ! Nous offrons un essai gratuit de 14 jours sans engagement et sans carte de crédit. Vous avez accès à toutes les fonctionnalités des plans payants pendant la période d\'essai.',
   },
   {
-    category: 'Fonctionnalites',
+    category: 'Fonctionnalités',
     question: 'Comment fonctionne le pointage biometrique ?',
     answer: 'Leopardo RH s\'integre avec les bornes ZKTeco pour le pointage par empreinte digitale, reconnaissance faciale ou QR code. Les pointages sont synchronises en temps reel avec le serveur central, avec support du mode offline.',
   },
@@ -46,12 +46,12 @@ const faqItems: FaqItem[] = [
   {
     category: 'Fonctionnalites',
     question: 'L\'application mobile est-elle disponible ?',
-    answer: 'Oui, l\'application mobile Leopardo RH est disponible pour iOS et Android. Elle permet aux employes de pointer, consulter leurs fiches de paie, demander des conges, voir l\'organigramme et recevoir des notifications push.',
+    answer: 'Oui, l\'application mobile Leopardo RH est disponible pour iOS et Android. Elle permet aux employés de pointer, consulter leurs fiches de paie, demander des congés, voir l\'organigramme et recevoir des notifications push.',
   },
   {
-    category: 'Securite',
+    category: 'Sécurité',
     question: 'Comment sont protegees les donnees ?',
-    answer: 'Toutes les donnees sont chiffrees en transit (TLS 1.3) et au repos. L\'architecture multi-tenant utilise des schemas PostgreSQL isoles par entreprise. Nous appliquons les bonnes pratiques OWASP et effectuons des audits de securite reguliers.',
+    answer: 'Toutes les donnees sont chiffrees en transit (TLS 1.3) et au repos. L\'architecture multi-tenant utilise des schemas PostgreSQL isoles par entreprise. Nous appliquons les bonnes pratiques OWASP et effectuons des audits de sécurité reguliers.',
   },
   {
     category: 'Securite',
@@ -95,7 +95,7 @@ export default function FaqPage() {
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
       <HeroSection
         headline="Questions Frequentes"
-        subheadline="Trouvez rapidement les reponses a vos questions"
+        subheadline="Trouvez rapidement les réponses a vos questions"
         badge={{ text: 'FAQ', icon: <HelpCircle className="w-3 h-3" /> }}
       />
 
@@ -166,7 +166,7 @@ export default function FaqPage() {
 
       <CTASection
         headline="Encore des Questions ?"
-        subheadline="Contactez notre equipe pour une reponse personnalisee"
+        subheadline="Contactez notre équipe pour une réponse personnalisée"
         ctaPrimary={{ text: 'Nous Contacter', href: '/contact' }}
         ctaSecondary={{ text: 'Essai gratuit', href: '/demo' }}
         background="gradient"

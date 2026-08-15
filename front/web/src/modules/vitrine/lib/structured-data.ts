@@ -32,6 +32,7 @@ export function generateOrganizationSchema() {
       'https://twitter.com/leopardo',
       'https://linkedin.com/company/leopardo',
       'https://facebook.com/leopardo',
+      'https://github.com/kitokoh/leopardo-hr',
     ],
     address: {
       '@type': 'PostalAddress',
@@ -233,6 +234,7 @@ export function generateLocalBusinessSchema() {
       'https://twitter.com/leopardo',
       'https://linkedin.com/company/leopardo',
       'https://facebook.com/leopardo',
+      'https://github.com/kitokoh/leopardo-hr',
     ],
   };
 }
