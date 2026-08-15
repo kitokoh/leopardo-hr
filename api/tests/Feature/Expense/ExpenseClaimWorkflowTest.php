@@ -55,7 +55,9 @@ class ExpenseClaimWorkflowTest extends TestCase
 
     public function test_employee_can_create_expense_claim_as_draft(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($employee);
@@ -76,7 +78,9 @@ class ExpenseClaimWorkflowTest extends TestCase
 
     public function test_employee_can_submit_own_claim(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $claim = ExpenseClaim::create([
@@ -99,7 +103,9 @@ class ExpenseClaimWorkflowTest extends TestCase
 
     public function test_manager_can_approve_submitted_claim(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
@@ -131,7 +137,9 @@ class ExpenseClaimWorkflowTest extends TestCase
         // Issue #2677 — garde de transition : un brouillon doit d'abord être
         // soumis ; on ne peut pas l'approuver directement (ni rejeter un
         // brouillon).
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
@@ -159,7 +167,9 @@ class ExpenseClaimWorkflowTest extends TestCase
 
     public function test_manager_cannot_approve_without_reason_after_reject(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
@@ -187,8 +197,11 @@ class ExpenseClaimWorkflowTest extends TestCase
 
     public function test_cross_tenant_claim_is_hidden(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyA */
         $companyA = Company::factory()->create();
+        /** @var \App\Core\Tenant\Domain\Models\Company $companyB */
         $companyB = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employeeA */
         $employeeA = Employee::factory()->create(['company_id' => $companyA->id]);
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
 
@@ -212,7 +225,9 @@ class ExpenseClaimWorkflowTest extends TestCase
 
     public function test_employee_cannot_approve_own_claim(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $claim = ExpenseClaim::create([

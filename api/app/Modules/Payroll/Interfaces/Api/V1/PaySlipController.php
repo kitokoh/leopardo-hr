@@ -94,7 +94,7 @@ class PaySlipController extends Controller
 
         $slips = $payrollRun->paySlips()
             ->with(['employee:id,first_name,last_name,email', 'lines', 'payrollRun:id,country_code'])
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         $this->auditLogger->recordSensitive($request, $actor, 'pay_slip.list', $payrollRun, [
             'result_count' => $slips->total(),

@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -89,6 +90,11 @@ class SelfServiceTrialTest extends TestCase
                     'trial' => ['days', 'ends_at'],
                 ],
             ]);
+
+        // Cohérence essai (constat QA live 2026-08-15, #3012/#3056) : la
+        // réponse doit annoncer le même nombre de jours que le
+        // provisionnement réel (14 j — VerifyTrialSignup + plan fallback).
+        $this->assertSame(14, $response->json('data.trial.days'));
 
         // #2680 — le mot de passe temporaire ne doit JAMAIS transiter dans la
         // réponse JSON (fuite potentielle via logs/proxy) : il part par email.
@@ -231,7 +237,7 @@ class SelfServiceTrialTest extends TestCase
         // Un seul tenant créé pour cet email
         $this->assertSame(
             1,
-            \Illuminate\Support\Facades\DB::table('companies')
+            DB::table('companies')
                 ->where('name', 'Race Test Algeria')
                 ->count(),
             'Le double verify ne doit pas créer deux tenants.'
@@ -269,10 +275,39 @@ class SelfServiceTrialTest extends TestCase
 
         $this->assertSame(
             0,
-            \Illuminate\Support\Facades\DB::table('companies')
+            DB::table('companies')
                 ->where('name', 'Claimed Test')
                 ->count(),
             'Aucun tenant ne doit être créé pour une demande déjà claimée.'
         );
+    }
+
+    // Issue #3057 — l'échec d'envoi de l'OTP ne doit jamais répondre
+    // « Code envoyé » : le lead est conservé mais l'état est honnête
+    // (provisioned=false → l'UI bascule en « demande reçue, contact 24 h »).
+    public function test_signup_reports_honest_state_when_otp_email_fails(): void
+    {
+        Mail::shouldReceive('to')
+            ->once()
+            ->andThrow(new \RuntimeException('smtp unavailable'));
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder.otp.fail@newtech.dz',
+            'company' => 'NewTech OTP Fail',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('provisioned', false)
+            ->assertJsonPath('data.status', 'pending_fallback');
+
+        // La demande est bien conservée malgré l'échec du mail.
+        $this->assertDatabaseHas('company_requests', [
+            'email' => 'founder.otp.fail@newtech.dz',
+            'status' => 'pending',
+        ]);
     }
 }

@@ -7,9 +7,9 @@ on:
     paths:
       - 'api/app/Jobs/**'
       - 'api/app/Listeners/**'
-      - 'api/app/Services/WebhookDispatcher.php'
-      - 'api/app/Services/PayrollService.php'
-      - 'api/app/Http/Controllers/Api/V1/PayrollRunController.php'
+      - 'api/app/Modules/Billing/Infrastructure/Services/WebhookDispatcher.php'
+      - 'api/app/Modules/Payroll/Infrastructure/Services/PayrollService.php'
+      - 'api/app/Modules/Payroll/Interfaces/Api/V1/PayrollRunController.php'
       - 'api/tests/Feature/QueueJobsTest.php'
       - 'api/tests/Feature/PayrollRunControllerTest.php'
       - '.github/workflows/backend-jobs-ci.yml'
@@ -18,9 +18,9 @@ on:
     paths:
       - 'api/app/Jobs/**'
       - 'api/app/Listeners/**'
-      - 'api/app/Services/WebhookDispatcher.php'
-      - 'api/app/Services/PayrollService.php'
-      - 'api/app/Http/Controllers/Api/V1/PayrollRunController.php'
+      - 'api/app/Modules/Billing/Infrastructure/Services/WebhookDispatcher.php'
+      - 'api/app/Modules/Payroll/Infrastructure/Services/PayrollService.php'
+      - 'api/app/Modules/Payroll/Interfaces/Api/V1/PayrollRunController.php'
       - 'api/tests/Feature/QueueJobsTest.php'
       - 'api/tests/Feature/PayrollRunControllerTest.php'
       - '.github/workflows/backend-jobs-ci.yml'
@@ -33,7 +33,7 @@ env:
 
 concurrency:
   group: backend-jobs-ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   jobs-and-queues:

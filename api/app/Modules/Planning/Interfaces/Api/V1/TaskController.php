@@ -48,7 +48,7 @@ class TaskController extends Controller
             $query->where('priority', $request->input('priority'));
         }
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
 
         return TaskResource::collection($query->orderBy('due_date')->orderByDesc('created_at')->paginate($perPage))
             ->response();
