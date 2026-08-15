@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useSsrLang } from '@/modules/vitrine/lib/locale-ssr-provider'
 import { SITE_URL } from '@/lib/site-url'
 import {
   type AppLocale,
@@ -761,7 +762,15 @@ export function setVitrineLocale(locale: AppLocale): void {
 }
 
 export function useVitrineLocale() {
-  const [locale, setLocaleState] = useState<AppLocale>(() => getCurrentLocale())
+  // Hydratation (bug vitrine 2026-08-15) : le premier rendu client doit
+  // matcher le SSR — on initialise sur la langue SSR (Accept-Language,
+  // fournie par LocaleSsrProvider depuis le RootLayout) puis on applique la
+  // vraie préférence (localStorage / navigator.language) après montage dans
+  // l'effet. Avant ce fix, le client hydratait avec getPreferredLocale()
+  // (navigator.language) pendant que le SSR rendait 'fr' → mismatch →
+  // erreur React #418 → interactivité morte pour tout visiteur non-FR.
+  const ssrLang = useSsrLang()
+  const [locale, setLocaleState] = useState<AppLocale>(() => normalizeLocale(ssrLang))
 
   useEffect(() => {
     const syncLocale = () => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -1141,7 +1142,7 @@ function CheckoutInner() {
     ? ['Récapitulatif', 'Créer mon compte']
     : ['Récapitulatif', 'Compte', 'Paiement'];
 
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [step, setStep] = useState(0);
   const [billing, setBilling] = useState<'monthly' | 'annual'>(rawBilling ?? 'annual');
   const [account, setAccount] = useState<AccountData>({
@@ -1163,7 +1164,7 @@ function CheckoutInner() {
       dir={direction}
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <main className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">

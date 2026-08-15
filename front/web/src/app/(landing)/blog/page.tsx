@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useSearchParams } from 'next/navigation';
 import {
   Navbar,
@@ -169,7 +170,7 @@ const blogCopy: Record<AppLocale, {
 
 export default function BlogPage() {
   const searchParams = useSearchParams();
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   const copy = blogCopy[locale] ?? blogCopy.fr;
   const posts = getBlogPosts(locale);
@@ -190,7 +191,7 @@ export default function BlogPage() {
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <HeroSection
         headline={copy.hero.headline}

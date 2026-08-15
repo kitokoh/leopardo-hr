@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -423,7 +424,7 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
 };
 
 export default function DownloadPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { locale, direction } = useVitrineLocale();
   const c = copy[locale as AppLocale] ?? copy.fr;
@@ -433,7 +434,7 @@ export default function DownloadPage() {
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-cyan-50/20 dark:from-slate-950 dark:via-emerald-950/20 dark:to-cyan-950/10" />

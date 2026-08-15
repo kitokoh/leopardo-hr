@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -106,7 +107,7 @@ function SuccessInner() {
   const amount = searchParams.get('amount');
   const price = amount ? (parseInt(amount, 10) / 100).toFixed(2) : null;
 
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(true);
 
@@ -136,7 +137,7 @@ function SuccessInner() {
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
     >
       {showConfetti && <Confetti />}
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <main className="relative py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Background glow */}

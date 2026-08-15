@@ -1,3 +1,4 @@
+import { LocaleSsrProvider } from "@/modules/vitrine/lib/locale-ssr-provider";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { headers } from "next/headers";
@@ -173,7 +174,9 @@ export default async function RootLayout({
           <PWAProvider>
             <LocaleSync />
             <main id="main-content" className="flex min-h-screen flex-col">
-              {children}
+              <LocaleSsrProvider lang={ssrLang}>
+                {children}
+              </LocaleSsrProvider>
             </main>
           </PWAProvider>
         </DarkModeProvider>
