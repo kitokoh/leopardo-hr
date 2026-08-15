@@ -119,10 +119,13 @@ class StripeService
      */
     public function verifyWebhookSignature(string $payload, string $sigHeader): ?array
     {
-        if (!$this->webhookSecret) {
-            Log::warning('Stripe: Webhook secret not configured, skipping verification.');
+        if (! $this->webhookSecret) {
+            // #2614 fail-closed : secret absent = webhook non vérifiable = on
+            // REJETTE (null). Un secret vide ne doit jamais accepter un
+            // payload (fail-open = signature by-passable en prod).
+            Log::error('Stripe: Webhook secret not configured — webhook REJETÉ (fail-closed).');
 
-            return json_decode($payload, true);
+            return null;
         }
 
         $elements = [];

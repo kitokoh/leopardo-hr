@@ -18,7 +18,7 @@ class ProfileScreen extends ConsumerWidget {
 
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
-    'ar': 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
+    'ar': 'العربية',
     'tr': 'Turkce',
     'en': 'English',
   };

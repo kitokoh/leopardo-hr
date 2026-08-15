@@ -202,7 +202,7 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          '${claim.date}${claim.description != null ? " "¢ ${claim.description}" : ""}',
+                          '${claim.date}${claim.description != null ? " • ${claim.description}" : ""}',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMutedDark,
                           ),

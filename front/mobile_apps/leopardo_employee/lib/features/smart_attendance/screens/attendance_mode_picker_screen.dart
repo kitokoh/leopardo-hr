@@ -59,7 +59,7 @@ class _AttendanceModePickerScreenState
           'icon': Icons.qr_code_scanner_rounded,
           'color': AppColors.mobileAccentPurple,
           'description':
-              'Scannez le QR Code affiché Ã  l\'entrée de l\'entreprise pour '
+              'Scannez le QR Code affiché à l\'entrée de l\'entreprise pour '
                   'pointer votre arrivée et votre départ.',
           'badge': null,
         },

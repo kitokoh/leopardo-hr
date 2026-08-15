@@ -313,7 +313,7 @@ class _EmployeesTab extends ConsumerWidget {
     if (e.scheduleName?.trim().isNotEmpty == true) {
       parts.add('Horaire ${e.scheduleName}');
     }
-    return parts.isEmpty ? null : parts.join(' Â· ');
+    return parts.isEmpty ? null : parts.join(' · ');
   }
 
   Color _workStateColor(String state) => switch (state) {
@@ -1149,7 +1149,7 @@ class _ScheduleSelector extends StatelessWidget {
           (schedule) => DropdownMenuItem<int?>(
             value: schedule.id,
             child: Text(
-              '${schedule.name} Â· ${schedule.startTime}-${schedule.endTime}',
+              '${schedule.name} · ${schedule.startTime}-${schedule.endTime}',
               overflow: TextOverflow.ellipsis,
             ),
           ),

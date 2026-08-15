@@ -65,6 +65,7 @@ type CopyTree = {
     heading: string;
     employees: string;
     present: string;
+    live: string;
     late: string;
     activity: string;
     team: string;
@@ -390,6 +391,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Tableau de bord',
       employees: 'Employes actifs',
       present: 'presents',
+      live: 'En direct',
       late: 'Retards',
       activity: 'Activite recente',
       team: 'Employes',
@@ -713,6 +715,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'لوحة التحكم',
       employees: 'الموظفون النشطون',
       present: 'حاضرون',
+      live: 'مباشر',
       late: 'التأخيرات',
       activity: 'النشاط الأخير',
       team: 'الموظفون',
@@ -1036,6 +1039,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Kontrol paneli',
       employees: 'Aktif calisanlar',
       present: 'mevcut',
+      live: 'Canlı',
       late: 'Gecikmeler',
       activity: 'Son etkinlik',
       team: 'Calisanlar',
@@ -1359,6 +1363,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Dashboard',
       employees: 'Active employees',
       present: 'present',
+      live: 'Live',
       late: 'Late arrivals',
       activity: 'Recent activity',
       team: 'Employees',

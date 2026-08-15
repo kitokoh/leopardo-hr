@@ -58,7 +58,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
           ),
         ),
         actions: [
-          // Bouton de rafraÃ®chissement
+          // Bouton de rafraîchissement
           IconButton(
             tooltip: 'Actualiser',
             icon: const Icon(Icons.refresh_rounded, color: _muted),
@@ -187,7 +187,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
       ),
     );
 
-    // Si l'utilisateur a sauvegardé un nouveau mode, rafraÃ®chir
+    // Si l'utilisateur a sauvegardé un nouveau mode, rafraîchir
     if (result == true) {
       ref.invalidate(smartAttendanceConfigProvider);
     }
