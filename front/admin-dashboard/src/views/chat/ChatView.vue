@@ -116,8 +116,10 @@ const messages = ref([])
 const inputMessage = ref('')
 const streaming = ref(false)
 // Contrat backend : POST /admin/ai/chat retourne 501 ADMIN_CHAT_UNAVAILABLE
-// tant que le service n'est pas branché (#3390) — on désactive le composer.
-const chatUnavailable = ref(false)
+// tant que le service n'est pas branché (#3390) — composer désactivé et état
+// « indisponible » affiché honnêtement (fix #3809 : la ref restait false et
+// l'état honnête n'apparaissait jamais).
+const chatUnavailable = ref(true)
 const messagesContainer = ref(null)
 
 function formatDate(date) {

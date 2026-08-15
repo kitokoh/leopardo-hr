@@ -33,7 +33,8 @@
               ></div>
             </div>
             <div class="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              <span class="animate-pulse">Redirection vers le cockpit d'accès</span>
+              <span class="animate-pulse" v-if="status === 'logging-out'">Fermeture de session...</span>
+              <span v-else>Session sécurisée — redirection</span>
             </div>
           </div>
         </div>
@@ -55,24 +56,27 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 const progress = ref(0)
+// #3809 (audit 2026-08-15) : plus de barre factice ni de délai fixe de 3,2 s.
+// La progression reflète l'état réel : 35 % pendant la fermeture de session
+// locale, 100 % uniquement une fois la session réellement purgée, puis
+// redirection événementielle (laisser la barre finir).
+const status = ref('logging-out') // 'logging-out' | 'done'
 
 onMounted(async () => {
-  // Start progress bar
-  setTimeout(() => {
-    progress.value = 100
-  }, 100)
-
-  // Perform logout
+  progress.value = 35
   try {
     await authStore.logout()
   } catch (error) {
+    // logout() purge toujours l'état local (finally) ; garde défensive si une
+    // future implémentation échoue avant la purge.
     console.error('Logout error:', error)
+  } finally {
+    progress.value = 100
+    status.value = 'done'
   }
-
-  // Redirect after animation
   setTimeout(() => {
-    router.push('/login')
-  }, 3200)
+    router.replace('/login')
+  }, 350)
 })
 </script>
 
