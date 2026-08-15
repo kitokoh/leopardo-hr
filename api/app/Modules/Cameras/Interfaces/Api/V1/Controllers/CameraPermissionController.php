@@ -43,8 +43,20 @@ class CameraPermissionController extends Controller
         $actor = $request->user();
         $data = $request->validated();
 
-        /** @var Employee $target */
-        $target = Employee::query()->findOrFail($data['employee_id']);
+        // Issue #3428 : l'employé cible doit appartenir à la société de la
+        // caméra (FK cross-tenant sinon — pattern #3065).
+        /** @var Employee|null $target */
+        $target = Employee::query()
+            ->where('company_id', $camera->company_id)
+            ->find($data['employee_id']);
+
+        if ($target === null) {
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'The target employee does not exist in this company.',
+                'localized_message' => __('errors.EMPLOYEE_NOT_FOUND', [], 'fr'),
+            ], 404);
+        }
 
         $permission = CameraPermission::query()->updateOrCreate(
             [
