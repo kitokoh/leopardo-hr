@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import ComplianceBadge, { type ComplianceBlock } from '@/components/payroll/ComplianceBadge';
 import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import {
   DollarSign,
@@ -21,8 +22,10 @@ const emptySubscribe = () => () => {};
 interface PaySlip {
   id: number;
   employee_id: number;
-  employee_name: string;
-  period: string;
+  employee_name?: string | null;
+  period?: string | null;
+  country_code?: string | null;
+  compliance?: ComplianceBlock | null;
   gross_salary: number;
   net_salary: number;
   status: string;
@@ -167,24 +170,31 @@ export default function PayrollPage() {
                     <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnGross}</th>
                     <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnNet}</th>
                     <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnCompliance}</th>
                     <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-app-border">
                   {loading ? (
-                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.loading}</td></tr>
+                    <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">{labels.loading}</td></tr>
                   ) : paginated.length === 0 ? (
-                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noPayslips}</td></tr>
+                    <tr><td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noPayslips}</td></tr>
                   ) : paginated.map(slip => (
                     <tr key={slip.id} className="transition-colors hover:bg-transparent/60">
-                      <td className="px-6 py-4 font-bold text-slate-950">{slip.employee_name}</td>
-                      <td className="px-4 py-4 text-slate-600">{slip.period}</td>
+                      <td className="px-6 py-4 font-bold text-slate-950">{slip.employee_name ?? '—'}</td>
+                      <td className="px-4 py-4 text-slate-600">{slip.period ?? '—'}</td>
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(slip.gross_salary)}</td>
                       <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(slip.net_salary)}</td>
                       <td className="px-4 py-4 text-center">
                         <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${slip.status === 'validated' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
                           {slip.status === 'validated' ? labels.statusValidated : labels.statusDraft}
                         </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        {/* Issue #2116 — rétro-compatible : aucun affichage si le payload n'expose pas le bloc compliance */}
+                        {slip.compliance ? (
+                          <ComplianceBadge compliance={slip.compliance} countryCode={slip.country_code} locale={locale} />
+                        ) : null}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
