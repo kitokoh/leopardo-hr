@@ -10726,17 +10726,49 @@ paths:
         "422":
           description: "Erreur de traitement de l'assertion"
 
-  /sso/oidc/{companyId}/callback:
+  /sso/oidc/{companyId}/authorize:
     get:
       tags: ["Platform"]
-      summary: "Callback OpenID Connect (IdP -> SP)"
-      description: "Endpoint public recevant le code/id_token OIDC. Stub — echange token a implementer."
+      summary: "Demarrer le flux OpenID Connect (SP -> IdP)"
+      description: "Endpoint public : genere state+nonce et retourne l'URL d'autorisation de l'IdP a ouvrir par le navigateur (issue #2231)."
       security: []
       parameters:
         - name: companyId
           in: path
           required: true
-          schema: { type: string }
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: "URL d'autorisation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      authorize_url: { type: string }
+        "422":
+          description: "OIDC non configure ou incomplet"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
+
+  /sso/oidc/{companyId}/callback:
+    get:
+      tags: ["Platform"]
+      summary: "Callback OpenID Connect (IdP -> SP)"
+      description: "Endpoint public recevant le code/id_token OIDC : verifie le state, echange le code contre les tokens, valide l'id_token (signature JWKS + iss/aud/exp/nonce) et emet un token Sanctum pour l'employe identifie (issue #2231)."
+      security: []
+      parameters:
+        - name: companyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
         - name: code
           in: query
           schema: { type: string }
@@ -10748,11 +10780,37 @@ paths:
           schema: { type: string }
       responses:
         "200":
-          description: "Callback traite"
+          description: "Connexion reussie — token Sanctum + employe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token: { type: string }
+                      token_type: { type: string }
+                      token_expires_at: { type: [string, "null"] }
+                      employee:
+                        type: object
+                        properties:
+                          id: { type: integer }
+                          first_name: { type: string }
+                          last_name: { type: string }
+                          email: { type: string }
+                          role: { type: string }
+                          manager_role: { type: [string, "null"] }
         "400":
           description: "Code ou id_token manquant"
         "422":
-          description: "Erreur d'echange de token"
+          description: "State invalide, id_token invalide, employe inconnu ou autre entreprise"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
 
   /sso/status:
     get:
@@ -10788,15 +10846,22 @@ paths:
           application/json:
             schema:
               type: object
-              required: [provider, entity_id, sso_url]
+              required: [provider]
               properties:
                 provider: { type: string, enum: [saml, oidc] }
-                entity_id: { type: string, format: uri }
-                sso_url: { type: string, format: uri }
+                entity_id: { type: string, format: uri, nullable: true }
+                sso_url: { type: string, format: uri, nullable: true }
                 slo_url: { type: string, format: uri, nullable: true }
                 certificate: { type: string, nullable: true }
                 client_id: { type: string, nullable: true }
                 client_secret: { type: string, nullable: true }
+                # OpenID Connect (issue #2231)
+                issuer: { type: string, format: uri, nullable: true }
+                authorize_url: { type: string, format: uri, nullable: true }
+                token_url: { type: string, format: uri, nullable: true }
+                jwks_uri: { type: string, format: uri, nullable: true }
+                redirect_uri: { type: string, format: uri, nullable: true }
+                scopes: { type: string, nullable: true }
       responses:
         "200":
           description: "SSO configure avec succes"

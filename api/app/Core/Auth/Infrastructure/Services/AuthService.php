@@ -166,6 +166,103 @@ readonly class AuthService
         ]);
     }
 
+    /**
+     * SSO OIDC (issue #2231/#2197) — émet un token Sanctum pour l'employé
+     * identifié par l'IdP, sans mot de passe. Réutilise la résolution
+     * cross-schema `public.user_lookups` et les mêmes gardes que login()
+     * (statut compte, statut employé, company résolue, abilities tenant).
+     *
+     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+     */
+    public function loginViaEmail(string $email, ?string $deviceName = null): array
+    {
+        $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
+        $employeeSchema = null;
+
+        try {
+            /** @var Employee|null $employee */
+            $employee = null;
+
+            if ($this->lookupTableExists()) {
+                $lookup = DB::table($this->lookupTable())
+                    ->where('email', $email)
+                    ->first();
+
+                if ($lookup !== null) {
+                    $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+                    if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
+                        $this->setTenantSearchPath($lookupSchema);
+                        $employeeSchema = $lookupSchema;
+                    }
+
+                    /** @var Employee|null $employee */
+                    $employee = Employee::withoutGlobalScopes()
+                        ->with('company')
+                        ->where('company_id', $lookup->company_id)
+                        ->where('id', $lookup->employee_id)
+                        ->where('email', $email)
+                        ->first();
+                }
+            }
+
+            if (! $employee) {
+                $found = $this->findEmployeeInTenantSchemas($email);
+                if ($found !== null) {
+                    [$employee, $employeeSchema] = $found;
+                    $this->setTenantSearchPath($employeeSchema);
+                }
+            }
+
+            if (! $employee) {
+                throw new InvalidCredentialsException;
+            }
+
+            if ($employeeSchema !== null) {
+                $this->setTenantSearchPath($employeeSchema);
+            }
+
+            $company = $this->resolveCompanyForEmployee($employee);
+            if (! $company) {
+                throw new CompanyNotFoundException;
+            }
+
+            if (in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
+
+            if ($employee->status !== 'active') {
+                throw new EmployeeNotActiveException;
+            }
+
+            $employee->forceFill(['last_login_at' => now()])->saveQuietly();
+
+            $tokenName = $deviceName ?: 'sso';
+            $expirationMinutes = (int) config('sanctum.expiration', 0);
+            $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+            $abilities = ['*'];
+            if ($employeeSchema !== null) {
+                $abilities[] = 'tenant_schema:'.$employeeSchema;
+                $abilities[] = 'tenant_email:'.$employee->email;
+                $abilities[] = 'tenant_company:'.$company->id;
+                $abilities[] = 'tenant_employee:'.$employee->id;
+            }
+
+            $tokenResult = $employee->createToken($tokenName, $abilities, $expiresAt);
+
+            return [
+                'employee' => $employee,
+                'token' => $tokenResult->plainTextToken,
+                'token_type' => 'Bearer',
+                'token_expires_at' => $expiresAt?->toIso8601String(),
+            ];
+        } finally {
+            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+                DB::statement('SET search_path TO '.$previousSearchPath);
+            }
+        }
+    }
+
     private function resolveCompanyForEmployee(Employee $employee): ?Company
     {
         $company = $employee->company;

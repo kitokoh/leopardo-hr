@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
 use App\Http\Controllers\Controller;
@@ -15,6 +16,7 @@ class SSOController extends Controller
 {
     public function __construct(
         private readonly SSOService $ssoService,
+        private readonly OidcFlowService $oidcFlowService,
     ) {}
 
     public function providers(): JsonResponse
@@ -52,12 +54,19 @@ class SSOController extends Controller
 
         $validated = $request->validate([
             'provider' => 'required|string|in:saml,oidc',
-            'entity_id' => 'required|string|url',
-            'sso_url' => 'required|string|url',
+            'entity_id' => 'nullable|string|url',
+            'sso_url' => 'nullable|string|url',
             'slo_url' => 'nullable|string|url',
             'certificate' => 'nullable|string',
             'client_id' => 'nullable|string',
             'client_secret' => 'nullable|string',
+            // OpenID Connect (issue #2231) — champs du flux authorize/callback.
+            'issuer' => 'nullable|string|url',
+            'authorize_url' => 'nullable|string|url',
+            'token_url' => 'nullable|string|url',
+            'jwks_uri' => 'nullable|string|url',
+            'redirect_uri' => 'nullable|string|url',
+            'scopes' => 'nullable|string|max:255',
         ]);
 
         $config = $this->ssoService->configureSSO(
@@ -109,6 +118,21 @@ class SSOController extends Controller
         }
     }
 
+    /**
+     * Issue #2231 — démarre le flux OIDC : retourne l'URL d'autorisation de
+     * l'IdP (state + nonce) que le frontend doit ouvrir.
+     */
+    public function oidcAuthorize(Request $request, string $companyId): JsonResponse
+    {
+        try {
+            return response()->json([
+                'data' => $this->oidcFlowService->buildAuthorizeUrl($companyId),
+            ]);
+        } catch (\RuntimeException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
     public function oidcCallback(Request $request, string $companyId): JsonResponse
     {
         $tokenData = $request->only(['code', 'state', 'id_token']);
@@ -118,14 +142,12 @@ class SSOController extends Controller
         }
 
         try {
-            $result = $this->ssoService->handleOIDCCallback($companyId, $tokenData);
+            $result = $this->oidcFlowService->complete($companyId, $tokenData);
 
             return response()->json([
                 'data' => $result,
-                'message' => 'OIDC callback recu.',
+                'message' => 'Connexion OIDC réussie.',
             ]);
-        } catch (SSOValidationNotImplementedException $e) {
-            return response()->json(['error' => $e->getMessage()], 501);
         } catch (\RuntimeException $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }

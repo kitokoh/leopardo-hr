@@ -98,14 +98,16 @@ class SSOService
             }
         }
 
-        // Audit #1694 : la validation des assertions SAML/OIDC n'est pas
-        // encore implémentée — ne JAMAIS marquer la config comme active
-        // (fausse garantie de sécurité). La config est conservée (chiffrée)
-        // pour permettre l'implémentation ultérieure.
+        // Audit #1694 : la validation SAML n'est pas encore implémentée —
+        // ne JAMAIS marquer une config SAML comme active (fausse garantie de
+        // sécurité). Pour OIDC (issue #2231), la validation EST implémentée
+        // (OidcFlowService) : la config devient active quand elle est complète.
+        $canActivate = $config->provider === 'oidc' && $config->isOidcFlowReady();
+
         $payload = [
             'provider' => $provider,
             'config' => json_encode($stored),
-            'is_active' => false,
+            'is_active' => $canActivate,
             'updated_at' => now(),
         ];
 
@@ -121,10 +123,16 @@ class SSOService
             ]);
         }
 
-        Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
-            'company_id' => $companyId,
-            'provider' => $provider,
-        ]);
+        if ($canActivate) {
+            Log::info('OIDC SSO configured and active (validation implemented — issue #2231)', [
+                'company_id' => $companyId,
+            ]);
+        } else {
+            Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
+                'company_id' => $companyId,
+                'provider' => $provider,
+            ]);
+        }
 
         return $config;
     }
@@ -169,12 +177,10 @@ class SSOService
             throw new \RuntimeException('OIDC SSO not configured for this company');
         }
 
-        // Audit #1694 : idem SAML — refus explicite (501) tant que la
-        // validation de l'ID token / l'échange de code ne sont pas
-        // implémentés.
-        throw new SSOValidationNotImplementedException(
-            'La validation OIDC n\'est pas encore implémentée — connexion refusée.'
-        );
+        // Issue #2231 : le flux OIDC complet (authorize + callback +
+        // validation id_token) vit dans OidcFlowService — cette méthode est
+        // conservée pour les appelants qui ne passent pas par le contrôleur.
+        return app(OidcFlowService::class)->complete($companyId, $tokenData);
     }
 
     /**
