@@ -166,7 +166,7 @@ class PayrollCalculator
      *     total_cost: float,
      * }
      */
-    public function computeNetBreakdown(float $grossEarnings, CountryRulesContract $rules): array
+    public function computeNetBreakdown(float $grossEarnings, CountryRulesContract $rules, ?float $familyParts = null): array
     {
         $social = $rules->calculateSocialCharges($grossEarnings);
         $taxableGross = $grossEarnings - $social['employee'];
@@ -174,6 +174,12 @@ class PayrollCalculator
         // porte le brut réel aux règles qui en ont besoin (CM #1821).
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
+
+        // Issue #2117 — RICF (réduction d'impôt pour charges de famille) :
+        // imputable sur l'impôt BRUT (net = max(0, impôt − réduction)),
+        // montant mensuel décidé par la règle pays selon les parts fiscales
+        // du salarié (défaut 1 part → réduction nulle → aucun changement).
+        $incomeTax = round(max(0.0, $incomeTax - $rules->familyTaxReduction($familyParts ?? 1.0)), 2);
 
         // Issue #1934 — la règle pays décide de la combinaison IR/taxe de
         // minimum fiscal (défaut : additive ; SN : max(IR, TRIMF)).
@@ -781,7 +787,11 @@ class PayrollCalculator
         // calculateBracketTax) servent la simulation ET le bulletin, garantie
         // que les deux produisent exactement les mêmes montants pour un même
         // brut et un même contexte de règles.
-        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules);
+        // Issue #2117 — parts fiscales du salarié (RICF) portées par
+        // `employees.family_parts` (défaut moteur 1 part → réduction nulle) ;
+        // même pattern lecture attribut que children_count (allocations
+        // familiales, ZONE-INFRA #1820).
+        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules, $this->familyPartsOf($employee));
         $social = $breakdown['social'];
 
         $lines[] = [
@@ -1277,5 +1287,17 @@ class PayrollCalculator
             'percentage_of_gross' => round($grossSalary * ((float) $component->percentage / 100), 2),
             default => 0.0,
         };
+    }
+
+    /**
+     * Issue #2117 — parts fiscales du salarié pour la RICF. Lit
+     * `employees.family_parts` (décimal, demi-points) ; défaut moteur 1
+     * part (célibataire sans enfant à charge → réduction nulle).
+     */
+    private function familyPartsOf(Employee $employee): float
+    {
+        $parts = $employee->getAttribute('family_parts');
+
+        return is_numeric($parts) ? (float) $parts : 1.0;
     }
 }

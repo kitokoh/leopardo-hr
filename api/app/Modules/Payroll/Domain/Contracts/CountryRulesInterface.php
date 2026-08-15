@@ -136,6 +136,17 @@ interface CountryRulesInterface
     public function verificationDate(): ?string;
 
     /**
+     * Issue #2117 — réduction d'impôt pour charges de famille (RICF) :
+     * montant MENSUEL imputable sur l'impôt brut (impôt net = max(0,
+     * impôt − réduction)). Mécanisme générique « parts fiscales » porté
+     * par le moteur : `$familyParts` est le nombre de parts du salarié
+     * (défaut 1 = célibataire sans enfant à charge → réduction nulle).
+     * Les pays qui n'implémentent pas de RICF retournent 0 (défaut
+     * AbstractCountryRules) — la méthode est inerte hors pays concernés.
+     */
+    public function familyTaxReduction(float $familyParts = 1.0): float;
+
+    /**
      * Standard legal weekly working-hours threshold beyond which overtime
      * applies by default, absent a company-specific schedule override (see
      * Schedule::overtime_threshold_weekly for the per-company setting this
