@@ -224,3 +224,15 @@ class SSOControllerTest extends TestCase
         $response->assertStatus(501);
     }
 }
+
+    public function test_saml_callback_is_gated_by_feature_flag(): void
+    {
+        config()->set('services.saml.enabled', false);
+
+        $response = $this->postJson("/api/v1/sso/saml/{$this->company->id}/callback", [
+            'SAMLResponse' => base64_encode('<samlp:Response>fake</samlp:Response>'),
+        ]);
+
+        $response->assertStatus(501)
+            ->assertJsonPath('error', 'SAML_FEATURE_DISABLED');
+    }
