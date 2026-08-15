@@ -47,6 +47,7 @@ trait Auditable
             return;
         }
 
+        /** @var \Illuminate\Http\Request|null $request */
         $request = request();
         if ($request === null) {
             return;

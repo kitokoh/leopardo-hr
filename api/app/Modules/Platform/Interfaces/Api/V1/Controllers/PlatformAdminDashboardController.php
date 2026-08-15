@@ -280,7 +280,7 @@ class PlatformAdminDashboardController extends Controller
     }
 
     /** @return null (toujours — une panne Redis remonte un 503 via reportDashboardFailure, spec #3001) */
-    private function redisAlert(): ?array
+    private function redisAlert(): null
     {
         if (config('cache.default') !== 'redis' && config('queue.default') !== 'redis' && config('session.driver') !== 'redis') {
             return null;
