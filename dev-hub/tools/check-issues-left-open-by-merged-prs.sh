@@ -55,6 +55,11 @@ for pr in prs:
         if ref in closed:
             mentions[ref]["explicitly_closed"].add(pr["number"])
 
+# JSON ne sait pas sérialiser les set — conversion avant dump.
+for m in mentions.values():
+    m["prs"] = sorted(set(m["prs"]))
+    m["explicitly_closed"] = sorted(m["explicitly_closed"])
+
 with open(sys.argv[1], "w") as f:
     json.dump(mentions, f)
 ' "${TMP_DIR}/mentions.json"
