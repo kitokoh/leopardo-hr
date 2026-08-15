@@ -18,7 +18,6 @@ declare(strict_types=1);
 // ── Modules migrés ─────────────────────────────────────────────────────────────
 use App\Modules\Attendance\Interfaces\Api\V1\ApprovalController;
 use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
-use App\Modules\Fleet\Interfaces\Api\V1\VehicleController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
@@ -122,6 +121,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::delete('/recruitment/interviews/{id}', [JobPostingActionController::class, 'destroyInterview'])->whereNumber('id');
 
         // ── Training management ──────────────────────────────────────────
+        // Issue #2225 : vues dashboard admin (listes globales sessions/inscriptions).
+        Route::get('/training/sessions', [TrainingController::class, 'indexAllSessions']);
+        Route::get('/training/enrollments', [TrainingController::class, 'indexEnrollments']);
         Route::post('/training/courses', [TrainingController::class, 'storeCourse']);
         Route::put('/training/courses/{trainingCourse}', [TrainingController::class, 'updateCourse']);
         Route::post('/training/courses/{trainingCourse}/sessions', [TrainingController::class, 'storeSession']);
@@ -162,6 +164,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // ── Webhooks (module Billing gère les endpoints) ─────────────────
         Route::get('/webhooks/events', [WebhookController::class, 'events']);
+        Route::post('/webhooks/{webhookEndpoint}/test', [WebhookController::class, 'test']);
         Route::get('/webhooks', [WebhookController::class, 'index']);
         Route::post('/webhooks', [WebhookController::class, 'store']);
         Route::get('/webhooks/{webhookEndpoint}', [WebhookController::class, 'show']);

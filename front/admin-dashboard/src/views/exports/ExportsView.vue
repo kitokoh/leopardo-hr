@@ -175,7 +175,7 @@ async function generateHrReport() {
   generatingReport.value = true
   hrReportError.value = ''
   try {
-    const res = await api.get('/admin/hr-reports', { params: hrReport })
+    const res = await api.get('/v1/admin/hr-reports', { params: hrReport })
     hrReportResult.value = res.data.data || res.data || null
   } catch (err) {
     hrReportResult.value = null

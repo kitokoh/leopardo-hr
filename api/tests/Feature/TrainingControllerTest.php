@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use Laravel\Sanctum\Sanctum;
@@ -180,5 +180,40 @@ class TrainingControllerTest extends TestCase
             'employee_id' => $foreignEmployee->id,
         ])->assertUnprocessable();
     }
-}
 
+    /**
+     * Issue #2225    /**
+     * Issue #2225 — listes globales sessions/inscriptions pour le dashboard.
+     */
+    public function test_manager_can_list_all_sessions_and_enrollments(): void
+    {
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $course = TrainingCourse::query()->create([
+            'company_id' => $company->id,
+            'title' => 'Securite incendie',
+            'description' => 'Initiation',
+            'is_active' => true,
+        ]);
+
+        $session = TrainingSession::query()->create([
+            'company_id' => $company->id,
+            'training_course_id' => $course->id,
+            'start_date' => '2026-08-20',
+            'end_date' => '2026-08-21',
+            'status' => 'scheduled',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/training/sessions')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+
+        $this->getJson('/api/v1/training/enrollments')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+    }
+}

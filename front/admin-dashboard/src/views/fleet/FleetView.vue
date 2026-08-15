@@ -177,7 +177,7 @@ async function fetchData() {
   try {
     const [vRes, aRes] = await Promise.all([
       api.get('/v1/vehicles'),
-      api.get('/admin/fleet/alerts').catch(() => ({ data: { data: [] } })),
+      api.get('/v1/admin/fleet/alerts').catch(() => ({ data: { data: [] } })),
     ])
     vehicles.value = vRes.data.data || vRes.data || []
     alerts.value = aRes.data.data || aRes.data || []
