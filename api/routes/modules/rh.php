@@ -137,7 +137,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // ── Module 4 — HR Referentials ────────────────────────────────────────────
     Route::get('/departments', [DepartmentController::class, 'index']);
     Route::post('/departments', [DepartmentController::class, 'store']);
+    Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::get('/departments/{department}', [DepartmentController::class, 'show'])->whereNumber('department');
+    // Audit expert 2026-08-15 (issue #2594) : organigramme par département (mobile).
+    Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::put('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::patch('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->whereNumber('department');
@@ -168,8 +171,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     // PA2-ARCH-011 : GET /notifications est deja source unique dans
     // routes/modules/dashboard.php (meme controller NotificationController::index).
     // Voir issue #1414.
-    Route::put('/notifications/read-all', [NotificationController::class, 'markAllRead']);
-    Route::put('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
+    // Issue #2674 — verbes canoniques alignés sur dashboard.php :
+    // POST mark-all-read / PATCH {id}/read. Ces chemins alias restent pour
+    // rétro-compat (anciens clients mobile), mêmes verbes que le canonique.
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->whereNumber('notification');
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->whereNumber('notification');
     Route::get('/notifications/stream', [NotificationStreamController::class, 'stream']);
     Route::post('/notifications/sse-token', [SseTokenController::class, 'issue']);

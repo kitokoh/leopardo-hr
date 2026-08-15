@@ -10,7 +10,7 @@ No active XSS sink was found in the reviewed admin dashboard source: no `v-html`
 
 Classic browser CSRF risk is low for the admin dashboard because the current admin API client sends a Bearer token in the `Authorization` header, not ambient cookies. Backend CORS also restricts credentialed origins through `config/cors.php`.
 
-The main residual risk is token exposure if a future XSS sink is introduced, because the admin token is currently stored in `localStorage`. The immediate hardening is therefore to keep dangerous DOM/script APIs blocked in lint and to revisit token storage when platform auth moves to a cookie-backed session.
+The main residual risk is token exposure if a future XSS sink is introduced, because the admin token is currently stored in `sessionStorage`. The immediate hardening is therefore to keep dangerous DOM/script APIs blocked in lint and to revisit token storage when platform auth moves to a cookie-backed session.
 
 ## Review Method
 
@@ -35,13 +35,13 @@ Note: an initial broad scan including `node_modules` timed out locally; the effe
 | HTML injection sinks | No active sink found | Vue templates use mustache rendering and bindings; no `v-html` in reviewed source. |
 | Script execution sinks | No active sink found | No `eval`, `new Function`, or `document.write` in reviewed source. |
 | Admin forms | No CSRF form issue found | Forms use Vue `@submit.prevent` and call the API client; no browser-native cross-site form POST to cookie-auth endpoints. |
-| API auth transport | CSRF low, XSS impact medium | `front/admin-dashboard/src/services/api.js` sends `Authorization: Bearer <token>` from `localStorage`. |
+| API auth transport | CSRF low, XSS impact medium | `front/admin-dashboard/src/services/api.js` sends `Authorization: Bearer <token>` from `sessionStorage`. |
 | CORS | Acceptable current posture | `api/config/cors.php` limits credentialed origins to `FRONTEND_URL` and `APP_URL`; `supports_credentials` is enabled for Sanctum-compatible flows. |
 | Toast/error rendering | No sink found | API errors are passed as strings to toast; avoid rendering server messages as HTML in future UI libraries. |
 
 ## Hardening Added
 
-`front/admin-dashboard/.eslintrc.cjs` now blocks the risky primitives that would reopen this class of issue:
+`front/admin-dashboard/eslint.config.js` now blocks the risky primitives that would reopen this class of issue:
 
 - `vue/no-v-html`
 - `no-eval`
@@ -55,8 +55,10 @@ Note: an initial broad scan including `node_modules` timed out locally; the effe
 - Do not store or render server-provided rich HTML in admin components.
 - Keep admin API calls on explicit `Authorization` headers until a deliberate cookie-session migration is designed.
 - If admin auth moves to cookies, add CSRF token acquisition, SameSite policy documentation, and Playwright/API regression coverage.
-- Treat any XSS in admin as credential compromise while tokens remain in `localStorage`.
+- Treat any XSS in admin as credential compromise while tokens remain in `sessionStorage`.
 
 ## Follow-Up
 
 The current audit closes the Plan 14 CSRF/XSS verification item for the admin dashboard. A future auth-storage hardening lot should evaluate HttpOnly SameSite cookies for the platform admin token, but that requires coordinated backend/frontend auth changes rather than a lint-only patch.
+
+> Note (issue #2757) : le token admin vit dans `sessionStorage` (PR #1299, migration depuis localStorage) et le lint passe par `eslint.config.js` (PR #1299) — ce document a été aligné.

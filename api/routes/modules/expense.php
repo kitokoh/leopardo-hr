@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use App\Modules\Expense\Interfaces\Api\V1\Controllers\ExpenseClaimController;
@@ -9,11 +10,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
     Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);
     Route::put('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
-    Route::post('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
 
     Route::middleware('api.manager')->group(function (): void {
         Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
         Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
-        Route::post('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
     });
 });

@@ -17,6 +17,7 @@ use App\Modules\Notification\Infrastructure\Services\CommunicationService;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class AttendanceService
@@ -40,59 +41,66 @@ class AttendanceService
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
 
-        $open = AttendanceLog::query()
-            ->where('employee_id', $employee->id)
-            ->where('date', $today)
-            ->whereNull('check_out')
-            ->orderByDesc('session_number')
-            ->first();
+        // Issue #2669 — le check-then-act était sans verrou : deux check-in
+        // parallèles pouvaient créer deux sessions ouvertes. La recherche de
+        // session ouverte est verrouillée (lockForUpdate) dans une transaction
+        // + index unique partiel (migration 2026_08_15_000004).
+        return DB::transaction(function () use ($employee, $dto, $company, $nowUtc, $today): AttendanceLog {
+            $open = AttendanceLog::query()
+                ->where('employee_id', $employee->id)
+                ->where('date', $today)
+                ->whereNull('check_out')
+                ->orderByDesc('session_number')
+                ->lockForUpdate()
+                ->first();
 
-        if ($open) {
-            throw new AlreadyCheckedInException;
-        }
+            if ($open) {
+                throw new AlreadyCheckedInException;
+            }
 
-        $this->ensurePunchPhotoProvided($company, $dto);
-        $photoPath = $this->storePunchPhoto($company, $employee, $dto);
+            $this->ensurePunchPhotoProvided($company, $dto);
+            $photoPath = $this->storePunchPhoto($company, $employee, $dto);
 
-        $sessionNumber = $this->nextSessionNumber($employee, $today);
+            $sessionNumber = $this->nextSessionNumber($employee, $today);
 
-        $schedule = $this->resolveSchedule($employee);
-        $punchMeta = $this->buildPunchMeta($company, $employee, $dto, 'check_in');
+            $schedule = $this->resolveSchedule($employee);
+            $punchMeta = $this->buildPunchMeta($company, $employee, $dto, 'check_in');
 
-        $status = 'incomplete';
-        $lateMinutes = 0;
+            $status = 'incomplete';
+            $lateMinutes = 0;
 
-        if ($schedule) {
-            $checkInLocal = $nowUtc->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
-            $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
-            $tolerance = (int) $schedule->late_tolerance_minutes;
-            $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
-            $status = $lateMinutes > 0 ? 'late' : 'ontime';
-        }
+            if ($schedule) {
+                $checkInLocal = $nowUtc->copy()->setTimezone($company->timezone);
+                $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+                $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
+                $tolerance = (int) $schedule->late_tolerance_minutes;
+                $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
+                $status = $lateMinutes > 0 ? 'late' : 'ontime';
+            }
 
-        $log = AttendanceLog::query()->create([
-            'company_id' => $employee->company_id,
-            'employee_id' => $employee->id,
-            'schedule_id' => $schedule?->id,
-            'date' => $today,
-            'session_number' => $sessionNumber,
-            'check_in' => $nowUtc,
-            'method' => $dto->method,
-            'work_type' => $dto->work_type,
-            'punch_note' => $dto->punch_note,
-            'punch_meta' => $punchMeta,
-            'punch_photo_path' => $photoPath,
-            'status' => $status,
-            'late_minutes' => $lateMinutes,
-            'gps_lat' => $dto->gps_lat,
-            'gps_lng' => $dto->gps_lng,
-        ]);
+            $log = AttendanceLog::query()->create([
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'schedule_id' => $schedule?->id,
+                'date' => $today,
+                'session_number' => $sessionNumber,
+                'check_in' => $nowUtc,
+                'method' => $dto->method,
+                'work_type' => $dto->work_type,
+                'punch_note' => $dto->punch_note,
+                'punch_meta' => $punchMeta,
+                'punch_photo_path' => $photoPath,
+                'status' => $status,
+                'late_minutes' => $lateMinutes,
+                'gps_lat' => $dto->gps_lat,
+                'gps_lng' => $dto->gps_lng,
+            ]);
 
-        AttendanceCheckedIn::dispatch($log);
-        $this->alertManagersIfOutsideGeofence($employee, $log, 'check_in');
+            AttendanceCheckedIn::dispatch($log);
+            $this->alertManagersIfOutsideGeofence($employee, $log, 'check_in');
 
-        return $log;
+            return $log;
+        });
     }
 
     public function checkOut(Employee $employee, CheckInDTO|float|null $dto = null, ?float $gpsLng = null, string $method = 'mobile'): AttendanceLog
@@ -103,12 +111,17 @@ class AttendanceService
         $nowUtc = now('UTC');
         $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
 
-        $log = AttendanceLog::query()
-            ->where('employee_id', $employee->id)
-            ->where('date', $today)
-            ->whereNull('check_out')
-            ->orderByDesc('session_number')
-            ->first();
+        // Issue #2669 — verrouillage de la session ouverte (deux check-out
+        // parallèles fermaient la même session en last-write-wins).
+        $log = DB::transaction(function () use ($employee, $today): ?AttendanceLog {
+            return AttendanceLog::query()
+                ->where('employee_id', $employee->id)
+                ->where('date', $today)
+                ->whereNull('check_out')
+                ->orderByDesc('session_number')
+                ->lockForUpdate()
+                ->first();
+        });
 
         if (! $log) {
             throw new MissingCheckInException;

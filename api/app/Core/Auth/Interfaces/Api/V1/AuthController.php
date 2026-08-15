@@ -6,15 +6,16 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
-use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -57,6 +58,9 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
+        // #2617 (main) : inscription réservée aux invitations valides — le
+        // RegisterAction refuse sans invitation_token et rattache l'employé au
+        // company_id de l'invitation (plus d'employé orphelin, #2636).
         /** @var array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string} $validated */
         $validated = $request->validated();
 
@@ -200,6 +204,18 @@ class AuthController extends Controller
             ]);
         }
 
+        // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
+        // ne peut pas s'authentifier, y compris via Google.
+        if ($employee->status !== 'active') {
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
+        }
+
         $token = $employee->createToken('google-auth');
 
         return (new EmployeeResource($employee))
@@ -229,6 +245,17 @@ class AuthController extends Controller
 
         if (! $employee) {
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
+        }
+
+        // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
+        if ($employee->status !== 'active') {
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

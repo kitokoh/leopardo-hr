@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { getSiteUrl } from '@/lib/site';
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
@@ -101,6 +102,7 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 }
 
 const ALLOWED_CORS_ORIGINS = [
+  getSiteUrl(),
   'https://leopardo-rh.com',
   'https://www.leopardo-rh.com',
   'http://localhost:3000',

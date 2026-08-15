@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { sessionCookieHeader, setSessionCookie } from './session-helpers';
 
 /**
  * #2167 — Dashboard client : « Actions rapides », « Voir toute l'activité »
@@ -11,6 +12,7 @@ import { expect, test, type Page } from '@playwright/test';
 async function mockManagerSession(page: Page) {
   await page.route('**/api/v1/auth/login', async (route) => {
     await route.fulfill({
+        headers: { 'Set-Cookie': sessionCookieHeader },
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
@@ -174,6 +176,8 @@ async function mockManagerSession(page: Page) {
 
 async function loginAsManager(page: Page) {
   await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+  // Issue #2746 — poser le cookie de session avant la soumission (middleware serveur).
+  await setSessionCookie(page);
   await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
   await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
   await page.getByRole('button', { name: /sign in|se connecter/i }).click();

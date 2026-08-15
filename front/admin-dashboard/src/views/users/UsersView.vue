@@ -69,7 +69,6 @@
             <option value="active">{{ $t('users.filters.status.active', 'Actif') }}</option>
             <option value="inactive">{{ $t('users.filters.status.inactive', 'Inactif') }}</option>
             <option value="suspended">{{ $t('users.filters.status.suspended', 'Suspendu') }}</option>
-            <option value="pending">{{ $t('users.filters.status.pending', 'En attente') }}</option>
           </select>
         </div>
 
@@ -237,7 +236,6 @@ const totalItems = ref(0)
 const isLoading = ref(false)
 const showBulkActions = ref(false)
 const showDetailModal = ref(false)
-
 // Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
   status: ''
@@ -254,11 +252,6 @@ const paginatedUsers = computed(() => users.value)
 const filteredUsers = computed(() => users.value)
 
 // #2481 : stats du résumé (totalItems alimenté par la réponse API).
-function updateStats() {
-  totalItems.value = users.value.length
-  totalPages.value = Math.max(1, Math.ceil(users.value.length / perPage.value))
-}
-
 // #2481 : export groupé = export client CSV de la page courante (aucun
 // endpoint d'export groupé côté API).
 function exportSelectedUsers() {
@@ -302,10 +295,12 @@ async function loadUsers() {
     const params = {}
     if (searchQuery.value) params.search = searchQuery.value
     if (filters.status) {
-      const apiStatus = { inactive: 'deactivated' }[filters.status] || filters.status
-      if (apiStatus !== 'pending') params.status = apiStatus // 'pending' n'existe pas côté API
+      // Issue #2699 — 'pending' n'existe pas côté API : l'option a été retirée.
+      params.status = { inactive: 'deactivated' }[filters.status] || filters.status
     }
-    params.per_page = 100
+    // Issue #2698 — pagination server-side réelle (page/per_page transmis).
+    params.page = currentPage.value
+    params.per_page = perPage.value
 
     const res = await api.get('/platform/users', { params })
     const items = res.data?.data ?? res.data ?? []
@@ -314,14 +309,19 @@ async function loadUsers() {
       name: user.name,
       email: user.email,
       status: user.status === 'deactivated' ? 'inactive' : user.status,
-      role: 'admin',
+      // Issue #2701 — le payload /platform/users n'expose ni rôle ni société :
+      // plus de valeur codée en dur, colonnes honnêtement vides.
+      role: null,
       segment: null,
       company: null,
-      createdAt: user.created_at ? new Date(user.created_at) : new Date(),
+      createdAt: user.created_at ? new Date(user.created_at) : null,
       lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
     }))
-    updateStats()
+    // Issue #2698 — métadonnées de pagination renvoyées par l'API.
+    const meta = res.data?.meta
+    totalItems.value = meta?.total ?? users.value.length
+    totalPages.value = meta?.last_page ?? Math.max(1, Math.ceil(users.value.length / perPage.value))
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -430,7 +430,7 @@ async function submitImpersonation() {
   impersonateBusy.value = true
   impersonateError.value = ''
   try {
-    const res = await api.post('/admin/impersonations', {
+    const res = await api.post('/platform/impersonations', {
       company_id: company.id,
       employee_id: company.employee_id,
       reason: impersonateReason.value.trim(),
@@ -461,8 +461,9 @@ function closeImpersonate() {
 async function deleteUser(user) {
   if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
     try {
-      // QA #2238 : désactivation via l'API (jamais de suppression physique).
-      await api.delete(`/platform/users/${user.id}`)
+      // Issue #2714 — désactivation RÉELLE via l'endpoint dédié (jamais de
+      // suppression physique : DELETE /platform/users/{id} détruit le compte).
+      await api.post(`/platform/users/${user.id}/deactivate`)
       toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
       await loadUsers()
     } catch (error) {
@@ -477,10 +478,22 @@ async function deleteUser(user) {
 async function exportUsers() {
   try {
     // Export honnête de la page courante (pas de mock) — CSV côté client.
+    // Issue #2700 — exporte les champs MAPÉS (createdAt/lastLoginAt, sinon les
+    // colonnes dates étaient toujours vides) + échappement anti-injection de
+    // formule (cellules commençant par = + - @).
+    const escapeCell = (value) => {
+      const str = value === null || value === undefined ? '' : String(value)
+      if (/^[=+\-@]/.test(str)) return `'${str}`
+      return `"${str.replace(/"/g, '""')}"`
+    }
+    const formatDate = (d) => (d instanceof Date && !Number.isNaN(d.getTime()))
+      ? d.toLocaleDateString('fr-FR')
+      : ''
     const csvContent = "data:text/csv;charset=utf-8," +
       "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
       users.value.map(user =>
-        `${user.name},${user.email},${user.status},${user.company?.name || ''},${user.created_at || ''},${user.last_login_at || ''}`
+        [user.name, user.email, user.status, user.company?.name || '', formatDate(user.createdAt), formatDate(user.lastLoginAt)]
+          .map(escapeCell).join(',')
       ).join('\n')
 
     const encodedUri = encodeURI(csvContent)
