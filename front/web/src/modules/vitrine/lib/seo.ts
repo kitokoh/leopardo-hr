@@ -21,6 +21,19 @@ export interface SEOMetadata {
   author?: string;
   publishedTime?: string;
   modifiedTime?: string;
+  /** Locale BCP-47 de la page (ex. "fr_FR", "en_US", "tr_TR", "ar_AR"). */
+  locale?: string;
+}
+
+/** #3807 : mapping AppLocale → og:locale BCP-47 (évite le fr_FR codé en dur). */
+export function ogLocaleFor(locale: string): string {
+  const map: Record<string, string> = {
+    fr: 'fr_FR',
+    en: 'en_US',
+    tr: 'tr_TR',
+    ar: 'ar_AR',
+  };
+  return map[locale] ?? 'fr_FR';
 }
 
 /**
@@ -55,6 +68,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
       description: seo.description,
       url: url,
       siteName: siteName,
+      ...(seo.locale && { locale: ogLocaleFor(seo.locale) }),
       images: [
         {
           url: image,

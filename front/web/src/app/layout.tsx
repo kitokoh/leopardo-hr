@@ -1,6 +1,7 @@
 import { LocaleSsrProvider } from "@/modules/vitrine/lib/locale-ssr-provider";
 import type { Metadata } from "next";
 import Script from "next/script";
+import { cache } from "react";
 import { headers } from "next/headers";
 
 import "./globals.css";
@@ -10,80 +11,104 @@ import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
+import type { AppLocale } from '@/lib/i18n';
 
-export const metadata: Metadata = {
-  title: {
-    default: "Leopardo RH - SaaS RH multilingue pour equipes terrain",
-    template: "%s | Leopardo RH",
-  },
-  description:
-    "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.",
-  keywords: [
-    "SaaS RH",
-    "logiciel RH",
-    "paie",
-    "pointage mobile",
-    "absences",
-    "kiosque RH",
-    "multi-tenant",
-    "RH multilingue",
-  ],
-  manifest: "/manifest",
-  metadataBase: new URL(siteUrl),
-  icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-    // Issue #2756 — iOS exige un PNG 180×180 pour apple-touch-icon (SVG ignoré).
-    apple: [{ url: "/apple-touch-icon.png", type: "image/png" }],
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'fr_FR',
-    siteName: 'Leopardo RH',
-    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
-    description: 'Une plateforme RH connectee pour vendre, onboarder et servir vos clients sur web, mobile et kiosque.',
-    url: siteUrl,
-    images: [
-      {
-        url: '/opengraph-image',
-        width: 1200,
-        height: 630,
-        alt: 'Leopardo RH - dashboard RH multilingue',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
-    description: 'Pointage, paie, absences, onboarding et operations terrain en un seul espace client.',
-    images: ['/twitter-image'],
-  },
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Leopardo RH",
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  alternates: {
-    // QA 2026-08-15 (#2656) : le layout racine n'épingle plus de canonical
-    // global — chaque page porte le sien (sinon toutes les pages sans
-    // metadata propre émettaient canonical = homepage).
-    canonical: siteUrl,
-    // QA 2026-08-15 (#3417) : la homepage (client component, pas de metadata
-    // propre) doit émettre les alternates hreflang comme le sitemap.xml —
-    // aligné sur la logique de generateSEOMetadata (seo.ts).
-    languages: {
-      fr: siteUrl,
-      en: `${siteUrl}/?lang=en`,
-      tr: `${siteUrl}/?lang=tr`,
-      ar: `${siteUrl}/?lang=ar`,
+// #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
+// de fr_FR codé en dur (deep-merge racine qui faussait toutes les pages
+// en/tr/ar). Le cache React garantit une seule lecture de headers() par requête
+// entre generateMetadata et RootLayout.
+const getSsrLocale = cache(async (): Promise<AppLocale> => {
+  const headerList = await headers();
+  return resolveSsrLang(headerList.get('accept-language')) as AppLocale;
+});
+
+function ogLocale(locale: AppLocale): string {
+  const map: Record<AppLocale, string> = {
+    fr: 'fr_FR',
+    en: 'en_US',
+    tr: 'tr_TR',
+    ar: 'ar_AR',
+  };
+  return map[locale];
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const ssrLocale = await getSsrLocale();
+
+  return {
+    title: {
+      default: "Leopardo RH - SaaS RH multilingue pour equipes terrain",
+      template: "%s | Leopardo RH",
     },
-  },
-};
+    description:
+      "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.",
+    keywords: [
+      "SaaS RH",
+      "logiciel RH",
+      "paie",
+      "pointage mobile",
+      "absences",
+      "kiosque RH",
+      "multi-tenant",
+      "RH multilingue",
+    ],
+    manifest: "/manifest",
+    metadataBase: new URL(siteUrl),
+    icons: {
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ],
+      // Issue #2756 — iOS exige un PNG 180×180 pour apple-touch-icon (SVG ignoré).
+      apple: [{ url: "/apple-touch-icon.png", type: "image/png" }],
+    },
+    openGraph: {
+      type: 'website',
+      locale: ogLocale(ssrLocale),
+      siteName: 'Leopardo RH',
+      title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
+      description: 'Une plateforme RH connectee pour vendre, onboarder et servir vos clients sur web, mobile et kiosque.',
+      url: siteUrl,
+      images: [
+        {
+          url: '/opengraph-image',
+          width: 1200,
+          height: 630,
+          alt: 'Leopardo RH - dashboard RH multilingue',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
+      description: 'Pointage, paie, absences, onboarding et operations terrain en un seul espace client.',
+      images: ['/twitter-image'],
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "Leopardo RH",
+    },
+    formatDetection: {
+      telephone: false,
+    },
+    alternates: {
+      // QA 2026-08-15 (#2656) : le layout racine n'épingle plus de canonical
+      // global — chaque page porte le sien (sinon toutes les pages sans
+      // metadata propre émettaient canonical = homepage).
+      canonical: siteUrl,
+      // QA 2026-08-15 (#3417) : la homepage (client component, pas de metadata
+      // propre) doit émettre les alternates hreflang comme le sitemap.xml —
+      // aligné sur la logique de generateMetadata (seo.ts).
+      languages: {
+        fr: siteUrl,
+        en: `${siteUrl}/?lang=en`,
+        tr: `${siteUrl}/?lang=tr`,
+        ar: `${siteUrl}/?lang=ar`,
+      },
+    },
+  };
+}
 
 // QA 2026-08-15 (#2657) : l'attribut lang est posé au SSR à partir de
 // Accept-Language (normalisé fr/en/ar/tr, défaut fr) au lieu de « fr »
@@ -112,8 +137,7 @@ export default async function RootLayout({
   // Issue #2719 — lang/dir calculés par requête (Accept-Language) au SSR :
   // plus de lang="fr" systématique pour les visiteurs en/tr/ar (LocaleSync
   // ajuste ensuite côté client selon les préférences utilisateur).
-  const headerList = await headers();
-  const ssrLang = resolveSsrLang(headerList.get('accept-language'));
+  const ssrLang = await getSsrLocale();
   // Analytics scripts (GA4, Mixpanel) are only loaded when the vitrine
   // feature flag is explicitly enabled. Previously `gaId`/`mixpanelToken`
   // were read and injected independently of `NEXT_PUBLIC_ENABLE_ANALYTICS`,

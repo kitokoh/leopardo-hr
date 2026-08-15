@@ -61,3 +61,29 @@ describe('pageMetadata coverage', () => {
     }
   });
 });
+
+describe('og:locale (#3807)', () => {
+  it('mappe les locales AppLocale vers og:locale BCP-47', () => {
+    const { ogLocaleFor } = require('@/modules/vitrine/lib/seo');
+    expect(ogLocaleFor('fr')).toBe('fr_FR');
+    expect(ogLocaleFor('en')).toBe('en_US');
+    expect(ogLocaleFor('tr')).toBe('tr_TR');
+    expect(ogLocaleFor('ar')).toBe('ar_AR');
+  });
+
+  it('generateMetadata pose openGraph.locale quand locale est fournie', () => {
+    const { generateMetadata } = require('@/modules/vitrine/lib/seo');
+    const metadata = generateMetadata({
+      title: 'Test',
+      description: 'Desc',
+      locale: 'ar',
+    });
+    expect(metadata.openGraph?.locale).toBe('ar_AR');
+  });
+
+  it('generateMetadata ne pose pas de locale quand elle est absente (héritage racine)', () => {
+    const { generateMetadata } = require('@/modules/vitrine/lib/seo');
+    const metadata = generateMetadata({ title: 'Test', description: 'Desc' });
+    expect(metadata.openGraph?.locale).toBeUndefined();
+  });
+});
