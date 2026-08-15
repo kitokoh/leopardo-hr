@@ -7,6 +7,7 @@
 ## [Unreleased]
 
 - **fix(test): main vert — factories `newModel()` en `public` (fatal PHP) + doublon PasswordResetTest retiré.** PR #3680 (#3597) a introduit des overrides `protected function newModel()` dans Employee/User/SalaryAdvanceFactory → fatal « access level » chargeant toute la suite ; visibilité alignée sur le parent (`public function newModel(array $attributes = [])`). `tests/Feature/Auth/PasswordResetTest.php` (4 tests, contrat pré-#2626 réintroduit par mégarde) supprimé — doublon strict de `tests/Feature/PasswordResetTest.php` (6 tests, contrat courant avec codes machine PASSWORD_RESET_SENT/DONE).
+- **fix(security): headers de version retirés — x-powered-by PHP/FrankenPHP masqué (Closes #3601, volet divulgation).** L'API exposait `x-powered-by: PHP/8.4.x` + `x-render-origin-server` (ciblage CVE facilité). `api/Caddyfile` : `header -Server` / `header -X-Powered-By` (image Docker API). Le volet CSP report-only → enforce reste ouvert dans l'issue (nonces/hashes, workstream séparé).
 
 - **fix(api): 500 sur double soumission évaluations/paie éliminé — contrainte unique rattrapée (Closes #3238).** La course entre `exists()` et `create()` (double-tap mobile, retry) faisait lever un `QueryException` SQLSTATE 23505 → 500. `EvaluationController::store` renvoie désormais la 422 `EVALUATION_ALREADY_EXISTS` et `PayrollService::create` lève `PayrollPeriodConflictException` quand la contrainte unique (employee_id, period, evaluator_id / employee_id, period_year, period_month) rattrape la concurrence. Chemin séquentiel inchangé.
 
