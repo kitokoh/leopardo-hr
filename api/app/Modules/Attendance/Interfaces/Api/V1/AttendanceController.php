@@ -320,10 +320,15 @@ class AttendanceController extends Controller
             ? Carbon::parse($validated['requested_check_out'])->setTimezone($timezone)
             : null;
 
-        if ($requestedCheckIn->isFuture() || ($requestedCheckOut !== null && $requestedCheckOut->isFuture())) {
-            throw ValidationException::withMessages([
-                'requested_check_in' => ['Impossible de demander une correction avec une heure future.'],
-            ]);
+        $errors = [];
+        if ($requestedCheckIn->isFuture()) {
+            $errors['requested_check_in'] = ['Impossible de demander une correction avec une heure future.'];
+        }
+        if ($requestedCheckOut !== null && $requestedCheckOut->isFuture()) {
+            $errors['requested_check_out'] = ['Impossible de demander une correction avec une heure future.'];
+        }
+        if ($errors !== []) {
+            throw ValidationException::withMessages($errors);
         }
 
         if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
