@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(ci): gardes dev-hub câblées en CI — job hygiene-guards (Closes #3708).** `architecture-check.yml` exécute désormais sur PR et push main : `check-app-version-sync.sh` (anti-drift APP_VERSION, #3528), `check-env-example-parity.sh` (#1487), `check-migration-basename-collisions.sh` (#1962) et `check-country-catalog.sh` (#2600). Ces gardes bash-pures n'étaient appelées par aucun workflow — la régression APP_VERSION 4.23.5 (b0630dd5) et la dérive des 6 clés .env.example sont passées inaperçues sur main.
+
 - **fix(admin/api): UsersView utilise le contrat super-admin pour le détail et l’impersonation (Closes #3268).** `/platform/users` expose la liaison société/employé par email canonique et le dashboard n’interroge plus `/admin/users` avec un ID `super_admins`.
 
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
