@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 - **fix(admin): route morte /users/:id supprimée (Closes #3280).** UserDetailView (prop `:show` inexistante, « Impersonner » inerte) jamais liée — code mort retiré du bundle.
 - **fix(admin): notifications temps réel — id de repli déterministe (Closes #3191).** `stores/realtime.js` : `socket-<timestamp>-<compteur>` au lieu de `Date.now()+Math.random()` (id non persistant, non corrélable).
 - **fix(web): canonicals — source unique d'URL de site (Closes #3190).** `site-url.ts` importe désormais `DEFAULT_SITE_URL` depuis `site.ts` (leopardo-rh.com) au lieu de son propre défaut divergent (`www.leopardo-rh.com`) — fin des canonicals/SEO potentiellement incohérents selon le module importé.
