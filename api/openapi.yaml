@@ -13962,16 +13962,6 @@ paths:
                       additionalProperties: { type: boolean }
         "401":
           $ref: "#/components/responses/Error401"
-    put:
-      tags: ["Billing"]
-      summary: "Modifier la matrice feature x plan (reserve a l'administration plateforme)"
-      operationId: updateFeatureFlagMatrix
-      responses:
-        "403":
-          description: "Ecriture reservee a l'administration plateforme ; cet endpoint tenant renvoie toujours 403"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /feature-flags/check/{featureKey}:
     get:
       tags: ["Billing"]

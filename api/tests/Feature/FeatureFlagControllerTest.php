@@ -127,23 +127,6 @@ class FeatureFlagControllerTest extends TestCase
         $response->assertJsonPath('data.limit', null);
     }
 
-    public function test_tenant_user_cannot_update_platform_feature_matrix(): void
-    {
-        $company = Company::factory()->create();
-        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
-
-        Sanctum::actingAs($manager);
-
-        $this->putJson('/api/v1/feature-flags/matrix', [
-            'feature_key' => 'vehicles',
-            'plan' => 'business',
-            'enabled' => true,
-            'limit_value' => 25,
-        ])->assertForbidden();
-
-        $this->assertSame(0, FeaturePlanMatrix::count());
-    }
-
     private function ensureFeaturePlanMatrixTable(): void
     {
         if (Schema::hasTable('feature_plan_matrix')) {

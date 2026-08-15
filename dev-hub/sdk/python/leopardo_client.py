@@ -273,7 +273,11 @@ class LeopardoClient:
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
     def get_admin_training_courses(self, **kwargs):
-        """Formations cross-tenant (super-admin)"""
+        """Cours de formation cross-tenant (super-admin, avec société et nombre de sessions)"""
+        return self.request("GET", "/admin/training/courses", **kwargs)
+
+    def get_admin_training_courses_2(self, **kwargs):
+        """Cours de formation cross-tenant (super-admin)"""
         return self.request("GET", "/admin/training/courses", **kwargs)
 
     def get_admin_training_enrollments(self, **kwargs):
@@ -424,13 +428,29 @@ class LeopardoClient:
         """Declencher la synchronisation d'un nœud edge"""
         return self.request("POST", "/api/v1/edge/{nodeId}/sync", **kwargs)
 
+    def get_api_v1_edge_download_caddyfile_edge(self, **kwargs):
+        """Caddyfile.edge de reference pour le nœud edge (public)"""
+        return self.request("GET", "/api/v1/edge/download/Caddyfile.edge", **kwargs)
+
+    def get_api_v1_edge_download_caddyfile_edge_sha256(self, **kwargs):
+        """Empreinte SHA-256 de Caddyfile.edge (public)"""
+        return self.request("GET", "/api/v1/edge/download/Caddyfile.edge.sha256", **kwargs)
+
     def get_api_v1_edge_download_docker_compose_yml(self, **kwargs):
         """docker-compose.yml de reference pour le nœud edge (public)"""
         return self.request("GET", "/api/v1/edge/download/docker-compose.yml", **kwargs)
 
+    def get_api_v1_edge_download_docker_compose_yml_sha256(self, **kwargs):
+        """Empreinte SHA-256 de docker-compose.yml (public)"""
+        return self.request("GET", "/api/v1/edge/download/docker-compose.yml.sha256", **kwargs)
+
     def get_api_v1_edge_download_env_example(self, **kwargs):
         """Exemple de fichier d'environnement pour le nœud edge (public)"""
         return self.request("GET", "/api/v1/edge/download/env-example", **kwargs)
+
+    def get_api_v1_edge_download_sha256_txt(self, **kwargs):
+        """Empreintes SHA-256 des assets d'installation edge (public)"""
+        return self.request("GET", "/api/v1/edge/download/sha256.txt", **kwargs)
 
     def get_api_v1_edge_health(self, **kwargs):
         """Healthcheck edge (public, machine-to-cloud)"""
@@ -1079,10 +1099,6 @@ class LeopardoClient:
     def getfeatureflagmatrix(self, **kwargs):
         """Voir la matrice complete feature x plan"""
         return self.request("GET", "/feature-flags/matrix", **kwargs)
-
-    def updatefeatureflagmatrix(self, **kwargs):
-        """Modifier la matrice feature x plan (reserve a l'administration plateforme)"""
-        return self.request("PUT", "/feature-flags/matrix", **kwargs)
 
     def getfeaturebykey(self, **kwargs):
         """Voir le detail d'une fonctionnalite du registre"""

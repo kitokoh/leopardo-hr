@@ -315,8 +315,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
-    /** Formations cross-tenant (super-admin) */
+    /** Cours de formation cross-tenant (super-admin, avec société et nombre de sessions) */
     getAdminTrainingCourses(options = {}) {
+      return request("GET", "/admin/training/courses", options);
+    },
+
+    /** Cours de formation cross-tenant (super-admin) */
+    getAdminTrainingCourses2(options = {}) {
       return request("GET", "/admin/training/courses", options);
     },
 
@@ -505,14 +510,34 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/api/v1/edge/{nodeId}/sync", options);
     },
 
+    /** Caddyfile.edge de reference pour le nœud edge (public) */
+    getApiV1EdgeDownloadCaddyfileEdge(options = {}) {
+      return request("GET", "/api/v1/edge/download/Caddyfile.edge", options);
+    },
+
+    /** Empreinte SHA-256 de Caddyfile.edge (public) */
+    getApiV1EdgeDownloadCaddyfileEdgeSha256(options = {}) {
+      return request("GET", "/api/v1/edge/download/Caddyfile.edge.sha256", options);
+    },
+
     /** docker-compose.yml de reference pour le nœud edge (public) */
     getApiV1EdgeDownloadDockerComposeYml(options = {}) {
       return request("GET", "/api/v1/edge/download/docker-compose.yml", options);
     },
 
+    /** Empreinte SHA-256 de docker-compose.yml (public) */
+    getApiV1EdgeDownloadDockerComposeYmlSha256(options = {}) {
+      return request("GET", "/api/v1/edge/download/docker-compose.yml.sha256", options);
+    },
+
     /** Exemple de fichier d'environnement pour le nœud edge (public) */
     getApiV1EdgeDownloadEnvExample(options = {}) {
       return request("GET", "/api/v1/edge/download/env-example", options);
+    },
+
+    /** Empreintes SHA-256 des assets d'installation edge (public) */
+    getApiV1EdgeDownloadSha256Txt(options = {}) {
+      return request("GET", "/api/v1/edge/download/sha256.txt", options);
     },
 
     /** Healthcheck edge (public, machine-to-cloud) */
@@ -1323,11 +1348,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Voir la matrice complete feature x plan */
     getFeatureFlagMatrix(options = {}) {
       return request("GET", "/feature-flags/matrix", options);
-    },
-
-    /** Modifier la matrice feature x plan (reserve a l'administration plateforme) */
-    updateFeatureFlagMatrix(options = {}) {
-      return request("PUT", "/feature-flags/matrix", options);
     },
 
     /** Voir le detail d'une fonctionnalite du registre */
