@@ -2,8 +2,8 @@
 
 namespace Tests\Support;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Hash;
  */
 trait CreatesCameraFixtures
 {
+    /**
+     * @param  array<string, mixed>  $features
+     */
     protected function createCompanyWithCameras(string $slug = 'alpha', array $features = ['cameras' => true, 'max_cameras' => 4]): Company
     {
         return Company::query()->create([
@@ -56,6 +59,9 @@ trait CreatesCameraFixtures
         ]);
     }
 
+    /**
+     * @return array<string, string>
+     */
     protected function authHeaders(Employee $employee, string $tokenName = 'tests'): array
     {
         $token = $employee->createToken($tokenName)->plainTextToken;
@@ -63,4 +69,3 @@ trait CreatesCameraFixtures
         return ['Authorization' => 'Bearer '.$token];
     }
 }
-
