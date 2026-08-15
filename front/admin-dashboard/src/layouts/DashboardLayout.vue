@@ -30,6 +30,11 @@
 
       <!-- Page content -->
       <main id="main-content" class="py-8">
+        <div v-if="dashboardStore.loadError" class="mx-auto mb-6 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">
+            {{ dashboardStore.loadError }} Les indicateurs affichés peuvent être incomplets. Utilisez Actualiser pour réessayer.
+          </div>
+        </div>
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <!-- Page header -->
           <div class="mb-8 animate-fade-in" v-if="$route.meta.title">
