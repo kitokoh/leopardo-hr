@@ -116,6 +116,10 @@ class LeopardoClient:
         """Rejeter une absence (manager)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def post_admin_ai_chat(self, **kwargs):
+        """Envoyer un message dans une conversation IA (super-admin)"""
+        return self.request("POST", "/admin/ai/chat", **kwargs)
+
     def get_admin_ai_conversations(self, **kwargs):
         """Conversations IA cross-tenant (super-admin)"""
         return self.request("GET", "/admin/ai/conversations", **kwargs)

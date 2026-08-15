@@ -1650,6 +1650,44 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /admin/ai/chat:
+    post:
+      tags: ["Admin"]
+      summary: "Envoyer un message dans une conversation IA (super-admin)"
+      description: "QA #2311 — le SPA admin répond dans une conversation tenant existante ; la reponse LLM est generee best-effort."
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message, conversation_id]
+              properties:
+                message: { type: string, maxLength: 2000 }
+                conversation_id: { type: integer }
+      responses:
+        "200":
+          description: "Message envoye et reponse generee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      conversation_id: { type: integer }
+                      response: { type: string }
+                      id: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Conversation introuvable"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /admin/edge-nodes:
     get:
       tags: ["Platform"]

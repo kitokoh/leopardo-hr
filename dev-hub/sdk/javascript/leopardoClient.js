@@ -120,6 +120,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Envoyer un message dans une conversation IA (super-admin) */
+    postAdminAiChat(options = {}) {
+      return request("POST", "/admin/ai/chat", options);
+    },
+
     /** Conversations IA cross-tenant (super-admin) */
     getAdminAiConversations(options = {}) {
       return request("GET", "/admin/ai/conversations", options);

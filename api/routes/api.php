@@ -30,6 +30,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\DemoUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiChatController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
 use App\Modules\Payroll\Interfaces\Api\V1\IslamicCalendarController;
@@ -303,6 +304,8 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index']);
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
             ->whereNumber('conversation');
+        // QA #2311 : envoi de message (POST /v1/ai/chat du SPA admin).
+        Route::post('/ai/chat', [PlatformAdminAiChatController::class, 'chat']);
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 
