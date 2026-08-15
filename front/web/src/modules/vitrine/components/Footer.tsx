@@ -13,7 +13,7 @@ const SOCIAL_LINKS = [
 import { NewsletterForm } from './NewsletterForm'
 import { getEnvConfig } from '../lib/env'
 
-function getFooterHref(sectionIndex: number, linkIndex: number): string {
+export function getFooterHref(sectionIndex: number, linkIndex: number): string | null {
   const key = `${sectionIndex}-${linkIndex}`
   const routes: Record<string, string> = {
     // PA2-MKT-013: the Footer renders on every landing page (26+ routes),
@@ -51,7 +51,7 @@ function getFooterHref(sectionIndex: number, linkIndex: number): string {
     '3-3': '/privacy',
   }
 
-  return routes[key] ?? '#'
+  return routes[key] ?? null
 }
 
 export function Footer() {
@@ -100,7 +100,7 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {section.links.map((link, linkIndex) => {
                   const href = getFooterHref(index, linkIndex)
-                  if (href === '/blog' && !enableBlog) return null
+                  if (!href || (href === '/blog' && !enableBlog)) return null
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
