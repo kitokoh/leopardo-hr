@@ -131,10 +131,9 @@
               </div>
 
               <div class="text-xs font-bold">
-                <!-- Pas de flux self-service de réinitialisation pour les comptes
-                     super-admin : la réinitialisation passe par l'ops
-                     (`php artisan super-admin:reset-password`). Lien volontairement
-                     absent plutôt que mort (#QA-2026-08-14). -->
+                <a href="mailto:support@leopardo-rh.com?subject=Mot%20de%20passe%20oubli%C3%A9%20-%20Acc%C3%A8s%20administrateur%20plateforme" class="text-brand-500 hover:text-brand-400 transition-colors">
+                  Mot de passe oublie ?
+                </a>
               </div>
             </div>
 
@@ -191,6 +190,7 @@
       <div class="flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-600">
         <span>© 2026 Leopardo Systems</span>
         <div class="flex items-center gap-4">
+          <a href="https://github.com/kitokoh/leopardo-hr/tree/main/docs/security" target="_blank" rel="noopener noreferrer" class="hover:text-slate-400 transition-colors">Sécurité</a>
           <a href="mailto:support@leopardo-rh.com" class="hover:text-slate-400 transition-colors">Support</a>
         </div>
       </div>
