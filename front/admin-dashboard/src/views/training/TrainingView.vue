@@ -208,7 +208,7 @@ const enrollmentColumns = [
 ]
 
 const sessionStatusMap = {
-  scheduled: { label: 'Planifiee', color: 'blue' },
+  planned: { label: 'Planifiee', color: 'blue' },
   in_progress: { label: 'En cours', color: 'yellow' },
   completed: { label: 'Terminee', color: 'green' },
   cancelled: { label: 'Annulee', color: 'red' },
@@ -254,7 +254,7 @@ async function fetchData() {
     const completed = enrollments.value.filter(e => e.status === 'completed')
     stats.value = {
       active_courses: courses.value.filter(c => c.is_active).length,
-      upcoming_sessions: sessions.value.filter(s => s.status === 'scheduled').length,
+      upcoming_sessions: sessions.value.filter(s => s.status === 'planned').length,
       total_enrollments: enrollments.value.length,
       completion_rate: enrollments.value.length > 0 ? Math.round(completed.length / enrollments.value.length * 100) : 0,
     }

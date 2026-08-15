@@ -95,3 +95,6 @@ composer.phar
 *.sqlite
 *.sqlite3
 docs/validation/I18N_DEBT_REPORT_2026_08_09.md
+
+# agent planning scratch (local only)
+.claude/

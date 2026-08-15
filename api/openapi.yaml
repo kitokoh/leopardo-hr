@@ -10243,7 +10243,7 @@ paths:
                   format: date
                 status:
                   type: string
-                  enum: [planned, ongoing, completed, cancelled]
+                  enum: [planned, in_progress, completed, cancelled]
       responses:
         "200":
           description: "Session modifiee"
