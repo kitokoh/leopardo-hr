@@ -18,7 +18,7 @@
       :rows="webhooks"
       :loading="loading"
       :error="error"
-      :search-keys="['url', 'description']"
+      :search-keys="['url', 'company_name']"
       search-placeholder="Rechercher un webhook..."
       default-sort="created_at"
       default-sort-dir="desc"
@@ -40,13 +40,13 @@
           </span>
         </div>
       </template>
-      <template #cell-is_active="{ value }">
+      <template #cell-active="{ value }">
         <span :class="value ? 'text-green-600' : 'text-gray-400'" class="text-sm font-medium">
           {{ value ? 'Actif' : 'Inactif' }}
         </span>
       </template>
-      <template #cell-last_delivery_status="{ value }">
-        <StatusBadge v-if="value" :status="value" :map="deliveryStatusMap" />
+      <template #cell-last_triggered_at="{ value }">
+        <span v-if="value" class="text-xs text-gray-500">{{ new Date(value).toLocaleString() }}</span>
         <span v-else class="text-xs text-gray-400">Jamais</span>
       </template>
       <template #row-actions="{ row }">
@@ -80,10 +80,6 @@
             <input v-model="form.url" type="url" required class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://..." />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Description</label>
-            <input v-model="form.description" type="text" class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" />
-          </div>
-          <div>
             <label class="block text-sm font-medium text-gray-700">Evenements</label>
             <div class="mt-2 grid grid-cols-2 gap-2">
               <label v-for="ev in availableEvents" :key="ev" class="flex items-center gap-2 text-sm text-gray-700">
@@ -94,7 +90,7 @@
           </div>
           <div>
             <label class="flex items-center gap-2 text-sm text-gray-700">
-              <input type="checkbox" v-model="form.is_active" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+              <input type="checkbox" v-model="form.active" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
               Actif
             </label>
           </div>
@@ -109,13 +105,27 @@
         </form>
       </div>
     </div>
+
+    <!-- QA #3494 : dialog de suppression (remplace confirm() natif) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Supprimer ce webhook ?</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Cette action est irréversible. Les livraisons futures seront interrompues.</p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">Annuler</button>
+          <button class="btn-danger" @click="confirmDeleteWebhook">Supprimer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+const toast = useToast()
 import { ref, onMounted } from 'vue'
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
+import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
@@ -127,15 +137,14 @@ const companies = ref([])
 const showCreateModal = ref(false)
 const editingWebhook = ref(null)
 
-const form = ref({ company_id: null, url: '', description: '', events: [], is_active: true })
+const form = ref({ company_id: null, url: '', events: [], active: true })
 
 const columns = [
   { key: 'company_name', label: 'Societe', sortable: true },
   { key: 'url', label: 'URL', sortable: true },
-  { key: 'description', label: 'Description' },
   { key: 'events', label: 'Evenements' },
-  { key: 'is_active', label: 'Statut', sortable: true },
-  { key: 'last_delivery_status', label: 'Dernier envoi', sortable: true },
+  { key: 'active', label: 'Statut', sortable: true },
+  { key: 'last_triggered_at', label: 'Dernier declenchement', sortable: true },
 ]
 
 const availableEvents = [
@@ -144,12 +153,6 @@ const availableEvents = [
   'payroll.validated', 'contract.created',
   'applicant.hired', 'training.completed',
 ]
-
-const deliveryStatusMap = {
-  success: { label: 'Succes', color: 'green' },
-  failed: { label: 'Echec', color: 'red' },
-  pending: { label: 'En attente', color: 'yellow' },
-}
 
 async function fetchData() {
   loading.value = true
@@ -175,14 +178,14 @@ async function fetchCompanies() {
 
 function editWebhook(wh) {
   editingWebhook.value = wh
-  form.value = { company_id: wh.company_id ?? null, url: wh.url, description: wh.description || '', events: [...(wh.events || [])], is_active: wh.is_active }
+  form.value = { company_id: wh.company_id ?? null, url: wh.url, events: [...(wh.events || [])], active: wh.active }
   showCreateModal.value = true
 }
 
 function closeModal() {
   showCreateModal.value = false
   editingWebhook.value = null
-  form.value = { company_id: null, url: '', description: '', events: [], is_active: true }
+  form.value = { company_id: null, url: '', events: [], active: true }
 }
 
 async function saveWebhook() {
@@ -195,8 +198,10 @@ async function saveWebhook() {
     }
     closeModal()
     fetchData()
+    toast.success('Webhook enregistré')
   } catch (err) {
     console.warn('Failed to save webhook', err)
+    toast.error("Erreur lors de l'enregistrement du webhook")
   } finally {
     saving.value = false
   }
@@ -205,18 +210,33 @@ async function saveWebhook() {
 async function testWebhook(id) {
   try {
     await api.post(`/admin/webhooks/${id}/test`) // #2634
+    toast.success('Webhook testé')
   } catch (err) {
     console.warn('Failed to test webhook', err)
+    toast.error('Erreur lors du test du webhook')
   }
 }
 
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
 async function deleteWebhook(id) {
-  if (!confirm('Supprimer ce webhook ?')) return
+  // QA #3494 : confirm() natif (non i18n, bloque le rendu) → dialog in-app.
+  deleteTarget.value = id
+  deleteOpen.value = true
+}
+
+async function confirmDeleteWebhook() {
+  const id = deleteTarget.value
+  if (!id) return
+  deleteOpen.value = false
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()
+    toast.success('Webhook supprimé')
   } catch (err) {
     console.warn('Failed to delete webhook', err)
+    toast.error('Erreur lors de la suppression du webhook')
   }
 }
 

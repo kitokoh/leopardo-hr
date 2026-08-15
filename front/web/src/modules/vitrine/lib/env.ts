@@ -32,7 +32,7 @@ export interface EnvironmentConfig {
 export function getEnvConfig(): EnvironmentConfig {
   return {
     // API
-    apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1",
+    apiUrl: process.env.NEXT_PUBLIC_API_URL || "/api/v1",
 
     // Analytics
     gaId: process.env.NEXT_PUBLIC_GA_ID || "",

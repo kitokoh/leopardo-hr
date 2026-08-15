@@ -1,10 +1,14 @@
-'use client';
-
 import { HeroSection } from '@/modules/vitrine/components/sections/HeroSection';
 import { CTASection } from '@/modules/vitrine/components/sections/CTASection';
 import { MainLayout } from '@/modules/vitrine/components/layout/MainLayout';
 import { Container } from '@/modules/vitrine/components/common/Container';
 import { Section } from '@/modules/vitrine/components/common/Section';
+import { SITE_URL } from '@/lib/site-url';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/guides/rh-startup` },
+};
 
 export default function GuidesRHStartupPage() {
   return (

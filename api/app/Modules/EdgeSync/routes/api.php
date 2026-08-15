@@ -44,14 +44,19 @@ Route::prefix('api/v1/edge')->group(function (): void {
 });
 
 // ── Authenticated admin routes ─────────────────────────────────────────────
+// Issue #3427 : ces routes exposent edge_token + données PII/biométrie via
+// /edge-node/{id}/pull → réservées aux rôles manager (api.manager), aligné
+// sur dashboard.php. Aucun appelant légitime employé (le super-admin passe
+// par /v1/admin/edge-nodes).
 Route::prefix('api/v1/edge')
-    ->middleware(['api', 'auth:sanctum', 'tenant', 'throttle:api'])
+    ->middleware(['api', 'auth:sanctum', 'tenant', 'api.manager', 'throttle:api'])
     ->group(function (): void {
         Route::get('/', [EdgeNodeController::class, 'index']);
         Route::post('/', [EdgeNodeController::class, 'store']);
         Route::get('/{nodeId}', [EdgeNodeController::class, 'show']);
         Route::post('/{nodeId}/sync', [EdgeNodeController::class, 'sync']);
-        Route::post('/{nodeId}/license', [EdgeNodeController::class, 'issueLicense']);
+        // #3319 : émission de licence réservée aux managers (api.manager).
+        Route::post('/{nodeId}/license', [EdgeNodeController::class, 'issueLicense'])->middleware('api.manager');
     });
 
 // ── Edge node machine routes ───────────────────────────────────────────────

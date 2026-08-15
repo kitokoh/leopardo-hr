@@ -28,12 +28,6 @@ import 'package:leopardo_employee/features/user_auth/screens/user_register_scree
 import 'package:leopardo_employee/features/user_auth/screens/user_login_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/user_home_screen.dart';
 import 'package:leopardo_employee/features/user_auth/screens/company_request_screen.dart';
-import 'package:leopardo_employee/features/contracts/screens/contract_screen.dart';
-import 'package:leopardo_employee/features/training/screens/training_screen.dart';
-import 'package:leopardo_employee/features/expenses/screens/expense_list_screen.dart';
-import 'package:leopardo_employee/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:leopardo_employee/features/ai_voice/screens/ai_voice_screen.dart';
-import 'package:leopardo_employee/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_employee/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_employee/features/smart_attendance/screens/smart_attendance_screen.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
@@ -204,30 +198,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const ProfileScreen(),
           ),
           GoRoute(
-            path: '/contracts',
-            builder: (context, state) => const ContractScreen(),
-          ),
-          GoRoute(
-            path: '/training',
-            builder: (context, state) => const TrainingScreen(),
-          ),
-          GoRoute(
-            path: '/expenses',
-            builder: (context, state) => const ExpenseListScreen(),
-          ),
-          GoRoute(
-            path: '/ai-chat',
-            builder: (context, state) => const AiChatScreen(),
-          ),
-          GoRoute(
-            path: '/ai-voice',
-            builder: (context, state) => const AiVoiceScreen(),
-          ),
-          GoRoute(
-            path: '/vehicle-map',
-            builder: (context, state) => const VehicleMapScreen(),
-          ),
-          GoRoute(
             path: '/onboarding',
             builder: (context, state) => const OnboardingScreen(),
           ),
@@ -315,7 +285,7 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

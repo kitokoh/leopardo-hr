@@ -18,7 +18,6 @@ use App\Modules\Planning\Providers\PlanningServiceProvider;
 use App\Modules\Platform\Providers\PlatformServiceProvider;
 use App\Modules\Recruitment\Providers\RecruitmentServiceProvider;
 use App\Modules\SmartAttendance\Providers\SmartAttendanceServiceProvider;
-use App\Modules\Training\Providers\TrainingServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
@@ -50,7 +49,6 @@ return [
     // — New DDD modules (Phase 3–4)
     PlatformServiceProvider::class,
     OnboardingServiceProvider::class,
-    TrainingServiceProvider::class,
     // — EdgeSync module
     EdgeSyncServiceProvider::class,
     // — Marketing module (Phase 1)

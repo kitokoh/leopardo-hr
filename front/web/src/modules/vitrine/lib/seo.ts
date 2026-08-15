@@ -96,7 +96,7 @@ export const pageMetadata = {
       "pointage numérique",
       "gestion absences",
     ],
-    ogImage: `${siteUrl}/og/landing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   employes: {
@@ -110,7 +110,7 @@ export const pageMetadata = {
       "logiciel RH",
       "paie employés",
     ],
-    ogImage: `${siteUrl}/og/employes.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   documents: {
@@ -124,7 +124,7 @@ export const pageMetadata = {
       "archivage conformité",
       "RGPD documents",
     ],
-    ogImage: `${siteUrl}/og/documents.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   comptabilite: {
@@ -138,7 +138,7 @@ export const pageMetadata = {
       "bulletins de paie",
       "conformité paie",
     ],
-    ogImage: `${siteUrl}/og/comptabilite.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   marketing: {
@@ -152,12 +152,15 @@ export const pageMetadata = {
       "campagnes email",
       "marketing automation",
     ],
-    ogImage: `${siteUrl}/og/marketing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
+      // Issue #3487 : la locale n'est pas résolue ici (metadata statique du
+      // module) — le layout /pricing lit ?lang= et appelle t(locale, ...).
+      // Ce fallback FR ne sert que si la clé i18n manque.
       t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
@@ -165,7 +168,7 @@ export const pageMetadata = {
       "coût gestion employés",
       "plans pricing",
     ],
-    ogImage: `${siteUrl}/og/pricing.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   about: {
@@ -173,7 +176,7 @@ export const pageMetadata = {
     description:
       "Découvrez notre mission, équipe et valeurs. Nous aidons les PME à gérer leurs employés simplement.",
     keywords: ["à propos", "équipe", "mission", "valeurs"],
-    ogImage: `${siteUrl}/og/about.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   blog: {
@@ -187,7 +190,7 @@ export const pageMetadata = {
       "tendances RH",
       "automatisation RH",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   changelog: {
@@ -200,7 +203,7 @@ export const pageMetadata = {
       "releases logiciel paie",
       "notes de version",
     ],
-    ogImage: `${siteUrl}/og/blog.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   docs: {
@@ -211,9 +214,9 @@ export const pageMetadata = {
       "documentation API RH",
       "intégration Leopardo",
       "webhooks paie",
-      "API gestion employes",
+      "API gestion employés",
     ],
-    ogImage: `${siteUrl}/og/docs.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   download: {
@@ -226,7 +229,7 @@ export const pageMetadata = {
       "client desktop ZKTeco",
       "app RH Android iOS",
     ],
-    ogImage: `${siteUrl}/og/download.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   contact: {
@@ -239,7 +242,7 @@ export const pageMetadata = {
       "demande commerciale",
       "assistance logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/contact.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   faq: {
@@ -249,10 +252,10 @@ export const pageMetadata = {
     keywords: [
       "FAQ Leopardo RH",
       "questions logiciel RH",
-      "aide gestion employes",
+      "aide gestion employés",
       "support paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/faq.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   testimonials: {
@@ -265,7 +268,7 @@ export const pageMetadata = {
       "retours utilisateurs paie SaaS",
       "case success RH PME",
     ],
-    ogImage: `${siteUrl}/og/testimonials.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   caseStudies: {
@@ -278,7 +281,7 @@ export const pageMetadata = {
       "cas client Leopardo RH",
       "ROI logiciel RH",
     ],
-    ogImage: `${siteUrl}/og/case-studies.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   videos: {
@@ -291,7 +294,7 @@ export const pageMetadata = {
       "tutoriel pointage biométrique",
       "demonstration paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/videos.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   branding: {
@@ -304,7 +307,7 @@ export const pageMetadata = {
       "logo entreprise application RH",
       "theme personnalise paie",
     ],
-    ogImage: `${siteUrl}/og/branding.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   careers: {
@@ -317,20 +320,20 @@ export const pageMetadata = {
       "recrutement startup SaaS",
       "offres emploi tech RH",
     ],
-    ogImage: `${siteUrl}/og/careers.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   mobile: {
     title: "Applications Mobiles | Leopardo RH sur Android et iOS",
     description:
-      "Applications mobiles Leopardo RH pour employes, managers et administrateurs : pointage, absences et validation en mobilite.",
+      "Applications mobiles Leopardo RH pour employés, managers et administrateurs : pointage, absences et validation en mobilite.",
     keywords: [
       "application mobile RH",
       "pointage mobile Android iOS",
       "app manager RH",
-      "app employe pointage",
+      "app employé pointage",
     ],
-    ogImage: `${siteUrl}/og/mobile.png`,
+    ogImage: `${siteUrl}/og/default.png`,
   },
 
   signup: {
@@ -343,21 +346,21 @@ export const pageMetadata = {
       "sandbox logiciel RH",
       "inscription essai paie SaaS",
     ],
-    ogImage: `${siteUrl}/og/signup.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
 
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Free, Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",
       "checkout SaaS RH",
       "paiement plan paie",
     ],
-    ogImage: `${siteUrl}/og/checkout.png`,
+    ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
 };

@@ -16,6 +16,7 @@ import {
   normalizeLocale,
   storeAuthSession,
   type AppLocale,
+  type CopyTree,
   type StoredAuthUser,
 } from '@/lib/i18n';
 import { OnboardingWizard } from '@/modules/onboarding/components/OnboardingWizard';
@@ -123,7 +124,7 @@ export default function DashboardLayout({
     }
 
     await apiFetch('/notifications/read-all', {
-      method: 'PUT',
+      method: 'POST',
     });
 
     setNotificationPreview((items) => items.map((item) => ({ ...item, is_read: true })));
@@ -366,7 +367,7 @@ export default function DashboardLayout({
         </header>
         <main className="mx-auto w-full max-w-7xl p-8">
           {currentModule && !currentModule.enabled ? (
-            <FeatureLockedPanel module={currentModule} />
+            <FeatureLockedPanel module={currentModule} labels={labels} />
           ) : (
             children
           )}
@@ -412,10 +413,11 @@ function SidebarLink({ module, active }: { module: ClientModuleAccess; active: b
   );
 }
 
-function FeatureLockedPanel({ module }: { module: ClientModuleAccess }) {
+function FeatureLockedPanel({ module, labels }: { module: ClientModuleAccess; labels: CopyTree }) {
+  // #2986 : messages localisés (4 locales) — plus de FR en dur.
   const reason = module.reason === 'role_locked'
-    ? 'Votre role actuel ne permet pas d acceder a ce module.'
-    : 'Ce module n est pas inclus dans votre plan actuel.';
+    ? labels.dashboard.featureLockedRole
+    : labels.dashboard.featureLockedPlan;
 
   useEffect(() => {
     trackClientEvent('feature_blocked', {
@@ -431,12 +433,12 @@ function FeatureLockedPanel({ module }: { module: ClientModuleAccess }) {
         <div className="space-y-4">
           <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-amber-700">
             <LockKeyhole className="h-4 w-4" aria-hidden="true" />
-            Module non inclus
+            {labels.dashboard.featureLockedBadge}
           </span>
           <div>
             <h1 className="text-3xl font-black text-slate-950">{module.upgradeLabel}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              {reason} Leopardo RH garde l interface explicite afin d eviter les 404 confuses et les erreurs API inutiles.
+              {reason} {labels.dashboard.featureLockedExplanation}
             </p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-transparent p-4 text-sm text-slate-700">
