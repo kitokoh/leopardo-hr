@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Modules\HR\Domain\Models\Contract;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\Payroll\Domain\Models\LoanRepayment;
-use App\Modules\HR\Domain\Models\TrainingEnrollment;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -89,12 +90,24 @@ class SelfServiceController extends Controller
             return response()->json(['message' => 'Already enrolled in this session.'], 422);
         }
 
-        $enrollment = TrainingEnrollment::create([
-            'training_session_id' => $sessionId,
-            'employee_id' => $user->id,
-            'company_id' => $user->company_id,
-            'status' => 'enrolled',
-        ]);
+        // #3811 : deux requêtes concurrentes peuvent franchir le garde
+        // exists() — l'unique (training_session_id, employee_id) tranche :
+        // la seconde insertion échoue en 23505 → même réponse 422 que le
+        // garde existant (idempotent, plus de 500).
+        try {
+            $enrollment = TrainingEnrollment::create([
+                'training_session_id' => $sessionId,
+                'employee_id' => $user->id,
+                'company_id' => $user->company_id,
+                'status' => 'enrolled',
+            ]);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                return response()->json(['message' => 'Already enrolled in this session.'], 422);
+            }
+
+            throw $e;
+        }
 
         return (new TrainingEnrollmentResource($enrollment))
             ->response()
@@ -132,4 +145,3 @@ class SelfServiceController extends Controller
         return response()->json(['data' => $repayments]); // LoanRepayment â€” no dedicated Resource yet
     }
 }
-

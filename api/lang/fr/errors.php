@@ -42,4 +42,9 @@ return [
     'SERVER_ERROR' => 'Une erreur est survenue. Veuillez réessayer.',
     'VALIDATION_ERROR' => 'Certains champs sont incorrects.',
     'UNSUPPORTED_API_VERSION' => 'Version API non supportee.',
+
+    'COMPANY_SLUG_CONFLICT' => 'Une entreprise avec ce nom existe déjà. Choisissez un autre nom.',
+    'PUBLIC_HOLIDAY_ALREADY_EXISTS' => 'Ce jour férié existe déjà pour cette période.',
+    // #3810 — codes stables (audit 2026-08-15) : plus de message brut exposé
+    'PAYROLL_REGULARIZATION_FAILED' => 'La création du run de régularisation a échoué. Réessayez.',
 ];

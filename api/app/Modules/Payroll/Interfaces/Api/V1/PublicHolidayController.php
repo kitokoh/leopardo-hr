@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
 
 /**
  * Issue #1811 — CRUD jours fériés par pays.
@@ -76,7 +77,21 @@ class PublicHolidayController extends Controller
         $this->assertUnique($data);
         $data['created_by'] = $request->user()?->id;
 
-        $holiday = PublicHoliday::create($data);
+        // #3811 : l'unique (company_id, country_code, date, year) peut être
+        // violé par deux requêtes concurrentes après le garde assertUnique() —
+        // 23505 → 422 idempotent au lieu d'un 500.
+        try {
+            $holiday = PublicHoliday::create($data);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                return response()->json([
+                    'error' => 'PUBLIC_HOLIDAY_ALREADY_EXISTS',
+                    'message' => __('errors.PUBLIC_HOLIDAY_ALREADY_EXISTS'),
+                ], 422);
+            }
+
+            throw $e;
+        }
 
         if (($data['company_id'] ?? null) === null) {
             // Férié NATIONAL : tous les tenants le voient → invalider tous les scopes (BUG #1897).

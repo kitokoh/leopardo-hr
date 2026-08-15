@@ -7,6 +7,10 @@ namespace App\Modules\EdgeSync\Application\Services;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
+use App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
+use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,13 +20,13 @@ use Illuminate\Support\Facades\Log;
  * and resolves conflicts against the Cloud database.
  *
  * IMPORTANT: this service only ever runs on Cloud, invoked by
- * {@see \App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController::forceSync()}
+ * {@see EdgeNodeController::forceSync()}
  * (manual admin-triggered sync) and
- * {@see \App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob}
+ * {@see ProcessSyncQueueJob}
  * (async processing after a real Edge push landed in sync_queue via
  * EdgeNodeController::pushFromEdge()). It must never be invoked from the
  * `edge:sync-daemon` command running on an Edge deployment — that daemon
- * uses {@see \App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient}
+ * uses {@see EdgeDaemonSyncClient}
  * instead, which performs the actual over-the-wire HTTP push/pull against
  * this Cloud API rather than writing to whatever local database connection
  * happens to be configured.
@@ -41,14 +45,14 @@ class SyncEngineService
     public function sync(EdgeNode $node): SyncLog
     {
         $log = SyncLog::create([
-            'edge_node_id'       => $node->id,
-            'direction'          => 'bidirectional',
-            'status'             => 'running',
-            'records_sent'       => 0,
-            'records_received'   => 0,
+            'edge_node_id' => $node->id,
+            'direction' => 'bidirectional',
+            'status' => 'running',
+            'records_sent' => 0,
+            'records_received' => 0,
             'conflicts_detected' => 0,
             'conflicts_resolved' => 0,
-            'started_at'         => now(),
+            'started_at' => now(),
         ]);
 
         try {
@@ -57,27 +61,27 @@ class SyncEngineService
                 $pullResult = $this->pull($node);
 
                 $log->update([
-                    'status'             => 'success',
-                    'records_sent'       => $pushResult['sent'],
-                    'records_received'   => $pullResult['received'],
+                    'status' => 'success',
+                    'records_sent' => $pushResult['sent'],
+                    'records_received' => $pullResult['received'],
                     'conflicts_detected' => $pushResult['conflicts'] + $pullResult['conflicts'],
                     'conflicts_resolved' => $pushResult['resolved'] + $pullResult['resolved'],
-                    'summary'            => ['push' => $pushResult, 'pull' => $pullResult],
-                    'finished_at'        => now(),
+                    'summary' => ['push' => $pushResult, 'pull' => $pullResult],
+                    'finished_at' => now(),
                 ]);
 
                 $node->update(['last_sync_at' => now()]);
             });
         } catch (\Throwable $e) {
-            Log::error('[EdgeSync] Sync failed for node ' . $node->id, [
+            Log::error('[EdgeSync] Sync failed for node '.$node->id, [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             $log->update([
-                'status'        => 'failed',
+                'status' => 'failed',
                 'error_message' => $e->getMessage(),
-                'finished_at'   => now(),
+                'finished_at' => now(),
             ]);
         }
 
@@ -97,13 +101,13 @@ class SyncEngineService
             ->limit(config('edge.batch_size', 100))
             ->get();
 
-        $sent      = 0;
+        $sent = 0;
         $conflicts = 0;
-        $resolved  = 0;
+        $resolved = 0;
 
         foreach ($pending as $item) {
             $item->update([
-                'status'        => 'processing',
+                'status' => 'processing',
                 'attempt_count' => $item->attempt_count + 1,
             ]);
 
@@ -114,9 +118,9 @@ class SyncEngineService
                     $conflicts++;
                     $resolution = $this->resolveConflict($item, $result);
                     $item->update([
-                        'status'              => 'conflict',
+                        'status' => 'conflict',
                         'conflict_resolution' => $resolution,
-                        'conflict_note'       => $result['conflict_note'] ?? null,
+                        'conflict_note' => $result['conflict_note'] ?? null,
                     ]);
                     $resolved++;
                 } else {
@@ -124,7 +128,7 @@ class SyncEngineService
                     $sent++;
                 }
             } catch (\Throwable $e) {
-                Log::warning('[EdgeSync] Push failed for queue item ' . $item->id, [
+                Log::warning('[EdgeSync] Push failed for queue item '.$item->id, [
                     'error' => $e->getMessage(),
                 ]);
 
@@ -159,8 +163,8 @@ class SyncEngineService
     {
         return match ($item->entity_type) {
             'attendance_logs' => $this->applyAttendanceLog($item),
-            'absences'        => $this->applyAbsence($item),
-            default           => $this->applyGeneric($item),
+            'absences' => $this->applyAbsence($item),
+            default => $this->applyGeneric($item),
         };
     }
 
@@ -173,24 +177,38 @@ class SyncEngineService
 
         if ($exists && $item->operation === 'create') {
             return [
-                'conflict'      => true,
+                'conflict' => true,
                 'conflict_note' => 'Duplicate external_event_id — create skipped.',
             ];
         }
 
-        $payload                         = $item->payload;
-        $payload['synced_from_offline']  = true;
+        $payload = $item->payload;
+        $payload['synced_from_offline'] = true;
 
-        match ($item->operation) {
-            'create' => DB::table('attendance_logs')->insert($payload),
-            'update' => DB::table('attendance_logs')
-                ->where('id', $item->entity_id)
-                ->update($payload),
-            'delete' => DB::table('attendance_logs')
-                ->where('id', $item->entity_id)
-                ->delete(),
-            default  => null,
-        };
+        // #3811 : deux syncs concurrents peuvent franchir le garde
+        // external_event_id ensemble — l'index unique tranche : la seconde
+        // insertion échoue en 23505 → conflit idempotent (pas de 500 job).
+        try {
+            match ($item->operation) {
+                'create' => DB::table('attendance_logs')->insert($payload),
+                'update' => DB::table('attendance_logs')
+                    ->where('id', $item->entity_id)
+                    ->update($payload),
+                'delete' => DB::table('attendance_logs')
+                    ->where('id', $item->entity_id)
+                    ->delete(),
+                default => null,
+            };
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                return [
+                    'conflict' => true,
+                    'conflict_note' => 'Duplicate external_event_id — create skipped (23505).',
+                ];
+            }
+
+            throw $e;
+        }
 
         return ['conflict' => false, 'conflict_note' => null];
     }
@@ -202,7 +220,7 @@ class SyncEngineService
 
         if ($cloud && in_array($cloud->status, ['approved', 'rejected'], true)) {
             return [
-                'conflict'      => true,
+                'conflict' => true,
                 'conflict_note' => 'Cloud record already approved/rejected — Cloud wins.',
             ];
         }
@@ -213,7 +231,7 @@ class SyncEngineService
             'create' => DB::table('absences')->insert($payload),
             'update' => DB::table('absences')->where('id', $item->entity_id)->update($payload),
             'delete' => DB::table('absences')->where('id', $item->entity_id)->delete(),
-            default  => null,
+            default => null,
         };
 
         return ['conflict' => false, 'conflict_note' => null];
@@ -222,12 +240,12 @@ class SyncEngineService
     protected function applyGeneric(SyncQueue $item): array
     {
         // Last-write-wins using updated_at timestamp
-        $cloud          = DB::table($item->entity_type)->where('id', $item->entity_id)->first();
+        $cloud = DB::table($item->entity_type)->where('id', $item->entity_id)->first();
         $localUpdatedAt = Carbon::parse($item->payload['updated_at'] ?? now());
 
         if ($cloud && Carbon::parse($cloud->updated_at)->gt($localUpdatedAt)) {
             return [
-                'conflict'      => true,
+                'conflict' => true,
                 'conflict_note' => 'Cloud record is newer — local update ignored.',
             ];
         }
@@ -240,7 +258,7 @@ class SyncEngineService
             'delete' => DB::table($item->entity_type)
                 ->where('id', $item->entity_id)
                 ->delete(),
-            default  => null,
+            default => null,
         };
 
         return ['conflict' => false, 'conflict_note' => null];

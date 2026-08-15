@@ -42,4 +42,9 @@ return [
     'SERVER_ERROR' => 'An error occurred. Please try again.',
     'VALIDATION_ERROR' => 'Some fields are incorrect.',
     'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',
+
+    'COMPANY_SLUG_CONFLICT' => 'A company with this name already exists. Please choose another name.',
+    'PUBLIC_HOLIDAY_ALREADY_EXISTS' => 'This public holiday already exists for this period.',
+    // #3810 — codes stables (audit 2026-08-15) : plus de message brut exposé
+    'PAYROLL_REGULARIZATION_FAILED' => 'Regularization run creation failed. Please retry.',
 ];

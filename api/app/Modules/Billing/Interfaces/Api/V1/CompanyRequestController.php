@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Http\Controllers\Controller;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -125,22 +126,32 @@ class CompanyRequestController extends Controller
         /** @var Employee $employee */
         $employee = $request->user();
         if ($employee instanceof Employee) {
-            return User::firstOrCreate(
-                ['email' => $employee->email],
-                [
-                    'first_name' => $employee->first_name,
-                    'last_name' => $employee->last_name,
-                    'password_hash' => $employee->password_hash ?: Hash::make(str()->random(32)),
-                    'provider' => 'employee',
-                    'preferred_language' => $employee->preferred_language ?? 'fr',
-                ]
-            );
-        // Issue #3597 : status non mass-assignable — assignation explicite.
-        $user->status = $employee->status ?? 'active';
-        $user->save();
+            // #3811 : firstOrCreate n'est pas atomique sous concurrence (deux
+            // requêtes simultanées sur le même email) — 23505 → re-lecture de
+            // l'utilisateur existant (idempotent, plus de 500).
+            try {
+                $user = User::firstOrCreate(
+                    ['email' => $employee->email],
+                    [
+                        'first_name' => $employee->first_name,
+                        'last_name' => $employee->last_name,
+                        'password_hash' => $employee->password_hash ?: Hash::make(str()->random(32)),
+                        'provider' => 'employee',
+                        'preferred_language' => $employee->preferred_language ?? 'fr',
+                    ]
+                );
+            } catch (QueryException $e) {
+                if ($e->getCode() === '23505') {
+                    $user = User::where('email', $employee->email)->firstOrFail();
+                } else {
+                    throw $e;
+                }
+            }
+            // Issue #3597 : status non mass-assignable — assignation explicite.
+            $user->status = $employee->status ?? 'active';
+            $user->save();
         }
 
         abort(401);
     }
 }
-
