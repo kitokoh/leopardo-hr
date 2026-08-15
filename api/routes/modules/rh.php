@@ -98,9 +98,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
     // ── Biometrics & Kiosks ───────────────────────────────────────────────────
     Route::get('/biometric-enrollment-requests', [BiometricEnrollmentController::class, 'index']);
-    Route::post('/biometric-enrollment-requests/{id}/approve', [BiometricEnrollmentController::class, 'approve']);
-    Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject']);
-    Route::post('/kiosks', [KioskController::class, 'register']);
+    Route::post('/biometric-enrollment-requests/{id}/approve', [BiometricEnrollmentController::class, 'approve'])->middleware('api.manager');
+    Route::post('/biometric-enrollment-requests/{id}/reject', [BiometricEnrollmentController::class, 'reject'])->middleware('api.manager');
+    Route::post('/kiosks', [KioskController::class, 'register'])->middleware('api.manager');
 
     // ── Module 1 — Absences ───────────────────────────────────────────────────
     // PA2-ARCH-011 : les routes /absences/* sont la source unique dans

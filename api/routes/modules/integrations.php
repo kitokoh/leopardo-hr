@@ -30,7 +30,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/zkteco/devices/{id}/sync-logs', [ZktecoController::class, 'syncLogs'])->whereNumber('id');
     Route::post('/zkteco/devices/{serialNumber}/push-users', [ZktecoController::class, 'pushUsers']);
     // Sécurité #2216 : rotation du token de device (manager uniquement)
-    Route::post('/zkteco/devices/{id}/regenerate-token', [ZktecoController::class, 'regenerateToken'])->whereNumber('id');
+    Route::post('/zkteco/devices/{id}/regenerate-token', [ZktecoController::class, 'regenerateToken'])->whereNumber('id')->middleware('api.manager');
 });
 
 // Device kiosks authenticate with X-Kiosk-Token, not a Sanctum user token.
