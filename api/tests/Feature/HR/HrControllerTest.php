@@ -84,6 +84,10 @@ class HrControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.id', $this->employee->id);
+        // #2327 : la fiche expose le contexte entreprise (company + currency)
+        // sans eager-load `company` sous le search_path tenant (42703).
+        $response->assertJsonPath('data.company.id', $this->company->id);
+        $response->assertJsonPath('data.currency', $this->company->currency);
     }
 
     public function test_manager_gets_404_for_cross_tenant_employee(): void

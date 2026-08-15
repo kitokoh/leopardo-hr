@@ -344,9 +344,13 @@ class EmployeeController extends Controller
     #[RequiresPermission('employees.view')]
     public function show(string $employeeId, Request $request): JsonResponse
     {
+        // v4.16.250 + #2327 : ne PAS eager-loader `company` sous le search_path
+        // tenant (la table `companies` résolue n'a pas la colonne `features` →
+        // SQLSTATE 42703). On charge uniquement `schedule`, puis on attache
+        // `currentCompany()` (public.companies, colonnes complètes) comme
+        // l'index() — pattern attachCompanyContext (#2327).
         $employee = Employee::query()
             ->with([
-                'company:id,name,language,timezone,currency,features',
                 'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
             ])
             ->findOrFail($employeeId);
@@ -359,6 +363,11 @@ class EmployeeController extends Controller
             'resource' => 'employee_profile',
             'target_employee_id' => $employee->id,
         ]);
+
+        $company = currentCompany();
+        if ($company instanceof Company) {
+            $employee->setRelation('company', $company);
+        }
 
         return (new EmployeeResource($employee))->response();
     }
