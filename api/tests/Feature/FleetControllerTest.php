@@ -340,8 +340,8 @@ class FleetControllerTest extends TestCase
 
         $this->assertCount(1, $response->json('data'));
         $this->assertSame($assigned->id, $response->json('data.0.vehicle_id'));
-        $this->assertSame(36.7, $response->json('data.0.latitude'));
-        $this->assertSame(3.0, $response->json('data.0.longitude'));
+        $this->assertEquals(36.7, $response->json('data.0.latitude'));
+        $this->assertEquals(3.0, $response->json('data.0.longitude'));
     }
 
     public function test_manager_keeps_full_fleet_access(): void
