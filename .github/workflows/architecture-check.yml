@@ -21,6 +21,34 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Issue #3708 : les gardes dev-hub (bash pur) n'étaient appelées par aucun
+  # workflow — la dérive APP_VERSION (#3528, régression b0630dd5) et la
+  # parité .env.example (#1487) sont passées inaperçues sur main. Ce job
+  # exécute les gardes non-PHP existantes sur PR et sur push main.
+  hygiene-guards:
+    name: Hygiene Guards (env, migrations, pays)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: APP_VERSION drift guard (issue #3528)
+        run: bash dev-hub/tools/check-app-version-sync.sh api
+
+      - name: .env.example parity guard (issue #1487)
+        run: bash dev-hub/tools/check-env-example-parity.sh api
+
+      - name: Migration basename collision guard (issue #1962)
+        run: bash dev-hub/tools/check-migration-basename-collisions.sh
+
+      - name: Country catalog guard (issue #2600)
+        run: bash dev-hub/tools/check-country-catalog.sh
+
+      - name: Canonical domains guard (issue #3706)
+        run: bash dev-hub/tools/check-canonical-domains.sh
+
   phpstan-modules:
     name: PHPStan — Modules Architecture
     runs-on: ubuntu-latest
