@@ -14,8 +14,9 @@ class AccessDeniedScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.surface,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -23,18 +24,18 @@ class AccessDeniedScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock_outline, size: 64, color: AppColors.primary),
+                Icon(Icons.lock_outline, size: 64, color: AppColors.rh),
                 const SizedBox(height: 16),
                 Text(
                   'Accès refusé',
-                  style: AppTypography.headline,
+                  style: AppTypography.title,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Votre compte n\'a pas le rôle Manager requis pour cette '
+                  'Votre compte n\'a pas le rôle RH requis pour cette '
                   'application. Utilisez l\'application correspondant à votre '
-                  'rôle (Employee, RH…) ou contactez votre administrateur.',
+                  'rôle (Employee, Manager…) ou contactez votre administrateur.',
                   style: AppTypography.body,
                   textAlign: TextAlign.center,
                 ),

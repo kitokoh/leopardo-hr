@@ -81,13 +81,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
-      final isAuthorized = authState.employee!.isHr;
+      final isAuthorized = isAuth && authState.employee!.isHr;
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && !isAuthorized) {
         // T116 : plus de boucle /welcome ↔ / — écran « accès refusé » explicite
         // pour un utilisateur connecté sans le rôle de l'app RH.
-        return onPublic ? null : '/access-denied';
+        return location == '/access-denied' ? null : '/access-denied';
       }
       if (isAuth && onPublic) return '/';
 

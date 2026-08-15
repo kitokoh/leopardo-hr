@@ -14,8 +14,9 @@ class AccessDeniedScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.surface,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -23,11 +24,11 @@ class AccessDeniedScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock_outline, size: 64, color: AppColors.primary),
+                Icon(Icons.lock_outline, size: 64, color: AppColors.rh),
                 const SizedBox(height: 16),
                 Text(
                   'Accès refusé',
-                  style: AppTypography.headline,
+                  style: AppTypography.title,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
