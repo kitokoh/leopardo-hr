@@ -7162,11 +7162,22 @@ paths:
     post:
       tags: ["Payroll"]
       summary: "Calculer la paie"
+      description: "Garde 422 pour les pays placeholder (CF/TD/GQ/TG/BJ/NE) : `acknowledge_placeholder=true` requis, acceptation auditée (issue #2332/#1872)."
       parameters:
         - name: payrollRun
           in: path
           required: true
           schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acknowledge_placeholder:
+                  type: boolean
+                  description: "Confirmation explicite pour un pays placeholder (422 sinon)"
       responses:
         "200":
           description: "Calcul lance"
@@ -7180,7 +7191,7 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
         "422":
-          description: "Session must be in draft status"
+          description: "Session must be in draft status / acknowledge_placeholder requis pour pays placeholder"
 
   /payroll-runs/{payrollRun}/validate:
     post:

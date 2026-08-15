@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\Queue;
@@ -21,9 +22,17 @@ class PayrollRunControllerTest extends TestCase
 {
     use \Tests\RefreshTenantDatabase;
 
-    private function bindFakePayrollCalculator(): void
+    private function bindFakePayrollCalculator(string $confidenceLevel = 'production'): void
     {
         $calculator = Mockery::mock(PayrollCalculator::class);
+        $calculator
+            ->shouldReceive('getRules')
+            ->andReturnUsing(
+                fn (string $countryCode): CountryRulesInterface => Mockery::mock(CountryRulesInterface::class)
+                    ->shouldReceive('confidenceLevel')
+                    ->andReturn($confidenceLevel)
+                    ->getMock()
+            );
         $calculator
             ->shouldReceive('calculateRun')
             ->once()
@@ -193,6 +202,70 @@ class PayrollRunControllerTest extends TestCase
             'payroll_run_id' => $run->id,
             'company_id' => $company->id,
             'status' => 'calculated',
+        ]);
+    }
+
+    public function test_calculate_placeholder_country_requires_acknowledge(): void
+    {
+        // Issue #2332 : la garde acknowledge_placeholder (pays placeholder —
+        // CF/TD/GQ/TG/BJ/NE) existait sur les simulations mais PAS sur le
+        // chemin run → un run réel pour un pays placeholder pouvait produire
+        // des montants indicatifs sans confirmation. L'acceptation est
+        // auditée (même pattern que ComplianceConfidenceApiTest #1872).
+        $this->bindFakePayrollCalculator('placeholder');
+
+        $company = Company::factory()->create(['country' => 'BJ', 'currency' => 'XOF']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'BJ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'draft',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        // Sans confirmation → 422 + aucune trace d'audit.
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate");
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('acknowledge_placeholder');
+        $this->assertDatabaseMissing('audit_logs', [
+            'action' => 'placeholder_warning_acknowledged',
+            'company_id' => $company->id,
+        ]);
+
+        // Avec confirmation → calcul accepté + acceptation auditée.
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate", ['acknowledge_placeholder' => true]);
+        $response->assertOk();
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'placeholder_warning_acknowledged',
+            'company_id' => $company->id,
+        ]);
+    }
+
+    public function test_calculate_non_placeholder_country_needs_no_acknowledge(): void
+    {
+        // Pays pilot/production : pas de garde (non-régression).
+        $this->bindFakePayrollCalculator('pilot');
+
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'draft',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate");
+        $response->assertOk();
+        $this->assertDatabaseMissing('audit_logs', [
+            'action' => 'placeholder_warning_acknowledged',
+            'company_id' => $company->id,
         ]);
     }
 
