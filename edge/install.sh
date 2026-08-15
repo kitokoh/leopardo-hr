@@ -58,6 +58,13 @@ if [ ! -s docker-compose.yml ]; then
     echo "Echec du telechargement du docker-compose depuis $CLOUD_URL" >&2
     exit 1
 fi
+# edge-proxy bind-mounts this file from the install directory. Download it as
+# part of the same trusted bundle and reject a non-Caddy/empty response.
+curl -fsSL "$CLOUD_URL/api/v1/edge/download/Caddyfile.edge" -o Caddyfile.edge
+if [ ! -s Caddyfile.edge ] || ! grep -q 'reverse_proxy edge-api:80' Caddyfile.edge || ! grep -q 'reverse_proxy edge-ui:3000' Caddyfile.edge; then
+    echo "Echec du telechargement ou de la verification de Caddyfile.edge depuis $CLOUD_URL" >&2
+    exit 1
+fi
 
 # Generate .env
 APP_KEY=$(openssl rand -base64 32)
