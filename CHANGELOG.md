@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(admin): titres d'onglets traduits via la locale active (Closes #2708).**
 - **fix(admin): MetricCard — prop trendLabel (fini les libellés dans trend) (Closes #2706).**
 - **fix(web): PWA — icônes PNG réelles (Closes #2756).** `PWAProvider` référençait `/icon-192.png` (absent), `layout.tsx` servait un apple-touch-icon SVG (ignoré par iOS) et `manifest.json` ne déclarait que des SVG. Génération depuis `icon.svg` (`rsvg-convert`) : `icon-192.png` (192), `icon-512.png` (512), `apple-touch-icon.png` (180) ; manifest déclare les PNG (any maskable), layout sert le PNG 180×180 pour iOS.
 - **fix(mobile): contrats workflows — garde CI validate-mobile-workflow-contracts verte (Closes #2754).** `mobile-workflow-contracts.json` référençait du code supprimé/renommé : workflow `manager_dashboard_placeholder` (écran supprimé PR #2285), token `vehiclePositionProvider` (renommé `myVehiclesProvider`), endpoints `/me/trainings` et `/vehicles/{vehicleId}/position` (réel : `/me/training-enrollments`, `/vehicles/$vehicleId/position`), route `/vehicles` (réelle : `/vehicle-map`), fichiers écran manquants pour les tokens `getMyEnrollments`/`getMyVehicles`/`getPosition` (repository/provider hors `screenFiles`). Aligné sur le code + simulation du validateur : 0 échec (le job `mobile-apps-guard` de `mobile-apps-ci.yml` était rouge).
