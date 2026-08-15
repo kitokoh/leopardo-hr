@@ -151,6 +151,27 @@ readonly class AuthService
                 'token_type' => 'Bearer',
                 'token_expires_at' => $expiresAt?->toIso8601String(),
             ];
+        } catch (QueryException $e) {
+            // Issue #2902 : un compte dont le tenant/schéma est absent ou
+            // orphelin (état possible en prod avec un seed partiel) ne doit
+            // JAMAIS produire un 500 « Server Error » : les requêtes sur une
+            // relation/schéma manquant (SQLSTATE 42P01 / 3F000) ou un accès
+            // refusé (42501) sont converties en 401 — même contrat qu'un
+            // compte inexistant. Les vraies pannes d'infrastructure (DB
+            // injoignable…) continuent de remonter.
+            if ($this->isMissingSchemaOrRelation($e)) {
+                Log::channel('structured')->warning('auth.login.orphaned_tenant', [
+                    'email' => $email,
+                    'sqlstate' => $e->getPrevious() instanceof \PDOException
+                        ? (string) $e->getPrevious()->getCode()
+                        : null,
+                    'message' => $e->getMessage(),
+                ]);
+
+                throw new InvalidCredentialsException;
+            }
+
+            throw $e;
         } finally {
             if ($previousSearchPath !== null && $previousSearchPath !== '') {
                 DB::statement('SET search_path TO '.$previousSearchPath);
@@ -288,6 +309,27 @@ readonly class AuthService
                 'token_type' => 'Bearer',
                 'token_expires_at' => $expiresAt?->toIso8601String(),
             ];
+        } catch (QueryException $e) {
+            // Issue #2902 : un compte dont le tenant/schéma est absent ou
+            // orphelin (état possible en prod avec un seed partiel) ne doit
+            // JAMAIS produire un 500 « Server Error » : les requêtes sur une
+            // relation/schéma manquant (SQLSTATE 42P01 / 3F000) ou un accès
+            // refusé (42501) sont converties en 401 — même contrat qu'un
+            // compte inexistant. Les vraies pannes d'infrastructure (DB
+            // injoignable…) continuent de remonter.
+            if ($this->isMissingSchemaOrRelation($e)) {
+                Log::channel('structured')->warning('auth.login.orphaned_tenant', [
+                    'email' => $email,
+                    'sqlstate' => $e->getPrevious() instanceof \PDOException
+                        ? (string) $e->getPrevious()->getCode()
+                        : null,
+                    'message' => $e->getMessage(),
+                ]);
+
+                throw new InvalidCredentialsException;
+            }
+
+            throw $e;
         } finally {
             if ($previousSearchPath !== null && $previousSearchPath !== '') {
                 DB::statement('SET search_path TO '.$previousSearchPath);
@@ -399,5 +441,22 @@ readonly class AuthService
     private function isSafeSchemaName(string $schema): bool
     {
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
+    }
+
+    /**
+     * Détecte les erreurs de requêtes sur des relations/schémas manquants
+     * (compte orphelin, migration partielle) vs une vraie panne DB.
+     */
+    private function isMissingSchemaOrRelation(QueryException $e): bool
+    {
+        if (! $e->getPrevious() instanceof \PDOException) {
+            return false;
+        }
+
+        return in_array((string) $e->getPrevious()->getCode(), [
+            '42P01', // undefined_table (relation « x » does not exist)
+            '3F000', // invalid_schema_name (schema « x » does not exist)
+            '42501', // insufficient_privilege
+        ], true);
     }
 }
