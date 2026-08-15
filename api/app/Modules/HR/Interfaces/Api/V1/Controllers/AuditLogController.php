@@ -58,7 +58,7 @@ class AuditLogController extends Controller
         }
 
         return AuditLogResource::collection(
-            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 25))
+            $query->orderByDesc('created_at')->paginate(min(100, max(1, $request->integer('per_page', 25))))
         )->response();
     }
 

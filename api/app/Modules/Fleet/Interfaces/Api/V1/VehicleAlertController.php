@@ -30,7 +30,7 @@ class VehicleAlertController extends Controller
         }
 
         $alerts = $query->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(min(100, max(1, $request->integer('per_page', 20))));
 
         return VehicleAlertResource::collection($alerts)->response();
     }

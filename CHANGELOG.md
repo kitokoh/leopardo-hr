@@ -5,6 +5,9 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+### Fixed
+- **fix(api): per_page borné 1..100 sur 18 endpoints (Closes #3059).** Les listes paginées acceptaient n'importe quel per_page (jusqu'à des milliers de lignes) : approvals, billing, ai-gateway, audit-log, cabinet-documents, contracts, vehicles, vehicle-alerts, vehicle-maintenance, vehicle-trips, payroll-cycles, training, pay-slips, payment-documents, loans, platform users/webhooks/training, recruitment.
+- **fix(api): route /training/sessions → méthode réelle indexSessionsAll (Closes #3062).** La route référençait `indexAllSessions` inexistant → 500 sur l'onglet Sessions de l'admin SPA.
 - **fix(kiosk): état non configuré localisé quand apiBaseUrl ou deviceCode manque (Closes #2911).** La borne n’essaie plus d’appeler une URL `/api/v1/kiosks/` invalide : les actions distantes sont désactivées et un message d’installation est affiché en FR/EN/TR/AR.
 ### Added
 - **feat(admin): impersonation SPA câblée sur POST /admin/impersonations (Closes #2518).** Le backend PA2-ADM-006 existait (PlatformImpersonationController : session Sanctum 30-120 min, motif obligatoire, audit) mais aucun bouton UI — la PR #2466 avait même retiré l'émetteur `@impersonate`. (1) `UsersView` recharge le détail via `GET /admin/users/{id}` (seule source du lien employé `company.employee_id`, décision #2519) ; (2) modal d'impersonation : motif obligatoire ≥ 5 caractères, POST `/admin/impersonations` {company_id, employee_id, reason}, affichage du jeton + expiration + copie, erreurs API ; (3) `UserDetailModal` affiche entreprise/employé lié depuis le payload `company` ; (4) i18n `users.impersonation.*` dans les 4 locales. Au passage (artefacts merge #2469 signalés par #2517) : doublons `import api` + `deleteUser` + handlers de modales morts (`handleUserCreated`/`handleUserUpdated`/`generateTemporaryPassword`) supprimés — lint 0 erreur, build vert.

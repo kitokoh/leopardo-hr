@@ -43,7 +43,7 @@ class EmployeeLoanController extends Controller
         }
 
         return LoanResource::collection(
-            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('created_at')->paginate(min(100, max(1, $request->integer('per_page', 15))))
         )->response();
     }
 

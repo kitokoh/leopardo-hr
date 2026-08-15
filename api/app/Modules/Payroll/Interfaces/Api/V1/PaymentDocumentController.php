@@ -84,7 +84,7 @@ class PaymentDocumentController extends Controller
             ->where('payroll_run_id', $payrollRun->id)
             ->with('employee:id,first_name,last_name,email')
             ->latest()
-            ->paginate($request->integer('per_page', 25));
+            ->paginate(min(100, max(1, $request->integer('per_page', 25))));
 
         return PaymentDocumentResource::collection($documents)->response();
     }

@@ -33,7 +33,7 @@ class VehicleTripController extends Controller
         }
 
         $trips = $query->orderByDesc('start_time')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(min(100, max(1, $request->integer('per_page', 20))));
 
         return VehicleTripResource::collection($trips)->response();
     }

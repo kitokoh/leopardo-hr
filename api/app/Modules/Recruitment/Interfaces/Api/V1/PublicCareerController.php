@@ -53,7 +53,7 @@ class PublicCareerController extends Controller
                 $query->where('contract_type', $request->input('contract_type'));
             }
 
-            $jobs = $query->orderByDesc('published_at')->paginate($request->integer('per_page', 15));
+            $jobs = $query->orderByDesc('published_at')->paginate(min(100, max(1, $request->integer('per_page', 15))));
 
             return JobPostingResource::collection($jobs)
                 ->additional([

@@ -123,7 +123,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // ── Training management ──────────────────────────────────────────
         // Issue #2225 : vues dashboard admin (listes globales sessions/inscriptions).
-        Route::get('/training/sessions', [TrainingController::class, 'indexAllSessions']);
+        Route::get('/training/sessions', [TrainingController::class, 'indexSessionsAll']);
         Route::get('/training/enrollments', [TrainingController::class, 'indexEnrollments']);
         Route::post('/training/courses', [TrainingController::class, 'storeCourse']);
         Route::put('/training/courses/{trainingCourse}', [TrainingController::class, 'updateCourse']);

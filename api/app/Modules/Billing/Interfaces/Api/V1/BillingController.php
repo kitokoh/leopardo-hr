@@ -131,7 +131,7 @@ class BillingController extends Controller
 
         $invoices = Invoice::where('company_id', $user->company_id)
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(min(100, max(1, $request->integer('per_page', 20))));
 
         return InvoiceResource::collection($invoices)->response();
     }
