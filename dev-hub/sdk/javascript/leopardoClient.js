@@ -2435,6 +2435,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", options);
     },
 
+    /** Tester un webhook (payload de test synchrone) */
+    postWebhooksByWebhookTest(options = {}) {
+      return request("POST", "/webhooks/{webhook}/test", options);
+    },
+
     /** Lister les types d'evenements webhook disponibles */
     getWebhooksEvents(options = {}) {
       return request("GET", "/webhooks/events", options);
