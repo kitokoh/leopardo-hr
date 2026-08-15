@@ -733,5 +733,33 @@
     "pricing": {
       "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "globe": "Real-time Globe",
+    "users": "Users",
+    "companies": "Companies",
+    "subscriptions": "Subscriptions",
+    "payroll": "Payroll",
+    "leaves": "Leave & Absence",
+    "contracts": "Contracts",
+    "recruitment": "Recruitment",
+    "training": "Training",
+    "fleet": "Vehicle Fleet",
+    "chat": "AI Chat",
+    "reports": "HR Reports",
+    "audit": "Audit Log",
+    "webhooks": "Webhooks",
+    "marketing": "Marketing",
+    "exports": "Exports & Reports",
+    "support": "Support",
+    "supportTickets": "Customer Support Center",
+    "crm": "CRM Pipeline",
+    "predictions": "AI Predictive Dashboard",
+    "growth": "Growth Administration",
+    "edge": "Edge Nodes",
+    "system": "System",
+    "mainMenu": "Main menu"
   }
 }

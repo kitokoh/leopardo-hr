@@ -164,6 +164,7 @@ import { toIntlLocale } from '@/i18n/index.js'
 
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
+const localeStore = useLocaleStore()
 const toast = useToast()
 
 const isLoading = ref(false)
