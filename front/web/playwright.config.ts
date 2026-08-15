@@ -31,6 +31,13 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL,
+    /* Issue #2746 — le service worker (public/sw.js) intercepte TOUTES les
+       requêtes /api/* via fetch() côté SW : les réponses mockées par
+       page.route() ne sont plus vues par la page (le fetch du SW contourne
+       l'interception Playwright) → requêtes réelles → 401/404 → redirections
+       /auth/login en boucle. Aucun test e2e ne couvre le SW lui-même :
+       on le bloque pour la suite. */
+    serviceWorkers: 'block',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     /* Screenshot on failure */

@@ -733,6 +733,7 @@ CREATE TABLE public.super_admins (
     name varchar(100) NOT NULL,
     email varchar(150) NOT NULL,
     password_hash varchar(255) NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'active',
     two_fa_secret varchar(32) NULL,
     last_login_at timestamptz NULL,
     created_at timestamptz NULL
