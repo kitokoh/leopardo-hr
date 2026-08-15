@@ -86,7 +86,9 @@ async function mockManagerSession(page: Page) {
             id: 1,
             action: 'absence.requested',
             auditable_type: 'App\\Models\\Absence',
-            created_at: '2026-05-21T10:00:00Z',
+            // La timeline récente a des onglets « Aujourd'hui / Cette semaine » :
+            // la donnée mockée doit être datée d'aujourd'hui pour apparaître.
+            created_at: new Date().toISOString(),
           },
         ],
       }),
@@ -105,6 +107,16 @@ async function mockManagerSession(page: Page) {
           next_actions: [],
         },
       }),
+    });
+  });
+
+  await page.route('**/api/v1/announcements**', async (route) => {
+    // #3027 : le dashboard lit /announcements?per_page=1 — 401 réel → redirect
+    // login → mock requis pour tous les tests dashboard.
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ data: [], meta: { total: 0 } }),
     });
   });
 
@@ -239,7 +251,7 @@ test.describe('Client web manager workday smoke', () => {
 
     await page.locator('aside a[href="/employees"]').click();
     await expect(page).toHaveURL(/\/employees$/);
-    await expect(page.locator('body')).toContainText('Total equipe');
+    await expect(page.locator('body')).toContainText('Total équipe');
     await expect(page.locator('body')).toContainText('42');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
     await expect(page.locator('body')).toContainText('EMP-501');
