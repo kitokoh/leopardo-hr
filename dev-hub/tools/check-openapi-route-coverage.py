@@ -364,12 +364,34 @@ def load_reverse_allowlist() -> set[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--json", action="store_true", help="sortie JSON")
+    parser.add_argument(
+        "--strict-staleness",
+        action="store_true",
+        help="échoue si une entrée de l'allowlist est en fait documentée "
+        "dans openapi.yaml (entrée devenue stale — à purger, issue #3596)",
+    )
     args = parser.parse_args()
 
     routes = parse_routes()
     openapi_ops = parse_openapi()
     allowlist = load_allowlist()
     reverse_allowlist = load_reverse_allowlist()
+
+    # Staleness (issue #3596) : une entrée allowlistée désormais documentée
+    # surestime les gaps réels et masque la progression de la remédiation
+    # #1473. Comparaison sur les deux formes (brute /v1/x et canonique /x).
+    stale_entries: list[str] = []
+    for entry in sorted(allowlist):
+        parts = entry.split(" ", 1)
+        if len(parts) != 2:
+            continue
+        method, path = parts[0].lower(), parts[1]
+        forms = {path}
+        canonical = canonical_spec_path(path)
+        if canonical is not None:
+            forms.add(canonical)
+        if any((method, form) in openapi_ops for form in forms):
+            stale_entries.append(entry)
 
     # Ensemble des opérations réellement routées, sous toutes leurs formes
     # canoniques (raw + version-stripped) pour la passe inverse.
@@ -422,6 +444,7 @@ def main() -> int:
         "new_uncovered": len(new_uncovered),
         "reverse_drift": len(reverse_drift),
         "new_reverse_drift": len(new_reverse),
+        "allowlist_stale": len(stale_entries),
         "by_module": {k: v for k, v in sorted(by_module.items())},
     }
 
@@ -451,6 +474,19 @@ def main() -> int:
         for key in new_reverse[:50]:
             print(f"::error::  {key}")
         return 1
+
+    if stale_entries:
+        print(
+            f"\n  - entrées allowlist staleness (désormais documentées): {len(stale_entries)}"
+        )
+        if args.strict_staleness:
+            print(
+                "::error::Allowlist OpenAPI stale — entrées à purger (désormais "
+                "documentées dans openapi.yaml, issue #3596) :"
+            )
+            for entry in stale_entries[:50]:
+                print(f"::error::  {entry}")
+            return 1
     return 0
 
 

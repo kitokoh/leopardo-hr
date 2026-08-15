@@ -150,7 +150,7 @@
 
     <!-- Impersonation modal (PA2-ADM-006, issue #2518) -->
     <div v-if="showImpersonateModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4">
-      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
         <h3 class="text-lg font-bold text-gray-900 dark:text-white">
           {{ t('users.impersonation.title', 'Impersonner un employé') }}
         </h3>

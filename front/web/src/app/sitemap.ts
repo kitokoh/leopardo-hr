@@ -63,11 +63,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/rh-startup', today, 'monthly', 0.7),
     page('/guides/checklist-paie', today, 'monthly', 0.7),
     page('/guides/planning-employes', today, 'monthly', 0.7),
-    // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
-    page('/blog', today, 'weekly', 0.7),
+    // #3378 : /blog gated sur NEXT_PUBLIC_ENABLE_BLOG (404 si off), /offline
+    // retiré (route interne du service worker — pas une page crawlable),
+    // /share déjà retiré (#3399/#3355, route POST-only).
     page('/signup', today, 'monthly', 0.6),
     page('/checkout', today, 'monthly', 0.5),
-    page('/offline', today, 'monthly', 0.4),
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
@@ -79,6 +79,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Le sitemap ne doit JAMAIS publier d'URLs /blog/* quand le flag est off,
   // sinon crawl 404 massif. `enableBlog` était relu mais inutilisé.
   if (enableBlog) {
+    staticPages.push(page('/blog', today, 'weekly', 0.7));
+
     const postsBySlug = new Map<string, BlogPost>();
     for (const locale of locales) {
       for (const post of getBlogPosts(locale)) {

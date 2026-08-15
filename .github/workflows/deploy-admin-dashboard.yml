@@ -67,7 +67,8 @@ jobs:
           # (production) s'applique — l'expliciter protège contre toute
           # régression de fallback et garde le contrat avec la doc.
           VITE_API_URL: https://gestionemployerbackend.onrender.com/api/v1
-        run: |
+          # Serveur push Socket.IO (optionnel) — sinon le client dérive wss://<hôte API> (#3392).
+          VITE_WEBSOCKET_URL: ${{ secrets.VITE_WEBSOCKET_URL }}        run: |
           npm ci
           npm run build
 

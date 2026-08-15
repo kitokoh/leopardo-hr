@@ -11,6 +11,9 @@ export type StoredAuthUser = {
   role?: string | null;
   manager_role?: string | null;
   capabilities?: Record<string, unknown> | null;
+  // Features tenant (FeatureFlag::for) renvoyées au niveau racine par
+  // /auth/me (EmployeeResource) : {rh, finance, cameras, muhasebe, leo_ai}.
+  features?: Record<string, unknown> | null;
   company?: {
     id?: number | string | null;
     name?: string | null;
@@ -31,7 +34,7 @@ export const AUTH_TOKEN_KEY = 'auth_token';
 export const AUTH_USER_KEY = 'auth_user';
 export const PREFERRED_LOCALE_KEY = 'preferred_locale';
 
-type CopyTree = {
+export type CopyTree = {
   login: {
     title: string;
     subtitle: string;
@@ -79,6 +82,10 @@ type CopyTree = {
     presentBadge: string;
     employeeLabel: string;
     checkInAt: string;
+    featureLockedRole: string;
+    featureLockedPlan: string;
+    featureLockedBadge: string;
+    featureLockedExplanation: string;
   };
   payrollPage: {
     title: string;
@@ -367,6 +374,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'Present',
       employeeLabel: 'Employé',
       checkInAt: 'Check-in a',
+      featureLockedRole: "Votre role actuel ne permet pas d'acceder a ce module.",
+      featureLockedPlan: "Ce module n'est pas inclus dans votre plan actuel.",
+      featureLockedBadge: 'Module non inclus',
+      featureLockedExplanation: "Leopardo RH garde l'interface explicite afin d'eviter les 404 confuses et les erreurs API inutiles.",
     },
     payrollPage: {
       title: 'Paie',
@@ -653,6 +664,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'حاضر',
       employeeLabel: 'موظف',
       checkInAt: 'تسجيل الدخول في',
+      featureLockedRole: 'دورك الحالي لا يسمح بالوصول إلى هذه الوحدة.',
+      featureLockedPlan: 'هذه الوحدة غير مشمولة في خطتك الحالية.',
+      featureLockedBadge: 'الوحدة غير مشمولة',
+      featureLockedExplanation: 'يحافظ Leopardo RH على واجهة واضحة لتجنب أخطاء 404 المربكة وأخطاء API غير الضرورية.',
     },
     payrollPage: {
       title: 'الرواتب',
@@ -939,6 +954,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'Burada',
       employeeLabel: 'Calisan',
       checkInAt: 'Giris saati',
+      featureLockedRole: "Mevcut rolunuz bu module erisim izni vermiyor.",
+      featureLockedPlan: "Bu modul mevcut planiniza dahil degil.",
+      featureLockedBadge: 'Modul dahil degil',
+      featureLockedExplanation: "Leopardo RH, kafa karistiran 404'leri ve gereksiz API hatalarini onlemek icin arayuzu acik tutar.",
     },
     payrollPage: {
       title: 'Bordro',
@@ -1225,6 +1244,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'Present',
       employeeLabel: 'Employee',
       checkInAt: 'Check-in at',
+      featureLockedRole: "Your current role does not allow access to this module.",
+      featureLockedPlan: "This module is not included in your current plan.",
+      featureLockedBadge: 'Module not included',
+      featureLockedExplanation: "Leopardo RH keeps the interface explicit to avoid confusing 404s and unnecessary API errors.",
     },
     payrollPage: {
       title: 'Payroll',

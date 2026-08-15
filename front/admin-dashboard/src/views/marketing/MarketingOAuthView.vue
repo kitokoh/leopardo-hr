@@ -82,11 +82,11 @@
 <script setup>
 import { onMounted, reactive } from 'vue'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
+import OAuthProviderCard from '@/components/marketing/OAuthProviderCard.vue'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
-import OAuthProviderCard from '@/components/marketing/OAuthProviderCard.vue'
 
 const localeStore = useLocaleStore()
 /** Traduction avec fallback sur la clé elle-même pour faciliter le débogage */
@@ -144,3 +144,5 @@ async function loadConfig() {
 
 onMounted(loadConfig)
 </script>
+
+

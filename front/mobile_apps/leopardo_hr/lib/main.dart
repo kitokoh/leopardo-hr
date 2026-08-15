@@ -27,7 +27,7 @@ Future<void> main() async {
     (options) {
       options.dsn =
           const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = 1.0;
+      options.tracesSampleRate = 0.2; // #2766 : échantillonnage borné (PII)
     },
     appRunner: () => runApp(
       StartupGate(
