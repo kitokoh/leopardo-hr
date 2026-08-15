@@ -677,6 +677,7 @@ CREATE TABLE shared_tenants.departments (
     id serial PRIMARY KEY,
     company_id uuid NULL,
     name varchar(150) NOT NULL,
+    manager_id integer NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL
 );
