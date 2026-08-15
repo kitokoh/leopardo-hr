@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\DB;
  * @property string $schema_name
  * @property string $tenancy_type
  * @property string $status
- * @property Carbon $subscription_start
- * @property Carbon $subscription_end
+ * @property Carbon|null $subscription_start
+ * @property Carbon|null $subscription_end
  * @property string $language
  * @property string $timezone
  * @property string $currency

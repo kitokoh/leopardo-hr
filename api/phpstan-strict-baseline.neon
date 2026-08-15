@@ -37,6 +37,12 @@ parameters:
 			path: app/Console/Commands/QueueHealthCheck.php
 
 		-
+			message: '#^Cannot call method copy\(\) on Illuminate\\Support\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Console/Commands/SendDripEmails.php
+
+		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
@@ -4327,12 +4333,6 @@ parameters:
 			path: app/Modules/Platform/Domain/Contracts/CompanyProvisioningInterface.php
 
 		-
-			message: '#^Ternary operator condition is always true\.$#'
-			identifier: ternary.alwaysTrue
-			count: 4
-			path: app/Modules/Platform/Infrastructure/Services/PlatformCompanyHealthService.php
-
-		-
 			message: '#^Parameter \#1 \$companyId of method App\\AI\\Workflows\\PreparePayrollWorkflow\:\:execute\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5207,6 +5207,18 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/CalendarSyncServiceTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Cameras\\CameraRtspSecurityTest\:\:authHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Cameras/CameraRtspSecurityTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Cameras\\CameraRtspSecurityTest\:\:createCompanyWithCameras\(\) has parameter \$features with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Cameras/CameraRtspSecurityTest.php
 
 		-
 			message: '#^Cannot access property \$last_used_at on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
@@ -6265,12 +6277,6 @@ parameters:
 			path: tests/Feature/GenerateBankExportJobTest.php
 
 		-
-			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\FilesystemAdapter\:\:get\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/GenerateBankExportJobTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 13
@@ -6364,6 +6370,12 @@ parameters:
 			message: '#^Access to an undefined property Tests\\Feature\\GrowthModuleTest\:\:\$commissionService\.$#'
 			identifier: property.notFound
 			count: 4
+			path: tests/Feature/GrowthModuleTest.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''country'' \(''country'', ''country''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
 			path: tests/Feature/GrowthModuleTest.php
 
 		-
@@ -8577,13 +8589,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 11
+			count: 13
 			path: tests/Feature/VehicleControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 6
+			count: 7
 			path: tests/Feature/VehicleControllerTest.php
 
 		-
@@ -8693,6 +8705,18 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/AuthServiceTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\Cameras\\TestRtspSsidGuardTest\:\:privateTargets\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Cameras/TestRtspSsidGuardTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\Cameras\\TestRtspSsidGuardTest\:\:publicTargets\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Cameras/TestRtspSsidGuardTest.php
 
 		-
 			message: '#^Method Tests\\Unit\\CountryDefaultsTest\:\:acceptanceCriteriaCountryCodesProvider\(\) should return array\<int, array\{string\}\> but returns array\{''Algeria \(DZ\)''\: array\{''DZ''\}, ''Morocco \(MA\)''\: array\{''MA''\}, ''Tunisia \(TN\)''\: array\{''TN''\}, ''France \(FR\)''\: array\{''FR''\}, ''Turkey \(TR\)''\: array\{''TR''\}, ''Cameroon \(CM, CEMAC\)''\: array\{''CM''\}, ''Central African Republic \(CF, CEMAC\)''\: array\{''CF''\}, ''Chad \(TD, CEMAC\)''\: array\{''TD''\}, \.\.\.\}\.$#'
