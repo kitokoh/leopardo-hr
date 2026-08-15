@@ -22,7 +22,7 @@ class AuthLoginDefensiveTest extends TestCase
     {
         $company = Company::factory()->create([
             'schema_name' => 'ghost_tenant_schema',
-            'tenancy_type' => 'isolated',
+            'tenancy_type' => 'shared',
             'status' => 'active',
         ]);
 
