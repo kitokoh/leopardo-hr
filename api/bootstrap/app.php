@@ -200,10 +200,65 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 404);
             }
 
+            $statusCode = $exception->getStatusCode();
+
+            // Issue #3810 : ne jamais exposer de message brut issu d'une
+            // exception interne (SQLSTATE, chemins serveur, traces) dans les
+            // réponses JSON. Les messages statiques passés à abort() par les
+            // contrôleurs (codes stables ou textes localisés volontaires)
+            // restent exposés ; tout message à signature interne est remplacé
+            // par un code stable + message générique localisé, et le détail
+            // est conservé côté serveur (logs).
+            $rawMessage = (string) $exception->getMessage();
+            $leakSignature = preg_match(
+                '/SQLSTATE|PDOException|QueryException|RuntimeException|ErrorException|TypeError|'
+                .'\\/var\\/www|vendor\\/laravel|getMessage\\(\\)|stack trace|#[0-9]+ \\/|\.php on line|'
+                .'\.php:[0-9]+/i',
+                $rawMessage
+            );
+
+            if ($leakSignature === 1 || trim($rawMessage) === '') {
+                $code = match ($statusCode) {
+                    400 => 'BAD_REQUEST',
+                    401 => 'UNAUTHENTICATED',
+                    403 => 'FORBIDDEN',
+                    409 => 'CONFLICT',
+                    422 => 'VALIDATION_FAILED',
+                    429 => 'TOO_MANY_REQUESTS',
+                    500 => 'SERVER_ERROR',
+                    503 => 'SERVICE_UNAVAILABLE',
+                    default => 'HTTP_ERROR',
+                };
+
+                Log::warning('HTTP exception rendered with sanitized message (issue #3810)', [
+                    'status' => $statusCode,
+                    'code' => $code,
+                    'exception' => get_class($exception),
+                    'message' => $rawMessage,
+                    'url' => $request->fullUrl(),
+                ]);
+
+                $response = new JsonResponse([
+                    'error' => $code,
+                    'message' => $code,
+                    'localized_message' => __("errors.{$code}", [], $request->getLocale()),
+                ], $statusCode);
+
+                // Issue #1774 : préserver les headers du throttling
+                // (Retry-After, X-RateLimit-*) posés par ThrottleRequestsException —
+                // sans eux, le 429 dégradé/limite est inexploitable côté client.
+                foreach ($exception->getHeaders() as $headerName => $headerValue) {
+                    /** @var array<string>|string|null $headerValue */
+                    $response->headers->set($headerName, $headerValue);
+                }
+
+                return $response;
+            }
+
             $response = new JsonResponse([
-                'error' => $exception->getMessage() ?: 'HTTP_ERROR',
-                'message' => $exception->getMessage() ?: 'HTTP_ERROR',
-            ], $exception->getStatusCode());
+                'error' => $rawMessage ?: 'HTTP_ERROR',
+                'message' => $rawMessage ?: 'HTTP_ERROR',
+            ], $statusCode);
 
             // Issue #1774 : préserver les headers du throttling
             // (Retry-After, X-RateLimit-*) posés par ThrottleRequestsException —
