@@ -302,7 +302,6 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
         Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
         Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);
-        Route::get('/users', [PlatformUsersController::class, 'index']);
         Route::post('/dashboard/alerts/{alertKey}/dismiss', [PlatformAdminDashboardController::class, 'dismissAlert'])
             ->where('alertKey', '[A-Za-z0-9\-_]+');
 
