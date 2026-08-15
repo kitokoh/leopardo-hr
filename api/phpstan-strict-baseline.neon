@@ -7,10 +7,10 @@ parameters:
 			path: app/Console/Commands/BackfillNotificationPreferences.php
 
 		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 6
-			path: app/Console/Commands/EdgeSyncDaemonCommand.php
+			message: '#^Offset ''enterprise''\|''free''\|''operations''\|''pilot'' on array\{free\: array\{amount\: 0\.0, currency\: ''EUR''\}, pilot\: array\{amount\: 29\.0, currency\: ''EUR''\}, operations\: array\{amount\: 99\.0, currency\: ''EUR''\}, enterprise\: array\{amount\: 299\.0, currency\: ''EUR''\}\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Console/Commands/GenerateMonthlyInvoices.php
 
 		-
 			message: '#^Cannot call method diffForHumans\(\) on Illuminate\\Support\\Carbon\|null\.$#'
@@ -317,6 +317,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Core/Feature/Infrastructure/Services/FeatureFlag.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>plan" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Core/Feature/Infrastructure/Services/FeatureService.php
 
 		-
 			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\ReflectionService\:\:analyzeClass\(\) return type has no value type specified in iterable type array\.$#'
@@ -1459,6 +1465,12 @@ parameters:
 			path: app/Jobs/ProcessPayrollBatchJob.php
 
 		-
+			message: '#^Method App\\Jobs\\ProvisionDemoTenantJob\:\:issueDemoAccess\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: app/Jobs/ProvisionDemoTenantJob.php
+
+		-
 			message: '#^Method App\\Jobs\\SendBulkNotificationsJob\:\:__construct\(\) has parameter \$notificationData with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1837,18 +1849,6 @@ parameters:
 			path: app/Modules/Attendance/Infrastructure/Services/CalendarSyncService.php
 
 		-
-			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\KioskAttendanceService\:\:syncPunches\(\) has parameter \$events with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Attendance/Infrastructure/Services/KioskAttendanceService.php
-
-		-
-			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\KioskAttendanceService\:\:syncPunches\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Attendance/Infrastructure/Services/KioskAttendanceService.php
-
-		-
 			message: '#^Method App\\Modules\\Attendance\\Infrastructure\\Services\\TraccarService\:\:getDevices\(\) should return array\<int, array\<string, mixed\>\> but returns array\<int\|string, mixed\>\.$#'
 			identifier: return.type
 			count: 1
@@ -1969,6 +1969,12 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/BiometricEnrollmentController.php
 
 		-
+			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
+
+		-
 			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
 			identifier: class.notFound
 			count: 1
@@ -1989,12 +1995,6 @@ parameters:
 		-
 			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeRosterEmployee\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
 
@@ -2259,12 +2259,18 @@ parameters:
 		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
-			count: 1
+			count: 2
 			path: app/Modules/Billing/Interfaces/Api/V1/CompanyRequestController.php
 
 		-
 			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController\:\:getCompanyPlan\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
+			count: 1
+			path: app/Modules/Billing/Interfaces/Api/V1/FeatureFlagController.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>plan" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Modules/Billing/Interfaces/Api/V1/FeatureFlagController.php
 
@@ -2887,6 +2893,12 @@ parameters:
 			path: app/Modules/HR/Infrastructure/Services/UserInvitationService.php
 
 		-
+			message: '#^Property App\\Modules\\HR\\Domain\\Models\\UserInvitation\:\:\$employee_id \(string\|null\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Modules/HR/Infrastructure/Services/UserInvitationService.php
+
+		-
 			message: '#^Call to function is_array\(\) with array\<mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
@@ -2915,6 +2927,12 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Controllers/ContractController.php
+
+		-
+			message: '#^Property App\\Modules\\HR\\Domain\\Models\\Department\:\:\$company_id \(int\|null\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Modules/HR/Interfaces/Api/V1/Controllers/DepartmentController.php
 
 		-
 			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(string\|null\)\: mixed\)\|null, ''trim'' given\.$#'
@@ -3551,6 +3569,18 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Onboarding/Domain/Contracts/OnboardingRepositoryInterface.php
+
+		-
+			message: '#^Call to function abort_if\(\) with false and 401 will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingChecklistController.php
+
+		-
+			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingChecklistController.php
 
 		-
 			message: '#^Method App\\Modules\\Onboarding\\Interfaces\\Api\\V1\\Controllers\\OnboardingChecklistController\:\:step\(\) has parameter \$metrics with no value type specified in iterable type array\.$#'
@@ -4375,6 +4405,18 @@ parameters:
 			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/MetricsController.php
 
 		-
+			message: '#^Method App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PlatformAdminDashboardController\:\:redisAlert\(\) never returns array\<string, mixed\> so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAdminDashboardController.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 20
+			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAdminDashboardController.php
+
+		-
 			message: '#^Ternary operator condition is always true\.$#'
 			identifier: ternary.alwaysTrue
 			count: 2
@@ -4631,54 +4673,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/SmartAttendance/Interfaces/Api/V1/Requests/SetModeRequest.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Training\\Application\\DTOs\\CreateCourseDTO\:\:\$category\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Training/Application/Actions/CreateCourse.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Training\\Application\\DTOs\\CreateCourseDTO\:\:\$duration\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Training/Application/Actions/CreateCourse.php
-
-		-
-			message: '#^Access to an undefined property App\\Modules\\Training\\Application\\DTOs\\CreateCourseDTO\:\:\$isMandatory\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Modules/Training/Application/Actions/CreateCourse.php
-
-		-
-			message: '#^Method App\\Modules\\Training\\Application\\DTOs\\CreateCourseDTO\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Training/Application/DTOs/CreateCourseDTO.php
-
-		-
-			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:hasManagerRole\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Training/Interfaces/Api/V1/Requests/StoreCourseRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Training\\Interfaces\\Api\\V1\\Requests\\StoreCourseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Training/Interfaces/Api/V1/Requests/StoreCourseRequest.php
-
-		-
-			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:hasManagerRole\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Modules/Training/Interfaces/Api/V1/Requests/StoreSessionRequest.php
-
-		-
-			message: '#^Method App\\Modules\\Training\\Interfaces\\Api\\V1\\Requests\\StoreSessionRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Modules/Training/Interfaces/Api/V1/Requests/StoreSessionRequest.php
 
 		-
 			message: '#^Method App\\Notifications\\EdgeNodeSilentAlert\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -5001,7 +4995,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
 			path: tests/Feature/Auth/RegisterLoginFlowTest.php
 
 		-
@@ -6589,6 +6583,12 @@ parameters:
 			path: tests/Feature/GrowthModuleTest.php
 
 		-
+			message: '#^Method Tests\\Feature\\HR\\EmployeeTenantIsolationTest\:\:authHeader\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/HR/EmployeeTenantIsolationTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -6637,6 +6637,12 @@ parameters:
 			path: tests/Feature/HR/HrControllerTest.php
 
 		-
+			message: '#^Property App\\Modules\\HR\\Domain\\Models\\Department\:\:\$company_id \(int\|null\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 3
+			path: tests/Feature/HR/OrganigrammeTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 8
@@ -6679,15 +6685,27 @@ parameters:
 			path: tests/Feature/KioskMultiEventPunchTest.php
 
 		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: tests/Feature/KioskSyncSkippedEventsTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: tests/Feature/KioskSyncSkippedEventsTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 11
+			count: 12
 			path: tests/Feature/LaunchReadinessControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Feature/LaunchReadinessControllerTest.php
 
 		-
@@ -6699,7 +6717,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 19
+			count: 20
 			path: tests/Feature/Leave/LeavePolicyApiTest.php
 
 		-
@@ -6717,7 +6735,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: tests/Feature/Leave/LeavePolicyApiTest.php
 
 		-
@@ -7591,9 +7609,21 @@ parameters:
 			path: tests/Feature/PlatformCompanyFeatureApiTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/PlatformCompanyHealthApiTest.php
+
+		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 20
+			path: tests/Feature/PlatformCompanyHealthApiTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
 			path: tests/Feature/PlatformCompanyHealthApiTest.php
 
 		-
@@ -8489,6 +8519,18 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Rules/ValidIbanTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getFillable\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/SensitiveFillableGuardTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\SensitiveFillableGuardTest\:\:test_sensitive_fields_are_not_mass_assignable\(\) has parameter \$forbidden with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/SensitiveFillableGuardTest.php
 
 		-
 			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php\:81\:\:isValidFeature\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
