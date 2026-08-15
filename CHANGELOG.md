@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **docs(qa): session expert14b 2026-08-15 — bilan merges swarm (~60 PRs), hotfixes P0 #3973/#4082, doublons fermés, implémentations #3956/#3953/#3964, constat #4087.**
 - **fix(mobile): leopardo_hr — bouton « Tester avec un compte demo » localisé (Closes #3956).** Le libellé du bouton d'accès démo de l'écran de connexion était codé en dur en FR ; il passe par la clé l10n `authTryDemoAccount` (ARB × 4 locales de `leopardo_core`), en parité avec les apps sœurs. Spec : `docs/specifications/ISSUE_3956_HR_DEMO_BUTTON_L10N.md`.
 - **fix(mobile): Smart Attendance — plus de StateError sur liste de sessions vide (Closes #3953).** `loadSessions()` appelait `firstWhere` dont l'orElse renvoyait `sessions.first` dans ses deux branches → StateError sur liste vide → fausse erreur « Impossible de charger les sessions GPS » pour tout employé sans session. Garde `isEmpty ? null : firstWhere(...)` ; l'état `activeSession=null` (clearActive) est conservé. Spec : `docs/specifications/ISSUE_3953_SMART_ATTENDANCE_EMPTY_SESSIONS.md`.
 - **fix(edge): install.sh — plus de pipe direct `curl | sh` pour Docker (Closes #3964).** Le script d'installation Docker était exécuté en pipe direct (script tronqué interprété en root en cas d'échec réseau/MITM). Désormais : téléchargement vers fichier temporaire, vérification non-vide + shebang, exécution, nettoyage — fail-closed. (`set -euo pipefail` déjà en place via #3792.) Spec : `docs/specifications/ISSUE_3964_EDGE_INSTALL_NO_PIPE.md`.
