@@ -167,9 +167,6 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // ML/BF sont passés 'pilot' (#1829) — leurs barèmes/charges sont
-        // couverts par PayrollCountryRulesTest ; seuls les membres restés
-        // 'placeholder' (BJ/TG/NE) sont vérifiés ici.
         foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
@@ -187,5 +184,31 @@ class CedeaoRulesUnitTest extends TestCase
             $this->assertSame(36.0, $charges['employee'], $memberCode);
             $this->assertSame(164.0, $charges['employer'], $memberCode);
         }
+    }
+
+    public function test_bf_is_pilot_with_cnss_rules(): void
+    {
+        // BF passé pilot (issue #2158, goldens) : CNSS retraite 5,5 % / 6,5 %
+        // + famille 7,0 % plafonnés à 900 000 XOF/mois, AT 3,5 % non plafonné.
+        $bf = (new CedeaoPayrollRules)->forMemberCountry('BF');
+
+        $this->assertSame('pilot', $bf->confidenceLevel());
+
+        $charges = $bf->calculateSocialCharges(1000.0);
+        $this->assertSame(55.0, $charges['employee']);
+        $this->assertSame(170.0, $charges['employer']); // 6,5 % + 7,0 % + 3,5 %
+    }
+
+    public function test_ml_is_pilot_with_inps_rules(): void
+    {
+        // ML passé pilot (issue #2158, goldens) : INPS retraite 3,6 % / 7,4 %
+        // plafonnés à 3 000 000 XOF/mois, famille 4,0 % + AT 2,0 % non plafonnés.
+        $ml = (new CedeaoPayrollRules)->forMemberCountry('ML');
+
+        $this->assertSame('pilot', $ml->confidenceLevel());
+
+        $charges = $ml->calculateSocialCharges(1000.0);
+        $this->assertSame(36.0, $charges['employee']);
+        $this->assertSame(134.0, $charges['employer']); // 7,4 % + 4,0 % + 2,0 %
     }
 }
