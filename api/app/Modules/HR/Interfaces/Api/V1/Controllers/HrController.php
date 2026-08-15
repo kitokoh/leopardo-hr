@@ -137,10 +137,10 @@ class HrController extends Controller
             'salary_type'     => ['required', Rule::in(['monthly', 'daily', 'hourly'])],
             'salary_base'     => 'nullable|numeric|min:0',
             'hourly_rate'     => 'nullable|numeric|min:0',
-            'department_id'   => 'nullable|integer|exists:departments,id',
-            'position_id'     => 'nullable|integer|exists:positions,id',
-            'site_id'         => 'nullable|integer|exists:sites,id',
-            'schedule_id'     => 'nullable|integer|exists:schedules,id',
+            'department_id'   => ['nullable', 'integer', Rule::exists('departments', 'id')->where('company_id', $actor->company_id)],
+            'position_id'     => ['nullable', 'integer', Rule::exists('positions', 'id')->where('company_id', $actor->company_id)],
+            'site_id'         => ['nullable', 'integer', Rule::exists('sites', 'id')->where('company_id', $actor->company_id)],
+            'schedule_id'     => ['nullable', 'integer', Rule::exists('schedules', 'id')->where('company_id', $actor->company_id)],
         ]);
 
         $employee = Employee::create([
@@ -202,10 +202,10 @@ class HrController extends Controller
             'contract_end'   => 'sometimes|nullable|date',
             'salary_base'    => 'sometimes|nullable|numeric|min:0',
             'hourly_rate'    => 'sometimes|nullable|numeric|min:0',
-            'department_id'  => 'sometimes|nullable|integer|exists:departments,id',
-            'position_id'    => 'sometimes|nullable|integer|exists:positions,id',
-            'site_id'        => 'sometimes|nullable|integer|exists:sites,id',
-            'schedule_id'    => 'sometimes|nullable|integer|exists:schedules,id',
+            'department_id'  => ['sometimes', 'nullable', 'integer', Rule::exists('departments', 'id')->where('company_id', $actor->company_id)],
+            'position_id'    => ['sometimes', 'nullable', 'integer', Rule::exists('positions', 'id')->where('company_id', $actor->company_id)],
+            'site_id'        => ['sometimes', 'nullable', 'integer', Rule::exists('sites', 'id')->where('company_id', $actor->company_id)],
+            'schedule_id'    => ['sometimes', 'nullable', 'integer', Rule::exists('schedules', 'id')->where('company_id', $actor->company_id)],
             'status'         => ['sometimes', Rule::in(['active', 'inactive', 'on_leave', 'suspended'])],
         ]);
 
