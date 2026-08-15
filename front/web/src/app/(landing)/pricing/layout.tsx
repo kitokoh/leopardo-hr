@@ -38,6 +38,8 @@ export async function generateMetadata(): Promise<Metadata> {
     ogType: 'website',
     canonical: `${SITE_URL}/pricing`,
     robots: 'index, follow',
+    // #3807 : og:locale aligné sur la locale SSR réelle (pas de fr_FR global).
+    locale,
   });
 }
 
