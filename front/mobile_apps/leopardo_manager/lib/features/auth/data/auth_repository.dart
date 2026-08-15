@@ -1,5 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
@@ -159,8 +160,15 @@ class AuthRepository {
       await _persistEmployeeContext(employee);
       return {'employee': employee};
     } catch (e) {
-      await storage.deleteToken();
-      await preferences.clearLocaleSettings();
+      // Issue #2736 (QA 2026-08-15) — ne supprimer le token que sur un 401
+      // explicite : une erreur réseau/timeout (mode hors-ligne, pointage
+      // offline #1290) ne doit pas détruire la session.
+      final isAuthError = e is ApiException &&
+          (e.statusCode == 401 || e.code == 'UNAUTHENTICATED');
+      if (isAuthError) {
+        await storage.deleteToken();
+        await preferences.clearLocaleSettings();
+      }
       return null;
     }
   }

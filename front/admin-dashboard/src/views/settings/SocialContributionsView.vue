@@ -183,7 +183,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
-import { translate } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
@@ -224,6 +224,7 @@ const simCountry = ref('CM')
 const compareCountry = ref('SN')
 const ignoreCaps = ref(false)
 const simA = ref(null)
+const simulating = ref(false)
 const simB = ref(null)
 let debounceTimer = null
 
@@ -313,24 +314,34 @@ function debouncedSimulate() {
 
 async function runSimulate() {
   if (!grossSalary.value || grossSalary.value <= 0) return
-  const [a, b] = await Promise.all([
-    api.post('/admin/payroll/simulate', {
-      country_code: simCountry.value,
-      gross_salary: grossSalary.value,
-      ignore_caps: ignoreCaps.value,
-    }),
-    api.post('/admin/payroll/simulate', {
-      country_code: compareCountry.value,
-      gross_salary: grossSalary.value,
-      ignore_caps: ignoreCaps.value,
-    }),
-  ])
-  simA.value = a.data.data
-  simB.value = b.data.data
+  // Issue #2712 — état de chargement + try/catch (rejet non géré auparavant).
+  simulating.value = true
+  try {
+    const [a, b] = await Promise.all([
+      api.post('/admin/payroll/simulate', {
+        country_code: simCountry.value,
+        gross_salary: grossSalary.value,
+        ignore_caps: ignoreCaps.value,
+      }),
+      api.post('/admin/payroll/simulate', {
+        country_code: compareCountry.value,
+        gross_salary: grossSalary.value,
+        ignore_caps: ignoreCaps.value,
+      }),
+    ])
+    simA.value = a.data.data
+    simB.value = b.data.data
+  } catch (e) {
+    console.error('Simulation failed:', e)
+    toast.error('Erreur lors de la simulation : ' + (e?.response?.data?.message || e.message))
+  } finally {
+    simulating.value = false
+  }
 }
 
 function money(value) {
-  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Number(value || 0))
+  // Issue #2715 — formatage selon la locale active (plus de fr-FR codé).
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current), { maximumFractionDigits: 0 }).format(Number(value || 0))
 }
 
 onMounted(() => {

@@ -206,7 +206,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const CabinetScreen(),
           ),
           GoRoute(
-            path: '/cabinet/:folderId',
+            path: '/cabinet/folder/:folderId',
             builder: (context, state) {
               final folderId = int.parse(state.pathParameters['folderId']!);
               final folderName = state.extra as String?;
