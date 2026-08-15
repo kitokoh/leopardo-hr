@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(billing): trial signup — échecs non avalés (Closes #2678).** L'échec de création de la `CompanyRequest` fait échouer le signup (OTP sans demande en attente = verify impossible) ; `findExistingManager` ne confond plus une erreur DB avec « aucun manager ».
 - **fix(payroll): indemnité 1/10ᵉ sur `calculated`+`validated` (Closes #2679) + jours de congés clippés sur la période du run (Closes #2672).** Une absence chevauchante (25 janv. → 5 févr.) était comptée en totalité dans janvier ET février (double déduction) ; seules les intersections comptent. Golden tests réalignés.
 - **fix(ai): `AITenantInjector` lie `current_company` (Closes #2690).** Sans le binding, les scopes `BelongsToCompany` tombaient en fallback → un oubli de scope = fuite cross-tenant.
 - **fix(api): un seul verbe par action approve/reject/submit (Closes #2684).** Routes PUT+POST dupliquées (absence.php, expense.php) → PUT seul (contrat clients vérifié).
