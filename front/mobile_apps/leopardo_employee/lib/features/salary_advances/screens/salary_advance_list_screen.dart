@@ -324,6 +324,9 @@ class _SalaryAdvanceListScreenState
         return 'a confirmer';
       case 'employee_confirmed':
         return 'recue';
+      case 'disputed':
+        // Issue #3431 : statut backend actif (PUT /dispute) sans libellé mobile.
+        return 'contester';
     }
 
     switch (advance.status) {

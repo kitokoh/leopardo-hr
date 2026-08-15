@@ -100,7 +100,7 @@ class Payroll {
       status: json['status'] as String,
       pdfPath: json['pdf_path'] as String?,
       validatedAt: json['validated_at'] != null
-          ? DateTime.parse(json['validated_at'] as String)
+          ? DateTime.tryParse(json['validated_at'].toString())
           : null,
       compliance: complianceJson is Map<String, dynamic>
           ? PayrollCompliance.fromJson(complianceJson)

@@ -484,6 +484,8 @@ class _SalaryAdvanceListScreenState
     if (validation == 'manager_approved') return 'validee';
     if (validation == 'payment_declared') return 'envoyee';
     if (validation == 'employee_confirmed') return 'recue';
+    // Issue #3431 : statut backend actif (PUT /dispute) sans libellé mobile.
+    if (validation == 'disputed') return 'contester';
 
     switch (advance.status) {
       case 'active':
@@ -509,6 +511,9 @@ class _SalaryAdvanceListScreenState
         return 'paiement declare, attente confirmation employe';
       case 'employee_confirmed':
         return 'reception confirmee par l employe';
+      case 'disputed':
+        // Issue #3431 : statut backend actif (PUT /dispute) sans libellé mobile.
+        return 'conteste — resolution requise';
       case 'rejected':
         return 'rejetee';
       case 'pending':
