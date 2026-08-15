@@ -133,6 +133,7 @@ class NotificationDispatcherTest extends TestCase
         // 4xx FCM en interne (fail-open du service), donc on simule une panne
         // remontante via une sous-classe qui jette une exception.
         $logPath = storage_path('logs/structured-'.uniqid('', true).'.log');
+        Config::set('logging.channels.structured.driver', 'single');
         Config::set('logging.channels.structured.path', $logPath);
 
         $failingPush = new class extends PushNotificationService {
@@ -170,6 +171,7 @@ class NotificationDispatcherTest extends TestCase
         // Channel `structured` pointé vers un fichier temporaire : on vérifie
         // la trace d'erreur réelle écrite (observabilité, pas de mock).
         $logPath = storage_path('logs/structured-'.uniqid('', true).'.log');
+        Config::set('logging.channels.structured.driver', 'single');
         Config::set('logging.channels.structured.path', $logPath);
 
         try {
