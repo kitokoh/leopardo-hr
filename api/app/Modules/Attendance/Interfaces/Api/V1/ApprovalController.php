@@ -113,7 +113,7 @@ class ApprovalController extends Controller
             ->with(['workflow:id,name', 'requester:id,first_name,last_name', 'approvable'])
             ->where('company_id', $actor->company_id)
             ->orderByDesc('created_at')
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return ApprovalRequestResource::collection($requests)->response();
     }
@@ -206,7 +206,7 @@ class ApprovalController extends Controller
             ->where('approver_id', $actor->id)
             ->with(['request:id,status,approvable_type,approvable_id,requester_id', 'request.requester:id,first_name,last_name'])
             ->orderByDesc('decided_at')
-            ->paginate($request->integer('per_page', 15));
+            ->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return response()->json($decisions);
     }
