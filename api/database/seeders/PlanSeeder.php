@@ -51,6 +51,7 @@ class PlanSeeder extends Seeder
             $canonicalId = DB::table('plans')->where('name', $canonicalName)->value('id');
             if ($canonicalId === null) {
                 DB::table('plans')->where('id', $legacyId)->update(['name' => $canonicalName]);
+
                 continue;
             }
 
