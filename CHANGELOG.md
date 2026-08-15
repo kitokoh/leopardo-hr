@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): webhook email-bounce — clé de config `services.mail_bounce_webhook.secret` + `.env.example` (Closes #3058).** Le controller exigeait `MAIL_BOUNCE_WEBHOOK_SECRET` sans que la clé existe dans `config/services.php` ni `.env.example` → 503 permanent (fail-closed #2616 rendait la feature inerte). Ajout du bloc de config (défaut vide = rejeté, comportement fail-closed conservé) + entrée `.env.example` documentée. Parité config/.env.example vérifiée (272 clés).
 ### Fixed
 - **fix(api): per_page borné à 100 sur 11 endpoints de liste (Closes #3059).** `per_page`/`limit` acceptés sans borne supérieure (hors périmètre #2682) → un client pouvait demander des pages énormes. Application du pattern partagé `max(1, min(100, …))` (déjà utilisé par DashboardController/PlatformCompanyController) sur Approvals (×2), Billing, AI Gateway, Audit Log, Cabinet Documents, Contracts, Vehicles (×4), Vehicle Alerts, Vehicle Maintenance, Vehicle Trips, Payroll Cycles. Test `VehicleControllerTest::test_per_page_is_capped_at_100` (500 → 100, 0 → 1). Spec Kit : `.specify/features/qa-expert2-api-2026-08-15/`.
 - **docs(qa): session expert 4 (runtime + merge campaign) 2026-08-15 — registre + spec/plan/tasks.** Bilan : ~25 PRs mergées, 84 runs CI orphelins annulés, 7 issues implémentées (#3055/#3034/#3036/#3037/#3038/#3022/#3058), 2 issues fermées avec preuve code (#2697/#2699), décision essai 14 jours consignée (arbitrage propriétaire demandé vs texte #2909).
