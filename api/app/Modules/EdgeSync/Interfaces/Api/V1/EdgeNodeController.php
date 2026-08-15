@@ -13,6 +13,7 @@ use App\Modules\EdgeSync\Application\Services\SyncEngineService;
 use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
+use App\Modules\EdgeSync\Interfaces\Api\V1\Requests\EdgeNodeActionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -95,7 +96,7 @@ class EdgeNodeController extends Controller
      * Trigger a manual sync for an Edge node.
      * POST /api/v1/edge/{nodeId}/sync
      */
-    public function sync(Request $request, string $nodeId): JsonResponse
+    public function sync(EdgeNodeActionRequest $request, string $nodeId): JsonResponse
     {
         $node = EdgeNode::where('company_id', $request->user()->company_id)
             ->findOrFail($nodeId);
@@ -233,7 +234,7 @@ class EdgeNodeController extends Controller
      * Force a manual sync for any tenant's Edge node (platform override).
      * POST /api/v1/platform/edge/nodes/{nodeId}/sync
      */
-    public function forceSync(string $nodeId): JsonResponse
+    public function forceSync(EdgeNodeActionRequest $request, string $nodeId): JsonResponse
     {
         $node = EdgeNode::findOrFail($nodeId);
         $log = $this->syncEngine->sync($node);
@@ -245,7 +246,7 @@ class EdgeNodeController extends Controller
      * Revoke an Edge node and its active license (platform override).
      * DELETE /api/v1/platform/edge/nodes/{nodeId}
      */
-    public function revokeNode(string $nodeId): JsonResponse
+    public function revokeNode(EdgeNodeActionRequest $request, string $nodeId): JsonResponse
     {
         $node = EdgeNode::findOrFail($nodeId);
 
