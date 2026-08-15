@@ -10,12 +10,5 @@
   "syncIntervalSeconds": 60,
   "listenHost": "127.0.0.1",
   "listenPort": 8037,
-  "edge": {
-    "enabled": false,
-    "_comment": "Mettre enabled=true quand un Edge node Leopardo est actif sur le réseau local.",
-    "baseUrl": "http://leopardo.local:7878",
-    "fallbackToCloud": true,
-    "healthCheckPath": "/api/edge/health",
-    "healthCheckIntervalSeconds": 30
-  }
+  "_edge": "Bloc 'edge' retiré (issue #2750) : aucun code ne le lisait (ni app.js ni bridge.py). Le bridge sert la config cloud via les globals window.__KIOSK_* injectés dans les pages HTML."
 }
