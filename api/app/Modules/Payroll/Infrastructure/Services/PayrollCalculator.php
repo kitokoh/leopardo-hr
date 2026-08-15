@@ -387,6 +387,11 @@ class PayrollCalculator
                 'total_employer_cost' => round($totalEmployerCost, 2),
                 'employee_count' => $run->paySlips()->count(),
                 'calculated_at' => now(),
+                // Issue #1874 : version/identifiant des règles EFFECTIVES persistés
+                // sur le run (colonnes 000009) pour l'audit et le re-calcul.
+                'rules_version' => $rulesVersion,
+                'rules_identifier' => $rulesIdentifier,
+                'rules_period' => $rulesPeriod,
             ]);
         });
 
@@ -587,6 +592,10 @@ class PayrollCalculator
         }
     }
 
+    /**
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
+     */
     private function calculateSlip(
         PayrollRun $run,
         Employee $employee,
@@ -646,6 +655,9 @@ class PayrollCalculator
      *     has_attendance_data: bool,
      *     lines: list<array<string, mixed>>,
      * }
+     *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      */
     private function computeSlipValues(
         PayrollRun $run,
@@ -977,6 +989,7 @@ class PayrollCalculator
      * contrat quand aucun log valide n'existe (comportement historique).
      * has_attendance_data indique quelle source a été utilisée.
      *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
      * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee, ?array $attendanceAgg = null): array
@@ -1217,6 +1230,8 @@ class PayrollCalculator
      *  - Absence approuvées (status=approved), ventilées payées (is_paid) /
      *    non payées via AbsenceType.
      *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
      */
     public function collectWorkInputs(
@@ -1260,7 +1275,7 @@ class PayrollCalculator
      * sumApprovedLeaveDays). ~3 requêtes au total au lieu de ~5 par employé.
      *
      * @param  Collection<int, Employee>  $employees
-     * @return array{0: array<int, array{distinct_days: int, overtime_hours: float}>, 1: array<int, array{paid_leave_days: float, unpaid_leave_days: float}>}
+     * @return array{0: array<int, array{distinct_days?: int, overtime_hours?: float}>, 1: array<int, array{paid_leave_days?: float, unpaid_leave_days?: float}>}
      */
     private function aggregateWorkInputs(PayrollRun $run, Collection $employees): array
     {

@@ -36,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int|null $schedule_id
+ * @property-read int $distinct_days
  * @property-read \App\Core\Auth\Domain\Models\Employee|null $employee
  * @property-read \App\Modules\Planning\Domain\Models\Schedule|null $schedule
  * @mixin \Illuminate\Database\Eloquent\Builder<static>

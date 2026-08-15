@@ -239,7 +239,7 @@ export function BlogArticle({
               {post.tags.map((tag) => (
                 <Link
                   key={tag}
-                  href={`/blog?category=${tag}`}
+                  href={`/blog?category=${encodeURIComponent(post.category)}`}
                   className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
                 >
                   #{tag}

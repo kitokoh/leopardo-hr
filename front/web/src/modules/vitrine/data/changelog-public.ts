@@ -11,6 +11,27 @@ export type PublicChangelogRelease = {
 
 export const publicChangelogReleases: PublicChangelogRelease[] = [
   {
+    version: '4.24.0',
+    isoDate: '2026-08-11',
+    title: 'Première release publique — sécurité, CI et qualité',
+    bullets: [
+      'Durcissement sécurité complet : SSO SAML/OIDC chiffré au repos, uploads contraints, auth web cookie httpOnly, XSS kiosk éliminé, mobile JWT hors Hive.',
+      'Couverture backend 71 % mesurée en CI (gate par module, Payroll ≥ 80 % cible) ; 1 917 tests, 424 endpoints API documentés.',
+      'Pagination et contrats de réponse normalisés (Growth, Caméras, DeviceToken, CabinetShare).',
+      'CI : 69 actions pinnées SHA, dependency-review bloquant, gate anti-stale SHA, scan secret A-2 réellement exécuté.',
+    ],
+  },
+  {
+    version: '4.23.5',
+    isoDate: '2026-07-19',
+    title: 'Correctifs production — cold start, E2E et paie',
+    bullets: [
+      'Warm-up anti cold-start Render pour l\u2019E2E staging (timeout Playwright 15 s).',
+      'Robustesse Vercel : ignoreCommand avec fallback SHA précédent.',
+      'Correctifs paie : numéro de facture réellement persisté, workers/scheduler Render démarrés, index FK salary_advances.',
+    ],
+  },
+  {
     version: '4.16.59',
     isoDate: '2026-05-16',
     title: 'API et admin — liste des bulletins par tenant',

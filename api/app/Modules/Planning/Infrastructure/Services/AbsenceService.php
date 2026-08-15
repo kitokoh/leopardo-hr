@@ -44,7 +44,7 @@ class AbsenceService
         // la déduction de solde et l'indemnité portent sur les jours ouvrés
         // (calendrier entreprise via PublicHolidayService, fallback week-ends
         // seuls quand le pays est inconnu ou qu'aucun férié n'est configuré).
-        $countryCode = $employee->company?->country ?? null;
+        $countryCode = $employee->company->country ?? null;
         $daysCount = $this->publicHolidays->workingDaysBetween(
             $startDate,
             $endDate,

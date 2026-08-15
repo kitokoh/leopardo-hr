@@ -112,7 +112,8 @@ class LeopardoMarketingApp extends StatelessWidget {
       title: 'Leopardo Marketing',
       theme: TenantTheme.apply(ThemeData.light(), null),
       darkTheme: TenantTheme.apply(ThemeData.dark(), null),
-      themeMode: ThemeMode.dark, // Default to dark for Glassmorphism
+      // Issue #3053 : ne pas forcer le dark — suivre le système.
+      themeMode: ThemeMode.system,
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
     );

@@ -145,6 +145,7 @@ class UserAuthRepository {
       method: 'POST',
       useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
+      maxRetriesOverride: 0,
       data: {
         'company_name': companyName,
         'email': email,
@@ -190,6 +191,8 @@ class UserAuthRepository {
         preferredLanguage: lang,
         isRtl: isRtl,
       );
+      // Header Accept-Language gere par l'intercepteur core (api_client.dart)
+      // a partir de _preferences.preferredLanguage — pas de mutation globale.
     }
 
     return user;
