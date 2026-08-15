@@ -6,6 +6,9 @@
 
 ## [Unreleased]
 
+- **fix(web): robots.txt — 14 préfixes protégés interdits à Googlebot/Bingbot + source unique (Closes #3377).** Les groupes dédiés `Googlebot`/`Bingbot` (`allow: /`) écrasaient le groupe `*` et gardaient un accès crawl total aux routes session-protégées (résidu #3375). Nouvelle source unique `PROTECTED_PREFIXES` consommée par robots.ts ; garde Jest anti-dérive avec le matcher middleware (littéraux imposés par Next.js).
+
+
 - **fix(test): main vert — factories `newModel()` en `public` (fatal PHP) + doublon PasswordResetTest retiré.** PR #3680 (#3597) a introduit des overrides `protected function newModel()` dans Employee/User/SalaryAdvanceFactory → fatal « access level » chargeant toute la suite ; visibilité alignée sur le parent (`public function newModel(array $attributes = [])`). `tests/Feature/Auth/PasswordResetTest.php` (4 tests, contrat pré-#2626 réintroduit par mégarde) supprimé — doublon strict de `tests/Feature/PasswordResetTest.php` (6 tests, contrat courant avec codes machine PASSWORD_RESET_SENT/DONE).
 
 
