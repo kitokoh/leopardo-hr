@@ -599,6 +599,14 @@
       }
     }
   },
+  "companies": {
+    "toast": {
+      "load_failed": "Unable to load the company details.",
+      "tickets_failed": "Unable to load the support tickets.",
+      "subscription_failed": "Failed to update the subscription.",
+      "features_failed": "Failed to save the module configuration."
+    }
+  },
   "signup": {
     "badge": "Free 30-day trial",
     "title": "Try Leopardo with your company",

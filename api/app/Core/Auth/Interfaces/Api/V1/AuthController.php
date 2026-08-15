@@ -57,7 +57,10 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        $result = $this->registerAction->execute($request->validated());
+        /** @var array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string} $validated */
+        $validated = $request->validated();
+
+        $result = $this->registerAction->execute($validated);
 
         return (new EmployeeResource($result['employee']))
             ->additional([
@@ -157,11 +160,25 @@ class AuthController extends Controller
 
     public function redirectToGoogle(): mixed
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
+        // au callback. Plus de Socialite stateless sans protection.
+        $state = \Illuminate\Support\Str::random(40);
+        session(['google_oauth_state' => $state]);
+
+        return Socialite::driver('google')->with(['state' => $state])->redirect();
     }
 
-    public function handleGoogleCallback(): JsonResponse
+    public function handleGoogleCallback(Request $request): JsonResponse
     {
+        // Issue #2619 : validation du state — callback sans state ou avec un
+        // state inconnu → 400 (pas de login).
+        $expected = session('google_oauth_state');
+        $provided = $request->query('state');
+        if (! is_string($expected) || ! is_string($provided) || ! hash_equals($expected, $provided)) {
+            return new JsonResponse(['error' => 'INVALID_OAUTH_STATE'], 400);
+        }
+        session()->forget('google_oauth_state');
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {

@@ -599,6 +599,14 @@
       }
     }
   },
+  "companies": {
+    "toast": {
+      "load_failed": "Şirket detayları yüklenemedi.",
+      "tickets_failed": "Destek talepleri yüklenemedi.",
+      "subscription_failed": "Abonelik güncellenemedi.",
+      "features_failed": "Modül ayarları kaydedilemedi."
+    }
+  },
   "signup": {
     "badge": "30 günlük ücretsiz deneme",
     "title": "Leopardo'yu şirketinizle deneyin",

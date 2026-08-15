@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 
-/// Ecran "Mon mois" â€” l'employe voit :
+/// Ecran "Mon mois" — l'employe voit :
 ///  - ses heures travaillees du mois
 ///  - ses heures supplementaires
 ///  - son gain brut et son du net estimes
@@ -63,7 +63,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
                 child: Padding(
                   padding: EdgeInsets.all(24),
                   child: CircularProgressIndicator(
-                    semanticsLabel: 'Chargement du rÃ©sumÃ© mensuel...',
+                    semanticsLabel: 'Chargement du résumé mensuel...',
                   ),
                 ),
               ),

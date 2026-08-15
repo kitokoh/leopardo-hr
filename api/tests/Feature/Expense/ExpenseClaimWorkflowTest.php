@@ -34,20 +34,20 @@ class ExpenseClaimWorkflowTest extends TestCase
     private function validPayload(): array
     {
         return [
-            'title'       => 'Déplacement client Alger',
+            'title' => 'Déplacement client Alger',
             'description' => 'Mission commerciale',
-            'items'       => [
+            'items' => [
                 [
-                    'category'    => 'transport',
+                    'category' => 'transport',
                     'description' => 'Billet de train',
-                    'amount'      => 2500.50,
-                    'date'        => '2026-07-20',
+                    'amount' => 2500.50,
+                    'date' => '2026-07-20',
                 ],
                 [
-                    'category'    => 'meals',
+                    'category' => 'meals',
                     'description' => 'Repas',
-                    'amount'      => 1200,
-                    'date'        => '2026-07-20',
+                    'amount' => 1200,
+                    'date' => '2026-07-20',
                 ],
             ],
         ];
@@ -69,7 +69,7 @@ class ExpenseClaimWorkflowTest extends TestCase
         $this->assertDatabaseHas('expense_claims', [
             'company_id' => $company->id,
             'employee_id' => $employee->id,
-            'status'     => 'draft',
+            'status' => 'draft',
         ]);
         $this->assertDatabaseCount('expense_items', 2);
     }
@@ -80,12 +80,12 @@ class ExpenseClaimWorkflowTest extends TestCase
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Note de frais',
-            'status'       => 'draft',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Note de frais',
+            'status' => 'draft',
             'total_amount' => 100,
-            'currency'     => 'DZD',
+            'currency' => 'DZD',
         ]);
 
         Sanctum::actingAs($employee);
@@ -104,12 +104,12 @@ class ExpenseClaimWorkflowTest extends TestCase
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Note de frais',
-            'status'       => 'submitted',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Note de frais',
+            'status' => 'submitted',
             'total_amount' => 100,
-            'currency'     => 'DZD',
+            'currency' => 'DZD',
             'submitted_at' => now(),
         ]);
 
@@ -120,9 +120,40 @@ class ExpenseClaimWorkflowTest extends TestCase
             ->assertJsonPath('data.status', 'approved');
 
         $this->assertDatabaseHas('expense_claims', [
-            'id'          => $claim->id,
-            'status'      => 'approved',
+            'id' => $claim->id,
+            'status' => 'approved',
             'approved_by' => (string) $manager->id,
+        ]);
+    }
+
+    public function test_manager_cannot_approve_draft_claim(): void
+    {
+        // Issue #2677 — garde de transition : un brouillon doit d'abord être
+        // soumis ; on ne peut pas l'approuver directement (ni rejeter un
+        // brouillon).
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $claim = ExpenseClaim::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Note de frais',
+            'status' => 'draft',
+            'total_amount' => 100,
+            'currency' => 'DZD',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+            ->assertStatus(422);
+        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'x'])
+            ->assertStatus(422);
+
+        $this->assertDatabaseHas('expense_claims', [
+            'id' => $claim->id,
+            'status' => 'draft',
         ]);
     }
 
@@ -133,12 +164,12 @@ class ExpenseClaimWorkflowTest extends TestCase
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Note de frais',
-            'status'       => 'submitted',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Note de frais',
+            'status' => 'submitted',
             'total_amount' => 100,
-            'currency'     => 'DZD',
+            'currency' => 'DZD',
             'submitted_at' => now(),
         ]);
 
@@ -162,12 +193,12 @@ class ExpenseClaimWorkflowTest extends TestCase
         $managerB = Employee::factory()->manager()->create(['company_id' => $companyB->id]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $companyA->id,
-            'employee_id'  => $employeeA->id,
-            'title'        => 'Frais société A',
-            'status'       => 'submitted',
+            'company_id' => $companyA->id,
+            'employee_id' => $employeeA->id,
+            'title' => 'Frais société A',
+            'status' => 'submitted',
             'total_amount' => 100,
-            'currency'     => 'DZD',
+            'currency' => 'DZD',
             'submitted_at' => now(),
         ]);
 
@@ -185,12 +216,12 @@ class ExpenseClaimWorkflowTest extends TestCase
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
         $claim = ExpenseClaim::create([
-            'company_id'   => $company->id,
-            'employee_id'  => $employee->id,
-            'title'        => 'Note de frais',
-            'status'       => 'submitted',
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'title' => 'Note de frais',
+            'status' => 'submitted',
             'total_amount' => 100,
-            'currency'     => 'DZD',
+            'currency' => 'DZD',
             'submitted_at' => now(),
         ]);
 

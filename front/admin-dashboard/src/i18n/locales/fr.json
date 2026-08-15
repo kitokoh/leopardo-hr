@@ -599,6 +599,14 @@
       }
     }
   },
+  "companies": {
+    "toast": {
+      "load_failed": "Impossible de charger la fiche entreprise.",
+      "tickets_failed": "Impossible de charger les tickets support.",
+      "subscription_failed": "Échec de la mise à jour de l'abonnement.",
+      "features_failed": "Échec de la configuration des modules."
+    }
+  },
   "signup": {
     "badge": "Essai gratuit 30 jours",
     "title": "Tester Leopardo avec votre entreprise",

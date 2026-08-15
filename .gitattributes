@@ -36,3 +36,8 @@ CHANGELOG.md merge=union
 *.gif filter=lfs diff=lfs merge=lfs -text
 *.apk filter=lfs diff=lfs merge=lfs -text
 *.aab filter=lfs diff=lfs merge=lfs -text
+
+# QA #2829 : médias vitrine hors Git LFS — le build Vercel ne résout pas LFS
+# (pointeurs servis en prod → images/vidéo cassées). Binaires réels commités.
+front/web/public/screenshots/*.png -filter -diff -merge
+front/web/public/videos/* -filter -diff -merge
