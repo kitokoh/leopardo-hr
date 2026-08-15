@@ -17,7 +17,7 @@ import 'package:leopardo_manager/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 
-/// Ecran "Equipe" â€” reserve aux managers (principal / RH).
+/// Ecran "Equipe" — reserve aux managers (principal / RH).
 /// Permet de lister, creer, archiver un employe et de gerer les invitations.
 class TeamScreen extends ConsumerStatefulWidget {
   const TeamScreen({super.key});
@@ -313,7 +313,7 @@ class _EmployeesTab extends ConsumerWidget {
     if (e.scheduleName?.trim().isNotEmpty == true) {
       parts.add('Horaire ${e.scheduleName}');
     }
-    return parts.isEmpty ? null : parts.join(' Â· ');
+    return parts.isEmpty ? null : parts.join(' · ');
   }
 
   Color _workStateColor(String state) => switch (state) {
@@ -1149,7 +1149,7 @@ class _ScheduleSelector extends StatelessWidget {
           (schedule) => DropdownMenuItem<int?>(
             value: schedule.id,
             child: Text(
-              '${schedule.name} Â· ${schedule.startTime}-${schedule.endTime}',
+              '${schedule.name} · ${schedule.startTime}-${schedule.endTime}',
               overflow: TextOverflow.ellipsis,
             ),
           ),
