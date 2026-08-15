@@ -163,14 +163,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/cabinet',
             builder: (context, state) => const CabinetScreen(),
           ),
-          GoRoute(
-            path: '/cabinet/folder/:folderId',
-            builder: (context, state) {
-              final folderId = int.parse(state.pathParameters['folderId']!);
-              final folderName = state.extra as String?;
-              return CabinetScreen(folderId: folderId, folderName: folderName);
-            },
-          ),
           // Issue #2748 — l'écran Cabinet pousse /cabinet/folder/{id}
           // (même convention que employee/HR) : la route 3 segments
           // manquait ici → GoError au tap sur un dossier.
@@ -319,7 +311,7 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

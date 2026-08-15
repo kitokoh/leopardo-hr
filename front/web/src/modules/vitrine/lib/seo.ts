@@ -211,7 +211,7 @@ export const pageMetadata = {
       "documentation API RH",
       "intégration Leopardo",
       "webhooks paie",
-      "API gestion employes",
+      "API gestion employés",
     ],
     ogImage: `${siteUrl}/og/default.png`,
   },
@@ -249,7 +249,7 @@ export const pageMetadata = {
     keywords: [
       "FAQ Leopardo RH",
       "questions logiciel RH",
-      "aide gestion employes",
+      "aide gestion employés",
       "support paie SaaS",
     ],
     ogImage: `${siteUrl}/og/default.png`,
@@ -323,12 +323,12 @@ export const pageMetadata = {
   mobile: {
     title: "Applications Mobiles | Leopardo RH sur Android et iOS",
     description:
-      "Applications mobiles Leopardo RH pour employes, managers et administrateurs : pointage, absences et validation en mobilite.",
+      "Applications mobiles Leopardo RH pour employés, managers et administrateurs : pointage, absences et validation en mobilite.",
     keywords: [
       "application mobile RH",
       "pointage mobile Android iOS",
       "app manager RH",
-      "app employe pointage",
+      "app employé pointage",
     ],
     ogImage: `${siteUrl}/og/default.png`,
   },

@@ -291,7 +291,7 @@ export default function DashboardPage() {
 
   const stats: DashboardStat[] = [
     {
-      title: 'Employes actifs',
+      title: 'Employés actifs',
       value: summary?.employees_active ?? 0,
       change: `${summary?.employees_total ?? 0} total`,
       trend: 'up',
@@ -320,7 +320,7 @@ export default function DashboardPage() {
       bgColor: 'bg-finance-light',
     },
     {
-      title: 'Departements',
+      title: 'Départements',
       value: summary?.departments ?? 0,
       change: 'actifs',
       trend: 'up',
@@ -333,7 +333,7 @@ export default function DashboardPage() {
   const activityRows = activities.length > 0
     ? activities.map((activity) => ({
         key: String(activity.id),
-        name: activity.auditable_type?.split('\\').pop() ?? 'Systeme',
+        name: activity.auditable_type?.split('\\').pop() ?? 'Système',
         action: activity.action,
         time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString(toIntlLocale(locale), { hour: '2-digit', minute: '2-digit' }) : '--:--',
         avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
@@ -481,8 +481,8 @@ export default function DashboardPage() {
                   <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity', 'Activite recente')}</h3>
-                  <p className="text-sm text-slate-500">{i18nT(locale, 'dashboard.recent_activity_hint', 'Dernieres actions de votre equipe')}</p>
+                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity', 'Activité recente')}</h3>
+                  <p className="text-sm text-slate-500">{i18nT(locale, 'dashboard.recent_activity_hint', 'Dernières actions de votre équipe')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -512,7 +512,7 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {activityRows.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
-                  Aucune activite recente a afficher pour ce tenant.
+                  Aucune activité recente a afficher pour ce tenant.
                 </div>
               ) : activityRows.map((activity, index) => (
                 <motion.div
@@ -608,8 +608,8 @@ export default function DashboardPage() {
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/employees' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/absences' },
+                  { icon: Users, label: 'Nouvel employé', color: 'bg-security', href: '/employees' },
+                  { icon: Calendar, label: 'Congés', color: 'bg-rh', href: '/absences' },
                   { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
                   { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
                 ].map((action) => (
@@ -680,7 +680,7 @@ function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
   return (
     <div className="space-y-6 p-6">
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Espace employe</p>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Espace employé</p>
         <h1 className="mt-3 text-3xl font-black text-slate-950">Bonjour {getDisplayName(user)}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
           Retrouvez vos actions utiles sans passer par les vues manager : pointage, absences, bulletins et langue.
