@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **docs(qa): session QA expert 8 2026-08-15 — audit infrastructure & périphérie (spec-kit).** Spec/plan/tasks + registre de constats dans `.specify/features/qa-expert8-infra-2026-08-15/` : 17 constats nouveaux tracés (#3518-#3523, #3528-#3538) — P1 `backup_drill.sh` (DROP SCHEMA sans garde), P1 paths CI `backend-jobs-ci.yml` périmés, credentials Postman en clair, proxy vitrine sans gestion d'erreur, `APP_VERSION` stale, edge install.sh sans checksum, CodeQL annulé sur main, dette gouvernance CI/web/api. Smoke runtime : API Render UP, vitrine Vercel UP, leopardo-rh.com NXDOMAIN (confirme #3452).
 - **fix(admin): raccourcis clavier — source unique + Alt+R implémenté (Closes #3275).** `KEYBOARD_SHORTCUTS` exporté depuis le composable ; Alt+R → /recruitment (annoncé mais jamais implémenté) ; plus de drift entre deux listes.
 - **fix(admin): route morte /users/:id supprimée (Closes #3280).** UserDetailView (prop `:show` inexistante, « Impersonner » inerte) jamais liée — code mort retiré du bundle.
 - **fix(admin): notifications temps réel — id de repli déterministe (Closes #3191).** `stores/realtime.js` : `socket-<timestamp>-<compteur>` au lieu de `Date.now()+Math.random()` (id non persistant, non corrélable).
