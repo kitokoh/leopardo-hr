@@ -185,7 +185,6 @@ class UserAuthRepository {
         preferredLanguage: lang,
         isRtl: isRtl,
       );
-      apiClient.dio.options.headers['Accept-Language'] = lang;
     }
 
     return user;

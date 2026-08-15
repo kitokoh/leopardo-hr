@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { pageMetadata } from '@/modules/vitrine/lib/seo';
@@ -8,7 +9,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.download.keywords,
   ogImage: pageMetadata.download.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/download',
+  canonical: `${SITE_URL}/download`,
 });
 
 export default function DownloadLayout({
