@@ -72,8 +72,9 @@ class PayrollSimulationController extends Controller
         $countryCode = $validated['country_code'];
 
         // Issue #1874 — identifiant de corrélation de la requête (logs ↔
-        // réponse ↔ audit) : UUID généré par requête, propagé aux logs.
-        $correlationId = (string) Str::uuid();
+        // réponse ↔ audit) : X-Correlation-ID / X-Request-Id header (repli
+        // UUID frais), propagé aux logs et à la réponse (RequestIdMiddleware).
+        $correlationId = correlation_id();
         Log::withContext(['correlation_id' => $correlationId]);
 
         $companyId = $user instanceof Employee ? (string) $user->company_id : null;
