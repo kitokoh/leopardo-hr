@@ -1,17 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import {
+  checkEdgeHealth,
+  HEALTH_POLL_INTERVAL_MS,
+  type EdgeHealth,
+  type SyncStatus,
+} from '@/lib/edge-health';
 
 const EDGE_API = process.env.NEXT_PUBLIC_EDGE_API ?? 'http://leopardo.local:7878';
-
-type SyncStatus = 'checking' | 'online' | 'offline' | 'error';
-
-interface EdgeHealth {
-  status: string;
-  node_id?: string;
-  pending_sync?: number;
-  last_sync?: string;
-}
 
 export default function HomePage() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('checking');
@@ -21,27 +18,15 @@ export default function HomePage() {
   const checkEdge = async () => {
     setChecking(true);
     setSyncStatus('checking');
-    try {
-      const res = await fetch(`${EDGE_API}/api/v1/edge/health`, {
-        signal: AbortSignal.timeout(4000),
-      });
-      if (res.ok) {
-        const data: EdgeHealth = await res.json();
-        setHealth(data);
-        setSyncStatus('online');
-      } else {
-        setSyncStatus('error');
-      }
-    } catch {
-      setSyncStatus('offline');
-    } finally {
-      setChecking(false);
-    }
+    const result = await checkEdgeHealth(EDGE_API);
+    setHealth(result.health);
+    setSyncStatus(result.status);
+    setChecking(false);
   };
 
   useEffect(() => {
     checkEdge();
-    const interval = setInterval(checkEdge, 30_000);
+    const interval = setInterval(checkEdge, HEALTH_POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, []);
 
@@ -63,7 +48,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-slate-900 flex flex-col">
       {/* Header */}
       <header className="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center font-bold text-sm">L</div>
           <span className="text-white font-semibold text-lg">Leopardo Edge</span>
         </div>

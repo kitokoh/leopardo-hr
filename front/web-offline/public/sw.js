@@ -1,12 +1,18 @@
 // Leopardo Edge — Service Worker
 // Stratégie : Cache First pour assets statiques, Network First pour /api/*
+// La logique de décision vit dans sw-strategies.js (testée par Vitest, #3971)
+// et est chargée ici via importScripts (SW classique, pas de module).
 
-const CACHE_NAME = 'leopardo-edge-v2';
+importScripts('/sw-strategies.js');
+
+const CACHE_NAME = 'leopardo-edge-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
 ];
+
+const strategies = self.LeopardoSwStrategies;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -41,11 +47,11 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // API calls → Network First, fallback graceful
-  if (url.pathname.startsWith('/api/')) {
+  if (strategies.classifyRequest(url.pathname) === 'api') {
     event.respondWith(
       fetch(event.request).catch(() =>
         new Response(
-          JSON.stringify({ error: 'offline', message: 'Edge non joignable' }),
+          strategies.offlineApiResponse(),
           { status: 503, headers: { 'Content-Type': 'application/json' } }
         )
       )
@@ -59,7 +65,7 @@ self.addEventListener('fetch', (event) => {
       if (cached) return cached;
       return fetch(event.request)
         .then((response) => {
-          if (!response || response.status !== 200 || response.type === 'opaque') {
+          if (!response || !strategies.isCacheable(response.status, response.type)) {
             return response;
           }
           const clone = response.clone();
@@ -70,8 +76,9 @@ self.addEventListener('fetch', (event) => {
           // Issue #3962 — navigation hors-ligne vers une route non visitée :
           // fetch() rejette → respondWith rejette → page d'erreur navigateur.
           // Fallback : servir l'app shell pré-cachée (SPA offline-first).
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+          const fallback = strategies.navigationFallback(url.pathname, event.request.mode);
+          if (fallback) {
+            return caches.match(fallback);
           }
           return new Response('Offline', { status: 503 });
         });
