@@ -25,14 +25,14 @@
 
 ## Phase 3 — Clients (frontends)
 
-- [ ] T014 [P1] US2 Afficher le bloc `compliance` dans la Web App `front/web` (simulation + fiche de paie) — issue #2116
-- [ ] T015 [P2] US2 Afficher le bloc `compliance` dans l'admin dashboard (`front/admin-dashboard`) et le mobile (suivi)
+- [x] T014 [P1] US2 Afficher le bloc `compliance` dans la Web App `front/web` (simulation + fiche de paie) — issue #2116 (PR #2157)
+- [x] T015 [P2] US2 Afficher le bloc `compliance` dans l'admin dashboard (#2112/#2135) et le mobile (issue #2143, PR #2249)
 
 ## Phase 4 — Complétion catalogue
 
 - [ ] T016 [P2] US4 Onboarding TG placeholder→pilot (playbook #1875) — issue #2121
-- [ ] T017 [P3] US1 Golden tests MA/TN (≥ 3 par pays, sourcés) — issue #2122
-- [x] T018 [P2] US1 Préavis SN par catégorie (8 j / 1 m / 3 m) — merge #2136 (noticePeriodDays($category), EndOfContractService, GoldenSn + SN_COMPLIANCE §8)
+- [x] T017 [P3] US1 Golden tests MA/TN/FR/TR/CA (≥ 3 par pays, sourcés) — issue #2119 (PR #2166)
+- [ ] T018 [P2] US1 Préavis SN par catégorie (8 j / 1 m / 3 m) — issue #2123
 - [ ] T019 [P2] US3 RICF CI art. 120 / abattement DGI GA / CNAC DZ — réponse expert (issue #2124)
 - [ ] T020 [P2] US1 Fiche validation SN signée → `confidenceLevel()` SN → `production` (issue #1912, bloqué externe)
 
@@ -40,18 +40,9 @@
 
 - [x] T021 Actualiser `.specify/constitution.md` §VIII (tableau Statut cible) — ajouter un renvoi vers `docs/payroll/VALIDATION_EXPERTE.md` pour le statut RÉEL des pays (DZ/FR `pilot` dans le code vs `production` cible au tableau ; la ligne SN doit rester `pilot` jusqu'à signature #1912) (contradicts: Constitution VIII vs code)
 - [x] T022 Miroiter la constitution réelle dans `.specify/memory/constitution.md` (actuellement template non rempli) — les runs `/speckit-converge` liront alors les principes MUST/SHOULD du projet au lieu de les ignorer (missing: Constitution I-VIII)
-- [x] T023 Corriger la section dupliquée « Procédure de mise à jour des taux » dans `docs/payroll/SN_COMPLIANCE.md` (présente deux fois à l'identique, fin de fichier) (unrequested) — **couvert par PR #2115** (restaure §12 + dé-doublonne)
+- [ ] T023 Corriger la section dupliquée « Procédure de mise à jour des taux » dans `docs/payroll/SN_COMPLIANCE.md` (présente deux fois à l'identique, fin de fichier) (unrequested) — **couvert par PR #2115** (restaure §12 + dé-doublonne)
 
-## Phase 6: Convergence (2026-08-14 — agent coordinateur, /speckit-converge)
+### Découvertes #2119/#2117 (nouvelles issues)
 
-**Statut Phase 5 vérifié sur main** : T021/T022 mergés (PR #2139 — issues #2137/#2138) ; T023 mergé (PR #2115) ; T015 volet admin mergé (PR #2135 — issue #2112) ; T016/T018 mergés (PRs #2121/#2136) ; T019 partiel mergé (PR #2133 — abattement GA, reste RICF CI/CNAC DZ expert #2124).
-
-- [x] T024 Réparations « main vert » session 2 — audit réparation pays (search_path + `auditable_id` varchar, #1952/#1873), `companies.timezone`/`currency` nullable, barème IUTS BF complet en base (#2003), seeder `legalReferenceTaxSlabs()`, tests caps #1913 réalignés, doublon `tests/Unit/Payroll/CedeaoRulesUnitTest.php` supprimé — **PR #2313** (vérifié : tests Payroll + PHPStan Strict + Modules Architecture verts)
-- [ ] T025 [P1] US2 Web App `front/web` — afficher le bloc `compliance` (niveau + avertissement + source + verification_date) sur la simulation et la fiche de paie — issue #2116 toujours ouverte, aucun PR
-- [ ] T026 [P3] US2 Mobile (employee/manager) — afficher l'avertissement de conformité sur la fiche de paie — issue #2143 (feat/2143-mobile-compliance-v2, PR #2249)
-- [ ] T027 [P2] US4 Onboarding TG placeholder→pilot (playbook #1875) — issue #2121 (feat/2121-tg-onboarding)
-- [ ] T028 [P3] US1 Golden tests MA/TN ≥ 3 par pays sourcés (US1) — issue #2119
-- [ ] T029 [P2] US3 Réponses expert : RICF CI art. 120 / abattement DGI GA / CNAC DZ / CSS famille SN — issue #2124 (dépend données expert-comptable)
-- [ ] T030 [P1] US1/§IV Main « complètement vert » — vérifier les 5 required checks sur le prochain push direct / merge
-- [ ] T031 [P2] US1 Fiche SN signée → `confidenceLevel()` SN → `production` (issue #1912) — **bloqué externe** (signature expert-comptable sénégalaise)
-- [ ] T032 [P3] Process — nettoyage des branches distantes obsolètes + scratch `tmp-agent-integ` (issue #2130, analyse postée)
+- [ ] T024 [P2] MA — abattement frais professionnels 35 % (CGI MA art. 58) non implémenté — issue #2260 (créée par converge #2143-session)
+- [ ] T025 [P2] TN — abattement IRPP 10 % (CGI TN art. 39) non implémenté — issue #2261
