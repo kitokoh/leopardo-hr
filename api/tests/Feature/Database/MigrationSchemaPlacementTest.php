@@ -81,10 +81,17 @@ class MigrationSchemaPlacementTest extends TestCase
         $publicHolidays = require base_path('database/migrations/public/2026_08_14_000002_create_public_holidays_table.php');
         $islamic = require base_path('database/migrations/public/2026_08_14_000003_create_islamic_calendar_table.php');
         $rateWorkflow = require base_path('database/migrations/tenant/2026_08_14_000001_add_rate_validation_workflow.php');
+        // Issue #2326 : la contrainte UNIQUE ajoutée par 000004 doit être
+        // idempotente (le garde Schema::hasTable ne couvre pas les
+        // contraintes → SQLSTATE[42P07] sur re-migrate). On la rejoue deux
+        // fois pour verrouiller le garde information_schema.
+        $uniquePublicHolidays = require base_path('database/migrations/public/2026_08_14_000004_add_unique_public_holidays.php');
 
         $publicHolidays->up();
         $islamic->up();
         $rateWorkflow->up();
+        $uniquePublicHolidays->up();
+        $uniquePublicHolidays->up();
 
         // Toujours au même endroit, toujours une seule fois.
         $this->assertSame('public', $this->tableSchema('public_holidays'));
@@ -93,6 +100,41 @@ class MigrationSchemaPlacementTest extends TestCase
         $this->assertSame(1, (int) DB::table('information_schema.tables')
             ->where('table_name', 'public_holidays')
             ->count());
+    }
+
+    public function test_public_holidays_unique_constraint_is_idempotent_when_re_run(): void
+    {
+        // Issue #2326 : `2026_08_14_000004` (UNIQUE country/year/date/company)
+        // rejouait l'ajout de contrainte sans garde → 42P07 sur le second
+        // `artisan migrate` (la garde Schema::hasTable ne couvre pas les
+        // contraintes). Le up() doit être no-op quand la contrainte existe.
+        $migration = require base_path(
+            'database/migrations/public/2026_08_14_000004_add_unique_public_holidays.php'
+        );
+
+        // Premier passage : la contrainte est créée (base fraîche).
+        $migration->up();
+
+        $this->assertSame(
+            1,
+            (int) DB::table('information_schema.table_constraints')
+                ->where('constraint_name', 'public_holidays_country_year_date_company_unique')
+                ->where('table_name', 'public_holidays')
+                ->count(),
+            'La contrainte UNIQUE doit exister après le premier up()'
+        );
+
+        // Second passage : no-op, aucune exception 42P07.
+        $migration->up();
+
+        $this->assertSame(
+            1,
+            (int) DB::table('information_schema.table_constraints')
+                ->where('constraint_name', 'public_holidays_country_year_date_company_unique')
+                ->where('table_name', 'public_holidays')
+                ->count(),
+            'La contrainte UNIQUE ne doit pas être dupliquée après re-run'
+        );
     }
 
     public function test_artisan_migrate_is_idempotent(): void
