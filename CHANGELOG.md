@@ -275,6 +275,8 @@ Nouvelle suite `tests/Feature/CrossTenantIndexIsolationTest` (7 tests) verrouill
 
 - **fix(api): erreurs du cockpit admin journalisées et exposées en 503 (Closes #3001).** Les catches silencieux des métriques, statistiques, activités, alertes et rapports RH n’affichent plus de faux zéros ou listes vides ; chaque panne est loggée avec son opération.
 
+- **fix(billing): codes de plans canoniques Free/Pilot/Operations/Enterprise (Closes #2977).** La matrice backend, le checkout, Stripe, les factures et le rate limiting utilisent désormais une source `PlanCode`; les alias historiques sont normalisés uniquement aux frontières.
+
 - **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
 - **fix(web): SignupForm — record localisé construit depuis le catalogue i18n partagé (complète #2648).** Les 70 clés du formulaire d'essai guidé vivent désormais dans `shared/i18n/locales/*.json` (source de vérité) et sont consommées via `t(locale, 'signup.*')` (garde PA2-I18N-014 vert).
 - **fix(web): SignupForm (essai guidé) localisé FR/EN/TR/AR (Closes #2648).** Le formulaire de `/signup` était 100 % codé en français (labels, placeholders, erreurs, écrans OTP/pending/tracking/success) alors que la page est 4-locales — les visiteurs EN/TR/AR voyaient un formulaire français. Le composant utilise désormais `useVitrineLocale()` + un record `signupFormCopy[locale]` ; le schéma zod `signupFormSchema(locale)` produit des messages de validation dans la langue active (tests mis à jour, accents FR restaurés).
