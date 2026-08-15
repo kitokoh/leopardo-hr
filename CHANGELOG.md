@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(web): e2e navigation réalignés — menu mobile + focus Tab (Closes #3503).** `navigation-and-links.spec.ts` : T1 cherchait un `<nav aria-label*=mobile>` inexistant (le menu mobile est un `motion.div` — vérifié : l'app fonctionne, le test était périmé) → cible désormais `[aria-label="Menu mobile"]` (aria-label ajouté sur le conteneur dans Navbar.tsx, a11y bonus) ; T2 pressait 5×Tab sans déplacer le focus initial dans chromium headless-shell → boucle Tab jusqu'à sortie de `<body>` (max 10), assertion sur la balise focalisée.
 - **fix(api): \$fillable sensible — role/status/company_id/salary/2FA retires du mass-assignment (Closes #3597).** Employee: role, status, company_id, salary_base, hourly_rate retirés du \$fillable ; SuperAdmin: status, two_fa_secret ; User: status. Create/update calls dans HrController, AuthController, EmployeeImportController alignés (set explicite + save). Factories non affectées (Model::unguarded).
 
 
