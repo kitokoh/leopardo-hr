@@ -75,13 +75,13 @@ class SenegalRulesUnitTest extends TestCase
         //   T1 salarié 5,6 % × 432 000 = 24 192 · T1 patronal 8,4 % × 432 000 = 36 288
         //   Tranche T2 = 1 000 000 − 432 000 = 568 000
         //   T2 salarié 2,4 % × 568 000 = 13 632 · T2 patronal 3,6 % × 568 000 = 20 448
-        //   CSS famille 3 % × min(1M, 63 k) = 1 890 · CSS AT 1 % × 63 k = 630
+        //   CSS famille 7 % × min(1M, 63 k) = 4 410 · CSS AT 1 % × 63 k = 630
         //   · CFCE 3 % = 30 000 (plafonds #1913)
-        //   → salarié 37 824 · patronal 89 256
+        //   → salarié 37 824 · patronal 91 776
         $charges = $this->sn()->calculateSocialCharges(1000000.0);
 
         self::assertSame(37824.0, $charges['employee']);
-        self::assertSame(89256.0, $charges['employer']);
+        self::assertSame(91776.0, $charges['employer']);
     }
 
     public function test_professional_expenses_30_percent(): void

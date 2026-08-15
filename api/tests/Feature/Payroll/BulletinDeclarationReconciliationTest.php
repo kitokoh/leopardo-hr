@@ -277,7 +277,7 @@ class BulletinDeclarationReconciliationTest extends TestCase
         $declaredPatronal = (float) $row[12];
         $cssCap = min($gross, 63000.0);
         $enginePatronalDeclaredScope = round(
-            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 3.0 / 100,
+            $t1Base * 8.4 / 100 + $t2Base * 3.6 / 100 + $cssCap * 7.0 / 100,
             2,
         );
         $this->assertEquals($enginePatronalDeclaredScope, $declaredPatronal);

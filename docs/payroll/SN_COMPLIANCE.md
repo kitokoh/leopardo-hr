@@ -16,7 +16,7 @@
 | CFCE 3 % patronal | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
 | IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (pilot) | IPRES | à valider expert |
 | IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-2 160k) | ✅ implémentée (pilot) | IPRES | à valider expert |
-| CSS famille patronale 3 % | ✅ implémentée (pilot) | CSS | à valider expert |
+| CSS famille patronale 7 % | ✅ implémentée (pilot) | CSS — taux officiel CIPRES/CLEISS 2026 | à valider expert |
 | CSS AT patronale 1 % | ✅ implémentée (pilot) | CSS — variable selon secteur | à valider expert |
 | Abattement frais pro 30 % (non plafonné) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
 | SMIG 58 900 XOF/mois | ✅ implémentée | — | à valider |
@@ -95,17 +95,18 @@ plafonnée) — `CFCE_SN_PAT`.
 
 | Cotisation | Taux | Type | Plafond |
 |---|---|---|---|
-| Prestations familiales patronale | 3,0 % ⚠️ | employeur | **63 000 XOF/mois** |
+| Prestations familiales patronale | 7,0 % | employeur | **63 000 XOF/mois** |
 | Accidents du travail patronale | 1,0 % | employeur | **63 000 XOF/mois** (taux selon risque à confirmer) |
 
-> **⚠️ Écart de taux à valider (issue #1912)** : les sources officielles
-> (CIPRES — lacipres.org ; CLEISS — « 63 000 × 7 % = 4 410 FCFA/mois »)
-> portent la prestation familiale CSS à **7 %** du salaire plafonné, et non
-> 3 % comme implémenté (`SenegalPayrollRules`/`IpresDeclarationGenerator`).
-> Le plafond serait par ailleurs passé de 63 000 à **80 000 XOF** en 2025
-> (décision CSS, contestée par le CNP — senenews 2025-01). L'implémentation
-> reste 3 % (pilot) en attendant la validation expert-comptable — cf.
-> `VALIDATION_EXPERTE.md`.
+> **Décision taux CSS (issue #2473)** : le taux officiel des prestations
+> familiales CSS est **7 %** du salaire plafonné (source CLEISS 2026 —
+> « 63 000 × 7 % = 4 410 FCFA/mois » ; CIPRES — lacipres.org). L'implémentation
+> est passée de 3 % à **7 %** (pilot) dans `SenegalPayrollRules` et
+> `IpresDeclarationGenerator` — reste à valider par l'expert-comptable
+> sénégalais (issue #1912) avant « production ».
+> Le plafond reste **63 000 XOF/mois** (CLEISS 2026 confirme 63 000 ; la
+> mention d'un passage à 80 000 XOF en 2025 — décision CSS contestée par le
+> CNP, senenews 2025-01 — n'est retenue par aucune source officielle à jour).
 
 ## 7. Abattement frais professionnels
 

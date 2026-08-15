@@ -36,10 +36,9 @@ class SenegalPayrollRules extends AbstractCountryRules
             // (floor/ceiling) pour que la simulation par item = moteur.
             ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 2160000.0],
             ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 2160000.0],
-            // CSS — prestations familiales 3 % + AT 1 %, plafonnées à
-            // 63 000 XOF/mois (#1913, procédure administrative CSS /
-            // eRegulations — aligné sur calculateSocialCharges).
-            ['name' => 'CSS Prestations Familiales Patronale', 'code' => 'CSS_SN_PAT_FAM', 'type' => 'employer', 'rate' => 3.0, 'cap' => 63000.0],
+            // CSS — prestations familiales 7 % (CLEISS 2026, taux officiel
+            // CIPRES/CSS) + AT 1 %, plafonnées à 63 000 XOF/mois (#2473).
+            ['name' => 'CSS Prestations Familiales Patronale', 'code' => 'CSS_SN_PAT_FAM', 'type' => 'employer', 'rate' => 7.0, 'cap' => 63000.0],
             ['name' => 'CSS Accidents du Travail Patronale', 'code' => 'CSS_SN_PAT_AT', 'type' => 'employer', 'rate' => 1.0, 'cap' => 63000.0],
             // CFCE — Contribution Forfaitaire à la Charge de l'Employeur 3 %
             // (issue #1827, docs/payroll/SN_COMPLIANCE.md §5).
@@ -85,8 +84,8 @@ class SenegalPayrollRules extends AbstractCountryRules
         //  - IPRES T2 (régime cadres) 2,4 % / 3,6 % sur la tranche
         //    432 001 – 2 160 000 XOF — appliquée quand le brut dépasse le
         //    plafond T1 (hypothèse pilote : brut > 432 k ⇒ régime cadres) ;
-        //  - CSS prestations familiales 3 % + AT 1 %, chacune plafonnée à
-        //    63 000 XOF/mois selon la procédure administrative CSS ;
+        //  - CSS prestations familiales 7 % (CLEISS 2026) + AT 1 %, chacune
+        //    plafonnée à 63 000 XOF/mois ;
         //  - CFCE 3 % sur la masse salariale brute (patronal uniquement).
         $ipresCap = 432000.0;
         $cssCap = 63000.0;
@@ -102,7 +101,7 @@ class SenegalPayrollRules extends AbstractCountryRules
             $employer += round($t2Base * $this->resolveContributionRate('IPRES_SN_PAT_T2', 3.6) / 100, 2);
         }
 
-        $employer += $this->computeContribution($grossSalary, 'CSS_SN_PAT_FAM', 3.0, $cssCap)
+        $employer += $this->computeContribution($grossSalary, 'CSS_SN_PAT_FAM', 7.0, $cssCap)
             + $this->computeContribution($grossSalary, 'CSS_SN_PAT_AT', 1.0, $cssCap)
             + $this->computeContribution($grossSalary, 'CFCE_SN_PAT', 3.0, null);
 

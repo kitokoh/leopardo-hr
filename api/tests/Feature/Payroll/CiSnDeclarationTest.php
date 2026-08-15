@@ -268,8 +268,8 @@ class CiSnDeclarationTest extends TestCase
         //   T1 = min(300 000, 432 000) = 300 000 · T2 = 0 (non cadre)
         //   T1 salariale 5,6 % = 16 800 · T1 patronale 8,4 % = 25 200
         //   T2 salariale 0 · T2 patronale 0 · CSS famille = min(300 000, 63 000)
-        //     × 3 % = 1 890 (plafond CSS #1913)
-        //   total patronal = 25 200 + 0 + 1 890 = 27 090
+        //     × 7 % = 4 410 (plafond CSS #1913)
+        //   total patronal = 25 200 + 0 + 4 410 = 29 610
         $this->assertSame('IPRES-SN-001', $row[0]);
         $this->assertSame('Diop', $row[1]);
         $this->assertSame('Fatou', $row[2]);
@@ -281,8 +281,8 @@ class CiSnDeclarationTest extends TestCase
         $this->assertSame('0.00', $row[8]);
         $this->assertSame('0.00', $row[9]);
         $this->assertSame('0.00', $row[10]);
-        $this->assertSame('1890.00', $row[11]);
-        $this->assertSame('27090.00', $row[12]);
+        $this->assertSame('4410.00', $row[11]);
+        $this->assertSame('29610.00', $row[12]);
     }
 
     public function test_sn_csv_cadre_with_t2(): void
@@ -307,8 +307,8 @@ class CiSnDeclarationTest extends TestCase
         //   T1 = 432 000 → salariale 5,6 % = 24 192 · patronale 8,4 % = 36 288
         //   T2 = 1 000 000 − 432 000 = 568 000 → salariale 2,4 % = 13 632
         //        patronale 3,6 % = 20 448
-        //   CSS famille = min(1 000 000, 63 000) × 3 % = 1 890 (plafond CSS #1913)
-        //   total patronal = 36 288 + 20 448 + 1 890 = 58 626
+        //   CSS famille = min(1 000 000, 63 000) × 7 % = 4 410 (plafond CSS #1913)
+        //   total patronal = 36 288 + 20 448 + 4 410 = 61 146
         $this->assertSame('cadre', $row[3]);
         $this->assertSame('432000.00', $row[5]);
         $this->assertSame('24192.00', $row[6]);
@@ -316,8 +316,8 @@ class CiSnDeclarationTest extends TestCase
         $this->assertSame('568000.00', $row[8]);
         $this->assertSame('13632.00', $row[9]);
         $this->assertSame('20448.00', $row[10]);
-        $this->assertSame('1890.00', $row[11]);
-        $this->assertSame('58626.00', $row[12]);
+        $this->assertSame('4410.00', $row[11]);
+        $this->assertSame('61146.00', $row[12]);
     }
 
     // ── Endpoints + RBAC ────────────────────────────────────────────────

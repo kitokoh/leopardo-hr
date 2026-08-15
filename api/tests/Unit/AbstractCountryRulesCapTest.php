@@ -41,12 +41,12 @@ class AbstractCountryRulesCapTest extends TestCase
         //   T2 salariale (cadres) : 568 000 × 2,4 % = 13 632,00 → 37 824,00
         //   T1 patronale : 432 000 × 8,4 % = 36 288,00
         //   T2 patronale : 568 000 × 3,6 % = 20 448,00
-        //   CSS famille 3 % = 1 890 · CSS AT 1 % = 630 · CFCE 3 % = 30 000
-        //   → patronale totale 89 256,00
+        //   CSS famille 7 % = 4 410 · CSS AT 1 % = 630 · CFCE 3 % = 30 000
+        //   → patronale totale 91 776,00
         $charges = $rules->calculateSocialCharges(1000000.0);
 
         $this->assertSame(37824.0, $charges['employee']);
-        $this->assertSame(89256.0, $charges['employer']);
+        $this->assertSame(91776.0, $charges['employer']);
     }
 
     public function test_senegal_contribution_uncapped_when_gross_below_432k(): void
@@ -57,12 +57,12 @@ class AbstractCountryRulesCapTest extends TestCase
         // déclenché), CSS famille/AT plafonnées à 63 000 :
         //   salariale : 200 000 × 5,6 % = 11 200,00
         //   patronale : 200 000 × 8,4 % = 16 800,00
-        //             + 63 000 × 3 % = 1 890,00 + 63 000 × 1 % = 630,00
-        //             + 200 000 × 3 % (CFCE) = 6 000,00 → 25 320,00
+        //             + 63 000 × 7 % = 4 410,00 + 63 000 × 1 % = 630,00
+        //             + 200 000 × 3 % (CFCE) = 6 000,00 → 27 840,00
         $charges = $rules->calculateSocialCharges(200000.0);
 
         $this->assertSame(11200.0, $charges['employee']);
-        $this->assertSame(25320.0, $charges['employer']);
+        $this->assertSame(27840.0, $charges['employer']);
     }
 
     public function test_cameroon_cnps_capped_at_750k_xaf(): void
