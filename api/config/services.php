@@ -50,8 +50,8 @@ return [
     'stripe' => [
         'secret' => env('STRIPE_SECRET_KEY'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
-        'price_starter' => env('STRIPE_PRICE_STARTER'),
-        'price_business' => env('STRIPE_PRICE_BUSINESS'),
+        'price_pilot' => env('STRIPE_PRICE_PILOT', env('STRIPE_PRICE_STARTER')),
+        'price_operations' => env('STRIPE_PRICE_OPERATIONS', env('STRIPE_PRICE_BUSINESS')),
         'price_enterprise' => env('STRIPE_PRICE_ENTERPRISE'),
     ],
 
@@ -88,11 +88,27 @@ return [
         'secret' => env('MARKETING_LEAD_WEBHOOK_TOKEN'),
     ],
 
+    'mail_bounce_webhook' => [
+        // PA2-COMM-007 - Secret partagé du webhook entrant de rebonds email
+        // (Postmark/SES/Mailgun). Le contrôleur est fail-closed (#2616) :
+        // secret absent → 503. La clé n'existait dans aucune config ni dans
+        // .env.example (#3058) → la feature était morte en permanence.
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET'),
+    ],
+
     'ayrshare' => [
         // Cle API primaire du compte Leopardo cote Ayrshare (Business/Enterprise
         // plan requis pour gerer des profils utilisateur par tenant).
         'api_key' => env('AYRSHARE_API_KEY'),
         'base_url' => env('AYRSHARE_BASE_URL', 'https://api.ayrshare.com/api'),
+    ],
+
+    'mail_bounce_webhook' => [
+        // #3058 : secret partage authentifiant les webhooks de rebond email
+        // (header X-Bounce-Webhook-Secret, EmailBounceWebhookController).
+        // Vide = webhook rejete (fail-closed #2616). A positionner en
+        // production (MAIL_BOUNCE_WEBHOOK_SECRET).
+        'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET', ''),
     ],
 
 ];

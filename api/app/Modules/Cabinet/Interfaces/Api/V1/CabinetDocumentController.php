@@ -56,7 +56,7 @@ class CabinetDocumentController extends Controller
             });
         }
 
-        $perPage = $request->integer('per_page', 20);
+        $perPage = max(1, min(100, $request->integer('per_page', 20)));
         $paginated = $query->orderByDesc('created_at')->paginate($perPage);
 
         return CabinetDocumentResource::collection($paginated)->response();

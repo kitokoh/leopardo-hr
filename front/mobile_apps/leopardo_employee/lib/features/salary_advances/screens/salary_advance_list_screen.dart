@@ -15,6 +15,7 @@ import 'package:leopardo_employee/features/salary_advances/providers/salary_adva
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
+import 'package:leopardo_core/core/utils/currency_format.dart';
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -356,7 +357,7 @@ class _SalaryAdvanceListScreenState
   }
 
   static String _formatMoney(double? amount, String currency) =>
-      '${(amount ?? 0).toStringAsFixed(0)} $currency';
+      '${(amount ?? 0).toStringAsFixed(0)}${currencySuffix(currency)}';
 }
 
 class _SalaryAdvanceRequestSheet extends ConsumerStatefulWidget {
@@ -398,7 +399,7 @@ class _SalaryAdvanceRequestSheetState
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.of(context).viewInsets.bottom;
-    final currency = ref.watch(authProvider).employee?.currency ?? 'DZD';
+    final currency = ref.watch(authProvider).employee?.currency ?? '';
 
     return Padding(
       padding: EdgeInsets.fromLTRB(22, 18, 22, bottom + 24),
@@ -439,7 +440,7 @@ class _SalaryAdvanceRequestSheetState
               style: const TextStyle(color: MobileSurface.text),
               decoration: InputDecoration(
                 labelText: 'Montant demande',
-                suffixText: currency,
+                suffixText: currencySuffix(currency).trim(),
               ),
               validator: (value) {
                 final amount = _parseAmount(value ?? '');

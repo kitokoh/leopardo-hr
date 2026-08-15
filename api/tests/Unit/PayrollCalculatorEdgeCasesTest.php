@@ -65,14 +65,17 @@ class PayrollCalculatorEdgeCasesTest extends TestCase
 
     public function test_overtime_pay_ten_hours_default_rate(): void
     {
-        // Golden F-05 : 60000 / 173,33 h × 10 h × 1,25 = 4327,00 DZD
-        $this->assertSame(4327.0, $this->calculator->computeOvertimePay(60000.0, 10.0));
+        // Golden F-05 : 60000 / 173,33 h × 10 h × 1,25 = 4327,005…
+        // Arrondi final à 2 décimales (issue #2685 — le taux horaire n'est
+        // plus arrondi AVANT les multiplicateurs) → 4327,01 DZD.
+        $this->assertSame(4327.01, $this->calculator->computeOvertimePay(60000.0, 10.0));
     }
 
     public function test_overtime_pay_custom_standard_rate_hours(): void
     {
-        // 10 h à 25 % + 10 h à 50 % = 4327,00 + 5192,40 = 9519,40 DZD
-        $this->assertSame(9519.4, $this->calculator->computeOvertimePay(60000.0, 20.0, 10));
+        // 10 h à 25 % + 10 h à 50 % = 4327,005… + 5192,406… = 9519,411…
+        // Arrondi final (issue #2685) → 9519,41 DZD.
+        $this->assertSame(9519.41, $this->calculator->computeOvertimePay(60000.0, 20.0, 10));
     }
 
     public function test_overtime_pay_zero_base(): void

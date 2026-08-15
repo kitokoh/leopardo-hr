@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'app.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,8 +59,14 @@ Future<void> _safeGoogleSignInInitialize() async {
     await GoogleSignIn.instance.initialize(
       // serverClientId est le web client id (type 3) — obligatoire pour que
       // authenticate() retourne un idToken vérifiable par le backend.
-      serverClientId:
-          '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com',
+      serverClientId: const String.fromEnvironment(
+        'GOOGLE_WEB_CLIENT_ID',
+        // T095 (QA 2026-08-15) : l'ID n'est plus codé en dur — fourni par
+        // --dart-define en build ; repli DEBUG uniquement (masqué en release).
+        // #3294 : aucun repli en dur — l'ID doit venir de --dart-define
+        // (GOOGLE_WEB_CLIENT_ID), sinon le sign-in Google est désactivé.
+        defaultValue: '',
+      ),
     );
   } catch (error, stackTrace) {
     debugPrint('Google Sign-In init skipped: $error');
@@ -80,7 +88,7 @@ Future<void> _openOfflineCache() async {
 }
 
 Future<void> _initializeLocales() async {
-  await initializeDateFormatting('fr_FR', null);
+  await initializeDateFormatting(deviceIntlDateLocale, null);
   await initializeDateFormatting('fr_CA', null);
   await initializeDateFormatting('fr_BE', null);
   await initializeDateFormatting('ar', null);

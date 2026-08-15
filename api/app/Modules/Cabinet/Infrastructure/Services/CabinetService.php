@@ -24,7 +24,7 @@ class CabinetService
     public function createFolder(Employee $owner, array $data): CabinetFolder
     {
         return CabinetFolder::create([
-            'company_id' => $this->legacyCompanyKey($owner),
+            'company_id' => $this->companyKey($owner),
             'employee_id' => $owner->id,
             'parent_id' => $data['parent_id'] ?? null,
             'name' => $data['name'],
@@ -76,7 +76,7 @@ class CabinetService
         $path = $file->store($storagePath, 'local');
 
         return CabinetDocument::create([
-            'company_id' => $this->legacyCompanyKey($owner),
+            'company_id' => $this->companyKey($owner),
             'employee_id' => $owner->id,
             'folder_id' => $data['folder_id'] ?? null,
             'name' => $data['name'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
@@ -152,7 +152,7 @@ class CabinetService
     public function share(Employee $owner, string $shareableType, int $shareableId, array $data): CabinetShare
     {
         $share = CabinetShare::create([
-            'company_id' => $this->legacyCompanyKey($owner),
+            'company_id' => $this->companyKey($owner),
             'employee_id' => $owner->id,
             'shareable_type' => $shareableType,
             'shareable_id' => $shareableId,
@@ -192,15 +192,11 @@ class CabinetService
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private function legacyCompanyKey(Employee $owner): int
+    private function companyKey(Employee $owner): ?string
     {
         $companyId = $owner->company_id;
 
-        if (is_numeric($companyId)) {
-            return (int) $companyId;
-        }
-
-        return 0;
+        return is_string($companyId) && $companyId !== '' ? $companyId : null;
     }
 
     private function deleteFolderDocumentFiles(CabinetFolder $folder): void
