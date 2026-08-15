@@ -106,10 +106,8 @@ class GenerateBankExportJobTest extends TestCase
 
         $company->forceFill([
             'metadata' => [
-                'bank' => [
-                    'iban' => 'FR7630006000011234567890189',
-                    'bic' => 'AGRIFRPP',
-                ],
+                'company_iban' => 'FR7630006000011234567890189',
+                'company_bic' => 'AGRIFRPP',
             ],
         ])->save();
 

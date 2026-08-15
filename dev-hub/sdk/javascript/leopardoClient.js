@@ -180,6 +180,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/hr-reports", options);
     },
 
+    /** Lister les sessions d'impersonation super-admin */
+    getAdminImpersonations(options = {}) {
+      return request("GET", "/admin/impersonations", options);
+    },
+
+    /** Creer une session d'impersonation (login en tant que) */
+    postAdminImpersonations(options = {}) {
+      return request("POST", "/admin/impersonations", options);
+    },
+
+    /** Terminer une session d'impersonation */
+    deleteAdminImpersonationsBySession(options = {}) {
+      return request("DELETE", "/admin/impersonations/{session}", options);
+    },
+
     /** Lister les fêtes islamiques d'une année (super-admin) */
     listIslamicCalendar(options = {}) {
       return request("GET", "/admin/islamic-calendar", options);
@@ -300,6 +315,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
     },
 
+    /** Inscriptions aux formations cross-tenant (super-admin) */
+    getAdminTrainingEnrollments(options = {}) {
+      return request("GET", "/admin/training/enrollments", options);
+    },
+
+    /** Sessions de formation cross-tenant (super-admin) */
+    getAdminTrainingSessions(options = {}) {
+      return request("GET", "/admin/training/sessions", options);
+    },
+
     /** Lister les utilisateurs plateforme (super-admin) — issue #2269 */
     getAdminUsers(options = {}) {
       return request("GET", "/admin/users", options);
@@ -313,6 +338,56 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269 */
     patchAdminUsersByUser(options = {}) {
       return request("PATCH", "/admin/users/{user}", options);
+    },
+
+    /** Endpoints webhook cross-tenant (super-admin) */
+    getAdminWebhooks(options = {}) {
+      return request("GET", "/admin/webhooks", options);
+    },
+
+    /** Creer un endpoint webhook */
+    postAdminWebhooks(options = {}) {
+      return request("POST", "/admin/webhooks", options);
+    },
+
+    /** Supprimer un endpoint webhook */
+    deleteAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("DELETE", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Detail d'un endpoint webhook */
+    getAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("GET", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Mettre a jour partiellement un endpoint webhook */
+    patchAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("PATCH", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Mettre a jour un endpoint webhook */
+    putAdminWebhooksByWebhookEndpoint(options = {}) {
+      return request("PUT", "/admin/webhooks/{webhookEndpoint}", options);
+    },
+
+    /** Livraisons webhook en echec (dead letters) */
+    getAdminWebhooksByWebhookEndpointDeadLetters(options = {}) {
+      return request("GET", "/admin/webhooks/{webhookEndpoint}/dead-letters", options);
+    },
+
+    /** Rejouer une livraison webhook en echec */
+    postAdminWebhooksByWebhookEndpointDeadLettersByDeliveryReplay(options = {}) {
+      return request("POST", "/admin/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay", options);
+    },
+
+    /** Dispatcher un evenement de test sur l'endpoint */
+    postAdminWebhooksByWebhookEndpointTest(options = {}) {
+      return request("POST", "/admin/webhooks/{webhookEndpoint}/test", options);
+    },
+
+    /** Evenements webhook disponibles */
+    getAdminWebhooksEvents(options = {}) {
+      return request("GET", "/admin/webhooks/events", options);
     },
 
     /** Couts IA par periode */
@@ -490,6 +565,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/auth/change-password", options);
     },
 
+    /** Demander un lien de reinitialisation de mot de passe */
+    postAuthForgotPassword(options = {}) {
+      return request("POST", "/auth/forgot-password", options);
+    },
+
     /** Connexion Google OAuth */
     postAuthGoogleToken(options = {}) {
       return request("POST", "/auth/google/token", options);
@@ -528,6 +608,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Inscription employe */
     postAuthRegister(options = {}) {
       return request("POST", "/auth/register", options);
+    },
+
+    /** Reinitialiser le mot de passe avec le jeton recu par email */
+    postAuthResetPassword(options = {}) {
+      return request("POST", "/auth/reset-password", options);
     },
 
     /** Lister les exports bancaires du tenant (pagine) */
@@ -875,6 +960,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/demo-users", options);
     },
 
+    /** Organigramme d'un departement (arbre department/teams/managers/employees, scope tenant) */
+    getDepartmentsByDepartmentHierarchy(options = {}) {
+      return request("GET", "/departments/{department}/hierarchy", options);
+    },
+
     /** Supprimer le token FCM du device courant au logout */
     deleteDeviceTokens(options = {}) {
       return request("DELETE", "/device-tokens", options);
@@ -1026,13 +1116,13 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Rejeter une note de frais */
-    postExpenseClaimsByExpenseClaimReject(options = {}) {
-      return request("POST", "/expense-claims/{expenseClaim}/reject", options);
+    putExpenseClaimsByExpenseClaimReject(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/reject", options);
     },
 
     /** Soumettre une note de frais */
-    postExpenseClaimsByExpenseClaimSubmit(options = {}) {
-      return request("POST", "/expense-claims/{expenseClaim}/submit", options);
+    putExpenseClaimsByExpenseClaimSubmit(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/submit", options);
     },
 
     /** Exporter les absences */
@@ -2585,13 +2675,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/trial/signup", options);
     },
 
-    /** Statut de provisioning du guided trial */
-    getTrialStatus(options = {}) {
-      return request("GET", "/trial/status", options);
-    },
-
     /** Statut du provisioning d'un essai guidé (polling) */
-    getTrialStatus2(options = {}) {
+    getTrialStatus(options = {}) {
       return request("GET", "/trial/status", options);
     },
 

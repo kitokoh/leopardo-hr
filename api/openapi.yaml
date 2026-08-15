@@ -152,29 +152,6 @@ paths:
                   data:
                     type: array
 
-  /trial/status:
-    get:
-      tags: ["Trial"]
-      summary: "Statut de provisioning du guided trial"
-      description: "Statut de l'essai guide + jeton de provisioning (issue #2437)."
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Statut du trial"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      status: { type: string }
-                      provisioning_token: { type: string, nullable: true }
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /health:
     get:
       tags: ["Health"]
@@ -394,7 +371,7 @@ paths:
       tags: ["User"]
       summary: "Profil de l'utilisateur connecté"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Profil utilisateur"
@@ -406,7 +383,7 @@ paths:
       tags: ["Payroll"]
       summary: "Liste des campagnes de paie (tenant)"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Campagnes de paie paginées"
@@ -414,7 +391,7 @@ paths:
       tags: ["Payroll"]
       summary: "Crée une campagne de paie"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "201":
           description: "Campagne créée"
@@ -426,7 +403,7 @@ paths:
       tags: ["Platform"]
       summary: "Métriques plateforme (super-admin)"
       security:
-        - bearerAuth: []
+        - BearerAuth: []
       responses:
         "200":
           description: "Métriques"

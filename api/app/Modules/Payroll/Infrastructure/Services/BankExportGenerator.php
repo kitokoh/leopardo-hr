@@ -21,7 +21,10 @@ use Throwable;
  */
 class BankExportGenerator
 {
-    public function generate(PayrollRun $run, string $format): string
+    /**
+     * @param  array<string, mixed>  $companyBank
+     */
+    public function generate(PayrollRun $run, string $format, array $companyBank = []): string
     {
         $slips = $run->paySlips()
             ->with('employee:id,first_name,last_name,iban,bank_account')
@@ -36,7 +39,7 @@ class BankExportGenerator
         $currency = CountryDefaults::for($run->country_code)['currency'];
 
         return match ($format) {
-            'sepa_xml' => $this->generateSepaExport($run, $slips, $currency),
+            'sepa_xml' => $this->generateSepaExport($run, $slips, $currency, $companyBank),
             'ccp_dz' => $this->generateCcpAlgerie($run, $slips),
             'cpa_dz' => $this->generateCpaBna($run, $slips, 'CPA'),
             'bna_dz' => $this->generateCpaBna($run, $slips, 'BNA'),
@@ -76,23 +79,26 @@ class BankExportGenerator
         $metadata = $company->metadata ?? [];
 
         return [
-            'iban' => is_string($metadata['bank']['iban'] ?? null) && $metadata['bank']['iban'] !== ''
-                ? $metadata['bank']['iban']
+            'iban' => is_string($metadata['company_iban'] ?? null) && $metadata['company_iban'] !== ''
+                ? $metadata['company_iban']
                 : null,
-            'bic' => is_string($metadata['bank']['bic'] ?? null) && $metadata['bank']['bic'] !== ''
-                ? $metadata['bank']['bic']
+            'bic' => is_string($metadata['company_bic'] ?? null) && $metadata['company_bic'] !== ''
+                ? $metadata['company_bic']
                 : null,
         ];
     }
 
-    /** @param Collection<int, PaySlip> $slips */
-    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency): string
+    /**
+     * @param  Collection<int, PaySlip>  $slips
+     * @param  array<string, mixed>  $companyBank
+     */
+    private function generateSepaExport(PayrollRun $run, Collection $slips, string $currency, array $companyBank = []): string
     {
-        $bank = $this->companyBankDetails($run);
+        $bank = $companyBank !== [] ? $companyBank : $this->companyBankDetails($run);
 
         if (! is_string($bank['iban']) || ! is_string($bank['bic'])) {
             throw new \RuntimeException(
-                'Configuration bancaire entreprise manquante (metadata.bank.iban / metadata.bank.bic) — export SEPA impossible.'
+                'Configuration bancaire entreprise manquante (metadata.company_iban / metadata.company_bic) — export SEPA impossible.'
             );
         }
 
@@ -134,7 +140,7 @@ class BankExportGenerator
     ): string {
         if (! is_string($companyIban) || ! is_string($companyBic) || $companyIban === '' || $companyBic === '') {
             throw new \RuntimeException(
-                'Configuration bancaire entreprise manquante (metadata.bank.iban / metadata.bank.bic) — export SEPA impossible.'
+                'Configuration bancaire entreprise manquante (metadata.company_iban / metadata.company_bic) — export SEPA impossible.'
             );
         }
 
