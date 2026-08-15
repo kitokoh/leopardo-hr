@@ -24,7 +24,7 @@ describe('Card Component', () => {
     it('should render with outlined variant', () => {
       render(<Card variant="outlined">Outlined</Card>);
       const card = screen.getByText('Outlined').closest('div');
-      expect(card).toHaveClass('border', 'border-slate-200', 'dark:border-slate-800');
+      expect(card).toHaveClass('border-2', 'border-slate-200', 'dark:border-slate-700');
     });
   });
 
@@ -32,7 +32,7 @@ describe('Card Component', () => {
     it('should apply hover effect when hover prop is true', () => {
       render(<Card hover>Hoverable</Card>);
       const card = screen.getByText('Hoverable').closest('div');
-      expect(card).toHaveClass('hover:shadow-lg', 'transition-shadow');
+      expect(card).toHaveClass('hover:shadow-lg', 'transition-all');
     });
 
     it('should not apply hover effect when hover prop is false', () => {

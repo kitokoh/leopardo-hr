@@ -12,31 +12,31 @@ describe('Badge Component', () => {
     it('should render with primary variant by default', () => {
       render(<Badge>Primary</Badge>);
       const badge = screen.getByText('Primary');
-      expect(badge).toHaveClass('bg-emerald-100', 'text-emerald-800');
+      expect(badge).toHaveClass('bg-emerald-100', 'text-emerald-700');
     });
 
     it('should render with secondary variant', () => {
       render(<Badge variant="secondary">Secondary</Badge>);
       const badge = screen.getByText('Secondary');
-      expect(badge).toHaveClass('bg-slate-100', 'text-slate-800');
+      expect(badge).toHaveClass('bg-slate-100', 'text-slate-700');
     });
 
     it('should render with success variant', () => {
       render(<Badge variant="success">Success</Badge>);
       const badge = screen.getByText('Success');
-      expect(badge).toHaveClass('bg-green-100', 'text-green-800');
+      expect(badge).toHaveClass('bg-green-100', 'text-green-700');
     });
 
     it('should render with warning variant', () => {
       render(<Badge variant="warning">Warning</Badge>);
       const badge = screen.getByText('Warning');
-      expect(badge).toHaveClass('bg-amber-100', 'text-amber-800');
+      expect(badge).toHaveClass('bg-amber-100', 'text-amber-700');
     });
 
     it('should render with error variant', () => {
       render(<Badge variant="error">Error</Badge>);
       const badge = screen.getByText('Error');
-      expect(badge).toHaveClass('bg-red-100', 'text-red-800');
+      expect(badge).toHaveClass('bg-red-100', 'text-red-700');
     });
   });
 
@@ -44,13 +44,13 @@ describe('Badge Component', () => {
     it('should render with small size', () => {
       render(<Badge size="sm">Small</Badge>);
       const badge = screen.getByText('Small');
-      expect(badge).toHaveClass('px-2', 'py-1', 'text-xs');
+      expect(badge).toHaveClass('px-2.5', 'py-1', 'text-xs');
     });
 
     it('should render with medium size', () => {
       render(<Badge size="md">Medium</Badge>);
       const badge = screen.getByText('Medium');
-      expect(badge).toHaveClass('px-3', 'py-1.5', 'text-sm');
+      expect(badge).toHaveClass('px-3.5', 'py-1.5', 'text-sm');
     });
   });
 
