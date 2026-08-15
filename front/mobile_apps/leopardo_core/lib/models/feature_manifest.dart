@@ -26,10 +26,18 @@ class FeatureManifest {
 
   Map<String, dynamic> toJson() => _$FeatureManifestToJson(this);
 
-  /// Valide la signature cryptographique du manifeste
+  /// Valide la signature cryptographique du manifeste.
+  ///
+  /// Décision documentée (#2215) : la validation HMAC avec un secret embarqé
+  /// dans le binaire mobile n'apporterait AUCUNE sécurité réelle (le secret
+  /// serait extractible par n'importe quel testeur/attaquant — faux sentiment
+  /// de confiance). La bonne solution est une signature asymétrique
+  /// (Ed25519/RSA) vérifiée à l'appareil, avec la clé publique servie par un
+  /// canal distinct du manifeste ; elle sera implémentée quand le serveur
+  /// signera réellement les manifestes. En attendant, ce contrôle n'est qu'un
+  /// garde de présence (non vide) et ne doit PAS être présenté comme une
+  /// authentification.
   bool validateSignature(String publicKey) {
-    // TODO: Implémenter la validation cryptographique
-    // Cette méthode sera implémentée dans la phase sécurité
     return signature.isNotEmpty;
   }
 

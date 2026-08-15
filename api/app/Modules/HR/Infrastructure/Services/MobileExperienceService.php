@@ -158,7 +158,11 @@ class MobileExperienceService
                 title: 'Gestion des roles',
                 description: 'Nommer un RH, comptable, marketing ou chef de departement.',
                 domain: 'rh',
-                route: '/company/team-roles',
+                // L app manager n a pas de route /company/team-roles : l ecran
+                // Equipe (TeamScreen) porte la gestion des roles (Nommer RH +
+                // edition des roles dans la fiche employe) — route alignee sur
+                // le routeur reel pour eviter le crash context.push() (#2212).
+                route: '/team',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -190,7 +194,10 @@ class MobileExperienceService
                 title: 'Tableau de bord admin',
                 description: 'Vue complete avec comptage des roles et activite.',
                 domain: 'rh',
-                route: '/dashboard/admin',
+                // Aucun ecran admin n existe dans l app manager : module servi
+                // SANS route (isActive=false cote client -> carte non cliquable,
+                // aucun crash GoRouter) (#2212).
+                route: null,
                 status: 'active',
             );
         } elseif ($employee->isHr()) {
@@ -200,7 +207,9 @@ class MobileExperienceService
                 title: 'Employes',
                 description: 'Ajouter, modifier et suivre les employes de l entreprise.',
                 domain: 'rh',
-                route: '/hr/employees',
+                // L app RH n a pas de route /hr/employees : TeamScreen (/team)
+                // liste, cree et archive les employes — route alignee (#2212).
+                route: '/team',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -208,7 +217,9 @@ class MobileExperienceService
                 title: 'Vue equipe',
                 description: 'Apercu rapide de toute l equipe et des contrats.',
                 domain: 'rh',
-                route: '/hr/team-overview',
+                // Pas de route /hr/team-overview : OrganigrammeScreen (/organigramme)
+                // donne la vue d ensemble de l equipe — route alignee (#2212).
+                route: '/organigramme',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -224,7 +235,9 @@ class MobileExperienceService
                 title: 'Invitations',
                 description: 'Envoyer et suivre les invitations employes.',
                 domain: 'rh',
-                route: '/invitations',
+                // Pas de route /invitations dediee : TeamScreen (/team) porte
+                // l onglet « Invitations » — route alignee (#2212).
+                route: '/team',
                 status: 'active',
             );
         }
@@ -323,7 +336,7 @@ class MobileExperienceService
                     description: 'Nommer RH, comptable, marketing.',
                     domain: 'rh',
                     icon: 'manage_accounts',
-                    route: '/company/team-roles',
+                    route: '/team',
                 ),
                 $this->quickAction(
                     key: 'tasks',
@@ -343,7 +356,9 @@ class MobileExperienceService
                     description: 'Creer un nouvel employe.',
                     domain: 'rh',
                     icon: 'person_add',
-                    route: '/hr/employees/new',
+                    // Pas de route /hr/employees/new : TeamScreen (/team) porte
+                    // le bouton « Ajouter » (formulaire classique + QR) (#2212).
+                    route: '/team',
                 ),
                 $this->quickAction(
                     key: 'team_overview',
@@ -351,7 +366,8 @@ class MobileExperienceService
                     description: 'Vue rapide de l equipe.',
                     domain: 'rh',
                     icon: 'groups',
-                    route: '/hr/team-overview',
+                    // Pas de route /hr/team-overview : OrganigrammeScreen (#2212).
+                    route: '/organigramme',
                 ),
                 $this->quickAction(
                     key: 'absences',

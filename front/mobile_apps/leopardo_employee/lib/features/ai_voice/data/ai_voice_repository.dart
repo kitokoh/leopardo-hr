@@ -9,6 +9,15 @@ class AiVoiceRepository {
   AiVoiceRepository(this.apiClient);
 
   Future<String> transcribe(Uint8List audioBytes, String filename) async {
+    if (audioBytes.isEmpty) {
+      // Garde #2213 : ne jamais envoyer un payload audio vide à l'API —
+      // le placeholder Voice IA n'a pas le droit de consommer /ai/voice/transcribe.
+      throw ArgumentError.value(
+        audioBytes,
+        'audioBytes',
+        'Un payload audio vide ne doit jamais être envoyé à /ai/voice/transcribe (#2213).',
+      );
+    }
     final formData = FormData.fromMap({
       'audio': MultipartFile.fromBytes(audioBytes, filename: filename),
     });

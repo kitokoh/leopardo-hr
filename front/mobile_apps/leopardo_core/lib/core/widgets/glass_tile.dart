@@ -7,7 +7,10 @@ class GlassTile extends StatelessWidget {
   final String title;
   final String? subtitle;
   final IconData icon;
-  final VoidCallback onTap;
+
+  /// Optionnel : une tuile sans callback (null) n'est pas cliquable — on ne
+  /// passe plus de noop `() {}` factice (nettoyage #2215).
+  final VoidCallback? onTap;
   final Color? iconColor;
 
   const GlassTile({
@@ -15,7 +18,7 @@ class GlassTile extends StatelessWidget {
     required this.title,
     this.subtitle,
     required this.icon,
-    required this.onTap,
+    this.onTap,
     this.iconColor,
   });
 

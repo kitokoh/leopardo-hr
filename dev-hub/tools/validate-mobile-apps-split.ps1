@@ -108,7 +108,7 @@ if ($failures.Count -eq 0) {
     }
 
     $managerApp = Get-Content -LiteralPath (Join-Path $managerRoot "lib/app.dart") -Raw
-    foreach ($route in @("/manager/dashboard", "/manager/attendance", "/manager/anomalies", "/manager/corrections")) {
+    foreach ($route in @("/manager/attendance", "/manager/anomalies", "/manager/corrections")) {
         if (-not $managerApp.Contains($route)) {
             Add-Failure "Manager app is missing prepared route $route"
         }

@@ -329,7 +329,7 @@ class _ModuleCard extends StatelessWidget {
         subtitle: module.description,
         icon: MobileExperienceIcons.forModule(module.key),
         iconColor: color,
-        onTap: module.isActive ? () => context.push(module.route!) : () {},
+        onTap: module.isActive ? () => context.push(module.route!) : null,
       ),
     );
   }
