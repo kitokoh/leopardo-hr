@@ -7842,7 +7842,7 @@ paths:
     get:
       tags: ["Payroll Engine"]
       summary: "Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"
-      description: "CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 3 %) + TOTAUX. 422 si le run n'est pas SN. RBAC manager ; 404 cross-tenant."
+      description: "CSV sénégalais : une ligne par bulletin validé (matricule IPRES, nom, prénom, catégorie general/cadre, brut, assiette T1 plafonnée 432 000 XOF, cotisations T1 5,6 %/8,4 %, assiette T2 cadres 2 160 000−432 000, cotisations T2 2,4 %/3,6 %, CSS famille 7 %) + TOTAUX. 422 si le run n'est pas SN. RBAC manager ; 404 cross-tenant."
       operationId: downloadIpresSnDeclaration
       parameters:
         - name: payrollRun
