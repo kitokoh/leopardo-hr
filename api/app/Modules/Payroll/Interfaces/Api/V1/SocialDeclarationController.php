@@ -46,12 +46,14 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnas_declaration');
 
-        $employees = $this->declarationService->activeEmployees($actor->company_id);
+        $companyId = (string) $actor->company_id;
+
+        $employees = $this->declarationService->activeEmployees($companyId);
 
         $quarterMonths = $this->declarationService->quarterMonths((string) $validated['quarter']);
 
         $payrollData = $this->declarationService->quarterPayrollData(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $validated['year'],
             $quarterMonths,
             withMonthsCount: true,
@@ -114,12 +116,12 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_declaration');
 
-        $employees = $this->declarationService->activeEmployees($actor->company_id);
+        $employees = $this->declarationService->activeEmployees((string) $actor->company_id);
 
         $quarterMonths = $this->declarationService->quarterMonths((string) $validated['quarter']);
 
         $payrollData = $this->declarationService->quarterPayrollData(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $validated['year'],
             $quarterMonths,
         );
@@ -197,10 +199,10 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.dsn_declaration');
 
-        $employees = $this->declarationService->activeEmployees($actor->company_id);
+        $employees = $this->declarationService->activeEmployees((string) $actor->company_id);
 
         $payrollData = $this->declarationService->monthPayrollData(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $validated['year'],
             (int) $validated['month'],
         );
