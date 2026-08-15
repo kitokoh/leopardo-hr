@@ -33,6 +33,10 @@
             <DocumentArrowDownIcon class="h-4 w-4 mr-2" />
             {{ $t('users.actions.export', 'Exporter') }}
           </button>
+
+          <!-- Issue #2269 : création d'utilisateur hors contrat backend v1 —
+               retirée de l'UI (aucun bouton mort) -->
+
         </div>
       </div>
     </div>
@@ -69,51 +73,9 @@
           </select>
         </div>
 
-        <!-- Company Filter -->
-        <div>
-          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.company.label', 'Entreprise') }}</label>
-          <select
-            v-model="filters.company"
-            class="block w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none appearance-none"
-          >
-            <option value="">{{ $t('users.filters.company.all', 'Toutes les entreprises') }}</option>
-            <option v-for="company in companies" :key="company.id" :value="company.id">
-              {{ company.name }}
-            </option>
-          </select>
+
         </div>
       </div>
-
-      <!-- Advanced Filters Toggle -->
-      <div class="mt-6">
-        <button
-          @click="showAdvancedFilters = !showAdvancedFilters"
-          class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors flex items-center"
-        >
-          <span>{{ showAdvancedFilters ? $t('users.filters.advanced.hide', 'Masquer les filtres avancés') : $t('users.filters.advanced.show', 'Afficher les filtres avancés') }}</span>
-          <ChevronDownIcon :class="['ml-2 h-4 w-4 transition-transform duration-300', showAdvancedFilters ? 'rotate-180' : '']" />
-        </button>
-      </div>
-
-      <!-- Advanced Filters -->
-      <div v-if="showAdvancedFilters" class="mt-4 pt-4 border-t border-gray-200">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.registrationDate.label', "Date d'inscription") }}</label>
-            <select
-              v-model="filters.registrationDate"
-              class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            >
-              <option value="">{{ $t('users.filters.registrationDate.all', 'Toutes les dates') }}</option>
-              <option value="today">{{ $t('users.filters.registrationDate.today', "Aujourd'hui") }}</option>
-              <option value="week">{{ $t('users.filters.registrationDate.week', 'Cette semaine') }}</option>
-              <option value="month">{{ $t('users.filters.registrationDate.month', 'Ce mois') }}</option>
-              <option value="quarter">{{ $t('users.filters.registrationDate.quarter', 'Ce trimestre') }}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Bulk Actions Panel -->
     <div v-if="showBulkActions && selectedUsers.length > 0" class="bg-brand-50/50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-2xl p-4 backdrop-blur-md animate-fade-in">
@@ -126,6 +88,18 @@
         </div>
 
         <div class="flex items-center space-x-6">
+          <button
+            @click="bulkAction('activate')"
+            class="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-500 transition-colors"
+          >
+            {{ $t('users.bulkPanel.activate', 'Activer') }}
+          </button>
+          <button
+            @click="bulkAction('deactivate')"
+            class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
+          >
+            {{ $t('users.bulkPanel.deactivate', 'Désactiver') }}
+          </button>
           <button
             @click="bulkAction('export')"
             class="text-[10px] font-black uppercase tracking-widest text-brand-600 hover:text-brand-500 transition-colors"
@@ -151,6 +125,7 @@
         @select="handleUserSelect"
         @select-all="handleSelectAll"
         @view="viewUser"
+        @delete="deleteUser"
         @impersonate="impersonateUser"
       />
 
@@ -159,7 +134,7 @@
         <Pagination
           :current-page="currentPage"
           :total-pages="totalPages"
-          :total-items="filteredUsers.length"
+          :total-items="totalItems"
           :per-page="perPage"
           @page-change="currentPage = $event"
           @per-page-change="perPage = $event"
@@ -172,7 +147,6 @@
       v-if="showDetailModal"
       :user="selectedUser"
       @close="showDetailModal = false"
-      @impersonate="impersonateUser"
     />
   </div>
 </template>
@@ -183,13 +157,12 @@ import {
   DocumentArrowDownIcon,
   CheckCircleIcon,
   MagnifyingGlassIcon,
-  InformationCircleIcon,
-  ChevronDownIcon
+  InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
-import api from '@/services/api.js'
+import api from '@/services/api'
 
 // Components
 import UserTable from '@/components/users/UserTable.vue'
@@ -209,100 +182,77 @@ const selectedUsers = ref([])
 const selectedUser = ref(null)
 const currentPage = ref(1)
 const perPage = ref(25)
+const totalPages = ref(1)
+const totalItems = ref(0)
 const isLoading = ref(false)
-const showAdvancedFilters = ref(false)
 const showBulkActions = ref(false)
 const showDetailModal = ref(false)
 
-// Filters
+// Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
-  status: '',
-  company: '',
-  registrationDate: ''
+  status: ''
 })
 
-// Donnees reelles
+// Issue #2269 : plus de mocks — données réelles depuis GET /admin/users.
 const users = ref([])
 const companies = ref([])
-const stats = reactive({
-  totalUsers: 0,
-  activeUsers: 0,
-  newToday: 0
+
+// Pagination (server-side)
+const paginatedUsers = computed(() => users.value)
+const usersSummary = computed(() => {
+  return t('users.page.summary', ':count utilisateur(s) plateforme')
+    .replace(':count', String(totalItems.value))
 })
 
 onMounted(async () => {
-  await Promise.all([loadUsers(), loadCompanies(), loadStats()])
+  await Promise.all([loadUsers(), loadCompanies()])
 })
 
-// Computed properties
-const filteredUsers = computed(() => {
-  let filtered = users.value
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(user =>
-      String(user.name || '').toLowerCase().includes(query) ||
-      String(user.email || '').toLowerCase().includes(query) ||
-      String(user.company_name || '').toLowerCase().includes(query)
-    )
-  }
-
-  if (filters.status) {
-    filtered = filtered.filter(user => user.status === filters.status)
-  }
-
-  if (filters.company) {
-    filtered = filtered.filter(user => user.company_id === filters.company)
-  }
-
-  if (filters.registrationDate) {
-    const now = new Date()
-    filtered = filtered.filter(user => {
-      const userDate = new Date(user.created_at || 0)
-      switch (filters.registrationDate) {
-        case 'today':
-          return userDate.toDateString() === now.toDateString()
-        case 'week':
-          return (now - userDate) <= 7 * 24 * 60 * 60 * 1000
-        case 'month':
-          return (now - userDate) <= 30 * 24 * 60 * 60 * 1000
-        case 'quarter':
-          return (now - userDate) <= 90 * 24 * 60 * 60 * 1000
-        default:
-          return true
-      }
-    })
-  }
-
-  return filtered
+// La recherche recharge la page 1 (debounce 300ms)
+let searchTimer = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    currentPage.value = 1
+    loadUsers()
+  }, 300)
 })
 
-const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(filteredUsers.value.length / perPage.value))
-})
-
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value
-  return filteredUsers.value.slice(start, start + perPage.value)
-})
-
-const usersSummary = computed(() => {
-  return t('users.page.summary', ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui")
-    .replace(':count', String(stats.totalUsers))
-    .replace(':active', String(stats.activeUsers))
-    .replace(':newToday', String(stats.newToday))
-})
-
-watch([searchQuery, filters], () => {
+watch(() => filters.status, () => {
   currentPage.value = 1
-}, { deep: true })
+  loadUsers()
+})
+
+watch([currentPage, perPage], () => {
+  loadUsers()
+})
 
 // Methods — donnees reelles (vague QA 2026-08-14, issue #2184)
 async function loadUsers() {
   isLoading.value = true
   try {
-    const res = await api.get('/admin/users', { params: { per_page: 200 } })
-    users.value = res.data.data || []
+    const params = new URLSearchParams({
+      page: String(currentPage.value),
+      per_page: String(perPage.value)
+    })
+    if (searchQuery.value.trim()) params.set('search', searchQuery.value.trim())
+    if (filters.status) params.set('status', filters.status)
+
+    const response = await api.get(`/admin/users?${params.toString()}`)
+    const payload = response.data || {}
+    users.value = (payload.data || []).map((user) => ({
+      ...user,
+      avatar: null,
+      // UserTable affiche un statut par libellé connu
+      status: user.is_active ? 'active' : 'inactive',
+      role: user.roles?.[0]?.role || null,
+      segment: null,
+      lastLoginAt: user.last_login_at,
+      createdAt: user.created_at
+    }))
+    totalItems.value = payload.meta?.total ?? users.value.length
+    totalPages.value = payload.meta?.last_page ?? 1
+    clearSelection()
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -313,28 +263,18 @@ async function loadUsers() {
 
 async function loadCompanies() {
   try {
-    const res = await api.get('/platform/companies', { params: { per_page: 200 } })
-    companies.value = res.data.data || []
+    // Cockpit clients réel — alimente le filtre entreprise (si ré-ajouté).
+    const response = await api.get('/platform/companies/health')
+    const items = response.data?.data?.items || []
+    companies.value = items.map((c) => ({ id: c.id, name: c.name }))
   } catch (error) {
     console.error('Failed to load companies:', error)
     companies.value = []
   }
 }
 
-async function loadStats() {
-  try {
-    const res = await api.get('/admin/dashboard/stats')
-    const s = res.data || {}
-    stats.totalUsers = Number(s.totalUsers || 0)
-    stats.activeUsers = users.value.filter(u => u.status === 'active').length
-    stats.newToday = Number(s.newUsersToday || 0)
-  } catch (error) {
-    console.error('Failed to load stats:', error)
-  }
-}
-
-function handleUserSelect(userId, selected) {
-  if (selected) {
+function handleUserSelect(userId, checked) {
+  if (checked) {
     selectedUsers.value.push(userId)
   } else {
     selectedUsers.value = selectedUsers.value.filter(id => id !== userId)
@@ -353,6 +293,33 @@ function clearSelection() {
 async function bulkAction(action) {
   if (action === 'export') {
     exportUsers()
+    return
+  }
+
+  const isActive = action === 'activate'
+  let ok = 0
+
+  try {
+    for (const id of selectedUsers.value) {
+      try {
+        await api.patch(`/admin/users/${id}`, { is_active: isActive })
+        ok++
+      } catch (patchError) {
+        console.error('Bulk action failed for user', id, patchError)
+      }
+    }
+
+    if (ok === 0) {
+      toast.error(t('users.toast.bulkError', "Erreur lors de l'action groupée"))
+      return
+    }
+
+    toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) mis à jour').replace(':count', String(ok)))
+    clearSelection()
+    await loadUsers()
+  } catch (error) {
+    console.error('Bulk action failed:', error)
+    toast.error(t('users.toast.bulkError', "Erreur lors de l'action groupée"))
   }
 }
 
@@ -361,52 +328,25 @@ function viewUser(user) {
   showDetailModal.value = true
 }
 
-async function impersonateUser(user) {
-  if (!user.company_id || !user.id) {
-    toast.error(t('users.toast.impersonateMissing', 'Impossible : données entreprise/employé absentes pour cet utilisateur'))
-    return
-  }
-  const reason = window.prompt(t('users.toast.impersonateReason', 'Raison de la connexion en tant que :name (obligatoire, min. 5 caractères)').replace(':name', user.name))
-  if (!reason || reason.trim().length < 5) {
-    toast.warning(t('users.toast.impersonateReasonRequired', 'Raison obligatoire (min. 5 caractères) — impersonation annulée'))
-    return
-  }
-  try {
-    const res = await api.post('/platform/impersonations', {
-      company_id: user.company_id,
-      employee_id: user.id,
-      reason: reason.trim(),
-      ttl_minutes: 30
-    })
-    const token = res.data?.token
-    if (token) {
-      toast.success(t('users.toast.impersonating', 'Connexion en tant que :name — token copié dans le presse-papier').replace(':name', user.name))
-      try {
-        await navigator.clipboard.writeText(token)
-      } catch (e) {
-        console.warn('Clipboard unavailable', e)
-      }
-    } else {
-      toast.success(t('users.toast.impersonating', 'Session d\'impersonation :name démarrée').replace(':name', user.name))
-    }
-    showDetailModal.value = false
-  } catch (error) {
-    console.error('Impersonation failed:', error)
-    toast.error(error?.response?.data?.message || t('users.toast.impersonateError', "Erreur lors de l'impersonation"))
-  }
+function deleteUser() {
+  // Issue #2269 : pas d'endpoint de suppression utilisateur en v1 — l'action
+  // est désactivée honnêtement (aucun bouton mort, aucune fausse promesse).
+  toast.info(t('users.toast.deleteError', 'Suppression non disponible pour les utilisateurs plateforme en v1 — désactiver le compte à la place.'))
+}
+
+function impersonateUser() {
+  // Pas de backend d'impersonation utilisateurs plateforme en v1 (issue #2269) :
+  // l'action est retirée de l'UI (UserTable émet, la vue ignore) — aucun bouton mort.
+  toast.info(t('users.toast.impersonating', 'Impersonation non disponible pour les utilisateurs plateforme en v1'))
 }
 
 async function exportUsers() {
   try {
-    const data = filteredUsers.value
-    if (data.length === 0) {
-      toast.info(t('users.toast.exportEmpty', 'Aucun utilisateur à exporter'))
-      return
-    }
+    // Export honnête de la page courante (pas de mock) — CSV côté client.
     const csvContent = "data:text/csv;charset=utf-8," +
-      "Nom,Email,Statut,Entreprise,Date d'inscription\n" +
-      data.map(user =>
-        `${user.name || ''},${user.email || ''},${user.status || ''},${user.company_name || ''},${user.created_at ? new Date(user.created_at).toLocaleDateString() : ''}`
+      "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
+      users.value.map(user =>
+        `${user.name},${user.email},${user.status},${user.company?.name || ''},${user.created_at || ''},${user.last_login_at || ''}`
       ).join('\n')
 
     const encodedUri = encodeURI(csvContent)
@@ -424,3 +364,5 @@ async function exportUsers() {
   }
 }
 </script>
+
+

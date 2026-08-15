@@ -366,5 +366,11 @@ Route::prefix('v1')->group(function (): void {
             ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
         Route::put('/rate-validation/{table}/{id}/reject', [RateValidationAdminController::class, 'reject'])
             ->whereIn('table', ['tax_slabs', 'social_contributions'])->whereNumber('id');
+
+        // Issue #2269 — gestion des utilisateurs plateforme (contrat SPA
+        // UsersView/UserDetailView réels, plus de mocks).
+        Route::get('/users', [PlatformUsersController::class, 'index']);
+        Route::get('/users/{user}', [PlatformUsersController::class, 'show'])->whereNumber('user');
+        Route::patch('/users/{user}', [PlatformUsersController::class, 'update'])->whereNumber('user');
     });
 });

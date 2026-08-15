@@ -2042,6 +2042,123 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /admin/users:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Lister les utilisateurs plateforme (super-admin) — issue #2269"
+      description: "Liste paginée des utilisateurs public.users avec entreprise liée. Recherche nom/email, filtre statut, tri allowlisté."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: per_page
+          required: false
+          schema: { type: integer, default: 25, maximum: 100 }
+        - in: query
+          name: search
+          required: false
+          schema: { type: string }
+        - in: query
+          name: status
+          required: false
+          schema:
+            type: string
+            enum: [active, disabled, pending, suspended]
+        - in: query
+          name: sort_by
+          required: false
+          schema:
+            type: string
+            enum: [created_at, last_login_at, email, last_name]
+        - in: query
+          name: sort_dir
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        "200":
+          description: "Liste paginée d'utilisateurs plateforme"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PlatformUser"
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+  /admin/users/{user}:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Détail d'un utilisateur plateforme (super-admin) — issue #2269"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Détail utilisateur avec rôles et entreprise liée"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+    patch:
+      tags: ["Platform Admin"]
+      summary: "Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269"
+      description: "is_active=false bloque le login (status=disabled). 422 si l'utilisateur cible partage l'email du super-admin courant."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [is_active]
+              properties:
+                is_active: { type: boolean }
+      responses:
+        "200":
+          description: "Utilisateur mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401": { $ref: "#/components/responses/Error401" }
+        "403": { $ref: "#/components/responses/Error403" }
+        "404": { $ref: "#/components/responses/Error404" }
+        "422": { $ref: "#/components/responses/Validation422" }
   /admin/platform/marketing/oauth-config:
     get:
       tags: ["Platform"]
@@ -17727,6 +17844,42 @@ components:
         cap: { type: number, nullable: true, minimum: 0 }
         effective_from: { type: string, format: date }
         effective_to: { type: string, format: date, nullable: true }
+    PlatformUser:
+      type: object
+      description: "Utilisateur plateforme (public.users) — contrat super-admin (issue #2269)"
+      properties:
+        id: { type: integer }
+        first_name: { type: string, nullable: true }
+        last_name: { type: string, nullable: true }
+        name: { type: string, nullable: true }
+        email: { type: string }
+        phone: { type: string, nullable: true }
+        status: { type: string, enum: [active, disabled, pending, suspended] }
+        is_active: { type: boolean }
+        preferred_language: { type: string }
+        last_login_at: { type: string, format: date-time, nullable: true }
+        failed_login_attempts: { type: integer }
+        locked_until: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
+        company:
+          type: object
+          nullable: true
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string, nullable: true }
+            link_status: { type: string }
+            employee_id: { type: integer }
+        roles:
+          type: array
+          description: "Présent sur GET /admin/users/{id} uniquement"
+          items:
+            type: object
+            properties:
+              role: { type: string, nullable: true }
+              manager_role: { type: string, nullable: true }
+              company_id: { type: string, format: uuid, nullable: true }
+              link_status: { type: string }
     TaxSlab:
       type: object
       properties:
