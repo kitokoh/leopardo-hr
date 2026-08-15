@@ -10,6 +10,8 @@
 - **fix(api): trial/signup — réponse uniforme anti-énumération (Closes #3945).** L'endpoint public répondait 409 EMAIL_ALREADY_REGISTERED pour un email existant → énumération de comptes. Signup renvoie désormais la même réponse 200 (log serveur) ; la détection doublon vit à l'étape verify (OTP = preuve de possession de la boîte mail) ; pas de double provisioning en guided-trial.
 
 - **fix(admin): CompaniesView — pays via la source canonique useSupportedCountries (Closes #3940).** La liste de 21 pays en dur (fallback du provisioning) est remplacée par le composable `useSupportedCountries` (GET /supported-countries, registre #1867) enrichi des champs riches (label/language/currency/timezone) — une seule source de vérité des pays dans l'app.
+
+- **fix(admin): toasts temps réel dédupliqués (Closes #3936).** Plus de toast à chaque connexion/reconnexion WebSocket (l'état reste visible dans l'UI) ; une alerte critique `system.alert` ne déclenche plus qu'un seul toast (via addNotification), au lieu de toast.error + toast.warning dupliqués.
 - **fix(ci): launch-observability-smoke — cancel-in-progress: true (Closes #3968).** Le cron */30 (48 runs/jour) s'empilait sur une queue saturée (#3545) : un run en retard remplace désormais le précédent.
 - **fix(edge): HEALTHCHECK Dockerfile.publish aligné sur /api/v1/edge/health (Closes #3960).** La probe sondait encore `/api/edge/health` (pré-#3592) → 404 → conteneur « unhealthy » permanent et deadlock `depends_on: service_healthy` futur. Le docker-compose.yml était déjà corrigé (#3908) ; le Dockerfile standalone restait sur l'ancien chemin.
 
