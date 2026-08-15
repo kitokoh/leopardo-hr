@@ -101,6 +101,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '@/services/api'
+import { useToast } from 'vue-toastification'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
@@ -257,21 +258,27 @@ async function fetchData() {
   }
 }
 
+const toast = useToast();
+
 async function approveRequest(id) {
   try {
     await api.put(`/v1/absences/${id}/approve`)
+    toast.success('Congé approuvé.')
     await fetchData()
   } catch (err) {
     console.warn('Failed to approve leave request', err)
+    toast.error(`Échec de l'approbation : ${err?.response?.data?.message || err.message}`)
   }
 }
 
 async function rejectRequest(id, comment) {
   try {
     await api.put(`/v1/absences/${id}/reject`, { rejected_reason: comment })
+    toast.success('Congé rejeté.')
     await fetchData()
   } catch (err) {
     console.warn('Failed to reject leave request', err)
+    toast.error(`Échec du rejet : ${err?.response?.data?.message || err.message}`)
   }
 }
 

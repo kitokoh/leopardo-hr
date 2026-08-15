@@ -7,6 +7,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_employee/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class MonthlySummaryScreen extends ConsumerStatefulWidget {
   const MonthlySummaryScreen({super.key});
@@ -34,7 +35,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
   Widget build(BuildContext context) {
     final async = ref.watch(monthlySummaryProvider(_month));
     final employee = ref.watch(authProvider).employee;
-    final monthLabel = DateFormat.yMMMM('fr_FR').format(_month);
+    final monthLabel = DateFormat.yMMMM(deviceIntlDateLocale).format(_month);
 
     return MobilePage(
       appBar: MobileTopBar(
@@ -238,7 +239,7 @@ class _MonthlySummaryBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currency = NumberFormat.currency(
-      locale: 'fr_FR',
+      locale: deviceIntlDateLocale,
       symbol: summary.currency,
       decimalDigits: 2,
     );
@@ -493,7 +494,7 @@ class _BreakdownRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final day = DateFormat('EEE d', 'fr_FR').format(entry.date);
+    final day = DateFormat('EEE d', deviceIntlDateLocale).format(entry.date);
 
     return MobilePanel(
       margin: const EdgeInsets.only(bottom: 8),

@@ -100,7 +100,7 @@ function SuccessInner() {
 
   const isSandbox = searchParams.get('sandbox') === '1';
   const sessionId = searchParams.get('session_id') || '';
-  const plan = searchParams.get('plan') || 'Operations';
+  const plan = searchParams.get('plan') || 'Business';
   const billing = searchParams.get('billing') || 'monthly';
   const email = searchParams.get('email') || '';
   const company = searchParams.get('company') || '';

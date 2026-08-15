@@ -12,7 +12,7 @@ function showsCurrency(price: string) {
 }
 
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
-  if (!showsCurrency(price)) return '/contact?type=enterprise'
+  if (!showsCurrency(price)) return '/contact?topic=enterprise'
   const billing = isAnnual ? 'annual' : 'monthly'
   // #2907 : mappe le NOM de plan affiché vers la clé canonique du checkout.
   // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :

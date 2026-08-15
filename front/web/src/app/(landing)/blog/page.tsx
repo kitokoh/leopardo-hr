@@ -176,16 +176,21 @@ export default function BlogPage() {
   const posts = getBlogPosts(locale);
   useScrollReveal();
 
-  const blogCards = posts.map((post) => ({
-    slug: post.slug,
-    title: post.title,
-    excerpt: post.excerpt,
-    image: post.image,
-    date: post.date,
-    author: post.author,
-    category: post.category,
-    readingTime: post.readingTime,
-  }));
+  const blogCards = [...posts]
+    // #3263 : les posts archivés (2023-2024) ne doivent pas passer pour du
+    // contenu frais — ils sont triés en fin de liste et badgeés « Archivé ».
+    .sort((a, b) => Number(Boolean(a.archived)) - Number(Boolean(b.archived)))
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      image: post.image,
+      date: post.date,
+      author: post.author,
+      category: post.category,
+      readingTime: post.readingTime,
+      archived: post.archived,
+    }));
 
   const categories = Array.from(new Set(posts.map((post) => post.category)));
 

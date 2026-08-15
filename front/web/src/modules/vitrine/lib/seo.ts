@@ -155,9 +155,26 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
   },
 
+  integrations: {
+    title: "Integrations & Connecteurs | Leopardo RH",
+    description:
+      "Connecteurs comptables et API Leopardo RH : Sage, QuickBooks, API publique, webhooks. Intégrez la paie et les RH à votre stack.",
+    keywords: [
+      "integrations RH",
+      "connecteurs comptables",
+      "API paie",
+      "webhooks RH",
+      "Sage QuickBooks",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
+      // Issue #3487 : la locale n'est pas résolue ici (metadata statique du
+      // module) — le layout /pricing lit ?lang= et appelle t(locale, ...).
+      // Ce fallback FR ne sert que si la clé i18n manque.
       t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
@@ -350,7 +367,7 @@ export const pageMetadata = {
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Free, Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",

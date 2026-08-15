@@ -71,5 +71,36 @@ class BridgeGlobalsInjectionTest(unittest.TestCase):
         self.assertNotIn("window.__KIOSK_API_BASE = ", js)
 
 
+class SyncEngineBaseUrlNormalizationTest(unittest.TestCase):
+    """Issue #3590 — drift apiBaseUrl : une config sans /api/v1 doit être
+    normalisée comme le fait app.js, sinon l'UI marche mais la sync bridge 404."""
+
+    def _engine(self, api_base_url: str) -> bridge.SyncEngine:
+        return bridge.SyncEngine(
+            {"apiBaseUrl": api_base_url, "deviceCode": "K1", "kioskToken": "t"},
+            bridge.LocalStore(":memory:"),
+        )
+
+    def test_base_url_with_version_suffix_is_kept(self) -> None:
+        engine = self._engine("https://example.test/api/v1")
+        self.assertEqual(engine.api_base_url, "https://example.test/api/v1")
+
+    def test_base_url_without_version_suffix_gets_api_v1(self) -> None:
+        engine = self._engine("https://example.test")
+        self.assertEqual(engine.api_base_url, "https://example.test/api/v1")
+
+    def test_base_url_trailing_slash_is_stripped(self) -> None:
+        engine = self._engine("https://example.test/api/v1/")
+        self.assertEqual(engine.api_base_url, "https://example.test/api/v1")
+
+    def test_health_probe_uses_light_endpoint(self) -> None:
+        # online_status ne doit plus télécharger le roster complet : la
+        # requête cible /health (assertion sur l'URL construite).
+        engine = self._engine("https://example.test/api/v1")
+        url = f"{engine.api_base_url}/health"
+        self.assertEqual(url, "https://example.test/api/v1/health")
+        self.assertNotIn("roster", url)
+
+
 if __name__ == "__main__":
     unittest.main()

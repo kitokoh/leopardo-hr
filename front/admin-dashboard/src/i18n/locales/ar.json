@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "إدارة المستخدمين",
-      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم"
+      "summary": ":count مستخدم"
     },
     "actions": {
       "bulk": "إجراءات (:count)",

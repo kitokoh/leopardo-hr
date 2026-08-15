@@ -67,6 +67,16 @@ readonly class AuthService
             }
 
             if (! $employee) {
+                // #2652 : le search_path peut être resté pointé sur un schéma
+                // fantôme (lookup périmé) — le réinitialiser sur la valeur par
+                // défaut AVANT le fallback, sinon la requête lève une
+                // QueryException et le login dégrade en 401 au lieu de
+                // retrouver l'employé dans le schéma partagé.
+                $defaultPath = (string) config('database.connections.pgsql.search_path', 'shared_tenants,public');
+                DB::statement('SET search_path TO '.$this->formatSearchPath(
+                    array_map('trim', explode(',', $defaultPath))
+                ));
+
                 /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->with('company')
@@ -95,11 +105,25 @@ readonly class AuthService
                 $this->setTenantSearchPath($employeeSchema);
             }
 
-            $lockedUntil = $employee->getAttributes()['locked_until'] ?? null;
+            // #2973 : getAttributes() renvoie la valeur BRUTE (string) — le
+            // instanceof \DateTimeInterface ne se déclenchait jamais depuis
+            // #2838 → le verrouillage de compte était silencieusement désactivé.
+            // Parse robuste → Carbon (type-safe pour isFuture()/AccountLockedException).
+            $lockedRaw = $employee->getAttributes()['locked_until'] ?? null;
+            $lockedUntil = null;
+            if (is_string($lockedRaw) && $lockedRaw !== '') {
+                try {
+                    $lockedUntil = \Illuminate\Support\Carbon::parse($lockedRaw);
+                } catch (\Throwable) {
+                    $lockedUntil = null;
+                }
+            } elseif ($lockedRaw instanceof \DateTimeInterface) {
+                $lockedUntil = \Illuminate\Support\Carbon::instance($lockedRaw);
+            }
             if ($this->supportsLoginLocking($employee)
-                && $lockedUntil instanceof \DateTimeInterface
-                && \Illuminate\Support\Carbon::parse($lockedUntil)->isFuture()) {
-                throw new AccountLockedException(\Illuminate\Support\Carbon::parse($lockedUntil));
+                && $lockedUntil instanceof \Illuminate\Support\Carbon
+                && $lockedUntil->isFuture()) {
+                throw new AccountLockedException($lockedUntil);
             }
 
             // QA 2026-08-15 (#2652) : un `password_hash` null/absent ne doit
@@ -110,7 +134,16 @@ readonly class AuthService
                 throw new InvalidCredentialsException;
             }
 
-            if (! Hash::check($password, $employee->password_hash)) {
+            // #2973 : un hash legacy malformé (non-bcrypt) fait lever
+            // Hash::check (RuntimeException → 500). Tout échec de vérification
+            // est traité comme identifiants invalides (401), jamais un 500.
+            try {
+                $passwordMatches = Hash::check($password, $employee->password_hash);
+            } catch (\Throwable) {
+                $passwordMatches = false;
+            }
+
+            if (! $passwordMatches) {
                 if ($this->supportsLoginLocking($employee)) {
                     $employee->increment('failed_login_attempts');
                     if ($employee->failed_login_attempts >= 5) {

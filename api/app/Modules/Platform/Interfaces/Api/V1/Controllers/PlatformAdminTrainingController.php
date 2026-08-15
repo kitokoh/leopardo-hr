@@ -33,7 +33,7 @@ class PlatformAdminTrainingController extends Controller
             ->leftJoin('companies', 'companies.id', '=', 'training_courses.company_id')
             ->select('training_courses.*', 'companies.name as company_name')
             ->orderBy('training_courses.title')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingCourseResource::collection($courses)->response();
     }
@@ -50,7 +50,7 @@ class PlatformAdminTrainingController extends Controller
             ->leftJoin('companies', 'companies.id', '=', 'training_sessions.company_id')
             ->select('training_sessions.*', 'companies.name as company_name')
             ->orderByDesc('training_sessions.start_date')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingSessionResource::collection($sessions)->response();
     }
@@ -62,7 +62,7 @@ class PlatformAdminTrainingController extends Controller
     public function indexEnrollments(Request $request): JsonResponse
     {
         $query = TrainingEnrollment::query()
-            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status'])
+            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status', 'session.course:id,title'])
             ->leftJoin('companies', 'companies.id', '=', 'training_enrollments.company_id')
             ->select('training_enrollments.*', 'companies.name as company_name');
 
@@ -71,7 +71,7 @@ class PlatformAdminTrainingController extends Controller
         }
 
         return TrainingEnrollmentResource::collection(
-            $query->orderByDesc('training_enrollments.created_at')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('training_enrollments.created_at')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 }

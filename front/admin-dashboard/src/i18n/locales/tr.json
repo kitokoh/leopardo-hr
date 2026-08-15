@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "Kullanici Yonetimi",
-      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
+      "summary": ":count kullanici"
     },
     "actions": {
       "bulk": "Islemler (:count)",

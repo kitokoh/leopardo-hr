@@ -638,6 +638,9 @@ class PayrollCalculator
      * Utilisé par calculateSlip() (bulletin standard) et par
      * calculateRegularizationRun() (valeur corrigée du différentiel).
      *
+     *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{
      *     gross_salary: float,
      *     total_deductions: float,
@@ -650,9 +653,6 @@ class PayrollCalculator
      *     has_attendance_data: bool,
      *     lines: list<array<string, mixed>>,
      * }
-     *
-     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
-     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      */
     private function computeSlipValues(
         PayrollRun $run,

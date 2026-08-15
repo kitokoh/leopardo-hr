@@ -1,13 +1,15 @@
+import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+
 interface JsonLdProps {
   data: Record<string, unknown>;
 }
 
-import { SITE_URL } from '@/lib/site-url';
+// Issue #1775 : https://gestionemployer-backend.vercel.app appartient à une entreprise de
+// construction US sans rapport — ne jamais l'utiliser dans les données
+// structurées. On utilise l'URL réelle de la marque (configurable).
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 
-// Issue #1775 : le domaine Vercel « emprunté » ne doit jamais apparaître dans
-// les données structurées. L'URL de marque est centralisée dans
-// src/lib/site-url.ts (env NEXT_PUBLIC_SITE_URL prioritaire, fallback
-// www.leopardo-rh.com — docs/DEPLOYMENT_PRODUCTION.md).
 export function JsonLd({ data }: JsonLdProps) {
   return (
     <script
@@ -54,7 +56,7 @@ export function ArticleJsonLd({
           name: 'Leopardo RH',
           logo: {
             '@type': 'ImageObject',
-            url: `${SITE_URL}/icon.svg`,
+            url: `${SITE_URL}/logo.png`,
           },
         },
       }}
@@ -63,6 +65,24 @@ export function ArticleJsonLd({
 }
 
 export function OrganizationJsonLd() {
+  const offers = getPricingPlans('fr').map((plan) => {
+    const price = Number(plan.price);
+    const baseOffer = {
+      '@type': 'Offer' as const,
+      name: plan.name,
+      description: plan.description,
+      priceCurrency: 'EUR',
+      url: `${SITE_URL}/pricing`,
+    };
+
+    return Number.isFinite(price)
+      ? { ...baseOffer, price }
+      : {
+          ...baseOffer,
+          description: `${plan.description} Tarif sur devis.`,
+        };
+  });
+
   return (
     <JsonLd
       data={{
@@ -74,13 +94,7 @@ export function OrganizationJsonLd() {
         description:
           'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
         availableLanguage: ['fr', 'en', 'ar', 'tr'],
-        offers: {
-          '@type': 'AggregateOffer',
-          priceCurrency: 'EUR',
-          lowPrice: '0',
-          highPrice: '99',
-          offerCount: '3',
-        },
+        offers,
         creator: {
           '@type': 'Organization',
           name: 'Leopardo RH',

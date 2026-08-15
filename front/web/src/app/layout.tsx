@@ -73,6 +73,15 @@ export const metadata: Metadata = {
     // global — chaque page porte le sien (sinon toutes les pages sans
     // metadata propre émettaient canonical = homepage).
     canonical: siteUrl,
+    // QA 2026-08-15 (#3417) : la homepage (client component, pas de metadata
+    // propre) doit émettre les alternates hreflang comme le sitemap.xml —
+    // aligné sur la logique de generateSEOMetadata (seo.ts).
+    languages: {
+      fr: siteUrl,
+      en: `${siteUrl}/?lang=en`,
+      tr: `${siteUrl}/?lang=tr`,
+      ar: `${siteUrl}/?lang=ar`,
+    },
   },
 };
 

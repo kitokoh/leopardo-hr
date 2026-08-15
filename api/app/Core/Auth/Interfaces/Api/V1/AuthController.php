@@ -202,9 +202,12 @@ class AuthController extends Controller
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',
                 'email' => $googleUser->getEmail(),
                 'password_hash' => Hash::make(str()->random(24)),
-                'role' => 'ordinary',
-                'status' => 'active',
             ]);
+
+            // Sensitive fields set explicitly (not mass-assignable, #3597)
+            $employee->role = 'ordinary';
+            $employee->status = 'active';
+            $employee->save();
         }
 
         // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)

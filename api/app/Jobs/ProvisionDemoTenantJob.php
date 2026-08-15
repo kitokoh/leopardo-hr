@@ -35,12 +35,6 @@ class ProvisionDemoTenantJob implements ShouldQueue
         try {
             $result = $provisioner->execute($this->email, $this->companyName, $this->country);
 
-            // #2629 : le magic link (démo) est réellement émis — la méthode
-            // issueDemoAccess() envoie l'email avec un lien à usage unique
-            // (72 h) géré par DemoLoginController. Best-effort : un échec
-            // d'envoi ne fait pas échouer le provisioning.
-            $this->issueDemoAccess($result['manager']);
-
             // #2437 : le statut du provisioning est persisté pour que le
             // prospect puisse poller GET /trial/status (login_url = le portail
             // client ; le magic link email est un bonus, jamais le seul canal).
@@ -58,10 +52,8 @@ class ProvisionDemoTenantJob implements ShouldQueue
             }
 
             // Issue #2620 : magic link envoyé au manager après provisioning
-            // réussi (token 72 h à usage unique, hash stocké sur extra_data).
-            if (isset($result['manager']) && $result['manager'] instanceof \App\Core\Auth\Domain\Models\Employee) {
-                $this->issueDemoAccess($result['manager']);
-            }
+            // QA #3002 : issueDemoAccess() déjà appelé plus haut (l.42) — le 2e
+            // appel révoquait le hash du 1er token (2 emails, 1 lien mort).
 
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 

@@ -18,7 +18,7 @@
       :rows="webhooks"
       :loading="loading"
       :error="error"
-      :search-keys="['url']"
+      :search-keys="['url', 'company_name']"
       search-placeholder="Rechercher un webhook..."
       default-sort="created_at"
       default-sort-dir="desc"
@@ -45,13 +45,8 @@
           {{ value ? 'Actif' : 'Inactif' }}
         </span>
       </template>
-      <template #cell-failure_count="{ value }">
-        <span :class="value > 0 ? 'text-red-600' : 'text-gray-400'" class="text-sm font-medium">
-          {{ value || 0 }}
-        </span>
-      </template>
       <template #cell-last_triggered_at="{ value }">
-        <span v-if="value" class="text-xs text-gray-500">{{ formatDate(value) }}</span>
+        <span v-if="value" class="text-xs text-gray-500">{{ new Date(value).toLocaleString() }}</span>
         <span v-else class="text-xs text-gray-400">Jamais</span>
       </template>
       <template #row-actions="{ row }">
@@ -110,6 +105,18 @@
         </form>
       </div>
     </div>
+
+    <!-- QA #3494 : dialog de suppression (remplace confirm() natif) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Supprimer ce webhook ?</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Cette action est irréversible. Les livraisons futures seront interrompues.</p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">Annuler</button>
+          <button class="btn-danger" @click="confirmDeleteWebhook">Supprimer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -120,8 +127,7 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
-import { toIntlLocale } from '@/i18n/index.js'
-import { useLocaleStore } from '@/stores/locale'
+import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const loading = ref(false)
 const saving = ref(false)
@@ -138,8 +144,7 @@ const columns = [
   { key: 'url', label: 'URL', sortable: true },
   { key: 'events', label: 'Evenements' },
   { key: 'active', label: 'Statut', sortable: true },
-  { key: 'failure_count', label: 'Echecs', sortable: true },
-  { key: 'last_triggered_at', label: 'Dernier envoi', sortable: true },
+  { key: 'last_triggered_at', label: 'Dernier declenchement', sortable: true },
 ]
 
 const availableEvents = [
@@ -148,14 +153,6 @@ const availableEvents = [
   'payroll.validated', 'contract.created',
   'applicant.hired', 'training.completed',
 ]
-
-
-
-const localeStore = useLocaleStore()
-
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString(toIntlLocale(localeStore.current), { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
 
 async function fetchData() {
   loading.value = true
@@ -220,8 +217,19 @@ async function testWebhook(id) {
   }
 }
 
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
 async function deleteWebhook(id) {
-  if (!confirm('Supprimer ce webhook ?')) return
+  // QA #3494 : confirm() natif (non i18n, bloque le rendu) → dialog in-app.
+  deleteTarget.value = id
+  deleteOpen.value = true
+}
+
+async function confirmDeleteWebhook() {
+  const id = deleteTarget.value
+  if (!id) return
+  deleteOpen.value = false
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()

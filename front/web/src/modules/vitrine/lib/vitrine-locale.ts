@@ -280,7 +280,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: "Mobile-First Company OS pour gerer votre personnel sur le terrain, en bureau et a distance. Employee, Manager et Platform Admin disponibles sur mobile.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
+        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'A propos', 'Videos'] },
         { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute'] },
         { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
@@ -424,7 +424,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS for managing your workforce in the field, at the office and remotely. Employee, Manager and Platform Admin available on mobile.',
       sections: [
-        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows'] },
+        { title: 'Product', links: ['Features', 'Pricing', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'About', 'Videos'] },
         { title: 'Resources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Community'] },
         { title: 'Mobile Apps', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Legal', links: ['Privacy', 'Terms', 'Legal notice', 'GDPR'] },
@@ -456,7 +456,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'IK Platformu',
     },
     hero: {
-      badge: 'Leo IA 2.0 hazir',
+      badge: 'Saha ekipleri icin mobil oncelikli isletim sistemi',
       badgeNew: 'Yeni',
       titleTop: 'Sirketinizi',
       titleBottom: 'tek uygulamadan yonetin.',
@@ -568,7 +568,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar'] },
         { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
         { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
@@ -600,7 +600,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       brandTagline: 'منصة الموارد البشرية',
     },
     hero: {
-      badge: 'Leo IA 2.0 متاح الان',
+      badge: 'نظام تشغيل متحرك أولاً لفرق الميدان',
       badgeNew: 'جديد',
       titleTop: 'نظام تشغيل الشركة',
       titleBottom: 'المتحرك بالجوال.',
@@ -615,8 +615,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       stats: [
         { value: 3, suffix: '', label: 'تطبيقات جوال' },
         { value: 2, suffix: '', label: 'تطبيقات ويب' },
-        { value: 14, suffix: 'ي', label: 'تجربة مجانية' },
-        { value: 7, suffix: 'ي', label: 'تشغيل ميداني' },
+        { value: 14, suffix: 'يومًا', label: 'تجربة مجانية' },
+        { value: 7, suffix: 'أيام', label: 'تشغيل ميداني' },
       ],
     },
     heroQuickTrial: {
@@ -712,7 +712,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات'] },
         { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
         { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
@@ -728,6 +728,35 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       },
     },
   },
+}
+
+// #3246 — preuve sociale honnête. Aucun client payant à ce jour
+// (PILOTAGE.md « Clients payants | 0 ») : tout contenu « client » de la
+// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard,
+// TestimonialHighlight et MiniCaseStudies pour marquer explicitement les
+// citations/cas comme des exemples (voir TESTIMONIALS_ARE_DEMO).
+// Régression 2026-08-15 : le merge #3561 a écrasé ce bloc (conflit de
+// rebase) → rétabli tel quel.
+export const ILLUSTRATIVE_EXAMPLE_LABEL: Record<AppLocale, string> = {
+  fr: 'Exemple illustratif',
+  en: 'Illustrative example',
+  tr: 'Temsili örnek',
+  ar: 'مثال توضيحي',
+}
+
+export const ILLUSTRATIVE_EXAMPLE_SUFFIX: Record<AppLocale, string> = {
+  fr: '(exemple)',
+  en: '(example)',
+  tr: '(örnek)',
+  ar: '(مثال)',
+}
+
+export function getIllustrativeExampleLabel(locale: AppLocale): string {
+  return ILLUSTRATIVE_EXAMPLE_LABEL[locale] ?? ILLUSTRATIVE_EXAMPLE_LABEL.fr
+}
+
+export function getIllustrativeExampleSuffix(locale: AppLocale): string {
+  return ILLUSTRATIVE_EXAMPLE_SUFFIX[locale] ?? ILLUSTRATIVE_EXAMPLE_SUFFIX.fr
 }
 
 export function getCurrentLocale(): AppLocale {

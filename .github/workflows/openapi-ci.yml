@@ -32,7 +32,7 @@ env:
 
 concurrency:
   group: openapi-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lint-openapi:
@@ -71,4 +71,6 @@ jobs:
       - name: Compare routes vs openapi.yaml
         # Toute route NON documentée ET NON allowlistée fait échouer le job.
         # Gaps connus : dev-hub/tools/openapi-coverage-allowlist.txt.
-        run: python3 dev-hub/tools/check-openapi-route-coverage.py
+        # --strict-staleness (#3596) : une entrée allowlistée devenue
+        # documentée doit être purgée (anti-régression remédiation #1473).
+        run: python3 dev-hub/tools/check-openapi-route-coverage.py --strict-staleness
