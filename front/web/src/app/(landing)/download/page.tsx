@@ -67,7 +67,7 @@ const copy: Record<AppLocale, {
       { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez a travailler sans internet. Les pointages sont stockes localement et synchronises automatiquement au retour du reseau.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Supervision multi-sites', description: "Surveillez plusieurs sites depuis un seul poste. Alertes en temps reel pour les anomalies d'acces." },
       { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les données biometriques restent sur le terminal, seuls les hash d'identification transitent." },
-      { icon: <Zap className="w-6 h-6" />, title: 'Installation rapide', description: "Installateur MSI silencieux. Deploiement GPO/SCCM possible pour les grandes organisations." },
+      { icon: <Zap className="w-6 h-6" />, title: 'Installation rapide', description: "Installateur MSI silencieux. Déploiement GPO/SCCM possible pour les grandes organisations." },
       { icon: <HardDrive className="w-6 h-6" />, title: 'Logs et audit', description: "Journal complet des operations. Export CSV pour conformité RGPD et audit interne." },
     ],
     requirements: [
@@ -218,7 +218,7 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',
+        description: 'Pointage mobile, demandes de congé, fiche de paie et notifications RH pour les collaborateurs.',
         androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
@@ -400,7 +400,7 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Synchronisation ZKTeco, mode hors-ligne et supervision site.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les équipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/download#mobile-apps'},
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employés sur iPhone.', href: '/download#mobile-apps'},
   ],
   en: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco sync, offline mode and site supervision.', href: '/contact?topic=download-windows' },
