@@ -11,6 +11,7 @@ desormais les seules applications mobiles actives.
 - `leopardo_manager/` : app mobile manager/RH. Elle conserve le perimetre complet du mobile actuel et prepare les routes des futurs ecrans manager.
 - `leopardo_hr/` : app mobile RH dediee, issue d'un split de `leopardo_manager`. Integree a la matrice CI canonique `mobile-distribute.yml` pour le deploiement Firebase (voir `CHANGELOG.md`).
 - `leopardo_platform_admin/` : app mobile super-admin plateforme. Elle consomme uniquement les API `/platform/*` pour piloter les tenants, creer une entreprise cliente, traiter les demandes clients et suivre les metriques globales.
+- `leopardo_marketing/` : app mobile marketing/communication (vitrine). Intégrée à melos et à la CI (QA 2026-08-15, #2661) ; son écran stats est encore un mock — chantier ouvert.
 
 ## Regles de contribution
 
@@ -24,7 +25,7 @@ desormais les seules applications mobiles actives.
 
 ## CI et distribution
 
-- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr` et `leopardo_platform_admin`.
+- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin` et `leopardo_marketing`.
 - `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) compile et distribue les APK Android de lancement vers Firebase App Distribution.
 
 ## Garde-fous Plan 26
@@ -55,6 +56,13 @@ Il verifie notamment :
 - absence de handlers UI vides sur les apps mobiles.
 
 Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis consommer cette API depuis les apps concernees. Si une evolution ne concerne qu'un persona, la placer uniquement dans l'app correspondante (`leopardo_employee`, `leopardo_manager` ou `leopardo_hr`).
+
+> **Chantier documenté (QA 2026-08-15, #2661)** : 13 fichiers repositories sont
+> byte-identiques entre employee/manager/hr (ai_chat, ai_voice, cabinet,
+> contracts, evaluations, expenses, notifications, training,
+> vehicle_position, biometric_enrollment…). Ils devront migrer vers
+> `leopardo_core` pour éviter la dérive de copies (ex. mojibake corrigé
+> séparément dans chaque app).
 
 ## Identites store
 

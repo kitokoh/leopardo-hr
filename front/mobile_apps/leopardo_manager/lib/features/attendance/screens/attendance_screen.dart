@@ -547,7 +547,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                           day.isAbsent
                               ? 'Absent'
                               : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
-                                  '${day.lateMinutes > 0 ? ' Â· +${day.lateMinutes} min' : ''}',
+                                  '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
                         ),
                       ],
