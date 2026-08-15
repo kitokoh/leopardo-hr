@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use Illuminate\Support\Facades\DB;
 use Tests\Support\CreatesMvpSchema;
@@ -218,6 +219,68 @@ class PublicCareerControllerTest extends TestCase
             'source' => 'linkedin',
             'status' => 'new',
         ]);
+    }
+
+    public function test_it_cannot_apply_twice_with_same_email(): void
+    {
+        $company = Company::factory()->create();
+        $job = JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Support Engineer',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $payload = [
+            'first_name' => 'Nadia',
+            'last_name' => 'Candidate',
+            'email' => 'nadia@example.com',
+            'source' => 'linkedin',
+        ];
+
+        // Issue #3860 — la première candidature passe (201), la seconde
+        // (même email, même poste) est rejetée en 409 ALREADY_APPLIED :
+        // double-clic, spam ou retry ne créent plus de doublons.
+        $first = $this->postJson("/api/v1/public/careers/{$company->slug}/jobs/{$job->id}/apply", $payload);
+        $first->assertCreated();
+
+        $second = $this->postJson("/api/v1/public/careers/{$company->slug}/jobs/{$job->id}/apply", $payload);
+        $second->assertStatus(409)
+            ->assertJson(['error' => 'ALREADY_APPLIED']);
+
+        $this->assertSame(1, Applicant::query()
+            ->where('company_id', $company->id)
+            ->where('job_posting_id', $job->id)
+            ->where('email', 'nadia@example.com')
+            ->count());
+    }
+
+    public function test_it_can_apply_twice_to_different_jobs(): void
+    {
+        $company = Company::factory()->create();
+        $jobA = JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Job A',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+        $jobB = JobPosting::create([
+            'company_id' => $company->id,
+            'title' => 'Job B',
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $payload = [
+            'first_name' => 'Nadia',
+            'last_name' => 'Candidate',
+            'email' => 'nadia@example.com',
+        ];
+
+        // Issue #3860 — l'unicité est par poste : le même candidat peut
+        // postuler à deux offres différentes.
+        $this->postJson("/api/v1/public/careers/{$company->slug}/jobs/{$jobA->id}/apply", $payload)->assertCreated();
+        $this->postJson("/api/v1/public/careers/{$company->slug}/jobs/{$jobB->id}/apply", $payload)->assertCreated();
     }
 
     public function test_it_cannot_apply_to_a_draft_job(): void
