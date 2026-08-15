@@ -58,6 +58,9 @@ class LeaveBalancesRoleGuardTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * @return array{0: Company, 1: Employee, 2: Employee}
+     */
     private function makeContext(): array
     {
         /** @var Company $company */
