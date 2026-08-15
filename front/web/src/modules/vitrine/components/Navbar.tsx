@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { withLocaleHref } from '../lib/locale-href'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
@@ -205,7 +206,7 @@ const navByLocale: Record<string, NavEntry[]> = {
   ],
 }
 
-function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => void }) {
+function DropdownMenu({ entry, onClose, search }: { entry: NavDropdown; onClose: () => void; search: string }) {
   const pathname = usePathname()
   return (
     <motion.div
@@ -219,7 +220,7 @@ function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => v
         {entry.items.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
+            href={withLocaleHref(item.href, search)}
             onClick={onClose}
             aria-current={pathname === item.href ? 'page' : undefined}
             className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-transparent dark:hover:bg-slate-800/80 transition-colors group"
@@ -248,6 +249,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const entries = filterNavEntries(navByLocale[locale] ?? navByLocale.fr)
+  const search = searchParams.toString()
 
   const handleLocaleChange = (nextLocale: typeof locale) => {
     setLocale(nextLocale)
@@ -314,14 +316,14 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                   </button>
                   <AnimatePresence>
                     {openDropdown === entry.label && (
-                      <DropdownMenu entry={entry} onClose={() => setOpenDropdown(null)} />
+                      <DropdownMenu entry={entry} onClose={() => setOpenDropdown(null)} search={search} />
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
                 <Link
                   key={entry.href}
-                  href={entry.href}
+                  href={withLocaleHref(entry.href, search)}
                   aria-current={pathname === entry.href ? 'page' : undefined}
                   className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80 ${
                     entry.href === '/download'
@@ -381,6 +383,8 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               className="lg:hidden p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={copy.nav.menuLabel}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu-panel"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -391,11 +395,13 @@ export function Navbar({ isDark, onToggleDark }: Props) {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-menu-panel"
+            role="region"
+            aria-label={copy.nav.menuLabel}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            aria-label="Menu mobile"
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">
@@ -439,7 +445,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                           {entry.items.map((item) => (
                             <Link
                               key={item.href}
-                              href={item.href}
+                              href={withLocaleHref(item.href, search)}
                               onClick={() => setMobileOpen(false)}
                               className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                             >
@@ -462,7 +468,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                     transition={{ delay: index * 0.05 }}
                   >
                     <Link
-                      href={entry.href}
+                      href={withLocaleHref(entry.href, search)}
                       className={`block px-4 py-3 text-lg font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
                         entry.href === '/download'
                           ? 'text-emerald-600 dark:text-emerald-400 flex items-center gap-2'
