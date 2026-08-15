@@ -98,8 +98,8 @@ readonly class AuthService
             $lockedUntil = $employee->getAttributes()['locked_until'] ?? null;
             if ($this->supportsLoginLocking($employee)
                 && $lockedUntil instanceof \DateTimeInterface
-                && $lockedUntil->isFuture()) {
-                throw new AccountLockedException($lockedUntil);
+                && \Illuminate\Support\Carbon::parse($lockedUntil)->isFuture()) {
+                throw new AccountLockedException(\Illuminate\Support\Carbon::parse($lockedUntil));
             }
 
             // QA 2026-08-15 (#2652) : un `password_hash` null/absent ne doit

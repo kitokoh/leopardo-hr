@@ -859,6 +859,73 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+
+  /auth/forgot-password:
+    post:
+      tags: ["Auth"]
+      summary: "Demander un lien de reinitialisation de mot de passe"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: "Lien de reinitialisation envoye si le compte existe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /auth/reset-password:
+    post:
+      tags: ["Auth"]
+      summary: "Reinitialiser le mot de passe avec le jeton recu par email"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, token, password, password_confirmation]
+              properties:
+                email:
+                  type: string
+                  format: email
+                token:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                password_confirmation:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: "Mot de passe reinitialise"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /auth/profile:
     patch:
       tags: ["Auth"]
@@ -2305,6 +2372,386 @@ paths:
                     type: array
         "401":
           $ref: "#/components/responses/Error401"
+
+  /admin/impersonations:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les sessions d'impersonation super-admin"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des sessions d'impersonation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Platform"]
+      summary: "Creer une session d'impersonation (login en tant que)"
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [employee_id, reason]
+              properties:
+                employee_id:
+                  type: integer
+                reason:
+                  type: string
+                expires_minutes:
+                  type: integer
+                  default: 30
+      responses:
+        "201":
+          description: "Session creee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /admin/impersonations/{session}:
+    delete:
+      tags: ["Platform"]
+      summary: "Terminer une session d'impersonation"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: session
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Session terminee"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/training/sessions:
+    get:
+      tags: ["Platform"]
+      summary: "Sessions de formation cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des sessions"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/training/enrollments:
+    get:
+      tags: ["Platform"]
+      summary: "Inscriptions aux formations cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des inscriptions"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/webhooks:
+    get:
+      tags: ["Platform"]
+      summary: "Endpoints webhook cross-tenant (super-admin)"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des endpoints webhook"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Platform"]
+      summary: "Creer un endpoint webhook"
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events]
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                secret:
+                  type: string
+      responses:
+        "201":
+          description: "Endpoint cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /admin/webhooks/events:
+    get:
+      tags: ["Platform"]
+      summary: "Evenements webhook disponibles"
+      security:
+        - SuperAdminBearerAuth: []
+      responses:
+        "200":
+          description: "Liste des evenements"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /admin/webhooks/{webhookEndpoint}:
+    get:
+      tags: ["Platform"]
+      summary: "Detail d'un endpoint webhook"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Endpoint"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["Platform"]
+      summary: "Mettre a jour un endpoint webhook"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                is_active:
+                  type: boolean
+      responses:
+        "200":
+          description: "Endpoint mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["Platform"]
+      summary: "Mettre a jour partiellement un endpoint webhook"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  format: uri
+                events:
+                  type: array
+                  items:
+                    type: string
+                is_active:
+                  type: boolean
+      responses:
+        "200":
+          description: "Endpoint mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Platform"]
+      summary: "Supprimer un endpoint webhook"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Endpoint supprime"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/webhooks/{webhookEndpoint}/test:
+    post:
+      tags: ["Platform"]
+      summary: "Dispatcher un evenement de test sur l'endpoint"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Evenement de test dispatche"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/webhooks/{webhookEndpoint}/dead-letters:
+    get:
+      tags: ["Platform"]
+      summary: "Livraisons webhook en echec (dead letters)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Liste des livraisons en echec"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /admin/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay:
+    post:
+      tags: ["Platform"]
+      summary: "Rejouer une livraison webhook en echec"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - in: path
+          name: webhookEndpoint
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: delivery
+          required: true
+          schema:
+            type: integer
+      responses:
+        "202":
+          description: "Livraison re-queuee"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /admin/hr-reports:
     get:
@@ -4964,6 +5411,33 @@ paths:
                     example: "All notifications marked as read"
         "401":
           $ref: "#/components/responses/Error401"
+
+  /departments/{department}/hierarchy:
+    get:
+      tags: ["HR"]
+      summary: "Organigramme d'un departement (arbre department/teams/managers/employees, scope tenant)"
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Arbre hierarchique du departement"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
 
   /notifications/{notification}/read:
     put:
@@ -10869,7 +11343,7 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /expense-claims/{expenseClaim}/submit:
-    post:
+    put:
       tags: ["Expenses"]
       summary: "Soumettre une note de frais"
       parameters:
@@ -10901,7 +11375,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /expense-claims/{expenseClaim}/reject:
-    post:
+    put:
       tags: ["Expenses"]
       summary: "Rejeter une note de frais"
       parameters:

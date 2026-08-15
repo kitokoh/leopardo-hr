@@ -67,7 +67,7 @@ This matrix maps the current API route surfaces to the roles allowed by the rout
 | Audit logs `/audit-logs*` | R | R sensitive HR | - | R finance events | - | - | Logs are sensitive; future expansion should add explicit policy tests. |
 | Approval workflows `/approval-*`, `/approvals*` | RW | RW | approve scoped | approve finance | approve team | requester only | Approval decisions are FK-isolated via request/workflow parent. |
 | Billing `/billing*` | RW | - | - | RW | - | - | `BillingControllerTest` covers tenant isolation and employee denial. |
-| Onboarding setup `/onboarding-setup*` | RW | RW | - | - | - | - | Distinct from public invitation and `/onboarding/checklist`. |
+| Onboarding setup `/onboarding-setup*` | RW | RW | R/W self onboarding | R/W self onboarding | R/W self onboarding | R/W self onboarding | T118 : tout employé authentifié du tenant complète son onboarding (checklist/progress/complete/skip) — plus de 403 `api.manager` pour un non-manager (décision 2026-08-15, `api/routes/modules/billing.php`). Distinct de l'invitation publique et de `/onboarding/checklist`. |
 | Feature flag matrix `/feature-flags/matrix` | R only tenant view | R only tenant view | R only tenant view | R only tenant view | R only tenant view | R only tenant view | Matrix writes must remain platform-owned; `FeatureFlagControllerTest` guards tenant writes. |
 | Dashboard `/dashboard/*` | R | R | R scoped | R finance | R team | self where exposed | Keep aggregates tenant-scoped. |
 | Exports `/export/employees`, `/export/attendance` | R | R | R scoped | R finance | R team | - | Exports trigger sensitive data audit logs where HR data is included. |

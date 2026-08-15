@@ -233,8 +233,10 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
+                    // Offre canonique 30 jours (spec #2909, vitrine #2972) :
+                    // la réponse doit refléter le provisioning réel (#3012).
                     'days' => 30,
-                    'ends_at' => now()->addDays(14)->toIso8601String(),
+                    'ends_at' => now()->addDays(30)->toIso8601String(),
                 ],
                 'next_steps' => [
                     'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',

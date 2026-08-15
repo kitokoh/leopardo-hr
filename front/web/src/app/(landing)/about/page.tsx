@@ -130,9 +130,8 @@ export default function AboutPage() {
                 pendant des années, il a décidé de créer une plateforme qui changerait tout.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-                Aujourd&apos;hui, Leopardo aide plus de 50 000 utilisateurs dans 15 pays à gérer leurs employés, leur paie
-                et leurs documents. Nous sommes fiers d&apos;avoir une satisfaction client de 98% et un taux de rétention
-                de 95%.
+                Aujourd&apos;hui, Leopardo accompagne des équipes RH en Afrique francophone et en Europe sur la paie,
+                les congés et les documents employés, avec une exigence forte de sécurité et de conformité.
               </p>
               <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
                 Notre mission est simple: rendre la gestion RH accessible à tous, peu importe la taille de votre
@@ -296,6 +295,10 @@ export default function AboutPage() {
               </motion.div>
             ))}
           </div>
+
+          <p className="mt-8 text-center text-slate-400 dark:text-slate-500 text-xs">
+            Chiffres de démonstration — données fictives à titre d&apos;illustration.
+          </p>
         </div>
       </section>
 
@@ -338,7 +341,7 @@ export default function AboutPage() {
       {/* CTA Section */}
       <CTASection
         headline="Prêt à Rejoindre Leopardo?"
-        subheadline="Commencez votre essai gratuit de 30 jours dès maintenant"
+        subheadline="Commencez votre essai gratuit de 14 jours dès maintenant"
         ctaPrimary={{
           text: 'Essai gratuit',
           href: '/signup',
