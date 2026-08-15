@@ -106,10 +106,10 @@ const items = [
   { id: 'subscriptions', label: 'Abonnements', description: 'Plans et facturation', icon: CreditCardIcon, route: '/subscriptions', shortcut: 'Alt+S' },
   // Routes tenant sans endpoints super-admin (#3272) : vues retirées du
   // routeur — la palette ne propose que des destinations réellement ouvrables.
-  { id: 'settings', label: 'Parametres', description: 'Compte et preferences', icon: CogIcon, route: '/settings' },
+  { id: 'settings', label: 'Paramètres', description: 'Compte et préférences', icon: CogIcon, route: '/settings' },
   { id: 'growth', label: 'Growth', description: 'Partenaires et croissance', icon: ArrowTrendingUpIcon, route: '/growth' },
-  { id: 'edge', label: 'Edge Nodes', description: 'Nœuds edge synchronises', icon: ServerIcon, route: '/edge' },
-  { id: 'globe', label: 'Globe', description: 'Presence mondiale en temps reel', icon: GlobeAltIcon, route: '/globe' },
+  { id: 'edge', label: 'Edge Nodes', description: 'Nœuds edge synchronisés', icon: ServerIcon, route: '/edge' },
+  { id: 'globe', label: 'Globe', description: 'Présence mondiale en temps réel', icon: GlobeAltIcon, route: '/globe' },
   { id: 'fleet', label: 'Flotte', description: 'Alertes flotte vehicules', icon: TruckIcon, route: '/fleet' },
   { id: 'marketing', label: 'Marketing OAuth', description: 'Configuration OAuth marketing', icon: MegaphoneIcon, route: '/marketing/oauth' },
   { id: 'support', label: 'Support', description: 'Tickets support clients', icon: LifebuoyIcon, route: '/support' },

@@ -61,10 +61,13 @@ if ! command -v sha256sum &> /dev/null; then
 fi
 
 verify_download() {
-    # $1 = nom du fichier attendu dans sha256.txt
+    # $1 = nom du fichier attendu dans le manifeste sha256.txt (JSON, #4007)
     # $2 = fichier local téléchargé
+    # Le manifeste servi par l'API est un objet JSON :
+    #   {"sha256":["<hash>  <fichier>", ...], "algorithm":"sha256"}
+    # Extraction coreutils-only : la valeur de la clé est `"<64hex>  <fichier>"`.
     local expected_hash
-    expected_hash=$(awk -v f="$1" '$2 == f { print $1 }' sha256.txt)
+    expected_hash=$(grep -oE '"[0-9a-f]{64}  [^"]*"' sha256.txt | grep -F " $1\"" | head -n1 | sed -E 's/^"([0-9a-f]{64})  .*/\1/')
     if [[ -z "$expected_hash" ]]; then
         echo "❌ $1 absent du manifeste d'intégrité servi par $CLOUD_URL." >&2
         exit 1

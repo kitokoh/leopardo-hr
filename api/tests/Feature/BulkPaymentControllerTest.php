@@ -10,6 +10,7 @@ use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Redis;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -167,4 +168,29 @@ class BulkPaymentControllerTest extends TestCase
         // Un seul job dispatché au total
         Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);
     }
+
+    public function test_bulk_pay_fails_closed_with_503_when_redis_is_unavailable(): void
+    {
+        // #3857 : FAIL-CLOSED. Redis est le coordinateur anti-doublon (claim
+        // NX du run) : s'il est indisponible, un dispatch sans claim
+        // laisserait deux requêtes concurrentes lancer deux jobs qui
+        // paieraient 2× les mêmes bulletins (mouvement d'argent). On refuse
+        // avec 503 et AUCUN job n'est dispatché.
+        Bus::fake();
+
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        $client = Mockery::mock();
+        $client->shouldReceive('set')->andThrow(new \RuntimeException('Redis connection refused'));
+        $client->shouldReceive('get')->andReturn(null);
+        Redis::shouldReceive('connection')->with('default')->andReturn($client);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertStatus(503)
+            ->assertJsonPath('error', 'BULK_PAYMENT_COORDINATOR_UNAVAILABLE');
+
+        Bus::assertNotDispatched(ProcessBulkPaymentJob::class);
+    }
 }
+

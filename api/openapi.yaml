@@ -282,64 +282,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/sha256.txt:
-    get:
-      tags: ["Health"]
-      summary: "Sommes SHA-256 des artefacts edge (public)"
-      description: "Manifeste des sommes SHA-256 (format texte) utilise par install.sh pour verifier l'integrite des telechargements (issues #3529/#3770)."
-      security: []
-      responses:
-        "200":
-          description: "Manifeste SHA-256"
-          content:
-            text/plain:
-              schema:
-                type: string
-        "404":
-          description: "Manifeste introuvable"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
-  /api/v1/edge/download/docker-compose.yml.sha256:
-    get:
-      tags: ["Health"]
-      summary: "Somme SHA-256 de docker-compose.yml edge (public)"
-      security: []
-      responses:
-        "200":
-          description: "Somme SHA-256 du fichier docker-compose.yml"
-          content:
-            text/plain:
-              schema:
-                type: string
-        "404":
-          description: "Somme introuvable"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
-  /api/v1/edge/download/Caddyfile.edge.sha256:
-    get:
-      tags: ["Health"]
-      summary: "Somme SHA-256 de Caddyfile.edge (public)"
-      security: []
-      responses:
-        "200":
-          description: "Somme SHA-256 du fichier Caddyfile.edge"
-          content:
-            text/plain:
-              schema:
-                type: string
-        "404":
-          description: "Somme introuvable"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
   /api/v1/edge/download/env-example:
     get:
       tags: ["Health"]
@@ -357,21 +299,42 @@ paths:
     get:
       tags: ["Health"]
       summary: "Empreintes SHA-256 des assets d'installation edge (public)"
-      description: "Fichier de sommes SHA-256 utilisé par install.sh pour vérifier l'intégrité des téléchargements (issue #3529)."
+      description: "Manifeste JSON des sommes SHA-256 utilisé par install.sh pour vérifier l'intégrité des téléchargements (issue #3529/#3770). Chaque entrée de `sha256` suit la convention `<hash>  <fichier>` (deux espaces)."
       security: []
       responses:
         "200":
-          description: "Sommes SHA-256 des assets"
-          content:
-            text/plain:
-              schema:
-                type: string
-        "404":
-          description: "Fichier introuvable"
+          description: "Manifeste JSON des sommes SHA-256"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                type: object
+                required: [sha256, algorithm]
+                properties:
+                  sha256:
+                    type: array
+                    description: "Lignes `<hash>  <fichier>` (format texte parsé par install.sh)"
+                    items:
+                      type: string
+                      example: "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08  install.sh"
+                  algorithm:
+                    type: string
+                    example: "sha256"
+        "503":
+          description: "Un ou plusieurs assets edge sont absents du serveur"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, missing]
+                properties:
+                  error:
+                    type: string
+                    example: "edge_assets_missing"
+                  missing:
+                    type: array
+                    items:
+                      type: string
+                    example: ["install.sh"]
 
   /api/v1/edge/download/docker-compose.yml.sha256:
     get:
@@ -2872,25 +2835,6 @@ paths:
           schema:
             type: integer
             default: 20
-      responses:
-        "200":
-          description: "Liste des cours"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /admin/training/courses:
-    get:
-      tags: ["Platform"]
-      summary: "Cours de formation cross-tenant (super-admin)"
-      security:
-        - SuperAdminBearerAuth: []
       responses:
         "200":
           description: "Liste des cours"

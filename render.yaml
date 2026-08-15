@@ -158,7 +158,7 @@ services:
     # Override default CMD to run queue:work instead of web server
     dockerCommand: >-
       php artisan queue:work redis
-      --queue=notifications,emails,pdf,payroll,default
+      --queue=notifications,emails,pdf,payroll,documents,default
       --tries=3
       --timeout=300
       --sleep=3
@@ -211,8 +211,14 @@ services:
         fromDatabase:
           name: leopardo-redis
           property: password
+      # #3907 : APP_KEY référencé depuis le web service (envVarKey) — un
+      # generateValue indépendant donnerait une clé différente → sessions/
+      # files chiffrées indéchiffrables entre services au provisionnement frais.
       - key: APP_KEY
-        sync: false  # must match web service
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: APP_KEY
       - key: QUEUE_CONNECTION
         value: redis
       - key: FIREBASE_PROJECT_ID
@@ -297,8 +303,13 @@ services:
         fromDatabase:
           name: leopardo-redis
           property: password
+      # #3907 : APP_KEY partagé avec le web service (envVarKey) — clé unique
+      # requise pour déchiffrer sessions/files (cf. worker).
       - key: APP_KEY
-        sync: false
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          envVarKey: APP_KEY
       - key: QUEUE_CONNECTION
         value: redis
       # Mail (issue #3594) : le scheduler envoie des emails synchrones (rappels,
