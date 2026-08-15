@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(mobile): Android 14 + locale platform_admin (Closes #2762, #2761).** `FOREGROUND_SERVICE_LOCATION` + `android:foregroundServiceType="location"` (crash géofencing Android 14+) ; `usesCleartextTraffic` en debug uniquement (URL dev 10.0.2.2) ; locale platform_admin résolue depuis les préférences.
 - **fix(mobile): 403 différencié — suspension (payload) vs défaut de permission (Closes #2743).** Fini le « Compte suspendu » systématique qui bloquait l'utilisateur sans explication.
 - **fix(mobile): `onUnauthorized` branché dans les 3 apps — sortie propre sur session révoquée (Closes #2737).** `handleSessionExpired()` reset l'état auth sans appel API (fini l'UI « authentifiée » fantôme ; pas de récursion via l'intercepteur 401).
 - **fix(mobile): `checkAuth()` ne supprime le token que sur 401 explicite (Closes #2736).** Une erreur réseau/timeout ne détruit plus la session au lancement (pointage hors-ligne #1290 préservé).
