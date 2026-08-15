@@ -376,6 +376,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            aria-label="Menu mobile"
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">

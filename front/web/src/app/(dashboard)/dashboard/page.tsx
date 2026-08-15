@@ -431,7 +431,7 @@ export default function DashboardPage() {
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{i18nT(locale, 'dashboard.priority_actions', 'Actions prioritaires')}</p>
           <div className="mt-4 grid gap-3 text-sm">
             <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
-            <PriorityAction label="Verifier les presences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
+            <PriorityAction label="Vérifier les présences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
           </div>
         </div>
       </section>
@@ -607,7 +607,7 @@ export default function DashboardPage() {
                 {announcementSent ? (
                   <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
-                    Message envoye a l&apos;equipe
+                    Message envoyé à l&apos;équipe
                   </div>
                 ) : (
                   <>

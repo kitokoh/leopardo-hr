@@ -155,6 +155,20 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
   },
 
+  integrations: {
+    title: "Integrations & Connecteurs | Leopardo RH",
+    description:
+      "Connecteurs comptables et API Leopardo RH : Sage, QuickBooks, API publique, webhooks. Intégrez la paie et les RH à votre stack.",
+    keywords: [
+      "integrations RH",
+      "connecteurs comptables",
+      "API paie",
+      "webhooks RH",
+      "Sage QuickBooks",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+  },
+
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:

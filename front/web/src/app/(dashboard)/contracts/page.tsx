@@ -102,7 +102,7 @@ export default function ContractsPage() {
   return (
     <ModulePageShell
       title="Contrats"
-      subtitle="Gestion des contrats employes : suivi des statuts, echeances et export PDF, branche directement sur l'API RH."
+      subtitle="Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH."
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {downloadError && (

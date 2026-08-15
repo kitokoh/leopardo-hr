@@ -86,7 +86,7 @@ export default function BillingPage() {
     new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency }).format(val || 0);
 
   const handleCancel = async () => {
-    if (!confirm('Annuler votre abonnement ? Vous perdrez l\'acces aux modules premium a la fin de la periode en cours.')) return;
+    if (!confirm('Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.')) return;
     setActionLoading('cancel');
     setError(null);
     try {
@@ -198,7 +198,7 @@ export default function BillingPage() {
                     <p className="mt-1 text-sm text-slate-500">
                       {subscription.current_period_start && subscription.current_period_end
                         ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
-                        : 'Aucune periode active'}
+                        : 'Aucune période active'}
                     </p>
                   </>
                 ) : (

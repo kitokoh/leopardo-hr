@@ -14,6 +14,9 @@
 | F7 | P1 | PHPStan Strict rouge sur main (17 erreurs #3298 : GenerateBankExportJob 3e arg ignoré, PayrollCalculator clés dupliquées merge #3128, 3 erreurs TrialWelcomeMail introduites par mon #3229, fixtures non typées, baseline counts) | issue #3298 + run local | Corrigé → branche fix/3298-phpstan-main-vert (PR ouverte) |
 | F8 | P1 | Verify trial : réponse `trial.days=30` + `ends_at=now+14j` (contradiction interne, provisioning réel 14j) | SelfServiceTrialController.php:222-225 | Couvert par session parallèle (#3218, days→14) |
 | F9 | P2 | Flux trial E2E validé localement (signup→verify→201, tenant + manager provisionnés) après fix F1 | curl local (PG14 leopardo) | ✅ |
+| F10 | P1 | Auth/PasswordResetTest (4 tests) rouge sur main : contrat #2626 non implémenté (codes machine absents, colonnes company_id/employee_id/updated_at manquantes, test pointant la classe mail dupliquée App\Mail) | run Feature local + ciblé | Corrigé → PR #3625 (9/9 verts) |
+| F11 | P2 | AuthService::login — search_path corrompu par lookup périmé → fallback employé en échec (401 au lieu de recovery) | test stale lookup + debug | Durci (fallback SET) dans PR #3625 ; test edge-case `recovers_via_schema_scan` résiduel pré-existant |
+| F12 | P3 | Logs de test pollués par des `DBG handle entered / DBG slips=9` (debug laissé dans un test payroll) | run suite Feature | Ouvert |
 
 ## Vérifications runtime effectuées (locale, PG16 + bootstrap CI)
 

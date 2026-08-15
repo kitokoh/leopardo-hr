@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, useScrollReveal } from '@/modules/vitrine';
 import { CTASection } from '@/modules/vitrine';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,7 +77,7 @@ const faqItems: FaqItem[] = [
 ];
 
 export default function FaqPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -92,7 +93,7 @@ export default function FaqPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
       <HeroSection
         headline="Questions Frequentes"
         subheadline="Trouvez rapidement les réponses a vos questions"

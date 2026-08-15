@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
@@ -244,7 +245,7 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; badge
    Page component
 ───────────────────────────────────────── */
 export default function MobilePage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [lang, setLang] = useState<Lang>('fr');
   useScrollReveal();
 
@@ -256,7 +257,7 @@ export default function MobilePage() {
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* ── Hero ───────────────────────────────── */}
       <section className="pt-32 pb-20 px-4">
