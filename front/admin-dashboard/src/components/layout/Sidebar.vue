@@ -168,6 +168,7 @@ import {
   ChartBarSquareIcon,
   MegaphoneIcon
 } from '@heroicons/vue/24/outline'
+import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'

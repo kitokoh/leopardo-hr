@@ -319,7 +319,7 @@ async function handleSubmit() {
     toast.success('Utilisateur mis à jour avec succès')
     emit('updated', updatedUser)
 
-  } catch {
+  } catch (error) {
     console.error('Failed to update user:', error)
     toast.error('Erreur lors de la mise à jour de l\'utilisateur')
   } finally {
