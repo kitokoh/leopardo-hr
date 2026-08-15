@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(ci): k6-load-smoke.yml — 11 inputs workflow_dispatch ramenés à 10 (Closes #3612).** `attendance_punch_mode` retiré du bloc `inputs` (limite GitHub Actions = 10, règle actionlint `events` introduite en 1.7.7) ; le job `attendance-punch-scale` reçoit désormais `PUNCH_MODE: manual` en environnement — comportement identique au défaut précédent. Le dispatch manuel du workflow n'est plus refusé ni partiellement ignoré par l'API GitHub.
+
 - **fix(api): liste /employees — PII retirées de la projection (Closes #3309).** personal_email, recovery_email, personal_phone, adresse et contacts d'urgence exclus de la liste ; salaire conservé (écran équipe mobile manager) ; PII toujours sur /employees/{id}.
 - **fix(mobile): DateTime.parse résiduels → tryParse dans 3 modèles core (Closes #3433).** attendance_log (date/check_in/check_out), payroll (validated_at), project_task (start/end/due_date) : plus de FormatException sur données malformées.
 - **fix(mobile): Contract.fromJson — start_date nullable gardé (Closes #3432).** Cast « as String » non gardé → TypeError au parsing de la liste contrats ; repli '' (comme endDate).
