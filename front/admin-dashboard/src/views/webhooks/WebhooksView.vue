@@ -18,7 +18,7 @@
       :rows="webhooks"
       :loading="loading"
       :error="error"
-      :search-keys="['url']"
+      :search-keys="['url', 'description']"
       search-placeholder="Rechercher un webhook..."
       default-sort="created_at"
       default-sort-dir="desc"
@@ -45,13 +45,8 @@
           {{ value ? 'Actif' : 'Inactif' }}
         </span>
       </template>
-      <template #cell-failure_count="{ value }">
-        <span :class="value > 0 ? 'text-red-600' : 'text-gray-400'" class="text-sm font-medium">
-          {{ value || 0 }}
-        </span>
-      </template>
-      <template #cell-last_triggered_at="{ value }">
-        <span v-if="value" class="text-xs text-gray-500">{{ formatDate(value) }}</span>
+      <template #cell-last_delivery_status="{ value }">
+        <StatusBadge v-if="value" :status="value" :map="deliveryStatusMap" />
         <span v-else class="text-xs text-gray-400">Jamais</span>
       </template>
       <template #row-actions="{ row }">
@@ -83,6 +78,10 @@
           <div>
             <label class="block text-sm font-medium text-gray-700">URL</label>
             <input v-model="form.url" type="url" required class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://..." />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <input v-model="form.description" type="text" class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700">Evenements</label>
@@ -120,8 +119,7 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
-import { toIntlLocale, translate } from '@/i18n/index.js'
-import { useLocaleStore } from '@/stores/locale'
+import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const loading = ref(false)
 const saving = ref(false)
@@ -131,34 +129,45 @@ const companies = ref([])
 const showCreateModal = ref(false)
 const editingWebhook = ref(null)
 
-const form = ref({ company_id: null, url: '', events: [], active: true })
+const form = ref({ company_id: null, url: '', description: '', events: [], active: true })
 
 const columns = [
   { key: 'company_name', label: 'Societe', sortable: true },
   { key: 'url', label: 'URL', sortable: true },
+  { key: 'description', label: 'Description' },
   { key: 'events', label: 'Evenements' },
   { key: 'active', label: 'Statut', sortable: true },
-  { key: 'failure_count', label: 'Echecs', sortable: true },
-  { key: 'last_triggered_at', label: 'Dernier envoi', sortable: true },
+  { key: 'last_delivery_status', label: 'Dernier envoi', sortable: true },
 ]
 
-const availableEvents = [
+// Allowlist backend canonique (PlatformAdminWebhookController::availableEvents).
+// Rafraîchie au montage via GET /admin/webhooks/events (#3389) — ce tableau
+// n'est qu'un fallback si la route est indisponible.
+const availableEvents = ref([
   'employee.created', 'employee.updated',
-  'absence.created', 'absence.approved',
-  'payroll.validated', 'contract.created',
-  'applicant.hired', 'training.completed',
-]
+  'leave.approved', 'leave.rejected',
+  'attendance.synced', 'payroll.processed',
+  'payroll.validated', 'loan.disbursed',
+  'expense.submitted', 'expense.approved',
+  'webhook.test',
+])
 
-
-
-const localeStore = useLocaleStore()
-
-function t(key, fallback = '') {
-  return translate(localeStore.current, key, fallback)
+async function fetchEvents() {
+  try {
+    const res = await api.get('/admin/webhooks/events')
+    const items = res.data?.data || []
+    if (Array.isArray(items) && items.length > 0) {
+      availableEvents.value = items
+    }
+  } catch {
+    // fallback : allowlist locale ci-dessus
+  }
 }
 
-function formatDate(iso) {
-  return new Date(iso).toLocaleDateString(toIntlLocale(localeStore.current), { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+const deliveryStatusMap = {
+  success: { label: 'Succes', color: 'green' },
+  failed: { label: 'Echec', color: 'red' },
+  pending: { label: 'En attente', color: 'yellow' },
 }
 
 async function fetchData() {
@@ -185,14 +194,14 @@ async function fetchCompanies() {
 
 function editWebhook(wh) {
   editingWebhook.value = wh
-  form.value = { company_id: wh.company_id ?? null, url: wh.url, events: [...(wh.events || [])], active: wh.active }
+  form.value = { company_id: wh.company_id ?? null, url: wh.url, description: wh.description || '', events: [...(wh.events || [])], active: wh.active }
   showCreateModal.value = true
 }
 
 function closeModal() {
   showCreateModal.value = false
   editingWebhook.value = null
-  form.value = { company_id: null, url: '', events: [], active: true }
+  form.value = { company_id: null, url: '', description: '', events: [], active: true }
 }
 
 async function saveWebhook() {
@@ -225,7 +234,7 @@ async function testWebhook(id) {
 }
 
 async function deleteWebhook(id) {
-  if (!window.confirm(t('webhooks.confirm_delete', 'Supprimer ce webhook ?'))) return
+  if (!confirm('Supprimer ce webhook ?')) return
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()
@@ -236,6 +245,6 @@ async function deleteWebhook(id) {
   }
 }
 
-onMounted(() => { fetchData(); fetchCompanies() })
+onMounted(() => { fetchData(); fetchCompanies(); fetchEvents() })
 </script>
 
