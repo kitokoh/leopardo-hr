@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(ops): APP_VERSION .env.example aligné sur 4.24.0 (complète #3528).** La garde `check-app-version-sync.sh` échouait encore : `api/.env.example` épinglait 4.23.5 alors que `config/app.php` défaut = 4.24.0 (PILOTAGE.md) — /health rapportait une version périmée en prod. Aligné ; garde verte.
+
 - **fix(tooling): .env.example — parité config/ restaurée (6 clés manquantes, issue #1487).** `RATE_LIMIT_PLAN_FREE_PER_MINUTE`, `RATE_LIMIT_PLAN_PILOT_PER_MINUTE`, `RATE_LIMIT_PLAN_OPERATIONS_PER_MINUTE`, `STRIPE_PRICE_PILOT`, `STRIPE_PRICE_OPERATIONS`, `TRIAL_DAYS` documentées — `check-env-example-parity.sh` : 273 clés, 0 manquante.
 
 - **fix(api): défense en profondeur mass-assignment — champs sensibles retirés des $fillable (Closes #3597).** `Employee` (company_id, salary_base, role, manager_role, status, failed_login_attempts, locked_until), `User` (status, email_verified_at, failed_login_attempts, locked_until), `SuperAdmin` (status, two_fa_secret), `Department` (company_id), `UserInvitation` (company_id, role, manager_role), `SalaryAdvance` (status), `Planning\Task` (status, performance_score) ne sont plus mass-assignables. 10 sites d'écriture (HrController, DepartmentController, OnboardingQrController, CompanyRequestController, UserAuthService, AuthService, SalaryAdvanceService, PlatformUserController, UserInvitationService) passent en assignation explicite ; factories en `forceFill` (états de test préservés) ; nouveau garde d'architecture `SensitiveFillableGuardTest` qui échoue si un champ sensible réapparaît en fillable.
