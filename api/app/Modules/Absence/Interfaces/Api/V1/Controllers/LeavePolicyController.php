@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Absence\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use Illuminate\Http\JsonResponse;
@@ -16,8 +17,12 @@ class LeavePolicyController extends Controller
      */
     public function balances(Request $request, int $employeeId): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
         $balances = LeaveBalance::query()
             ->with('absenceType')
+            ->where('company_id', $actor->company_id)
             ->where('employee_id', $employeeId)
             ->where('year', $request->input('year', now()->year))
             ->get()
