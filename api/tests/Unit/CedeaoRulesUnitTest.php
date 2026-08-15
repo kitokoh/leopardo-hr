@@ -166,11 +166,11 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        foreach (['ML', 'BF', 'BJ', 'TG', 'NE'] as $memberCode) {
+        // BJ/TG/NE restent placeholder (aucune règle légale sourcée) : pas de
+        // barème légal, pas de CN, pas de 13ème mois, pas d'abattement frais pro.
+        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
-            // Placeholder intact : pas de barème légal, pas de CN, pas de
-            // 13ème mois, pas d'abattement frais pro.
             $this->assertSame('placeholder', $rules->confidenceLevel(), $memberCode);
             $this->assertStringContainsString('placeholder', $rules->publicHolidaysSource(), $memberCode);
             $this->assertSame(0.0, $rules->calculateBracketTax(200000.0), $memberCode);
@@ -183,5 +183,36 @@ class CedeaoRulesUnitTest extends TestCase
             $this->assertSame(36.0, $charges['employee'], $memberCode);
             $this->assertSame(164.0, $charges['employer'], $memberCode);
         }
+    }
+
+    public function test_ml_and_bf_are_pilot(): void
+    {
+        // ML (#1829/#2158) et BF (#1829) sont passés pilot : CNSS/INPS réels,
+        // barème ITS propre, préavis par ancienneté — aligné sur les golden
+        // tests et docs/payroll/{ML,BF}_COMPLIANCE.md.
+        $ml = (new CedeaoPayrollRules)->forMemberCountry('ML');
+        $this->assertSame('pilot', $ml->confidenceLevel());
+        $this->assertCount(6, $ml->taxSlabs());
+        $this->assertSame(30.0, $ml->noticePeriodDays(3.0));
+        $this->assertSame(250.0, $ml->calculateIncomeTax(50000.0));
+
+        // INPS ML : retraite salariale 3,6 % plafonnée 3 000 000 + patronal
+        // 7,4 % ; familles 4,0 % et AT 2,0 % non plafonnés → sur 1 000 XOF :
+        //   salariale 36,00 · patronale 74,00 + 40,00 + 20,00 = 134,00
+        $mlCharges = $ml->calculateSocialCharges(1000.0);
+        $this->assertSame(36.0, $mlCharges['employee']);
+        $this->assertSame(134.0, $mlCharges['employer']);
+
+        $bf = (new CedeaoPayrollRules)->forMemberCountry('BF');
+        $this->assertSame('pilot', $bf->confidenceLevel());
+        $this->assertCount(6, $bf->taxSlabs());
+        $this->assertSame(30.0, $bf->noticePeriodDays(3.0));
+
+        // CNSS BF : retraite 5,5 % / 6,5 % + familles 7,0 % plafonnées
+        // 900 000 + AT 3,5 % non plafonné → sur 1 000 XOF :
+        //   salariale 55,00 · patronale 65,00 + 70,00 + 35,00 = 170,00
+        $bfCharges = $bf->calculateSocialCharges(1000.0);
+        $this->assertSame(55.0, $bfCharges['employee']);
+        $this->assertSame(170.0, $bfCharges['employer']);
     }
 }

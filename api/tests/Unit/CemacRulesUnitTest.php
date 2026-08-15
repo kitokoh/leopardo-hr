@@ -87,19 +87,36 @@ class CemacRulesUnitTest extends TestCase
 
     public function test_other_cemac_members_unaffected(): void
     {
+        // TD/CF/GQ restent placeholder non plafonnés (#1821/#1824).
+        foreach (['TD', 'CF', 'GQ'] as $memberCode) {
+            $rules = (new CemacPayrollRules)->forMemberCountry($memberCode);
+
+            $this->assertSame('placeholder', $rules->confidenceLevel(), $memberCode);
+            $this->assertCount(5, $rules->taxSlabs(), $memberCode);
+            $this->assertSame(0.0, $rules->noticePeriodDays(3.0), $memberCode);
+
+            $charges = $rules->calculateSocialCharges(2000000.0);
+            $this->assertSame(84000.0, $charges['employee'], $memberCode);
+            $this->assertSame(324000.0, $charges['employer'], $memberCode);
+        }
+    }
+
+    public function test_ga_is_pilot(): void
+    {
+        // GA (#1824) passé pilot : barème IRPP à 8 tranches, préavis
+        // calendaire par ancienneté, CNPS non plafonnée — aligné sur les
+        // golden tests et docs/payroll/GA_COMPLIANCE.md.
         $ga = (new CemacPayrollRules)->forMemberCountry('GA');
 
-        // Placeholder conservé : 5 tranches génériques, pas d'abattement,
-        // pas de préavis, confidence placeholder.
-        $this->assertCount(5, $ga->taxSlabs());
+        $this->assertCount(8, $ga->taxSlabs());
         $this->assertSame(['rate' => 0.0, 'cap' => null], $ga->professionalExpensesDeduction());
-        $this->assertSame(0.0, $ga->noticePeriodDays(3.0));
-        $this->assertSame('placeholder', $ga->confidenceLevel());
+        $this->assertSame(30.0, $ga->noticePeriodDays(3.0));
+        $this->assertSame('pilot', $ga->confidenceLevel());
 
-        // CNPS GA non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
+        // CNPS GA (2 000 000 × 2,5 % salariale / × 16,0 % patronale).
         $charges = $ga->calculateSocialCharges(2000000.0);
-        $this->assertSame(84000.0, $charges['employee']);
-        $this->assertSame(324000.0, $charges['employer']);
+        $this->assertSame(50000.0, $charges['employee']);
+        $this->assertSame(320000.0, $charges['employer']);
     }
 
     public function test_cm_confidence_level_is_pilot(): void
