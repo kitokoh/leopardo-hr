@@ -20,6 +20,7 @@ class AuthLoginDefensiveTest extends TestCase
 
     public function test_login_returns_401_instead_of_500_when_lookup_points_to_missing_tenant_schema(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'schema_name' => 'ghost_tenant_schema',
             'tenancy_type' => 'shared',
@@ -44,6 +45,7 @@ class AuthLoginDefensiveTest extends TestCase
 
     public function test_login_returns_401_when_lookup_schema_exists_but_employee_row_is_missing(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
@@ -68,12 +70,14 @@ class AuthLoginDefensiveTest extends TestCase
 
     public function test_login_nominal_path_is_unchanged(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'email' => 'nominal@tenant.dz',
