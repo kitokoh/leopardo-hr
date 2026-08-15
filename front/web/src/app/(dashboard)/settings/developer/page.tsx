@@ -288,7 +288,7 @@ export default function DeveloperSettingsPage() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-bold text-slate-950">{webhook.url}</p>
                         <p className="mt-0.5 text-xs text-slate-500">
-                          {labels.eventsCount.replace('{count}', String(webhook.events.length))} Â· {webhook.failure_count ? labels.failuresCount.replace('{count}', String(webhook.failure_count)) : labels.noFailures}
+                          {labels.eventsCount.replace('{count}', String(webhook.events.length))} · {webhook.failure_count ? labels.failuresCount.replace('{count}', String(webhook.failure_count)) : labels.noFailures}
                         </p>
                       </div>
                       <button

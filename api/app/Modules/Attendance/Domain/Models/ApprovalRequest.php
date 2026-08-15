@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -19,10 +21,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $requester_id
  * @property int $current_level
  * @property string $status
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  *
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class ApprovalRequest extends Model
 {
@@ -35,6 +37,15 @@ class ApprovalRequest extends Model
         'current_level',
         'status',
     ];
+
+    /**
+     * @param  Builder<ApprovalRequest>  $query
+     * @return Builder<ApprovalRequest>
+     */
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('status', 'pending');
+    }
 
     /** @return BelongsTo<ApprovalWorkflow, $this> */
     public function workflow(): BelongsTo
@@ -59,4 +70,3 @@ class ApprovalRequest extends Model
         return $this->morphTo();
     }
 }
-

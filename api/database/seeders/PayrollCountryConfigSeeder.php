@@ -86,7 +86,11 @@ class PayrollCountryConfigSeeder extends Seeder
                 );
             }
 
-            foreach ($countryRules->taxSlabs() as $slab) {
+            // Issue #2003 : le seeder seede depuis `legalReferenceTaxSlabs()`
+            // (source légale = code, jamais la base) — un re-seed restaure le
+            // barème complet même si la base diverge (l'ancien `taxSlabs()`
+            // résolvait la base AVANT le code → re-seed = no-op silencieux).
+            foreach ($countryRules->legalReferenceTaxSlabs() as $slab) {
                 TaxSlab::updateOrCreate(
                     [
                         'company_id' => null,

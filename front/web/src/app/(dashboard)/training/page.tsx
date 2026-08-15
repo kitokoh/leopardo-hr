@@ -251,7 +251,7 @@ export default function TrainingPage() {
                             sessions.map((session) => (
                               <div key={session.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-app-border bg-transparent px-3 py-2">
                                 <div className="flex items-center gap-3 text-xs text-slate-600">
-                                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{session.start_date ?? 'â€”'} au {session.end_date ?? 'â€”'}</span>
+                                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{session.start_date ?? '—'} au {session.end_date ?? '—'}</span>
                                   {session.location ? <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{session.location}</span> : null}
                                   <span className="flex items-center gap-1"><Users className="h-3 w-3" />{session.enrollments?.length ?? 0} inscrits</span>
                                 </div>

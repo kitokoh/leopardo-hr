@@ -41,7 +41,7 @@
       <!-- Top Stats -->
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
         <StatsCard title="Score Santé" :value="health.adoption.health_score" unit="/100" icon="HeartIcon" :color="scoreColor" />
-        <StatsCard title="Ã‰quipe Active" :value="health.adoption.employees.active" icon="UsersIcon" color="green" />
+        <StatsCard title="Équipe Active" :value="health.adoption.employees.active" icon="UsersIcon" color="green" />
         <StatsCard title="Pointages (30j)" :value="health.adoption.attendance.logs_30d" icon="FingerPrintIcon" color="blue" />
         <StatsCard title="Revenu (MRR)" :value="formatCurrency(health.subscription.mrr, health.subscription.currency)" icon="BanknotesIcon" color="purple" />
       </div>
@@ -165,7 +165,7 @@
                 >
                   <CloudArrowUpIcon v-if="!isSavingFeatures" class="mr-2 h-4 w-4" />
                   <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                  {{ isSavingFeatures ? 'Mise Ã  jour...' : 'Sauvegarder la configuration' }}
+                  {{ isSavingFeatures ? 'Mise à jour...' : 'Sauvegarder la configuration' }}
                 </button>
               </div>
             </div>
@@ -188,7 +188,7 @@
                 <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="plan">Plan de services</label>
                 <select id="plan" v-model.number="subscriptionForm.plan_id" class="form-input">
                   <option v-for="plan in plans" :key="plan.id" :value="plan.id">
-                    {{ plan.name }} â€” {{ formatCurrency(plan.price_monthly, health.company.currency) }}/m
+                    {{ plan.name }} — {{ formatCurrency(plan.price_monthly, health.company.currency) }}/m
                   </option>
                 </select>
               </div>
@@ -222,7 +222,7 @@
               <!-- Activer client -->
               <button class="btn-primary w-full justify-center shadow-premium py-3" :disabled="isSavingSubscription">
                 <span v-if="isSavingSubscription" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                {{ isSavingSubscription ? 'Enregistrement...' : 'Mettre Ã  jour l\'abonnement' }}
+                {{ isSavingSubscription ? 'Enregistrement...' : 'Mettre à jour l\'abonnement' }}
               </button>
               <button
                 v-if="health?.company?.status === 'trial'"
@@ -459,7 +459,7 @@ async function saveSubscription() {
 
   try {
     await api.patch(`/platform/companies/${route.params.id}/subscription`, subscriptionForm.value)
-    toast.success('Abonnement mis Ã  jour avec succès.')
+    toast.success('Abonnement mis à jour avec succès.')
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)

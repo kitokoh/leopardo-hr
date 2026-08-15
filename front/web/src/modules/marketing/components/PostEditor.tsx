@@ -21,7 +21,7 @@ type PostEditorProps = {
 };
 
 /**
- * Module Marketing â€” Phase 4 (PA2-MKT-011).
+ * Module Marketing — Phase 4 (PA2-MKT-011).
  *
  * Standalone post composer: content + target platforms + optional
  * scheduling date. Used by the `/social` calendar page (new post from a

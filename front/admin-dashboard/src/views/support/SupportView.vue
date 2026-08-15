@@ -16,7 +16,7 @@
     <!-- KPI Summary -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
       <StatsCard title="Total Demandes" :value="totalRequests" icon="ChatBubbleBottomCenterTextIcon" color="blue" />
-      <StatsCard title="Ã€ Traiter" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
+      <StatsCard title="À Traiter" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
       <StatsCard title="Approuvées" :value="statusCounts.approved" icon="CheckCircleIcon" color="green" />
       <StatsCard title="Rejetées" :value="statusCounts.rejected" icon="XCircleIcon" color="red" />
     </div>
@@ -141,7 +141,7 @@
                   :disabled="request.status !== 'pending' || savingId === request.id"
                   rows="4"
                   class="form-input text-sm leading-relaxed"
-                  placeholder="Ã‰valuez la légitimité du lead, taille de l'entreprise..."
+                  placeholder="Évaluez la légitimité du lead, taille de l'entreprise..."
                 ></textarea>
               </div>
 
@@ -226,7 +226,7 @@ const statusCounts = ref({ pending: 0, approved: 0, rejected: 0 })
 
 const filters = [
   { value: 'all', label: 'Toutes' },
-  { value: 'pending', label: 'Ã€ traiter' },
+  { value: 'pending', label: 'À traiter' },
   { value: 'approved', label: 'Approuvées' },
   { value: 'rejected', label: 'Rejetées' },
 ]
