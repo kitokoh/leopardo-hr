@@ -41,7 +41,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Fonctionnalités',
     question: 'Peut-on generer des bulletins de paie multi-pays ?',
-    answer: 'Oui, Leopardo RH supporte la paie multi-pays (Algérie, Maroc, Tunisie, France, Turquie, Sénégal, Canada + zones CEMAC et CEDEAO) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
+    answer: 'Oui, Leopardo RH supporte la paie multi-pays avec 9 moteurs de regles locales (Algerie, Canada, CEDEAO, CEMAC, France, Maroc, Senegal, Tunisie, Turquie) : baremes fiscaux et cotisations sociales specifiques a chaque pays ou zone. Les bulletins sont generes en PDF.',
   },
   {
     category: 'Fonctionnalités',
