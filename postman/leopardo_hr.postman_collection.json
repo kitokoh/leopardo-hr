@@ -15,6 +15,18 @@
       "key": "token",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "demoEmployeeEmail",
+      "value": "manager@entreprise.com"
+    },
+    {
+      "key": "demoAdminEmail",
+      "value": "admin@leopardo-rh.com"
+    },
+    {
+      "key": "demoPassword",
+      "value": "CHANGE_ME"
     }
   ],
   "item": [
@@ -185,7 +197,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"manager@entreprise.com\",\n  \"password\": \"password123\",\n  \"device_name\": \"postman\"\n}",
+              "raw": "{\n  \"email\": \"{{demoEmployeeEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"device_name\": \"postman\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -205,7 +217,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@leopardo-rh.com\",\n  \"password\": \"password123\",\n  \"device_name\": \"postman\"\n}",
+              "raw": "{\n  \"email\": \"{{demoAdminEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"device_name\": \"postman\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -265,7 +277,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"current_password\": \"password123\",\n  \"new_password\": \"NewPass123!\"\n}",
+              "raw": "{\n  \"current_password\": \"{{demoPassword}}\",\n  \"new_password\": \"NewPass123!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
