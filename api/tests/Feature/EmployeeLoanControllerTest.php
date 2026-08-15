@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
+use App\Modules\Payroll\Domain\Models\LoanRepayment;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -114,18 +116,18 @@ class EmployeeLoanControllerTest extends TestCase
 
     public function test_cross_tenant_loan_returns_404(): void
     {
-        $company     = Company::factory()->create();
+        $company = Company::factory()->create();
         $otherCompany = Company::factory()->create();
-        $manager     = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
         $foreignLoan = EmployeeLoan::create([
-            'company_id'          => $otherCompany->id,
-            'employee_id'         => Employee::factory()->create(['company_id' => $otherCompany->id])->id,
-            'amount'              => 15000,
-            'currency'            => 'DZD',
-            'installments'        => 3,
-            'installment_amount'  => 5000,
-            'start_date'          => now()->addMonth(),
-            'status'              => 'pending_approval',
+            'company_id' => $otherCompany->id,
+            'employee_id' => Employee::factory()->create(['company_id' => $otherCompany->id])->id,
+            'amount' => 15000,
+            'currency' => 'DZD',
+            'installments' => 3,
+            'installment_amount' => 5000,
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
         ]);
 
         Sanctum::actingAs($manager);
@@ -137,19 +139,19 @@ class EmployeeLoanControllerTest extends TestCase
 
     public function test_disburse_requires_approved_status(): void
     {
-        $company  = Company::factory()->create();
-        $manager  = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
         $employee = Employee::factory()->create(['company_id' => $company->id, 'role' => 'employee']);
 
         $pendingLoan = EmployeeLoan::create([
-            'company_id'         => $company->id,
-            'employee_id'        => $employee->id,
-            'amount'             => 25000,
-            'currency'           => 'DZD',
-            'installments'       => 6,
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 25000,
+            'currency' => 'DZD',
+            'installments' => 6,
             'installment_amount' => 4166.67,
-            'start_date'         => now()->addMonth(),
-            'status'             => 'pending_approval',
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
         ]);
 
         Sanctum::actingAs($manager);
@@ -208,5 +210,61 @@ class EmployeeLoanControllerTest extends TestCase
             'start_date' => now()->addMonth()->toDateString(),
         ])->assertUnprocessable();
     }
-}
 
+    /**
+     * Issue #3950 — show() ne doit jamais exposer des repayments d'un autre
+     * tenant, même si le prêt parent appartient au tenant courant
+     * (defense-in-depth sur la relation).
+     */
+    public function test_show_filters_repayments_to_current_tenant(): void
+    {
+        $company = Company::factory()->create();
+        $otherCompany = Company::factory()->create();
+        $manager = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $loan = EmployeeLoan::create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'amount' => 12000,
+            'currency' => 'DZD',
+            'installments' => 3,
+            'installment_amount' => 4000,
+            'start_date' => now()->addMonth(),
+            'status' => 'pending_approval',
+        ]);
+        LoanRepayment::create([
+            'employee_loan_id' => $loan->id,
+            'company_id' => $company->id,
+            'due_date' => now()->addMonth()->toDateString(),
+            'amount' => 4000,
+            'principal' => 4000,
+            'interest' => 0,
+            'status' => 'pending',
+        ]);
+        // Ligne « orpheline » d'un autre tenant rattachée au même prêt :
+        // elle ne doit pas fuiter dans la réponse.
+        DB::table('loan_repayments')->insert([
+            'employee_loan_id' => $loan->id,
+            'company_id' => $otherCompany->id,
+            'due_date' => now()->addMonth()->toDateString(),
+            'amount' => 9999,
+            'principal' => 9999,
+            'interest' => 0,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        // L'endpoint reste 200 (le prêt appartient au tenant).
+        $this->getJson("/api/v1/loans/{$loan->id}")->assertOk();
+
+        // Contrat de scopage de la relation : le filtre company_id du
+        // contrôleur (show) ne doit exposer que les repayments du tenant
+        // courant, jamais la ligne orpheline d'un autre tenant.
+        $loan->load(['repayments' => fn ($query) => $query->where('company_id', $company->id)]);
+        $this->assertCount(1, $loan->repayments);
+        $this->assertSame(4000.0, (float) $loan->repayments->first()->amount);
+    }
+}
