@@ -32,7 +32,7 @@ class VerifyTrialSignup
     ) {}
 
     /**
-     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string, temp_password: string}|array{success: false, error: string, message: string, status: int}
+     * @return array{success: true, company: Company, manager: Employee, manager_email: string, first_name: string, last_name: string}|array{success: false, error: string, message: string, status: int}
      */
     public function execute(string $email, string $code): array
     {
@@ -162,7 +162,6 @@ class VerifyTrialSignup
             'manager_email' => $email,
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'temp_password' => $tempPassword,
         ];
     }
 
