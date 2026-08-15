@@ -456,7 +456,7 @@
   "payrollConfidencePilotMessage": "Pilot rules for {country}: amounts based on general public references (labor code) but not yet legally validated locally. Confirm with a local legal or tax advisor before relying on these figures (tax brackets, social contributions, overtime thresholds) for your statutory obligations.",
   "payrollConfidencePlaceholderMessage": "Placeholder without values for {country}: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced.",
   "payrollConfidenceUnknownMessage": "No payroll rules are available for {country}: payroll calculation is not available for this country.",
-  "signupBadge": "Free 30-day trial",
+  "signupBadge": "Free 14-day trial",
   "signupTitle": "Try Leopardo with your company",
   "signupSubtitle": "Create your trial workspace in 2 minutes. No credit card required.",
   "signupLabelemail": "Work email",
@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "Unable to load the company details.",
   "companiesToastTicketsFailed": "Unable to load the support tickets.",
   "companiesToastSubscriptionFailed": "Failed to update the subscription.",
-  "companiesToastFeaturesFailed": "Failed to save the module configuration."
+  "companiesToastFeaturesFailed": "Failed to save the module configuration.",
+  "seoPricingDescription": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
 }

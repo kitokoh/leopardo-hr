@@ -708,17 +708,17 @@
       "agreeTerms": "You must accept the terms of use"
     }
   },
-  "seo": {
-    "pricing": {
-      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
-    }
-  },
   "companies": {
     "toast": {
       "load_failed": "Unable to load the company details.",
       "tickets_failed": "Unable to load the support tickets.",
       "subscription_failed": "Failed to update the subscription.",
       "features_failed": "Failed to save the module configuration."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
   }
 }
