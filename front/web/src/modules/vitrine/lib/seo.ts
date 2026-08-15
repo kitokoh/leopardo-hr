@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
+import { t } from '@/lib/i18n/locale-catalog';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
@@ -152,7 +153,7 @@ export const pageMetadata = {
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      "Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.",
+      t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
       "tarification paie",
