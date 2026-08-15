@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web-offline): garde CI — les icônes du manifest PWA doivent exister (Closes #3963).** Les icônes 192/512 existent désormais sur main (ajoutées en parallèle) ; ce PR verrouille la non-régression : le workflow web-offline échoue si `manifest.json` déclare une icône absente de `public/`.
 - **fix(web-offline): service worker — fallback offline pour les navigations (Closes #3962).** `fetch()` sans `.catch()` sur la branche statique → toute route non visitée hors-ligne affichait la page d'erreur navigateur. Fallback : `caches.match('/index.html')` (app shell pré-cachée) pour `mode === 'navigate'`, 503 gracieux sinon. Cache bumpé v1 → v2.
 - **fix(mobile-hr): écran d'erreur de rendu — « Leopardo RH » au lieu de « Leopardo Manager » (copier-coller) (Closes #3955).**
 - **fix(mobile-core): fichier mort `TranslationSyncService` supprimé — import cassé (`translation_catalog_cache.dart` inexistant) bloquait `dart analyze` (Closes #3954).** 0 référence dans les apps ; le package analyze redevient parlant pour les vrais problèmes.
