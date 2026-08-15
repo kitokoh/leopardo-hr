@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { areFormsEnabled, formsDisabledResponse, getClientIp } from '../_lib/lead-capture';
 import { RateLimiter } from '@/modules/vitrine/lib/validation';
+import { isValidProvisioningToken } from '../_lib/provisioning-token';
 
 /**
  * GET /api/forms/trial-status?token=<provisioning_token>
@@ -22,8 +23,6 @@ const LEOPARDO_API_URL =
 // Polling ~5 s côté client → 12 req/min max par prospect. Marge à 30/min.
 const rateLimiter = new RateLimiter(30, 60 * 1000);
 
-const TOKEN_RE = /^[a-f0-9]{64}$/;
-
 export async function GET(request: NextRequest) {
   if (!areFormsEnabled()) {
     return formsDisabledResponse();
@@ -31,7 +30,7 @@ export async function GET(request: NextRequest) {
 
   const token = request.nextUrl.searchParams.get('token') ?? '';
 
-  if (!TOKEN_RE.test(token)) {
+  if (!isValidProvisioningToken(token)) {
     return NextResponse.json(
       {
         success: false,
