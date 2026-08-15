@@ -736,5 +736,51 @@
     "pricing": {
       "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
+  },
+  "adminChat": {
+    "conversation": "Conversation",
+    "error": "Sorry, an error occurred. Please try again.",
+    "historyEmpty": "No conversations.",
+    "new": "New conversation",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "start": "Start a conversation with the AI assistant.",
+    "subtitle": "Ask about HR, payroll, recruitment...",
+    "thinking": "Thinking...",
+    "title": "Leopardo AI Assistant",
+    "unavailableBadge": "Unavailable",
+    "unavailableBody": "The AI chat is not enabled for the super-admin console. Use a supported company workspace to access this assistant.",
+    "unavailableTitle": "AI assistant unavailable at platform level"
+  },
+  "navigation": {
+    "analytics": "Analytics",
+    "audit": "Audit Log",
+    "chat": "AI Chat",
+    "companies": "Companies",
+    "contracts": "Contracts",
+    "crm": "CRM Pipeline",
+    "dashboard": "Dashboard",
+    "edge": "Edge Nodes",
+    "exports": "Exports & Reports",
+    "fleet": "Vehicle Fleet",
+    "globe": "Real-time Globe",
+    "growth": "Growth Administration",
+    "leaves": "Leave & Absence",
+    "mainMenu": "Main menu",
+    "marketing": "Marketing",
+    "payroll": "Payroll",
+    "predictions": "AI Predictive Dashboard",
+    "recruitment": "Recruitment",
+    "reports": "HR Reports",
+    "subscriptions": "Subscriptions",
+    "support": "Support",
+    "supportTickets": "Customer Support Center",
+    "system": "System",
+    "training": "Training",
+    "users": "Users",
+    "webhooks": "Webhooks"
+  },
+  "webhooks": {
+    "confirm_delete": "Delete this webhook?"
   }
 }

@@ -50,33 +50,6 @@ class CabinetRepository {
     return CabinetFolder.fromJson(extractDataMap(response.data));
   }
 
-  Future<CabinetFolder> updateFolder(
-    int id, {
-    String? name,
-    int? parentId,
-  }) async {
-    final data = <String, dynamic>{};
-    if (name != null) data['name'] = name;
-    if (parentId != null) data['parent_id'] = parentId;
-    final response = await apiClient.requestWithRetry(
-      '/cabinet/folders/$id',
-      method: 'PUT',
-      data: data,
-      maxRetriesOverride: 0,
-      timeoutOverride: _actionTimeout,
-    );
-    return CabinetFolder.fromJson(extractDataMap(response.data));
-  }
-
-  Future<void> deleteFolder(int id) async {
-    await apiClient.requestWithRetry(
-      '/cabinet/folders/$id',
-      method: 'DELETE',
-      maxRetriesOverride: 0,
-      timeoutOverride: _actionTimeout,
-    );
-  }
-
   Future<List<CabinetDocument>> getDocuments({int? folderId}) async {
     final params = <String, dynamic>{};
     if (folderId != null) params['folder_id'] = folderId;

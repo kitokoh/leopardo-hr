@@ -11,6 +11,7 @@ use App\Modules\Notification\Domain\Models\CompanyAnnouncement;
 use App\Modules\Notification\Infrastructure\Services\AnnouncementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
@@ -124,7 +125,9 @@ class AnnouncementController extends Controller
         try {
             $announcement = $this->announcements->publishNow($announcement);
         } catch (RuntimeException $e) {
-            throw ValidationException::withMessages(['status' => $e->getMessage()]);
+            // #3810 : code stable + message localisé, jamais de message brut.
+            Log::error('announcement.publish_failed', ['announcement_id' => $announcement->id, 'error' => $e->getMessage()]);
+            throw ValidationException::withMessages(['status' => __('errors.ANNOUNCEMENT_PUBLISH_FAILED')]);
         }
 
         return (new CompanyAnnouncementResource($announcement->load('author')))->response();
@@ -140,7 +143,9 @@ class AnnouncementController extends Controller
         try {
             $announcement = $this->announcements->cancel($announcement, $actor);
         } catch (RuntimeException $e) {
-            throw ValidationException::withMessages(['status' => $e->getMessage()]);
+            // #3810 : code stable + message localisé, jamais de message brut.
+            Log::error('announcement.cancel_failed', ['announcement_id' => $announcement->id, 'error' => $e->getMessage()]);
+            throw ValidationException::withMessages(['status' => __('errors.ANNOUNCEMENT_CANCEL_FAILED')]);
         }
 
         return (new CompanyAnnouncementResource($announcement->load(['author', 'cancelledBy'])))->response();

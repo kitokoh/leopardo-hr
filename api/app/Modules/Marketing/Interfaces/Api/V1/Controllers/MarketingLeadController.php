@@ -28,7 +28,9 @@ use Illuminate\Support\Facades\Log;
  * protected by the same shared secret already documented for
  * `MARKETING_LEAD_WEBHOOK_TOKEN` in
  * `docs/validation/LAUNCH_OBSERVABILITY_DASHBOARD.md` — mirrors
- * `EmailBounceWebhookController`.
+ * `EmailBounceWebhookController`. Fail-closed (#3888) : secret absent → 503,
+ * la vitrine envoie déjà `Authorization: Bearer $MARKETING_LEAD_WEBHOOK_TOKEN`
+ * (`front/web/src/app/api/forms/_lib/lead-capture.ts:buildForwardHeaders`).
  *
  * The admin-facing listing/status endpoints for the platform CRM pipeline
  * live in PA2-ADM-004 (`PlatformCrmPipelineController` /
@@ -45,18 +47,21 @@ class MarketingLeadController extends Controller
         $configuredSecret = (string) config('services.marketing_lead_webhook.secret', '');
 
         if ($configuredSecret === '') {
-            // Issue #2688 (QA 2026-08-15) — fail-open documenté : si le secret
-            // n'est pas configuré, l'ingestion reste ouverte (comportement
-            // historique) mais un warning bruyant signale le risque en prod.
-            Log::warning('Marketing lead ingest: shared secret is NOT configured — endpoint is fail-open. Set services.marketing_lead_webhook.secret.');
-        } else {
-            $providedSecret = (string) $request->header('X-Marketing-Lead-Token', '');
+            // #3888 fail-closed : secret non configuré = endpoint non
+            // authentifiable = on REFUSE (503). Un endpoint public sans
+            // secret ne doit jamais ingérer un payload (fail-open =
+            // poisonning de la base leads CRM). Miroir d'EmailBounceWebhookController (#2616).
+            Log::error('Marketing lead ingest: secret not configured — endpoint REJECTED (fail-closed). Set services.marketing_lead_webhook.secret.');
 
-            if (! hash_equals($configuredSecret, $this->extractBearerOrHeader($request, $providedSecret))) {
-                Log::warning('Marketing lead ingest: invalid or missing shared secret');
+            abort(503, 'Marketing lead webhook not configured.');
+        }
 
-                return new JsonResponse(['error' => 'Invalid signature'], 400);
-            }
+        $providedSecret = (string) $request->header('X-Marketing-Lead-Token', '');
+
+        if (! hash_equals($configuredSecret, $this->extractBearerOrHeader($request, $providedSecret))) {
+            Log::warning('Marketing lead ingest: invalid or missing shared secret');
+
+            return new JsonResponse(['error' => 'Invalid signature'], 400);
         }
 
         $dto = CreateMarketingLeadDTO::fromArray($request->validated());

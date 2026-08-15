@@ -88,7 +88,6 @@ import {
   MegaphoneIcon,
   LifebuoyIcon,
   PresentationChartLineIcon,
-  SparklesIcon,
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
@@ -105,20 +104,16 @@ const items = [
   { id: 'users', label: 'Utilisateurs', description: 'Gestion des utilisateurs', icon: UsersIcon, route: '/users', shortcut: 'Alt+U' },
   { id: 'companies', label: 'Entreprises', description: 'Gestion des entreprises', icon: BuildingOfficeIcon, route: '/companies', shortcut: 'Alt+C' },
   { id: 'subscriptions', label: 'Abonnements', description: 'Plans et facturation', icon: CreditCardIcon, route: '/subscriptions', shortcut: 'Alt+S' },
-  // Routes tenant (guard #2272) : hors périmètre console super-admin — retirées
-  // de la palette pour éviter les redirections muettes vers /.
-  // (payroll, leaves, recruitment, exports, chat restent accessibles côté client)
+  // Routes tenant sans endpoints super-admin (#3272) : vues retirées du
+  // routeur — la palette ne propose que des destinations réellement ouvrables.
   { id: 'settings', label: 'Parametres', description: 'Compte et preferences', icon: CogIcon, route: '/settings' },
   { id: 'growth', label: 'Growth', description: 'Partenaires et croissance', icon: ArrowTrendingUpIcon, route: '/growth' },
   { id: 'edge', label: 'Edge Nodes', description: 'Nœuds edge synchronises', icon: ServerIcon, route: '/edge' },
   { id: 'globe', label: 'Globe', description: 'Presence mondiale en temps reel', icon: GlobeAltIcon, route: '/globe' },
   { id: 'fleet', label: 'Flotte', description: 'Alertes flotte vehicules', icon: TruckIcon, route: '/fleet' },
-  // Routes tenant encore guardées (reports/audit/predictions, guard #2272) :
-  // retirées de la palette pour éviter toast + redirection muette vers /.
   { id: 'marketing', label: 'Marketing OAuth', description: 'Configuration OAuth marketing', icon: MegaphoneIcon, route: '/marketing/oauth' },
   { id: 'support', label: 'Support', description: 'Tickets support clients', icon: LifebuoyIcon, route: '/support' },
   { id: 'crm', label: 'CRM', description: 'Pipeline CRM', icon: PresentationChartLineIcon, route: '/crm/pipeline' },
-  { id: 'predictions', label: 'Predictions IA', description: 'Dashboard predictif', icon: SparklesIcon, route: '/predictions' },
   { id: 'toggle-dark', label: 'Basculer mode sombre', description: 'Changer le theme', icon: themeStore.isDark ? SunIcon : MoonIcon, action: () => themeStore.toggle(), shortcut: 'Ctrl+D' },
 ]
 

@@ -48,10 +48,6 @@ export function useKeyboardShortcuts() {
           e.preventDefault()
           router.push('/subscriptions')
           break
-        case 'r':
-          e.preventDefault()
-          router.push('/recruitment')
-          break
       }
       return
     }
@@ -87,6 +83,5 @@ export const KEYBOARD_SHORTCUTS = [
   { keys: 'Alt+U', description: 'Utilisateurs' },
   { keys: 'Alt+C', description: 'Entreprises' },
   { keys: 'Alt+S', description: 'Abonnements' },
-  { keys: 'Alt+R', description: 'Recrutement' },
   { keys: '?', description: 'Aide raccourcis' },
 ]

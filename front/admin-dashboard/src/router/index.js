@@ -138,16 +138,6 @@ const routes = [
       },
 
       {
-        path: '/payroll',
-        name: 'payroll',
-        component: () => import('@/views/payroll/PayrollView.vue'),
-        meta: {
-          title: 'Paie',
-          icon: 'CurrencyEuroIcon',
-          requiresTenant: true
-        }
-      },
-      {
         path: '/settings/payroll/social-contributions',
         name: 'social-contributions',
         component: () => import('@/views/settings/SocialContributionsView.vue'),
@@ -175,43 +165,12 @@ const routes = [
         }
       },
       {
-        path: '/leaves',
-        name: 'leaves',
-        component: () => import('@/views/leaves/LeavesView.vue'),
-        meta: {
-          title: 'Congés & Absences',
-          icon: 'CalendarDaysIcon',
-          requiresTenant: true
-        }
-      },
-      {
-        path: '/contracts',
-        name: 'contracts',
-        component: () => import('@/views/contracts/ContractsView.vue'),
-        meta: {
-          title: 'Contrats',
-          icon: 'DocumentDuplicateIcon',
-          requiresTenant: true
-        }
-      },
-      {
-        path: '/recruitment',
-        name: 'recruitment',
-        component: () => import('@/views/recruitment/RecruitmentView.vue'),
-        meta: {
-          title: 'Recrutement',
-          icon: 'UserPlusIcon',
-          requiresTenant: true
-        }
-      },
-      {
         path: '/training',
         name: 'training',
         component: () => import('@/views/training/TrainingView.vue'),
         meta: {
           title: 'Formations',
-          icon: 'AcademicCapIcon',
-          requiresTenant: true
+          icon: 'AcademicCapIcon'
         }
       },
       {
@@ -229,8 +188,7 @@ const routes = [
         component: () => import('@/views/chat/ChatView.vue'),
         meta: {
           title: 'Chat IA',
-          icon: 'SparklesIcon',
-          requiresTenant: true
+          icon: 'SparklesIcon'
         }
       },
       {
@@ -239,8 +197,7 @@ const routes = [
         component: () => import('@/views/webhooks/WebhooksView.vue'),
         meta: {
           title: 'Webhooks',
-          icon: 'LinkIcon',
-          requiresTenant: true
+          icon: 'LinkIcon'
         }
       },
       {
@@ -250,36 +207,6 @@ const routes = [
         meta: {
           title: 'Exports & Rapports',
           icon: 'ArrowDownTrayIcon'
-        }
-      },
-      {
-        path: '/reports',
-        name: 'reports',
-        component: () => import('@/views/reports/ReportsView.vue'),
-        meta: {
-          title: 'Rapports RH',
-          icon: 'ChartPieIcon',
-          requiresTenant: true
-        }
-      },
-      {
-        path: '/predictions',
-        name: 'predictions',
-        component: () => import('@/views/predictions/PredictionsView.vue'),
-        meta: {
-          title: 'Dashboard Prédictif IA',
-          icon: 'ChartBarSquareIcon',
-          requiresTenant: true
-        }
-      },
-      {
-        path: '/audit',
-        name: 'audit',
-        component: () => import('@/views/audit/AuditLogsView.vue'),
-        meta: {
-          title: 'Journal d\'audit',
-          icon: 'ShieldCheckIcon',
-          requiresTenant: true
         }
       },
       {

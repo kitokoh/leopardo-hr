@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/** @extends \Illuminate\Database\Eloquent\Factories\Factory<AttendanceLog> */
 class AttendanceLogFactory extends Factory
 {
     protected $model = AttendanceLog::class;

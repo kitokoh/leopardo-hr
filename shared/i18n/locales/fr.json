@@ -736,5 +736,51 @@
     "pricing": {
       "description": "Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours."
     }
+  },
+  "adminChat": {
+    "conversation": "Conversation",
+    "error": "Désolé, une erreur est survenue. Veuillez réessayer.",
+    "historyEmpty": "Aucune conversation.",
+    "new": "Nouvelle conversation",
+    "placeholder": "Tapez votre message...",
+    "send": "Envoyer",
+    "start": "Commencez une conversation avec l’assistant IA.",
+    "subtitle": "Posez vos questions RH, paie, recrutement...",
+    "thinking": "Réflexion en cours...",
+    "title": "Assistant IA Leopardo",
+    "unavailableBadge": "Indisponible",
+    "unavailableBody": "Le chat IA n’est pas activé pour la console super-admin. Utilisez un espace entreprise pris en charge pour accéder à cet assistant.",
+    "unavailableTitle": "Assistant IA indisponible au niveau plateforme"
+  },
+  "navigation": {
+    "analytics": "Analytique",
+    "audit": "Journal d'audit",
+    "chat": "Chat IA",
+    "companies": "Entreprises",
+    "contracts": "Contrats",
+    "crm": "Pipeline CRM",
+    "dashboard": "Tableau de bord",
+    "edge": "Nœuds Edge",
+    "exports": "Exports & Rapports",
+    "fleet": "Flotte véhicules",
+    "globe": "Globe Temps Réel",
+    "growth": "Administration Growth",
+    "leaves": "Congés & Absences",
+    "mainMenu": "Menu principal",
+    "marketing": "Marketing",
+    "payroll": "Paie",
+    "predictions": "Dashboard Prédictif IA",
+    "recruitment": "Recrutement",
+    "reports": "Rapports RH",
+    "subscriptions": "Abonnements",
+    "support": "Support",
+    "supportTickets": "Centre support client",
+    "system": "Système",
+    "training": "Formations",
+    "users": "Utilisateurs",
+    "webhooks": "Webhooks"
+  },
+  "webhooks": {
+    "confirm_delete": "Supprimer ce webhook ?"
   }
 }

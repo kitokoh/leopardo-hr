@@ -184,7 +184,7 @@ export const pageMetadata = {
       // Issue #3487 : la locale n'est pas résolue ici (metadata statique du
       // module) — le layout /pricing lit ?lang= et appelle t(locale, ...).
       // Ce fallback FR ne sert que si la clé i18n manque.
-      t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
+      t('fr', 'seo.pricing.description', 'Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
       "tarification paie",

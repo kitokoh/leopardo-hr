@@ -23,8 +23,6 @@ import 'package:leopardo_employee/features/evaluations/data/evaluation_repositor
 import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_employee/features/home/data/project_repository.dart';
 import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
-import 'package:leopardo_employee/features/ai_chat/data/ai_chat_repository.dart';
-import 'package:leopardo_employee/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
 
@@ -167,17 +165,9 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   return UserAuthRepository(apiClient, storage, preferences);
 });
 
-final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AiChatRepository(apiClient);
-});
 
-final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((
-  ref,
-) {
-  final apiClient = ref.watch(apiClientProvider);
-  return VehiclePositionRepository(apiClient);
-});
+
+
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);

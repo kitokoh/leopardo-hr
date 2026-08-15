@@ -202,21 +202,6 @@ class AttendanceRepository {
     return MonthlySummary.fromJson(extractDataMap(response.data));
   }
 
-  Future<MonthlySummary> getMyQuickEstimate({
-    required DateTime from,
-    required DateTime to,
-  }) async {
-    String fmt(DateTime d) =>
-        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
-    final response = await apiClient.requestWithRetry(
-      '/me/quick-estimate',
-      maxRetriesOverride: 0,
-      timeoutOverride: _readTimeout,
-      queryParameters: {'from': fmt(from), 'to': fmt(to)},
-    );
-    return MonthlySummary.fromJson(extractDataMap(response.data));
-  }
-
   Future<List<AttendanceLog>> getHistory(int year, int month) async {
     final from = DateTime(year, month, 1);
     final to = DateTime(year, month + 1, 0);
