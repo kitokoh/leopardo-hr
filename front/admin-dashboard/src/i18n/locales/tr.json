@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "Kullanici Yonetimi",
-      "summary": ":count kullanici - :active aktif - :newToday bugun yeni"
+      "summary": ":count kullanici"
     },
     "actions": {
       "bulk": "Islemler (:count)",
@@ -255,8 +255,7 @@
       "exportInProgress": "Disa aktarim yapiliyor...",
       "exportDone": "Disa aktarim tamamlandi",
       "exportError": "Disa aktarim basarisiz oldu",
-      "selectionExportDone": "Secim disa aktarimi tamamlandi",
-      "bulkDone": "Güncelleme tamamlandı"
+      "selectionExportDone": "Secim disa aktarimi tamamlandi"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
@@ -264,32 +263,7 @@
     "errors": {
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
-      "fix_fields": "Lütfen kırmızı alanları düzeltin",
-      "password_min": "Şifre en az 8 karakter olmalıdır",
-      "search_no_match": "Aramanızla eşleşen sayfa yok",
-      "update_failed": "Kullanıcı güncellenemedi"
-    },
-    "impersonation": {
-      "title": "Bir çalışanı taklit et",
-      "subtitle": ":name adına oturum aç",
-      "reason": "Gerekçe (zorunlu, en az 5 karakter)",
-      "reasonMin": "Gerekçe zorunludur (en az 5 karakter).",
-      "noLink": "Bu hesaba bağlı çalışan yok — taklit edilemiyor.",
-      "start": "Oturum oluştur",
-      "cancel": "İptal",
-      "tokenTitle": "Taklit belirteci (tek kullanımlık)",
-      "expires": ":date tarihinde sona erer",
-      "copy": "Belirteci kopyala",
-      "copied": "Belirteç kopyalandı",
-      "created": "Taklit oturumu oluşturuldu",
-      "error": "Taklit oturumu oluşturulurken hata oluştu",
-      "done": "Tamam",
-      "employee": "Bağlı çalışan #:id"
-    },
-    "edit": {
-      "title": "Kullanıcıyı düzenle",
-      "status": "Durum",
-      "save": "Güncelle"
+      "fix_fields": "Lütfen kırmızı alanları düzeltin"
     }
   },
   "dashboard": {
@@ -302,8 +276,14 @@
     "recent_activity": "Son Etkinlik",
     "recent_activity_hint": "Ekibinizin son eylemleri",
     "leo_ia_announcement_title": "Tebrikler ekip",
-    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
-    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin."
+    "leo_ia_announcement_body": "Bu haftaki ozveriniz icin tum ekibe tebrikler. Bu ivmeyi surdurun!",
+    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.",
+    "leo_presence_insight": "Bugün {active} aktif çalışandan {today} giriş yaptı. Ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_presence_empty": "Şu anda katılım verisi yok. Yine de ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_announcements_count": "Şirketinizde {count} duyuru yayınlandı.",
+    "presence_today_title": "Bugünkü katılım",
+    "presence_today_summary": "Bugün {active} aktif çalışandan {present} giriş yaptı",
+    "presence_today_empty": "Katılım verisi mevcut değil."
   },
   "marketing": {
     "oauth": {
@@ -626,7 +606,7 @@
     }
   },
   "signup": {
-    "badge": "30 günlük ücretsiz deneme",
+    "badge": "14 günlük ücretsiz deneme",
     "title": "Leopardo'yu şirketinizle deneyin",
     "subtitle": "Deneme alanınızı 2 dakikada oluşturun. Kredi kartı gerekmez.",
     "labelEmail": "İş e-postası",
@@ -692,6 +672,7 @@
     "credsSentByEmail": "Bu bilgiler e-postayla da gönderildi:",
     "credsEmailed": "Giriş bilgileriniz e-postayla gönderildi.",
     "trialNote": "Ücretsiz deneme:",
+    "trialDaysUnit": "gün",
     "trialNoteSuffix": "kredi kartı gerekmez",
     "downloadApp": "Uygulamayı indir",
     "changePasswordNote": "İlk girişte parolanızı değiştirin.",
@@ -714,6 +695,11 @@
       "tickets_failed": "Destek talepleri yüklenemedi.",
       "subscription_failed": "Abonelik güncellenemedi.",
       "features_failed": "Modül ayarları kaydedilemedi."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
   }
 }

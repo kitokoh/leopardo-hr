@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -22,11 +23,21 @@ class RegisterLoginFlowTest extends TestCase
     {
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
+        // #3364 : une invitation référence TOUJOURS un employé existant
+        // (employee_id NOT NULL — UserInvitationService::createAndSend).
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => $email,
+            'password_hash' => Hash::make('old-password'),
+            'role' => 'ordinary',
+            'status' => 'active',
+        ]);
+
         DB::table('public.user_invitations')->insert([
-            'id' => (string) \Illuminate\Support\Str::uuid(),
+            'id' => (string) Str::uuid(),
             'company_id' => $company->id,
             'schema_name' => 'shared_tenants',
-            'employee_id' => 0,
+            'employee_id' => $employee->id,
             'email' => $email,
             'role' => 'ordinary',
             'manager_role' => null,
@@ -73,10 +84,12 @@ class RegisterLoginFlowTest extends TestCase
         $register->assertStatus(201)
             ->assertJsonStructure(['data' => ['id', 'email', 'role'], 'token']);
 
-        // L'employé est rattaché au company_id de l'invitation (plus
-        // d'orphelin → plus de CompanyNotFoundException au login).
+        // #3364 : l'employé EXISTANT est mis à jour (pas de doublon) —
+        // une seule ligne pour l'email, avec le nouveau mot de passe.
+        $this->assertDatabaseCount('employees', 1);
         $this->assertDatabaseHas('employees', [
             'email' => 'john.doe@example.com',
+            'status' => 'active',
         ]);
 
         $login = $this->postJson('/api/v1/auth/login', [

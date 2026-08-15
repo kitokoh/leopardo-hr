@@ -231,9 +231,16 @@ function formatDate(date) {
 
 async function exportReport() {
   try {
+    // Issue #3045 — échappement anti-injection de formule (cellules = + - @),
+    // cohérent avec UsersView (#2700).
+    const escapeCell = (value) => {
+      const str = value === null || value === undefined ? '' : String(value)
+      if (/^[=+\-@]/.test(str)) return `'${str}`
+      return `"${str.replace(/"/g, '""')}"`
+    }
     const csvContent = "data:text/csv;charset=utf-8," +
       "Type,Message,Date\n" +
-      activities.value.map(a => `${a.type || ''},${String(a.message || '').replace(/,/g, ';')},${a.created_at || ''}`).join('\n')
+      activities.value.map(a => [a.type || '', a.message || '', a.created_at || ''].map(escapeCell).join(',')).join('\n')
     const link = document.createElement("a")
     link.setAttribute("href", encodeURI(csvContent))
     link.setAttribute("download", "analytics-activities.csv")

@@ -1,6 +1,8 @@
+import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: { canonical: `${SITE_URL}/demo` },
   title: 'Demander une Demo | Leopardo RH',
   description:
     'Planifiez une demo gratuite de Leopardo RH. Découvrez la gestion RH automatisee : paie multi-pays, pointage, absences, formations et plus.',

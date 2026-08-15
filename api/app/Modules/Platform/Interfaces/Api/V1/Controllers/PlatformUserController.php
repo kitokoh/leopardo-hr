@@ -47,7 +47,7 @@ class PlatformUserController extends Controller
         }
 
         $users = $query->orderByDesc('id')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return new JsonResponse([
             'data' => collect($users->items())->map(fn (SuperAdmin $user): array => $this->serialize($user)),

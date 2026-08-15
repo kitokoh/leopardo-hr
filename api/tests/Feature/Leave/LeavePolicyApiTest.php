@@ -374,5 +374,24 @@ class LeavePolicyApiTest extends TestCase
             ->assertJsonPath('data.0.company_id', $company->id)
             ->assertJsonCount(1, 'data');
     }
-}
 
+    public function test_legacy_employee_leave_balances_route_is_removed(): void
+    {
+        // QA #3055/#3063 : l'ancienne route `employees/{employeeId}/leave-balances`
+        // (contrôleur dupliqué module Absence) exposait les soldes de n'importe
+        // quel employé, sans garde de rôle ni scope société. Elle a été supprimée :
+        // seul `/leave-balances` (manager) et `/me/leave-balances` (soi-même) existent.
+        [$company, $manager] = $this->makeManagerAndCompany();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/employees/'.$employee->id.'/leave-balances?year=2026')
+            ->assertNotFound();
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/employees/'.$manager->id.'/leave-balances?year=2026')
+            ->assertNotFound();
+    }
+}

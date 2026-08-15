@@ -20,7 +20,7 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/register',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
       data: {
         'first_name': firstName,
@@ -45,7 +45,7 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/login',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
       data: {'email': email, 'password': password, 'device_name': 'Mobile App'},
     );
@@ -67,7 +67,7 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/google-signin',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       isLoginRequest: true,
       data: {
         'google_id': googleId,
@@ -108,7 +108,7 @@ class UserAuthRepository {
     try {
       await apiClient.requestWithRetry(
         '/user/logout',
-        method: 'POST',
+        method: 'POST', maxRetriesOverride: 0,
         useUserSession: true,
         timeoutOverride: const Duration(seconds: 8),
         maxRetriesOverride: 0,
@@ -142,7 +142,7 @@ class UserAuthRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/user/company-requests',
-      method: 'POST',
+      method: 'POST', maxRetriesOverride: 0,
       useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
       maxRetriesOverride: 0,
@@ -181,7 +181,7 @@ class UserAuthRepository {
     final user = AppUser.fromJson(_userPayload(extractDataMap(response.data)));
 
     // Persiste la nouvelle locale localement pour que le header Accept-Language
-    // et le Locale Flutter soient mis à jour sans nécessiter un re-login.
+    // et le Locale Flutter soient mis Ã  jour sans nÃ©cessiter un re-login.
     if (preferredLanguage != null) {
       final lang = user.preferredLanguage.isNotEmpty
           ? user.preferredLanguage
@@ -191,6 +191,8 @@ class UserAuthRepository {
         preferredLanguage: lang,
         isRtl: isRtl,
       );
+      // Header Accept-Language gere par l'intercepteur core (api_client.dart)
+      // a partir de _preferences.preferredLanguage — pas de mutation globale.
     }
 
     return user;

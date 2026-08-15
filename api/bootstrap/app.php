@@ -103,6 +103,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // MULTI-PAYS (#1867) : pays légal du tenant obligatoire et supporté
             // avant toute opération RH/paie sensible.
             'tenant.country' => RequireTenantCountry::class,
+            // #3368 : restaure le search_path après chaque requête kiosque
+            // (les handlers basculent vers le schéma tenant sans try/finally).
+            'kiosk.search_path' => \App\Http\Middleware\EnsureKioskSearchPathReset::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.

@@ -194,24 +194,6 @@
           ]
         },
         {
-          "name": "training_enrollments",
-          "routes": [
-            "/training"
-          ],
-          "endpoints": [
-            "/me/training-enrollments"
-          ],
-          "screenFiles": [
-            "lib/features/training/screens/training_screen.dart",
-            "lib/features/training/providers/training_provider.dart",
-            "lib/features/training/data/training_repository.dart"
-          ],
-          "sourceTokens": [
-            "trainingEnrollmentsProvider",
-            "getMyEnrollments"
-          ]
-        },
-        {
           "name": "my_vehicles",
           "routes": [
             "/vehicle-map"

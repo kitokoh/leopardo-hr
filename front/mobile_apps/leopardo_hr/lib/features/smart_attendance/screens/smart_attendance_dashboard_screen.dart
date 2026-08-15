@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 /// Tableau de bord Smart Attendance — Manager
 ///
@@ -103,7 +104,7 @@ class _StatsGrid extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', 'fr_FR').format(parsedDate) : dateLabel}",
+          "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', deviceIntlDateLocale).format(parsedDate) : dateLabel}",
           style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
         ),
         const SizedBox(height: 12),

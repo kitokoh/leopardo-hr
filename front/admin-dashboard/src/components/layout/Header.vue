@@ -38,13 +38,29 @@
             <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
-                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : 'bg-red-400')
+                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : (realtimeStore.pushUnavailable ? 'bg-gray-400' : 'bg-red-400'))
               ]"
             ></div>
             <span class="text-xs text-gray-500 hidden sm:block">
-              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : 'Déconnecté') }}
+              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : (realtimeStore.pushUnavailable ? 'Push non configuré' : 'Déconnecté')) }}
             </span>
           </div>
+
+          <!-- Language selector -->
+          <label class="sr-only" for="admin-language-select">
+            {{ $t('common.language.label', 'Language') }}
+          </label>
+          <select
+            id="admin-language-select"
+            :value="localeStore.current"
+            :aria-label="$t('common.language.label', 'Language')"
+            class="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            @change="localeStore.setLocale($event.target.value)"
+          >
+            <option v-for="locale in localeStore.supported" :key="locale" :value="locale">
+              {{ languageLabels[locale] }}
+            </option>
+          </select>
 
           <!-- Quick stats -->
           <div class="hidden md:flex items-center space-x-6 text-sm text-slate-500 dark:text-slate-400">
@@ -245,6 +261,13 @@ const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
 
+const languageLabels = {
+  fr: 'Français',
+  ar: 'العربية',
+  tr: 'Türkçe',
+  en: 'English',
+}
+
 const searchQuery = ref('')
 const showNotifications = ref(false)
 const showAlerts = ref(false)
@@ -269,6 +292,14 @@ onUnmounted(() => {
 })
 
 // Methods
+// Issue #3042 — routes tenant gardées (meta requiresTenant, guard #2272) :
+// la console super-admin n'a pas de contexte tenant, l'accès rebondit vers /
+// (toast « Fonctionnalité entreprise »). Les exclure de la recherche pour
+// éviter une navigation qui finit en rebond muet.
+function isTenantGuarded(route) {
+  return Boolean(route.meta?.requiresTenant)
+}
+
 function handleSearch() {
   const query = searchQuery.value.trim()
   if (!query) return
@@ -278,6 +309,7 @@ function handleSearch() {
   const normalized = query.toLowerCase()
   const matches = router.getRoutes().filter((route) => {
     if (!route.path.startsWith('/') || route.path.includes(':') || route.path === '/') return false
+    if (isTenantGuarded(route)) return false
     const haystack = `${route.path} ${route.meta?.title ?? ''} ${route.name ?? ''}`.toLowerCase()
     return haystack.includes(normalized)
   })
@@ -286,7 +318,9 @@ function handleSearch() {
     router.push(matches[0].path)
   } else {
     // Aucune route : cible la vue liste la plus proche par mot-clé du path.
-    const fallback = router.getRoutes().find((r) => r.path.includes(normalized) && !r.path.includes(':'))
+    const fallback = router.getRoutes().find(
+      (r) => r.path.includes(normalized) && !r.path.includes(':') && !isTenantGuarded(r)
+    )
     if (fallback) router.push(fallback.path)
   }
 }

@@ -6,7 +6,7 @@ services:
   # Web Service — Laravel API
   # ──────────────────────────────────────────────────────────────────────────
   - type: web
-    name: leopardo-api
+    name: gestionemployerbackend
     runtime: docker
     dockerfilePath: api/Dockerfile.prod
     dockerContext: .
@@ -25,7 +25,7 @@ services:
         value: "true"
       - key: APP_URL
         fromService:
-          name: leopardo-api
+          name: gestionemployerbackend
           type: web
           property: host
       - key: LOG_CHANNEL
