@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
- * HrController â€” Leopardo RH Mobile App
+ * HrController — Leopardo RH Mobile App
  *
  * Endpoints ONLY accessible to employees with manager_role = 'rh'.
  * These routes are protected by middleware: api.manager:rh,principal
@@ -150,7 +150,7 @@ class HrController extends Controller
         $employee = Employee::create([
             ...$validatedForCreate,
             'preferred_language' => 'fr',
-            'password_hash'     => Hash::make(Str::random(32)), // Temporary â€” will be set via invitation
+            'password_hash'     => Hash::make(Str::random(32)), // Temporary — will be set via invitation
         ]);
         $employee->company_id = $actor->company_id;
         $employee->role = 'employee'; // HR can only create regular employees

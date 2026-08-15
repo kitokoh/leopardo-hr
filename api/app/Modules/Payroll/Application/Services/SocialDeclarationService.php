@@ -24,7 +24,7 @@ class SocialDeclarationService
      *
      * @return Collection<int, Employee>
      */
-    public function activeEmployees(int $companyId): Collection
+    public function activeEmployees(string $companyId): Collection
     {
         return Employee::query()
             ->where('company_id', $companyId)
@@ -45,6 +45,7 @@ class SocialDeclarationService
             'Q2' => [4, 5, 6],
             'Q3' => [7, 8, 9],
             'Q4' => [10, 11, 12],
+            default => throw new \InvalidArgumentException("Trimestre invalide : {$quarter}"),
         };
     }
 
@@ -54,9 +55,9 @@ class SocialDeclarationService
      * `months_worked` (nombre de mois distincts avec bulletin).
      *
      * @param  list<int>  $months
-     * @return \Illuminate\Support\Collection<int, object>  keyBy employee_id
+     * @return \Illuminate\Support\Collection<int|string, \stdClass>  keyBy employee_id
      */
-    public function quarterPayrollData(int $companyId, int $year, array $months, bool $withMonthsCount = false)
+    public function quarterPayrollData(string $companyId, int $year, array $months, bool $withMonthsCount = false)
     {
         $query = DB::table('pay_slips')
             ->join('payroll_runs', 'pay_slips.payroll_run_id', '=', 'payroll_runs.id')
@@ -83,9 +84,9 @@ class SocialDeclarationService
      * Agrégation mensuelle des bulletins validés par employé :
      * `total_gross` + `total_net` (DSN France).
      *
-     * @return \Illuminate\Support\Collection<int, object>  keyBy employee_id
+     * @return \Illuminate\Support\Collection<int|string, \stdClass>  keyBy employee_id
      */
-    public function monthPayrollData(int $companyId, int $year, int $month)
+    public function monthPayrollData(string $companyId, int $year, int $month)
     {
         return DB::table('pay_slips')
             ->join('payroll_runs', 'pay_slips.payroll_run_id', '=', 'payroll_runs.id')

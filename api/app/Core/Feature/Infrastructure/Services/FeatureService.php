@@ -56,7 +56,7 @@ class FeatureService
                     ->latest()
                     ->first();
 
-                return PlanCode::normalize($sub?->plan ?? PlanCode::Free->value)->value;
+                return PlanCode::normalize($sub->plan ?? PlanCode::Free->value)->value;
             }
         );
     }

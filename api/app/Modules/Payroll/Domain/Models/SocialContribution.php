@@ -85,7 +85,7 @@ class SocialContribution extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeForCountry(Builder $query, string $countryCode): Builder
@@ -94,7 +94,7 @@ class SocialContribution extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeEmployee(Builder $query): Builder
@@ -103,7 +103,7 @@ class SocialContribution extends Model
     }
 
     /**
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     public function scopeEmployer(Builder $query): Builder
@@ -118,7 +118,7 @@ class SocialContribution extends Model
      * a payroll run from a past period must use the social contribution
      * rates that were effective *during that period*, not today's rates.
      *
-     * @param  Builder<static>  $q
+     * @param  Builder<static>  $query
      * @param  Carbon|\DateTimeInterface|string|null  $asOf
      * @return Builder<static>
      */

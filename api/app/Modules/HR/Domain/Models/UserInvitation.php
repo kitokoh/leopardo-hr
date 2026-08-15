@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  * @property string $id
  * @property string|null $company_id
  * @property string $schema_name
- * @property string|null $employee_id
+ * @property int|null $employee_id
  * @property string $email
  * @property string $role
  * @property string|null $manager_role

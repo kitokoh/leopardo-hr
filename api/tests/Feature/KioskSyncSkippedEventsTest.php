@@ -83,7 +83,7 @@ class KioskSyncSkippedEventsTest extends TestCase
             ->assertJsonPath('data.processed_count', 1)
             ->assertJsonPath('data.skipped_count', 3);
 
-        $skipped = collect($response->json('data.skipped'));
+        $skipped = collect((array) $response->json('data.skipped'));
         $this->assertSame(
             'EMPLOYEE_NOT_FOUND',
             $skipped->firstWhere('external_event_id', 'evt-unknown-001')['reason'] ?? null

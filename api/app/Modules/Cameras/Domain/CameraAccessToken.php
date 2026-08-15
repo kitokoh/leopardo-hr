@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
  * Section 4.2 du cahier des charges.
  *
  * @property int $id
- * @property int $company_id
+ * @property string $company_id
  * @property int $camera_id
  * @property string $token
  * @property string|null $label
