@@ -1236,10 +1236,6 @@ class LeopardoClient:
         """Lister les bulletins de paie d'une session"""
         return self.request("GET", "/payroll-runs/{payrollRun}/pay-slips", **kwargs)
 
-    def get_payroll_runs_by_payrollrun_payment_documents(self, **kwargs):
-        """Documents de paiement d'un cycle paie"""
-        return self.request("GET", "/payroll-runs/{payrollRun}/payment-documents", **kwargs)
-
     def listpayrollrunregularizations(self, **kwargs):
         """Lister les régularisations d'un run (DZ-DEPTH #1818)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/regularizations", **kwargs)

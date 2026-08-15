@@ -1520,11 +1520,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
     },
 
-    /** Documents de paiement d'un cycle paie */
-    getPayrollRunsByPayrollRunPaymentDocuments(options = {}) {
-      return request("GET", "/payroll-runs/{payrollRun}/payment-documents", options);
-    },
-
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
     listPayrollRunRegularizations(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/regularizations", options);
