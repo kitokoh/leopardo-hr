@@ -19,6 +19,8 @@ bloquantes ouvertes.
 |---|---|---|---|---|---|
 | DZ (Algérie) | `AlgeriaPayrollRules` | pilot* | `DZ_COMPLIANCE.md` | ❌ à valider | barèmes IRG/CNAS à confirmer |
 | FR | `FrancePayrollRules` | pilot* | — | ❌ à valider | barème IR/charges à confirmer |
+| MA (Maroc) | `MoroccoPayrollRules` | pilot | `MA_COMPLIANCE.md` | ❌ à valider | abattement frais pro 35 % (art. 58) ✅ implémenté (#2260) ; CNSS/AMO/IR à confirmer |
+| TN (Tunisie) | `TunisiaPayrollRules` | pilot | (fiche à créer) | ❌ à valider | abattement IRPP 10 % (art. 39) ✅ implémenté (#2261) ; reste à confirmer |
 
 > \* DZ/FR sont **pilot dans le code** (`confidenceLevel()`), pas production —
 > aucun pays n'a de validation experte signée à ce jour ; la colonne
