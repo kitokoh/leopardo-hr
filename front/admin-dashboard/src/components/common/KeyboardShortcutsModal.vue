@@ -41,20 +41,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
+import { KEYBOARD_SHORTCUTS } from '@/composables/useKeyboardShortcuts'
 
 const visible = ref(false)
 
-const shortcuts = [
-  { keys: 'Ctrl + D', description: 'Basculer mode sombre' },
-  { keys: 'Ctrl + K', description: 'Rechercher' },
-  { keys: 'Alt + H', description: 'Tableau de bord' },
-  { keys: 'Alt + U', description: 'Utilisateurs' },
-  { keys: 'Alt + C', description: 'Entreprises' },
-  { keys: 'Alt + S', description: 'Abonnements' },
-  { keys: 'Alt + R', description: 'Recrutement' },
-  { keys: 'Escape', description: 'Fermer les modales' },
-  { keys: '?', description: 'Aide raccourcis' },
-]
+// #3275 : liste unique depuis useKeyboardShortcuts (plus de drift) ;
+// « Escape » reste spécifique au modal (fermeture locale via @keydown.escape).
+const shortcuts = [...KEYBOARD_SHORTCUTS, { keys: 'Escape', description: 'Fermer les modales' }]
 
 function onShowHelp() {
   visible.value = true
