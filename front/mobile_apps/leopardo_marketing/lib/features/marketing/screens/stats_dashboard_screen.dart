@@ -4,78 +4,59 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_marketing/features/marketing/repositories/providers.dart';
 
 // ─── Modèle ──────────────────────────────────────────────────────────────────
 
-/// Statistiques agrégées retournées par l'API Marketing.
-/// Connecter à GET /api/v1/marketing/posts/stats (à implémenter côté API).
+/// Statistiques agrégées réelles (#2595), calculées côté client à partir de
+/// GET /marketing/posts (le backend n'expose pas de métriques d'engagement :
+/// seuls les compteurs de posts par statut et par plateforme sont honnêtes).
 class MarketingStats {
-  final int impressions;
-  final int likes;
-  final int clicks;
-  final int shares;
+  final int total;
+  final int published;
+  final int scheduled;
+  final int failed;
   final List<PlatformStats> byPlatform;
 
   const MarketingStats({
-    required this.impressions,
-    required this.likes,
-    required this.clicks,
-    required this.shares,
+    required this.total,
+    required this.published,
+    required this.scheduled,
+    required this.failed,
     required this.byPlatform,
   });
+
+  factory MarketingStats.fromAggregation(Map<String, dynamic> agg) {
+    return MarketingStats(
+      total: (agg['total'] as num?)?.toInt() ?? 0,
+      published: (agg['published'] as num?)?.toInt() ?? 0,
+      scheduled: (agg['scheduled'] as num?)?.toInt() ?? 0,
+      failed: (agg['failed'] as num?)?.toInt() ?? 0,
+      byPlatform: ((agg['byPlatform'] as List?) ?? const [])
+          .map((e) => PlatformStats(
+                platform: (e as Map<String, dynamic>)['platform']?.toString() ?? '?',
+                posts: ((e['posts'] as num?) ?? 0).toInt(),
+              ))
+          .toList(),
+    );
+  }
 }
 
 class PlatformStats {
   final String platform;
   final int posts;
-  final int impressions;
-  final int engagements;
-  final int clicks;
 
-  const PlatformStats({
-    required this.platform,
-    required this.posts,
-    required this.impressions,
-    required this.engagements,
-    required this.clicks,
-  });
+  const PlatformStats({required this.platform, required this.posts});
 }
 
 // ─── Provider Riverpod ────────────────────────────────────────────────────────
 
-/// Fournit les statistiques marketing.
-/// Remplacer le corps par un appel `api.get('/v1/marketing/stats')` une fois
-/// l'endpoint backend disponible.
+/// Fournit les statistiques marketing agrégées depuis le référentiel
+/// (fetchStats sur GET /marketing/posts). États d'erreur AsyncValue gérés
+/// par l'écran (retry inclus) — plus aucune donnée fabriquée.
 final marketingStatsProvider = FutureProvider<MarketingStats>((ref) async {
-  // Simulation d'une latence réseau — à remplacer par un vrai appel API.
-  await Future.delayed(const Duration(milliseconds: 800));
-
-  return const MarketingStats(
-    impressions: 24_310,
-    likes: 1_847,
-    clicks: 432,
-    shares: 98,
-    byPlatform: [
-      PlatformStats(
-        platform: 'LinkedIn',
-        impressions: 12_540,
-        likes: 923,
-        clicks: 214,
-      ),
-      PlatformStats(
-        platform: 'Facebook',
-        impressions: 8_920,
-        likes: 651,
-        clicks: 138,
-      ),
-      PlatformStats(
-        platform: 'X (Twitter)',
-        impressions: 2_850,
-        likes: 273,
-        clicks: 80,
-      ),
-    ],
-  );
+  final repository = ref.watch(socialPostRepositoryProvider);
+  return MarketingStats.fromAggregation(await repository.fetchStats());
 });
 
 // ─── Écran ────────────────────────────────────────────────────────────────────
@@ -166,15 +147,15 @@ class _KpiGrid extends StatelessWidget {
         Row(
           children: [
             MobileMetricTile(
-              value: _format(stats.impressions),
-              label: 'Impressions',
+              value: _format(stats.total),
+              label: 'Posts (30 j)',
               color: AppColors.ia, // violet — couleur marketing
             ),
             const SizedBox(width: 10),
             MobileMetricTile(
-              value: _format(stats.likes),
-              label: 'Likes',
-              color: AppColors.danger,
+              value: _format(stats.published),
+              label: 'Publiés',
+              color: AppColors.success,
             ),
           ],
         ),
@@ -182,15 +163,15 @@ class _KpiGrid extends StatelessWidget {
         Row(
           children: [
             MobileMetricTile(
-              value: _format(stats.clicks),
-              label: 'Clics',
+              value: _format(stats.scheduled),
+              label: 'Planifiés',
               color: AppColors.info,
             ),
             const SizedBox(width: 10),
             MobileMetricTile(
-              value: _format(stats.shares),
-              label: 'Partages',
-              color: AppColors.success,
+              value: _format(stats.failed),
+              label: 'Échecs',
+              color: AppColors.danger,
             ),
           ],
         ),
@@ -239,27 +220,11 @@ class _PlatformCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
 
-          // Métriques inline
-          Row(
-            children: [
-              _InlineStat(
-                label: 'Impressions',
-                value: platform.impressions,
-                color: AppColors.ia,
-              ),
-              const SizedBox(width: 16),
-              _InlineStat(
-                label: 'Likes',
-                value: platform.likes,
-                color: AppColors.danger,
-              ),
-              const SizedBox(width: 16),
-              _InlineStat(
-                label: 'Clics',
-                value: platform.clicks,
-                color: AppColors.info,
-              ),
-            ],
+          // Nombre réel de posts ciblant cette plateforme (30 j)
+          _InlineStat(
+            label: 'Posts ciblés',
+            value: platform.posts,
+            color: AppColors.ia,
           ),
         ],
       ),

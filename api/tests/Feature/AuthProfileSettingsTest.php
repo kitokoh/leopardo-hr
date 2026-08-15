@@ -149,13 +149,13 @@ class AuthProfileSettingsTest extends TestCase
         ]);
 
         CabinetFolder::query()->create([
-            'company_id' => 1,
+            'company_id' => $company->id,
             'employee_id' => $employee->id,
             'name' => 'Contrats',
         ]);
 
         CabinetDocument::query()->create([
-            'company_id' => 1,
+            'company_id' => $company->id,
             'employee_id' => $employee->id,
             'name' => 'Contrat CDI',
             'original_name' => 'contrat.pdf',
