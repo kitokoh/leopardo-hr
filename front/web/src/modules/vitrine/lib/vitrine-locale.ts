@@ -760,6 +760,33 @@ export function setVitrineLocale(locale: AppLocale): void {
   broadcastLocaleChange()
 }
 
+// #3246 — preuve sociale honnête. Aucun client payant à ce jour
+// (PILOTAGE.md « Clients payants | 0 ») : tout contenu « client » de la
+// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard,
+// TestimonialHighlight et MiniCaseStudies pour marquer explicitement les
+// citations/cas comme des exemples (voir TESTIMONIALS_ARE_DEMO).
+export const ILLUSTRATIVE_EXAMPLE_LABEL: Record<AppLocale, string> = {
+  fr: 'Exemple illustratif',
+  en: 'Illustrative example',
+  tr: 'Temsili örnek',
+  ar: 'مثال توضيحي',
+}
+
+export const ILLUSTRATIVE_EXAMPLE_SUFFIX: Record<AppLocale, string> = {
+  fr: '(exemple)',
+  en: '(example)',
+  tr: '(örnek)',
+  ar: '(مثال)',
+}
+
+export function getIllustrativeExampleLabel(locale: AppLocale): string {
+  return ILLUSTRATIVE_EXAMPLE_LABEL[locale] ?? ILLUSTRATIVE_EXAMPLE_LABEL.fr
+}
+
+export function getIllustrativeExampleSuffix(locale: AppLocale): string {
+  return ILLUSTRATIVE_EXAMPLE_SUFFIX[locale] ?? ILLUSTRATIVE_EXAMPLE_SUFFIX.fr
+}
+
 export function useVitrineLocale() {
   const [locale, setLocaleState] = useState<AppLocale>(() => getCurrentLocale())
 
