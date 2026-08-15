@@ -12,6 +12,8 @@ return [
     'activity_support_ticket' => 'تذكرة دعم: :subject',
     'activity_edge_sync' => 'مزامنة إيدج: :name',
     'activity_user_signup' => 'مستخدم جديد: :name (:email)',
-    'conversation_not_found' => 'المحادثة غير موجودة.',
+    'admin_chat_unavailable' => 'يتم إعداد مساعد الذكاء الاصطناعي لكل مستأجر: لا يمكن لوحدة التحكم الأساسية الرد باسم مستأجر. سجّل الدخول إلى مساحة المستأجر لاستخدام المساعد.',
+    'conversation_not_found' => 'Conversation introuvable.',
+    'conversations_unavailable' => 'Conversations indisponibles.',
     'oauth_save_failed' => 'تعذر حفظ الإعدادات.',
 ];

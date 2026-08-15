@@ -75,11 +75,11 @@ OHADA) — paliers `1.15` / `1.35`, seuil légal 40 h/semaine.
 
 ## 7. Préavis
 
-| Catégorie | Préavis |
+| Catégorie | Préavis (jours OUVRÉS, #2219) |
 |---|---|
-| Ouvriers | 8 jours |
-| Employés / Techniciens | 1 mois |
-| Cadres | 3 mois |
+| Ouvriers | 6 j (8 j calendaires) |
+| Employés / Techniciens | 22 j (1 mois) |
+| Cadres | 66 j (3 mois) |
 
 ⚠️ L'interface n'expose que l'ancienneté : implémentation pilote au niveau
 **employé/technicien** (30 jours) — catégorie du contrat = suivi.
@@ -89,3 +89,17 @@ OHADA) — paliers `1.15` / `1.35`, seuil légal 40 h/semaine.
 Fixes : 1ᵉʳ janvier, 3 janvier (Fête de la Révolution), 8 mars, 1ᵉʳ mai,
 11 décembre (Fête Nationale), 25 décembre + fêtes islamiques mobiles (via
 table `islamic_calendar`, #1812). Gestion dynamique via #1811.
+
+## 11. Déclarations mensuelles — périmètre du CSV CNSS (décision #2158)
+
+Générateur : `CedeaoCnsDeclarationGenerator` — `GET /api/v1/payroll-runs/{run}/declarations/cnss-bf` (managers `principal`/`comptable`).
+
+| Rubrique | Salarial | Patronal | Plafond (XOF/mois) |
+|---|---|---|---|
+| Retraite | 5,5 % | 6,5 % | 900 000 |
+| Prestations familiales | — | 7,0 % | 900 000 |
+| Risques professionnels (AT) | — | 3,5 % | non plafonné |
+
+Une ligne par bulletin validé (matricule `employees.cnss_bf_matricule`) + ligne TOTAUX.
+Canal déclaratif : CNSS Burkina Faso (www.cnss.bf) — montants `pilot` à valider par
+expert-comptable local (registre `docs/payroll/VALIDATION_EXPERTE.md`, #1904).

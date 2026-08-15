@@ -19,37 +19,24 @@
             <button
               @click="runHealthCheck"
               :disabled="isRunningHealthCheck"
-              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-white/10 dark:bg-slate-900/10 hover:bg-white/20 transition-all border border-white/10"
+              class="inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest text-white bg-white/10 dark:bg-slate-900/10 hover:bg-white/20 transition-all border border-white/10 disabled:opacity-50"
             >
               <HeartIcon class="h-4 w-4 mr-2" :class="{ 'animate-pulse text-red-400': isRunningHealthCheck }" />
               {{ isRunningHealthCheck ? 'Analyse...' : 'Health Check' }}
-            </button>
-
-            <button
-              @click="toggleMaintenanceMode"
-              :class="[
-                'inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-black uppercase tracking-widest transition-all border shadow-lg',
-                systemStatus.maintenanceMode
-                  ? 'bg-red-600 text-white border-red-500 hover:bg-red-500'
-                  : 'bg-amber-500 text-white border-amber-400 hover:bg-amber-400'
-              ]"
-            >
-              <WrenchScrewdriverIcon class="h-4 w-4 mr-2" />
-              {{ systemStatus.maintenanceMode ? 'Sortir de Maintenance' : 'Maintenance' }}
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Queue / Jobs Observability (PA2-QA-006) -->
+    <!-- Queue / Jobs Observability (PA2-QA-006 — GET /platform/observability/queues) -->
     <QueueObservabilityCard
       :data="queueObservability"
       :loading="isLoadingObservability"
       @refresh="loadQueueObservability"
     />
 
-    <!-- Notifications & Runbooks Observability (PA2-ADM-005) -->
+    <!-- Notifications & Runbooks Observability (PA2-ADM-005 — GET /platform/observability/notifications) -->
     <NotificationObservabilityCard
       :data="notificationObservability"
       :loading="isLoadingNotificationObservability"
@@ -60,27 +47,31 @@
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up">
       <SystemStatusCard
         title="Statut Global"
-        :status="systemStatus.overall"
-        :details="systemStatus.overallDetails"
+        :status="globalHealthStatus"
+        :details="globalHealthDetails"
+        :last-check="lastUpdated"
         icon="ServerIcon"
       />
       <SystemStatusCard
         title="Base de Données"
-        :status="systemStatus.database"
-        :details="systemStatus.databaseDetails"
+        :status="databaseStatus"
+        :details="databaseDetails"
+        :last-check="healthCheckTimestamp"
         icon="CircleStackIcon"
       />
       <SystemStatusCard
         title="Services API"
-        :status="systemStatus.api"
-        :details="systemStatus.apiDetails"
+        status="unavailable"
+        details="Aucun endpoint backend dédié pour le moment."
+        :show-details="false"
         icon="CloudIcon"
       />
       <SystemStatusCard
         title="Infrastructure"
-        :status="systemStatus.websocket"
-        details="Render + Cloudflare"
-        icon="GlobeAltIcon"
+        status="unavailable"
+        details="Aucun endpoint backend dédié pour le moment."
+        :show-details="false"
+        icon="WifiIcon"
       />
     </div>
 
@@ -90,15 +81,11 @@
         <section class="card">
           <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Métriques Temps Réel</h3>
-            <button
-              @click="refreshMetrics"
-              class="p-2 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              <ArrowPathIcon class="h-5 w-5" />
-            </button>
           </div>
-          <div class="p-6">
-            <RealTimeMetricsChart :data="performanceMetrics" />
+          <div class="flex flex-col items-center justify-center py-12 text-center">
+            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
+            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
+            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
           </div>
         </section>
 
@@ -106,21 +93,11 @@
         <section class="card">
           <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Outils de Test API</h3>
-            <button
-              @click="showApiTesterModal = true"
-              class="btn-secondary py-2"
-            >
-              <BeakerIcon class="h-4 w-4 mr-2" />
-              Nouveau test
-            </button>
           </div>
-          <div class="p-6">
-            <ApiTestingTools
-              :tests="apiTests"
-              @run="runApiTest"
-              @edit="editApiTest"
-              @delete="deleteApiTest"
-            />
+          <div class="flex flex-col items-center justify-center py-12 text-center">
+            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
+            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
+            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
           </div>
         </section>
       </div>
@@ -129,31 +106,24 @@
       <div class="lg:col-span-4 space-y-8">
         <section class="card p-6">
           <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-wider">Utilisation des Ressources</h3>
-          <ResourceUsageWidget :data="resourceUsage" />
+          <div class="flex flex-col items-center justify-center py-12 text-center">
+            <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
+            <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
+            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
+          </div>
         </section>
 
         <!-- Security Monitoring -->
         <section class="card">
           <div class="border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 flex items-center justify-between">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Sécurité</h3>
-            <span
-              :class="[
-                'px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all duration-500 shadow-glass-sm',
-                securityStatus.level === 'high' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800' :
-                securityStatus.level === 'medium' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800' :
-                'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/40'
-              ]"
-            >
-              {{ securityStatus.label }}
-            </span>
           </div>
           <div class="p-4">
-            <SecurityMonitoring
-              :alerts="securityAlerts"
-              :status="securityStatus"
-              @investigate="investigateAlert"
-              @dismiss="dismissSecurityAlert"
-            />
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+              <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
+              <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
+              <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
+            </div>
           </div>
         </section>
 
@@ -161,21 +131,13 @@
         <section class="card">
           <div class="border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 flex items-center justify-between">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Sauvegardes</h3>
-            <button
-              @click="createBackup"
-              :disabled="isCreatingBackup"
-              class="text-xs font-black text-brand-600 hover:text-brand-700 uppercase tracking-widest disabled:opacity-50"
-            >
-              {{ isCreatingBackup ? 'Creation...' : 'Nouvelle' }}
-            </button>
           </div>
-          <div class="p-2">
-            <BackupManagement
-              :backups="backups"
-              @restore="restoreBackup"
-              @delete="deleteBackup"
-              @download="downloadBackup"
-            />
+          <div class="p-4">
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+              <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
+              <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
+              <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
+            </div>
           </div>
         </section>
       </div>
@@ -185,58 +147,23 @@
     <div class="card">
       <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
         <h3 class="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Configuration Plateforme</h3>
-        <div class="flex items-center space-x-3">
-          <button
-            @click="exportConfig"
-            class="text-xs font-bold text-slate-500 hover:text-slate-700 uppercase tracking-widest"
-          >
-            Exporter JSON
-          </button>
-          <button
-            @click="showImportModal = true"
-            class="text-xs font-bold text-brand-600 hover:text-brand-700 uppercase tracking-widest"
-          >
-            Importer
-          </button>
-        </div>
       </div>
       <div class="p-6">
-        <SystemConfiguration
-          :config="systemConfig"
-          @update="updateConfig"
-          @reset="resetConfig"
-        />
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+          <InformationCircleIcon class="h-8 w-8 text-slate-300 dark:text-slate-600 mb-3" />
+          <p class="text-sm font-bold text-slate-500 dark:text-slate-400">Non disponible</p>
+          <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">Aucun endpoint backend ne fournit ces données pour le moment.</p>
+        </div>
       </div>
     </div>
-
-    <!-- Modals -->
-    <CreateTaskModal
-      v-if="showCreateTaskModal"
-      @close="showCreateTaskModal = false"
-      @created="handleTaskCreated"
-    />
-
-    <ImportConfigModal
-      v-if="showImportModal"
-      @close="showImportModal = false"
-      @imported="handleConfigImported"
-    />
-
-    <ApiTesterModal
-      v-if="showApiTesterModal"
-      @close="showApiTesterModal = false"
-      @created="handleApiTestCreated"
-    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   HeartIcon,
-  WrenchScrewdriverIcon,
-  ArrowPathIcon,
-  BeakerIcon
+  InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
@@ -245,133 +172,80 @@ import api from '@/services/api'
 import SystemStatusCard from '@/components/system/SystemStatusCard.vue'
 import QueueObservabilityCard from '@/components/system/QueueObservabilityCard.vue'
 import NotificationObservabilityCard from '@/components/system/NotificationObservabilityCard.vue'
-import RealTimeMetricsChart from '@/components/system/RealTimeMetricsChart.vue'
-import ResourceUsageWidget from '@/components/system/ResourceUsageWidget.vue'
-import BackupManagement from '@/components/system/BackupManagement.vue'
-import SecurityMonitoring from '@/components/system/SecurityMonitoring.vue'
-import SystemConfiguration from '@/components/system/SystemConfiguration.vue'
-import ApiTestingTools from '@/components/system/ApiTestingTools.vue'
-import CreateTaskModal from '@/components/system/CreateTaskModal.vue'
-import ImportConfigModal from '@/components/system/ImportConfigModal.vue'
-import ApiTesterModal from '@/components/system/ApiTesterModal.vue'
 
 const toast = useToast()
 
 // Reactive state
 const isRunningHealthCheck = ref(false)
+
+// PA2-QA-006 — GET /platform/observability/queues
 const queueObservability = ref(null)
 const isLoadingObservability = ref(false)
+
+// PA2-ADM-005 — GET /platform/observability/notifications
 const notificationObservability = ref(null)
 const isLoadingNotificationObservability = ref(false)
-const isCreatingBackup = ref(false)
-const showCreateTaskModal = ref(false)
-const showImportModal = ref(false)
-const showApiTesterModal = ref(false)
 
-// System status
-const systemStatus = reactive({
-  overall: 'healthy',
-  overallDetails: 'Tous les services fonctionnent normalement',
-  database: 'healthy',
-  databaseDetails: 'Connexions: 45/100 â€¢ Latence: 12ms',
-  api: 'healthy',
-  apiDetails: 'Temps de réponse moyen: 89ms',
-  websocket: 'healthy',
-  websocketDetails: '1,247 connexions actives',
-  maintenanceMode: false
+// GET /admin/dashboard/stats — agrégats plateforme (dont systemHealth)
+const stats = ref(null)
+const lastUpdated = ref(null)
+
+// GET /health/ready — sonde DB réelle, déclenchée par le bouton Health Check
+const healthCheck = ref(null)
+const healthCheckTimestamp = ref(null)
+
+// Statut global dérivé de stats.systemHealth (good | warning | error)
+const globalHealthStatus = computed(() => {
+  const map = {
+    good: 'healthy',
+    warning: 'warning',
+    error: 'error'
+  }
+  return map[stats.value?.systemHealth] || 'unavailable'
 })
 
-// Performance metrics
-const performanceMetrics = ref({
-  cpu: [],
-  memory: [],
-  network: [],
-  timestamps: []
+const globalHealthDetails = computed(() => {
+  const map = {
+    healthy: 'Sonde agrégée DB + Redis opérationnelle.',
+    warning: 'Sonde agrégée : dégradation détectée.',
+    error: 'Sonde agrégée : base de données injoignable.'
+  }
+  return map[globalHealthStatus.value] || 'Non disponible — GET /admin/dashboard/stats'
 })
 
-// Resource usage
-const resourceUsage = reactive({
-  cpu: 45,
-  memory: 67,
-  disk: 34,
-  network: 23
+// Base de données : résultat réel du Health Check (GET /health/ready)
+const databaseStatus = computed(() => {
+  if (!healthCheck.value) return 'unavailable'
+  return healthCheck.value.checks?.database?.ok ? 'healthy' : 'error'
 })
 
-// Automated tasks
-const automatedTasks = ref([])
-const backups = ref([])
-const securityAlerts = ref([])
-const apiTests = ref([])
-
-// Security status
-const securityStatus = reactive({
-  level: 'high',
-  label: 'SÃ‰CURISÃ‰',
-  score: 95
+const databaseDetails = computed(() => {
+  const db = healthCheck.value?.checks?.database
+  if (!db) return 'Non disponible — lancez un Health Check.'
+  return db.ok ? `Latence: ${db.latency_ms} ms` : `Erreur: ${db.error || 'base injoignable'}`
 })
-
-// System configuration
-const systemConfig = ref({})
-
-// Scaling configuration
-const scalingConfig = reactive({
-  enabled: true,
-  minInstances: 2,
-  maxInstances: 10,
-  targetCpuPercent: 70,
-  scaleUpCooldown: 300,
-  scaleDownCooldown: 600
-})
-
-const scalingMetrics = reactive({
-  currentInstances: 3,
-  averageCpu: 45,
-  requestsPerSecond: 150
-})
-
-// Load balancer
-const loadBalancerNodes = ref([])
-const trafficMetrics = reactive({
-  totalRequests: 15420,
-  averageResponseTime: 89,
-  errorRate: 0.02
-})
-
-// Auto-refresh interval
-let metricsInterval = null
 
 onMounted(async () => {
-  await loadSystemData()
-  await loadQueueObservability()
-  await loadNotificationObservability()
-  startMetricsRefresh()
+  await Promise.all([
+    loadSystemStats(),
+    loadQueueObservability(),
+    loadNotificationObservability()
+  ])
 })
 
-onUnmounted(() => {
-  if (metricsInterval) {
-    clearInterval(metricsInterval)
-  }
-})
-
-// Methods
-async function loadSystemData() {
+// Méthodes
+async function loadSystemStats() {
   try {
-    await Promise.all([
-      loadAutomatedTasks(),
-      loadBackups(),
-      loadSecurityAlerts(),
-      loadApiTests(),
-      loadSystemConfig(),
-      loadLoadBalancerNodes(),
-      updatePerformanceMetrics()
-    ])
+    const response = await api.get('/admin/dashboard/stats')
+    stats.value = response.data
+    lastUpdated.value = new Date()
   } catch (error) {
-    console.error('Failed to load system data:', error)
-    toast.error('Erreur lors du chargement des données système')
+    console.error('Failed to load system stats:', error)
+    toast.error('Erreur lors du chargement des stats système')
   }
 }
 
-// PA2-QA-006 â€” Redis/jobs observability: queue depth, failed jobs and last
+// PA2-QA-006 — Redis/jobs observability: queue depth, failed jobs and last
 // run of scheduled tasks, backed by GET /platform/observability/queues.
 async function loadQueueObservability() {
   isLoadingObservability.value = true
@@ -387,7 +261,7 @@ async function loadQueueObservability() {
   }
 }
 
-// PA2-ADM-005 â€” Cross-tenant notification failure rate (24h) + curated
+// PA2-ADM-005 — Cross-tenant notification failure rate (24h) + curated
 // runbook links, backed by GET /platform/observability/notifications.
 async function loadNotificationObservability() {
   isLoadingNotificationObservability.value = true
@@ -403,425 +277,29 @@ async function loadNotificationObservability() {
   }
 }
 
-async function loadAutomatedTasks() {
-  // Mock automated tasks
-  automatedTasks.value = [
-    {
-      id: 1,
-      name: 'Sauvegarde quotidienne',
-      description: 'Sauvegarde automatique de la base de données',
-      schedule: '0 2 * * *',
-      enabled: true,
-      lastRun: new Date(Date.now() - 3600000),
-      nextRun: new Date(Date.now() + 82800000),
-      status: 'success'
-    },
-    {
-      id: 2,
-      name: 'Nettoyage des logs',
-      description: 'Suppression des logs de plus de 30 jours',
-      schedule: '0 3 * * 0',
-      enabled: true,
-      lastRun: new Date(Date.now() - 86400000 * 2),
-      nextRun: new Date(Date.now() + 86400000 * 5),
-      status: 'success'
-    },
-    {
-      id: 3,
-      name: 'Mise Ã  jour des certificats',
-      description: 'Renouvellement automatique des certificats SSL',
-      schedule: '0 4 1 * *',
-      enabled: true,
-      lastRun: new Date(Date.now() - 86400000 * 15),
-      nextRun: new Date(Date.now() + 86400000 * 15),
-      status: 'pending'
-    }
-  ]
-}
-
-async function loadBackups() {
-  // Mock backups
-  backups.value = [
-    {
-      id: 1,
-      name: 'backup-2026-05-02-02-00',
-      type: 'full',
-      size: '2.4 GB',
-      createdAt: new Date(Date.now() - 3600000),
-      status: 'completed'
-    },
-    {
-      id: 2,
-      name: 'backup-2026-05-01-02-00',
-      type: 'full',
-      size: '2.3 GB',
-      createdAt: new Date(Date.now() - 86400000),
-      status: 'completed'
-    },
-    {
-      id: 3,
-      name: 'backup-2026-04-30-02-00',
-      type: 'incremental',
-      size: '450 MB',
-      createdAt: new Date(Date.now() - 86400000 * 2),
-      status: 'completed'
-    }
-  ]
-}
-
-async function loadSecurityAlerts() {
-  // Mock security alerts
-  securityAlerts.value = [
-    {
-      id: 1,
-      type: 'suspicious_login',
-      severity: 'medium',
-      message: 'Tentative de connexion depuis une IP inhabituelle',
-      details: 'IP: 192.168.1.100 â€¢ Utilisateur: admin@example.com',
-      timestamp: new Date(Date.now() - 1800000),
-      status: 'open'
-    },
-    {
-      id: 2,
-      type: 'rate_limit_exceeded',
-      severity: 'low',
-      message: 'Limite de taux dépassée pour l\'API',
-      details: 'Endpoint: /api/users â€¢ IP: 10.0.0.50',
-      timestamp: new Date(Date.now() - 3600000),
-      status: 'investigating'
-    }
-  ]
-}
-
-async function loadApiTests() {
-  // Mock API tests
-  apiTests.value = [
-    {
-      id: 1,
-      name: 'Test authentification',
-      method: 'POST',
-      endpoint: '/api/auth/login',
-      lastRun: new Date(Date.now() - 1800000),
-      status: 'passed',
-      responseTime: 145
-    },
-    {
-      id: 2,
-      name: 'Test liste utilisateurs',
-      method: 'GET',
-      endpoint: '/api/users',
-      lastRun: new Date(Date.now() - 900000),
-      status: 'passed',
-      responseTime: 89
-    },
-    {
-      id: 3,
-      name: 'Test création entreprise',
-      method: 'POST',
-      endpoint: '/api/companies',
-      lastRun: new Date(Date.now() - 2700000),
-      status: 'failed',
-      responseTime: 0,
-      error: 'Timeout after 5000ms'
-    }
-  ]
-}
-
-async function loadSystemConfig() {
-  // Mock system configuration
-  systemConfig.value = {
-    general: {
-      siteName: 'Leopardo RH',
-      timezone: 'Europe/Paris',
-      language: 'fr',
-      maintenanceMode: false
-    },
-    security: {
-      sessionTimeout: 3600,
-      maxLoginAttempts: 5,
-      passwordMinLength: 8,
-      twoFactorRequired: false
-    },
-    performance: {
-      cacheEnabled: true,
-      cacheTtl: 300,
-      compressionEnabled: true,
-      rateLimitEnabled: true
-    },
-    notifications: {
-      emailEnabled: true,
-      smsEnabled: false,
-      pushEnabled: true,
-      webhookEnabled: true
-    }
-  }
-}
-
-async function loadLoadBalancerNodes() {
-  // Mock load balancer nodes
-  loadBalancerNodes.value = [
-    {
-      id: 1,
-      name: 'api-node-1',
-      ip: '10.0.1.10',
-      status: 'healthy',
-      connections: 145,
-      cpu: 45,
-      memory: 67,
-      responseTime: 89
-    },
-    {
-      id: 2,
-      name: 'api-node-2',
-      ip: '10.0.1.11',
-      status: 'healthy',
-      connections: 132,
-      cpu: 52,
-      memory: 71,
-      responseTime: 92
-    },
-    {
-      id: 3,
-      name: 'api-node-3',
-      ip: '10.0.1.12',
-      status: 'draining',
-      connections: 23,
-      cpu: 15,
-      memory: 34,
-      responseTime: 78
-    }
-  ]
-}
-
-function startMetricsRefresh() {
-  // Update metrics every 5 seconds
-  metricsInterval = setInterval(updatePerformanceMetrics, 5000)
-}
-
-function updatePerformanceMetrics() {
-  const now = new Date()
-
-  // Generate realistic metrics
-  const cpu = Math.random() * 30 + 40 // 40-70%
-  const memory = Math.random() * 20 + 60 // 60-80%
-  const network = Math.random() * 40 + 10 // 10-50%
-
-  // Update performance metrics
-  performanceMetrics.value.cpu.push(cpu)
-  performanceMetrics.value.memory.push(memory)
-  performanceMetrics.value.network.push(network)
-  performanceMetrics.value.timestamps.push(now)
-
-  // Keep only last 20 points
-  if (performanceMetrics.value.cpu.length > 20) {
-    performanceMetrics.value.cpu.shift()
-    performanceMetrics.value.memory.shift()
-    performanceMetrics.value.network.shift()
-    performanceMetrics.value.timestamps.shift()
-  }
-
-  // Update resource usage
-  resourceUsage.cpu = Math.round(cpu)
-  resourceUsage.memory = Math.round(memory)
-  resourceUsage.network = Math.round(network)
-  resourceUsage.disk = Math.round(Math.random() * 20 + 30) // 30-50%
-}
-
 async function runHealthCheck() {
   isRunningHealthCheck.value = true
 
   try {
-    // Simulate health check
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    const response = await api.get('/health/ready')
+    healthCheck.value = response.data
+    healthCheckTimestamp.value = new Date()
 
-    // Update system status
-    systemStatus.overall = 'healthy'
-    systemStatus.database = 'healthy'
-    systemStatus.api = 'healthy'
-    systemStatus.websocket = 'healthy'
-
-    toast.success('Health check terminé â€¢ Tous les services sont opérationnels')
+    if (healthCheck.value?.checks?.database?.ok) {
+      toast.success('Health check terminé — base de données opérationnelle')
+    } else {
+      toast.error('Health check terminé — base de données en erreur')
+    }
   } catch (error) {
+    healthCheck.value = error.response?.data || {
+      status: 'fail',
+      checks: { database: { ok: false } }
+    }
+    healthCheckTimestamp.value = new Date()
     console.error('Health check failed:', error)
-    toast.error('Erreur lors du health check')
+    toast.error('Health check terminé — base de données injoignable')
   } finally {
     isRunningHealthCheck.value = false
-  }
-}
-
-async function toggleMaintenanceMode() {
-  try {
-    systemStatus.maintenanceMode = !systemStatus.maintenanceMode
-
-    if (systemStatus.maintenanceMode) {
-      toast.warning('Mode maintenance activé')
-    } else {
-      toast.success('Mode maintenance désactivé')
-    }
-  } catch (error) {
-    console.error('Failed to toggle maintenance mode:', error)
-    toast.error('Erreur lors du changement de mode')
-  }
-}
-
-function refreshMetrics() {
-  updatePerformanceMetrics()
-  toast.success('Métriques actualisées')
-}
-
-// Task management
-function toggleTask(taskId) {
-  const task = automatedTasks.value.find(t => t.id === taskId)
-  if (task) {
-    task.enabled = !task.enabled
-    toast.success(`Tâche ${task.enabled ? 'activée' : 'désactivée'}`)
-  }
-}
-
-function editTask(task) {
-  toast.info(`Ã‰dition de la tâche: ${task.name}`)
-}
-
-function deleteTask(taskId) {
-  automatedTasks.value = automatedTasks.value.filter(t => t.id !== taskId)
-  toast.success('Tâche supprimée')
-}
-
-function handleTaskCreated(task) {
-  automatedTasks.value.push(task)
-  showCreateTaskModal.value = false
-  toast.success('Tâche créée avec succès')
-}
-
-// Backup management
-async function createBackup() {
-  isCreatingBackup.value = true
-
-  try {
-    await new Promise(resolve => setTimeout(resolve, 5000))
-
-    const newBackup = {
-      id: Date.now(),
-      name: `backup-${new Date().toISOString().split('T')[0]}-${new Date().toTimeString().split(' ')[0].replace(/:/g, '-')}`,
-      type: 'manual',
-      size: '2.1 GB',
-      createdAt: new Date(),
-      status: 'completed'
-    }
-
-    backups.value.unshift(newBackup)
-    toast.success('Sauvegarde créée avec succès')
-  } catch (error) {
-    console.error('Backup creation failed:', error)
-    toast.error('Erreur lors de la création de la sauvegarde')
-  } finally {
-    isCreatingBackup.value = false
-  }
-}
-
-function restoreBackup(backup) {
-  toast.warning(`Restauration de la sauvegarde: ${backup.name}`)
-}
-
-function deleteBackup(backupId) {
-  backups.value = backups.value.filter(b => b.id !== backupId)
-  toast.success('Sauvegarde supprimée')
-}
-
-function downloadBackup(backup) {
-  toast.info(`Téléchargement de: ${backup.name}`)
-}
-
-// Security
-function investigateAlert(alert) {
-  toast.info(`Investigation de l'alerte: ${alert.message}`)
-}
-
-function dismissSecurityAlert(alertId) {
-  securityAlerts.value = securityAlerts.value.filter(a => a.id !== alertId)
-  toast.success('Alerte fermée')
-}
-
-// Configuration
-function updateConfig(section, config) {
-  systemConfig.value[section] = { ...systemConfig.value[section], ...config }
-  toast.success('Configuration mise Ã  jour')
-}
-
-function resetConfig(section) {
-  toast.warning(`Configuration ${section} réinitialisée`)
-}
-
-function exportConfig() {
-  const configBlob = new Blob([JSON.stringify(systemConfig.value, null, 2)], { type: 'application/json' })
-  const url = URL.createObjectURL(configBlob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'system-config.json'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-
-  toast.success('Configuration exportée')
-}
-
-function handleConfigImported(config) {
-  systemConfig.value = config
-  showImportModal.value = false
-  toast.success('Configuration importée')
-}
-
-// API Testing
-function runApiTest(test) {
-  toast.info(`Exécution du test: ${test.name}`)
-}
-
-function editApiTest(test) {
-  toast.info(`Ã‰dition du test: ${test.name}`)
-}
-
-function deleteApiTest(testId) {
-  apiTests.value = apiTests.value.filter(t => t.id !== testId)
-  toast.success('Test supprimé')
-}
-
-function handleApiTestCreated(test) {
-  apiTests.value.push(test)
-  showApiTesterModal.value = false
-  toast.success('Test API créé')
-}
-
-// Scaling
-function updateScalingConfig(config) {
-  Object.assign(scalingConfig, config)
-  toast.success('Configuration d\'auto-scaling mise Ã  jour')
-}
-
-function manualScale(action) {
-  if (action === 'up') {
-    scalingMetrics.currentInstances++
-    toast.success('Instance ajoutée manuellement')
-  } else {
-    scalingMetrics.currentInstances--
-    toast.success('Instance supprimée manuellement')
-  }
-}
-
-// Load Balancer
-function toggleLoadBalancerNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = node.status === 'healthy' ? 'unhealthy' : 'healthy'
-    toast.success(`NÅ“ud ${node.name} ${node.status === 'healthy' ? 'activé' : 'désactivé'}`)
-  }
-}
-
-function drainNode(nodeId) {
-  const node = loadBalancerNodes.value.find(n => n.id === nodeId)
-  if (node) {
-    node.status = 'draining'
-    toast.info(`Drainage du nÅ“ud ${node.name} en cours`)
   }
 }
 </script>

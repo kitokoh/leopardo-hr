@@ -6,6 +6,8 @@ namespace Tests\Feature\Training;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Domain\Models\TrainingCourse;
+use App\Modules\HR\Domain\Models\TrainingSession;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -157,5 +159,82 @@ class TrainingControllerTest extends TestCase
 
         $response->assertStatus(401);
     }
-}
 
+    /** @test */
+    public function rh_can_create_session(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        $course = TrainingCourse::create([
+            'company_id' => $this->company->id,
+            'title'      => 'Formation PHP',
+            'type'       => 'internal',
+        ]);
+
+        $response = $this->postJson("/api/v1/training/courses/{$course->id}/sessions", [
+            'start_date'       => now()->addWeek()->toDateString(),
+            'end_date'         => now()->addWeeks(2)->toDateString(),
+            'location'         => 'Salle A',
+            'external_trainer' => 'Mohamed',
+        ]);
+
+        $response->assertCreated();
+        $response->assertJsonPath('data.location', 'Salle A');
+    }
+
+    /** @test */
+    public function employee_can_enroll_in_session(): void
+    {
+        $course = TrainingCourse::create([
+            'company_id' => $this->company->id,
+            'title'      => 'Formation',
+            'type'       => 'internal',
+        ]);
+
+        $session = TrainingSession::create([
+            'training_course_id' => $course->id,
+            'company_id'         => $this->company->id,
+            'start_date'         => now()->addWeek(),
+            'end_date'           => now()->addWeeks(2),
+            'status'             => 'planned',
+        ]);
+
+        Sanctum::actingAs($this->manager);
+
+        $response = $this->postJson("/api/v1/training/sessions/{$session->id}/enroll", [
+            'employee_id' => $this->employee->id,
+        ]);
+        $response->assertStatus(201);
+    }
+
+    /** @test */
+    public function training_isolated_by_tenant_and_rejects_foreign_enrollment(): void
+    {
+        $foreignCourse = TrainingCourse::create([
+            'company_id' => $this->otherCompany->id,
+            'title'      => 'Foreign Course',
+            'type'       => 'internal',
+        ]);
+        $course = TrainingCourse::create([
+            'company_id' => $this->company->id,
+            'title'      => 'Internal Course',
+            'type'       => 'internal',
+        ]);
+        $session = TrainingSession::create([
+            'training_course_id' => $course->id,
+            'company_id'         => $this->company->id,
+            'start_date'         => now()->addWeek(),
+            'end_date'           => now()->addWeeks(2),
+            'status'             => 'planned',
+        ]);
+
+        $foreignEmployee = Employee::factory()->create(['company_id' => $this->otherCompany->id]);
+
+        Sanctum::actingAs($this->manager);
+
+        $this->getJson("/api/v1/training/courses/{$foreignCourse->id}")->assertNotFound();
+        $this->postJson("/api/v1/training/sessions/{$session->id}/enroll", [
+            'employee_id' => $foreignEmployee->id,
+        ])->assertUnprocessable();
+    }
+}

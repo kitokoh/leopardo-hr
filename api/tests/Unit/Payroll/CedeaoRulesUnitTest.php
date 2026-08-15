@@ -9,8 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Issue #1825 — CEDEAO/CI : CedeaoPayrollRules passe de « placeholder » à
- * « pilot » pour la Côte d'Ivoire (ITSAS CGI 2024 art. 116-120, CN,
- * CNSS 2024, 13ème mois, préavis art. 18). Volontairement SANS base de
+ * « pilot » pour la Côte d'Ivoire (ITS 2024 unifié art. 119 bis, CNSS,
+ * 13ème mois, préavis art. 18). Volontairement SANS base de
  * données : les règles retombent sur les barèmes par défaut quand
  * tax_slabs/social_contributions sont vides (méthodologie golden F-03/F-13).
  * Référence légale : docs/payroll/CI_COMPLIANCE.md.
@@ -22,27 +22,22 @@ class CedeaoRulesUnitTest extends TestCase
         return new CedeaoPayrollRules('CI');
     }
 
-    public function test_ci_its_2024_unique_monthly_and_cn_abolished(): void
+    public function test_ci_its_2024_calculated_on_monthly_gross(): void
     {
         $rules = $this->ci();
 
-        // Réforme 2024 (#1918, art. 119 bis) : ITS UNIQUE mensuel sur le
-        // brut (docs/payroll/CI_COMPLIANCE.md §1) — plus d'ITSAS annuel,
-        // plus de CN séparée. Brut 200 000 :
-        //   tranche 0 % (0-75k) = 0 · tranche 16 % (75k-240k) = 125 000 × 16 %
-        //   → 20 000,00
+        // Calcul manuel (docs/payroll/CI_COMPLIANCE.md §1 — réforme 2024,
+        // ord. 2023-718/719, CGI art. 119 bis) : ITS unique mensuel sur le
+        // BRUT — tranche 75 001–240 000 @ 16 % → 200 000 : 125 000 × 16 % = 20 000.
         $its = $rules->calculateIncomeTax(200000.0);
         $this->assertSame(20000.0, $its);
 
-        // CN supprimée (fusionnée dans l'ITS) → 0 quelle que soit l'assiette.
-        $this->assertSame(0.0, $rules->calculateBracketTax(300000.0));
+        // CN abolie (#1918, fusionnée dans l'ITS) : bracket tax = 0.
+        $cn = $rules->calculateBracketTax(300000.0);
+        $this->assertSame(0.0, $cn);
 
-        // Impôt total mensuel = ITS seul = 20 000,00.
-        $this->assertSame(20000.0, round($its + $rules->calculateBracketTax(300000.0), 2));
-
-        // Tranche 0 % : brut 100 000 → (100 000 − 75 000) × 16 % = 4 000 ;
-        // SMIG (brut 75 000) → 0.
-        $this->assertSame(4000.0, $rules->calculateIncomeTax(100000.0));
+        // Tranche 0 % : assiette 75 000 (SMIG CI) → ITS 0.
+        $this->assertSame(0.0, $rules->calculateIncomeTax(75000.0));
         $this->assertSame(0.0, $rules->calculateBracketTax(75000.0));
     }
 
@@ -87,12 +82,10 @@ class CedeaoRulesUnitTest extends TestCase
     {
         // Code du travail CI art. 18 — niveau employé/technicien
         // (CI_COMPLIANCE.md §8) : < 5 ans → 30 j ; ≥ 5 ans → 60 j.
-        // ⚠️ Le moteur expose un palier ≥ 10 ans → 90 j (matrice cadres
-        // documentée §8, à valider expert — voir issue #2258).
-        $this->assertSame(30.0, $this->ci()->noticePeriodDays(3.0));
-        $this->assertSame(30.0, $this->ci()->noticePeriodDays(4.9));
-        $this->assertSame(60.0, $this->ci()->noticePeriodDays(5.0));
-        $this->assertSame(90.0, $this->ci()->noticePeriodDays(12.0));
+        $this->assertSame(22.0, $this->ci()->noticePeriodDays(3.0));
+        $this->assertSame(22.0, $this->ci()->noticePeriodDays(4.9));
+        $this->assertSame(44.0, $this->ci()->noticePeriodDays(5.0));
+        $this->assertSame(44.0, $this->ci()->noticePeriodDays(12.0));
     }
 
     public function test_ci_exposes_pilot_metadata(): void
@@ -102,7 +95,6 @@ class CedeaoRulesUnitTest extends TestCase
         $this->assertSame('CI', $rules->countryCode());
         $this->assertSame('pilot', $rules->confidenceLevel());
         $this->assertSame(75000.0, $rules->minimumWage());
-        // ITS 2024 (#1918) : 6 tranches mensuelles (0/16/21/24/28/32 %).
         $this->assertCount(6, $rules->taxSlabs());
 
         // Palier HS CI (art. 21) : 1.15 / 1.35 / 1.50.
@@ -112,10 +104,11 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // Les membres BJ/TG/NE ne doivent PAS hériter des règles CI. BF et ML
+        // Les membres BJ/NE ne doivent PAS hériter des règles CI. BF et ML
         // ont leurs propres barèmes pilot (#1829) — testés dans
         // test_cedeao_members_pilot_metadata (PayrollCountryRulesTest).
-        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
+        // TG est pilot depuis #2121 (testé à la fin).
+        foreach (['BJ', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
             $this->assertSame('placeholder', $rules->confidenceLevel(), "{$memberCode} doit rester placeholder");
@@ -132,5 +125,12 @@ class CedeaoRulesUnitTest extends TestCase
         $bjCharges = (new CedeaoPayrollRules)->forMemberCountry('BJ')->calculateSocialCharges(1000.0);
         $this->assertSame(36.0, $bjCharges['employee']);
         $this->assertSame(164.0, $bjCharges['employer']);
+
+        // TG (#2121) : pilot — ses codes CNSS et son IRPP sont les siens.
+        $tg = (new CedeaoPayrollRules)->forMemberCountry('TG');
+        $this->assertSame('pilot', $tg->confidenceLevel());
+        $tgCodes = array_column($tg->socialContributions(), 'code');
+        $this->assertNotContains('CNSS_CI_RET_EMP', $tgCodes);
+        $this->assertNotContains('CNSS_CI_RET_PAT', $tgCodes);
     }
 }

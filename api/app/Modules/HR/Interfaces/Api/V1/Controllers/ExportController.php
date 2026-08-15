@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
+use App\Http\Controllers\Controller;
+use App\Modules\HR\Domain\Models\ExportHistory;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class ExportController extends Controller
 {
@@ -53,6 +56,8 @@ class ExportController extends Controller
         $format = $validated['format'] ?? 'json';
 
         if ($format === 'csv') {
+            $this->recordExport($request, $user, 'employees', 'csv', $employees->count(), 'employees_export_'.now()->format('Y-m-d').'.csv');
+
             $csv = $this->toCsv($employees);
 
             return response()->json([
@@ -64,6 +69,8 @@ class ExportController extends Controller
                 ],
             ]);
         }
+
+        $this->recordExport($request, $user, 'employees', 'json', $employees->count());
 
         return response()->json([
             'data' => [
@@ -101,6 +108,8 @@ class ExportController extends Controller
         $format = $validated['format'] ?? 'json';
 
         if ($format === 'csv') {
+            $this->recordExport($request, $user, 'attendance', 'csv', $logs->count(), 'attendance_export_'.$from.'_'.$to.'.csv');
+
             return response()->json([
                 'data' => [
                     'format' => 'csv',
@@ -110,6 +119,8 @@ class ExportController extends Controller
                 ],
             ]);
         }
+
+        $this->recordExport($request, $user, 'attendance', 'json', $logs->count());
 
         return response()->json([
             'data' => [
@@ -240,7 +251,40 @@ class ExportController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => []]);
+        $validated = $request->validate([
+            'type' => 'nullable|string|max:100',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+
+        $query = ExportHistory::query()
+            ->where('company_id', $user->company_id)
+            ->orderByDesc('created_at');
+
+        if (! empty($validated['type'])) {
+            $query->where('type', $validated['type']);
+        }
+
+        /** @var LengthAwarePaginator<int, ExportHistory> $history */
+        $history = $query->paginate((int) ($validated['per_page'] ?? 20));
+
+        $items = collect($history->items())->map(static fn (ExportHistory $row): array => [
+            'id' => $row->id,
+            'type' => $row->type,
+            'format' => $row->format,
+            'record_count' => $row->record_count,
+            'filename' => $row->filename,
+            'created_at' => $row->created_at->toIso8601String(),
+        ])->all();
+
+        return response()->json([
+            'data' => $items,
+            'meta' => [
+                'current_page' => $history->currentPage(),
+                'last_page' => $history->lastPage(),
+                'per_page' => $history->perPage(),
+                'total' => $history->total(),
+            ],
+        ]);
     }
 
     public function accountingJournal(Request $request): JsonResponse
@@ -254,7 +298,7 @@ class ExportController extends Controller
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_journal']);
 
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
-            'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end'
+            'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end',
         ]);
 
         return $this->exportResponse($request, $records, 'payroll_journal');
@@ -272,9 +316,9 @@ class ExportController extends Controller
 
         // Summary representation for ledger
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
-            'payroll_run_id', 'gross_salary', 'net_salary'
+            'payroll_run_id', 'gross_salary', 'net_salary',
         ]);
-        
+
         // Group by payroll_run_id for the ledger
         $grouped = $records->groupBy('payroll_run_id')->map(function ($group, $runId): \stdClass {
             $row = new \stdClass;
@@ -300,43 +344,43 @@ class ExportController extends Controller
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'accounting_od']);
 
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
-            'payroll_run_id', 'gross_salary', 'net_salary', 'period_end'
+            'payroll_run_id', 'gross_salary', 'net_salary', 'period_end',
         ]);
-        
+
         $grouped = $records->groupBy('payroll_run_id');
         $odEntries = collect();
-        
+
         foreach ($grouped as $runId => $group) {
             $date = $group->first()->period_end ?? now()->toDateString();
             $totalGross = $group->sum('gross_salary');
             $totalNet = $group->sum('net_salary');
             $totalSocial = $totalGross - $totalNet;
-            
+
             // 641 - Remuneration du personnel (Debit)
-            $odEntries->push((object)[
+            $odEntries->push((object) [
                 'date' => $date,
                 'account' => '641000',
                 'label' => 'Rémunérations',
                 'debit' => $totalGross,
-                'credit' => 0
+                'credit' => 0,
             ]);
-            
+
             // 431 - Securite Sociale (Credit)
-            $odEntries->push((object)[
+            $odEntries->push((object) [
                 'date' => $date,
                 'account' => '431000',
                 'label' => 'Charges Sociales',
                 'debit' => 0,
-                'credit' => $totalSocial
+                'credit' => $totalSocial,
             ]);
-            
+
             // 421 - Personnel remu dues (Credit)
-            $odEntries->push((object)[
+            $odEntries->push((object) [
                 'date' => $date,
                 'account' => '421000',
                 'label' => 'Rémunérations Dues',
                 'debit' => 0,
-                'credit' => $totalNet
+                'credit' => $totalNet,
             ]);
         }
 
@@ -413,17 +457,25 @@ class ExportController extends Controller
             'format' => 'nullable|in:json,csv,xlsx',
         ]);
 
+        /** @var Employee|null $user */
+        $user = $request->user();
+
         $format = $validated['format'] ?? 'json';
         if ($format === 'csv' || $format === 'xlsx') {
+            $filename = $filenamePrefix.'_'.now()->format('Y-m-d').'.csv';
+            $this->recordExport($request, $user, $filenamePrefix, 'csv', $records->count(), $filename);
+
             return response()->json([
                 'data' => [
                     'format' => 'csv',
                     'content' => $this->toCsv($records),
-                    'filename' => $filenamePrefix.'_'.now()->format('Y-m-d').'.csv',
+                    'filename' => $filename,
                     'count' => $records->count(),
                 ],
             ]);
         }
+
+        $this->recordExport($request, $user, $filenamePrefix, 'json', $records->count());
 
         return response()->json([
             'data' => [
@@ -432,5 +484,31 @@ class ExportController extends Controller
                 'count' => $records->count(),
             ],
         ]);
+    }
+
+    /**
+     * Historise un export (issue #2199) — append-only, tenant-scopé.
+     * Un échec d'historisation ne doit JAMAIS faire échouer l'export.
+     */
+    private function recordExport(Request $request, ?Employee $user, string $type, string $format, int $count, ?string $filename = null): void
+    {
+        if ($user === null) {
+            return;
+        }
+
+        try {
+            ExportHistory::create([
+                'company_id' => $user->company_id,
+                'employee_id' => $user->id,
+                'type' => $type,
+                'format' => $format,
+                'record_count' => $count,
+                'filename' => $filename,
+                'ip_address' => $request->ip(),
+                'user_agent' => Str::limit((string) $request->userAgent(), 500),
+            ]);
+        } catch (\Throwable) {
+            // L'export reste fonctionnel même si la table est indisponible.
+        }
     }
 }

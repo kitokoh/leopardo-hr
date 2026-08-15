@@ -150,5 +150,71 @@ class OnboardingQrControllerTest extends TestCase
             ->assertStatus(422)
             ->assertJsonValidationErrors(['qr_token']);
     }
+
+    public function test_company_onboarding_returns_payload_for_principal_manager(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $manager = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Karim',
+            'last_name' => 'Principal',
+            'email' => 'principal@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+
+        $this
+            ->actingAs($manager, 'sanctum')
+            ->getJson('/api/v1/company/qr-onboarding')
+            ->assertOk()
+            ->assertJsonPath('data.type', 'company_onboarding')
+            ->assertJsonPath('data.company.id', $company->id)
+            ->assertJsonPath('data.company.name', 'Company A')
+            ->assertJsonPath('data.issued_by.id', $manager->id)
+            ->assertJsonStructure(['data' => ['token', 'expires_at']]);
+    }
+
+    public function test_company_onboarding_forbidden_for_non_manager(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Company A',
+            'slug' => 'company-a',
+            'sector' => 'restaurant',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@company.test',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::query()->create([
+            'company_id' => $company->id,
+            'first_name' => 'Sami',
+            'last_name' => 'Employe',
+            'email' => 'employe@a.test',
+            'password_hash' => Hash::make('password123'),
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        $this
+            ->actingAs($employee, 'sanctum')
+            ->getJson('/api/v1/company/qr-onboarding')
+            ->assertStatus(403);
+    }
 }
 

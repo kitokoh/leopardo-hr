@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 readonly class AuthService
@@ -43,12 +45,17 @@ readonly class AuthService
                     $employeeSchema = $lookupSchema;
                 }
 
-                /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->with('company')
-                    ->where('company_id', $lookup->company_id)
-                    ->where('id', $lookup->employee_id)
-                    ->first();
+                // #2652 : un lookup peut pointer vers un schéma tenant absent ou
+                // partiellement migré (ex. démo désactivée en production). Ne jamais
+                // requêter une table inexistante → traité comme « aucun employé ».
+                if ($employeeSchema === null || $this->tenantEmployeesTableExists($employeeSchema)) {
+                    /** @var Employee|null $employee */
+                    $employee = Employee::withoutGlobalScopes()
+                        ->with('company')
+                        ->where('company_id', $lookup->company_id)
+                        ->where('id', $lookup->employee_id)
+                        ->first();
+                }
             }
 
             if (! $employee) {
@@ -67,17 +74,40 @@ readonly class AuthService
                     ->first();
                 $employee?->syncUserLookup();
             }
+        } catch (QueryException $e) {
+            // #2652 : une résolution d'employé ne doit jamais faire échouer le login
+            // en 500 (schéma absent, table partiellement migrée). On journalise en
+            // warning structuré et on retombe sur la réponse 401 propre.
+            Log::warning('auth.login_employee_resolution_failed', [
+                'email' => $email,
+                'message' => $e->getMessage(),
+            ]);
+            $employee = null;
+            $employeeSchema = null;
+        }
 
-            if (! $employee) {
-                throw new InvalidCredentialsException;
-            }
+        if (! $employee) {
+            throw new InvalidCredentialsException;
+        }
 
+        try {
             if ($employeeSchema !== null) {
                 $this->setTenantSearchPath($employeeSchema);
             }
 
-            if ($this->supportsLoginLocking($employee) && $employee->locked_until && $employee->locked_until->isFuture()) {
-                throw new AccountLockedException($employee->locked_until);
+            $lockedUntil = $employee->getAttributes()['locked_until'] ?? null;
+            if ($this->supportsLoginLocking($employee)
+                && $lockedUntil instanceof \DateTimeInterface
+                && $lockedUntil->isFuture()) {
+                throw new AccountLockedException($lockedUntil);
+            }
+
+            // QA 2026-08-15 (#2652) : un `password_hash` null/absent ne doit
+            // jamais atteindre Hash::check (TypeError → 500 brut). Un compte
+            // sans mot de passe exploitable est traité comme identifiants
+            // invalides — même traitement que le mot de passe faux.
+            if (! is_string($employee->password_hash) || $employee->password_hash === '') {
+                throw new InvalidCredentialsException;
             }
 
             if (! Hash::check($password, $employee->password_hash)) {
@@ -132,6 +162,27 @@ readonly class AuthService
                 'token_type' => 'Bearer',
                 'token_expires_at' => $expiresAt?->toIso8601String(),
             ];
+        } catch (QueryException $e) {
+            // Issue #2902 : un compte dont le tenant/schéma est absent ou
+            // orphelin (état possible en prod avec un seed partiel) ne doit
+            // JAMAIS produire un 500 « Server Error » : les requêtes sur une
+            // relation/schéma manquant (SQLSTATE 42P01 / 3F000) ou un accès
+            // refusé (42501) sont converties en 401 — même contrat qu'un
+            // compte inexistant. Les vraies pannes d'infrastructure (DB
+            // injoignable…) continuent de remonter.
+            if ($this->isMissingSchemaOrRelation($e)) {
+                Log::channel('structured')->warning('auth.login.orphaned_tenant', [
+                    'email' => $email,
+                    'sqlstate' => $e->getPrevious() instanceof \PDOException
+                        ? (string) $e->getPrevious()->getCode()
+                        : null,
+                    'message' => $e->getMessage(),
+                ]);
+
+                throw new InvalidCredentialsException;
+            }
+
+            throw $e;
         } finally {
             if ($previousSearchPath !== null && $previousSearchPath !== '') {
                 DB::statement('SET search_path TO '.$previousSearchPath);
@@ -164,6 +215,137 @@ readonly class AuthService
             'failed_login_attempts',
             'locked_until',
         ]);
+    }
+
+    /**
+     * SSO OIDC (issue #2231/#2197) — émet un token Sanctum pour l'employé
+     * identifié par l'IdP, sans mot de passe. Réutilise la résolution
+     * cross-schema `public.user_lookups` et les mêmes gardes que login()
+     * (statut compte, statut employé, company résolue, abilities tenant).
+     *
+     * @return array{employee: Employee, token: string, token_type: string, token_expires_at: ?string}
+     */
+    public function loginViaEmail(string $email, ?string $deviceName = null): array
+    {
+        $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
+        $employeeSchema = null;
+
+        try {
+            /** @var Employee|null $employee */
+            $employee = null;
+
+            if ($this->lookupTableExists()) {
+                $lookup = DB::table($this->lookupTable())
+                    ->where('email', $email)
+                    ->first();
+
+                if ($lookup !== null) {
+                    $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+                    if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
+                        $this->setTenantSearchPath($lookupSchema);
+                        $employeeSchema = $lookupSchema;
+                    }
+
+                    // #2652 : même garde que login() — schéma tenant absent ⇒ « aucun employé ».
+                    if ($employeeSchema === null || $this->tenantEmployeesTableExists($employeeSchema)) {
+                        /** @var Employee|null $employee */
+                        $employee = Employee::withoutGlobalScopes()
+                            ->with('company')
+                            ->where('company_id', $lookup->company_id)
+                            ->where('id', $lookup->employee_id)
+                            ->where('email', $email)
+                            ->first();
+                    }
+                }
+            }
+
+            if (! $employee) {
+                $found = $this->findEmployeeInTenantSchemas($email);
+                if ($found !== null) {
+                    [$employee, $employeeSchema] = $found;
+                    $this->setTenantSearchPath($employeeSchema);
+                }
+            }
+        } catch (QueryException $e) {
+            // #2652 : jamais de 500 sur résolution d'employé (schéma absent/migré partiel).
+            Log::warning('auth.login_via_email_employee_resolution_failed', [
+                'email' => $email,
+                'message' => $e->getMessage(),
+            ]);
+            $employee = null;
+            $employeeSchema = null;
+        }
+
+        if (! $employee) {
+            throw new InvalidCredentialsException;
+        }
+
+        try {
+            if ($employeeSchema !== null) {
+                $this->setTenantSearchPath($employeeSchema);
+            }
+
+            $company = $this->resolveCompanyForEmployee($employee);
+            if (! $company) {
+                throw new CompanyNotFoundException;
+            }
+
+            if (in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
+
+            if ($employee->status !== 'active') {
+                throw new EmployeeNotActiveException;
+            }
+
+            $employee->forceFill(['last_login_at' => now()])->saveQuietly();
+
+            $tokenName = $deviceName ?: 'sso';
+            $expirationMinutes = (int) config('sanctum.expiration', 0);
+            $expiresAt = $expirationMinutes > 0 ? now()->addMinutes($expirationMinutes) : null;
+            $abilities = ['*'];
+            if ($employeeSchema !== null) {
+                $abilities[] = 'tenant_schema:'.$employeeSchema;
+                $abilities[] = 'tenant_email:'.$employee->email;
+                $abilities[] = 'tenant_company:'.$company->id;
+                $abilities[] = 'tenant_employee:'.$employee->id;
+            }
+
+            $tokenResult = $employee->createToken($tokenName, $abilities, $expiresAt);
+
+            return [
+                'employee' => $employee,
+                'token' => $tokenResult->plainTextToken,
+                'token_type' => 'Bearer',
+                'token_expires_at' => $expiresAt?->toIso8601String(),
+            ];
+        } catch (QueryException $e) {
+            // Issue #2902 : un compte dont le tenant/schéma est absent ou
+            // orphelin (état possible en prod avec un seed partiel) ne doit
+            // JAMAIS produire un 500 « Server Error » : les requêtes sur une
+            // relation/schéma manquant (SQLSTATE 42P01 / 3F000) ou un accès
+            // refusé (42501) sont converties en 401 — même contrat qu'un
+            // compte inexistant. Les vraies pannes d'infrastructure (DB
+            // injoignable…) continuent de remonter.
+            if ($this->isMissingSchemaOrRelation($e)) {
+                Log::channel('structured')->warning('auth.login.orphaned_tenant', [
+                    'email' => $email,
+                    'sqlstate' => $e->getPrevious() instanceof \PDOException
+                        ? (string) $e->getPrevious()->getCode()
+                        : null,
+                    'message' => $e->getMessage(),
+                ]);
+
+                throw new InvalidCredentialsException;
+            }
+
+            throw $e;
+        } finally {
+            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+                DB::statement('SET search_path TO '.$previousSearchPath);
+            }
+        }
     }
 
     private function resolveCompanyForEmployee(Employee $employee): ?Company
@@ -271,5 +453,21 @@ readonly class AuthService
     {
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
     }
-}
 
+    /**
+     * Détecte les erreurs de requêtes sur des relations/schémas manquants
+     * (compte orphelin, migration partielle) vs une vraie panne DB.
+     */
+    private function isMissingSchemaOrRelation(QueryException $e): bool
+    {
+        if (! $e->getPrevious() instanceof \PDOException) {
+            return false;
+        }
+
+        return in_array((string) $e->getPrevious()->getCode(), [
+            '42P01', // undefined_table (relation « x » does not exist)
+            '3F000', // invalid_schema_name (schema « x » does not exist)
+            '42501', // insufficient_privilege
+        ], true);
+    }
+}

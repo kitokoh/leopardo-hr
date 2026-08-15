@@ -1,0 +1,159 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Leave;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Planning\Domain\Models\AbsenceType;
+use App\Modules\Planning\Domain\Models\LeaveAccrual;
+use App\Modules\Planning\Domain\Models\LeaveBalance;
+use App\Modules\Planning\Domain\Models\LeavePolicy;
+use Illuminate\Support\Facades\DB;
+use Tests\Support\CreatesMvpSchema;
+use Tests\TestCase;
+
+/**
+ * Issues #2416 (LeaveCarryForward : solde reportable = balance − used −
+ * pending) et #2418 (AbsenceService::create : le contrôle de solde réserve
+ * les jours pending — plus de sur-réservation).
+ */
+class LeavePendingReservationTest extends TestCase
+{
+    use CreatesMvpSchema;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpMvpSchema();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
+    }
+
+    private function context(): array
+    {
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        /** @var AbsenceType $type */
+        $type = AbsenceType::factory()->create([
+            'company_id' => $company->id,
+            'deducts_leave' => true,
+        ]);
+
+        /** @var LeavePolicy $policy */
+        $policy = LeavePolicy::query()->create([
+            'company_id' => $company->id,
+            'absence_type_id' => $type->id,
+            'name' => 'Congés annuels',
+            'accrual_type' => 'yearly',
+            'accrual_amount' => 10,
+            'carry_forward' => true,
+            'max_carry_forward' => 30,
+            'active' => true,
+        ]);
+
+        return [$company, $employee, $type, $policy];
+    }
+
+    // ── Issue #2416 : LeaveCarryForward ─────────────────────────────────
+
+    public function test_carry_forward_deducts_pending_days(): void
+    {
+        [$company, $employee, $type, $policy] = $this->context();
+
+        LeaveBalance::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $type->id,
+            'balance' => 10,
+            'used' => 0,
+            'pending' => 5, // 5 jours en attente (réservés par #2329)
+            'year' => now()->year - 1,
+        ]);
+
+        $this->artisan('leave:carry-forward', ['--year' => now()->year - 1])
+            ->assertExitCode(0);
+
+        // Reporté = 10 − 0 − 5 = 5 (et non 10 avant #2416).
+        $carried = LeaveAccrual::query()
+            ->where('employee_id', $employee->id)
+            ->where('leave_policy_id', $policy->id)
+            ->where('type', 'carry_forward')
+            ->sum('amount');
+
+        $this->assertSame(5.0, (float) $carried);
+
+        $newBalance = LeaveBalance::query()
+            ->where('employee_id', $employee->id)
+            ->where('absence_type_id', $type->id)
+            ->where('year', now()->year)
+            ->first();
+        $this->assertNotNull($newBalance);
+        $this->assertSame(5.0, (float) $newBalance->balance);
+    }
+
+    public function test_carry_forward_ignores_cancelled_pending(): void
+    {
+        [$company, $employee, $type, $policy] = $this->context();
+
+        LeaveBalance::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $type->id,
+            'balance' => 10,
+            'used' => 0,
+            'pending' => 0, // demande annulée → pending libéré
+            'year' => now()->year - 1,
+        ]);
+
+        $this->artisan('leave:carry-forward', ['--year' => now()->year - 1])
+            ->assertExitCode(0);
+
+        $carried = LeaveAccrual::query()
+            ->where('employee_id', $employee->id)
+            ->where('leave_policy_id', $policy->id)
+            ->where('type', 'carry_forward')
+            ->sum('amount');
+
+        $this->assertSame(10.0, (float) $carried);
+    }
+
+    // ── Issue #2418 : contrôle de solde à la création ──────────────────
+
+    public function test_create_blocks_second_request_when_pending_reserves_balance(): void
+    {
+        [$company, $employee, $type] = $this->context();
+
+        LeaveBalance::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $type->id,
+            'balance' => 20,
+            'used' => 0,
+            'pending' => 0,
+            'year' => now()->year,
+        ]);
+
+        \Laravel\Sanctum\Sanctum::actingAs($employee);
+
+        // Première demande : 15 j → pending = 15.
+        $this->postJson('/api/v1/absences', [
+            'absence_type_id' => $type->id,
+            'start_date' => now()->addDays(1)->format('Y-m-d'),
+            'end_date' => now()->addDays(15)->format('Y-m-d'),
+        ])->assertCreated();
+
+        // Seconde demande : 15 j → disponible = 20 − 0 − 15 = 5 → bloquée.
+        $this->postJson('/api/v1/absences', [
+            'absence_type_id' => $type->id,
+            'start_date' => now()->addDays(30)->format('Y-m-d'),
+            'end_date' => now()->addDays(44)->format('Y-m-d'),
+        ])->assertStatus(422);
+    }
+}

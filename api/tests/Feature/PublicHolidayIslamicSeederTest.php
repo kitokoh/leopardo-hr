@@ -30,11 +30,22 @@ class PublicHolidayIslamicSeederTest extends TestCase
     {
         (new PublicHolidaySeeder)->run();
 
-        foreach (['DZ', 'CM', 'CI', 'SN'] as $countryCode) {
+        // Issue #2255 : calendriers fixes officiels étendus à FR, MA, TN, TR,
+        // CA, ML, GA, CG (BF volontairement absent : réforme légale 2026).
+        foreach (['DZ', 'CM', 'CI', 'SN', 'FR', 'MA', 'TN', 'TR', 'CA', 'ML', 'GA', 'CG'] as $countryCode) {
             $this->assertGreaterThan(
                 0,
                 PublicHoliday::where('country_code', $countryCode)->count(),
                 "Aucun férié fixe seedé pour {$countryCode}"
+            );
+        }
+
+        // Dates repères par pays (fériés fixes officiels).
+        foreach (['FR' => '07-14', 'MA' => '07-30', 'TN' => '03-20', 'TR' => '10-29', 'CA' => '07-01', 'ML' => '09-22', 'GA' => '08-17', 'CG' => '08-15'] as $countryCode => $monthDay) {
+            $this->assertGreaterThan(
+                0,
+                PublicHoliday::where('country_code', $countryCode)->where('month_day', $monthDay)->count(),
+                "Férié {$monthDay} manquant pour {$countryCode}"
             );
         }
 
@@ -110,7 +121,7 @@ class PublicHolidayIslamicSeederTest extends TestCase
 
         $this->assertGreaterThan(0, $sn->count(), 'Aucune date tahmarit seedée');
         $first = $sn->first();
-        $this->assertNotNull($first, 'au moins une date tahmarit seedée');
+        $this->assertNotNull($first);
         $this->assertSame('2025-07-06', $first->gregorian_date);
     }
 
@@ -118,9 +129,10 @@ class PublicHolidayIslamicSeederTest extends TestCase
     {
         (new IslamicCalendarSeeder)->run();
 
-        /** @var array<string, array<string, array{duration: int, name: string}>> $countries */
-        $countries = config('islamic_holidays_map.countries');
-        $mappingKeys = collect($countries)
+        /** @var array<string, array<string, array{duration: int, name: string}>> $countriesMap */
+        $countriesMap = config('islamic_holidays_map.countries');
+
+        $mappingKeys = collect($countriesMap)
             ->flatMap(fn (array $holidays): array => array_keys($holidays))
             ->unique()
             ->values();

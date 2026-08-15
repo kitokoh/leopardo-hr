@@ -64,9 +64,11 @@ const nextSteps = [
     color: 'emerald',
     title: 'Connectez-vous à votre espace',
     desc: 'Accédez au dashboard manager et configurez votre première équipe.',
-    href: `${DEFAULT_BACKEND_API_URL}/auth/login`,
+    // Issue #2234 (T010) : l'URL API Laravel renvoyait JSON/404 —
+    // la route web du portail client est /auth/login.
+    href: '/auth/login',
     cta: 'Accéder au dashboard',
-    external: true,
+    external: false,
   },
   {
     icon: Smartphone,
@@ -82,9 +84,9 @@ const nextSteps = [
     color: 'violet',
     title: 'Invitez votre équipe',
     desc: 'Envoyez les invitations depuis le dashboard — vos employés reçoivent leur accès par email.',
-    href: `${DEFAULT_BACKEND_API_URL}/auth/login`,
+    href: '/auth/login',
     cta: 'Gérer les invitations',
-    external: true,
+    external: false,
   },
 ];
 
@@ -173,7 +175,7 @@ function SuccessInner() {
 
             <p className="text-xl text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed">
               {company ? `${company} — ` : ''} Plan <strong className="text-slate-900 dark:text-white">{plan}</strong>
-              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 30 jours offerts, aucune carte débitée aujourd&apos;hui.
+              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 14 jours offerts, aucune carte débitée aujourd&apos;hui.
             </p>
           </motion.div>
 
@@ -207,7 +209,7 @@ function SuccessInner() {
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400">Période d&apos;essai</span>
-                <span className="text-sm font-bold text-emerald-600">30 jours gratuits</span>
+                <span className="text-sm font-bold text-emerald-600">14 jours gratuits</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400">Débité aujourd&apos;hui</span>
@@ -317,16 +319,13 @@ function SuccessInner() {
             transition={{ duration: 0.6, delay: 1.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <a
-              href={`${DEFAULT_BACKEND_API_URL}/auth/login`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/auth/login"
               className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"
             >
               <LogIn className="w-5 h-5" />
               Accéder à mon espace
-              <ExternalLink className="w-4 h-4 opacity-70" />
-            </a>
+            </Link>
             <Link
               href="/download"
               className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all duration-300 hover:shadow-lg text-base"

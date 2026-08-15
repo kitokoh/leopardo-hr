@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 
 /**
  * CEDEAO (#1830) — déclaration IPRES/CSS mensuelle Sénégal (CSV).
@@ -14,29 +15,43 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
  * (general/cadre), brut, assiette T1 (min(brut, 432 000 XOF)), cotisation
  * T1 salariale (5,6 %) / patronale (8,4 %), assiette T2 (cadres
  * uniquement : min(brut, 2 160 000) − 432 000), cotisation T2 salariale
- * (2,4 %) / patronale (3,6 %), CSS famille patronale (3,0 % plafonnée à
- * 63 000 XOF/mois — alignée moteur, #1913) + ligne TOTAUX.
+ * (2,4 %) / patronale (3,6 %), CSS famille patronale (7,0 % plafonnée à
+ * 63 000 XOF/mois — taux officiel CIPRES/CLEISS #2473, aligné moteur, #1913)
+ * + ligne TOTAUX.
+ *
+ * ⚠️ Issue #2539 : les TAUX et PLAFONDS sont lus depuis
+ * SenegalPayrollRules::socialContributions() (source unique) — toute
+ * constante locale dupliquée a été supprimée ; un changement de taux dans
+ * les règles pays est automatiquement répercuté dans le CSV.
  *
  * ⚠️ Format interne documenté — à valider avec un comptable sénégalais.
  */
 class IpresDeclarationGenerator
 {
-    public const IPRES_T1_CAP = 432000.0;
+    public function __construct(
+        private readonly SenegalPayrollRules $rules = new SenegalPayrollRules(),
+    ) {}
 
-    public const IPRES_T2_CAP = 2160000.0;
+    /**
+     * Rate lookup depuis les règles pays (issue #2539) — codes SN canoniques.
+     *
+     * @return array{rate: float, cap: float|null, floor: float|null, ceiling: float|null}
+     */
+    private function contribution(string $code): array
+    {
+        foreach ($this->rules->socialContributions() as $contrib) {
+            if ($contrib['code'] === $code) {
+                return [
+                    'rate' => (float) $contrib['rate'],
+                    'cap' => isset($contrib['cap']) ? (float) $contrib['cap'] : null,
+                    'floor' => isset($contrib['floor']) ? (float) $contrib['floor'] : null,
+                    'ceiling' => isset($contrib['ceiling']) ? (float) $contrib['ceiling'] : null,
+                ];
+            }
+        }
 
-    public const RATE_T1_EMP = 5.6;
-
-    public const RATE_T1_PAT = 8.4;
-
-    public const RATE_T2_EMP = 2.4;
-
-    public const RATE_T2_PAT = 3.6;
-
-    public const RATE_CSS_FAMILLE_PAT = 3.0;
-
-    /** #1913 : plafond CSS famille (63 000 XOF/mois) — aligné sur le moteur. */
-    public const CSS_FAMILLE_CAP = 63000.0;
+        throw new \RuntimeException("IpresDeclarationGenerator: code {$code} absent de SenegalPayrollRules::socialContributions().");
+    }
 
     public function generate(PayrollRun $run): string
     {
@@ -177,24 +192,33 @@ class IpresDeclarationGenerator
         $employee = $slip->employee;
         $isCadre = ($employee->ipres_category ?? 'general') === 'cadre';
 
-        $t1Base = min($gross, self::IPRES_T1_CAP);
-        $t2Base = $isCadre ? max(0.0, min($gross, self::IPRES_T2_CAP) - self::IPRES_T1_CAP) : 0.0;
+        // Issue #2539 : taux/plafonds depuis les règles pays (source unique).
+        $t1 = $this->contribution('IPRES_SN_EMP');
+        $t1Pat = $this->contribution('IPRES_SN_PAT');
+        $t2 = $this->contribution('IPRES_SN_EMP_T2');
+        $t2Pat = $this->contribution('IPRES_SN_PAT_T2');
+        $css = $this->contribution('CSS_SN_PAT_FAM');
 
-        $t1Emp = round($t1Base * self::RATE_T1_EMP / 100, 2);
-        $t1Pat = round($t1Base * self::RATE_T1_PAT / 100, 2);
-        $t2Emp = round($t2Base * self::RATE_T2_EMP / 100, 2);
-        $t2Pat = round($t2Base * self::RATE_T2_PAT / 100, 2);
-        $cssFamillePat = round(min($gross, self::CSS_FAMILLE_CAP) * self::RATE_CSS_FAMILLE_PAT / 100, 2);
-        $totalPatronal = round($t1Pat + $t2Pat + $cssFamillePat, 2);
+        $t1Base = min($gross, $t1['cap'] ?? $gross);
+        $t2Base = $isCadre
+            ? max(0.0, min($gross, $t2['ceiling'] ?? $gross) - ($t2['floor'] ?? 0.0))
+            : 0.0;
+
+        $t1Emp = round($t1Base * $t1['rate'] / 100, 2);
+        $t1PatAmt = round($t1Base * $t1Pat['rate'] / 100, 2);
+        $t2Emp = round($t2Base * $t2['rate'] / 100, 2);
+        $t2PatAmt = round($t2Base * $t2Pat['rate'] / 100, 2);
+        $cssFamillePat = round(min($gross, $css['cap'] ?? $gross) * $css['rate'] / 100, 2);
+        $totalPatronal = round($t1PatAmt + $t2PatAmt + $cssFamillePat, 2);
 
         return [
             'gross' => $gross,
             't1_base' => $t1Base,
             't1_emp' => $t1Emp,
-            't1_pat' => $t1Pat,
+            't1_pat' => $t1PatAmt,
             't2_base' => $t2Base,
             't2_emp' => $t2Emp,
-            't2_pat' => $t2Pat,
+            't2_pat' => $t2PatAmt,
             'css_famille_pat' => $cssFamillePat,
             'total_patronal' => $totalPatronal,
         ];

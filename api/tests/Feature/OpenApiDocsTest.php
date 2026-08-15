@@ -69,6 +69,11 @@ class OpenApiDocsTest extends TestCase
                 ->assertSee('buildCurlSnippet', false)
                 ->assertSee('buildJavaScriptSnippet', false)
                 ->assertSee('buildPhpSnippet', false)
+                // Non-régression #2265 : le littéral `<?php` du snippet builder est
+                // échappé dans la vue (tag court PHP ouvert puis fermé) ; le HTML
+                // rendu doit contenir la séquence brute (assertSee(..., false) car
+                // le défaut chercherait la forme échappée `&lt;?php`).
+                ->assertSee('<?php', false)
                 ->assertSee('GuzzleHttp', false)
                 ->assertSee('Copier');
     }

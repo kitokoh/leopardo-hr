@@ -31,6 +31,13 @@ class BfIutsBackfillTest extends TestCase
      */
     private function seedLegacyBfSlabs(): void
     {
+        // La migration 000021 (barème BF complet en base) pré-seede les 6
+        // tranches nationales sur une base fraîche — on repart d'une table
+        // vide pour reproduire fidèlement l'état legacy d'un tenant #1829.
+        TaxSlab::where('country_code', 'BF')
+            ->whereNull('company_id')
+            ->delete();
+
         $rows = [
             [0, 600000, 0.0],
             [600001, 1500000, 12.1],
@@ -77,10 +84,10 @@ class BfIutsBackfillTest extends TestCase
         // 6 tranches désormais (borne 6 M + tranche 27,5 %).
         $this->assertCount(6, $slabs);
 
-        /** @var TaxSlab $slab4 */
         $slab4 = $slabs[4];
-        /** @var TaxSlab $slab5 */
         $slab5 = $slabs[5];
+        $this->assertNotNull($slab4);
+        $this->assertNotNull($slab5);
 
         $this->assertSame(6_000_000.0, (float) $slab4->max_amount, 'tranche 4 500 001 bornée à 6 000 000');
         $this->assertSame(6_000_001.0, (float) $slab5->min_amount);
@@ -139,7 +146,7 @@ class BfIutsBackfillTest extends TestCase
 
         $this->assertCount(6, $slabs, 'le re-seed doit rétablir les 6 tranches IUTS');
         $last = $slabs->last();
-        $this->assertNotNull($last, 'au moins une tranche IUTS re-seedée');
+        $this->assertNotNull($last);
         $this->assertSame(27.5, (float) $last->rate);
     }
 
@@ -164,7 +171,7 @@ class BfIutsBackfillTest extends TestCase
         $ci = TaxSlab::where('country_code', 'CI')->get();
         $this->assertCount(1, $ci, 'CI ne doit pas être modifié');
         $first = $ci->first();
-        $this->assertNotNull($first, 'la tranche CI doit rester présente');
+        $this->assertNotNull($first);
         $this->assertNull($first->max_amount);
     }
 }

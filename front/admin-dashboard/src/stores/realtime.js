@@ -69,7 +69,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
     // Événements de connexion
     socket.value.on('connect', () => {
-      console.log('WebSocket connecté')
+      // console.log removed (audit 2026-08-15) — WebSocket connecté
       isConnected.value = true
       clearPushGraceTimer()
       stopPolling()
@@ -77,7 +77,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     })
 
     socket.value.on('disconnect', () => {
-      console.log('WebSocket déconnecté')
+      // console.log removed (audit 2026-08-15) — WebSocket déconnecté
       isConnected.value = false
       toast.warning('Connexion temps réel perdue')
       // Push dropped after being connected: switch to fallback polling
@@ -144,7 +144,15 @@ export const useRealtimeStore = defineStore('realtime', () => {
     pollInFlight = true
     const isBaselinePoll = knownNotificationIds.size === 0 && notifications.value.length === 0
     try {
-      const { data } = await api.get('/notifications', { params: { per_page: 20 } })
+      // Le token super-admin (guard super_admin_api) ne s'authentifie pas sur
+      // `/notifications` (route tenant) : le backend répond 401. Ce n'est pas
+      // une session expirée — c'est un endpoint inexistant pour ce profil.
+      // `_skipAuthRedirect` empêche l'intercepteur global de détruire la
+      // session (issue #2310) ; sur 401 on désactive simplement le polling.
+      const { data } = await api.get('/notifications', {
+        params: { per_page: 20 },
+        _skipAuthRedirect: true,
+      })
       const items = Array.isArray(data?.data) ? data.data : []
 
       // Present newest first, and only surface items we haven't already
@@ -173,7 +181,16 @@ export const useRealtimeStore = defineStore('realtime', () => {
         })
       }
     } catch (error) {
-      console.error('Fallback polling notifications a échoué:', error)
+      // 401 = pas d'inbox notifications pour le super-admin (route tenant) :
+      // le polling ne sert à rien, on le désactive proprement sans toucher à
+      // la session (issue #2310). Les autres erreurs réseau restent
+      // silencieuses (retentées au prochain tick).
+      if (error?.response?.status === 401) {
+        console.warn('Notifications super-admin indisponibles (401) — polling désactivé')
+        stopPolling()
+      } else {
+        console.error('Fallback polling notifications a échoué:', error)
+      }
     } finally {
       pollInFlight = false
     }
@@ -285,8 +302,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   function addNotification(notification) {
     const { silent, ...rest } = notification
+    // Issue #2707 — id synthétique uniquement si le payload socket n'en
+    // fournit pas (sinon PATCH /v1/notifications/{id}/read → 404).
     const newNotification = {
-      id: Date.now() + Math.random(),
+      id: rest.id ?? Date.now() + Math.random(),
       read: false,
       ...rest
     }
@@ -310,15 +329,30 @@ export const useRealtimeStore = defineStore('realtime', () => {
     }
   }
 
-  function markNotificationAsRead(notificationId) {
+  async function markNotificationAsRead(notificationId) {
     const notification = notifications.value.find(n => n.id === notificationId)
     if (notification) {
       notification.read = true
     }
+    // Issue #2239 — persister côté backend (PATCH /notifications/{id}/read).
+    // Best-effort : un échec réseau ne doit pas casser l'UX locale.
+    try {
+      // Issue #2705 — _skipAuthRedirect : en super-admin ces routes tenant
+      // répondent 401 ; sans ce flag l'intercepteur détruisait la session.
+      await api.patch(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
+    } catch (err) {
+      console.warn('Failed to persist notification read state', err)
+    }
   }
 
-  function markAllNotificationsAsRead() {
+  async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
+    // Issue #2239 — persister côté backend (POST /notifications/mark-all-read).
+    try {
+      await api.post('/v1/notifications/mark-all-read', null, { _skipAuthRedirect: true })
+    } catch (err) {
+      console.warn('Failed to persist mark-all-read', err)
+    }
   }
 
   function clearNotifications() {

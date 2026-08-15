@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: JobDetailPageProps): Promise<
   return generateSEOMetadata({
     title: `${job.title}${company ? ` chez ${company.display_name}` : ''}`,
     description: job.description?.slice(0, 155) || `Postulez a l'offre "${job.title}".`,
-    canonical: `https://gestionemployer-backend.vercel.app/${companySlug}/careers/jobs/${job.id}`,
+    canonical: `${SITE_URL}/${companySlug}/careers/jobs/${job.id}`,
     ogType: 'article',
     ogImage: company?.logo_url ?? undefined,
   });

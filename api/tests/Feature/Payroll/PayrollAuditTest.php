@@ -14,6 +14,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
+use Mockery\Expectation;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -117,11 +118,11 @@ class PayrollAuditTest extends TestCase
         $this->assertSame(PayrollCalculationAudit::ACTOR_USER, $audit->actor_type);
         $this->assertSame($this->managerA->id, $audit->actor_id);
 
-        // Agrégats uniquement (jamais de salaires individuels). Le run inclut
-        // le manager principal (employé actif de la société, structure par
-        // défaut) + l'employé seedé → 2 bulletins (comportement produit réel).
-        $this->assertGreaterThanOrEqual(1, (int) ($audit->input_snapshot['employee_count'] ?? 0));
-        $this->assertGreaterThanOrEqual(60000.0, (float) ($audit->result_snapshot['total_gross'] ?? 0.0));
+        // Agrégats uniquement (jamais de salaires individuels). Le manager et
+        // l'employé seedé reçoivent chacun un bulletin (repli structure
+        // d'entreprise par défaut) → 2 bulletins de 60 000.
+        $this->assertSame(2, (int) ($audit->input_snapshot['employee_count'] ?? 0));
+        $this->assertSame(120000.0, (float) ($audit->result_snapshot['total_gross'] ?? 0.0));
         $this->assertSame(2, (int) ($audit->result_snapshot['employee_count'] ?? 0));
         $this->assertGreaterThan(0.0, (float) ($audit->result_snapshot['total_net'] ?? 0.0));
         $this->assertGreaterThan(0.0, (float) ($audit->result_snapshot['total_employer_cost'] ?? 0.0));
@@ -160,6 +161,27 @@ class PayrollAuditTest extends TestCase
         $this->assertDatabaseHas('payroll_calculation_audits', ['correlation_id' => $correlationId2]);
     }
 
+    public function test_request_correlation_header_echoes_and_links_audit(): void
+    {
+        Sanctum::actingAs($this->managerA);
+
+        $response = $this->withHeader('X-Correlation-ID', '11111111-2222-3333-4444-555555555555')
+            ->postJson('/api/v1/payroll/simulate', [
+                'country_code' => 'DZ',
+                'gross_salary' => 60000,
+            ])->assertOk();
+
+        // Le header est échoé en réponse (RequestIdMiddleware) et l'audit
+        // reprend le MÊME identifiant : requête → job → résultat traçables.
+        $this->assertSame('11111111-2222-3333-4444-555555555555', $response->headers->get('X-Correlation-ID'));
+        $this->assertSame('11111111-2222-3333-4444-555555555555', $response->headers->get('X-Request-Id'));
+
+        /** @var PayrollCalculationAudit $audit */
+        $audit = PayrollCalculationAudit::query()->where('correlation_id', '11111111-2222-3333-4444-555555555555')->first();
+        $this->assertNotNull($audit, 'L\'audit doit reprendre le correlation_id du header.');
+        $this->assertSame(PayrollCalculationAudit::STATUS_SUCCESS, $audit->status);
+    }
+
     public function test_audit_show_returns_reproduction_context(): void
     {
         $run = $this->seedCalculableRun($this->companyA);
@@ -192,7 +214,7 @@ class PayrollAuditTest extends TestCase
 
         // Aucun utilisateur authentifié (équivalent ProcessPayrollBatchJob /
         // commande) : l'acteur de l'audit doit être `job`.
-        (new PayrollCalculator())->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
         $run->refresh();
         $this->assertNotNull($run->correlation_id);

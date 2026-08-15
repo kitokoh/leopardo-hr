@@ -221,11 +221,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useToast } from 'vue-toastification'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
+const supportedCountries = useSupportedCountries()
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -233,16 +235,6 @@ const localeStore = useLocaleStore()
 function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
-
-const supportedCountries = [
-  { code: 'DZ', labelKey: 'common.countries.DZ' },
-  { code: 'CM', labelKey: 'common.countries.CM' },
-  { code: 'CI', labelKey: 'common.countries.CI' },
-  { code: 'SN', labelKey: 'common.countries.SN' },
-  { code: 'MA', labelKey: 'common.countries.MA' },
-  { code: 'TN', labelKey: 'common.countries.TN' },
-  { code: 'FR', labelKey: 'common.countries.FR' },
-]
 
 const isPlatformAdmin = ref(false)
 const rates = ref([])
@@ -314,9 +306,7 @@ async function createRate() {
       name: form.name,
       rate: form.rate,
       effective_from: form.effective_from,
-      // La référence légale est tracée dans l'historique (nom de la ligne).
-      // Le nom du brouillon porte la référence légale : « Nom (réf. légale) ».
-      ...(form.legal_reference ? {} : {}),
+      legal_reference: form.legal_reference.trim() || null,
     }
     if (form.table === 'tax_slabs') {
       payload.min_amount = 0

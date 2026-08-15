@@ -61,11 +61,11 @@ au-delà (à confirmer pour CG).
 
 ## 7. Préavis
 
-| Catégorie | Préavis |
+| Catégorie | Préavis (jours OUVRÉS, #2219) |
 |---|---|
-| Ouvriers | 8 jours |
-| Employés / Techniciens | 1 mois |
-| Cadres | 3 mois |
+| Ouvriers | 6 j (8 j calendaires) |
+| Employés / Techniciens | 22 j (1 mois) |
+| Cadres | 66 j (3 mois) |
 
 ⚠️ L'interface n'expose que l'ancienneté : implémentation pilote au niveau
 **employé/technicien** (30 jours) — catégorie du contrat = suivi.
@@ -75,3 +75,17 @@ au-delà (à confirmer pour CG).
 Fixes : 1ᵉʳ janvier, 1ᵉʳ mai, 15 août, 15 octobre (Fête Nationale),
 1ᵉʳ novembre, 25 décembre + fêtes islamiques mobiles (via table
 `islamic_calendar`, #1812). Gestion dynamique via #1811.
+
+## 11. Déclarations mensuelles — périmètre du CSV CNSS (décision #2155)
+
+Générateur : `CemacCnpsDeclarationGenerator` — `GET /api/v1/payroll-runs/{run}/declarations/cnss-cg` (managers `principal`/`comptable`).
+
+| Rubrique | Salarial | Patronal | Plafond (XAF/mois) |
+|---|---|---|---|
+| Retraite | 4,0 % | 8,0 % | 2 500 000 |
+| Prestations familiales | — | 10,0 % | 2 500 000 |
+| Risques professionnels (AT) | — | 3,0 % | non plafonné |
+
+Une ligne par bulletin validé (matricule `employees.cnps_matricule`, repli `matricule`) + ligne TOTAUX.
+Centimes additionnels CM exclus. Canal déclaratif : CNSS Congo — montants `pilot` à valider
+par expert-comptable local (registre `docs/payroll/VALIDATION_EXPERTE.md`, #1904).

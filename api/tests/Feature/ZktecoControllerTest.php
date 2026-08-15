@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -78,5 +79,183 @@ class ZktecoControllerTest extends TestCase
             ],
         ])->assertStatus(404);
     }
-}
 
+    public function test_register_device_returns_token_once(): void
+    {
+        $response = $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices', [
+                'serial_number' => 'SN-TOKEN-001',
+                'name' => 'Porte A',
+            ])
+            ->assertCreated();
+
+        $response->assertJsonStructure([
+            'data' => ['id', 'serial_number', 'status'],
+            'device_token',
+        ]);
+
+        // Le hash ne doit jamais être exposé.
+        $response->assertJsonMissing(['sync_token_hash']);
+        $this->assertNotNull($response->json('device_token'));
+
+        $this->assertDatabaseHas('zkteco_devices', [
+            'serial_number' => 'SN-TOKEN-001',
+        ]);
+    }
+
+    public function test_heartbeat_requires_device_token(): void
+    {
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-001',
+            'name' => 'Porte B',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        // Sans token → 401, statut inchangé.
+        $this->postJson('/api/v1/zkteco/heartbeat/SN-AUTH-001')
+            ->assertStatus(401);
+
+        $this->assertDatabaseHas('zkteco_devices', [
+            'serial_number' => 'SN-AUTH-001',
+            'status' => 'offline',
+        ]);
+    }
+
+    public function test_heartbeat_rejects_wrong_device_token(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-002',
+            'name' => 'Porte C',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        $this->withHeader('X-Device-Token', 'wrong-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-AUTH-002')
+            ->assertStatus(401);
+    }
+
+    public function test_heartbeat_succeeds_with_valid_token(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-003',
+            'name' => 'Porte D',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        $this->withHeader('X-Device-Token', 'valid-device-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-AUTH-003')
+            ->assertOk()
+            ->assertJsonPath('data.status', 'online');
+
+        $this->assertDatabaseHas('zkteco_devices', [
+            'serial_number' => 'SN-AUTH-003',
+            'status' => 'online',
+        ]);
+    }
+
+    public function test_sync_attendance_rejects_unauthenticated_device_and_writes_nothing(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-004',
+            'name' => 'Porte E',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'zkteco_id' => 'zk-42',
+        ]);
+
+        // Sans token : 401 et AUCUNE écriture dans attendance_logs.
+        $this->postJson('/api/v1/zkteco/sync-attendance/SN-AUTH-004', [
+            'records' => [
+                ['user_id' => 'zk-42', 'timestamp' => '2026-01-01 08:00:00'],
+            ],
+        ])->assertStatus(401);
+
+        $this->assertDatabaseMissing('attendance_logs', [
+            'method' => 'zkteco',
+        ]);
+    }
+
+    public function test_sync_attendance_succeeds_with_valid_token(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-005',
+            'name' => 'Porte F',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'zkteco_id' => 'zk-43',
+        ]);
+
+        $this->withHeader('X-Device-Token', 'valid-device-token')
+            ->postJson('/api/v1/zkteco/sync-attendance/SN-AUTH-005', [
+                'records' => [
+                    ['user_id' => 'zk-43', 'timestamp' => '2026-01-01 08:00:00', 'punch_type' => 0],
+                ],
+            ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.records_processed', 1);
+
+        $this->assertDatabaseHas('attendance_logs', [
+            'employee_id' => $employee->id,
+            'date' => '2026-01-01',
+            'method' => 'zkteco',
+        ]);
+    }
+
+    public function test_regenerate_token_rotates_and_revokes_old_token(): void
+    {
+        /** @var ZktecoDevice $device */
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-006',
+            'name' => 'Porte G',
+            'sync_token_hash' => bcrypt('old-device-token'),
+        ]);
+
+        $response = $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices/'.$device->id.'/regenerate-token')
+            ->assertOk();
+
+        $newToken = $response->json('device_token');
+        $this->assertNotNull($newToken);
+        $this->assertNotSame('old-device-token', $newToken);
+
+        // L'ancien token est révoqué.
+        $this->withHeader('X-Device-Token', 'old-device-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-AUTH-006')
+            ->assertStatus(401);
+
+        // Le nouveau fonctionne.
+        $this->withHeader('X-Device-Token', $newToken)
+            ->postJson('/api/v1/zkteco/heartbeat/SN-AUTH-006')
+            ->assertOk();
+    }
+
+    public function test_regenerate_token_requires_manager(): void
+    {
+        /** @var ZktecoDevice $device */
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-AUTH-007',
+            'name' => 'Porte H',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        $this->actingAs($this->employee)
+            ->postJson('/api/v1/zkteco/devices/'.$device->id.'/regenerate-token')
+            ->assertForbidden();
+    }
+}

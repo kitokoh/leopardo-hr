@@ -48,7 +48,7 @@
       <tbody class="divide-y divide-slate-200/50 dark:divide-slate-800/50 bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm">
         <!-- Loading state -->
         <tr v-if="loading">
-          <td colspan="8" class="px-6 py-16 text-center">
+          <td colspan="5" class="px-6 py-16 text-center">
             <div class="flex flex-col items-center justify-center">
               <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-600 mb-4"></div>
               <span class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Chargement des utilisateurs...</span>
@@ -58,7 +58,7 @@
 
         <!-- Empty state -->
         <tr v-else-if="users.length === 0">
-          <td colspan="8" class="px-6 py-12 text-center">
+          <td colspan="5" class="px-6 py-12 text-center">
             <UsersIcon class="mx-auto h-12 w-12 text-gray-400" />
             <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun utilisateur</h3>
             <p class="mt-1 text-sm text-gray-500">
@@ -85,15 +85,13 @@
             />
           </td>
 
-          <!-- Avatar & Name -->
+          <!-- Initials & Name -->
           <td class="whitespace-nowrap px-6 py-5">
             <div class="flex items-center">
               <div class="h-10 w-10 flex-shrink-0 relative">
-                <img
-                  :src="user.avatar"
-                  :alt="user.name"
-                  class="h-10 w-10 rounded-xl shadow-sm"
-                />
+                <div class="h-10 w-10 rounded-xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center text-xs font-black text-brand-700 dark:text-brand-300">
+                  {{ initials(user.name) }}
+                </div>
                 <div
                   v-if="user.status === 'active'"
                   class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-slate-900 bg-emerald-500 shadow-sm"
@@ -113,33 +111,14 @@
             </span>
           </td>
 
-          <!-- Role -->
-          <td class="whitespace-nowrap px-6 py-5">
-            <span :class="['px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border', getRoleColor(user.role)]">
-              {{ getRoleLabel(user.role) }}
-            </span>
-          </td>
-
           <!-- Company -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {{ user.company?.name || '-' }}
-          </td>
-
-          <!-- Segment -->
-          <td class="whitespace-nowrap px-6 py-5">
-            <span :class="getSegmentColor(user.segment)">
-              {{ getSegmentLabel(user.segment) }}
-            </span>
-          </td>
-
-          <!-- Last Login -->
-          <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {{ formatLastLogin(user.lastLoginAt) }}
+            {{ user.company_name || '-' }}
           </td>
 
           <!-- Created At -->
           <td class="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {{ formatDate(user.createdAt) }}
+            {{ formatDate(user.created_at) }}
           </td>
 
           <!-- Actions -->
@@ -151,20 +130,6 @@
                 title="Voir les détails"
               >
                 <EyeIcon class="h-4 w-4" />
-              </button>
-              <button
-                @click="$emit('edit', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
-                title="Modifier"
-              >
-                <PencilIcon class="h-4 w-4" />
-              </button>
-              <button
-                @click="$emit('impersonate', user)"
-                class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200"
-                title="Se connecter en tant que"
-              >
-                <UserIcon class="h-4 w-4" />
               </button>
               <button
                 @click="$emit('delete', user)"
@@ -187,8 +152,6 @@ import {
   ChevronUpIcon,
   ChevronDownIcon,
   EyeIcon,
-  PencilIcon,
-  UserIcon,
   TrashIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
@@ -212,24 +175,20 @@ const props = defineProps({
   }
 })
 
-defineEmits(['select', 'select-all', 'view', 'edit', 'delete', 'impersonate'])
+defineEmits(['select', 'select-all', 'view', 'edit', 'delete'])
 
 // Sorting
 const sortBy = ref('name')
 const sortOrder = ref('asc')
 
-// Table columns
+// Table columns (donnees reelles : pas de role/segment/lastLogin cote API)
 const columns = [
   { key: 'name', label: 'Utilisateur', sortable: true },
   { key: 'status', label: 'Statut', sortable: true },
-  { key: 'role', label: 'Rôle', sortable: true },
   { key: 'company', label: 'Entreprise', sortable: true },
-  { key: 'segment', label: 'Segment', sortable: false },
-  { key: 'lastLoginAt', label: 'Dernière connexion', sortable: true },
-  { key: 'createdAt', label: 'Inscription', sortable: true }
+  { key: 'created_at', label: 'Inscription', sortable: true }
 ]
 
-// Computed properties
 const isAllSelected = computed(() => {
   return props.users.length > 0 && props.selectedUsers.length === props.users.length
 })
@@ -245,19 +204,16 @@ const sortedUsers = computed(() => {
     let aValue = a[sortBy.value]
     let bValue = b[sortBy.value]
 
-    // Handle nested properties
     if (sortBy.value === 'company') {
-      aValue = a.company?.name || ''
-      bValue = b.company?.name || ''
+      aValue = a.company_name || ''
+      bValue = b.company_name || ''
     }
 
-    // Handle dates
-    if (sortBy.value === 'createdAt' || sortBy.value === 'lastLoginAt') {
+    if (sortBy.value === 'created_at') {
       aValue = aValue ? new Date(aValue) : new Date(0)
       bValue = bValue ? new Date(bValue) : new Date(0)
     }
 
-    // Convert to string for comparison
     aValue = String(aValue).toLowerCase()
     bValue = String(bValue).toLowerCase()
 
@@ -269,7 +225,6 @@ const sortedUsers = computed(() => {
   })
 })
 
-// Methods
 function handleSort(column) {
   if (sortBy.value === column) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
@@ -277,6 +232,15 @@ function handleSort(column) {
     sortBy.value = column
     sortOrder.value = 'asc'
   }
+}
+
+function initials(name) {
+  return String(name || '?')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join('')
 }
 
 function getStatusColor(status) {
@@ -299,64 +263,8 @@ function getStatusLabel(status) {
   return labels[status] || status
 }
 
-function getRoleColor(role) {
-  const colors = {
-    admin: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
-    manager: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-    employee: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900/30 dark:text-slate-400 dark:border-slate-800',
-    hr: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800'
-  }
-  return colors[role] || 'bg-slate-50 text-slate-700 border-slate-200'
-}
-
-function getRoleLabel(role) {
-  const labels = {
-    admin: 'Administrateur',
-    manager: 'Manager',
-    employee: 'Employé',
-    hr: 'RH'
-  }
-  return labels[role] || role
-}
-
-function getSegmentColor(segment) {
-  const colors = {
-    champions: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800',
-    loyal: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800',
-    potential: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800',
-    new: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800',
-    'at-risk': 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-900/40'
-  }
-  return colors[segment] || 'bg-slate-50 text-slate-700 border-slate-200'
-}
-
-function getSegmentLabel(segment) {
-  const labels = {
-    champions: 'Champions',
-    loyal: 'Loyaux',
-    potential: 'Potentiels',
-    new: 'Nouveaux',
-    'at-risk': 'À risque'
-  }
-  return labels[segment] || segment
-}
-
-function formatLastLogin(date) {
-  if (!date) return 'Jamais'
-
-  const now = new Date()
-  const loginDate = new Date(date)
-  const diff = now - loginDate
-
-  if (diff < 60000) return 'À l\'instant'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
-  if (diff < 604800000) return `${Math.floor(diff / 86400000)}j`
-
-  return loginDate.toLocaleDateString(toIntlLocale(localeStore.current))
-}
-
 function formatDate(date) {
+  if (!date) return '-'
   return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',

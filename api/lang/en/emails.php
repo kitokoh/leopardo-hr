@@ -2,6 +2,9 @@
 
 return [
     // Subjects
+    'demo_access_subject' => 'Your Leopardo RH demo workspace is ready',
+    'demo_access_body' => 'Welcome! Your sandbox is provisioned. Click the link below to access your workspace (valid 72 h, single use). Link: :url',
+
     'invoice_subject' => 'Invoice :number — :company',
     'welcome_subject' => 'Welcome to :company',
     'password_reset_subject' => 'Reset your password',

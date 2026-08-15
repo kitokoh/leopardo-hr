@@ -89,7 +89,7 @@ class TurkeyPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Turkish public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'TR fixed public holidays (Ulusal Bayram ve Genel Tatiller Kanunu, seed PublicHolidaySeeder, issue #2255): 1er jan, 23 avr, 1er mai, 19 mai, 15 juil, 30 août, 29 oct + mobiles islamiques (Ramazan Bayramı, Kurban Bayramı) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

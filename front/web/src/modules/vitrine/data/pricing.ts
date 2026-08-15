@@ -45,7 +45,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/mois + 2 EUR/employe actif',
       annualPeriod: '/mois + 1,60 EUR/employe actif, facture annuellement',
       description: 'Pour tester Leopardo sur un site, une equipe ou une agence',
-      priceNote: '30 jours offerts. 10 employes inclus.',
+      priceNote: '14 jours offerts. 10 employes inclus.',
       employeeLimit: '1-30 employes',
       features: [
         'Pointage web et mobile',
@@ -66,7 +66,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/mois + 4 EUR/employe actif',
       annualPeriod: '/mois + 3,20 EUR/employe actif, facture annuellement',
       description: 'Pour les PME multi-equipes qui veulent piloter terrain, RH et paie simple',
-      priceNote: '30 jours offerts. 40 employes inclus.',
+      priceNote: '14 jours offerts. 40 employes inclus.',
       employeeLimit: '15-250 employes',
       features: [
         'Tout Pilot, plus :',
@@ -90,7 +90,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'Pour groupes multi-pays, franchises, reseaux de sites et exigences fortes',
       employeeLimit: '500+ employes',
       features: [
-        'Tout Growth, plus :',
+        'Tout Operations, plus :',
         'SSO SAML/OIDC et politiques avancees',
         'SLA, accompagnement migration et formation',
         'Environnements dedies ou region cloud choisie',
@@ -131,7 +131,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/month + EUR 2/active employee',
       annualPeriod: '/month + EUR 1.60/active employee, billed annually',
       description: 'For testing Leopardo on one site, team or branch',
-      priceNote: '30-day free trial. 10 employees included.',
+      priceNote: '14-day free trial. 10 employees included.',
       employeeLimit: '1-30 employees',
       features: [
         'Web and mobile attendance',
@@ -152,7 +152,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/month + EUR 4/active employee',
       annualPeriod: '/month + EUR 3.20/active employee, billed annually',
       description: 'For SMBs managing field teams, HR workflows and simple payroll',
-      priceNote: '30-day free trial. 40 employees included.',
+      priceNote: '14-day free trial. 40 employees included.',
       employeeLimit: '15-250 employees',
       features: [
         'Everything in Pilot, plus:',
@@ -176,7 +176,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'For multi-country groups, franchises, site networks and strict governance',
       employeeLimit: '500+ employees',
       features: [
-        'Everything in Growth, plus:',
+        'Everything in Operations, plus:',
         'SAML/OIDC SSO and advanced policies',
         'SLA, migration guidance and training',
         'Dedicated environments or selected cloud region',
@@ -217,7 +217,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/ay + aktif calisan basina 2 EUR',
       annualPeriod: '/ay + aktif calisan basina 1,60 EUR, yillik faturalama',
       description: 'Leopardo yu tek saha, ekip veya subede denemek icin',
-      priceNote: '30 gun ucretsiz deneme. 10 calisan dahil.',
+      priceNote: '14 gun ucretsiz deneme. 10 calisan dahil.',
       employeeLimit: '1-30 calisan',
       features: [
         'Web ve mobil yoklama',
@@ -238,7 +238,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/ay + aktif calisan basina 4 EUR',
       annualPeriod: '/ay + aktif calisan basina 3,20 EUR, yillik faturalama',
       description: 'Saha ekipleri, IK akislari ve basit bordro yoneten KOBI ler icin',
-      priceNote: '30 gun ucretsiz deneme. 40 calisan dahil.',
+      priceNote: '14 gun ucretsiz deneme. 40 calisan dahil.',
       employeeLimit: '15-250 calisan',
       features: [
         'Pilot taki her sey, arti:',
@@ -262,7 +262,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'Cok ulkeli gruplar, franchise lar, saha aglari ve yuksek yonetisim icin',
       employeeLimit: '500+ calisan',
       features: [
-        'Growth taki her sey, arti:',
+        'Operations taki her sey, arti:',
         'SAML/OIDC SSO ve gelismis politikalar',
         'SLA, gecis destegi ve egitim',
         'Ozel ortamlar veya secilen bulut bolgesi',
@@ -303,7 +303,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/شهر + 2 يورو لكل موظف نشط',
       annualPeriod: '/شهر + 1.60 يورو لكل موظف نشط، فوترة سنوية',
       description: 'للفرق التي تريد ترك الجداول المتفرقة والبدء بنظام موارد بشرية واضح',
-      priceNote: '30 يوما مجانا. يشمل 10 موظفين.',
+      priceNote: '14 يوما مجانا. يشمل 10 موظفين.',
       employeeLimit: '1-30 موظفا',
       features: [
         'الحضور عبر الويب والجوال',
@@ -313,7 +313,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
         'بوابة العميل ومساحة المدير',
         'دعم عبر البريد خلال 48 ساعة',
       ],
-      cta: 'ابدأ 30 يوما مجانا',
+      cta: 'ابدأ 14 يوما مجانا',
       popular: false,
       gradient: 'from-slate-600 to-slate-700',
     },
@@ -324,10 +324,10 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/شهر + 4 يورو لكل موظف نشط',
       annualPeriod: '/شهر + 3.20 يورو لكل موظف نشط، فوترة سنوية',
       description: 'للشركات الصغيرة والمتوسطة التي تحتاج الحضور والرواتب والمديرين والتحليلات',
-      priceNote: '30 يوما مجانا. يشمل 40 موظفا.',
+      priceNote: '14 يوما مجانا. يشمل 40 موظفا.',
       employeeLimit: '15-250 موظفا',
       features: [
-        'كل ما في Starter، بالإضافة إلى:',
+        'كل ما في Pilot، بالإضافة إلى:',
         'رواتب متعددة البلدان وموافقات موارد بشرية',
         'مديرون وفرق ومسارات اعتماد',
         'حضور ZKTeco والكشك والجوال',
@@ -335,7 +335,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
         'API وwebhooks وتكاملات',
         'دعم أولوية خلال 24 ساعة',
       ],
-      cta: 'جرّب Growth مجانا',
+      cta: 'جرّب Operations',
       popular: true,
       gradient: 'from-emerald-500 to-cyan-500',
     },
@@ -348,7 +348,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       description: 'للمجموعات متعددة البلدان وشبكات المواقع والحوكمة المتقدمة',
       employeeLimit: '500+ موظف',
       features: [
-        'كل ما في Growth، بالإضافة إلى:',
+        'كل ما في Operations، بالإضافة إلى:',
         'SSO عبر SAML/OIDC وسياسات متقدمة',
         'اتفاقية خدمة ومرافقة انتقال وتدريب',
         'بيئات مخصصة أو منطقة سحابية مختارة',

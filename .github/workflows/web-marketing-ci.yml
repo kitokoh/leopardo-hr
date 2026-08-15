@@ -18,7 +18,9 @@ permissions:
 
 concurrency:
   group: web-marketing-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : sur main, ne jamais annuler le run du commit précédent
+  # (annulation en cascade des builds/bundles utiles). Runs PR annulés.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -48,6 +50,10 @@ jobs:
       - name: Run ESLint
         working-directory: front/web
         run: npm run lint
+
+      - name: Check for double-encoded UTF-8 (mojibake)
+        working-directory: front/web
+        run: npm run check:mojibake
 
   web-marketing-build:
     name: Web Marketing Build
@@ -114,7 +120,7 @@ jobs:
         env:
           NEXT_PUBLIC_API_URL: https://gestionemployerbackend.onrender.com/api/v1
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
-        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts --project=chromium --workers=1
+        run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts --project=chromium --workers=1
 
       - name: Upload Playwright report
         if: always()

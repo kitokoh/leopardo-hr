@@ -188,4 +188,28 @@ if (Test-Path "CHANGELOG.md") {
     Pass "CHANGELOG.md encoding is valid UTF-8 without mojibake."
 }
 
+# Session 2026-08-15 — garde structure CHANGELOG : les merges parallèles
+# (swarm d'agents) ont dupliqué l'en-tête "### Fixed" à plusieurs reprises
+# (#2480, #2495, #2503…). Un en-tête de section ne doit jamais apparaître
+# deux fois de suite.
+if (Test-Path "CHANGELOG.md") {
+    $chg = Get-Content "CHANGELOG.md" -Raw
+    $dupHeaders = @("### Fixed`n### Fixed", "### Added`n### Added", "### Changed`n### Changed", "### Removed`n### Removed")
+    foreach ($h in $dupHeaders) {
+        if ($chg.Contains($h)) {
+            Fail "CHANGELOG.md contient un en-tête de section dupliqué (merge parallèle) — fusionner les sections avant merge."
+        }
+    }
+    Pass "CHANGELOG.md section headers are not duplicated."
+}
+
+# Garde .claude/ : le scratch de planification des agents ne doit jamais
+# être commité (fichiers locaux, cf. issue #2494 / session 2026-08-15).
+foreach ($line in $changedList) {
+    if ($line -match '^\.claude/') {
+        Fail "Fichier de scratch agent committé : $line — retirer .claude/ du repo (git rm --cached + .gitignore)."
+    }
+}
+Pass "No agent scratch (.claude/) committed."
+
 Pass "Governance checks passed."

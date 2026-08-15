@@ -68,6 +68,10 @@
           </div>
         </form>
 
+        <div v-if="hrReportError" class="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {{ hrReportError }}
+        </div>
+
         <div v-if="hrReportResult" class="mt-6">
           <div class="overflow-x-auto rounded-md border border-gray-200">
             <table class="min-w-full divide-y divide-gray-200">
@@ -120,6 +124,9 @@ import {
   AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon
 } from '@heroicons/vue/24/outline'
 import api, { downloadApiFile } from '@/services/api'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
@@ -127,6 +134,7 @@ const exportHistory = ref([])
 const historyLoading = ref(false)
 const hrReportResult = ref(null)
 const generatingReport = ref(false)
+const hrReportError = ref('')
 
 const hrReport = reactive({
   type: 'headcount',
@@ -160,19 +168,25 @@ const exportStatusMap = {
 async function downloadReport(report) {
   report.downloading = true
   try {
+    // Issue #2710 — état de téléchargement réel (plus de setTimeout simulé).
     await downloadApiFile(`${report.endpoint}?format=${report.format}`, `${report.key}.${report.format}`)
+  } catch (error) {
+    console.error('Download failed:', error)
+    toast.error('Erreur lors du téléchargement du rapport')
   } finally {
-    setTimeout(() => { report.downloading = false }, 1000)
+    report.downloading = false
   }
 }
 
 async function generateHrReport() {
   generatingReport.value = true
+  hrReportError.value = ''
   try {
-    const res = await api.get('/v1/hr-reports', { params: hrReport })
+    const res = await api.get('/v1/admin/hr-reports', { params: hrReport })
     hrReportResult.value = res.data.data || res.data || null
-  } catch {
+  } catch (err) {
     hrReportResult.value = null
+    hrReportError.value = err?.response?.data?.message || 'Impossible de générer le rapport HR (endpoint indisponible).'
   } finally {
     generatingReport.value = false
   }
@@ -181,7 +195,9 @@ async function generateHrReport() {
 async function fetchHistory() {
   historyLoading.value = true
   try {
-    const res = await api.get('/v1/export/history').catch(() => ({ data: { data: [] } }))
+    // Issue #2710 — un échec backend s'affiche comme une erreur explicite
+    // (plus de catch silencieux qui ressemble à « aucun export »).
+    const res = await api.get('/v1/export/history')
     exportHistory.value = res.data.data || res.data || []
   } finally {
     historyLoading.value = false

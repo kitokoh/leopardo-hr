@@ -120,6 +120,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/absences/{absence}/reject", options);
     },
 
+    /** Envoyer un message a l'assistant IA (super-admin) */
+    postAdminAiChat(options = {}) {
+      return request("POST", "/admin/ai/chat", options);
+    },
+
     /** Conversations IA cross-tenant (super-admin) */
     getAdminAiConversations(options = {}) {
       return request("GET", "/admin/ai/conversations", options);
@@ -250,6 +255,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/rate-validation/pending", options);
     },
 
+    /** Lister les règles de cotisations sociales nationales (platform_admin) — issue #1815 */
+    listAdminSocialContributions(options = {}) {
+      return request("GET", "/admin/social-contributions", options);
+    },
+
+    /** Créer une règle de cotisation nationale (platform_admin) — issue #1815 */
+    storeAdminSocialContribution(options = {}) {
+      return request("POST", "/admin/social-contributions", options);
+    },
+
+    /** Supprimer une règle de cotisation nationale (platform_admin) — issue #1815 */
+    destroyAdminSocialContribution(options = {}) {
+      return request("DELETE", "/admin/social-contributions/{socialContribution}", options);
+    },
+
+    /** Modifier une règle de cotisation nationale (platform_admin) — issue #1815 */
+    updateAdminSocialContribution(options = {}) {
+      return request("PUT", "/admin/social-contributions/{socialContribution}", options);
+    },
+
     /** Lister les barèmes fiscaux nationaux (platform_admin) — issue #1814 */
     listAdminTaxSlabs(options = {}) {
       return request("GET", "/admin/tax-slabs", options);
@@ -273,6 +298,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814 */
     resetAdminTaxSlabs(options = {}) {
       return request("POST", "/admin/tax-slabs/reset-defaults", options);
+    },
+
+    /** Lister les utilisateurs plateforme (super-admin) — issue #2269 */
+    getAdminUsers(options = {}) {
+      return request("GET", "/admin/users", options);
+    },
+
+    /** Détail d'un utilisateur plateforme (super-admin) — issue #2269 */
+    getAdminUsersByUser(options = {}) {
+      return request("GET", "/admin/users/{user}", options);
+    },
+
+    /** Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269 */
+    patchAdminUsersByUser(options = {}) {
+      return request("PATCH", "/admin/users/{user}", options);
     },
 
     /** Couts IA par periode */
@@ -410,6 +450,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/attendance/monthly-report", options);
     },
 
+    /** Régularité de présence (manager/RH) */
+    getAttendanceRegularity(options = {}) {
+      return request("GET", "/attendance/regularity", options);
+    },
+
     /** Etat du jour */
     getAttendanceToday(options = {}) {
       return request("GET", "/attendance/today", options);
@@ -485,14 +530,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/auth/register", options);
     },
 
-    /** Lister les exports bancaires */
+    /** Lister les exports bancaires du tenant (pagine) */
     getBankExports(options = {}) {
       return request("GET", "/bank-exports", options);
     },
 
-    /** Generer un export bancaire */
+    /** Creer un export bancaire pour un run valide/paye (asynchrone) */
     postBankExports(options = {}) {
       return request("POST", "/bank-exports", options);
+    },
+
+    /** Détail d'un export bancaire */
+    getBankExportsByBankExport(options = {}) {
+      return request("GET", "/bank-exports/{bankExport}", options);
     },
 
     /** Telecharger un export bancaire */
@@ -591,8 +641,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Deplacer un document */
-    postCabinetDocumentsByCabinetDocumentMove(options = {}) {
-      return request("POST", "/cabinet/documents/{cabinetDocument}/move", options);
+    patchCabinetDocumentsByCabinetDocumentMove(options = {}) {
+      return request("PATCH", "/cabinet/documents/{cabinetDocument}/move", options);
     },
 
     /** Lister les dossiers */
@@ -770,6 +820,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/contracts/{contract}/generate-pdf", options);
     },
 
+    /** Alias PDF du contrat (issue #2226) */
+    getContractsByContractPdf(options = {}) {
+      return request("GET", "/contracts/{contract}/pdf", options);
+    },
+
     /** Renouveler un contrat */
     postContractsByContractRenew(options = {}) {
       return request("POST", "/contracts/{contract}/renew", options);
@@ -813,6 +868,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume dashboard */
     getDashboardSummary(options = {}) {
       return request("GET", "/dashboard/summary", options);
+    },
+
+    /** Comptes demo publics pour la documentation QA */
+    getDemoUsers(options = {}) {
+      return request("GET", "/demo-users", options);
     },
 
     /** Supprimer le token FCM du device courant au logout */
@@ -860,6 +920,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/employees/{employee}/archive", options);
     },
 
+    /** Solde de congés d'un employé (manager/RH) */
+    getEmployeesByEmployeeBalance(options = {}) {
+      return request("GET", "/employees/{employee}/balance", options);
+    },
+
     /** Certificat de travail PDF (fin de contrat, F-08) */
     getEmployeesByEmployeeCertificateOfEmployment(options = {}) {
       return request("GET", "/employees/{employee}/certificate-of-employment", options);
@@ -873,6 +938,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Solde de tout compte (fin de contrat, F-08) */
     getEmployeesByEmployeeEndOfContract(options = {}) {
       return request("GET", "/employees/{employee}/end-of-contract", options);
+    },
+
+    /** Journal de paie d'un employé (manager/RH) */
+    getEmployeesByEmployeeLedger(options = {}) {
+      return request("GET", "/employees/{employee}/ledger", options);
     },
 
     /** Estimation sur periode */
@@ -951,8 +1021,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Approuver une note de frais */
-    postExpenseClaimsByExpenseClaimApprove(options = {}) {
-      return request("POST", "/expense-claims/{expenseClaim}/approve", options);
+    putExpenseClaimsByExpenseClaimApprove(options = {}) {
+      return request("PUT", "/expense-claims/{expenseClaim}/approve", options);
     },
 
     /** Rejeter une note de frais */
@@ -965,49 +1035,59 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/expense-claims/{expenseClaim}/submit", options);
     },
 
+    /** Exporter les absences */
+    getExportAbsences(options = {}) {
+      return request("GET", "/export/absences", options);
+    },
+
+    /** Exporter l'ordre de virement (OD) */
+    getExportAccountingOd(options = {}) {
+      return request("GET", "/export/accounting-od", options);
+    },
+
+    /** Exporter le pointage */
+    getExportAttendance(options = {}) {
+      return request("GET", "/export/attendance", options);
+    },
+
+    /** Exporter les contrats */
+    getExportContracts(options = {}) {
+      return request("GET", "/export/contracts", options);
+    },
+
+    /** Exporter les employes */
+    getExportEmployees(options = {}) {
+      return request("GET", "/export/employees", options);
+    },
+
+    /** Historique des exports du portail manager (issue #2199) - manager uniquement */
+    exportHistory(options = {}) {
+      return request("GET", "/export/history", options);
+    },
+
     /** Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement */
     exportPaySlips(options = {}) {
       return request("GET", "/export/pay-slips", options);
     },
 
-    /** Exporter les absences */
-    getExportsAbsences(options = {}) {
-      return request("GET", "/exports/absences", options);
+    /** Exporter le journal de paie */
+    getExportPayrollJournal(options = {}) {
+      return request("GET", "/export/payroll-journal", options);
     },
 
-    /** Exporter le pointage */
-    getExportsAttendance(options = {}) {
-      return request("GET", "/exports/attendance", options);
-    },
-
-    /** Exporter les contrats */
-    getExportsContracts(options = {}) {
-      return request("GET", "/exports/contracts", options);
-    },
-
-    /** Exporter les employes */
-    getExportsEmployees(options = {}) {
-      return request("GET", "/exports/employees", options);
-    },
-
-    /** Historique des exports */
-    getExportsHistory(options = {}) {
-      return request("GET", "/exports/history", options);
-    },
-
-    /** Exporter les bulletins */
-    getExportsPaySlips(options = {}) {
-      return request("GET", "/exports/pay-slips", options);
+    /** Exporter le grand livre de paie */
+    getExportPayrollLedger(options = {}) {
+      return request("GET", "/export/payroll-ledger", options);
     },
 
     /** Exporter les formations */
-    getExportsTraining(options = {}) {
-      return request("GET", "/exports/training", options);
+    getExportTraining(options = {}) {
+      return request("GET", "/export/training", options);
     },
 
     /** Exporter la flotte */
-    getExportsVehicles(options = {}) {
-      return request("GET", "/exports/vehicles", options);
+    getExportVehicles(options = {}) {
+      return request("GET", "/export/vehicles", options);
     },
 
     /** Verifier si une fonctionnalite est activee pour le plan de l'entreprise courante */
@@ -1075,14 +1155,54 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/fleet/reports/mileage", options);
     },
 
+    /** Candidature partenaire */
+    postGrowthPartnerApply(options = {}) {
+      return request("POST", "/growth/partner/apply", options);
+    },
+
+    /** Entreprises parrainées par le partenaire */
+    getGrowthPartnerCompanies(options = {}) {
+      return request("GET", "/growth/partner/companies", options);
+    },
+
+    /** Tableau de bord de l'espace partenaire */
+    getGrowthPartnerDashboard(options = {}) {
+      return request("GET", "/growth/partner/dashboard", options);
+    },
+
+    /** Demande de versement commission */
+    postGrowthPartnerPayout(options = {}) {
+      return request("POST", "/growth/partner/payout", options);
+    },
+
+    /** Statistiques partenaire connecté */
+    getGrowthPartnerStats(options = {}) {
+      return request("GET", "/growth/partner/stats", options);
+    },
+
     /** Healthcheck live + ready */
     getHealth(options = {}) {
       return request("GET", "/health", options);
     },
 
+    /** Liveness probe — processus API vivant (sans dépendances) */
+    getHealthLive(options = {}) {
+      return request("GET", "/health/live", options);
+    },
+
+    /** Readiness probe — base de données disponible */
+    getHealthReady(options = {}) {
+      return request("GET", "/health/ready", options);
+    },
+
+    /** Catalogue de traductions complet */
+    getI18nCatalog(options = {}) {
+      return request("GET", "/i18n/catalog", options);
+    },
+
     /** Traductions pour une locale */
-    getI18nByLocale(options = {}) {
-      return request("GET", "/i18n/{locale}", options);
+    getI18nCatalogByLocale(options = {}) {
+      return request("GET", "/i18n/catalog/{locale}", options);
     },
 
     /** Verification interne MediaMTX */
@@ -1105,9 +1225,29 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/kiosks", options);
     },
 
+    /** Annonces du kiosk (device token) */
+    getKiosksByDeviceCodeAnnouncements(options = {}) {
+      return request("GET", "/kiosks/{deviceCode}/announcements", options);
+    },
+
+    /** Infos employe pour ecran kiosk (device token) */
+    postKiosksByDeviceCodeEmployeeInfo(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/employee-info", options);
+    },
+
+    /** Solde conges employe pour kiosk (device token) */
+    postKiosksByDeviceCodeLeaveBalance(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/leave-balance", options);
+    },
+
     /** Pointage via kiosk */
     postKiosksByDeviceCodePunch(options = {}) {
       return request("POST", "/kiosks/{deviceCode}/punch", options);
+    },
+
+    /** Pointage QR via kiosk (device token) */
+    postKiosksByDeviceCodeQrPunch(options = {}) {
+      return request("POST", "/kiosks/{deviceCode}/qr-punch", options);
     },
 
     /** Roster biometrie d'un kiosk */
@@ -1181,13 +1321,18 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Approuver un pret */
-    postLoansByEmployeeLoanApprove(options = {}) {
-      return request("POST", "/loans/{employeeLoan}/approve", options);
+    putLoansByEmployeeLoanApprove(options = {}) {
+      return request("PUT", "/loans/{employeeLoan}/approve", options);
     },
 
     /** Decaisser un pret */
-    postLoansByEmployeeLoanDisburse(options = {}) {
-      return request("POST", "/loans/{employeeLoan}/disburse", options);
+    putLoansByEmployeeLoanDisburse(options = {}) {
+      return request("PUT", "/loans/{employeeLoan}/disburse", options);
+    },
+
+    /** Persister un lead marketing (vitrine) */
+    postMarketingLeads(options = {}) {
+      return request("POST", "/marketing/leads", options);
     },
 
     /** Compte social connecte du tenant */
@@ -1235,6 +1380,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/marketing/social-posts/{socialPost}/publish", options);
     },
 
+    /** Anomalies de pointage de l'employé courant */
+    getMeAttendanceAnomalies(options = {}) {
+      return request("GET", "/me/attendance-anomalies", options);
+    },
+
     /** Mon solde de paie courant */
     getMeBalance(options = {}) {
       return request("GET", "/me/balance", options);
@@ -1263,6 +1413,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Mes soldes de conges */
     getMeLeaveBalances(options = {}) {
       return request("GET", "/me/leave-balances", options);
+    },
+
+    /** Journal de paie de l'employé courant */
+    getMeLedger(options = {}) {
+      return request("GET", "/me/ledger", options);
     },
 
     /** Mes prets */
@@ -1320,6 +1475,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/me/quick-estimate", options);
     },
 
+    /** Mes inscriptions formation (alias mobile employee) */
+    getMeTrainingEnrollments(options = {}) {
+      return request("GET", "/me/training-enrollments", options);
+    },
+
     /** Mes formations */
     getMeTrainings(options = {}) {
       return request("GET", "/me/trainings", options);
@@ -1328,6 +1488,16 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Auto-inscription a une formation */
     postMeTrainingsBySessionEnroll(options = {}) {
       return request("POST", "/me/trainings/{session}/enroll", options);
+    },
+
+    /** Vehicules assignes a l'employe connecte (mobile) */
+    getMeVehicles(options = {}) {
+      return request("GET", "/me/vehicles", options);
+    },
+
+    /** Métriques plateforme (super-admin) */
+    getMetrics(options = {}) {
+      return request("GET", "/metrics", options);
     },
 
     /** Lire les preferences de notification de l'utilisateur courant */
@@ -1395,26 +1565,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/org-chart/{employeeId}/subordinates", options);
     },
 
-    /** Candidature partenaire */
-    postPartnerApply(options = {}) {
-      return request("POST", "/partner/apply", options);
-    },
-
-    /** Entreprises parrainées par le partenaire */
-    getPartnerCompanies(options = {}) {
-      return request("GET", "/partner/companies", options);
-    },
-
-    /** Demande de versement commission */
-    postPartnerPayout(options = {}) {
-      return request("POST", "/partner/payout", options);
-    },
-
-    /** Statistiques partenaire connecté */
-    getPartnerStats(options = {}) {
-      return request("GET", "/partner/stats", options);
-    },
-
     /** Lister les bulletins du tenant (manager) */
     getPaySlips(options = {}) {
       return request("GET", "/pay-slips", options);
@@ -1455,7 +1605,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/payment-confirmations/{paymentItem}/confirm", options);
     },
 
-    /** Alias mobile pour documents de paiement d'un cycle */
+    /** Documents de paiement d.un cycle paie */
     getPaymentsByPayrollRunDocuments(options = {}) {
       return request("GET", "/payments/{payrollRun}/documents", options);
     },
@@ -1480,6 +1630,21 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/anomalies", options);
     },
 
+    /** Generer un export bancaire pour un run valide (alias chemin) */
+    postPayrollRunsByPayrollRunBankExport(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/bank-export", options);
+    },
+
+    /** Lancer le paiement groupé du run (virements) */
+    postPayrollRunsByPayrollRunBulkPay(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/bulk-pay", options);
+    },
+
+    /** Statut du paiement groupé du run */
+    getPayrollRunsByPayrollRunBulkPayStatus(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/bulk-pay/status", options);
+    },
+
     /** Calculer la paie */
     postPayrollRunsByPayrollRunCalculate(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/calculate", options);
@@ -1495,14 +1660,39 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", options);
     },
 
+    /** Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158) */
+    downloadCnssBfDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", options);
+    },
+
+    /** Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155) */
+    downloadCnssCgDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", options);
+    },
+
     /** Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830) */
     downloadCnssCiDeclaration(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", options);
     },
 
+    /** Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155) */
+    downloadCnssGaDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", options);
+    },
+
+    /** Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158) */
+    downloadInpsMlDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/inps-ml", options);
+    },
+
     /** Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830) */
     downloadIpresSnDeclaration(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/declarations/ipres-sn", options);
+    },
+
+    /** Export comptable du run (CSV/Excel streamé) */
+    getPayrollRunsByPayrollRunExport(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/export", options);
     },
 
     /** Journal de paie mensuel CSV (F-10) */
@@ -1520,11 +1710,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
     },
 
-    /** Documents de paiement d'un cycle paie */
-    getPayrollRunsByPayrollRunPaymentDocuments(options = {}) {
-      return request("GET", "/payroll-runs/{payrollRun}/payment-documents", options);
-    },
-
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
     listPayrollRunRegularizations(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/regularizations", options);
@@ -1533,6 +1718,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Créer un run de régularisation (DZ-DEPTH #1818) */
     regularizePayrollRun(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/regularize", options);
+    },
+
+    /** Envoyer les bulletins du run aux employés */
+    postPayrollRunsByPayrollRunSendSlips(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/send-slips", options);
     },
 
     /** Resume de la session de paie */
@@ -1560,6 +1750,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll/audit/{correlationId}", options);
     },
 
+    /** Réglages du cycle de paie (société) */
+    getPayrollCycleSettings(options = {}) {
+      return request("GET", "/payroll/cycle-settings", options);
+    },
+
+    /** Mettre à jour les réglages du cycle de paie */
+    putPayrollCycleSettings(options = {}) {
+      return request("PUT", "/payroll/cycle-settings", options);
+    },
+
+    /** Historique des cycles de paie */
+    getPayrollCycles(options = {}) {
+      return request("GET", "/payroll/cycles", options);
+    },
+
+    /** Cycle de paie courant */
+    getPayrollCyclesCurrent(options = {}) {
+      return request("GET", "/payroll/cycles/current", options);
+    },
+
     /** Previsualiser un cycle de paie candidat */
     getPayrollCyclesPreview(options = {}) {
       return request("GET", "/payroll/cycles/preview", options);
@@ -1573,6 +1783,26 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Simuler l'impact d'un barème (manager, dry-run) — issue #1814 */
     simulatePayroll(options = {}) {
       return request("POST", "/payroll/simulate", options);
+    },
+
+    /** Liste des campagnes de paie (tenant) */
+    getPayrolls(options = {}) {
+      return request("GET", "/payrolls", options);
+    },
+
+    /** Crée une campagne de paie */
+    postPayrolls(options = {}) {
+      return request("POST", "/payrolls", options);
+    },
+
+    /** Suggestions de rééquilibrage des équipes */
+    getPlanningShiftRebalancing(options = {}) {
+      return request("GET", "/planning/shift-rebalancing", options);
+    },
+
+    /** Optimisation hebdomadaire du planning (suggestions) */
+    getPlanningWeeklyOptimization(options = {}) {
+      return request("GET", "/planning/weekly-optimization", options);
     },
 
     /** Connexion super-admin */
@@ -1655,9 +1885,34 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/platform/country-defaults", options);
     },
 
+    /** Lister les nœuds edge de la plateforme (super-admin) */
+    getPlatformEdgeNodes(options = {}) {
+      return request("GET", "/platform/edge/nodes", options);
+    },
+
+    /** Révoquer un nœud edge (super-admin) */
+    deletePlatformEdgeNodesByNodeId(options = {}) {
+      return request("DELETE", "/platform/edge/nodes/{nodeId}", options);
+    },
+
+    /** Forcer la synchronisation d'un nœud edge (super-admin) */
+    postPlatformEdgeNodesByNodeIdSync(options = {}) {
+      return request("POST", "/platform/edge/nodes/{nodeId}/sync", options);
+    },
+
+    /** Historique des opérations growth (super-admin) */
+    getPlatformGrowthHistory(options = {}) {
+      return request("GET", "/platform/growth/history", options);
+    },
+
     /** Lister les partenaires (admin) */
     getPlatformGrowthPartners(options = {}) {
       return request("GET", "/platform/growth/partners", options);
+    },
+
+    /** Mettre à jour le statut de candidature d'un partenaire (super-admin) */
+    patchPlatformGrowthPartnersByPartnerApplication(options = {}) {
+      return request("PATCH", "/platform/growth/partners/{partner}/application", options);
     },
 
     /** Mettre à jour le taux de commission d'un partenaire */
@@ -1670,6 +1925,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/platform/growth/payouts", options);
     },
 
+    /** Mettre à jour le statut d'un payout partenaire (super-admin) */
+    patchPlatformGrowthPayoutsByPayout(options = {}) {
+      return request("PATCH", "/platform/growth/payouts/{payout}", options);
+    },
+
     /** Agregats business du cockpit super-admin */
     getPlatformMetricsOverview(options = {}) {
       return request("GET", "/platform/metrics/overview", options);
@@ -1678,6 +1938,46 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister le catalogue des plans SaaS */
     getPlatformPlans(options = {}) {
       return request("GET", "/platform/plans", options);
+    },
+
+    /** Lister les utilisateurs plateforme (super-admins) */
+    getPlatformUsers(options = {}) {
+      return request("GET", "/platform/users", options);
+    },
+
+    /** Creer un utilisateur plateforme */
+    postPlatformUsers(options = {}) {
+      return request("POST", "/platform/users", options);
+    },
+
+    /** Desactiver un utilisateur plateforme (jamais de suppression physique) */
+    deletePlatformUsersByUser(options = {}) {
+      return request("DELETE", "/platform/users/{user}", options);
+    },
+
+    /** Detail d'un utilisateur plateforme */
+    getPlatformUsersByUser(options = {}) {
+      return request("GET", "/platform/users/{user}", options);
+    },
+
+    /** Mettre a jour un utilisateur plateforme */
+    patchPlatformUsersByUser(options = {}) {
+      return request("PATCH", "/platform/users/{user}", options);
+    },
+
+    /** Activer un utilisateur plateforme */
+    postPlatformUsersByUserActivate(options = {}) {
+      return request("POST", "/platform/users/{user}/activate", options);
+    },
+
+    /** Desactiver un utilisateur plateforme */
+    postPlatformUsersByUserDeactivate(options = {}) {
+      return request("POST", "/platform/users/{user}/deactivate", options);
+    },
+
+    /** Suspendre un utilisateur plateforme */
+    postPlatformUsersByUserSuspend(options = {}) {
+      return request("POST", "/platform/users/{user}/suspend", options);
     },
 
     /** Lister les postes */
@@ -2010,14 +2310,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/smart-attendance/config", options);
     },
 
-    /** Mettre à jour la configuration GPS (admin) */
-    putSmartAttendanceConfig(options = {}) {
-      return request("PUT", "/smart-attendance/config", options);
-    },
-
     /** Statistiques du jour — Smart Attendance (manager/RH) */
     getSmartAttendanceDashboard(options = {}) {
       return request("GET", "/smart-attendance/dashboard", options);
+    },
+
+    /** Préférence mode géolocalisation d'un employé (manager/RH) */
+    getSmartAttendanceEmployeesByEmployeeIdPreference(options = {}) {
+      return request("GET", "/smart-attendance/employees/{employeeId}/preference", options);
     },
 
     /** Envoyer un événement géographique (entrée/sortie de zone) */
@@ -2025,9 +2325,9 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/smart-attendance/geo-events", options);
     },
 
-    /** Lire les préférences de pointage de l'employé */
-    getSmartAttendancePreferences(options = {}) {
-      return request("GET", "/smart-attendance/preferences", options);
+    /** Sessions GPS de l'employé courant */
+    getSmartAttendanceMySessions(options = {}) {
+      return request("GET", "/smart-attendance/my-sessions", options);
     },
 
     /** Mettre à jour les préférences de pointage */
@@ -2045,9 +2345,14 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/smart-attendance/sessions/{id}", options);
     },
 
-    /** Valider ou rejeter une session GPS (manager/RH) */
-    postSmartAttendanceSessionsByIdValidate(options = {}) {
-      return request("POST", "/smart-attendance/sessions/{id}/validate", options);
+    /** Approuver une session GPS (manager/RH) */
+    postSmartAttendanceSessionsByIdApprove(options = {}) {
+      return request("POST", "/smart-attendance/sessions/{id}/approve", options);
+    },
+
+    /** Rejeter une session GPS (manager/RH) */
+    postSmartAttendanceSessionsByIdReject(options = {}) {
+      return request("POST", "/smart-attendance/sessions/{id}/reject", options);
     },
 
     /** Lister les regles de cotisations sociales (manager) */
@@ -2103,6 +2408,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Desactiver le SSO de l'entreprise */
     deleteSsoDisable(options = {}) {
       return request("DELETE", "/sso/disable", options);
+    },
+
+    /** Demarrer le flux OpenID Connect (SP -> IdP) */
+    getSsoOidcByCompanyIdAuthorize(options = {}) {
+      return request("GET", "/sso/oidc/{companyId}/authorize", options);
     },
 
     /** Callback OpenID Connect (IdP -> SP) */
@@ -2245,9 +2555,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/courses/{trainingCourse}/sessions", options);
     },
 
+    /** Toutes les inscriptions formation du tenant */
+    getTrainingEnrollments(options = {}) {
+      return request("GET", "/training/enrollments", options);
+    },
+
     /** Modifier une inscription */
     putTrainingEnrollmentsByTrainingEnrollment(options = {}) {
       return request("PUT", "/training/enrollments/{trainingEnrollment}", options);
+    },
+
+    /** Toutes les sessions de formation du tenant */
+    getTrainingSessions(options = {}) {
+      return request("GET", "/training/sessions", options);
     },
 
     /** Modifier une session */
@@ -2258,6 +2578,41 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Inscrire un employe */
     postTrainingSessionsByTrainingSessionEnroll(options = {}) {
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
+    },
+
+    /** Demande d'essai guidé / auto-service (onboarding) */
+    postTrialSignup(options = {}) {
+      return request("POST", "/trial/signup", options);
+    },
+
+    /** Statut de provisioning du guided trial */
+    getTrialStatus(options = {}) {
+      return request("GET", "/trial/status", options);
+    },
+
+    /** Statut du provisioning d'un essai guidé (polling) */
+    getTrialStatus2(options = {}) {
+      return request("GET", "/trial/status", options);
+    },
+
+    /** Vérifie le code OTP et provisionne l'espace d'essai */
+    postTrialVerify(options = {}) {
+      return request("POST", "/trial/verify", options);
+    },
+
+    /** Connexion utilisateur sans entreprise (parcours legacy mobile) */
+    postUserLogin(options = {}) {
+      return request("POST", "/user/login", options);
+    },
+
+    /** Profil de l'utilisateur connecté */
+    getUserMe(options = {}) {
+      return request("GET", "/user/me", options);
+    },
+
+    /** Crée un compte utilisateur sans entreprise (parcours legacy mobile) */
+    postUserRegister(options = {}) {
+      return request("POST", "/user/register", options);
     },
 
     /** Liste de toutes les alertes vehicules */
@@ -2400,6 +2755,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", options);
     },
 
+    /** Tester un endpoint webhook */
+    postWebhooksByWebhookTest(options = {}) {
+      return request("POST", "/webhooks/{webhook}/test", options);
+    },
+
     /** Lister les types d'evenements webhook disponibles */
     getWebhooksEvents(options = {}) {
       return request("GET", "/webhooks/events", options);
@@ -2430,6 +2790,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PUT", "/zkteco/devices/{id}", options);
     },
 
+    /** Regenerer le jeton d'une pointeuse (manager) */
+    postZktecoDevicesByIdRegenerateToken(options = {}) {
+      return request("POST", "/zkteco/devices/{id}/regenerate-token", options);
+    },
+
     /** Lister l'historique de synchronisation d'une pointeuse (manager) */
     listZktecoSyncLogs(options = {}) {
       return request("GET", "/zkteco/devices/{id}/sync-logs", options);
@@ -2454,4 +2819,4 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
 export default createLeopardoClient;
 
-export const openApiVersion = "4.23.5";
+export const openApiVersion = "4.24.0";

@@ -223,14 +223,14 @@ class EmployeeController extends Controller
         $employees->each(function (Employee $employee) use ($approvedAbsenceIds, $latestLogs): void {
             if ($employee->status !== 'active') {
                 $employee->setAttribute('work_state', 'offline');
-                $employee->setAttribute('work_state_label', 'Hors ligne');
+                $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
 
                 return;
             }
 
             if ($approvedAbsenceIds->has($employee->id)) {
                 $employee->setAttribute('work_state', 'leave');
-                $employee->setAttribute('work_state_label', 'En conge');
+                $employee->setAttribute('work_state_label', __('employees.work_state_leave'));
 
                 return;
             }
@@ -240,14 +240,14 @@ class EmployeeController extends Controller
 
             if (! $log) {
                 $employee->setAttribute('work_state', 'offline');
-                $employee->setAttribute('work_state_label', 'Hors ligne');
+                $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
 
                 return;
             }
 
             if ($log->status === 'absent') {
                 $employee->setAttribute('work_state', 'absent');
-                $employee->setAttribute('work_state_label', 'Absent');
+                $employee->setAttribute('work_state_label', __('employees.work_state_absent'));
 
                 return;
             }
@@ -260,16 +260,16 @@ class EmployeeController extends Controller
                 };
                 $employee->setAttribute('work_state', $state);
                 $employee->setAttribute('work_state_label', match ($state) {
-                    'break' => 'En pause',
-                    'mission' => 'En mission',
-                    default => 'Present',
+                    'break' => __('employees.work_state_break'),
+                    'mission' => __('employees.work_state_mission'),
+                    default => __('employees.work_state_present'),
                 });
 
                 return;
             }
 
             $employee->setAttribute('work_state', 'offline');
-            $employee->setAttribute('work_state_label', 'Hors ligne');
+            $employee->setAttribute('work_state_label', __('employees.work_state_offline'));
         });
     }
 
@@ -344,9 +344,13 @@ class EmployeeController extends Controller
     #[RequiresPermission('employees.view')]
     public function show(string $employeeId, Request $request): JsonResponse
     {
+        // v4.16.250 + #2327 : ne PAS eager-loader `company` sous le search_path
+        // tenant (la table `companies` résolue n'a pas la colonne `features` →
+        // SQLSTATE 42703). On charge uniquement `schedule`, puis on attache
+        // `currentCompany()` (public.companies, colonnes complètes) comme
+        // l'index() — pattern attachCompanyContext (#2327).
         $employee = Employee::query()
             ->with([
-                'company:id,name,language,timezone,currency,features',
                 'schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes',
             ])
             ->findOrFail($employeeId);
@@ -359,6 +363,10 @@ class EmployeeController extends Controller
             'resource' => 'employee_profile',
             'target_employee_id' => $employee->id,
         ]);
+
+        // currentCompany() retourne toujours une Company résolue par le
+        // middleware tenant (jamais null ici) — pas de garde instanceof.
+        $employee->setRelation('company', currentCompany());
 
         return (new EmployeeResource($employee))->response();
     }

@@ -18,6 +18,10 @@ Garde CI (bloquante sur le drift NOUVEAU) :
   - toute route absente d'openapi.yaml ET absente de l'allowlist fait échouer
     le job (exit 1) : une nouvelle route doit être documentée, ou ajoutée à
     l'allowlist avec une justification.
+  - PASSE INVERSE (issue #2181) : toute opération documentée dans
+    openapi.yaml qui n'existe dans AUCUNE route PHP est du drift inverse
+    (un client suivant la spec reçoit un 404). Exceptions volontaires dans
+    dev-hub/tools/openapi-reverse-allowlist.txt.
 
 Usage :
   python3 dev-hub/tools/check-openapi-route-coverage.py [--json]
@@ -36,8 +40,16 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ROUTES_DIR = REPO_ROOT / "api" / "routes"
 OPENAPI_FILE = REPO_ROOT / "api" / "openapi.yaml"
 ALLOWLIST_FILE = Path(__file__).resolve().parent / "openapi-coverage-allowlist.txt"
+REVERSE_ALLOWLIST_FILE = Path(__file__).resolve().parent / "openapi-reverse-allowlist.txt"
 
 HTTP_VERBS = {"get", "post", "put", "patch", "delete"}
+
+# Les routes des modules DDD peuvent être enregistrées par leur provider
+# (loadRoutesFrom) en dehors de api/routes/ : EdgeSync et SmartAttendance.
+MODULE_ROUTE_FILES = [
+    REPO_ROOT / "api" / "app" / "Modules" / "EdgeSync" / "routes" / "api.php",
+    REPO_ROOT / "api" / "app" / "Modules" / "SmartAttendance" / "routes" / "smart_attendance.php",
+]
 
 # Route::apiResource('users') → méthodes CRUD standard Laravel.
 RESOURCE_METHODS = {
@@ -57,7 +69,9 @@ API_RESOURCE_METHODS = {
     "destroy": "delete",
 }
 
-ROUTE_RE = re.compile(r"Route::(get|post|put|patch|delete)\(\s*['\"]([^'\"]+)['\"]")
+ROUTE_RE = re.compile(
+    r"(?:Route::|->)(get|post|put|patch|delete)\(\s*['\"]([^'\"]+)['\"]"
+)
 PREFIX_RE = re.compile(r"prefix\(\s*['\"]([^'\"]+)['\"]\)")
 GROUP_OPEN_RE = re.compile(r"->group\(function")
 GROUP_CLOSE_RE = re.compile(r"^\s*\}\);")
@@ -74,16 +88,42 @@ def normalize_path(path: str) -> str:
     return path.rstrip("/") or "/"
 
 
+def _build_base(prefixes: list[str]) -> str:
+    """Joindre les préfixes de groupe avec un séparateur '/' (bug corrigé #2233 :
+    la concaténation brute `growth`+`partner`+`/apply` produisait `growthpartner/apply`,
+    rendant des centaines de routes impossibles à couvrir par la garde)."""
+    parts = [p.strip("/") for p in prefixes if p and p.strip("/")]
+    return normalize_path("/" + "/".join(parts)) if parts else ""
+
+
 def parse_routes() -> list[dict]:
-    """Retourne [{method, path, file}] pour chaque route trouvée."""
+    """Retourne [{method, path, file}] pour chaque route trouvée.
+
+    Corrections #2233 :
+      - préfixes imbriqués joints avec '/' (plus de concaténation brute) ;
+      - chaînes multi-lignes `->middleware(...)->prefix('x')->group(function` :
+        le préfixe est mémorisé et poussé quand le groupe s'ouvre (même sur
+        une ligne suivante) ;
+      - contexte des fichiers `require`'d depuis routes/api.php : le groupe
+        `prefix('v1')` englobant est hérité par chaque module (sinon les
+        routes des modules sont incomparables à openapi.yaml).
+    """
     routes: list[dict] = []
-    for file in sorted(ROUTES_DIR.rglob("*.php")):
-        # web.php sert les pages HTML (docs, tester-guide) — hors contrat API.
-        if file.name == "web.php" and file.parent == ROUTES_DIR:
-            continue
-        rel = file.relative_to(ROUTES_DIR).as_posix()
-        prefix_stack: list[tuple[int, str]] = []
-        current_prefixes: list[str] = []
+
+    def parse_file(file: Path, inherited: list[tuple[int, str]] | None = None) -> None:
+        try:
+            rel = file.relative_to(ROUTES_DIR).as_posix()
+        except ValueError:
+            # Fichier hors api/routes/ (modules DDD EdgeSync/SmartAttendance) :
+            # étiquette lisible dans le rapport (repo-relative).
+            rel = file.relative_to(REPO_ROOT).as_posix()
+        # Issue #2489 (régression #2431) : le contexte de préfixe hérité du
+        # `require` dans api.php (groupe `v1` englobant) doit amorcer la pile —
+        # sinon les routes des modules sont comparées sans le préfixe de
+        # version et l'allowlist ne matche plus (drift faux positif massif).
+        prefix_stack: list[tuple[int, str]] = list(inherited or [])
+        current_prefixes = [p for _, p in prefix_stack]
+        pending_prefix: str | None = None
 
         for raw in file.read_text(encoding="utf-8", errors="replace").splitlines():
             line = raw.strip()
@@ -98,20 +138,38 @@ def parse_routes() -> list[dict]:
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
 
-            # Chaîne Route::prefix('...')->...->group(function () { ... });
-            # Le préfixe s'applique au groupe ouvert sur cette ligne.
+            # Issue #2421 : le préfixe peut être sur une ligne SÉPARÉE du
+            # ->group(function ...) (pattern multi-lignes) :
+            #   Route::middleware([...])
+            #       ->prefix('absences')
+            #       ->group(function (): void {
+            # On mémorise le préfixe « en attente » et on l'applique au groupe
+            # ouvert sur la ligne suivante.
             m = PREFIX_RE.search(line)
-            if m and GROUP_OPEN_RE.search(line):
-                prefix_stack.append((indent, m.group(1)))
+            if m and "prefix(" in line:
+                pending_prefix = m.group(1)
+
+            if GROUP_OPEN_RE.search(line):
+                prefix_stack.append((indent, pending_prefix or ""))
+                pending_prefix = None
                 current_prefixes = [p for _, p in prefix_stack]
+                continue
+            if m:
+                pending_prefix = m.group(1)
                 continue
 
             if GROUP_OPEN_RE.search(line):
-                # Groupe sans nouveau préfixe : hérite du contexte courant.
-                prefix_stack.append((indent, ""))
+                # Groupe sans nouveau préfixe sur la même ligne : hérite du
+                # préfixe en attente (ligne précédente) ou du contexte courant.
+                prefix_stack.append((indent, pending_prefix if pending_prefix is not None else ""))
+                pending_prefix = None
+                current_prefixes = [p for _, p in prefix_stack]
                 continue
 
-            base = "".join(current_prefixes)
+            # Issue #2489 (régression #2431) : jointure avec '/' via
+            # _build_base (fix #2233) — la concaténation brute produisait
+            # `v1ai/...` au lieu de `v1/ai/...`, incomparable à openapi.yaml.
+            base = _build_base(current_prefixes)
 
             m = ROUTE_RE.search(line)
             if m:
@@ -144,8 +202,100 @@ def parse_routes() -> list[dict]:
                     )
                 continue
 
-        # Pile résiduelle : groupes fermés par fin de fichier (rare).
+    # 1) api.php d'abord : collecte des require de modules avec le contexte de
+    #    préfixe au point d'inclusion (le groupe `v1` englobant).
+    api_file = ROUTES_DIR / "api.php"
+    inherited_by_module: dict[str, list[tuple[int, str]]] = {}
+    if api_file.exists():
+        stack: list[tuple[int, str]] = []
+        current: list[str] = []
+        pending: str | None = None
+        for raw in api_file.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("//"):
+                continue
+            indent = len(raw) - len(raw.lstrip())
+            if GROUP_CLOSE_RE.match(raw):
+                while stack and stack[-1][0] >= indent:
+                    stack.pop()
+                current = [p for _, p in stack]
+                continue
+            m = PREFIX_RE.search(line)
+            if m and "prefix(" in line:
+                pending = m.group(1)
+            if GROUP_OPEN_RE.search(line):
+                stack.append((indent, pending or ""))
+                pending = None
+                current = [p for _, p in stack]
+                continue
+            m = re.search(r"require\s+__DIR__\.\s*['\"]([^'\"]+)['\"]", line)
+            if m and current:
+                key = m.group(1).lstrip("./").lstrip("/")
+                inherited_by_module.setdefault(key, []).extend(
+                    [(i, p) for i, p in stack]
+                )
+
+    # 2) Parse de chaque fichier, avec le contexte hérité le cas échéant.
+    for file in sorted(ROUTES_DIR.rglob("*.php")):
+        # web.php sert les pages HTML (docs, tester-guide) — hors contrat API.
+        if file.name == "web.php" and file.parent == ROUTES_DIR:
+            continue
+        if file == api_file:
+            continue  # api.php est analysé à l'étape 1 pour les requires ; ses
+            # propres routes restent couvertes par la passe ci-dessous.
+        rel = file.relative_to(ROUTES_DIR).as_posix()
+        inherited = inherited_by_module.get(rel) or inherited_by_module.get(
+            "modules/" + file.name
+        )
+        parse_file(file, inherited)
+    # api.php lui-même (routes directes sous v1, platform, admin, etc.)
+    if api_file.exists():
+        parse_file(api_file)
+
+    # 3) Routes des modules DDD enregistrées par leur provider via
+    #    loadRoutesFrom (hors api/routes/) : EdgeSync, SmartAttendance.
+    #    QA 2026-08-15 (#2662) : elles étaient invisibles à la passe directe
+    #    de cette garde (seule la passe inverse les couvrait via
+    #    scripts/route_openapi_compare.py). Chemins absolus (api/v1/...),
+    #    donc aucun préfixe hérité.
+    for file in MODULE_ROUTE_FILES:
+        if not file.exists():
+            print(f"[WARN] Module route file absent: {file}", file=sys.stderr)
+            continue
+        parse_file(file)
+
     return routes
+
+
+def parse_routes_accurate() -> set[tuple[str, str]]:
+    """Ensemble {(method, path)} des routes réelles, préfixes composés
+    correctement (séparateur '/'), pour la passe inverse.
+
+    Réutilise le parseur d'audit `scripts/route_openapi_compare.py` (mêmes
+    normalisations {param}), en repli sur les formes canoniques du parseur
+    principal si le module est indisponible.
+    """
+    try:
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        from route_openapi_compare import extract_routes, norm_path
+
+        out: set[tuple[str, str]] = set()
+        for verb, path in extract_routes():
+            p = norm_path(path).replace("{p}", "{param}")
+            for prefix in ("/api/v1", "/api", "/v1"):
+                if p.startswith(prefix):
+                    p = p[len(prefix):]
+                    break
+            out.add((verb, p))
+        return out
+    except Exception:  # pragma: no cover - repli conservateur
+        out = set()
+        for r in parse_routes():
+            out.add((r["method"], r["path"]))
+            can = canonical_spec_path(r["path"])
+            if can is not None:
+                out.add((r["method"], can))
+        return out
 
 
 def parse_openapi() -> set[tuple[str, str]]:
@@ -185,16 +335,30 @@ def canonical_spec_path(path: str) -> str | None:
     `v1admin/...` (préfixes imbriqués concaténés sans séparateur + version) ;
     cette fonction rétablit la forme documentée (`/admin/...`).
 
+    Gère aussi la forme `api/v1/...` des routes de modules DDD enregistrées
+    par provider (EdgeSync, SmartAttendance).
+
     Renvoie None si le chemin ne commence pas par un préfixe de version
     (les routes sans préfixe `v1` sont comparées telles quelles).
     """
-    m = re.match(r"^v\d+", path)
+    m = re.match(r"^/?v\d+(?=/|$)", path)
     if not m:
         return None
     stripped = path[m.end():]
     if not stripped.startswith("/"):
         stripped = "/" + stripped
     return stripped
+
+
+def load_reverse_allowlist() -> set[str]:
+    if not REVERSE_ALLOWLIST_FILE.exists():
+        return set()
+    entries = set()
+    for line in REVERSE_ALLOWLIST_FILE.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#"):
+            entries.add(line)
+    return entries
 
 
 def main() -> int:
@@ -205,6 +369,26 @@ def main() -> int:
     routes = parse_routes()
     openapi_ops = parse_openapi()
     allowlist = load_allowlist()
+    reverse_allowlist = load_reverse_allowlist()
+
+    # Ensemble des opérations réellement routées, sous toutes leurs formes
+    # canoniques (raw + version-stripped) pour la passe inverse.
+    route_ops: set[tuple[str, str]] = set()
+    for r in routes:
+        route_ops.add((r["method"], r["path"]))
+        canonical = canonical_spec_path(r["path"])
+        if canonical is not None:
+            route_ops.add((r["method"], canonical))
+    # Passe inverse : parseur précis (préfixes composés avec '/') qui couvre
+    # aussi les fichiers de routes DDD (EdgeSync, SmartAttendance).
+    route_ops |= parse_routes_accurate()
+
+    # ── Passe inverse : opérations documentées mais non routées (issue #2181) ──
+    reverse_drift: list[str] = []
+    for method, path in sorted(openapi_ops):
+        if (method, path) not in route_ops:
+            reverse_drift.append(f"{method.upper()} {path}")
+    new_reverse = sorted(set(reverse_drift) - reverse_allowlist)
 
     uncovered: list[dict] = []
     covered = 0
@@ -236,6 +420,8 @@ def main() -> int:
         "uncovered": len(uncovered),
         "uncovered_in_allowlist": len(uncovered) - len(new_uncovered),
         "new_uncovered": len(new_uncovered),
+        "reverse_drift": len(reverse_drift),
+        "new_reverse_drift": len(new_reverse),
         "by_module": {k: v for k, v in sorted(by_module.items())},
     }
 
@@ -249,14 +435,21 @@ def main() -> int:
         print(f"  - non couvertes (total): {len(uncovered)}")
         print(f"  - dans l'allowlist (gaps connus): {len(uncovered) - len(new_uncovered)}")
         print(f"  - NOUVELLES non couvertes (drift): {len(new_uncovered)}")
+        print(f"  - drift inverse (documenté non routé): {len(reverse_drift)} "
+              f"(dont {len(new_reverse)} nouveaux)")
         for file, keys in sorted(by_module.items()):
             print(f"  {file}: {len(keys)} non couvertes")
 
-    # Bloquant uniquement sur le drift NOUVEAU (non allowlisté).
+    # Bloquant sur le drift NOUVEAU (non allowlisté) dans les deux sens.
     if new_uncovered:
         print("\n::error::Nouvelles routes sans documentation OpenAPI (issue #1473) :")
         for r in new_uncovered[:50]:
             print(f"::error::  {r['key']}  ({r['file']})")
+        return 1
+    if new_reverse:
+        print("\n::error::Opérations OpenAPI documentées mais absentes des routes PHP (issue #2181) :")
+        for key in new_reverse[:50]:
+            print(f"::error::  {key}")
         return 1
     return 0
 

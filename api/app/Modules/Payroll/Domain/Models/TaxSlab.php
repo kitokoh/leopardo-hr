@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $company_id
  * @property string $country_code
  * @property string $name
+ * @property string|null $legal_reference
  * @property float $min_amount
  * @property float|null $max_amount
  * @property float $rate
@@ -52,6 +53,7 @@ class TaxSlab extends Model
     protected $fillable = [
         'company_id', 'country_code', 'name', 'min_amount', 'max_amount',
         'rate', 'fixed_deduction', 'effective_from', 'effective_to',
+        'legal_reference',
         'status', 'submitted_by', 'validated_by', 'validated_at', 'rejection_reason',
     ];
 

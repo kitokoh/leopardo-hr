@@ -9,7 +9,9 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
@@ -384,6 +386,139 @@ class SocialDeclarationController extends Controller
         $content = $generator->generate($payrollRun);
 
         $filename = sprintf('CNPS_CM_DAS_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEMAC (#2155) — déclaration CNSS mensuelle Gabon (GA, CSV) :
+     * mêmes règles CNSS CEMAC que CM (retraite 2,5 %/5 %, famille 8 %,
+     * AT 3 % — plafond 3 000 000 XAF), sans centimes additionnels.
+     */
+    public function generateCnssGaDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'GA') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Gabon (CNSS GA).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_ga_declaration');
+
+        $generator = new CemacCnpsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNSS_GA_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEMAC (#2155) — déclaration CNSS mensuelle Congo (CG, CSV) :
+     * retraite 4 %/8 %, famille 10 %, AT 3 % — plafond 2 500 000 XAF.
+     */
+    public function generateCnssCgDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'CG') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Congo (CNSS CG).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_cg_declaration');
+
+        $generator = new CemacCnpsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNSS_CG_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEDEAO (#2158) — déclaration CNSS mensuelle Burkina Faso (CSV).
+     * 422 si le run n'est pas un run BF.
+     */
+    public function generateCnssBfDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'BF') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Burkina Faso (CNSS BF).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_bf_declaration');
+
+        $generator = new CedeaoCnsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNSS_BF_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEDEAO (#2158) — déclaration INPS mensuelle Mali (CSV).
+     * 422 si le run n'est pas un run ML.
+     */
+    public function generateInpsMlDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'ML') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Mali (INPS ML).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.inps_ml_declaration');
+
+        $generator = new CedeaoCnsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('INPS_ML_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
 
         return response()->streamDownload(function () use ($content): void {
             echo $content;

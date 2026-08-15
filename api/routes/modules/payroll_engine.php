@@ -115,10 +115,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll-runs/{payrollRun}/pay-slips', [PaySlipController::class, 'indexForRun'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/send-slips', [PaySlipController::class, 'sendSlips'])->whereNumber('payrollRun');
         Route::get('/pay-slips/{paySlip}', [PaySlipController::class, 'show'])->whereNumber('paySlip');
-        Route::get('/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
 
-        // Bank Exports
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
+        // Issue #2267 : contrat OpenAPI GET/POST /bank-exports (liste + génération).
+        Route::get('/bank-exports', [BankExportController::class, 'index']);
+        Route::post('/bank-exports', [BankExportController::class, 'store']);
         Route::get('/bank-exports/{bankExport}', [BankExportController::class, 'show'])->whereNumber('bankExport');
         Route::get('/bank-exports/{bankExport}/download', [BankExportController::class, 'download'])->whereNumber('bankExport');
 
@@ -133,11 +134,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // Social Declarations — CNSS CI + IPRES/CSS SN (CEDEAO #1830)
         Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ci', [SocialDeclarationController::class, 'generateCnssCiDeclaration'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/declarations/ipres-sn', [SocialDeclarationController::class, 'generateIpresSnDeclaration'])->whereNumber('payrollRun');
+        // CEMAC (#2155) — CNSS Gabon (GA) + Congo (CG)
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ga', [SocialDeclarationController::class, 'generateCnssGaDeclaration'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnss-cg', [SocialDeclarationController::class, 'generateCnssCgDeclaration'])->whereNumber('payrollRun');
+
+        // CEDEAO (#2158) — CNSS Burkina Faso + INPS Mali
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnss-bf', [SocialDeclarationController::class, 'generateCnssBfDeclaration'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/declarations/inps-ml', [SocialDeclarationController::class, 'generateInpsMlDeclaration'])->whereNumber('payrollRun');
 
         // Plan 61 — Payroll cycles
         Route::get('/payroll/cycles', [PayrollCycleController::class, 'index']);
         Route::get('/payroll/cycles/current', [PayrollCycleController::class, 'current']);
-        Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
 
         // PA2-PAY-011 — Configurable company pay cycle rule (daily/weekly/monthly)
         Route::get('/payroll/cycle-settings', [PayrollCycleController::class, 'cycleSettings']);
@@ -153,7 +160,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payment-batches/{paymentBatch}/mark-paid', [PaymentBatchController::class, 'markPaid'])->whereNumber('paymentBatch');
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
-        Route::get('/payroll-runs/{payrollRun}/payment-documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
+    });
+
+    // ── Manager read-only payroll (principal, comptable, rh) ────────────
+    // Issue #2749 — l'app RH (leopardo_hr) consomme ces lectures depuis ses
+    // écrans paie ; le rôle rh était exclu du groupe principal/comptable
+    // → 403 systématique. Les écritures paie restent principal/comptable.
+    Route::middleware(['api.manager:principal,comptable,rh', 'tenant.country'])->group(function (): void {
+        Route::get('/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
+        Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
         Route::get('/payments/{payrollRun}/documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
     });
 

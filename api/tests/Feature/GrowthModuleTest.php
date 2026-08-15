@@ -270,6 +270,7 @@ class GrowthModuleTest extends TestCase
         $this->postJson('/api/v1/trial/signup', [
             'email' => $email,
             'company' => 'Test Growth Co '.uniqid(),
+            'country' => 'DZ', // requis depuis #2127 (pays supporté obligatoire)
             'referral_code' => $partner->referral_code,
             // MULTI-PAYS (#1867) : pays obligatoire depuis le registre.
             'country' => 'DZ',

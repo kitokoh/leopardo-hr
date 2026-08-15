@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'demo_link_invalid' => "Lien d'accès démo invalide ou déjà utilisé.",
+    'demo_link_expired' => "Ce lien d'accès démo a expiré. Demandez un nouvel accès.",
     'login_success' => 'Connexion réussie.',
     'logout_success' => 'Déconnexion réussie.',
     'session_expired' => 'Votre session a expiré. Veuillez vous reconnecter.',

@@ -62,7 +62,9 @@ class PayrollCalculatorUnitTest extends TestCase
 
     public function test_get_rules_throws_for_unknown_country(): void
     {
-        // #1868 : plus de fallback silencieux — exception métier typée.
+        // Issue #1868 : le resolver lève UnsupportedCountryRulesException
+        // (RuntimeException métier, 422) — plus d'InvalidArgumentException
+        // générique (aligné PR #2303, re-cassé par le merge direct #2164).
         $this->expectException(UnsupportedCountryRulesException::class);
         (new PayrollCalculator)->getRules('XX');
     }

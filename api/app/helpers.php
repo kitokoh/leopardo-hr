@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Support\Str;
 
 if (! function_exists('currentCompany')) {
     /**
@@ -12,6 +13,33 @@ if (! function_exists('currentCompany')) {
         $company = app('current_company');
 
         return $company;
+    }
+}
+
+
+if (! function_exists('correlation_id')) {
+    /**
+     * Identifiant de corrélation de la requête/job en cours (issue #1874).
+     *
+     * Source : header `X-Correlation-ID` (ou `X-Request-Id` en repli,
+     * RequestIdMiddleware), sinon UUID frais. Lié au conteneur pour la durée
+     * de vie de la requête : logs structurés, réponses API et lignes
+     * d'audit de calcul paie partagent le même identifiant.
+     */
+    function correlation_id(): string
+    {
+        if (app()->bound('correlation_id')) {
+            return (string) app('correlation_id');
+        }
+
+        $req = app()->bound('request') ? app('request') : null;
+        $header = $req instanceof \Illuminate\Http\Request
+            ? ($req->header('X-Correlation-ID') ?: $req->header('X-Request-Id'))
+            : null;
+        $id = is_string($header) && $header !== '' ? $header : (string) Str::uuid();
+        app()->instance('correlation_id', $id);
+
+        return $id;
     }
 }
 

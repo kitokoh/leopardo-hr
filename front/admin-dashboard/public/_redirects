@@ -1,0 +1,8 @@
+# Cloudflare Pages SPA fallback (issue #2334) : les routes gérées par
+# vue-router (createWebHistory) doivent re-servir index.html sur accès
+# direct / hard refresh, sinon Cloudflare Pages renvoie 404 (ou le HTML
+# comme JS → page blanche). Les vrais assets (dist/assets/*) sont servis
+# normalement par le CDN.
+#
+# https://developers.cloudflare.com/pages/configuration/single-page-application/
+/* /index.html 200

@@ -222,6 +222,6 @@ class SocialContributionAdminControllerTest extends TestCase
         ])->assertStatus(422);
 
         // A reste intacte.
-        $this->assertSame(5.6, (float) SocialContribution::query()->findOrFail((int) $a['id'])->rate);
+        $this->assertSame(5.6, (float) SocialContribution::findOrFail((int) $a['id'])->rate);
     }
 }

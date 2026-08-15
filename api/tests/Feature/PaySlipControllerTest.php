@@ -229,6 +229,71 @@ class PaySlipControllerTest extends TestCase
     }
 
     /**
+     * Issue #2116 — le contrat de liste expose le bloc `compliance`
+     * (niveau de confiance des règles pays, contrat #1872) + champs
+     * calculés `employee_name`/`period`/`country_code` (rétro-compatibles).
+     */
+    public function test_pay_slips_expose_compliance_contract(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee, ['country_code' => 'CI']);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/pay-slips?per_page=10')
+            ->assertOk()
+            ->assertJsonPath('data.0.country_code', 'CI')
+            ->assertJsonPath('data.0.period', '2026-05')
+            ->assertJsonPath('data.0.employee_name', $employee->first_name.' '.$employee->last_name)
+            ->assertJsonPath('data.0.compliance.level', 'pilot')
+            ->assertJsonPath('data.0.compliance.warning_key', 'payroll.compliance_warning_pilot')
+            ->assertJsonPath('data.0.compliance.source', 'docs/payroll/CI_COMPLIANCE.md')
+            ->assertJsonPath('data.0.compliance.verification_date', null);
+    }
+
+    /**
+     * Issue #2116 — rétro-compatibilité : un bulletin dont le run n'a pas de
+     * pays supporté par le moteur expose `compliance: null` (les clients
+     * n'affichent rien, aucune erreur).
+     */
+    public function test_pay_slips_compliance_null_for_unsupported_country(): void
+    {
+        [$company, $manager, $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee, ['country_code' => 'US']);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/pay-slips?per_page=10')
+            ->assertOk()
+            ->assertJsonPath('data.0.compliance', null)
+            ->assertJsonPath('data.0.country_code', 'US');
+    }
+
+    /**
+     * Issue #2116 — le contrat self-service `/me/pay-slips` expose aussi le
+     * bloc `compliance` (même ressource, mêmes champs calculés).
+     */
+    public function test_employee_self_service_pay_slips_expose_compliance_block(): void
+    {
+        [$company, , $employee] = $this->payrollActor();
+        $this->payrollSlip($company, $employee, ['status' => 'validated']);
+
+        Sanctum::actingAs($employee);
+
+        $response = $this->getJson('/api/v1/me/pay-slips');
+
+        $response->assertOk();
+        $compliance = $response->json('data.0.compliance');
+        $this->assertIsArray($compliance);
+        $this->assertContains($compliance['level'], ['production', 'pilot', 'placeholder', 'unknown']);
+        $this->assertArrayHasKey('warning', $compliance);
+        $this->assertArrayHasKey('warning_key', $compliance);
+        $this->assertSame('payroll.compliance_warning_'.$compliance['level'], $compliance['warning_key']);
+        $this->assertSame('docs/payroll/DZ_COMPLIANCE.md', $compliance['source']);
+        $this->assertTrue($compliance['verification_date'] === null || is_string($compliance['verification_date']));
+    }
+
+    /**
      * @return array{0: Company, 1: Employee, 2: Employee}
      */
     private function payrollActor(): array

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
-use Illuminate\Support\Collection;
 
 /**
  * Programme FOCUS — F-10 : journal de paie mensuel (CSV).
@@ -76,10 +75,13 @@ class PayrollJournalGenerator
                 $cell = (string) $cell;
 
                 // Neutralisation CSV formula injection (OWASP) : une cellule
-                // commençant par =, +, -, @ ou des tabulations/CR est préfixée
-                // d'une apostrophe pour empêcher l'exécution dans Excel/LibreOffice
-                // (les champs matricule/nom sont contrôlés par l'employé).
-                if ($cell !== '' && str_contains('=+-@'."\t".chr(13), $cell[0])) {
+                // TEXTE commençant par =, +, -, @ ou des tabulations/CR est
+                // préfixée d'une apostrophe pour empêcher l'exécution dans
+                // Excel/LibreOffice (les champs matricule/nom sont contrôlés
+                // par l'employé). Issue #2223 : les montants (nombres, y
+                // compris négatifs pour les régularisations) ne sont JAMAIS
+                // neutralisés — ils doivent rester des nombres.
+                if ($cell !== '' && ! is_numeric($cell) && str_contains('=+-@'."\t".chr(13), $cell[0])) {
                     $cell = "'".$cell;
                 }
 

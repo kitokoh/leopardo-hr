@@ -20,7 +20,7 @@
 | 13ème mois (conventions de branche) | ✅ implémentée (pilot) | pratique généralisée | à valider expert |
 | Congés (2,2 j/mois, +0,2 j/5 ans) | 📝 à documenter/test | Code travail CI art. 25.1 | — |
 | HS (15 % / 35 % / 50 %) | ✅ implémentée (pilot) | Code travail CI art. 21 | à valider expert |
-| Préavis (art. 18) | ✅ implémentée (pilot, niveau employé) | Code travail CI art. 18 | à valider expert |
+| Préavis (art. 18) | ✅ implémentée (pilot, par catégorie — #2264) | Code travail CI art. 18 | à valider expert |
 | Jours fériés fixes CI | 📝 via CRUD jours fériés (#1811) | loi | — |
 | Jours fériés islamiques mobiles | 📝 via calendrier islamique (#1812) | table `islamic_calendar` | — |
 
@@ -47,13 +47,33 @@ pour le membre CI — CGI art. 119 bis, ord. 2023-718/719) :
 | > 8 000 000 | 32 % |
 
 `calculateIncomeTax()` applique le barème progressif mensuel directement sur
-le **brut** (bornes inclusives, même mécanique que le moteur). La **RICF**
-(réduction d'impôt pour charges de famille, art. 120 : 5 500–44 000 XOF/mois
-selon le nombre de parts) n'est **pas encore appliquée** — les données
-familiales (parts) ne sont pas portées par le moteur ; défaut 0
-(célibataire, 1 part). À compléter quand les données employé le permettront.
-⚠️ Pour CI, `calculateIncomeTax()` retourne **l'ITS seul** ; la CN n'existe
-plus (abolie, §3).
+le **brut** (bornes inclusives, même mécanique que le moteur), puis la
+**RICF** (réduction d'impôt pour charges de famille, art. 120) est imputée
+sur l'impôt brut : **ITS net = max(0, ITS brut − RICF)**.
+
+**RICF (implémentée, #2117 — CGI CI art. 120, réforme ord. 2023-718/719)** :
+réduction mensuelle imputable sur l'impôt brut selon le nombre de parts
+fiscales (`employees.family_parts`, défaut 1 part) :
+
+| Parts | RICF mensuelle (XOF) | Parts | RICF mensuelle (XOF) |
+|---|---|---|---|
+| 1 | 0 | 3,5 | 27 500 |
+| 1,5 | 5 500 | 4 | 33 000 |
+| 2 | 11 000 | 4,5 | 38 500 |
+| 2,5 | 16 500 | 5 | 44 000 (plafond) |
+| 3 | 22 000 | > 5 | 44 000 |
+
+Soit **11 000 XOF/mois par demi-part au-delà de 1 part**, plafonné à
+44 000. Détermination des parts (art. 120 al. 2) : célibataire/divorcé/veuf
+sans enfant = 1 · marié sans enfant = 2 · +0,5 part par enfant à charge
+(+1 part si enfant infirme) · plafond légal **5 parts** · situation de
+famille au 1er janvier de l'année d'acquisition du revenu (31 décembre si
+mariage/charges en cours d'année). Les données familiales restent à
+alimenter côté employé (`family_parts`) — défaut 1 part = aucune réduction
+(comportement inchangé). Statut : `pilot` — à valider par expert-comptable
+OHADA-CI (#1904/#2124).
+⚠️ Pour CI, `calculateIncomeTax()` retourne **l'ITS net de RICF** ; la CN
+n'existe plus (abolie, §3).
 
 ## 2. Assiette ITS
 
@@ -117,13 +137,15 @@ Codes : `CNSS_CI_RET_EMP`, `CNSS_CI_RET_PAT`, `CNSS_CI_FAM_PAT`,
 
 | Catégorie | < 5 ans | ≥ 5 ans |
 |---|---|---|
-| Ouvriers | 8 jours | 15 jours |
-| Employés / Techniciens | 1 mois | 2 mois |
-| Cadres | 3 mois | 3 mois |
+| Ouvriers | 6 j ouvrés (8 j cal.) | 11 j ouvrés (15 j cal.) |
+| Employés / Techniciens | 22 j ouvrés (1 mois) | 44 j ouvrés (2 mois) |
+| Cadres | 66 j ouvrés (3 mois) | 66 j ouvrés (3 mois) |
 
-⚠️ L'interface `noticePeriodDays(yearsOfService)` n'expose que l'ancienneté :
-implémentation pilote au niveau **employé/technicien** (< 5 ans : 30 j ;
-≥ 5 ans : 60 j) — ouvriers et cadres documentés ici, la catégorie du contrat
+⚠️ Issue #2219 : `noticePeriodDays()` renvoie des **jours ouvrés** (le moteur
+divise par les jours ouvrés du mois, ~22) — renvoyer des jours calendaires
+surpaierait 30/22 = 1,36× l'indemnité de préavis (alignement DZ #1943).
+Implémentation pilote au niveau **employé/technicien** (< 5 ans : 22 j ;
+≥ 5 ans : 44 j) — ouvriers et cadres documentés ici, la catégorie du contrat
 sera prise en compte dans un suivi.
 
 ## 9. 13ème mois

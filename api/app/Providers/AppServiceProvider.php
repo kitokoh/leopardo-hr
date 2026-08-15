@@ -179,6 +179,16 @@ class AppServiceProvider extends ServiceProvider
                 ->by('webhooks-inbound:'.$request->ip());
         });
 
+        // Audit expert 2026-08-15 (issue #2621) — GET /trial/status est pollé
+        // par l'UI vitrine toutes les 5 s (jusqu'à ~12 requêtes/min) ; il doit
+        // avoir son propre bucket, distinct de `5,15` réservé aux mutations
+        // (signup/verify). Clé par IP + token pour limiter le scraping.
+        RateLimiter::for('trial-status', function (Request $request) {
+            $token = strtolower((string) $request->query('token', 'anonymous'));
+
+            return Limit::perMinute(60)->by('trial-status:'.$token.'|'.$request->ip());
+        });
+
         // PA2-API-005 — Session-based web login forms (employee login, super-admin
         // platform login) are not covered by the API 'auth-sensitive' limiter
         // above, which only guards the Sanctum token endpoints. Keyed by e-mail +
@@ -208,6 +218,13 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('public-careers', function (Request $request) {
             return Limit::perMinute((int) config('security.rate_limits.public_careers_per_minute', 60))
                 ->by('public-careers:'.$request->ip());
+        });
+
+        // Issue #2621 : GET /trial/status est POLLÉ par la vitrine (~1 req /
+        // 5 s pendant 60 s) — un limit 5/15 min le 429ait systématiquement.
+        // Limiteur dédié 60/min/IP (statut non sensible, pas de mutation).
+        RateLimiter::for('trial-status', function (Request $request) {
+            return Limit::perMinute(60)->by('trial-status:'.$request->ip());
         });
     }
 

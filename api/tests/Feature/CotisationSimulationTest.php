@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
@@ -144,14 +145,14 @@ class CotisationSimulationTest extends TestCase
         /** @var array<string, mixed> $data */
         $data = $response->json('data');
 
-        // Taux CI légaux (#1825/#1893 + caps #1913) : CNSS retraite 3,2 %
-        // salarié, patronal 4,5 % (retraite) + 5,75 % (famille) + 2,0 % (AT)
-        // avec famille/AT plafonnées à 70 000 XOF/mois (guide CNPS) — surtout
-        // PAS les taux DZ (9 % / 26 %). Brut 100 000 > plafond branche 70 000 :
-        //   salarié 100 000 × 3,2 % = 3 200
-        //   patronal 4 500 + 70 000 × 5,75 % + 70 000 × 2,0 % = 9 925
+        // Taux CI légaux (#1825/#1893 + #1913) : CNSS retraite 3,2 % salarié,
+        // patronal 4,5 % + famille 5,75 % plafonnée 70 000 + AT 2 % plafonné
+        // 70 000 → 100 000 × 4,5 % + 4 025 + 1 400 = 9 925 — surtout PAS les
+        // taux DZ (9 % / 26 %).
         $this->assertSame('CI', $data['country_code']);
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
+        // Plafonds #1913 : famille + AT plafonnés à 70 000 → 100 000 × 4,5 %
+        // + 70 000 × 5,75 % + 70 000 × 2 % = 9 925,00.
         $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['net_before_tax']);
     }
@@ -359,15 +360,16 @@ class CotisationSimulationTest extends TestCase
         $this->assertSame('CedeaoPayrollRules', $data['contract']['rules_identifier']);
         $this->assertSame('pilot', $data['contract']['confidence_level']);
 
-        // Caps #1913 (famille/AT 70 000 XOF) : patronal 9 925 sur 100 000.
         $this->assertEquals(3200.0, $data['total_employee_deduction']);
+        // Plafonds #1913 : famille + AT plafonnés à 70 000 → 100 000 × 4,5 %
+        // + 70 000 × 5,75 % + 70 000 × 2 % = 9 925,00.
         $this->assertEquals(9925.0, $data['total_employer_cost']);
         $this->assertEquals(96800.0, $data['taxable_gross']);
         $this->assertEquals(4000.0, $data['income_tax']);
         $this->assertEquals(0.0, $data['bracket_tax']);
         $this->assertEquals(7200.0, $data['total_deductions']);
         $this->assertEquals(92800.0, $data['net_salary']);
-        $this->assertEquals(109925.0, $data['total_cost_employer']);
+        $this->assertEquals(109925.0, $data['total_cost_employer']); // 100 000 + 9 925 (plafonds #1913)
 
         // Le contrat imbriqué expose les mêmes montants (cohérence).
         $this->assertEquals(3200.0, $data['contract']['social_employee']);
@@ -450,7 +452,7 @@ class CotisationSimulationTest extends TestCase
 
         (new PayrollCalculator)->calculateRun($run);
 
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip|null $slip */
+        /** @var PaySlip|null $slip */
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
         $this->assertEquals(60000.0, (float) $slip->gross_salary);
@@ -482,6 +484,72 @@ class CotisationSimulationTest extends TestCase
         $this->assertMatchesRegularExpression('/^v1-[0-9a-f]{16}$/', (string) $slip->rules_version);
         $this->assertSame($slip->rules_version, $data['contract']['rules_version']);
         $this->assertSame($slip->rules_period?->toDateString(), $data['contract']['rules_period']);
+    }
+
+    /**
+     * Issue #2220 — parité SN : la taxe de minimum fiscal (TRIMF) doit être
+     * déduite dans la simulation comme dans le bulletin (max(IR, TRIMF)).
+     * Gross 100 000 XOF : IR 2 380 < TRIMF 5 400 → net bulletin = 89 000.
+     */
+    public function test_contract_sn_trimef_parity_with_payslip(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'SN', 'currency' => 'XOF']);
+
+        /** @var PayrollRun $run */
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'SN',
+            'status' => PayrollRun::STATUS_DRAFT,
+        ]);
+
+        SalaryStructure::create([
+            'company_id' => $company->id,
+            'name' => 'Grille par défaut (test)',
+            'base_salary' => 100000,
+            'currency' => 'XOF',
+            'country_code' => 'SN',
+            'frequency' => 'monthly',
+            'active' => true,
+        ]);
+
+        Employee::factory()->create([
+            'company_id' => $company->id,
+            'salary_type' => 'fixed',
+            'salary_base' => 100000,
+            'status' => 'active',
+        ]);
+
+        (new PayrollCalculator)->calculateRun($run);
+
+        /** @var PaySlip|null $slip */
+        $slip = $run->paySlips()->first();
+        $this->assertNotNull($slip);
+        // TRIMF (5 400) > IR (2 380) → le net bulletin intègre le minimum fiscal.
+        $this->assertEquals(89000.0, (float) $slip->net_salary);
+
+        /** @var Employee $manager */
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($manager);
+
+        // Simulation /payroll/simulate — même résultat que le bulletin (#1869).
+        $sim = $this->postJson('/api/v1/payroll/simulate', [
+            'gross_salary' => 100000,
+            'country_code' => 'SN',
+        ])->assertOk()->json('data');
+
+        $this->assertEquals((float) $slip->net_salary, $sim['net']);
+        $this->assertEquals(89000.0, $sim['net']);
+        // L'impôt exposé est bien l'IR (2 380) — le TRIMF (5 400) est déduit
+        // dans base_deductions (max(IR, TRIMF)) mais l'IR reste affiché.
+        $this->assertEquals(2380.0, (float) $sim['income_tax']);
     }
 
     /**
@@ -707,9 +775,6 @@ class CotisationSimulationTest extends TestCase
         $this->assertEquals(75600.0, $contract['total_cost']);
     }
 
-    /**
-     * @return int
-     */
     private function decimalPlaces(float $value): int
     {
         $formatted = number_format($value, 6, '.', '');

@@ -26,7 +26,7 @@ const copyByLocale: Record<AppLocale, ProofCopy> = {
     badge: 'Pret pour le terrain',
     title: 'Une plateforme unique pour vendre, connecter et operer',
     subtitle: 'Vitrine publique, portail client, admin plateforme, apps employee/manager/admin et kiosk biometrie sont penses comme un meme systeme operationnel.',
-    primary: 'Demarrer 30 jours gratuits',
+    primary: 'Demarrer 14 jours gratuits',
     secondary: 'Voir la demo',
     proofs: [
       { title: '3 apps mobiles', detail: 'Employee, Manager/RH et Platform Admin avec workflows dedies.' },
@@ -39,7 +39,7 @@ const copyByLocale: Record<AppLocale, ProofCopy> = {
     badge: 'Field-ready',
     title: 'One platform to sell, connect and operate',
     subtitle: 'Public website, client portal, platform admin, employee/manager/admin mobile apps and biometric kiosk are designed as one operational system.',
-    primary: 'Start 30-day trial',
+    primary: 'Start 14-day trial',
     secondary: 'Watch demo',
     proofs: [
       { title: '3 mobile apps', detail: 'Employee, Manager/HR and Platform Admin with dedicated workflows.' },
@@ -52,7 +52,7 @@ const copyByLocale: Record<AppLocale, ProofCopy> = {
     badge: 'Saha icin hazir',
     title: 'Satmak, baglamak ve isletmek icin tek platform',
     subtitle: 'Genel vitrin, musteri portali, platform yonetimi, employee/manager/admin mobil uygulamalari ve biyometrik kiosk tek operasyonel sistem olarak tasarlandi.',
-    primary: '30 gun ucretsiz basla',
+    primary: '14 gun ucretsiz basla',
     secondary: 'Demoyu gor',
     proofs: [
       { title: '3 mobil uygulama', detail: 'Employee, Manager/IK ve Platform Admin icin ayrilmis akislar.' },
@@ -65,7 +65,7 @@ const copyByLocale: Record<AppLocale, ProofCopy> = {
     badge: 'جاهز للميدان',
     title: 'منصة واحدة للبيع والربط والتشغيل',
     subtitle: 'تعمل الواجهة العامة وبوابة العميل وتطبيقات الجوال والكشك البيومتري كمنظومة تشغيل واحدة.',
-    primary: 'ابدأ 30 يوما مجانا',
+    primary: 'ابدأ 14 يوما مجانا',
     secondary: 'شاهد العرض',
     proofs: [
       { title: '3 تطبيقات جوال', detail: 'Employee وManager/RH وPlatform Admin بمسارات مخصصة.' },

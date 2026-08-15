@@ -34,13 +34,9 @@
             {{ $t('users.actions.export', 'Exporter') }}
           </button>
 
-          <button
-            @click="showCreateModal = true"
-            class="btn-primary py-2.5 text-xs font-black uppercase tracking-widest shadow-premium"
-          >
-            <UserPlusIcon class="h-4 w-4 mr-2" />
-            {{ $t('users.actions.new', 'Nouveau') }}
-          </button>
+          <!-- Issue #2269 : création d'utilisateur hors contrat backend v1 —
+               retirée de l'UI (aucun bouton mort) -->
+
         </div>
       </div>
     </div>
@@ -73,98 +69,12 @@
             <option value="active">{{ $t('users.filters.status.active', 'Actif') }}</option>
             <option value="inactive">{{ $t('users.filters.status.inactive', 'Inactif') }}</option>
             <option value="suspended">{{ $t('users.filters.status.suspended', 'Suspendu') }}</option>
-            <option value="pending">{{ $t('users.filters.status.pending', 'En attente') }}</option>
           </select>
         </div>
 
-        <!-- Role Filter -->
-        <div>
-          <label class="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">{{ $t('users.filters.role.label', 'Rôle') }}</label>
-          <select
-            v-model="filters.role"
-            class="block w-full px-4 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none appearance-none"
-          >
-            <option value="">{{ $t('users.filters.role.all', 'Tous les rôles') }}</option>
-            <option value="admin">{{ $t('users.filters.role.admin', 'Administrateur') }}</option>
-            <option value="manager">{{ $t('users.filters.role.manager', 'Manager') }}</option>
-            <option value="employee">{{ $t('users.filters.role.employee', 'Employé') }}</option>
-            <option value="hr">{{ $t('users.filters.role.hr', 'RH') }}</option>
-          </select>
+
         </div>
       </div>
-
-      <!-- Advanced Filters Toggle -->
-      <div class="mt-6">
-        <button
-          @click="showAdvancedFilters = !showAdvancedFilters"
-          class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors flex items-center"
-        >
-          <span>{{ showAdvancedFilters ? $t('users.filters.advanced.hide', 'Masquer les filtres avancés') : $t('users.filters.advanced.show', 'Afficher les filtres avancés') }}</span>
-          <ChevronDownIcon :class="['ml-2 h-4 w-4 transition-transform duration-300', showAdvancedFilters ? 'rotate-180' : '']" />
-        </button>
-      </div>
-
-      <!-- Advanced Filters -->
-      <div v-if="showAdvancedFilters" class="mt-4 pt-4 border-t border-gray-200">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.company.label', 'Entreprise') }}</label>
-            <select
-              v-model="filters.company"
-              class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            >
-              <option value="">{{ $t('users.filters.company.all', 'Toutes les entreprises') }}</option>
-              <option v-for="company in companies" :key="company.id" :value="company.id">
-                {{ company.name }}
-              </option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.registrationDate.label', "Date d'inscription") }}</label>
-            <select
-              v-model="filters.registrationDate"
-              class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            >
-              <option value="">{{ $t('users.filters.registrationDate.all', 'Toutes les dates') }}</option>
-              <option value="today">{{ $t('users.filters.registrationDate.today', "Aujourd'hui") }}</option>
-              <option value="week">{{ $t('users.filters.registrationDate.week', 'Cette semaine') }}</option>
-              <option value="month">{{ $t('users.filters.registrationDate.month', 'Ce mois') }}</option>
-              <option value="quarter">{{ $t('users.filters.registrationDate.quarter', 'Ce trimestre') }}</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.lastLogin.label', 'Dernière connexion') }}</label>
-            <select
-              v-model="filters.lastLogin"
-              class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            >
-              <option value="">{{ $t('users.filters.lastLogin.all', 'Toutes') }}</option>
-              <option value="today">{{ $t('users.filters.lastLogin.today', "Aujourd'hui") }}</option>
-              <option value="week">{{ $t('users.filters.lastLogin.week', 'Cette semaine') }}</option>
-              <option value="month">{{ $t('users.filters.lastLogin.month', 'Ce mois') }}</option>
-              <option value="never">{{ $t('users.filters.lastLogin.never', 'Jamais connecté') }}</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('users.filters.segment.label', 'Segment') }}</label>
-            <select
-              v-model="filters.segment"
-              class="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-            >
-              <option value="">{{ $t('users.filters.segment.all', 'Tous les segments') }}</option>
-              <option value="champions">{{ $t('users.filters.segment.champions', 'Champions') }}</option>
-              <option value="loyal">{{ $t('users.filters.segment.loyal', 'Loyaux') }}</option>
-              <option value="potential">{{ $t('users.filters.segment.potential', 'Potentiels') }}</option>
-              <option value="new">{{ $t('users.filters.segment.new', 'Nouveaux') }}</option>
-              <option value="at-risk">{{ $t('users.filters.segment.atRisk', 'À risque') }}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Bulk Actions Panel -->
     <div v-if="showBulkActions && selectedUsers.length > 0" class="bg-brand-50/50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800 rounded-2xl p-4 backdrop-blur-md animate-fade-in">
@@ -188,12 +98,6 @@
             class="text-[10px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-500 transition-colors"
           >
             {{ $t('users.bulkPanel.deactivate', 'Désactiver') }}
-          </button>
-          <button
-            @click="bulkAction('suspend')"
-            class="text-[10px] font-black uppercase tracking-widest text-red-600 hover:text-red-500 transition-colors"
-          >
-            {{ $t('users.bulkPanel.suspend', 'Suspendre') }}
           </button>
           <button
             @click="bulkAction('export')"
@@ -220,9 +124,7 @@
         @select="handleUserSelect"
         @select-all="handleSelectAll"
         @view="viewUser"
-        @edit="editUser"
         @delete="deleteUser"
-        @impersonate="impersonateUser"
       />
 
       <!-- Pagination -->
@@ -230,7 +132,7 @@
         <Pagination
           :current-page="currentPage"
           :total-pages="totalPages"
-          :total-items="filteredUsers.length"
+          :total-items="totalItems"
           :per-page="perPage"
           @page-change="currentPage = $event"
           @per-page-change="perPage = $event"
@@ -239,53 +141,86 @@
     </div>
 
     <!-- Modals -->
-    <CreateUserModal
-      v-if="showCreateModal"
-      @close="showCreateModal = false"
-      @created="handleUserCreated"
-    />
-
-    <EditUserModal
-      v-if="showEditModal"
-      :user="selectedUser"
-      @close="showEditModal = false"
-      @updated="handleUserUpdated"
-    />
-
     <UserDetailModal
       v-if="showDetailModal"
       :user="selectedUser"
       @close="showDetailModal = false"
-      @edit="editUser"
+      @impersonate="openImpersonate"
     />
+
+    <!-- Impersonation modal (PA2-ADM-006, issue #2518) -->
+    <div v-if="showImpersonateModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4">
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+          {{ t('users.impersonation.title', 'Impersonner un employé') }}
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('users.impersonation.subtitle', 'Ouvrir une session au nom de :name').replace(':name', impersonation?.name || '') }}
+        </p>
+
+        <div v-if="!impersonationResult" class="mt-4 space-y-3">
+          <div v-if="impersonation?.company" class="rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800">
+            <p class="font-semibold text-gray-800 dark:text-slate-200">{{ impersonation.company.name || '—' }}</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400">
+              {{ t('users.impersonation.employee', 'Employé #:id').replace(':id', impersonation.company.employee_id) }}
+            </p>
+          </div>
+          <textarea
+            v-model="impersonateReason"
+            rows="3"
+            class="w-full rounded-xl border border-slate-300 p-3 text-sm dark:border-slate-700 dark:bg-slate-800"
+            :placeholder="t('users.impersonation.reason', 'Motif (obligatoire, 5 caractères minimum)')"
+          ></textarea>
+          <p v-if="impersonateError" class="text-sm font-medium text-red-600 dark:text-red-400">{{ impersonateError }}</p>
+          <div class="flex justify-end gap-2">
+            <button class="btn-secondary" @click="closeImpersonate">{{ t('users.impersonation.cancel', 'Annuler') }}</button>
+            <button class="btn-primary" :disabled="impersonateBusy" @click="submitImpersonation">
+              {{ impersonateBusy ? '…' : t('users.impersonation.start', 'Créer la session') }}
+            </button>
+          </div>
+        </div>
+
+        <div v-else class="mt-4 space-y-3">
+          <div class="rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/30">
+            <p class="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+              {{ t('users.impersonation.tokenTitle', 'Jeton d’impersonation (usage unique)') }}
+            </p>
+            <code class="mt-2 block break-all rounded-lg bg-white p-2 text-xs dark:bg-slate-900">{{ impersonationResult.token }}</code>
+            <p class="mt-2 text-xs text-emerald-700 dark:text-emerald-400">
+              {{ t('users.impersonation.expires', 'Expire le :date').replace(':date', new Date(impersonationResult.expires_at).toLocaleString()) }}
+            </p>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button class="btn-secondary" @click="copyImpersonationToken">{{ t('users.impersonation.copy', 'Copier le jeton') }}</button>
+            <button class="btn-primary" @click="closeImpersonate">{{ t('users.impersonation.done', 'Terminé') }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import {
-  UserPlusIcon,
   DocumentArrowDownIcon,
   CheckCircleIcon,
   MagnifyingGlassIcon,
-  InformationCircleIcon,
-  ChevronDownIcon
+  InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
 // Components
 import UserTable from '@/components/users/UserTable.vue'
 import Pagination from '@/components/common/Pagination.vue'
-import CreateUserModal from '@/components/users/CreateUserModal.vue'
-import EditUserModal from '@/components/users/EditUserModal.vue'
 import UserDetailModal from '@/components/users/UserDetailModal.vue'
 
 const toast = useToast()
 const localeStore = useLocaleStore()
 
-// Local i18n helper for use inside <script setup> (mirrors the global $t exposed to templates)
 function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
@@ -296,122 +231,97 @@ const selectedUsers = ref([])
 const selectedUser = ref(null)
 const currentPage = ref(1)
 const perPage = ref(25)
+const totalPages = ref(1)
+const totalItems = ref(0)
 const isLoading = ref(false)
-const showAdvancedFilters = ref(false)
 const showBulkActions = ref(false)
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
 const showDetailModal = ref(false)
-
-// Filters
+// Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
-  status: '',
-  role: '',
-  company: '',
-  registrationDate: '',
-  lastLogin: '',
-  segment: ''
+  status: ''
 })
 
-// Mock data
+// Issue #2269 : plus de mocks — données réelles depuis GET /admin/users.
 const users = ref([])
 const companies = ref([])
-const stats = reactive({
-  totalUsers: 0,
-  activeUsers: 0,
-  newToday: 0
+
+// Pagination (server-side)
+const paginatedUsers = computed(() => users.value)
+// #2481 : sélection « tout » basée sur la liste chargée (la recherche est
+// déjà server-side via /platform/users?search=…).
+const filteredUsers = computed(() => users.value)
+
+// #2481 : stats du résumé (totalItems alimenté par la réponse API).
+// #2481 : export groupé = export client CSV de la page courante (aucun
+// endpoint d'export groupé côté API).
+function exportSelectedUsers() {
+  exportUsers()
+}
+const usersSummary = computed(() => {
+  return t('users.page.summary', ':count utilisateur(s) plateforme')
+    .replace(':count', String(totalItems.value))
 })
 
 onMounted(async () => {
-  await loadUsers()
-  await loadCompanies()
-  updateStats()
+  await Promise.all([loadUsers(), loadCompanies()])
 })
 
-// Computed properties
-const filteredUsers = computed(() => {
-  let filtered = users.value
-
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(user =>
-      user.name.toLowerCase().includes(query) ||
-      user.email.toLowerCase().includes(query) ||
-      user.company?.name.toLowerCase().includes(query)
-    )
-  }
-
-  // Status filter
-  if (filters.status) {
-    filtered = filtered.filter(user => user.status === filters.status)
-  }
-
-  // Role filter
-  if (filters.role) {
-    filtered = filtered.filter(user => user.role === filters.role)
-  }
-
-  // Company filter
-  if (filters.company) {
-    filtered = filtered.filter(user => user.company?.id === filters.company)
-  }
-
-  // Registration date filter
-  if (filters.registrationDate) {
-    const now = new Date()
-    filtered = filtered.filter(user => {
-      const userDate = new Date(user.createdAt)
-      switch (filters.registrationDate) {
-        case 'today':
-          return userDate.toDateString() === now.toDateString()
-        case 'week':
-          return (now - userDate) <= 7 * 24 * 60 * 60 * 1000
-        case 'month':
-          return (now - userDate) <= 30 * 24 * 60 * 60 * 1000
-        case 'quarter':
-          return (now - userDate) <= 90 * 24 * 60 * 60 * 1000
-        default:
-          return true
-      }
-    })
-  }
-
-  return filtered
+// La recherche recharge la page 1 (debounce 300ms)
+let searchTimer = null
+watch(searchQuery, () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    currentPage.value = 1
+    loadUsers()
+  }, 300)
 })
 
-const totalPages = computed(() => {
-  return Math.ceil(filteredUsers.value.length / perPage.value)
-})
-
-const paginatedUsers = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value
-  const end = start + perPage.value
-  return filteredUsers.value.slice(start, end)
-})
-
-const usersSummary = computed(() => {
-  return t('users.page.summary', ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui")
-    .replace(':count', String(filteredUsers.value.length))
-    .replace(':active', String(stats.activeUsers))
-    .replace(':newToday', String(stats.newToday))
-})
-
-// Watch for filter changes to reset pagination
-watch([searchQuery, filters], () => {
+watch(() => filters.status, () => {
   currentPage.value = 1
-}, { deep: true })
+  loadUsers()
+})
 
-// Methods
+watch([currentPage, perPage], () => {
+  loadUsers()
+})
+
+// Methods — donnees reelles (vague QA 2026-08-14, issue #2184)
 async function loadUsers() {
   isLoading.value = true
-
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // QA #2238 : données réelles via l'API /platform/users (issue #2229).
+    // Le contrat API expose active/deactivated/suspended ; l'UI admin utilise
+    // active/inactive/suspended/pending → mapping bidirectionnel ci-dessous.
+    const params = {}
+    if (searchQuery.value) params.search = searchQuery.value
+    if (filters.status) {
+      // Issue #2699 — 'pending' n'existe pas côté API : l'option a été retirée.
+      params.status = { inactive: 'deactivated' }[filters.status] || filters.status
+    }
+    // Issue #2698 — pagination server-side réelle (page/per_page transmis).
+    params.page = currentPage.value
+    params.per_page = perPage.value
 
-    // Generate mock users
-    users.value = generateMockUsers(150)
+    const res = await api.get('/platform/users', { params })
+    const items = res.data?.data ?? res.data ?? []
+    users.value = items.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      status: user.status === 'deactivated' ? 'inactive' : user.status,
+      // Issue #2701 — le payload /platform/users n'expose ni rôle ni société :
+      // plus de valeur codée en dur, colonnes honnêtement vides.
+      role: null,
+      segment: null,
+      company: null,
+      createdAt: user.created_at ? new Date(user.created_at) : null,
+      lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
+    }))
+    // Issue #2698 — métadonnées de pagination renvoyées par l'API.
+    const meta = res.data?.meta
+    totalItems.value = meta?.total ?? users.value.length
+    totalPages.value = meta?.last_page ?? Math.max(1, Math.ceil(users.value.length / perPage.value))
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -421,52 +331,19 @@ async function loadUsers() {
 }
 
 async function loadCompanies() {
-  // Generate mock companies
-  companies.value = [
-    { id: 1, name: 'Acme Corp' },
-    { id: 2, name: 'TechStart Inc' },
-    { id: 3, name: 'Global Solutions' },
-    { id: 4, name: 'Innovation Labs' },
-    { id: 5, name: 'Digital Dynamics' }
-  ]
-}
-
-function generateMockUsers(count) {
-  const mockUsers = []
-  const statuses = ['active', 'inactive', 'suspended', 'pending']
-  const roles = ['admin', 'manager', 'employee', 'hr']
-  const segments = ['champions', 'loyal', 'potential', 'new', 'at-risk']
-
-  for (let i = 1; i <= count; i++) {
-    mockUsers.push({
-      id: i,
-      name: `Utilisateur ${i}`,
-      email: `user${i}@example.com`,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      role: roles[Math.floor(Math.random() * roles.length)],
-      segment: segments[Math.floor(Math.random() * segments.length)],
-      company: companies.value[Math.floor(Math.random() * companies.value.length)],
-      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-      lastLoginAt: Math.random() > 0.2 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000) : null,
-      avatar: `https://ui-avatars.com/api/?name=Utilisateur+${i}&background=random`
-    })
+  try {
+    // QA #2238 : liste réelle des sociétés de la plateforme (filtre).
+    const res = await api.get('/platform/companies', { params: { per_page: 100 } })
+    const items = res.data?.data ?? []
+    companies.value = items.map(c => ({ id: c.id, name: c.name }))
+  } catch (error) {
+    console.error('Failed to load companies:', error)
+    companies.value = []
   }
-
-  return mockUsers
 }
 
-function updateStats() {
-  stats.totalUsers = users.value.length
-  stats.activeUsers = users.value.filter(u => u.status === 'active').length
-
-  const today = new Date().toDateString()
-  stats.newToday = users.value.filter(u =>
-    new Date(u.createdAt).toDateString() === today
-  ).length
-}
-
-function handleUserSelect(userId, selected) {
-  if (selected) {
+function handleUserSelect(userId, checked) {
+  if (checked) {
     selectedUsers.value.push(userId)
   } else {
     selectedUsers.value = selectedUsers.value.filter(id => id !== userId)
@@ -474,11 +351,7 @@ function handleUserSelect(userId, selected) {
 }
 
 function handleSelectAll(selected) {
-  if (selected) {
-    selectedUsers.value = paginatedUsers.value.map(u => u.id)
-  } else {
-    selectedUsers.value = []
-  }
+  selectedUsers.value = selected ? filteredUsers.value.map(u => u.id) : []
 }
 
 function clearSelection() {
@@ -488,24 +361,17 @@ function clearSelection() {
 
 async function bulkAction(action) {
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    switch (action) {
-      case 'activate':
-        toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) activé(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'deactivate':
-        toast.success(t('users.toast.bulkDeactivated', ':count utilisateur(s) désactivé(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'suspend':
-        toast.success(t('users.toast.bulkSuspended', ':count utilisateur(s) suspendu(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'export':
-        exportSelectedUsers()
-        return
+    // QA #2238 : actions réelles via l'API /platform/users/{id}/{action}.
+    if (action !== 'export') {
+      await Promise.all(selectedUsers.value.map(id =>
+        api.post(`/platform/users/${id}/${action}`)
+      ))
+    } else {
+      exportSelectedUsers()
+      return
     }
 
+    toast.success(t('users.toast.bulkDone', ':count utilisateur(s) mis à jour').replace(':count', String(selectedUsers.value.length)))
     clearSelection()
     await loadUsers()
   } catch (error) {
@@ -514,23 +380,91 @@ async function bulkAction(action) {
   }
 }
 
-function viewUser(user) {
+async function viewUser(user) {
+  // #2518 : le détail est rechargé depuis /admin/users/{id} — seule source du
+  // lien employé (company.employee_id) nécessaire à l'impersonation (#2519).
   selectedUser.value = user
   showDetailModal.value = true
+  try {
+    const res = await api.get(`/admin/users/${user.id}`)
+    const detail = res.data?.data ?? null
+    if (detail) {
+      selectedUser.value = {
+        ...user,
+        ...detail,
+        company: detail.company ?? user.company ?? null,
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load impersonation link for user', user.id, error)
+  }
 }
 
-function editUser(user) {
-  selectedUser.value = user
-  showEditModal.value = true
+// #2518 — Impersonation PA2-ADM-006 : POST /admin/impersonations avec motif.
+const impersonation = ref(null)
+const showImpersonateModal = ref(false)
+const impersonateReason = ref('')
+const impersonateBusy = ref(false)
+const impersonateError = ref('')
+const impersonationResult = ref(null)
+
+function openImpersonate(user) {
+  impersonation.value = user
+  impersonateReason.value = ''
+  impersonateError.value = ''
+  impersonationResult.value = null
+  showImpersonateModal.value = true
+}
+
+async function submitImpersonation() {
+  const user = impersonation.value
+  const company = user?.company
+  if (!company?.id || !company?.employee_id) {
+    impersonateError.value = t('users.impersonation.noLink', 'Aucun employé lié à ce compte — impersonation impossible.')
+    return
+  }
+  if (impersonateReason.value.trim().length < 5) {
+    impersonateError.value = t('users.impersonation.reasonMin', 'Motif obligatoire (5 caractères minimum).')
+    return
+  }
+  impersonateBusy.value = true
+  impersonateError.value = ''
+  try {
+    const res = await api.post('/platform/impersonations', {
+      company_id: company.id,
+      employee_id: company.employee_id,
+      reason: impersonateReason.value.trim(),
+    })
+    impersonationResult.value = res.data
+    toast.success(t('users.impersonation.created', 'Session d’impersonation créée'))
+  } catch (error) {
+    impersonateError.value = error.response?.data?.message
+      || t('users.impersonation.error', "Erreur lors de la création de la session d'impersonation")
+  } finally {
+    impersonateBusy.value = false
+  }
+}
+
+function copyImpersonationToken() {
+  if (!impersonationResult.value?.token) return
+  navigator.clipboard?.writeText(impersonationResult.value.token)
+    .then(() => toast.success(t('users.impersonation.copied', 'Jeton copié')))
+    .catch(() => toast.info(impersonationResult.value.token))
+}
+
+function closeImpersonate() {
+  showImpersonateModal.value = false
+  impersonation.value = null
+  impersonationResult.value = null
 }
 
 async function deleteUser(user) {
   if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      toast.success(t('users.toast.deleted', 'Utilisateur supprimé'))
+      // Issue #2714 — désactivation RÉELLE via l'endpoint dédié (jamais de
+      // suppression physique : DELETE /platform/users/{id} détruit le compte).
+      await api.post(`/platform/users/${user.id}/deactivate`)
+      toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
       await loadUsers()
     } catch (error) {
       console.error('Delete failed:', error)
@@ -539,34 +473,27 @@ async function deleteUser(user) {
   }
 }
 
-function impersonateUser(user) {
-  toast.info(t('users.toast.impersonating', 'Connexion en tant que :name').replace(':name', user.name))
-  // Implement impersonation logic
-}
-
-function handleUserCreated() {
-  toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
-  showCreateModal.value = false
-  loadUsers()
-}
-
-function handleUserUpdated() {
-  toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
-  showEditModal.value = false
-  loadUsers()
-}
-
+// Génère un mot de passe temporaire sûr (16 caractères) pour la création
+// d'un utilisateur plateforme (exigence API : ≥ 12 caractères).
 async function exportUsers() {
   try {
-    toast.info(t('users.toast.exportInProgress', 'Export en cours...'))
-
-    // Simulate export
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
+    // Export honnête de la page courante (pas de mock) — CSV côté client.
+    // Issue #2700 — exporte les champs MAPÉS (createdAt/lastLoginAt, sinon les
+    // colonnes dates étaient toujours vides) + échappement anti-injection de
+    // formule (cellules commençant par = + - @).
+    const escapeCell = (value) => {
+      const str = value === null || value === undefined ? '' : String(value)
+      if (/^[=+\-@]/.test(str)) return `'${str}`
+      return `"${str.replace(/"/g, '""')}"`
+    }
+    const formatDate = (d) => (d instanceof Date && !Number.isNaN(d.getTime()))
+      ? d.toLocaleDateString('fr-FR')
+      : ''
     const csvContent = "data:text/csv;charset=utf-8," +
-      "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
-      filteredUsers.value.map(user =>
-        `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
+      "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
+      users.value.map(user =>
+        [user.name, user.email, user.status, user.company?.name || '', formatDate(user.createdAt), formatDate(user.lastLoginAt)]
+          .map(escapeCell).join(',')
       ).join('\n')
 
     const encodedUri = encodeURI(csvContent)
@@ -583,25 +510,6 @@ async function exportUsers() {
     toast.error(t('users.toast.exportError', "Erreur lors de l'export"))
   }
 }
-
-function exportSelectedUsers() {
-  const selectedUserData = users.value.filter(u => selectedUsers.value.includes(u.id))
-
-  const csvContent = "data:text/csv;charset=utf-8," +
-    "Nom,Email,Statut,Rôle,Entreprise,Date d'inscription\n" +
-    selectedUserData.map(user =>
-      `${user.name},${user.email},${user.status},${user.role},${user.company?.name || ''},${user.createdAt.toLocaleDateString()}`
-    ).join('\n')
-
-  const encodedUri = encodeURI(csvContent)
-  const link = document.createElement("a")
-  link.setAttribute("href", encodedUri)
-  link.setAttribute("download", "selected-users-export.csv")
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-
-  toast.success(t('users.toast.selectionExportDone', 'Export de la sélection terminé'))
-}
 </script>
+
 

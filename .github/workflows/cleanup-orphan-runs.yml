@@ -1,0 +1,65 @@
+name: CI Queue — Orphan Runs Cleanup
+# ============================================================
+# Issue #2413 : la file GitHub Actions se sature de runs orphelins
+# (branches de PR mergées/fermées et supprimées) — jusqu'à 470+ runs queued,
+# aucun check requis ne démarre, aucun merge possible.
+#
+# WORKFLOW CANONIQUE (consolidation 2026-08-15) : il remplace les trois PRs
+# concurrentes #2463/#2464/#2468 qui avaient chacune ajouté un workflow de
+# nettoyage (actions-queue-cleanup.yml, ci-cleanup.yml, cleanup-orphan-runs.yml)
+# — trois crons qui tournaient en parallèle pour le même objectif. Un seul
+# workflow + un seul script (dev-hub/tools/cancel-orphan-runs.sh) est conservé ;
+# les doublons ont été supprimés.
+#
+# Ce workflow annule automatiquement les runs `queued`/`in_progress` dont la
+# branche head n'existe plus (ni branche vivante, ni PR ouverte, ni main), et
+# (issue #2540) les runs queued supersédés d'une même branche/workflow :
+#   - en cron (toutes les 6 h) : file nettoyée en continu ;
+#   - à la fermeture d'une PR : les derniers runs de la branche sont annulés
+#     immédiatement au lieu de moisir dans la file ;
+#   - manuellement via workflow_dispatch (déblocage d'urgence).
+#
+# Le script (dev-hub/tools/cancel-orphan-runs.sh) ne touche JAMAIS aux runs de
+# main ni des branches vivantes/PR ouvertes — seul le travail mort est annulé.
+
+on:
+  schedule:
+    # Toutes les 2 h à :17 (décalé des top-of-hour des autres crons).
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: ci-queue-orphan-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cancel-orphan-runs:
+    name: Cancel runs on deleted branches
+    runs-on: ubuntu-latest
+    # Le token d'une PR venant d'un fork n'a pas `actions: write` ; le
+    # nettoyage ne concerne de toute façon que les branches du dépôt.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Cancel orphan and superseded runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x dev-hub/tools/cancel-orphan-runs.sh
+          # Issue #2540 : --superseded annule aussi les runs queued dont un
+          # push plus récent existe sur la même branche/workflow (complète le
+          # concurrency natif qui n'agit qu'au démarrage du nouveau run).
+          dev-hub/tools/cancel-orphan-runs.sh "${{ github.repository }}" --superseded

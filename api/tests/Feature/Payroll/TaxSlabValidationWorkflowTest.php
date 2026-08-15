@@ -304,23 +304,11 @@ class TaxSlabValidationWorkflowTest extends TestCase
         $this->assertContains(NotifyTaxRateValidation::class.'@handleTaxRateApproved', $raw[TaxRateApproved::class] ?? []);
         $this->assertContains(NotifyTaxRateValidation::class.'@handleTaxRateRejected', $raw[TaxRateRejected::class] ?? []);
 
-        // La table `app_notifications` n'est créée par aucune migration du
-        // repo (dette #1813) : schéma manuel local au test (pattern
-        // PayrollCountryRulesTemporalVersioningTest) pour prouver la chaîne
-        // listener → tenant → notification in-app de bout en bout.
-        \Illuminate\Support\Facades\Schema::create('app_notifications', function (\Illuminate\Database\Schema\Blueprint $table): void {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id')->index();
-            $table->string('type', 80);
-            $table->string('title', 255);
-            $table->text('body')->nullable();
-            $table->jsonb('data')->nullable();
-            $table->boolean('read')->default(false);
-            $table->timestamp('read_at')->nullable();
-            $table->string('action_url', 500)->nullable();
-            $table->timestampsTz();
-        });
-
+        // La table `app_notifications` est créée par la migration tenant
+        // `2026_08_15_000001_create_app_notifications_table` (issue #2398,
+        // dette #1813) — le schéma manuel local au test n'est plus nécessaire
+        // (la chaîne listener → tenant → notification in-app est prouvée
+        // de bout en bout avec la table réelle).
         // Un platform_admin existe : la soumission déclenche l'email best-effort.
         SuperAdmin::query()->create([
             'name' => 'Admin Notif',

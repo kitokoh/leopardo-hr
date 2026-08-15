@@ -90,6 +90,72 @@ class PayrollCalculator
      * comme le bulletin) ; seuls les montants exposés sont arrondis à 2
      * décimales (demi au plus proche) ; le net a un plancher à 0.
      *
+     * Issue #2220 — décomposition de l'impôt par tranche, alignée sur la
+     * règle pays. L'assiette ET la convention (mensuelle/annualisée) varient
+     * par pays (ex. CI : ITS 2024 sur le BRUT mensuel ; DZ : progressif sur
+     * le net fiscal mensuel ; MA/FR : annualisé) : on évalue les 4 candidats
+     * (assiette gross/taxable × convention mensuelle/annualisée) et on
+     * retient celui dont le total est le plus proche de l'impôt réellement
+     * calculé par le moteur (`calculateIncomeTax()`). La somme des tranches
+     * converge ainsi vers l'impôt affiché (simulateur = bulletin).
+     *
+     * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
+     */
+    public function slabTaxBreakdown(CountryRulesContract $rules, float $gross, float $taxBase, float $expectedTax): array
+    {
+        $candidates = [
+            $this->progressiveSlabs($rules, $gross, 1.0),
+            $this->progressiveSlabs($rules, $taxBase, 1.0),
+            $this->progressiveSlabs($rules, $gross, 12.0),
+            $this->progressiveSlabs($rules, $taxBase, 12.0),
+        ];
+
+        $best = $candidates[0];
+        $bestDelta = PHP_FLOAT_MAX;
+        foreach ($candidates as $candidate) {
+            $delta = abs(array_sum(array_column($candidate, 'tax')) - $expectedTax);
+            if ($delta < $bestDelta) {
+                $best = $candidate;
+                $bestDelta = $delta;
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
+     */
+    private function progressiveSlabs(CountryRulesContract $rules, float $taxBase, float $periods): array
+    {
+        $base = $taxBase * $periods;
+        $bySlab = [];
+
+        foreach ($rules->taxSlabs() as $slab) {
+            $lowerBound = (float) $slab['min'];
+            if ($lowerBound > 0) {
+                $lowerBound -= 1;
+            }
+            $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
+            $taxableInSlab = min($base, $upperBound) - $lowerBound;
+            if ($taxableInSlab <= 0) {
+                continue;
+            }
+            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
+
+            $bySlab[] = [
+                'min' => (float) $slab['min'],
+                'max' => $slab['max'],
+                'rate' => (float) $slab['rate'],
+                'taxable_amount' => round($taxableInSlab / $periods, 2),
+                'tax' => round($slabTax / $periods, 2),
+            ];
+        }
+
+        return $bySlab;
+    }
+
+    /**
      * @return array{
      *     social: array{employee: float, employer: float},
      *     taxable_gross: float,
@@ -100,7 +166,7 @@ class PayrollCalculator
      *     total_cost: float,
      * }
      */
-    public function computeNetBreakdown(float $grossEarnings, CountryRulesContract $rules): array
+    public function computeNetBreakdown(float $grossEarnings, CountryRulesContract $rules, ?float $familyParts = null): array
     {
         $social = $rules->calculateSocialCharges($grossEarnings);
         $taxableGross = $grossEarnings - $social['employee'];
@@ -108,6 +174,12 @@ class PayrollCalculator
         // porte le brut réel aux règles qui en ont besoin (CM #1821).
         $incomeTax = $rules->calculateIncomeTax($taxableGross, 12, $grossEarnings);
         $bracketTax = $rules->calculateBracketTax($grossEarnings);
+
+        // Issue #2117 — RICF (réduction d'impôt pour charges de famille) :
+        // imputable sur l'impôt BRUT (net = max(0, impôt − réduction)),
+        // montant mensuel décidé par la règle pays selon les parts fiscales
+        // du salarié (défaut 1 part → réduction nulle → aucun changement).
+        $incomeTax = round(max(0.0, $incomeTax - $rules->familyTaxReduction($familyParts ?? 1.0)), 2);
 
         // Issue #1934 — la règle pays décide de la combinaison IR/taxe de
         // minimum fiscal (défaut : additive ; SN : max(IR, TRIMF)).
@@ -143,13 +215,21 @@ class PayrollCalculator
             throw new PayrollRunLockedException('Payroll run is locked (closing done). Unlock with reason first.');
         }
 
-        $correlationId = $run->correlation_id ?? (string) Str::uuid();
-        // Corrélation des logs de ce calcul (pattern minimal — pas de
-        // middleware dédié dans le repo, cf. issue #1874).
-        Log::withContext(['correlation_id' => $correlationId]);
-        if ($run->correlation_id === null) {
+        $correlationId = $run->correlation_id;
+        if ($correlationId === null) {
+            // Issue #1874 : corrélation requête ↔ calcul — on reprend le
+            // header X-Correlation-ID/X-Request-Id de la REQUÊTE COURANTE
+            // (frais par requête via RequestIdMiddleware), sinon UUID frais.
+            // NB : ne pas utiliser correlation_id() ici — sa valeur est liée
+            // au conteneur et peut être STALE entre deux tests PHPUnit du
+            // même process → deux runs avec le même ID → violation de la
+            // contrainte unique payroll_runs.correlation_id (#2551 cause 8).
+            $header = request()->header('X-Correlation-ID') ?: request()->header('X-Request-Id');
+            $correlationId = is_string($header) && $header !== '' ? $header : (string) Str::uuid();
             $run->forceFill(['correlation_id' => $correlationId])->save();
         }
+        // Corrélation des logs de ce calcul (issue #1874).
+        Log::withContext(['correlation_id' => $correlationId]);
 
         try {
             $result = $this->executeCalculateRun($run);
@@ -284,6 +364,13 @@ class PayrollCalculator
 
             $run->update([
                 'status' => 'calculated',
+                // Issue #1874 — version/identifiant/période des règles
+                // EFFECTIVES persistées sur le run (l'audit et les re-calculs
+                // historiques en ont besoin ; seuls les bulletins les
+                // portaient avant — cf. #1871/#1874).
+                'rules_version' => $rulesVersion,
+                'rules_identifier' => $rulesIdentifier,
+                'rules_period' => $rulesPeriod,
                 'total_gross' => round($totalGross, 2),
                 'total_deductions' => round($totalDeductions, 2),
                 'total_net' => round($totalNet, 2),
@@ -346,6 +433,12 @@ class PayrollCalculator
 
         /** @var SalaryStructure|null $defaultStructure */
         $defaultStructure = $structures->first();
+
+        // Issue #2221 : version/identifiant/période des règles EFFECTIVES
+        // persistées aussi sur les runs de régularisation (promesse #1871).
+        $rulesVersion = $rules->rulesVersion();
+        $rulesIdentifier = (new \ReflectionClass($rules))->getShortName();
+        $rulesPeriod = $run->period_start->toDateString();
 
         DB::transaction(function () use ($run, $original, $structures, $defaultStructure, $rules): void {
             // Recalcul idempotent : on repart de zéro (aucune double application).
@@ -429,6 +522,11 @@ class PayrollCalculator
 
             $run->update([
                 'status' => 'calculated',
+                // Issue #1871 — mêmes règles EFFECTIVES que le run standard :
+                // l'audit lit rules_version/rules_identifier depuis le run.
+                'rules_version' => $rules->rulesVersion(),
+                'rules_identifier' => (new \ReflectionClass($rules))->getShortName(),
+                'rules_period' => $run->period_start->toDateString(),
                 'total_gross' => round($totalGross, 2),
                 'total_deductions' => round($totalDeductions, 2),
                 'total_net' => round($totalNet, 2),
@@ -691,7 +789,11 @@ class PayrollCalculator
         // calculateBracketTax) servent la simulation ET le bulletin, garantie
         // que les deux produisent exactement les mêmes montants pour un même
         // brut et un même contexte de règles.
-        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules);
+        // Issue #2117 — parts fiscales du salarié (RICF) portées par
+        // `employees.family_parts` (défaut moteur 1 part → réduction nulle) ;
+        // même pattern lecture attribut que children_count (allocations
+        // familiales, ZONE-INFRA #1820).
+        $breakdown = $this->computeNetBreakdown($grossEarnings, $rules, $this->familyPartsOf($employee));
         $social = $breakdown['social'];
 
         $lines[] = [
@@ -840,7 +942,11 @@ class PayrollCalculator
             return 0.0;
         }
 
-        $hourlyRate = round($baseSalary / self::MONTHLY_HOURS, 2);
+        // Issue #2685 (QA 2026-08-15) — le taux horaire était arrondi à 2
+        // décimales AVANT les multiplicateurs 1.25/1.50 : sous-paiement
+        // systématique (ex. base 100 000 → taux 576,85 au lieu de 576,879…).
+        // La précision complète est conservée jusqu'à l'arrondi final.
+        $hourlyRate = $baseSalary / self::MONTHLY_HOURS;
         $standard = min($overtimeHours, (float) $standardRateHours);
         $premium = max(0.0, $overtimeHours - (float) $standardRateHours);
 
@@ -1018,7 +1124,10 @@ class PayrollCalculator
         $slips = PaySlip::query()
             ->where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
-            ->where('status', 'validated')
+            // Issue #2679 — les runs créent des bulletins 'calculated' (non
+            // encore validés) : une entreprise qui ne valide jamais retombait
+            // en silence sur base×12. Les deux statuts comptent.
+            ->whereIn('status', ['calculated', 'validated'])
             ->where('period_start', '>=', $twelveMonthsAgo)
             ->where('period_start', '<', $run->period_start)
             ->get(['gross_salary', 'period_start']);
@@ -1120,7 +1229,7 @@ class PayrollCalculator
 
     private function sumApprovedLeaveDays(PayrollRun $run, Employee $employee, bool $paid): float
     {
-        return (float) Absence::query()
+        $absences = Absence::query()
             ->where('company_id', $run->company_id)
             ->where('employee_id', $employee->id)
             ->where('status', 'approved')
@@ -1129,7 +1238,38 @@ class PayrollCalculator
             ->whereHas('absenceType', function (Builder $q) use ($paid): void {
                 $q->where('is_paid', $paid);
             })
-            ->sum('days_count');
+            ->get(['start_date', 'end_date', 'days_count']);
+
+        $periodStart = $run->period_start->copy()->startOfDay();
+        $periodEnd = $run->period_end->copy()->startOfDay();
+        $total = 0.0;
+
+        foreach ($absences as $absence) {
+            // Issue #2672 (QA 2026-08-15) — clipping sur la période : une
+            // absence chevauchante (ex. 25 janv. → 5 févr.) était comptée en
+            // TOTALITÉ dans les runs de janvier ET février (double déduction
+            // dans le prorata). On ne compte que l'intersection avec la
+            // période, au prorata du days_count stocké.
+            if ($absence->end_date === null) {
+                continue;
+            }
+
+            $overlapStart = $absence->start_date->copy()->max($periodStart);
+            $overlapEnd = $absence->end_date->copy()->min($periodEnd);
+
+            if ($overlapEnd->lt($overlapStart)) {
+                continue;
+            }
+
+            $overlapDays = $overlapStart->diffInDays($overlapEnd) + 1;
+            $totalSpanDays = $absence->start_date->diffInDays($absence->end_date) + 1;
+
+            $total += $totalSpanDays > 0
+                ? (float) $absence->days_count * ($overlapDays / $totalSpanDays)
+                : (float) $absence->days_count;
+        }
+
+        return $total;
     }
 
     /**
@@ -1187,5 +1327,17 @@ class PayrollCalculator
             'percentage_of_gross' => round($grossSalary * ((float) $component->percentage / 100), 2),
             default => 0.0,
         };
+    }
+
+    /**
+     * Issue #2117 — parts fiscales du salarié pour la RICF. Lit
+     * `employees.family_parts` (décimal, demi-points) ; défaut moteur 1
+     * part (célibataire sans enfant à charge → réduction nulle).
+     */
+    private function familyPartsOf(Employee $employee): float
+    {
+        $parts = $employee->getAttribute('family_parts');
+
+        return is_numeric($parts) ? (float) $parts : 1.0;
     }
 }

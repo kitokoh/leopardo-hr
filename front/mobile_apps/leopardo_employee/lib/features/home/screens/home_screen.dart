@@ -70,6 +70,13 @@ class HomeScreen extends ConsumerWidget {
                       stage: stage,
                       branding: branding,
                     ),
+                    if (stage == 'new') ...[
+                      const SizedBox(height: 12),
+                      // T117 (QA omnichannel 2026-08-15) : l'onboarding était
+                      // déclaré dans le routeur mais injoignable — entrée
+                      // visible quand le stage est « new ».
+                      _OnboardingEntryCard(primary: primary),
+                    ],
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
@@ -107,8 +114,7 @@ class _HeaderRow extends StatelessWidget {
   });
 
   final String firstName;
-  final String stage;
-  final TenantBranding? branding;
+  final String stage;  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
@@ -329,9 +335,55 @@ class _ModuleCard extends StatelessWidget {
         subtitle: module.description,
         icon: MobileExperienceIcons.forModule(module.key),
         iconColor: color,
-        onTap: module.isActive ? () => context.push(module.route!) : () {},
+        onTap: module.isActive ? () => context.push(module.route!) : null,
       ),
     );
   }
 }
 
+
+/// T117 (QA omnichannel 2026-08-15) — entrée vers l'écran /onboarding,
+/// affichée quand le stage mobile est « new » (checklist non complétée).
+class _OnboardingEntryCard extends StatelessWidget {
+  const _OnboardingEntryCard({required this.primary});
+
+  final Color primary;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/onboarding'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: primary.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: primary.withValues(alpha: 0.30)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.rocket_launch, color: primary),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Compléter mon onboarding',
+                    style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Configurez votre espace en quelques étapes.',
+                    style: AppTypography.caption,
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: primary),
+          ],
+        ),
+      ),
+    );
+  }
+}

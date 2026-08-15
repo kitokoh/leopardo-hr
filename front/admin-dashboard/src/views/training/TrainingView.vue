@@ -90,7 +90,7 @@
 
     <!-- Course Detail Panel -->
     <div v-if="selectedCourse" class="fixed inset-0 z-50 overflow-hidden" @click.self="closeDetail">
-      <div class="absolute inset-0 glass-bg0/50 transition-opacity" @click="closeDetail" />
+      <div class="absolute inset-0 glass-bg/50 transition-opacity" @click="closeDetail" />
       <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
         <div class="w-screen max-w-lg">
           <div class="flex h-full flex-col overflow-y-auto shadow-xl">
@@ -208,7 +208,7 @@ const enrollmentColumns = [
 ]
 
 const sessionStatusMap = {
-  scheduled: { label: 'Planifiee', color: 'blue' },
+  planned: { label: 'Planifiee', color: 'blue' },
   in_progress: { label: 'En cours', color: 'yellow' },
   completed: { label: 'Terminee', color: 'green' },
   cancelled: { label: 'Annulee', color: 'red' },
@@ -244,9 +244,10 @@ async function fetchData() {
   error.value = ''
   try {
     const [coursesRes, sessionsRes, enrollRes] = await Promise.all([
-      api.get('/v1/training/courses'),
-      api.get('/v1/training/sessions').catch(() => ({ data: { data: [] } })),
-      api.get('/v1/training/enrollments').catch(() => ({ data: { data: [] } })),
+      // #2634 : sessions/enrollments en vue cross-tenant console (routes /admin/*).
+      api.get('/v1/training/courses').catch(() => ({ data: { data: [] } })),
+      api.get('/admin/training/sessions').catch(() => ({ data: { data: [] } })),
+      api.get('/admin/training/enrollments').catch(() => ({ data: { data: [] } })),
     ])
     courses.value = coursesRes.data.data || coursesRes.data || []
     sessions.value = sessionsRes.data.data || sessionsRes.data || []
@@ -254,7 +255,7 @@ async function fetchData() {
     const completed = enrollments.value.filter(e => e.status === 'completed')
     stats.value = {
       active_courses: courses.value.filter(c => c.is_active).length,
-      upcoming_sessions: sessions.value.filter(s => s.status === 'scheduled').length,
+      upcoming_sessions: sessions.value.filter(s => s.status === 'planned').length,
       total_enrollments: enrollments.value.length,
       completion_rate: enrollments.value.length > 0 ? Math.round(completed.length / enrollments.value.length * 100) : 0,
     }

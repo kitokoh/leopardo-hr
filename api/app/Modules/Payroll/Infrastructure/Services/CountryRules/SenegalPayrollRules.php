@@ -21,6 +21,9 @@ class SenegalPayrollRules extends AbstractCountryRules
         return 58900.0;
     }
 
+    /**
+     * @return array<int, array{name: string, code: string, type: string, rate: float, cap: float|null, floor?: float, ceiling?: float, assiette_rate?: float}>
+     */
     public function socialContributions(): array
     {
         return [
@@ -29,12 +32,16 @@ class SenegalPayrollRules extends AbstractCountryRules
             ['name' => 'IPRES Patronale', 'code' => 'IPRES_SN_PAT', 'type' => 'employer', 'rate' => 8.4, 'cap' => 432000.0],
             // IPRES régime cadres T2 — tranche 432 001 – 2 160 000 XOF
             // (issue #1827, docs/payroll/SN_COMPLIANCE.md §4bis).
-            ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null],
-            ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null],
-            // CSS — prestations familiales 3 % + AT 1 %, plafonnées à
+            // Issue #2220 : la métadonnée porte la TRANCHE réelle
+            // (floor/ceiling) pour que la simulation par item = moteur.
+            ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 2160000.0],
+            ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 2160000.0],
+            // CSS — prestations familiales 7 % (CIPRES/CLEISS officiel —
+            // « 63 000 × 7 % = 4 410 FCFA/mois », issue #2473) + AT 1 %
+            // (1/3/5 % selon secteur, défaut bureau 1 %), plafonnées à
             // 63 000 XOF/mois (#1913, procédure administrative CSS /
             // eRegulations — aligné sur calculateSocialCharges).
-            ['name' => 'CSS Prestations Familiales Patronale', 'code' => 'CSS_SN_PAT_FAM', 'type' => 'employer', 'rate' => 3.0, 'cap' => 63000.0],
+            ['name' => 'CSS Prestations Familiales Patronale', 'code' => 'CSS_SN_PAT_FAM', 'type' => 'employer', 'rate' => 7.0, 'cap' => 63000.0],
             ['name' => 'CSS Accidents du Travail Patronale', 'code' => 'CSS_SN_PAT_AT', 'type' => 'employer', 'rate' => 1.0, 'cap' => 63000.0],
             // CFCE — Contribution Forfaitaire à la Charge de l'Employeur 3 %
             // (issue #1827, docs/payroll/SN_COMPLIANCE.md §5).
@@ -80,8 +87,9 @@ class SenegalPayrollRules extends AbstractCountryRules
         //  - IPRES T2 (régime cadres) 2,4 % / 3,6 % sur la tranche
         //    432 001 – 2 160 000 XOF — appliquée quand le brut dépasse le
         //    plafond T1 (hypothèse pilote : brut > 432 k ⇒ régime cadres) ;
-        //  - CSS prestations familiales 3 % + AT 1 %, chacune plafonnée à
-        //    63 000 XOF/mois selon la procédure administrative CSS ;
+        //  - CSS prestations familiales 7 % (CIPRES/CLEISS, #2473) + AT 1 %,
+        //    chacune plafonnée à 63 000 XOF/mois selon la procédure
+        //    administrative CSS ;
         //  - CFCE 3 % sur la masse salariale brute (patronal uniquement).
         $ipresCap = 432000.0;
         $cssCap = 63000.0;
@@ -97,7 +105,7 @@ class SenegalPayrollRules extends AbstractCountryRules
             $employer += round($t2Base * $this->resolveContributionRate('IPRES_SN_PAT_T2', 3.6) / 100, 2);
         }
 
-        $employer += $this->computeContribution($grossSalary, 'CSS_SN_PAT_FAM', 3.0, $cssCap)
+        $employer += $this->computeContribution($grossSalary, 'CSS_SN_PAT_FAM', 7.0, $cssCap)
             + $this->computeContribution($grossSalary, 'CSS_SN_PAT_AT', 1.0, $cssCap)
             + $this->computeContribution($grossSalary, 'CFCE_SN_PAT', 3.0, null);
 
@@ -148,10 +156,15 @@ class SenegalPayrollRules extends AbstractCountryRules
      */
     public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
+        // Issue #2219 : JOURS OUVRÉS (alignement DZ #1943) — le moteur divise
+        // par les jours ouvrés du mois (22) ; les durées calendaires
+        // (8/30/90) surpaiement 8/6=1,33× / 30/22=1,36× / 90/66=1,36×.
+        // Conversion calendaire → ouvré (≈22 j ouvrés/mois) : 8 j → 6 ·
+        // 1 mois → 22 · 3 mois → 66.
         return match (strtolower((string) $category)) {
-            'cadre' => 90.0,
-            'ouvrier', 'worker' => 8.0,
-            default => 30.0, // employés / techniciens (1 mois)
+            'cadre' => 66.0,
+            'ouvrier', 'worker' => 6.0,
+            default => 22.0, // employés / techniciens (1 mois)
         };
     }
 
@@ -179,7 +192,7 @@ class SenegalPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Senegalese public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'SN fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

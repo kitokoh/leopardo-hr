@@ -135,6 +135,42 @@ class AppLocalizationsTr extends AppLocalizations {
   String get commonOr => 'veya';
 
   @override
+  String get commonCountriesDz => 'Cezayir';
+
+  @override
+  String get commonCountriesCm => 'Kamerun';
+
+  @override
+  String get commonCountriesCi => 'Fildişi Sahili';
+
+  @override
+  String get commonCountriesSn => 'Senegal';
+
+  @override
+  String get commonCountriesMa => 'Fas';
+
+  @override
+  String get commonCountriesTn => 'Tunus';
+
+  @override
+  String get commonCountriesFr => 'Fransa';
+
+  @override
+  String get commonCountriesTr => 'Türkiye';
+
+  @override
+  String get commonCountriesCg => 'Kongo';
+
+  @override
+  String get commonCountriesGa => 'Gabon';
+
+  @override
+  String get commonCountriesBf => 'Burkina Faso';
+
+  @override
+  String get commonCountriesMl => 'Mali';
+
+  @override
   String get modulesAttendance => 'Puantaj';
 
   @override
@@ -625,5 +661,722 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String attendanceRetryAfterFailure(Object label) {
     return '$label. Lütfen tekrar deneyin.';
+  }
+
+  @override
+  String get holidaysPageTitle => 'Ülkeye göre resmî tatiller';
+
+  @override
+  String get holidaysPageSubtitle =>
+      'Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.';
+
+  @override
+  String get holidaysCountry => 'Ülke';
+
+  @override
+  String get holidaysYear => 'Yıl';
+
+  @override
+  String get holidaysAdd => 'Resmî tatil ekle';
+
+  @override
+  String get holidaysThDate => 'Tarih';
+
+  @override
+  String get holidaysThName => 'Ad';
+
+  @override
+  String get holidaysThType => 'Tür';
+
+  @override
+  String get holidaysThScope => 'Kapsam';
+
+  @override
+  String get holidaysThActions => 'İşlemler';
+
+  @override
+  String get holidaysScopeNational => 'Ulusal';
+
+  @override
+  String get holidaysScopeCompany => 'Şirket';
+
+  @override
+  String get holidaysEdit => 'Düzenle';
+
+  @override
+  String get holidaysDelete => 'Sil';
+
+  @override
+  String holidaysEmpty(Object country, Object year) {
+    return '$country / $year için resmî tatil yok.';
+  }
+
+  @override
+  String get holidaysModalEdittitle => 'Resmi tatili düzenle';
+
+  @override
+  String get holidaysModalNewtitle => 'Yeni resmi tatil';
+
+  @override
+  String get holidaysNameLabel => 'Ad';
+
+  @override
+  String get holidaysDateLabel => 'Tarih';
+
+  @override
+  String get holidaysTypeLabel => 'Tür';
+
+  @override
+  String get holidaysTypeFixed => 'Sabit';
+
+  @override
+  String get holidaysTypeIslamic => 'İslami';
+
+  @override
+  String get holidaysTypeChristian => 'Hristiyan';
+
+  @override
+  String get holidaysTypeCustom => 'Özel';
+
+  @override
+  String get holidaysRecurring => 'Her yıl tekrarlanır';
+
+  @override
+  String get holidaysCancel => 'İptal';
+
+  @override
+  String get holidaysSaving => 'Kaydediliyor…';
+
+  @override
+  String get holidaysSave => 'Kaydet';
+
+  @override
+  String get holidaysErrorsLoad => 'Resmi tatiller yüklenemedi.';
+
+  @override
+  String get holidaysErrorsSave => 'Resmi tatil kaydedilemedi.';
+
+  @override
+  String get holidaysErrorsDelete => 'Silinemedi.';
+
+  @override
+  String get holidaysSuccessSaved => 'Resmi tatil kaydedildi.';
+
+  @override
+  String get holidaysSuccessDeleted => 'Resmi tatil silindi.';
+
+  @override
+  String get holidaysConfirmDelete => '« :name » silinsin mi?';
+
+  @override
+  String get holidaysNavTitle => 'Resmi tatiller';
+
+  @override
+  String get holidaysEditTitle => 'Resmî tatili düzenle';
+
+  @override
+  String get holidaysAddTitle => 'Yeni resmî tatil';
+
+  @override
+  String get holidaysLoadError => 'Resmî tatiller yüklenemedi.';
+
+  @override
+  String get holidaysSaved => 'Resmî tatil kaydedildi.';
+
+  @override
+  String get holidaysSaveError => 'Resmî tatil kaydedilemedi.';
+
+  @override
+  String get holidaysDeleted => 'Resmî tatil silindi.';
+
+  @override
+  String get holidaysDeleteError => 'Silinemedi.';
+
+  @override
+  String get holidaysCountriesDz => 'Cezayir';
+
+  @override
+  String get holidaysCountriesCm => 'Kamerun';
+
+  @override
+  String get holidaysCountriesCi => 'Fildişi Sahili';
+
+  @override
+  String get holidaysCountriesSn => 'Senegal';
+
+  @override
+  String get holidaysCountriesMa => 'Fas';
+
+  @override
+  String get holidaysCountriesTn => 'Tunus';
+
+  @override
+  String get holidaysIslamicTitle => 'İslami bayramlar';
+
+  @override
+  String get holidaysIslamicSubtitle =>
+      'Hicri takvimin hareketli tarihleri (Kurban, Mevlid, Tamkharit…) yıllık girilir; CEMAC/ECOWAS ülkeleri + DZ/MA/TN için otomatik uygulanır.';
+
+  @override
+  String holidaysIslamicConfirm(Object year) {
+    return '$year onayla';
+  }
+
+  @override
+  String holidaysIslamicBannerUnconfirmed(Object count, Object year) {
+    return '$year için $count doğrulanmamış İslami bayram — maaş kapanışından önce tarihleri kontrol edin.';
+  }
+
+  @override
+  String get holidaysIslamicThName => 'Bayram';
+
+  @override
+  String get holidaysIslamicThDate => 'Miladi tarih';
+
+  @override
+  String get holidaysIslamicThDuration => 'Süre';
+
+  @override
+  String get holidaysIslamicThCountries => 'Ülkeler';
+
+  @override
+  String get holidaysIslamicThStatus => 'Durum';
+
+  @override
+  String get holidaysIslamicThActions => 'İşlemler';
+
+  @override
+  String holidaysIslamicDurationDays(Object count) {
+    return '$count gün';
+  }
+
+  @override
+  String get holidaysIslamicStatusConfirmed => 'Onaylı';
+
+  @override
+  String get holidaysIslamicStatusApproximate => 'Yaklaşık';
+
+  @override
+  String get holidaysIslamicEdit => 'Düzenle';
+
+  @override
+  String holidaysIslamicEmpty(Object year) {
+    return '$year için kayıtlı İslami bayram yok.';
+  }
+
+  @override
+  String holidaysIslamicModalTitle(Object name) {
+    return '$name düzenle';
+  }
+
+  @override
+  String get holidaysIslamicLabelDate => 'Miladi tarih';
+
+  @override
+  String get holidaysIslamicLabelDuration => 'Süre (gün)';
+
+  @override
+  String get holidaysIslamicLabelConfirmed => 'Onaylı (resmi) tarih';
+
+  @override
+  String get holidaysIslamicLoadError =>
+      'İslami takvim yüklenirken hata oluştu.';
+
+  @override
+  String holidaysIslamicConfirmDialog(Object year) {
+    return '$year için tüm İslami tarihler onaylansın mı?';
+  }
+
+  @override
+  String get holidaysIslamicSaved => 'İslami bayram kaydedildi.';
+
+  @override
+  String get holidaysIslamicSaveError => 'Kaydederken hata oluştu.';
+
+  @override
+  String get holidaysIslamicConfirmError =>
+      'Tarihler onaylanırken hata oluştu.';
+
+  @override
+  String holidaysIslamicConfirmYearSuccess(Object count) {
+    return '$count tarih onaylandı.';
+  }
+
+  @override
+  String holidaysIslamicDeleteConfirmDialog(Object name) {
+    return '“$name” silinsin mi?';
+  }
+
+  @override
+  String get taxRatesTitle => 'Yasal oranlar — onay';
+
+  @override
+  String get taxRatesSubtitle =>
+      'Maaş motorunun kullandığı vergi dilimleri ve sosyal katkılar. Her değişiklik, değişmez bir denetim iziyle iki adımlı onay akışından (muhasebeci → platform yöneticisi) geçer.';
+
+  @override
+  String get taxRatesPendingTitle => 'Onay bekliyor';
+
+  @override
+  String get taxRatesPendingEmpty => 'Onay bekleyen değişiklik yok.';
+
+  @override
+  String get taxRatesRatesTitle => 'Yürürlükteki oranlar';
+
+  @override
+  String get taxRatesRatesSubtitle =>
+      'Yalnızca aktif satırlar maaş bordrolarında kullanılır.';
+
+  @override
+  String get taxRatesRatesEmpty => 'Kayıtlı oran yok.';
+
+  @override
+  String get taxRatesPropose => 'Değişiklik öner';
+
+  @override
+  String get taxRatesThType => 'Tür';
+
+  @override
+  String get taxRatesThName => 'Başlık';
+
+  @override
+  String get taxRatesThCountry => 'Ülke';
+
+  @override
+  String get taxRatesThRate => 'Oran';
+
+  @override
+  String get taxRatesThEffective => 'Geçerlilik';
+
+  @override
+  String get taxRatesThStatus => 'Durum';
+
+  @override
+  String get taxRatesThActions => 'İşlemler';
+
+  @override
+  String get taxRatesThAction => 'İşlem';
+
+  @override
+  String get taxRatesThActor => 'Kullanıcı';
+
+  @override
+  String get taxRatesThReason => 'Neden';
+
+  @override
+  String get taxRatesThDate => 'Tarih';
+
+  @override
+  String get taxRatesTypeSlab => 'Dilim';
+
+  @override
+  String get taxRatesTypeContribution => 'Katkı';
+
+  @override
+  String get taxRatesStatusActive => '🟢 Aktif';
+
+  @override
+  String get taxRatesStatusPending => '🟡 Beklemede';
+
+  @override
+  String get taxRatesStatusDraft => '⚪ Taslak';
+
+  @override
+  String get taxRatesStatusSuperseded => '🔴 Değiştirildi';
+
+  @override
+  String get taxRatesSubmit => 'Gönder';
+
+  @override
+  String get taxRatesHistory => 'Geçmiş';
+
+  @override
+  String get taxRatesApprove => 'Onayla';
+
+  @override
+  String get taxRatesReject => 'Reddet';
+
+  @override
+  String get taxRatesModalTitle => 'Oran değişikliği öner';
+
+  @override
+  String get taxRatesLegalRef => 'Yasal referans';
+
+  @override
+  String get taxRatesLegalRefRequired =>
+      'Yasal referans zorunludur (geçmişe işlenir).';
+
+  @override
+  String get taxRatesCancel => 'İptal';
+
+  @override
+  String get taxRatesSaving => 'Kaydediliyor…';
+
+  @override
+  String get taxRatesSave => 'Kaydet';
+
+  @override
+  String get taxRatesRejectModalTitle => 'Değişikliği reddet';
+
+  @override
+  String get taxRatesRejectReason => 'Ret nedeni (zorunlu)';
+
+  @override
+  String get taxRatesHistoryTitle => 'Değişiklik geçmişi';
+
+  @override
+  String get taxRatesHistoryEmpty => 'Geçmiş kaydı yok.';
+
+  @override
+  String get taxRatesHistoryCreated => 'Oluşturuldu';
+
+  @override
+  String get taxRatesHistorySubmitted => 'Gönderildi';
+
+  @override
+  String get taxRatesHistoryApproved => 'Onaylandı';
+
+  @override
+  String get taxRatesHistoryRejected => 'Reddedildi';
+
+  @override
+  String get taxRatesHistorySuperseded => 'Değiştirildi';
+
+  @override
+  String get taxRatesClose => 'Kapat';
+
+  @override
+  String get taxRatesLoadError => 'Oranlar yüklenemedi.';
+
+  @override
+  String get taxRatesSaved => 'Öneri kaydedildi.';
+
+  @override
+  String get taxRatesSaveError => 'Öneri kaydedilemedi.';
+
+  @override
+  String get taxRatesSubmitted => 'Değişiklik onaya gönderildi.';
+
+  @override
+  String get taxRatesSubmitError => 'Değişiklik gönderilemedi.';
+
+  @override
+  String get taxRatesApproved => 'Değişiklik onaylandı ve aktif.';
+
+  @override
+  String get taxRatesApproveError => 'Değişiklik onaylanamadı.';
+
+  @override
+  String get taxRatesRejected => 'Değişiklik reddedildi (taslağa döndü).';
+
+  @override
+  String get taxRatesRejectError => 'Değişiklik reddedilemedi.';
+
+  @override
+  String get taxRatesHistoryError => 'Geçmiş yüklenemedi.';
+
+  @override
+  String get taxRatesStatusOnly => 'Salt okuma (tenant işlemi)';
+
+  @override
+  String get taxSlabsTitle => 'Ülkeye göre vergi dilimleri';
+
+  @override
+  String get taxSlabsSubtitle =>
+      'Maaş motorunun kullandığı IRG/IRPP/ITSAS dilimleri. Ulusal yönetim (platform yöneticisi), gerçek zamanlı etki simülatörü — hiçbir şey kaydedilmez.';
+
+  @override
+  String get taxSlabsThCountry => 'Ülke';
+
+  @override
+  String get taxSlabsScope => 'Kapsam';
+
+  @override
+  String get taxSlabsScopeNational => 'Ulusal';
+
+  @override
+  String get taxSlabsScopeCompany => 'Şirkete özel';
+
+  @override
+  String get taxSlabsNationalNote =>
+      'ulusal kapsam — şirket istisnaları kiracı tarafında kalır';
+
+  @override
+  String get taxSlabsThMin => 'Min';
+
+  @override
+  String get taxSlabsThMax => 'Maks';
+
+  @override
+  String get taxSlabsThRate => 'Oran';
+
+  @override
+  String get taxSlabsThDeduction => 'Sabit kesinti';
+
+  @override
+  String get taxSlabsThEffective => 'Geçerlilik';
+
+  @override
+  String get taxSlabsThActions => 'İşlemler';
+
+  @override
+  String get taxSlabsEdit => 'Düzenle';
+
+  @override
+  String get taxSlabsDelete => 'Sil';
+
+  @override
+  String get taxSlabsAdd => 'Dilim ekle';
+
+  @override
+  String get taxSlabsReset => 'Yasal varsayılanlara sıfırla';
+
+  @override
+  String get taxSlabsEmpty => 'Bu ülke için kayıtlı dilim yok.';
+
+  @override
+  String get taxSlabsEditTitle => 'Dilimi düzenle';
+
+  @override
+  String get taxSlabsAddTitle => 'Dilim ekle';
+
+  @override
+  String get taxSlabsLegalRef => 'Yasal referans';
+
+  @override
+  String get taxSlabsCancel => 'İptal';
+
+  @override
+  String get taxSlabsSaving => 'Kaydediliyor…';
+
+  @override
+  String get taxSlabsSave => 'Kaydet';
+
+  @override
+  String get taxSlabsSimulatorTitle => 'Etki simülatörü';
+
+  @override
+  String get taxSlabsSimulatorSubtitle =>
+      'Brüt maaş girin: hesaplama (katkılar, matrah, dilim başına vergi, net, işveren maliyeti) gerçek maaş motoruyla çalışır — hiçbir şey kaydedilmez.';
+
+  @override
+  String get taxSlabsSimGross => 'Brüt maaş';
+
+  @override
+  String get taxSlabsSimCompare => 'Karşılaştırılacak maaş';
+
+  @override
+  String get taxSlabsSimRun => 'Simüle et';
+
+  @override
+  String get taxSlabsSimRunning => 'Hesaplanıyor…';
+
+  @override
+  String get taxSlabsSimSocial => 'Katkılar (çalışan)';
+
+  @override
+  String get taxSlabsSimTax => 'Vergi';
+
+  @override
+  String get taxSlabsSimNet => 'Net';
+
+  @override
+  String get taxSlabsSimBase => 'Matrah';
+
+  @override
+  String get taxSlabsSimSlabTax => 'Dilim vergisi';
+
+  @override
+  String get taxSlabsLoadError => 'Vergi dilimi yüklenemedi.';
+
+  @override
+  String get taxSlabsSaveError => 'Dilim kaydedilemedi.';
+
+  @override
+  String get taxSlabsSaved => 'Dilim güncellendi.';
+
+  @override
+  String get taxSlabsCreated => 'Dilim oluşturuldu.';
+
+  @override
+  String get taxSlabsDeleted => 'Dilim silindi.';
+
+  @override
+  String get taxSlabsDeleteError => 'Silinemedi.';
+
+  @override
+  String taxSlabsDeleteConfirm(Object name) {
+    return '«$name» dilimi silinsin mi?';
+  }
+
+  @override
+  String get taxSlabsResetConfirm =>
+      'Yasal varsayılan değerlere sıfırlansın mı? Mevcut dilimler değiştirilecek.';
+
+  @override
+  String get taxSlabsResetDone => 'Dilim sıfırlandı.';
+
+  @override
+  String get taxSlabsResetError => 'Sıfırlanamadı.';
+
+  @override
+  String taxSlabsDefaultName(Object country) {
+    return '$country yasal dilimi';
+  }
+
+  @override
+  String get taxSlabsSimError => 'Simülasyon yapılamadı.';
+
+  @override
+  String get socialContribTitle => 'Ülkeye göre sosyal katkılar';
+
+  @override
+  String get socialContribSubtitle =>
+      'CNPS, CNSS, IPRES, CNAS… — ülke başına oranlar, tavanlar ve türler (çalışan/işveren). Ulusal yönetim + tavanlı/tavansız simülatör ve 2 ülke karşılaştırıcı.';
+
+  @override
+  String get socialContribThCountry => 'Ülke';
+
+  @override
+  String get socialContribThOrg => 'Kurum';
+
+  @override
+  String get socialContribThCode => 'Kod';
+
+  @override
+  String get socialContribThType => 'Tür';
+
+  @override
+  String get socialContribThRate => 'Oran';
+
+  @override
+  String get socialContribThCap => 'Tavan';
+
+  @override
+  String get socialContribThEffective => 'Geçerlilik';
+
+  @override
+  String get socialContribThActions => 'İşlemler';
+
+  @override
+  String get socialContribTypeAll => 'Tümü';
+
+  @override
+  String get socialContribTypeEmployee => 'Çalışan';
+
+  @override
+  String get socialContribTypeEmployer => 'İşveren';
+
+  @override
+  String get socialContribAdd => 'Katkı ekle';
+
+  @override
+  String get socialContribEdit => 'Düzenle';
+
+  @override
+  String get socialContribDelete => 'Sil';
+
+  @override
+  String get socialContribEmpty => 'Bu ülke için kayıtlı katkı yok.';
+
+  @override
+  String get socialContribAddTitle => 'Katkı ekle';
+
+  @override
+  String get socialContribEditTitle => 'Katkıyı düzenle';
+
+  @override
+  String get socialContribCancel => 'İptal';
+
+  @override
+  String get socialContribSaving => 'Kaydediliyor…';
+
+  @override
+  String get socialContribSave => 'Kaydet';
+
+  @override
+  String get socialContribSimTitle => 'Simülatör ve karşılaştırıcı';
+
+  @override
+  String get socialContribSimSubtitle =>
+      'Brüt maaş girin: iki ülke için yan yana çalışan/işveren dökümü, vergi ve toplam işveren maliyeti (yasal tavanla veya tavansız).';
+
+  @override
+  String get socialContribSimGross => 'Brüt maaş';
+
+  @override
+  String get socialContribCompareCountry => 'Karşılaştırılan ülke';
+
+  @override
+  String get socialContribIgnoreCaps => 'Yasal tavan olmadan';
+
+  @override
+  String get socialContribSimEmployee => 'Çalışan katkıları';
+
+  @override
+  String get socialContribSimEmployer => 'İşveren katkıları';
+
+  @override
+  String get socialContribSimTax => 'Vergi';
+
+  @override
+  String get socialContribTotalCost => 'Toplam işveren maliyeti';
+
+  @override
+  String get socialContribLoadError => 'Katkılar yüklenemedi.';
+
+  @override
+  String get socialContribSaveError => 'Katkı kaydedilemedi.';
+
+  @override
+  String get socialContribSaved => 'Katkı güncellendi.';
+
+  @override
+  String get socialContribCreated => 'Katkı oluşturuldu.';
+
+  @override
+  String get socialContribDeleted => 'Katkı silindi.';
+
+  @override
+  String get socialContribDeleteError => 'Silinemedi.';
+
+  @override
+  String socialContribDeleteConfirm(Object name) {
+    return '«$name» silinsin mi?';
+  }
+
+  @override
+  String get payrollConfidenceLabel => 'Maaş kuralları güven düzeyi';
+
+  @override
+  String get payrollConfidenceLevelProduction => 'Üretim';
+
+  @override
+  String get payrollConfidenceLevelPilot => 'Pilot';
+
+  @override
+  String get payrollConfidenceLevelPlaceholder => 'Taslak';
+
+  @override
+  String get payrollConfidenceLevelUnknown => 'Bilinmiyor';
+
+  @override
+  String payrollConfidenceProductionMessage(Object country) {
+    return '$country için doğrulanmış ve üretimde kullanılan kurallar. Yasal bildirimler için bu tutarlara dayanmadan önce güncel oranları her zaman yerel bir danışmanla teyit edin.';
+  }
+
+  @override
+  String payrollConfidencePilotMessage(Object country) {
+    return '$country için pilot kurallar: genel kamu kaynaklarından (iş kanunu) alınan ancak yerelde henüz yasal olarak doğrulanmamış tutarlar. Yasal yükümlülükleriniz için bu rakamlara (vergi dilimleri, sosyal güvenlik katkıları, fazla mesai eşikleri) dayanmadan önce yerel bir hukuk veya vergi danışmanına danışın.';
+  }
+
+  @override
+  String payrollConfidencePlaceholderMessage(Object country) {
+    return '$country için değersiz taslak: vergi ve sosyal güvenlik katkı tutarları henüz belgelenmemiştir ve değiştirilene kadar gerçek maaş döngülerinde kullanılmamalıdır.';
+  }
+
+  @override
+  String payrollConfidenceUnknownMessage(Object country) {
+    return '$country için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor.';
   }
 }

@@ -94,6 +94,9 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      # QA #2277 : doit pointer vers le callback VITRINE (proxy Next) —
+      # https://leopardo-rh.com/api/v1/auth/google/callback (à aligner dans la
+      # console Google Cloud). Le cookie de session est posé sur la vitrine.
       - key: GOOGLE_REDIRECT_URL
         sync: false
       # Firebase
@@ -118,6 +121,20 @@ services:
         value: noreply@leopardo-rh.com
       - key: MAIL_FROM_NAME
         value: "Leopardo RH"
+      # Demo / ops (issue #2336) : le super-admin et le cockpit admin ne
+      # sont utilisables que si ces variables sont renseignées sur Render.
+      # SUPER_ADMIN_PASSWORD : mot de passe du compte admin@leopardo-rh.com
+      # seedé par SuperAdminSeeder (sinon généré aléatoirement → login
+      # impossible). sync: false → à saisir dans le dashboard Render.
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false
+      - key: FORCE_SUPER_ADMIN_PASSWORD_RESET
+        value: "true"
+      - key: ADMIN_DASHBOARD_URL
+        sync: false
+      # Opt-in demo (GET /api/v1/demo-users) — staging/demo uniquement.
+      - key: DEMO_MODE_ENABLED
+        value: "false"
 
   # ──────────────────────────────────────────────────────────────────────────
   # Background Worker — Laravel Queue Worker

@@ -677,6 +677,7 @@ CREATE TABLE shared_tenants.departments (
     id serial PRIMARY KEY,
     company_id uuid NULL,
     name varchar(150) NOT NULL,
+    manager_id integer NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL
 );
@@ -733,6 +734,7 @@ CREATE TABLE public.super_admins (
     name varchar(100) NOT NULL,
     email varchar(150) NOT NULL,
     password_hash varchar(255) NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'active',
     two_fa_secret varchar(32) NULL,
     last_login_at timestamptz NULL,
     created_at timestamptz NULL
@@ -879,6 +881,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.device_tokens (
 -- Calendar connections (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
     id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
     employee_id bigint NOT NULL,
     provider varchar(20) NOT NULL,
     access_token text NULL,
@@ -897,6 +900,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
 -- Calendar events (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_events (
     id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
     employee_id bigint NOT NULL,
     external_event_id varchar(255) NULL,
     provider varchar(20) NOT NULL DEFAULT 'google',
@@ -917,16 +921,40 @@ CREATE TABLE IF NOT EXISTS shared_tenants.zkteco_devices (
     id bigserial PRIMARY KEY,
     company_id uuid NOT NULL,
     serial_number varchar(100) NOT NULL UNIQUE,
-    name varchar(100) NOT NULL,
+    sync_token_hash varchar(255) NULL,
+    name varchar(120) NOT NULL,
     ip_address varchar(45) NULL,
     port smallint NOT NULL DEFAULT 4370,
     protocol varchar(20) NOT NULL DEFAULT 'tcp',
+    location_label varchar(120) NULL,
     status varchar(20) NOT NULL DEFAULT 'offline',
+    model varchar(60) NULL,
+    firmware_version varchar(60) NULL,
+    employee_capacity integer NOT NULL DEFAULT 1000,
+    fingerprint_capacity integer NOT NULL DEFAULT 3000,
+    face_capacity integer NOT NULL DEFAULT 500,
     last_heartbeat_at timestamptz NULL,
     last_sync_at timestamptz NULL,
+    capabilities jsonb NULL,
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
+
+CREATE TABLE IF NOT EXISTS shared_tenants.zkteco_sync_logs (
+    id bigserial PRIMARY KEY,
+    zkteco_device_id bigint NOT NULL REFERENCES shared_tenants.zkteco_devices(id) ON DELETE CASCADE,
+    direction varchar(10) NOT NULL DEFAULT 'pull',
+    sync_type varchar(20) NOT NULL DEFAULT 'attendance',
+    records_count integer NOT NULL DEFAULT 0,
+    errors_count integer NOT NULL DEFAULT 0,
+    status varchar(20) NOT NULL DEFAULT 'started',
+    error_message text NULL,
+    started_at timestamptz NOT NULL,
+    completed_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+CREATE INDEX IF NOT EXISTS zkteco_sync_logs_device_created_idx ON shared_tenants.zkteco_sync_logs (zkteco_device_id, created_at);
 
 -- EdgeSync module tables (public schema — shared across tenants)
 CREATE TABLE IF NOT EXISTS public.edge_nodes (

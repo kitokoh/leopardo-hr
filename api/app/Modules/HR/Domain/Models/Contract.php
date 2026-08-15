@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Domain\Models;
 
+use App\Core\Tenant\Domain\Models\Company;
 use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -86,6 +87,12 @@ class Contract extends Model
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'employee_id');
+    }
+
+    /** @return BelongsTo<Company, $this> */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     /** @return BelongsTo<Department, $this> */

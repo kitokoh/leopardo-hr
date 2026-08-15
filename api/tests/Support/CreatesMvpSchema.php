@@ -74,7 +74,25 @@ trait CreatesMvpSchema
             $table->string('preferred_language')->default('fr');
             $table->string('status')->default('active');
             $table->timestamp('email_verified_at')->nullable();
+            // Colonnes de gestion plateforme (issue #2269) — miroir de la
+            // migration publique 2026_05_02_100001.
+            $table->string('phone')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->integer('failed_login_attempts')->default(0);
+            $table->timestamp('locked_until')->nullable();
             $table->timestamps();
+        });
+
+        Schema::create('user_employee_links', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('employee_id');
+            $table->foreignUuid('company_id')->constrained('companies');
+            $table->string('status')->default('pending');
+            $table->timestamp('linked_at')->nullable();
+            $table->timestamps();
+
+            $table->unique(['user_id', 'company_id']);
         });
 
         Schema::create('partners', function (Blueprint $table) {
@@ -809,6 +827,8 @@ trait CreatesMvpSchema
             $table->string('name', 100);
             $table->string('email', 150)->unique();
             $table->string('password_hash', 255);
+            // Issue #2630 : statut de compte (migration 2026_08_15_000002).
+            $table->string('status', 20)->default('active');
             $table->string('two_fa_secret', 32)->nullable();
             $table->timestampTz('last_login_at')->nullable();
             $table->timestampTz('created_at')->nullable();
@@ -1013,6 +1033,7 @@ trait CreatesMvpSchema
         DB::statement('DROP TABLE IF EXISTS public.sync_logs CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.edge_nodes CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.companies CASCADE');
+        DB::statement('DROP TABLE IF EXISTS public.user_employee_links CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.users CASCADE');
         DB::statement('DROP TABLE IF EXISTS public.plans CASCADE');
         DB::statement('DROP TABLE IF EXISTS shared_tenants.features CASCADE');
@@ -1314,6 +1335,10 @@ trait CreatesMvpSchema
                 $table->date('period_end');
                 $table->char('country_code', 2);
                 $table->string('status', 20)->default('draft');
+                // Issue #2221 : règles effectives persistées sur le run (migration 000009)
+                $table->string('rules_version', 32)->nullable();
+                $table->date('rules_period')->nullable();
+                $table->string('rules_identifier', 150)->nullable();
                 $table->decimal('total_gross', 12, 2)->default(0);
                 $table->decimal('total_deductions', 12, 2)->default(0);
                 $table->decimal('total_net', 12, 2)->default(0);
@@ -1899,6 +1924,8 @@ trait CreatesMvpSchema
         if (! Schema::hasTable($this->moduleTable('calendar_events'))) {
             Schema::create($this->moduleTable('calendar_events'), function (Blueprint $table): void {
                 $table->id();
+                // Audit expert 2026-08-15 (issue #2623) : company_id NOT NULL.
+                $table->uuid('company_id');
                 $table->unsignedBigInteger('employee_id');
                 $table->string('external_event_id')->nullable();
                 $table->string('provider', 20)->default('google');

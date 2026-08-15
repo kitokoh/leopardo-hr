@@ -70,11 +70,11 @@ OHADA) — paliers `1.15` / `1.35`, seuil légal 40 h/semaine.
 
 ## 7. Préavis
 
-| Catégorie | Préavis |
+| Catégorie | Préavis (jours OUVRÉS, #2219) |
 |---|---|
-| Ouvriers | 8 jours |
-| Employés / Techniciens | 1 mois |
-| Cadres | 3 mois |
+| Ouvriers | 6 j (8 j calendaires) |
+| Employés / Techniciens | 22 j (1 mois) |
+| Cadres | 66 j (3 mois) |
 
 ⚠️ L'interface n'expose que l'ancienneté : implémentation pilote au niveau
 **employé/technicien** (30 jours) — catégorie du contrat = suivi.
@@ -85,3 +85,17 @@ Fixes : 1ᵉʳ janvier, 20 janvier (Fête de l'Armée), 26 mars, 1ᵉʳ mai,
 25 mai (Fête Nationale), 22 septembre (Fête de l'Indépendance),
 25 décembre + fêtes islamiques mobiles (via table `islamic_calendar`,
 #1812). Gestion dynamique via #1811.
+
+## 11. Déclarations mensuelles — périmètre du CSV INPS (décision #2158)
+
+Générateur : `CedeaoCnsDeclarationGenerator` — `GET /api/v1/payroll-runs/{run}/declarations/inps-ml` (managers `principal`/`comptable`).
+
+| Rubrique | Salarial | Patronal | Plafond (XOF/mois) |
+|---|---|---|---|
+| Retraite | 3,6 % | 7,4 % | 3 000 000 |
+| Prestations familiales | — | 4,0 % | non plafonné |
+| Risques professionnels (AT) | — | 2,0 % | non plafonné |
+
+Une ligne par bulletin validé (matricule `employees.inps_ml_matricule`) + ligne TOTAUX.
+Canal déclaratif : INPS Mali (www.inps.ml) — montants `pilot` à valider par
+expert-comptable local (registre `docs/payroll/VALIDATION_EXPERTE.md`, #1904).

@@ -30,8 +30,8 @@ const docCategories = [
     color: 'emerald',
     items: [
       { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
-      { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#onboarding' },
-      { title: 'Inviter votre equipe', desc: 'Ajouter des managers et des employes', href: '/docs#team' },
+      { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
+      { title: 'Inviter votre equipe', desc: 'Ajouter des managers et des employes', href: '/docs#api-quickstart' },
       { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
     ],
   },
@@ -40,10 +40,10 @@ const docCategories = [
     icon: LayoutDashboard,
     color: 'blue',
     items: [
-      { title: 'Tableau de bord', desc: 'KPIs, alertes, activite recente', href: '/docs#dashboard' },
-      { title: 'Gestion des absences', desc: 'Demandes, approbations, soldes', href: '/docs#leaves' },
-      { title: 'Paie & bulletins', desc: 'Lancer une paie, generer les bulletins PDF', href: '/docs#payroll' },
-      { title: 'Contrats & documents', desc: 'Gestion documentaire securisee', href: '/docs#contracts' },
+      { title: 'Tableau de bord', desc: 'KPIs, alertes, activite recente', href: '/docs#api-quickstart' },
+      { title: 'Gestion des absences', desc: 'Demandes, approbations, soldes', href: '/docs#webhooks-overview' },
+      { title: 'Paie & bulletins', desc: 'Lancer une paie, generer les bulletins PDF', href: '/docs#webhooks-overview' },
+      { title: 'Contrats & documents', desc: 'Gestion documentaire securisee', href: '/docs#api-quickstart' },
     ],
   },
   {
@@ -51,10 +51,11 @@ const docCategories = [
     icon: Smartphone,
     color: 'violet',
     items: [
-      { title: 'Leopardo Employee', desc: 'Pointage, demandes, bulletin, notifications push', href: '/docs#mobile-employee' },
-      { title: 'Leopardo Manager', desc: 'Equipe, horaires, taches, approbations', href: '/docs#mobile-manager' },
-      { title: 'Platform Admin', desc: 'Super-admin : creation tenant, supervision', href: '/docs#mobile-platform-admin' },
-      { title: 'Notifications push (FCM)', desc: 'Configurer Firebase Cloud Messaging', href: '/docs#mobile-push' },
+      { title: 'Leopardo Employee', desc: 'Pointage, demandes, bulletin, notifications push', href: '/docs#sdk-overview' },
+      { title: 'Leopardo Manager', desc: 'Equipe, horaires, taches, approbations', href: '/docs#sdk-overview' },
+      { title: 'Platform Admin', desc: 'Super-admin : creation tenant, supervision', href: '/docs#sdk-overview' },
+      { title: 'Installer les applications', desc: 'Android / iOS, distribution, versions', href: '/docs#mobile-install' },
+      { title: 'Notifications push (FCM)', desc: 'Configurer Firebase Cloud Messaging', href: '/docs#sdk-overview' },
     ],
   },
   {
@@ -62,10 +63,10 @@ const docCategories = [
     icon: Code2,
     color: 'amber',
     items: [
-      { title: 'Authentification', desc: 'Bearer token, /auth/login, /auth/me, Google OAuth', href: '/docs#api-auth' },
-      { title: 'Employes & RH', desc: 'CRUD employes, absences, pointages, paie', href: '/docs#api-hr' },
-      { title: 'Platform Admin', desc: 'Tenants, creation entreprise, super-admin', href: '/docs#api-platform' },
-      { title: 'Erreurs & pagination', desc: 'Codes erreur standards, throttling, curseur', href: '/docs#api-errors' },
+      { title: 'Authentification', desc: 'Bearer token, /auth/login, /auth/me, Google OAuth', href: '/docs#api-quickstart' },
+      { title: 'Employes & RH', desc: 'CRUD employes, absences, pointages, paie', href: '/docs#api-quickstart' },
+      { title: 'Platform Admin', desc: 'Tenants, creation entreprise, super-admin', href: '/docs#api-quickstart' },
+      { title: 'Erreurs & pagination', desc: 'Codes erreur standards, throttling, curseur', href: '/docs#api-quickstart' },
     ],
   },
   {
@@ -73,10 +74,10 @@ const docCategories = [
     icon: Webhook,
     color: 'pink',
     items: [
-      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-intro' },
+      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-overview' },
       { title: 'Evenements disponibles', desc: 'attendance.*, leave.*, salary_advance.*, payroll.*', href: '/docs#webhooks-events' },
       { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-security' },
-      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-testing' },
+      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-overview' },
     ],
   },
   {
@@ -84,10 +85,10 @@ const docCategories = [
     icon: Package,
     color: 'orange',
     items: [
-      { title: 'leopardo_core (Flutter)', desc: 'Package partagé — ApiClient, SecureStorage, modeles', href: '/docs#sdk-core' },
-      { title: 'Auth & Google Sign-In', desc: 'GoogleSignIn v7+ initialize(), idToken, backend JWT', href: '/docs#sdk-auth' },
-      { title: 'Notifications (FCM)', desc: 'FirebaseMessaging, foreground/background, deep links', href: '/docs#sdk-fcm' },
-      { title: 'Publication & CI', desc: 'GitHub Actions flutter-ci.yml, build, tests', href: '/docs#sdk-ci' },
+      { title: 'leopardo_core (Flutter)', desc: 'Package partagé — ApiClient, SecureStorage, modeles', href: '/docs#sdk-overview' },
+      { title: 'Auth & Google Sign-In', desc: 'GoogleSignIn v7+ initialize(), idToken, backend JWT', href: '/docs#sdk-overview' },
+      { title: 'Notifications (FCM)', desc: 'FirebaseMessaging, foreground/background, deep links', href: '/docs#sdk-overview' },
+      { title: 'Publication & CI', desc: 'GitHub Actions flutter-ci.yml, build, tests', href: '/docs#sdk-overview' },
     ],
   },
   {
@@ -95,10 +96,10 @@ const docCategories = [
     icon: Play,
     color: 'teal',
     items: [
-      { title: 'Environnement sandbox', desc: 'URL demo Render, comptes de test, token Bearer demo', href: '/docs#playground-sandbox' },
-      { title: 'Explorer les endpoints', desc: 'Interface Swagger / Redoc interactive', href: '/docs#playground-explorer' },
-      { title: 'Exemples cURL', desc: "Collection d'appels prets a l'emploi pour tous les modules", href: '/docs#playground-curl' },
-      { title: 'Tokens developpeur', desc: 'Creer un token scope-reduit pour tests partenaires', href: '/docs#playground-tokens' },
+      { title: 'Environnement sandbox', desc: 'URL demo Render, comptes de test, token Bearer demo', href: '/docs#api-quickstart' },
+      { title: 'Explorer les endpoints', desc: 'Interface Swagger / Redoc interactive', href: '/docs#api-quickstart' },
+      { title: 'Exemples cURL', desc: "Collection d'appels prets a l'emploi pour tous les modules", href: '/docs#api-quickstart' },
+      { title: 'Tokens developpeur', desc: 'Creer un token scope-reduit pour tests partenaires', href: '/docs#api-quickstart' },
     ],
   },
   {
@@ -106,10 +107,10 @@ const docCategories = [
     icon: Shield,
     color: 'red',
     items: [
-      { title: 'Roles & permissions', desc: 'Principal, RH, Employe, Super Admin, RBAC', href: '/docs#rbac' },
-      { title: 'Multi-tenant', desc: 'Architecture par schema PostgreSQL', href: '/docs#multi-tenant' },
+      { title: 'Roles & permissions', desc: 'Principal, RH, Employe, Super Admin, RBAC', href: '/docs#api-quickstart' },
+      { title: 'Multi-tenant', desc: 'Architecture par schema PostgreSQL', href: '/docs#api-quickstart' },
       { title: 'Securite & RGPD', desc: 'Chiffrement, audit trail, conformite', href: '/docs#security' },
-      { title: 'Deploiement', desc: 'Docker, Render, Vercel, variables env', href: '/docs#deploy' },
+      { title: 'Deploiement', desc: 'Docker, Render, Vercel, variables env', href: '/docs#api-quickstart' },
     ],
   },
   {
@@ -117,10 +118,10 @@ const docCategories = [
     icon: Webhook,
     color: 'cyan',
     items: [
-      { title: 'ZKTeco', desc: 'Configuration des bornes biometriques', href: '/docs#zkteco' },
-      { title: 'Calendrier (CalDAV)', desc: 'Synchronisation agenda', href: '/docs#calendar' },
-      { title: 'Exports bancaires', desc: 'SEPA, CCP, CSV', href: '/docs#exports' },
-      { title: 'Guide partenaire API', desc: "Guide d'integration pour ISV et partenaires", href: '/docs#partner-api' },
+      { title: 'ZKTeco', desc: 'Configuration des bornes biometriques', href: '/docs#kiosk' },
+      { title: 'Calendrier (CalDAV)', desc: 'Synchronisation agenda', href: '/docs#api-quickstart' },
+      { title: 'Exports bancaires', desc: 'SEPA, CCP, CSV', href: '/docs#api-quickstart' },
+      { title: 'Guide partenaire API', desc: "Guide d'integration pour ISV et partenaires", href: '/docs#api-quickstart' },
     ],
   },
 ];
@@ -200,7 +201,7 @@ export default function DocsPage() {
       <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 px-4">
+      <section id="intro" className="pt-32 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
             <BookOpen className="w-3.5 h-3.5" />
@@ -290,7 +291,7 @@ export default function DocsPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400">Recevez les evenements RH directement dans vos systemes</p>
             </div>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div id="webhooks-events" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { group: 'Pointage', events: ['attendance.checked_in', 'attendance.checked_out', 'attendance.auto_closed'] },
               { group: 'Absences', events: ['leave.requested', 'leave.approved', 'leave.rejected'] },
@@ -305,9 +306,9 @@ export default function DocsPage() {
               </div>
             ))}
           </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+          <p id="webhooks-security" className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             Chaque payload est signe avec <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">X-Leopardo-Signature</code> (HMAC-SHA256).{' '}
-            <Link href="/docs#webhooks-security" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc →</Link>
+            <Link href="/docs#webhooks-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc →</Link>
           </p>
         </div>
       </section>
@@ -393,6 +394,70 @@ export default function DocsPage() {
         </div>
       </section>
 
+      {/* Sécurité & RGPD */}
+      <section id="security" className="py-12 px-4 bg-slate-50 dark:bg-slate-900/60 border-y border-slate-200 dark:border-slate-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+              <Shield className="w-5 h-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Sécurité & RGPD</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Chiffrement, isolation multi-tenant et conformité réglementaire</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { title: 'Chiffrement en transit', desc: 'Toutes les communications passent par TLS 1.3. Aucun échange en clair entre les clients, l\'API et les bornes.' },
+              { title: 'Chiffrement au repos', desc: 'Les données sensibles sont chiffrées en AES-256. Les données biométriques restent sur le terminal, seuls des hash transitent.' },
+              { title: 'Isolation multi-tenant', desc: 'Un schéma PostgreSQL isolé par entreprise. Les accès sont contrôlés par RBAC (Principal, RH, Employé, Super Admin).' },
+              { title: 'Conformité RGPD', desc: 'Hébergement européen, audit trail complet, exports et suppression des données personnelles conformes au RGPD.' },
+            ].map((item) => (
+              <div key={item.title} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{item.title}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Applications mobiles — installation */}
+      <section id="mobile-install" className="py-12 px-4 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
+              <Smartphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Installer les applications mobiles</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Employee, Manager et Platform Admin — iOS & Android</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { name: 'Leopardo Employee', desc: "Pointage mobile, géolocalisation, bulletins, demandes d'absence et notifications push.", href: '/signup?source=download_employee_android' },
+              { name: 'Leopardo Manager', desc: 'Équipe, horaires, tâches, approbations des demandes et paie simplifiée depuis le terrain.', href: '/signup?source=download_manager_android' },
+              { name: 'Leopardo Platform Admin', desc: 'Création de tenants, supervision des entreprises clientes et provisioning 2FA.', href: '/signup?source=download_platform-admin_android' },
+            ].map((app) => (
+              <div key={app.name} className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{app.name}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">{app.desc}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                  Google Play et App Store : <span className="font-semibold text-emerald-600 dark:text-emerald-400">bientôt disponibles</span>.
+                </p>
+                <Link href={app.href} className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                  Rejoindre les testeurs <ExternalLink className="w-3 h-3" />
+                </Link>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+            Plus de détails sur les trois apps : <Link href="/mobile" className="text-emerald-600 dark:text-emerald-400 hover:underline">page Applications mobiles →</Link>.
+          </p>
+        </div>
+      </section>
+
       {/* Doc categories */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto space-y-12">
@@ -448,8 +513,8 @@ export default function DocsPage() {
           <div className="grid sm:grid-cols-3 gap-4">
             {[
               { icon: Terminal, label: 'API Explorer', desc: 'Tester les endpoints en direct', href: '/integrations#api' },
-              { icon: Key, label: "Guide d'authentification", desc: 'Bearer tokens, Google OAuth, scopes', href: '/docs#api-auth' },
-              { icon: Server, label: 'Guide de deploiement', desc: 'Docker, Render, Vercel', href: '/docs#deploy' },
+              { icon: Key, label: "Guide d'authentification", desc: 'Bearer tokens, Google OAuth, scopes', href: '/docs#api-quickstart' },
+              { icon: Server, label: 'Guide de deploiement', desc: 'Docker, Render, Vercel', href: '/docs#api-quickstart' },
             ].map((link) => (
               <Link
                 key={link.label}

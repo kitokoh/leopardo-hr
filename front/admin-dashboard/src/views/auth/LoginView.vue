@@ -131,9 +131,7 @@
               </div>
 
               <div class="text-xs font-bold">
-                <a href="#" class="text-brand-500 hover:text-brand-400 transition-colors">
-                  Mot de passe oublie ?
-                </a>
+                <span class="text-xs font-semibold text-slate-500">Support technique : support@leopardo-rh.com</span>
               </div>
             </div>
 
@@ -162,25 +160,6 @@
                 {{ isLoading ? 'Authentification...' : 'Se connecter' }}
               </button>
 
-              <div class="relative">
-                <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                  <div class="w-full border-t border-white/5"></div>
-                </div>
-                <div class="relative flex justify-center text-xs font-black uppercase tracking-widest">
-                  <span class="bg-slate-900/40 px-4 text-slate-600">Ou tester</span>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                :disabled="isLoading"
-                class="w-full flex items-center justify-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 py-4 px-4 text-sm font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/20 transition-all duration-300 group"
-                @click="showDemoModal = true"
-                aria-label="Acces Demo"
-              >
-                <SparklesIcon class="h-5 w-5 group-hover:animate-pulse" />
-                Acces Demo
-              </button>
             </div>
           </form>
         </div>
@@ -190,34 +169,17 @@
       <div class="flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-widest text-slate-600">
         <span>© 2026 Leopardo Systems</span>
         <div class="flex items-center gap-4">
-          <a href="#" class="hover:text-slate-400 transition-colors">Sécurité</a>
-          <a href="#" class="hover:text-slate-400 transition-colors">Support</a>
+          <span class="hover:text-slate-400 transition-colors cursor-not-allowed">Sécurité</span>
+          <span class="hover:text-slate-400 transition-colors cursor-not-allowed">Support</span>
         </div>
       </div>
     </div>
 
-    <!-- Demo Modal -->
-    <div v-if="showDemoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" @click="showDemoModal = false"></div>
-      <div class="w-full max-w-sm relative p-8 text-center bg-slate-900 shadow-2xl rounded-3xl border border-white/10 z-10">
-         <h3 class="text-xl font-black text-white uppercase tracking-tight">Accès Démo</h3>
-         <p class="mt-4 text-slate-400 text-sm font-medium italic">administrateurs plateforme</p>
-         <div class="mt-8 space-y-3">
-           <button
-             class="w-full btn-primary py-4 uppercase font-black tracking-widest text-xs"
-             aria-label="Utiliser le compte demo super-admin"
-             @click="selectDemoUser('admin@leopardo-rh.com', 'password123')"
-           >
-             Super Administrateur
-           </button>
-         </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   LockClosedIcon,
@@ -225,7 +187,6 @@ import {
   ExclamationTriangleIcon,
   EyeIcon,
   EyeSlashIcon,
-  SparklesIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
@@ -248,7 +209,6 @@ const isLoading = ref(false)
 const error = ref('')
 const requiresTwoFactor = ref(false)
 const showPassword = ref(false)
-const showDemoModal = ref(false)
 const attempted = ref(false)
 
 // S-6 (#1666) : feedback inline par champ (aria-invalid + aria-describedby).
@@ -268,15 +228,6 @@ const fieldErrors = computed(() => {
   }
   return errors
 })
-
-/* eslint-disable no-unused-vars */
-async function selectDemoUser(email, password) {
-  form.email = email
-  form.password = password
-  showDemoModal.value = false
-  await nextTick()
-  await handleLogin()
-}
 
 async function handleLogin() {
   if (isLoading.value) return

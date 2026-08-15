@@ -76,10 +76,12 @@ class SSOControllerTest extends TestCase
 
         $response->assertOk()
             ->assertJsonStructure([
-                'data' => ['enabled', 'provider'],
+                'data' => ['enabled', 'provider', 'validation_available'],
             ]);
 
         $this->assertFalse($response->json('data.enabled'));
+        // Audit #1694 : validation non implémentée — jamais promettre un login SSO.
+        $this->assertFalse($response->json('data.validation_available'));
     }
 
     public function test_configure_sso_requires_principal_manager(): void
@@ -195,6 +197,8 @@ class SSOControllerTest extends TestCase
             ->assertOk();
 
         $this->assertFalse($response->json('data.enabled'));
+        // La config (même présente) reste sans validation : contrat #2278.
+        $this->assertFalse($response->json('data.validation_available'));
     }
 
     public function test_saml_callback_returns_501_until_validation_is_implemented(): void

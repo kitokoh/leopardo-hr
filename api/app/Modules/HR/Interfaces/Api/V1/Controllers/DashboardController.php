@@ -140,10 +140,22 @@ class DashboardController extends Controller
         /** @var Employee $user */
         $user = $request->user();
         $companyId = $user->company_id;
-        $monthInput = $request->input('month', now()->format('Y-m'));
+        $monthInput = $request->input('month');
         $month = is_string($monthInput) ? $monthInput : now()->format('Y-m');
-        $periodStart = Carbon::createFromFormat('Y-m', $month) ?? now();
+        $periodStart = now();
+
+        try {
+            $parsedMonth = Carbon::createFromFormat('!Y-m', $month);
+            if ($parsedMonth instanceof Carbon) {
+                $periodStart = $parsedMonth;
+            }
+        } catch (\Throwable) {
+            // A client-controlled month must never turn an invalid date into a
+            // 500. Keep the KPI window on the current month instead.
+        }
+
         $periodStart = $periodStart->startOfMonth();
+        $month = $periodStart->format('Y-m');
         $periodEnd = $periodStart->copy()->endOfMonth();
 
         $turnover = DB::table('employees')

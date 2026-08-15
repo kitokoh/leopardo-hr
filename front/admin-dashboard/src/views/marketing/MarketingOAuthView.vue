@@ -80,7 +80,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
@@ -115,7 +115,7 @@ async function saveProvider(provider) {
     if (form.clientSecret.trim()) {
       payload.client_secret = form.clientSecret
     }
-    await api.put('/v1/platform/marketing/oauth-config', payload)
+    await api.put('/v1/admin/platform/marketing/oauth-config', payload)
     toast.success(t('marketing.oauth.saved_ok', { provider }))
     forms[provider].clientSecret = ''
   } catch {
@@ -124,6 +124,24 @@ async function saveProvider(provider) {
     saving[provider] = false
   }
 }
+
+/** Charge la configuration existante (GET /admin/platform/marketing/oauth-config). */
+async function loadConfig() {
+  try {
+    const { data } = await api.get('/v1/admin/platform/marketing/oauth-config')
+    const configs = data?.data || {}
+    for (const [provider, cfg] of Object.entries(configs)) {
+      if (forms[provider]) {
+        forms[provider].clientId = cfg.client_id || ''
+        forms[provider].redirectUri = cfg.redirect_uri || ''
+      }
+    }
+  } catch {
+    // errors handled by global api.js interceptor — écran reste éditable
+  }
+}
+
+onMounted(loadConfig)
 </script>
 
 <script>

@@ -19,7 +19,14 @@ class SSOService
     private const SENSITIVE_FIELDS = ['certificate', 'client_secret'];
 
     /**
-     * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null}
+     * Audit #1694 : la validation des assertions SAML/OIDC n'est pas
+     * implémentée — exposer false tant que le moteur de validation n'existe
+     * pas (les intégrateurs doivent afficher « SSO en cours de déploiement »).
+     */
+    private const VALIDATION_AVAILABLE = false;
+
+    /**
+     * @return array{enabled: bool, provider: string|null, config: SSOProviderConfig|null, validation_available: bool}
      */
     public function getCompanySSO(string $companyId): array
     {
@@ -33,6 +40,8 @@ class SSOService
                 'enabled' => false,
                 'provider' => null,
                 'config' => null,
+                // Audit #1694 : validation non implémentée.
+                'validation_available' => self::VALIDATION_AVAILABLE,
             ];
         }
 
@@ -56,6 +65,8 @@ class SSOService
                 'provider' => $provider,
                 ...$configData,
             ]),
+            // Audit #1694 : validation non implémentée.
+            'validation_available' => self::VALIDATION_AVAILABLE,
         ];
     }
 
@@ -98,14 +109,16 @@ class SSOService
             }
         }
 
-        // Audit #1694 : la validation des assertions SAML/OIDC n'est pas
-        // encore implémentée — ne JAMAIS marquer la config comme active
-        // (fausse garantie de sécurité). La config est conservée (chiffrée)
-        // pour permettre l'implémentation ultérieure.
+        // Audit #1694 : la validation SAML n'est pas encore implémentée —
+        // ne JAMAIS marquer une config SAML comme active (fausse garantie de
+        // sécurité). Pour OIDC (issue #2231), la validation EST implémentée
+        // (OidcFlowService) : la config devient active quand elle est complète.
+        $canActivate = $config->provider === 'oidc' && $config->isOidcFlowReady();
+
         $payload = [
             'provider' => $provider,
             'config' => json_encode($stored),
-            'is_active' => false,
+            'is_active' => $canActivate,
             'updated_at' => now(),
         ];
 
@@ -121,10 +134,16 @@ class SSOService
             ]);
         }
 
-        Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
-            'company_id' => $companyId,
-            'provider' => $provider,
-        ]);
+        if ($canActivate) {
+            Log::info('OIDC SSO configured and active (validation implemented — issue #2231)', [
+                'company_id' => $companyId,
+            ]);
+        } else {
+            Log::warning('SSO configured but kept inactive (validation not implemented — audit #1694)', [
+                'company_id' => $companyId,
+                'provider' => $provider,
+            ]);
+        }
 
         return $config;
     }
@@ -159,7 +178,7 @@ class SSOService
 
     /**
      * @param  array<string, mixed>  $tokenData
-     * @return array{user_email: string, claims: array<string, mixed>}
+     * @return array{employee: array<string, mixed>, token: string, token_type: string, token_expires_at: string|null}
      */
     public function handleOIDCCallback(string $companyId, array $tokenData): array
     {
@@ -169,12 +188,10 @@ class SSOService
             throw new \RuntimeException('OIDC SSO not configured for this company');
         }
 
-        // Audit #1694 : idem SAML — refus explicite (501) tant que la
-        // validation de l'ID token / l'échange de code ne sont pas
-        // implémentés.
-        throw new SSOValidationNotImplementedException(
-            'La validation OIDC n\'est pas encore implémentée — connexion refusée.'
-        );
+        // Issue #2231 : le flux OIDC complet (authorize + callback +
+        // validation id_token) vit dans OidcFlowService — cette méthode est
+        // conservée pour les appelants qui ne passent pas par le contrôleur.
+        return app(OidcFlowService::class)->complete($companyId, $tokenData);
     }
 
     /**

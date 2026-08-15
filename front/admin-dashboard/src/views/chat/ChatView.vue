@@ -126,7 +126,7 @@ function scrollToBottom() {
 
 async function fetchConversations() {
   try {
-    const res = await api.get('/v1/ai/conversations')
+    const res = await api.get('/v1/admin/ai/conversations')
     conversations.value = res.data.data || res.data || []
   } catch (err) {
     console.warn('Failed to load AI conversations', err)
@@ -136,7 +136,7 @@ async function fetchConversations() {
 async function selectConversation(conv) {
   activeConversation.value = conv
   try {
-    const res = await api.get(`/v1/ai/conversations/${conv.id}/messages`)
+    const res = await api.get(`/v1/admin/ai/conversations/${conv.id}/messages`)
     messages.value = res.data.data || res.data || []
     scrollToBottom()
   } catch (err) {
@@ -165,7 +165,7 @@ async function sendMessage() {
       message: text,
       conversation_id: activeConversation.value?.id || null,
     }
-    const res = await api.post('/v1/ai/chat', payload)
+    const res = await api.post('/v1/admin/ai/chat', payload)
     const reply = res.data
     if (!activeConversation.value && reply.conversation_id) {
       activeConversation.value = { id: reply.conversation_id, title: text.slice(0, 50) }

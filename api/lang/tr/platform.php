@@ -12,6 +12,8 @@ return [
     'activity_support_ticket' => 'Destek bileti: :subject',
     'activity_edge_sync' => 'Edge senkronizasyonu: :name',
     'activity_user_signup' => 'Yeni kullanıcı: :name (:email)',
-    'conversation_not_found' => 'Konuşma bulunamadı.',
+    'admin_chat_unavailable' => 'Yapay zekâ asistanı kiracı bazında yapılandırılır: platform konsolu bir kiracı adına yanıt veremez. Asistanı kullanmak için kiracı çalışma alanına giriş yapın.',
+    'conversation_not_found' => 'Conversation introuvable.',
+    'conversations_unavailable' => 'Conversations indisponibles.',
     'oauth_save_failed' => 'Yapılandırma kaydedilemedi.',
 ];

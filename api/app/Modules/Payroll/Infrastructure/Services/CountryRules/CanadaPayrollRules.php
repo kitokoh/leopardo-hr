@@ -170,8 +170,9 @@ class CanadaPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Canadian public-holiday calendar is wired in yet, and statutory holidays '.
-            'differ by province/territory; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'CA fixed federal public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 1er juil, 11 nov, '.
+            '25 déc + mobiles fédéraux (Good Friday, Victoria Day, Labour Day, Thanksgiving) — les fériés '.
+            'provinciaux restent à saisir manuellement (PA2-COUNTRY-012).';
     }
 
     public function confidenceLevel(): string

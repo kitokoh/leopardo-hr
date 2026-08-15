@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
@@ -23,6 +24,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\Requests\StorePayrollRunRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PayrollRunController extends Controller
@@ -50,7 +52,7 @@ class PayrollRunController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $runs = $query->orderByDesc('period_start')->paginate($request->integer('per_page', 15));
+        $runs = $query->orderByDesc('period_start')->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
         return PayrollRunResource::collection($runs)->response();
     }
@@ -110,8 +112,88 @@ class PayrollRunController extends Controller
             return response()->json(['message' => 'Payroll run cannot be recalculated in current status.'], 422);
         }
 
+        // Issue #2555 — un pays sans règles enregistrées (ex. 'ZZ') fait
+        // lever `UnsupportedCountryRulesException` ici, AVANT le try/catch :
+        // le run restait bloqué dans son statut précédent (ex. `calculated`)
+        // et n'était plus recalculable. Contrat : tout échec de calculate
+        // ramène le run à `draft` (recalculable), même l'échec de résolution
+        // des règles.
+        try {
+            $rules = $this->calculator->getRules($payrollRun->country_code);
+        } catch (\Throwable $e) {
+            $payrollRun->update(['status' => PayrollRun::STATUS_DRAFT]);
+            Log::error('payroll.run.calculation_failed', [
+                'run_id' => $payrollRun->id,
+                'company_id' => $payrollRun->company_id,
+                'country_code' => $payrollRun->country_code,
+                'period' => $payrollRun->period_start->toDateString(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => __('payroll.calculation_failed'),
+            ], 422);
+        }
+
+        // Issue #2332 — un pays en règle « placeholder » (aucune valeur légale
+        // implémentée) expose des montants indicatifs : un run RÉEL ne doit
+        // pas être calculé sans confirmation explicite. Même garde que les
+        // simulations (#1872), placée AVANT tout changement de statut pour
+        // ne jamais laisser le run bloqué en `calculating` sur un 422.
+        // (getRules est déjà résolu ci-dessus — ne pas re-résoudre.)
+        if ($rules->confidenceLevel() === 'placeholder') {
+            $acknowledged = $request->boolean('acknowledge_placeholder');
+            if (! $acknowledged) {
+                return response()->json([
+                    'message' => __('payroll.placeholder_acknowledge_required', ['country' => $payrollRun->country_code]),
+                    'errors' => [
+                        'acknowledge_placeholder' => [__('payroll.placeholder_acknowledge_required', ['country' => $payrollRun->country_code])],
+                    ],
+                ], 422);
+            }
+
+            // Acceptation AUDITÉE — mêmes champs que les simulations #1872,
+            // contexte `payroll_run_calculate` + run_id pour tracer le run.
+            AuditLog::create([
+                'company_id' => $payrollRun->company_id,
+                'user_id' => $actor->id,
+                'action' => 'placeholder_warning_acknowledged',
+                'auditable_type' => 'App\\Modules\\Payroll\\Infrastructure\\Services\\CountryRules\\CountryRulesResolver',
+                'auditable_id' => 0,
+                'old_values' => [],
+                'new_values' => [
+                    'country_code' => $payrollRun->country_code,
+                    'rules_identifier' => (new \ReflectionClass($rules))->getShortName(),
+                    'confidence_level' => 'placeholder',
+                    'context' => 'payroll_run_calculate',
+                    'run_id' => $payrollRun->id,
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        }
+
         $payrollRun->update(['status' => 'calculating']);
-        $run = $this->calculator->calculateRun($payrollRun);
+
+        try {
+            $run = $this->calculator->calculateRun($payrollRun);
+        } catch (\Throwable $e) {
+            // Issue #2221 : un échec de calcul ne doit jamais laisser le run
+            // bloqué en `calculating` (recalcul refusé à vie par la garde
+            // ci-dessus). On restaure `draft` et on journalise le détail.
+            $payrollRun->update(['status' => PayrollRun::STATUS_DRAFT]);
+            Log::error('payroll.run.calculation_failed', [
+                'run_id' => $payrollRun->id,
+                'company_id' => $payrollRun->company_id,
+                'country_code' => $payrollRun->country_code,
+                'period' => $payrollRun->period_start->toDateString(),
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => __('payroll.calculation_failed'),
+            ], 422);
+        }
 
         // Issue #1767 : un calcul à 0 bulletin (ex. aucune structure salariale
         // active pour ce pays) ne doit pas réussir en silence — sinon le run

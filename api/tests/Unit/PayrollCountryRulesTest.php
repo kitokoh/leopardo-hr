@@ -23,7 +23,7 @@ class PayrollCountryRulesTest extends TestCase
             'TN' => [new TunisiaPayrollRules, 91.8, 165.7],
             'FR' => [new FrancePayrollRules, 170.3, 300.0],
             'TR' => [new TurkeyPayrollRules, 150.0, 225.0],
-            'SN' => [new SenegalPayrollRules, 56.0, 154.0],
+            'SN' => [new SenegalPayrollRules, 56.0, 194.0],
         ];
 
         foreach ($rules as $countryCode => [$countryRules, $expectedEmployeeCharge, $expectedEmployerCharge]) {
@@ -39,8 +39,11 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_progressive_income_tax_rules_are_applied_at_slab_edges(): void
     {
+        // TN (#2261) : abattement IRPP 10 % du revenu annuel (plancher 1 000
+        // TND) appliqué avant le barème → 5 000 et 6 000 TND/an tombent tous
+        // deux sous la tranche 0 % après abattement (6 000 − 1 000 = 5 000).
         self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(5000 / 12));
-        self::assertSame(21.67, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
+        self::assertSame(0.0, (new TunisiaPayrollRules)->calculateIncomeTax(6000 / 12));
         self::assertSame(0.0, (new FrancePayrollRules)->calculateIncomeTax(11294 / 12));
         self::assertSame(0.06, (new FrancePayrollRules)->calculateIncomeTax(11300 / 12));
         self::assertSame(1375.0, (new TurkeyPayrollRules)->calculateIncomeTax(110000 / 12));
@@ -57,10 +60,15 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_morocco_uses_annual_ir_with_fixed_deduction(): void
     {
+        // CGI MA art. 58 (#2260) : abattement frais professionnels 35 % du brut
+        // ANNUEL (plancher 2 500 / plafond 30 000 MAD) appliqué AVANT le barème.
         $rules = new MoroccoPayrollRules;
 
+        // 2 500 × 12 = 30 000 ; abattement 35 % = 10 500 → assiette 19 500 → 0 %
         self::assertSame(0.0, $rules->calculateIncomeTax(2500));
-        self::assertSame(333.33, $rules->calculateIncomeTax(5000));
+        // 5 000 × 12 = 60 000 ; abattement 35 % = 21 000 → assiette 39 000
+        // → tranche 10 % (fixe 3 000) : 39 000 × 10 % − 3 000 = 900/an → 75,00/mois
+        self::assertSame(75.0, $rules->calculateIncomeTax(5000));
     }
 
     /**
@@ -100,7 +108,7 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame('Africa/Casablanca', $morocco->timezone());
         self::assertSame([7], $morocco->weeklyRestDays());
         self::assertSame(['daily', 'weekly', 'monthly'], $morocco->supportedPayCycles());
-        self::assertStringContainsString('placeholder', $morocco->publicHolidaysSource());
+        self::assertStringContainsString('MA fixed public holidays', $morocco->publicHolidaysSource());
         self::assertSame('pilot', $morocco->confidenceLevel());
 
         $tunisia = new TunisiaPayrollRules;
@@ -108,7 +116,7 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame('Africa/Tunis', $tunisia->timezone());
         self::assertSame([7], $tunisia->weeklyRestDays());
         self::assertSame(['daily', 'weekly', 'monthly'], $tunisia->supportedPayCycles());
-        self::assertStringContainsString('placeholder', $tunisia->publicHolidaysSource());
+        self::assertStringContainsString('TN fixed public holidays', $tunisia->publicHolidaysSource());
         self::assertSame('pilot', $tunisia->confidenceLevel());
     }
 
@@ -262,8 +270,10 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
             if ($memberCode === 'GA') {
                 self::assertCount(8, $rules->taxSlabs()); // IRPP GA 8 tranches
+                self::assertStringContainsString('GA fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'CG') {
                 self::assertCount(6, $rules->taxSlabs()); // IRPP CG 6 tranches
+                self::assertStringContainsString('CG fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'CM') {
                 self::assertStringContainsString('CM fixed public holidays', $rules->publicHolidaysSource());
             } else {
@@ -322,7 +332,7 @@ class PayrollCountryRulesTest extends TestCase
             'ML' => ['Africa/Bamako', 40000.0],
             'BF' => ['Africa/Ouagadougou', 34664.0],
             'BJ' => ['Africa/Porto-Novo', 52000.0],
-            'TG' => ['Africa/Lome', 35000.0],
+            'TG' => ['Africa/Lome', 52500.0],
             'NE' => ['Africa/Niamey', 30047.0],
         ];
 
@@ -335,18 +345,21 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($minimumWage, $rules->minimumWage());
             self::assertSame([7], $rules->weeklyRestDays());
             self::assertSame(['monthly'], $rules->supportedPayCycles());
-            // #1825 + #1829 : CI, BF et ML sont passés au niveau 'pilot'
-            // (barèmes légaux implémentés) — les autres membres UEMOA restent
-            // 'placeholder' jusqu'à leurs issues.
-            $expectedConfidence = in_array($memberCode, ['CI', 'BF', 'ML'], true) ? 'pilot' : 'placeholder';
+            // #1825 + #1829 + #2121 : CI, BF, ML et TG sont passés au niveau
+            // 'pilot' (barèmes légaux implémentés) — les autres membres
+            // UEMOA restent 'placeholder' jusqu'à leurs issues.
+            $expectedConfidence = in_array($memberCode, ['CI', 'BF', 'ML', 'TG'], true) ? 'pilot' : 'placeholder';
             self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
             if ($memberCode === 'CI') {
                 self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
+            } elseif ($memberCode === 'ML') {
+                self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
+                self::assertStringContainsString('ML fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'BF') {
                 self::assertCount(6, $rules->taxSlabs()); // IUTS 6 tranches (#1915 : +27,5 % > 6 M)
                 self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
-            } elseif ($memberCode === 'ML') {
-                self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
+                // #2255 : BF conserve le placeholder fériés (réforme légale 2026)
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
             } else {
                 self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
             }

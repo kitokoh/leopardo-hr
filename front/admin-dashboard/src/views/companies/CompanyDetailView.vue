@@ -314,13 +314,7 @@
                 </div>
               </dl>
 
-              <button
-                @click="router.push('/system')"
-                class="mt-8 w-full inline-flex items-center justify-center rounded-xl bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-2.5 text-xs font-black uppercase tracking-widest text-slate-300 hover:bg-white/10 transition-colors border border-white/10"
-              >
-                <CommandLineIcon class="mr-2 h-4 w-4" />
-                Accès Super-Console
-              </button>
+              
             </div>
           </section>
         </aside>
@@ -330,22 +324,20 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n'
+import { useLocaleStore } from '@/stores/locale'
 import { Switch } from '@headlessui/vue'
 import {
   ArrowLeftIcon,
   ArrowPathIcon,
   ExclamationCircleIcon,
-  HeartIcon,
-  UsersIcon,
-  FingerPrintIcon,
   BanknotesIcon,
   BoltIcon,
   CheckBadgeIcon,
   CreditCardIcon,
-  CommandLineIcon,
   CloudArrowUpIcon,
   BuildingOfficeIcon,
   SparklesIcon,
@@ -358,11 +350,9 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
-import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const route = useRoute()
-const router = useRouter()
 const toast = useToast()
 const localeStore = useLocaleStore()
 
@@ -395,8 +385,9 @@ const supportTickets = ref([])
 const supportSummary = ref({ open_count: 0 })
 
 const scoreColor = computed(() => {
-  if (healthScore.value >= 75) return 'green'
-  if (healthScore.value >= 50) return 'yellow'
+  const healthScore = health.value?.adoption?.health_score ?? 0
+  if (healthScore >= 75) return 'green'
+  if (healthScore >= 50) return 'yellow'
   return 'red'
 })
 
@@ -426,6 +417,7 @@ async function loadCompany() {
   } catch (error) {
     console.error('Failed to load company detail:', error)
     errorMessage.value = 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.'
+    toast.error(translate(localeStore.current, 'companies.toast.load_failed', 'companies.toast.load_failed'))
   } finally {
     isLoading.value = false
   }
@@ -448,6 +440,7 @@ async function loadSupportTickets() {
   } catch (error) {
     console.error('Failed to load support tickets for company:', error)
     supportTickets.value = []
+    toast.error(translate(localeStore.current, 'companies.toast.tickets_failed', 'companies.toast.tickets_failed'))
   } finally {
     isSupportLoading.value = false
   }
@@ -463,6 +456,7 @@ async function saveSubscription() {
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
+    toast.error(translate(localeStore.current, 'companies.toast.subscription_failed', 'companies.toast.subscription_failed'))
   } finally {
     isSavingSubscription.value = false
   }
@@ -480,6 +474,7 @@ async function saveFeatures() {
     originalFeatures.value = { ...featuresForm.value }
   } catch (error) {
     console.error('Failed to save features:', error)
+    toast.error(translate(localeStore.current, 'companies.toast.features_failed', 'companies.toast.features_failed'))
   } finally {
     isSavingFeatures.value = false
   }

@@ -198,6 +198,11 @@ class CountryRulesResolverTest extends TestCase
                 return null;
             }
 
+            public function familyTaxReduction(float $familyParts = 1.0): float
+            {
+                return 0.0;
+            }
+
             public function complianceWarningKey(): string
             {
                 return 'payroll.compliance_warning_placeholder';
@@ -209,11 +214,6 @@ class CountryRulesResolverTest extends TestCase
             public function legalSources(): array
             {
                 return [];
-            }
-
-            public function complianceVerifiedAt(): null
-            {
-                return null;
             }
 
             public function rulesVersion(): string
@@ -401,6 +401,11 @@ class CountryRulesResolverTest extends TestCase
                 return null;
             }
 
+            public function familyTaxReduction(float $familyParts = 1.0): float
+            {
+                return 0.0;
+            }
+
             public function complianceWarningKey(): string
             {
                 return 'payroll.compliance_warning_placeholder';
@@ -412,11 +417,6 @@ class CountryRulesResolverTest extends TestCase
             public function legalSources(): array
             {
                 return [];
-            }
-
-            public function complianceVerifiedAt(): null
-            {
-                return null;
             }
 
             public function rulesVersion(): string

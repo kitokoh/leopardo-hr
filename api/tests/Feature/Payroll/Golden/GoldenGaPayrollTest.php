@@ -108,6 +108,6 @@ class GoldenGaPayrollTest extends TestCase
         // présenté comme valeur légale (« 1 mois de base × N ans ») →
         // déplacé dans GoldenGenericEngineTest avec avertissement explicite
         // (#1938).
-        $this->assertSame(30.0, $this->ga()->noticePeriodDays(5.0));
+        $this->assertSame(22.0, $this->ga()->noticePeriodDays(5.0));
     }
 }

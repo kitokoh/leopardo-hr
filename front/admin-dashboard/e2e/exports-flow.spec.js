@@ -33,19 +33,17 @@ test.describe('Recruitment page structure', () => {
     'Skipped: requires PLAYWRIGHT_AUTH_TOKEN for authenticated tests',
   )
 
-  test('recruitment view exposes jobs and pipeline controls', async ({ page }) => {
+  test('tenant-scoped recruitment view redirects the super-admin to the dashboard', async ({ page }) => {
+    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
+    // l'accès direct par URL à une vue tenant redirige vers le dashboard.
     await page.addInitScript((token) => {
       sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/recruitment')
 
-    await expect(page.getByRole('button', { name: /Pipeline Kanban/i })).toBeVisible()
-    await expect(page.getByRole('button', { name: /Postes/i })).toBeVisible()
-
-    await page.getByRole('button', { name: /Postes/i }).click()
-    await expect(page.getByPlaceholder(/Intitule du poste/i)).toBeVisible()
-    await expect(page.getByRole('button', { name: /Creer le poste/i })).toBeVisible()
+    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
+    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
   })
 })
 
@@ -55,15 +53,16 @@ test.describe('Exports page structure', () => {
     'Skipped: requires PLAYWRIGHT_AUTH_TOKEN for authenticated tests',
   )
 
-  test('exports view loads with expected heading', async ({ page }) => {
+  test('tenant-scoped exports view redirects the super-admin to the dashboard', async ({ page }) => {
+    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
+    // l'accès direct par URL à une vue tenant redirige vers le dashboard.
     await page.addInitScript((token) => {
       sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/exports')
 
-    await expect(
-      page.getByRole('heading', { name: /export|rapports|reports/i }),
-    ).toBeVisible({ timeout: 10_000 })
+    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
+    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
   })
 })

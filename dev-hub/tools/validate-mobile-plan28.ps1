@@ -87,7 +87,6 @@ if (Test-Path -LiteralPath $employeeRoot) {
         "rejectAdvance",
         "/approvals",
         "/team",
-        "/manager/dashboard",
         "/manager/attendance",
         "/manager/anomalies",
         "/manager/corrections",
@@ -117,7 +116,6 @@ if (Test-Path -LiteralPath $managerRoot) {
         "rejectAdvance",
         "/team",
         "/approvals",
-        "/manager/dashboard",
         "/manager/attendance",
         "/manager/anomalies",
         "/manager/corrections"

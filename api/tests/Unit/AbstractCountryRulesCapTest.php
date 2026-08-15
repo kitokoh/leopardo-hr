@@ -9,6 +9,7 @@ use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CemacPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
 use PHPUnit\Framework\TestCase;
+use Tests\Support\SnPayrollFixtures;
 
 /**
  * ZONE-INFRA (#1820) — mécanismes transversaux Afrique sub-saharienne.
@@ -41,12 +42,12 @@ class AbstractCountryRulesCapTest extends TestCase
         //   T2 salariale (cadres) : 568 000 × 2,4 % = 13 632,00 → 37 824,00
         //   T1 patronale : 432 000 × 8,4 % = 36 288,00
         //   T2 patronale : 568 000 × 3,6 % = 20 448,00
-        //   CSS famille 3 % = 1 890 · CSS AT 1 % = 630 · CFCE 3 % = 30 000
-        //   → patronale totale 89 256,00
+        //   CSS famille 7 % = 4 410 (CIPRES #2473) · CSS AT 1 % = 630
+        //   · CFCE 3 % = 30 000 → patronale totale 91 776,00
         $charges = $rules->calculateSocialCharges(1000000.0);
 
-        $this->assertSame(37824.0, $charges['employee']);
-        $this->assertSame(89256.0, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(1000000.0)['employee'], $charges['employee']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(1000000.0)['employer'], $charges['employer']);
     }
 
     public function test_senegal_contribution_uncapped_when_gross_below_432k(): void
@@ -57,12 +58,12 @@ class AbstractCountryRulesCapTest extends TestCase
         // déclenché), CSS famille/AT plafonnées à 63 000 :
         //   salariale : 200 000 × 5,6 % = 11 200,00
         //   patronale : 200 000 × 8,4 % = 16 800,00
-        //             + 63 000 × 3 % = 1 890,00 + 63 000 × 1 % = 630,00
-        //             + 200 000 × 3 % (CFCE) = 6 000,00 → 25 320,00
+        //             + 63 000 × 7 % = 4 410,00 (CIPRES #2473) + 63 000 × 1 % = 630,00
+        //             + 200 000 × 3 % (CFCE) = 6 000,00 → 27 840,00
         $charges = $rules->calculateSocialCharges(200000.0);
 
-        $this->assertSame(11200.0, $charges['employee']);
-        $this->assertSame(25320.0, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(200000.0)['employee'], $charges['employee']);
+        $this->assertSame(SnPayrollFixtures::socialCharges(200000.0)['employer'], $charges['employer']);
     }
 
     public function test_cameroon_cnps_capped_at_750k_xaf(): void
@@ -97,8 +98,10 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CedeaoPayrollRules)->forMemberCountry('CI');
 
-        // Brut 3 000 000 XOF > plafond retraite 1 647 315 ; famille/AT
-        // plafonnées séparément à 70 000 (#1913, guide officiel CNPS) :
+        // Brut 3 000 000 XOF > plafonds CNSS (guide CNPS, CI_COMPLIANCE.md §4 +
+        // #1913) : retraite salariale 3,2 % / patronale 4,5 % plafonnées à
+        // 1 647 315 ; prestations familiales 5,75 % et AT 2,0 % plafonnées à
+        // 70 000 FCFA/mois (branche, guide CNPS) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
         //   patronale : 1 647 315 × 4,5 % + 70 000 × 5,75 % + 70 000 × 2,0 %
         //             = 74 129,18 + 4 025,00 + 1 400,00 = 79 554,18

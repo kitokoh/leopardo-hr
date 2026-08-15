@@ -73,8 +73,9 @@ class CotisationSimulationController extends Controller
         $rulesPeriod = $rulesPeriodValue !== null ? Carbon::parse($rulesPeriodValue) : null;
 
         // Issue #1874 — identifiant de corrélation de la requête (logs ↔
-        // réponse ↔ audit) : UUID généré par requête, propagé aux logs.
-        $correlationId = (string) Str::uuid();
+        // réponse ↔ audit) : X-Correlation-ID / X-Request-Id header (repli
+        // UUID frais), propagé aux logs et à la réponse (RequestIdMiddleware).
+        $correlationId = correlation_id();
         Log::withContext(['correlation_id' => $correlationId]);
 
         // Pays inconnu → 422 explicite (UnsupportedCountryRulesException,
@@ -124,16 +125,28 @@ class CotisationSimulationController extends Controller
         $employeeContributions = [];
         $employerContributions = [];
         foreach ($rules->socialContributions() as $contribution) {
-            // Base plafonnée quand la règle déclare un cap (sinon brut entier).
-            $base = $contribution['cap'] === null
-                ? $gross
-                : min($gross, (float) $contribution['cap']);
+            // Issue #2220 — la base suit la VRAIE règle du moteur :
+            //  1. assiette_rate (ex. CSG/CRDS FR sur 98,25 % du brut) ;
+            //  2. tranche floor/ceiling (ex. IPRES T2 SN 432 001–2 160 000) ;
+            //  3. cap simple (plafond classique) ;
+            //  4. sinon brut entier.
+            if (isset($contribution['assiette_rate'])) {
+                $base = $gross * ((float) $contribution['assiette_rate'] / 100);
+            } elseif (isset($contribution['floor'])) {
+                $base = $gross > (float) $contribution['floor']
+                    ? min($gross, (float) ($contribution['ceiling'] ?? PHP_FLOAT_MAX)) - (float) $contribution['floor']
+                    : 0.0;
+            } else {
+                $base = ($contribution['cap'] ?? null) === null
+                    ? $gross
+                    : min($gross, (float) $contribution['cap']);
+            }
 
             $item = [
                 'name' => $contribution['name'],
                 'code' => $contribution['code'],
                 'rate' => $contribution['rate'],
-                'cap' => $contribution['cap'],
+                'cap' => $contribution['cap'] ?? null,
                 'amount' => round($base * (float) $contribution['rate'] / 100, 2),
             ];
 

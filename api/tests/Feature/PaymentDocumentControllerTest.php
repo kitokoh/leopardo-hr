@@ -107,13 +107,41 @@ class PaymentDocumentControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->getJson("/api/v1/payroll-runs/{$run->id}/payment-documents")
+        $this->getJson("/api/v1/payments/{$run->id}/documents")
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $document->id);
 
-        $this->getJson("/api/v1/payroll-runs/{$foreignRun->id}/payment-documents")
+        $this->getJson("/api/v1/payments/{$foreignRun->id}/documents")
             ->assertNotFound();
+    }
+
+    public function test_rh_manager_lists_documents_for_own_payroll_run(): void
+    {
+        // Issue #2749 — l'app RH (leopardo_hr) liste les documents de paie
+        // d'un run via /payments/{run}/documents : le rôle rh est désormais
+        // accepté sur cette lecture (principal, comptable, rh).
+        $company = Company::factory()->create();
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => fake()->unique()->safeEmail(),
+        ]);
+        [$run, $slip] = $this->payrollSlip($company, $employee);
+        PaymentDocument::query()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'payroll_run_id' => $run->id,
+            'pay_slip_id' => $slip->id,
+            'document_type' => PaymentDocument::TYPE_PAYMENT_SLIP,
+            'status' => PaymentDocument::STATUS_AVAILABLE,
+        ]);
+
+        Sanctum::actingAs($rh);
+
+        $this->getJson("/api/v1/payments/{$run->id}/documents")
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
     }
 
     public function test_mark_paid_dispatches_advance_receipt_document_job(): void

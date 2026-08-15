@@ -197,6 +197,55 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertJsonStructure(['data' => ['next_payment_date']]);
     }
 
+    /**
+     * Issue #2143 — /me/balance expose le bloc `compliance` (#1872) résolu
+     * depuis le pays de l'entreprise (niveau pilot pour DZ). Rétro-compatible :
+     * pays non supporté → compliance null (garde anti-500).
+     */
+    public function test_employee_balance_exposes_compliance_block(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 120000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonPath('data.country', 'DZ')
+            ->assertJsonPath('data.compliance.level', 'pilot')
+            ->assertJsonPath('data.compliance.warning_key', 'payroll.compliance_warning_pilot')
+            ->assertJsonPath('data.compliance.source', 'docs/payroll/DZ_COMPLIANCE.md')
+            ->assertJsonPath('data.compliance.verification_date', null);
+    }
+
+    public function test_employee_balance_compliance_null_for_unsupported_country(): void
+    {
+        $company = Company::factory()->create([
+            'country' => 'US',
+            'currency' => 'USD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 120000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonPath('data.compliance', null);
+    }
+
     public function test_employee_balance_reports_next_payment_date_from_company_pay_day(): void
     {
         $company = Company::factory()->create([
@@ -231,6 +280,72 @@ class PayrollCycleIntegrationTest extends TestCase
 
         $this->getJson("/api/v1/employees/{$other->id}/balance")
             ->assertForbidden();
+    }
+
+    public function test_balance_exposes_compliance_block(): void
+    {
+        // Issue #2144 — le bloc compliance (niveau de confiance paie) doit
+        // être exposé sur /me/balance pour l'écran paie mobile employee.
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 50000,
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/me/balance')
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => ['compliance' => ['level', 'warning', 'warning_key', 'source', 'verification_date']],
+            ])
+            ->assertJsonPath('data.compliance.level', 'pilot');
+    }
+
+    public function test_mobile_summary_exposes_compliance_block(): void
+    {
+        // Issue #2144 — même bloc sur /payroll/mobile-summary (manager).
+        $company = Company::factory()->create(['country' => 'MA']);
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson('/api/v1/payroll/mobile-summary')
+            ->assertOk()
+            ->assertJsonStructure(['data' => ['compliance' => ['level']]])
+            ->assertJsonPath('data.compliance.level', 'pilot');
+    }
+
+    public function test_rh_manager_can_access_mobile_summary(): void
+    {
+        // Issue #2749 — les écrans paie de l'app RH (leopardo_hr) consomment
+        // /payroll/mobile-summary : le rôle rh était exclu du groupe
+        // principal/comptable → 403. Les lectures paie mobiles acceptent
+        // désormais principal, comptable ET rh.
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($rh);
+
+        $this->getJson('/api/v1/payroll/mobile-summary')
+            ->assertOk()
+            ->assertJsonStructure(['data' => ['totals']]);
+    }
+
+    public function test_rh_manager_cannot_write_salary_structure(): void
+    {
+        // Issue #2749 — seules les LECTURES mobiles sont ouvertes à rh ;
+        // les écritures paie restent strictement principal/comptable.
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $rh = Employee::factory()->managerRh()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($rh);
+
+        $this->postJson('/api/v1/salary-structures', [
+            'name' => 'Structure interdite',
+            'country' => 'DZ',
+        ])->assertStatus(403);
     }
 
     public function test_manager_mobile_summary_is_tenant_scoped(): void

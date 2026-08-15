@@ -22,7 +22,9 @@ export function useNotificationStream() {
     }
 
     const apiUrl = import.meta.env.VITE_API_URL || ''
-    const url = `${apiUrl}/api/v1/notifications/stream`
+    // Issue #2225 : VITE_API_URL peut déjà se terminer par /api/v1 —
+    // on construit l'URL SSE sans dupliquer le préfixe.
+    const url = `${apiUrl.replace(/\/+$/, '')}${apiUrl.includes('/api/v1') ? '' : '/api/v1'}/notifications/stream`
 
     // EventSource doesn't support custom headers natively, so instead of
     // leaking the long-lived bearer token as a query parameter (which ends up

@@ -131,14 +131,18 @@ class CedeaoRulesUnitTest extends TestCase
         $this->assertFalse((new CedeaoPayrollRules)->forMemberCountry('BF')->thirteenthMonthMandatory());
     }
 
-    public function test_ci_notice_period_days(): void
+    public function test_ci_notice_period_employee_level(): void
     {
-        // CI_COMPLIANCE.md §6 — palier ancienneté (approximation pilote,
-        // matrice complète ouvriers/employés/cadres documentée) :
-        //   < 5 ans : 30 j · 5–10 ans : 60 j · > 10 ans : 90 j.
-        $this->assertSame(30.0, $this->rules()->noticePeriodDays(3.0));
-        $this->assertSame(60.0, $this->rules()->noticePeriodDays(7.0));
-        $this->assertSame(90.0, $this->rules()->noticePeriodDays(12.0));
+        // CI_COMPLIANCE.md §8 — niveau employé/technicien (pilot) :
+        //   < 5 ans : 22 j · ≥ 5 ans : 44 j (JOURS OUVRÉS #2219, ex 30/60 cal.).
+        //   Cadres → 66 j (ex 90), ouvriers → 6/11 j (ex 8/15).
+        //   (catégorie passée par EndOfContractService via ipres_category).
+        $this->assertSame(22.0, $this->rules()->noticePeriodDays(3.0));
+        $this->assertSame(22.0, $this->rules()->noticePeriodDays(4.9));
+        $this->assertSame(44.0, $this->rules()->noticePeriodDays(7.0));
+        $this->assertSame(44.0, $this->rules()->noticePeriodDays(12.0));
+        $this->assertSame(66.0, $this->rules()->noticePeriodDays(12.0, 'cadre'));
+        $this->assertSame(6.0, $this->rules()->noticePeriodDays(3.0, 'ouvrier'));
     }
 
     public function test_ci_overtime_tiers(): void
@@ -166,11 +170,14 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // BJ/TG/NE restent placeholder : pas de barème légal, pas de CN, pas
-        // de 13ème mois, pas d'abattement frais pro.
-        foreach (['BJ', 'TG', 'NE'] as $memberCode) {
+        // ML/BF sont PILOT depuis #1829 (IUTS/ITS + CNSS/INPS sourcés) ;
+        // TG est PILOT depuis #2578 (préavis jours ouvrés) ; BJ/NE restent
+        // placeholder.
+        foreach (['BJ', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
+            // Placeholder intact : pas de barème légal, pas de CN, pas de
+            // 13ème mois, pas d'abattement frais pro.
             $this->assertSame('placeholder', $rules->confidenceLevel(), $memberCode);
             $this->assertStringContainsString('placeholder', $rules->publicHolidaysSource(), $memberCode);
             $this->assertSame(0.0, $rules->calculateBracketTax(200000.0), $memberCode);
@@ -184,14 +191,41 @@ class CedeaoRulesUnitTest extends TestCase
             $this->assertSame(164.0, $charges['employer'], $memberCode);
         }
 
-        // BF et ML sont passés 'pilot' (#1829) : barèmes légaux implémentés,
-        // préavis 30 j — mais calendrier férié toujours placeholder.
+        // BF/ML passés pilot (#1829) : barèmes IUTS/ITS + CNSS/INPS légaux.
         foreach (['BF', 'ML'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
-
             $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
-            $this->assertStringContainsString('placeholder', $rules->publicHolidaysSource(), $memberCode);
-            $this->assertSame(30.0, $rules->noticePeriodDays(3.0), $memberCode);
+            $this->assertCount(6, $rules->taxSlabs(), $memberCode);
         }
+
+        // TG passé pilot (#2578) : barème + préavis jours ouvrés.
+        $tg = (new CedeaoPayrollRules)->forMemberCountry('TG');
+        $this->assertSame('pilot', $tg->confidenceLevel());
+    }
+
+    public function test_bf_is_pilot_with_cnss_rules(): void
+    {
+        // BF passé pilot (issue #2158, goldens) : CNSS retraite 5,5 % / 6,5 %
+        // + famille 7,0 % plafonnés à 900 000 XOF/mois, AT 3,5 % non plafonné.
+        $bf = (new CedeaoPayrollRules)->forMemberCountry('BF');
+
+        $this->assertSame('pilot', $bf->confidenceLevel());
+
+        $charges = $bf->calculateSocialCharges(1000.0);
+        $this->assertSame(55.0, $charges['employee']);
+        $this->assertSame(170.0, $charges['employer']); // 6,5 % + 7,0 % + 3,5 %
+    }
+
+    public function test_ml_is_pilot_with_inps_rules(): void
+    {
+        // ML passé pilot (issue #2158, goldens) : INPS retraite 3,6 % / 7,4 %
+        // plafonnés à 3 000 000 XOF/mois, famille 4,0 % + AT 2,0 % non plafonnés.
+        $ml = (new CedeaoPayrollRules)->forMemberCountry('ML');
+
+        $this->assertSame('pilot', $ml->confidenceLevel());
+
+        $charges = $ml->calculateSocialCharges(1000.0);
+        $this->assertSame(36.0, $charges['employee']);
+        $this->assertSame(134.0, $charges['employer']); // 7,4 % + 4,0 % + 2,0 %
     }
 }

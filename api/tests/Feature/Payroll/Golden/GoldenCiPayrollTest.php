@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll\Golden;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -39,12 +44,13 @@ class GoldenCiPayrollTest extends TestCase
 
     public function test_golden_ci_smig_75000(): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §1-3), brut = SMIG 75 000 XOF :
-        //   CNSS salariale = 75 000 × 3,2 % = 2 400
-        //   CNSS patronale = 75 000 × 4,5 % (retraite, plaf. 1 647 315)
-        //                    + 70 000 × 5,75 % (famille, plaf. 70 000 #1913)
-        //                    + 70 000 × 2,0 % (AT, plaf. 70 000 #1913)
-        //                  = 3 375,00 + 4 025,00 + 1 400,00 = 8 800,00
+
+        // Calcul manuel (CI_COMPLIANCE.md §1-4), brut = SMIG 75 000 XOF :
+        //   CNSS salariale = 75 000 × 3,2 % = 2 400 (plafond retraite 1 647 315)
+        //   Patronal : retraite 4,5 % × 75 000 = 3 375 · famille 5,75 % et AT
+        //     2,0 % plafonnées à 70 000 (guide CNPS, #1913) = 4 025 + 1 400
+        //     → 8 800,00
+
         //   ITS 2024 = progressif MENSUEL sur le brut 75 000 → tranche
         //     0–75 000 @ 0 % → 0,00 (plus de CN ni d'abattement)
         //   Net = 75 000 − 2 400 − 0,00 = 72 600,00
@@ -53,7 +59,7 @@ class GoldenCiPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(75000.0);
 
         $this->assertSame(2400.0, $charges['employee']);
-        $this->assertSame(8800.00, $charges['employer']);
+        $this->assertSame(8800.0, $charges['employer']);
 
         $taxBase = 75000.0 - $charges['employee'];
         $its = $rules->calculateIncomeTax($taxBase, 12, 75000.0);
@@ -201,22 +207,22 @@ class GoldenCiPayrollTest extends TestCase
     public static function itsProvider(): array
     {
         return [
-            'tranche 0 % (≤ 75k)'             => [50000.0, 1600.0, 0.0],
+            'tranche 0 % (≤ 75k)' => [50000.0, 1600.0, 0.0],
             // 150 000 → 75 001–150 000 × 16 % = 75 000 × 16 % = 12 000,00
-            'tranche 16 % (75k–240k)'         => [150000.0, 4800.0, 12000.00],
+            'tranche 16 % (75k–240k)' => [150000.0, 4800.0, 12000.00],
             // 300 000 → 26 400 + 60 000 × 21 % = 12 600 → 39 000,00
-            'tranche 21 % (240k–800k)'        => [300000.0, 9600.0, 39000.00],
+            'tranche 21 % (240k–800k)' => [300000.0, 9600.0, 39000.00],
             // 700 000 → 26 400 + 460 000 × 21 % = 96 600 → 123 000,00
-            'tranche 24 % (800k–2,4M)'        => [700000.0, 22400.0, 123000.00],
+            'tranche 24 % (800k–2,4M)' => [700000.0, 22400.0, 123000.00],
             // 3 000 000 → 26 400 + 117 600 + 1 600 000 × 24 % = 384 000
             //   + 600 000 × 28 % = 168 000 → 696 000,00
-            'tranche 28 % (2,4M–8M)'          => [3000000.0, 96000.0, 696000.00],
+            'tranche 28 % (2,4M–8M)' => [3000000.0, 96000.0, 696000.00],
             // 10 000 000 → 26 400 + 117 600 + 384 000 + 5 600 000 × 28 %
             //   = 1 568 000 + 2 000 000 × 32 % = 640 000 → 2 736 000,00
-            'tranche 32 % (> 8M)'             => [10000000.0, 320000.0, 2736000.00],
+            'tranche 32 % (> 8M)' => [10000000.0, 320000.0, 2736000.00],
             // 12 000 000 (> 10 M — suivi #1918) → 2 736 000
             //   + 4 000 000 × 32 % = 1 280 000 → 3 376 000,00
-            'tranche 32 % (> 10M)'            => [12000000.0, 384000.0, 3376000.00],
+            'tranche 32 % (> 10M)' => [12000000.0, 384000.0, 3376000.00],
         ];
     }
 
@@ -249,12 +255,46 @@ class GoldenCiPayrollTest extends TestCase
     #[DataProvider('preavisProvider')]
     public function test_golden_ci_preavis(float $years, float $expectedDays): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §6 — Code du travail art. 18) :
-        //  < 5 ans → 30 j · 5-10 ans → 60 j · ≥ 10 ans → 90 j
-        //  (palier employé/technicien — pilot, à valider).
+        // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18) :
+        //  niveau employé/technicien (pilot) : < 5 ans → 22 j · ≥ 5 ans → 44 j
+        //  (JOURS OUVRÉS #2219 — ex 30/60 j calendaires).
+        //  Cadres → 66 j et ouvriers → 6/11 j (catégorie via ipres_category).
         $rules = $this->rules();
 
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
+    }
+
+    #[DataProvider('preavisParCategorieProvider')]
+    public function test_golden_ci_preavis_par_categorie(string $category, float $years, float $expectedDays): void
+    {
+        // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18) :
+        //  ouvriers : < 5 ans → 6 j · ≥ 5 ans → 11 j (JOURS OUVRÉS #2219, ex 8/15)
+        //  employés/techniciens : < 5 ans → 22 j · ≥ 5 ans → 44 j (ex 30/60)
+        //  cadres : 66 j (3 mois) quelle que soit l'ancienneté (ex 90)
+        //  — la catégorie est portée par employees.ipres_category (#2264).
+        $rules = $this->rules();
+
+        $this->assertSame($expectedDays, $rules->noticePeriodDays($years, $category));
+    }
+
+    /**
+     * @return array<string, array{string, float, float}>
+     */
+    public static function preavisParCategorieProvider(): array
+    {
+        // CI_COMPLIANCE.md §8 (Code du travail art. 18, implémenté #2372) :
+        //  ouvriers 6/11 j · employés/techniciens 22/44 j · cadres 66 j
+        //  (JOURS OUVRÉS #2219, conversion 30→22 / 60→44 / 90→66 / 8→6 / 15→11).
+        return [
+            'ouvrier moins de 5 ans' => ['ouvrier', 2.0, 6.0],
+            'ouvrier 5 ans et plus' => ['ouvrier', 7.0, 11.0],
+            'worker 10 ans' => ['worker', 10.0, 11.0],
+            'employe moins de 5 ans' => ['employee', 2.0, 22.0],
+            'employe 5 ans et plus' => ['employee', 7.0, 44.0],
+            'technicien 12 ans' => ['technician', 12.0, 44.0],
+            'cadre 2 ans' => ['cadre', 2.0, 66.0],
+            'cadre 15 ans' => ['cadre', 15.0, 66.0],
+        ];
     }
 
     /**
@@ -263,9 +303,9 @@ class GoldenCiPayrollTest extends TestCase
     public static function preavisProvider(): array
     {
         return [
-            'moins de 5 ans'  => [2.0, 30.0],
-            '5 à 10 ans'      => [7.0, 60.0],
-            '10 ans et plus'  => [12.0, 90.0],
+            'moins de 5 ans' => [2.0, 22.0],
+            '5 à 10 ans' => [7.0, 44.0],
+            '10 ans et plus' => [12.0, 44.0],
         ];
     }
 
@@ -273,13 +313,13 @@ class GoldenCiPayrollTest extends TestCase
     {
         // Calcul manuel (CI_COMPLIANCE.md) : prorata entrée le 15 → 12,06 j/22
         // (même mécanique F-05 que DZ) : 22 × 17/31 = 12,06.
-        $this->assertSame(32890.91, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 12.06));
+        $this->assertSame(32890.91, (new PayrollCalculator)->computeProratedBase(60000.0, 22.0, 12.06));
     }
 
     public function test_golden_ci_prorata_sortie_10(): void
     {
         // Calcul manuel : sortie le 10 → 7,10 j/22 : 22 × 10/31 = 7,10.
-        $this->assertSame(19363.64, (new PayrollCalculator())->computeProratedBase(60000.0, 22.0, 7.10));
+        $this->assertSame(19363.64, (new PayrollCalculator)->computeProratedBase(60000.0, 22.0, 7.10));
     }
 
     public function test_golden_ci_cnss_employee_zero_on_zero_salary(): void
@@ -355,19 +395,19 @@ class GoldenCiPayrollTest extends TestCase
      */
     public function test_golden_ci_full_run_its_2024(): void
     {
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
-        $company = \App\Core\Tenant\Domain\Models\Company::factory()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'country' => 'CI',
             'currency' => 'XOF',
         ]);
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
-        $employee = \App\Core\Auth\Domain\Models\Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => 100000,
         ]);
 
-        \App\Modules\Payroll\Domain\Models\SalaryStructure::create([
+        SalaryStructure::create([
             'company_id' => $company->id,
             'name' => 'Grille CI test',
             'base_salary' => 100000,
@@ -377,8 +417,8 @@ class GoldenCiPayrollTest extends TestCase
             'active' => true,
         ]);
 
-        /** @var \App\Modules\Payroll\Domain\Models\PayrollRun $run */
-        $run = \App\Modules\Payroll\Domain\Models\PayrollRun::create([
+        /** @var PayrollRun $run */
+        $run = PayrollRun::create([
             'company_id' => $company->id,
             'period_start' => '2026-07-01',
             'period_end' => '2026-07-31',
@@ -386,13 +426,110 @@ class GoldenCiPayrollTest extends TestCase
             'status' => 'draft',
         ]);
 
-        (new \App\Modules\Payroll\Infrastructure\Services\PayrollCalculator)->calculateRun($run);
+        (new PayrollCalculator)->calculateRun($run);
 
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $slip */
+        /** @var PaySlip $slip */
         $slip = $run->paySlips()->firstOrFail();
 
         $this->assertSame(100000.0, (float) $slip->gross_salary);
         $this->assertSame(7200.0, (float) $slip->total_deductions);
         $this->assertSame(92800.0, (float) $slip->net_salary);
     }
+    public function test_golden_ci_ricf_scale_art_120(): void
+    {
+        // RICF — calcul manuel (CGI CI art. 120, réforme ord. 2023-718/719,
+        // effet 01/01/2024, CI_COMPLIANCE.md §1) : réduction d'impôt pour
+        // charges de famille imputable sur l'ITS brut, 11 000 XOF/mois par
+        // demi-part au-delà de 1 part, plafonnée à 44 000 (5 parts) :
+        //   1 part → 0 · 1,5 → 5 500 · 2 → 11 000 · 2,5 → 16 500 ·
+        //   3 → 22 000 · 3,5 → 27 500 · 4 → 33 000 · 4,5 → 38 500 ·
+        //   5 → 44 000.
+        $rules = $this->rules();
+
+        $this->assertSame(0.0, $rules->familyTaxReduction(1.0));
+        $this->assertSame(5500.0, $rules->familyTaxReduction(1.5));
+        $this->assertSame(11000.0, $rules->familyTaxReduction(2.0));
+        $this->assertSame(16500.0, $rules->familyTaxReduction(2.5));
+        $this->assertSame(22000.0, $rules->familyTaxReduction(3.0));
+        $this->assertSame(27500.0, $rules->familyTaxReduction(3.5));
+        $this->assertSame(33000.0, $rules->familyTaxReduction(4.0));
+        $this->assertSame(38500.0, $rules->familyTaxReduction(4.5));
+        $this->assertSame(44000.0, $rules->familyTaxReduction(5.0));
+        // Plafond légal : le nombre de parts ne peut pas dépasser 5.
+        $this->assertSame(44000.0, $rules->familyTaxReduction(6.0));
+        // Défaut 1 part (célibataire sans enfant) → aucune réduction.
+        $this->assertSame(0.0, $rules->familyTaxReduction());
+        // Les autres membres CEDEAO (BF) n'ont pas de RICF implémentée.
+        $this->assertSame(0.0, (new CedeaoPayrollRules('BF'))->familyTaxReduction(3.0));
+    }
+
+    public function test_golden_ci_ricf_marie_1_enfant_brut_100000(): void
+    {
+        // Calcul manuel (#2117) : brut 100 000, 2,5 parts (marié 1 enfant) :
+        //   CNSS salariale = 100 000 × 3,2 % = 3 200
+        //   ITS brut 2024 = (100 000 − 75 000) × 16 % = 4 000
+        //   RICF (art. 120) = 11 000 × (2,5 − 1) = 16 500 → imputable sur
+        //     l'impôt brut → ITS net = max(0, 4 000 − 16 500) = 0
+        //   Net = 100 000 − 3 200 − 0 = 96 800
+        $rules = $this->rules();
+
+        $this->assertSame(16500.0, $rules->familyTaxReduction(2.5));
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(100000.0, $rules, 2.5);
+
+        $this->assertSame(0.0, $breakdown['income_tax']);
+        $this->assertSame(96800.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_ci_ricf_4_parts_brut_400000(): void
+    {
+        // Calcul manuel (#2117) : brut 400 000, 4 parts (ex. marié 4 enfants
+        //   à charge : base marié 2 + 0,5 × 4 enfants = 4) :
+        //   CNSS salariale = 12 800
+        //   ITS brut 2024 = 165 000 × 16 % + 160 000 × 21 % = 60 000
+        //   RICF (art. 120) = 11 000 × (4 − 1) = 33 000
+        //   ITS net = 60 000 − 33 000 = 27 000
+        //   Net = 400 000 − 12 800 − 27 000 = 360 200
+        $rules = $this->rules();
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(400000.0, $rules, 4.0);
+
+        $this->assertSame(27000.0, $breakdown['income_tax']);
+        $this->assertSame(360200.0, $breakdown['net_salary']);
+    }
+
+    public function test_golden_ci_ricf_parts_max_brut_3m(): void
+    {
+        // Calcul manuel (#2117) : brut 3 000 000, 5 parts (plafond légal) :
+        //   CNSS salariale = min(3 000 000, 1 647 315) × 3,2 % = 52 714,08
+        //     (le plafond retraite 1 647 315 EST atteint — #1913)
+        //   ITS brut 2024 = 165 000×16 % + 560 000×21 % + 1 600 000×24 %
+        //     + 600 000×28 % = 696 000
+        //   RICF (art. 120) = 44 000 (plafond)
+        //   ITS net = 696 000 − 44 000 = 652 000
+        //   Net = 3 000 000 − 52 714,08 − 652 000 = 2 295 285,92
+        $rules = $this->rules();
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(3000000.0, $rules, 5.0);
+
+        $this->assertSame(652000.0, $breakdown['income_tax']);
+        $this->assertSame(2295285.92, $breakdown['net_salary']);
+    }
+
+    public function test_golden_ci_ricf_default_1_part_no_change(): void
+    {
+        // Calcul manuel (#2117) : brut 500 000, défaut 1 part (célibataire
+        // sans enfant, family_parts null) → RICF 0 → comportement IDENTIQUE
+        // au moteur avant #2117 (ITS 81 000, net 403 000 — verrouillé par
+        // PayrollCalculationContractTest).
+        $rules = $this->rules();
+
+        $this->assertSame(0.0, $rules->familyTaxReduction());
+
+        $breakdown = (new PayrollCalculator)->computeNetBreakdown(500000.0, $rules);
+
+        $this->assertSame(81000.0, $breakdown['income_tax']);
+        $this->assertSame(403000.0, $breakdown['net_salary']);
+    }
+
 }

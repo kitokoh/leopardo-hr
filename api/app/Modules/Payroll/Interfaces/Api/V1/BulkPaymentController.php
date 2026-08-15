@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessBulkPaymentJob;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,9 +38,9 @@ class BulkPaymentController extends Controller
         if (! $actor->isManager()) {
             abort(403, 'Manager role required for bulk payment.');
         }
-        if (! in_array($payrollRun->status, ['validated', 'calculated'], true)) {
+        if (! in_array($payrollRun->status, ['validated', 'locked'], true)) {
             return response()->json([
-                'message' => 'PayrollRun must be validated or calculated before bulk payment.',
+                'message' => 'PayrollRun must be validated (or locked) before bulk payment.',
             ], 422);
         }
 
@@ -126,4 +126,3 @@ class BulkPaymentController extends Controller
         ], $progress));
     }
 }
-

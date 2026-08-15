@@ -1,6 +1,12 @@
 <?php
 
 return [
+'work_state_offline' => 'Hors ligne',
+    'work_state_leave' => 'En congé',
+    'work_state_absent' => 'Absent',
+    'work_state_break' => 'En pause',
+    'work_state_mission' => 'En mission',
+    'work_state_present' => 'Présent',
     // Rôles
     'role_manager' => 'Manager',
     'role_employee' => 'Employé',

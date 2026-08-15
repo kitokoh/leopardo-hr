@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Planning\Domain\Models\Absence;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur
@@ -36,9 +38,9 @@ class MobileExperienceService
     public function for(Employee $employee): array
     {
         return [
-            'stage'         => $this->stageFor($employee),
-            'app'           => $this->appContextFor($employee),
-            'modules'       => $this->modulesFor($employee),
+            'stage' => $this->stageFor($employee),
+            'app' => $this->appContextFor($employee),
+            'modules' => $this->modulesFor($employee),
             'quick_actions' => $this->quickActionsFor($employee),
         ];
     }
@@ -46,6 +48,10 @@ class MobileExperienceService
     /**
      * Identify which mobile app this employee should be using.
      * This is used by the frontend to redirect to the right app on first login.
+     *
+     * Seules 4 apps sont distribuées (employee, manager, rh, platform_admin —
+     * front/mobile_apps) : les rôles comptable/marketing/dept n'ont PAS d'app
+     * dédiée et retombent sur l'app Manager (T120).
      *
      * @return array{id: string, name: string, deep_link_scheme: string}
      */
@@ -55,21 +61,36 @@ class MobileExperienceService
             return ['id' => 'employee', 'name' => 'Leopardo Employee', 'deep_link_scheme' => 'leopardo-employee'];
         }
 
-        return match($employee->manager_role) {
-            'principal'  => ['id' => 'manager',   'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
-            'rh'         => ['id' => 'rh',         'name' => 'Leopardo RH',        'deep_link_scheme' => 'leopardo-rh'],
-            'comptable'  => ['id' => 'comptable',  'name' => 'Leopardo Comptable', 'deep_link_scheme' => 'leopardo-comptable'],
-            'marketing'  => ['id' => 'marketing',  'name' => 'Leopardo Marketing', 'deep_link_scheme' => 'leopardo-marketing'],
-            'dept'       => ['id' => 'dept',       'name' => 'Leopardo Dept',      'deep_link_scheme' => 'leopardo-dept'],
-            default      => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+        return match ($employee->manager_role) {
+            'principal' => ['id' => 'manager',   'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+            'rh' => ['id' => 'rh',         'name' => 'Leopardo RH',        'deep_link_scheme' => 'leopardo-rh'],
+            // Rôles sans app dédiée distribuée → app Manager (gestion des équipes).
+            'comptable',
+            'marketing',
+            'dept' => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+            default => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
         };
     }
 
     private function stageFor(Employee $employee): string
     {
+        // Le compteur `extra_data.app_actions_count` n'est écrit nulle part
+        // (T119) : le stage repose désormais sur des signaux réels d'activité
+        // (pointages ou absences déclarées). Le compteur reste accepté comme
+        // surcharge si un client l'alimente.
         $count = data_get($employee->extra_data, 'app_actions_count');
+        if (is_numeric($count) && (int) $count < 10) {
+            return 'new';
+        }
 
-        return is_numeric($count) && (int) $count < 10 ? 'new' : 'regular';
+        $hasActivity = AttendanceLog::where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->exists()
+            || Absence::where('company_id', $employee->company_id)
+                ->where('employee_id', $employee->id)
+                ->exists();
+
+        return $hasActivity ? 'regular' : 'new';
     }
 
     /**
@@ -158,7 +179,11 @@ class MobileExperienceService
                 title: 'Gestion des roles',
                 description: 'Nommer un RH, comptable, marketing ou chef de departement.',
                 domain: 'rh',
-                route: '/company/team-roles',
+                // L app manager n a pas de route /company/team-roles : l ecran
+                // Equipe (TeamScreen) porte la gestion des roles (Nommer RH +
+                // edition des roles dans la fiche employe) — route alignee sur
+                // le routeur reel pour eviter le crash context.push() (#2212).
+                route: '/team',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -190,7 +215,10 @@ class MobileExperienceService
                 title: 'Tableau de bord admin',
                 description: 'Vue complete avec comptage des roles et activite.',
                 domain: 'rh',
-                route: '/dashboard/admin',
+                // Aucun ecran admin n existe dans l app manager : module servi
+                // SANS route (isActive=false cote client -> carte non cliquable,
+                // aucun crash GoRouter) (#2212).
+                route: null,
                 status: 'active',
             );
         } elseif ($employee->isHr()) {
@@ -200,7 +228,9 @@ class MobileExperienceService
                 title: 'Employes',
                 description: 'Ajouter, modifier et suivre les employes de l entreprise.',
                 domain: 'rh',
-                route: '/hr/employees',
+                // L app RH n a pas de route /hr/employees : TeamScreen (/team)
+                // liste, cree et archive les employes — route alignee (#2212).
+                route: '/team',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -208,7 +238,9 @@ class MobileExperienceService
                 title: 'Vue equipe',
                 description: 'Apercu rapide de toute l equipe et des contrats.',
                 domain: 'rh',
-                route: '/hr/team-overview',
+                // Pas de route /hr/team-overview : OrganigrammeScreen (/organigramme)
+                // donne la vue d ensemble de l equipe — route alignee (#2212).
+                route: '/organigramme',
                 status: 'active',
             );
             $modules[] = $this->module(
@@ -224,7 +256,9 @@ class MobileExperienceService
                 title: 'Invitations',
                 description: 'Envoyer et suivre les invitations employes.',
                 domain: 'rh',
-                route: '/invitations',
+                // Pas de route /invitations dediee : TeamScreen (/team) porte
+                // l onglet « Invitations » — route alignee (#2212).
+                route: '/team',
                 status: 'active',
             );
         }
@@ -323,7 +357,7 @@ class MobileExperienceService
                     description: 'Nommer RH, comptable, marketing.',
                     domain: 'rh',
                     icon: 'manage_accounts',
-                    route: '/company/team-roles',
+                    route: '/team',
                 ),
                 $this->quickAction(
                     key: 'tasks',
@@ -343,7 +377,9 @@ class MobileExperienceService
                     description: 'Creer un nouvel employe.',
                     domain: 'rh',
                     icon: 'person_add',
-                    route: '/hr/employees/new',
+                    // Pas de route /hr/employees/new : TeamScreen (/team) porte
+                    // le bouton « Ajouter » (formulaire classique + QR) (#2212).
+                    route: '/team',
                 ),
                 $this->quickAction(
                     key: 'team_overview',
@@ -351,7 +387,8 @@ class MobileExperienceService
                     description: 'Vue rapide de l equipe.',
                     domain: 'rh',
                     icon: 'groups',
-                    route: '/hr/team-overview',
+                    // Pas de route /hr/team-overview : OrganigrammeScreen (#2212).
+                    route: '/organigramme',
                 ),
                 $this->quickAction(
                     key: 'absences',

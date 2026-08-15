@@ -316,6 +316,18 @@ abstract class AbstractCountryRules implements CountryRulesInterface
     }
 
     /**
+     * Issue #2117 — défaut générique de la RICF : aucune réduction (le
+     * mécanisme est inerte hors pays l'ayant implémenté, ex. CI art. 120
+     * CGI via CedeaoPayrollRules). Constitution §III : les réductions sont
+     * déclarées dans une méthode DÉDIÉE, jamais en inline dans
+     * calculateIncomeTax().
+     */
+    public function familyTaxReduction(float $familyParts = 1.0): float
+    {
+        return 0.0;
+    }
+
+    /**
      * PA2-COUNTRY-006: default compliance disclaimer shared by every
      * country implementation, derived from confidenceLevel() so it stays
      * accurate automatically as a country's rules mature from

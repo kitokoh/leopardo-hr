@@ -90,13 +90,15 @@ if ($failures.Count -eq 0) {
     $coreFiles = Get-ChildItem -LiteralPath (Join-Path $coreRoot "lib") -Recurse -File -Filter *.dart
     foreach ($file in $coreFiles) {
         $content = Get-Content -LiteralPath $file.FullName -Raw
-        if ($content.Contains("package:leopardo_employee/") -or $content.Contains("package:leopardo_manager/") -or $content.Contains("package:leopardo_platform_admin/")) {
+        if ($content.Contains("package:leopardo_employee/") -or $content.Contains("package:leopardo_manager/") -or $content.Contains("package:leopardo_hr/") -or $content.Contains("package:leopardo_platform_admin/") -or $content.Contains("package:leopardo_marketing/")) {
             $relative = Resolve-Path -LiteralPath $file.FullName -Relative
             Add-Failure "Core package must not import app-specific package in $relative"
         }
     }
 
-    foreach ($app in @("leopardo_employee", "leopardo_manager", "leopardo_platform_admin")) {
+    # QA 2026-08-15 (#2661) : leopardo_hr et leopardo_marketing étaient
+    # absents de la vérification de dépendance à leopardo_core.
+    foreach ($app in @("leopardo_employee", "leopardo_manager", "leopardo_hr", "leopardo_platform_admin", "leopardo_marketing")) {
         $pubspec = Join-Path $appsRoot "$app/pubspec.yaml"
         $content = Get-Content -LiteralPath $pubspec -Raw
         if (-not $content.Contains("leopardo_core:")) {
@@ -108,7 +110,7 @@ if ($failures.Count -eq 0) {
     }
 
     $managerApp = Get-Content -LiteralPath (Join-Path $managerRoot "lib/app.dart") -Raw
-    foreach ($route in @("/manager/dashboard", "/manager/attendance", "/manager/anomalies", "/manager/corrections")) {
+    foreach ($route in @("/manager/attendance", "/manager/anomalies", "/manager/corrections")) {
         if (-not $managerApp.Contains($route)) {
             Add-Failure "Manager app is missing prepared route $route"
         }

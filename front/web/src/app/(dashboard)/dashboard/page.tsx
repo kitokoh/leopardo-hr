@@ -24,11 +24,14 @@ import {
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { trackClientEvent } from '@/lib/client-analytics';
-import { getCopy, getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
+import { getDisplayName, getPreferredLocale, getStoredUser, toIntlLocale, type AppLocale, type StoredAuthUser } from '@/lib/i18n';
 import { getClientModuleAccess } from '@/lib/client-features';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 const emptySubscribe = () => () => {};
+
+// Persistance « Plus tard » de la carte Leo IA (localStorage, pas de cookie).
+const LEO_IA_CARD_DISMISS_KEY = 'leopardo_ia_card_dismissed';
 
 type DashboardStat = {
   title: string;
@@ -105,7 +108,6 @@ const GlassCard = ({ children, className = '', delay = 0 }: { children: React.Re
 
 export default function DashboardPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
-  const copy = getCopy(locale).dashboardPage;
   const [activeTab, setActiveTab] = useState('today');
   const [user, setUser] = useState<StoredAuthUser | null>(null);
   const [userLoaded, setUserLoaded] = useState(false);
@@ -114,21 +116,10 @@ export default function DashboardPage() {
   const [readiness, setReadiness] = useState<LaunchReadiness | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [notifOpen, setNotifOpen] = useState(false);
-  const [showAllActivities, setShowAllActivities] = useState(false);
-  const [leoState, setLeoState] = useState<'idle' | 'sending' | 'sent' | 'dismissed'>(() => {
-    if (typeof window === 'undefined') {
-      return 'idle';
-    }
-
-    try {
-      return sessionStorage.getItem('leo_ia_dismissed') === '1' ? 'dismissed' : 'idle';
-    } catch {
-      return 'idle';
-    }
-  });
-  const [leoError, setLeoError] = useState<string | null>(null);
+  const [leoCardDismissed, setLeoCardDismissed] = useState(false);
+  const [announcementSending, setAnnouncementSending] = useState(false);
+  const [announcementSent, setAnnouncementSent] = useState(false);
+  const [announcementError, setAnnouncementError] = useState<string | null>(null);
   const dashboardStartRef = useRef<number>(0);
   const dashboardTrackedRef = useRef(false);
   const role = user?.role?.toLowerCase() ?? null;
@@ -147,6 +138,70 @@ export default function DashboardPage() {
     dashboardStartRef.current = performance.now();
     setUser(getStoredUser());
     setUserLoaded(true);
+  }, []);
+
+  // Carte Leo IA : « Plus tard » masque la carte de facon persistante
+  // (localStorage) — verifie au montage, jamais via useSyncExternalStore.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(LEO_IA_CARD_DISMISS_KEY) === 'true') {
+        setLeoCardDismissed(true);
+      }
+    } catch {
+      // localStorage indisponible (navigation privee) — la carte reste visible.
+    }
+  }, []);
+
+  const sendCongratsAnnouncement = useCallback(async () => {
+    if (announcementSending) {
+      return;
+    }
+
+    setAnnouncementSending(true);
+    setAnnouncementError(null);
+    const startedAt = performance.now();
+
+    try {
+      // POST /api/v1/announcements — Store AnnouncementController (PA2-COMM-004) :
+      // title/body obligatoires, audience_type 'company' (broadcast entreprise).
+      await apiFetch('/announcements', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: i18nT(locale, 'dashboard.leo_ia_announcement_title'),
+          body: i18nT(locale, 'dashboard.leo_ia_announcement_body'),
+          priority: 'normal',
+          audience_type: 'company',
+        }),
+      });
+
+      setAnnouncementSent(true);
+      trackClientEvent('leo_ia_announcement_sent', {
+        status: 'success',
+        audience_type: 'company',
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
+    } catch (error) {
+      setAnnouncementError(error instanceof ApiError ? error.message : i18nT(locale, 'dashboard.leo_ia_announcement_error'));
+      trackClientEvent('leo_ia_announcement_sent', {
+        status: 'error',
+        audience_type: 'company',
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
+    } finally {
+      setAnnouncementSending(false);
+    }
+  }, [announcementSending, locale]);
+
+  const dismissLeoCard = useCallback(() => {
+    try {
+      localStorage.setItem(LEO_IA_CARD_DISMISS_KEY, 'true');
+    } catch {
+      // localStorage indisponible — masquee pour la session uniquement.
+    }
+    setLeoCardDismissed(true);
+    trackClientEvent('leo_ia_card_dismissed', {
+      surface: 'manager_dashboard',
+    });
   }, []);
 
   const trackDashboardLoaded = useCallback((extra: Record<string, unknown> = {}) => {
@@ -187,7 +242,7 @@ export default function DashboardPage() {
       try {
         const [summaryResponse, activityResponse, readinessPayload] = await Promise.all([
           apiFetch('/dashboard/summary'),
-          apiFetch(`/dashboard/recent-activity?limit=${showAllActivities ? 50 : 5}`),
+          apiFetch('/dashboard/recent-activity?limit=5'),
           apiFetch('/launch-readiness')
             .then((response) => response.json() as Promise<{ data?: LaunchReadiness }>)
             .catch(() => null),
@@ -232,7 +287,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isEmployee, isSuperAdmin, showAllActivities, trackDashboardLoaded, userLoaded]);
+  }, [isEmployee, isSuperAdmin, trackDashboardLoaded, userLoaded]);
 
   const stats: DashboardStat[] = [
     {
@@ -281,64 +336,9 @@ export default function DashboardPage() {
         name: activity.auditable_type?.split('\\').pop() ?? 'Systeme',
         action: activity.action,
         time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString(toIntlLocale(locale), { hour: '2-digit', minute: '2-digit' }) : '--:--',
-        createdAt: activity.created_at ?? null,
         avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
       }))
     : [];
-
-  const query = searchQuery.trim().toLowerCase();
-  const filteredActivityRows = activityRows.filter((row) => {
-    if (!query) {
-      return true;
-    }
-
-    return row.name.toLowerCase().includes(query) || row.action.toLowerCase().includes(query);
-  });
-
-  const visibleActivityRows = filteredActivityRows.filter((row) => {
-    if (activeTab === 'week' || !row.createdAt) {
-      return true;
-    }
-
-    return new Date(row.createdAt).toDateString() === new Date().toDateString();
-  });
-
-  async function sendCongratsMessage() {
-    setLeoState('sending');
-    setLeoError(null);
-
-    try {
-      const response = await apiFetch('/announcements', {
-        method: 'POST',
-        body: JSON.stringify({
-          title: copy.leoCongratsTitle,
-          body: copy.leoCongratsBody,
-          audience_type: 'company',
-          priority: 'normal',
-          status: 'published',
-        }),
-      });
-
-      if (!response.ok) {
-        throw new ApiError(copy.leoSendError, response.status);
-      }
-
-      setLeoState('sent');
-    } catch (error) {
-      setLeoError(error instanceof ApiError ? error.message : copy.leoSendError);
-      setLeoState('idle');
-    }
-  }
-
-  function dismissLeo() {
-    try {
-      sessionStorage.setItem('leo_ia_dismissed', '1');
-    } catch {
-      // sessionStorage indisponible (privacy/SSR) — on ignore silencieusement.
-    }
-
-    setLeoState('dismissed');
-  }
 
   if (!userLoaded) {
     return null;
@@ -376,53 +376,14 @@ export default function DashboardPage() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder={copy.searchPlaceholder}
-              aria-label="Rechercher"
+              placeholder="Rechercher..."
               className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
-          <div className="relative">
-            <button
-              onClick={() => setNotifOpen((open) => !open)}
-              className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-transparent"
-              aria-label="Notifications"
-              aria-expanded={notifOpen}
-            >
-              <Bell className="h-5 w-5 text-slate-600" />
-              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
-            </button>
-            {notifOpen ? (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} aria-hidden="true" />
-                <div className="absolute right-0 z-50 mt-2 w-80 rounded-2xl border border-app-border bg-white p-4 shadow-xl">
-                  <p className="mb-3 text-sm font-bold text-slate-950">Notifications</p>
-                  {filteredActivityRows.length === 0 ? (
-                    <p className="text-sm text-slate-500">Aucune activite recente.</p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {filteredActivityRows.slice(0, 5).map((activity) => (
-                        <li key={activity.key} className="rounded-lg bg-slate-50 px-3 py-2">
-                          <p className="text-sm font-bold text-slate-900">{activity.name}</p>
-                          <p className="text-xs text-slate-500">
-                            {activity.action} • {activity.time}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  <Link
-                    href="/settings/notifications"
-                    onClick={() => setNotifOpen(false)}
-                    className="mt-3 block text-center text-sm font-bold text-emerald-700 hover:underline"
-                  >
-                    Gerer les notifications
-                  </Link>
-                </div>
-              </>
-            ) : null}
-          </div>
+          <button className="relative rounded-xl border border-app-border bg-white p-2 transition-colors hover:bg-transparent">
+            <Bell className="h-5 w-5 text-slate-600" />
+            <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
+          </button>
         </div>
       </motion.div>
 
@@ -549,11 +510,11 @@ export default function DashboardPage() {
             </div>
 
             <div className="space-y-3">
-              {visibleActivityRows.length === 0 ? (
+              {activityRows.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
-                  {query ? copy.noSearchResults : 'Aucune activite recente a afficher pour ce tenant.'}
+                  Aucune activite recente a afficher pour ce tenant.
                 </div>
-              ) : visibleActivityRows.map((activity, index) => (
+              ) : activityRows.map((activity, index) => (
                 <motion.div
                   key={activity.key}
                   initial={{ opacity: 0, x: -20 }}
@@ -567,7 +528,7 @@ export default function DashboardPage() {
                   <div className="flex-1">
                     <p className="font-bold text-slate-950">{activity.name}</p>
                     <p className="text-sm text-slate-500">
-                      {activity.action} ”¢ {activity.time}
+                      {activity.action} • {activity.time}
                     </p>
                   </div>
                   <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
@@ -577,18 +538,18 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <button
-              onClick={() => setShowAllActivities((current) => !current)}
-              className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
+            <Link
+              href="/reports"
+              className="mt-4 flex w-full items-center justify-center rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
             >
-              {showAllActivities ? copy.collapseActivity : copy.viewAllActivity}
-            </button>
+              Voir toute l&apos;activite
+            </Link>
           </div>
         </GlassCard>
 
         <div className="space-y-6">
-          <GlassCard delay={0.5}>
-            {leoState === 'dismissed' ? null : (
+          {!leoCardDismissed ? (
+            <GlassCard delay={0.5}>
               <div className="bg-gradient-to-br from-ia/5 to-ia-light p-6">
                 <div className="mb-4 flex items-start gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ia to-ia-dark shadow-lg shadow-ia/30">
@@ -600,34 +561,38 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {leoState === 'sent' ? (
-                  <div className="mb-4 flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
-                    <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
-                    Message de felicitations envoye a l equipe.
+                <div className="mb-4 rounded-xl bg-white/50 p-4">
+                  <p className="text-sm leading-relaxed text-slate-700">
+                    &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
+                  </p>
+                </div>
+
+                {announcementSent ? (
+                  <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                    Message envoye a l&apos;equipe
                   </div>
                 ) : (
                   <>
-                    <div className="mb-4 rounded-xl bg-white/50 p-4">
-                      <p className="text-sm leading-relaxed text-slate-700">
-                        &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
+                    {announcementError ? (
+                      <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+                        {announcementError}
                       </p>
-                    </div>
-
-                    {leoError ? (
-                      <p className="mb-3 text-sm font-bold text-red-600" role="alert">{leoError}</p>
                     ) : null}
-
                     <div className="flex gap-2">
                       <button
-                        onClick={() => void sendCongratsMessage()}
-                        disabled={leoState === 'sending'}
-                        className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30 disabled:opacity-60"
+                        type="button"
+                        onClick={() => void sendCongratsAnnouncement()}
+                        disabled={announcementSending}
+                        className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {leoState === 'sending' ? copy.sendingInProgress : 'Oui, envoyer'}
+                        {announcementSending ? 'Envoi...' : 'Oui, envoyer'}
                       </button>
                       <button
-                        onClick={dismissLeo}
-                        className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent"
+                        type="button"
+                        onClick={dismissLeoCard}
+                        disabled={announcementSending}
+                        className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         Plus tard
                       </button>
@@ -635,8 +600,8 @@ export default function DashboardPage() {
                   </>
                 )}
               </div>
-            )}
-          </GlassCard>
+            </GlassCard>
+          ) : null}
 
           <GlassCard delay={0.6}>
             <div className="p-6">

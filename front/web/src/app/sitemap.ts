@@ -1,7 +1,9 @@
 import type { MetadataRoute } from 'next';
-import { getAllPosts } from '@/lib/mdx';
+import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
+import { getEnvConfig } from '@/modules/vitrine/lib/env';
+import { getSiteUrl } from '@/lib/site';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+const siteUrl = getSiteUrl();
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
 
 function localizedAlternates(path: string) {
@@ -31,6 +33,7 @@ function page(path: string, lastModified: Date, changeFrequency: MetadataRoute.S
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const today = new Date();
+  const { enableBlog } = getEnvConfig();
 
   const staticPages: MetadataRoute.Sitemap = [
     page('/', today, 'weekly', 1.0),
@@ -43,7 +46,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/integrations', today, 'monthly', 0.75),
     page('/about', today, 'monthly', 0.7),
     page('/changelog', today, 'weekly', 0.65),
-    page('/blog', today, 'weekly', 0.8),
     page('/docs', today, 'monthly', 0.7),
     page('/download', today, 'monthly', 0.75),
     page('/contact', today, 'monthly', 0.6),
@@ -59,16 +61,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/rh-startup', today, 'monthly', 0.7),
     page('/guides/checklist-paie', today, 'monthly', 0.7),
     page('/guides/planning-employes', today, 'monthly', 0.7),
+    // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
+    page('/blog', today, 'weekly', 0.7),
+    page('/signup', today, 'monthly', 0.6),
+    page('/checkout', today, 'monthly', 0.5),
+    page('/offline', today, 'monthly', 0.4),
+    page('/share', today, 'monthly', 0.4),
   ];
 
-  const blogPosts = getAllPosts();
-  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: post.date ? new Date(post.date) : today,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-    alternates: localizedAlternates(`/blog/${post.slug}`),
-  }));
+  // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).
+  // Déduplication des slugs toutes locales confondues : un seul entry par slug,
+  // le post de la locale par défaut 'fr' gagne (itérée en premier).
+  //
+  // #2276 / #2904 (régression merge hybride #2469) : le blog est gated par
+  // NEXT_PUBLIC_ENABLE_BLOG (blog/layout.tsx → notFound() si off → 404 live).
+  // Le sitemap ne doit JAMAIS publier d'URLs /blog/* quand le flag est off,
+  // sinon crawl 404 massif. `enableBlog` était relu mais inutilisé.
+  if (enableBlog) {
+    const postsBySlug = new Map<string, BlogPost>();
+    for (const locale of locales) {
+      for (const post of getBlogPosts(locale)) {
+        if (!postsBySlug.has(post.slug)) {
+          postsBySlug.set(post.slug, post);
+        }
+      }
+    }
 
-  return [...staticPages, ...blogPages];
+    const blogPages: MetadataRoute.Sitemap = [...postsBySlug.values()].map((post) => ({
+      url: `${siteUrl}/blog/${post.slug}`,
+      lastModified: post.date ? new Date(post.date) : today,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+      alternates: localizedAlternates(`/blog/${post.slug}`),
+    }));
+
+    return [...staticPages, ...blogPages];
+  }
+
+  return staticPages;
 }

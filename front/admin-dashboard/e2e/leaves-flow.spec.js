@@ -23,15 +23,16 @@ test.describe('Leaves page structure', () => {
     'Skipped: requires PLAYWRIGHT_AUTH_TOKEN for authenticated tests',
   )
 
-  test('leaves calendar view loads with expected heading', async ({ page }) => {
+  test('tenant-scoped leaves view redirects the super-admin to the dashboard', async ({ page }) => {
+    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
+    // l'accès direct par URL à une vue tenant redirige vers le dashboard.
     await page.addInitScript((token) => {
       sessionStorage.setItem('admin_token', token)
     }, process.env.PLAYWRIGHT_AUTH_TOKEN)
 
     await page.goto('/leaves')
 
-    await expect(
-      page.getByRole('heading', { name: /cong|absences|leaves/i }),
-    ).toBeVisible({ timeout: 10_000 })
+    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
+    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
   })
 })

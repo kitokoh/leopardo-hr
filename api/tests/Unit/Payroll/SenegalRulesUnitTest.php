@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Payroll;
 
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\TestCase;
+use Tests\Support\SnPayrollFixtures;
 
 /**
  * Issue #1827 — Sénégal (SN) : SenegalPayrollRules « pilot » vers prêt pour
@@ -28,17 +31,17 @@ class SenegalRulesUnitTest extends TestCase
         //   150 001-350k : 9 000 · 350 001-700k : 18 000 · > 700k : 36 000
         $rules = $this->sn();
 
-        self::assertSame(900.0, $rules->calculateBracketTax(25000.0));
-        self::assertSame(2700.0, $rules->calculateBracketTax(25001.0));
-        self::assertSame(2700.0, $rules->calculateBracketTax(75000.0));
-        self::assertSame(5400.0, $rules->calculateBracketTax(75001.0));
-        self::assertSame(5400.0, $rules->calculateBracketTax(150000.0));
-        self::assertSame(9000.0, $rules->calculateBracketTax(150001.0));
-        self::assertSame(9000.0, $rules->calculateBracketTax(350000.0));
-        self::assertSame(18000.0, $rules->calculateBracketTax(350001.0));
-        self::assertSame(18000.0, $rules->calculateBracketTax(700000.0));
-        self::assertSame(36000.0, $rules->calculateBracketTax(700001.0));
-        self::assertSame(36000.0, $rules->calculateBracketTax(2000000.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(25000.0), $rules->calculateBracketTax(25000.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(25001.0), $rules->calculateBracketTax(25001.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(75000.0), $rules->calculateBracketTax(75000.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(75001.0), $rules->calculateBracketTax(75001.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(150000.0), $rules->calculateBracketTax(150000.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(150001.0), $rules->calculateBracketTax(150001.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(350000.0), $rules->calculateBracketTax(350000.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(350001.0), $rules->calculateBracketTax(350001.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(700000.0), $rules->calculateBracketTax(700000.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(700001.0), $rules->calculateBracketTax(700001.0));
+        self::assertSame(SnPayrollFixtures::bracketTax(2000000.0), $rules->calculateBracketTax(2000000.0));
     }
 
     public function test_cfce_in_social_contributions(): void
@@ -63,7 +66,7 @@ class SenegalRulesUnitTest extends TestCase
         //   déclenché à la borne exacte) ;
         //   brut 500 000 → T1 plafonné à 24 192 + T2 2,4 % × 68 000 = 1 632
         //   → salariale totale 25 824.
-        self::assertSame(24192.0, $this->sn()->calculateSocialCharges(432000.0)['employee']);
+        self::assertSame(SnPayrollFixtures::socialCharges(432000.0)['employee'], $this->sn()->calculateSocialCharges(432000.0)['employee']);
         self::assertSame(25824.0, $this->sn()->calculateSocialCharges(500000.0)['employee']);
     }
 
@@ -73,13 +76,13 @@ class SenegalRulesUnitTest extends TestCase
         //   T1 salarié 5,6 % × 432 000 = 24 192 · T1 patronal 8,4 % × 432 000 = 36 288
         //   Tranche T2 = 1 000 000 − 432 000 = 568 000
         //   T2 salarié 2,4 % × 568 000 = 13 632 · T2 patronal 3,6 % × 568 000 = 20 448
-        //   CSS famille 3 % × min(1M, 63 k) = 1 890 · CSS AT 1 % × 63 k = 630
-        //   · CFCE 3 % = 30 000 (plafonds #1913)
-        //   → salarié 37 824 · patronal 89 256
+        //   CSS famille 7 % × min(1M, 63 k) = 4 410 (CIPRES #2473) · CSS AT
+        //   1 % × 63 k = 630 · CFCE 3 % = 30 000 (plafonds #1913)
+        //   → salarié 37 824 · patronal 91 776
         $charges = $this->sn()->calculateSocialCharges(1000000.0);
 
-        self::assertSame(37824.0, $charges['employee']);
-        self::assertSame(89256.0, $charges['employer']);
+        self::assertSame(SnPayrollFixtures::socialCharges(1000000.0)['employee'], $charges['employee']);
+        self::assertSame(SnPayrollFixtures::socialCharges(1000000.0)['employer'], $charges['employer']);
     }
 
     public function test_professional_expenses_30_percent(): void
@@ -117,7 +120,7 @@ class SenegalRulesUnitTest extends TestCase
      */
     public function test_golden_sn_net_with_max_ir_trimf(): void
     {
-        $calculator = new \App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
+        $calculator = new PayrollCalculator;
 
         // Brut 60 000 — IPRES salariale 5,6 % = 3 360 ; IR = 0 (annuel
         // 463 680 < 630 000, abattement 30 % du brut) ; TRIMF 2 700 →
@@ -145,7 +148,7 @@ class SenegalRulesUnitTest extends TestCase
      */
     public function test_other_countries_remain_additive(): void
     {
-        $ci = new \App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules('CI');
+        $ci = new CedeaoPayrollRules('CI');
 
         self::assertSame(4000.0, $ci->combineMinimumFiscalTax(3000.0, 1000.0));
     }

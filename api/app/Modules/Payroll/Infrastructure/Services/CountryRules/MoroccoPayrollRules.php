@@ -45,7 +45,17 @@ class MoroccoPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
-        $annualTaxable = $grossTaxable * $annualBasis;
+        // CGI Maroc art. 58 (issue #2260) : abattement pour frais
+        // professionnels de 35 % du revenu brut ANNUEL, plancher 2 500 MAD,
+        // plafond 30 000 MAD par an, appliqué AVANT le barème IR (méthode
+        // dédiée moroccoProfessionalExpensesAbatement() — constitution §III,
+        // jamais de calcul inline). Le moteur passe $grossTaxable =
+        // brut − cotisations et $grossForAbatement = brut réel (défaut :
+        // $grossTaxable si non fourni).
+        $abatementBase = $grossForAbatement ?? $grossTaxable;
+        $abatement = $this->moroccoProfessionalExpensesAbatement($abatementBase * $annualBasis);
+
+        $annualTaxable = max(0.0, $grossTaxable * $annualBasis - $abatement);
         $tax = 0.0;
         $fixedDeduction = 0.0;
 
@@ -59,6 +69,18 @@ class MoroccoPayrollRules extends AbstractCountryRules
         }
 
         return round(max(0, ($tax - $fixedDeduction)) / $annualBasis, 2);
+    }
+
+    /**
+     * CGI Maroc art. 58 — abattement pour frais professionnels : 35 % du
+     * revenu brut ANNUEL, plancher 2 500 MAD, plafond 30 000 MAD par an
+     * (MA_COMPLIANCE.md §1). Méthode dédiée (constitution §III).
+     */
+    public function moroccoProfessionalExpensesAbatement(float $annualGross): float
+    {
+        $abatement = $annualGross * 0.35;
+
+        return min(max($abatement, 2500.0), 30000.0);
     }
 
     public function calculateSocialCharges(float $grossSalary): array
@@ -101,7 +123,7 @@ class MoroccoPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Moroccan public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'MA fixed public holidays (décrets royaux, seed PublicHolidaySeeder, issue #2255): 1er jan, 11 jan, 1er mai, 30 juil, 14 août, 20 août, 21 août, 6 nov, 18 nov + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, 1er Moharrem, Aïd el-Mawlid) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

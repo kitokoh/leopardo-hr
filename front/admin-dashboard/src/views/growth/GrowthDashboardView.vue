@@ -63,10 +63,7 @@
                   >
                     Approuver
                   </button>
-                  <button
-                    @click="managePartner(partner)"
-                    class="text-slate-400 hover:text-teal-600 font-bold text-xs uppercase"
-                  >Gérer</button>
+                  <span class="text-xs font-semibold text-slate-400">Approuvé</span>
                 </td>
               </tr>
               <tr v-if="partners.length === 0">
@@ -129,11 +126,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '@/services/api';
-import { useLocaleStore } from '@/stores/locale';
-import { translate } from '@/i18n/index.js';
+import { useToast } from 'vue-toastification';
 
-const localeStore = useLocaleStore();
-const t = (key, fallback = '') => translate(localeStore.current, key, fallback);
+const toast = useToast();
 
 const currentTab = ref('partners');
 const loading = ref(true);
@@ -173,7 +168,10 @@ const approvePartner = async (partner) => {
   try {
     await api.patch(`/platform/growth/partners/${partner.id}/application`, { status: 'approved' });
     loadData();
-  } catch (e) { alert("Erreur: " + e.message); }
+  } catch (e) {
+    console.error('Approve partner failed:', e)
+    toast.error(`Erreur : ${e?.response?.data?.message || e.message}`)
+  }
 };
 
 const updatePayout = async (payout, status) => {
@@ -182,28 +180,9 @@ const updatePayout = async (payout, status) => {
   try {
     await api.patch(`/platform/growth/payouts/${payout.id}`, { status, notes: reason });
     loadData();
-  } catch (e) { alert("Erreur: " + e.message); }
-};
-
-const managePartner = async (partner) => {
-  const label = partner.user?.email || `#${partner.id}`;
-  const rawRate = prompt(`Taux de commission (points de base, 0-10000) pour ${label} :`, String(partner.rate ?? 15));
-  if (rawRate === null) return;
-
-  const rate = Number(rawRate);
-  if (!Number.isInteger(rate) || rate < 0 || rate > 10000) {
-    alert(t('growth.rate_invalid', 'Taux invalide : entier entre 0 et 10000.'));
-    return;
-  }
-
-  const reason = prompt(t('growth.rate_reason', 'Motif de la modification (audit, min 5 caracteres) :'));
-  if (!reason) return;
-
-  try {
-    await api.patch(`/platform/growth/partners/${partner.id}/rate`, { rate, reason });
-    await loadData();
   } catch (e) {
-    alert(t('growth.error', 'Erreur: ') + (e.response?.data?.message || e.message));
+    console.error('Update payout failed:', e)
+    toast.error(`Erreur : ${e?.response?.data?.message || e.message}`)
   }
 };
 

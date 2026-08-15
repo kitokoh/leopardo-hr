@@ -12,11 +12,11 @@ use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
 use App\Rules\GlobalEmailUnique;
+use App\Support\PlatformCompanyLookup;
 use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -95,7 +95,7 @@ class OnboardingQrController extends Controller
         $companyPayload = is_array($payload['company'] ?? null) ? $payload['company'] : [];
 
         $targetCompanyId = (string) ($companyPayload['id'] ?? '');
-        $targetCompany = $this->findCompanyFromPublicSchema($targetCompanyId);
+        $targetCompany = PlatformCompanyLookup::findOrFail($targetCompanyId);
         $user = $this->resolveUserFromEmployee($employee);
 
         $existing = CompanyRequest::query()
@@ -218,23 +218,7 @@ class OnboardingQrController extends Controller
 
     private function resolveCurrentCompany(Employee $actor): Company
     {
-        return $this->findCompanyFromPublicSchema((string) $actor->company_id);
-    }
-
-    private function findCompanyFromPublicSchema(string $companyId): Company
-    {
-        if (DB::getDriverName() !== 'pgsql') {
-            return Company::query()->findOrFail($companyId);
-        }
-
-        $previous = DB::selectOne('SHOW search_path')->search_path ?? 'shared_tenants,public';
-        DB::statement('SET search_path TO public');
-
-        try {
-            return Company::query()->findOrFail($companyId);
-        } finally {
-            DB::statement('SET search_path TO '.$previous);
-        }
+        return PlatformCompanyLookup::findOrFail((string) $actor->company_id);
     }
 
     private function resolveUserFromEmployee(Employee $employee): User

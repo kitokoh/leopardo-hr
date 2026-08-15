@@ -18,20 +18,18 @@ declare(strict_types=1);
 // ── Modules migrés ─────────────────────────────────────────────────────────────
 use App\Modules\Attendance\Interfaces\Api\V1\ApprovalController;
 use App\Modules\Billing\Interfaces\Api\V1\WebhookController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\ContractController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\HrReportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\OrgChartController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\SelfServiceController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\TrainingController;
+use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
 use App\Modules\Planning\Interfaces\Api\V1\LeavePolicyController;
 use App\Modules\Recruitment\Interfaces\Api\V1\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\RecruitmentController;
-
-use App\Modules\HR\Interfaces\Api\V1\Controllers\AdvancedReportController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\AuditLogController;
-use App\Modules\HR\Interfaces\Api\V1\Controllers\PredictionController;
-use App\Modules\Payroll\Interfaces\Api\V1\EmployeeLoanController;
-
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
@@ -42,6 +40,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
     Route::get('/me/contract', [ContractController::class, 'myActiveContract']);
     Route::get('/me/career', [SelfServiceController::class, 'myCareer']);
     Route::get('/me/trainings', [SelfServiceController::class, 'myTrainings']);
+    // Alias compatible client mobile employee (TrainingEnrollment shape enrichie).
+    Route::get('/me/training-enrollments', [SelfServiceController::class, 'myTrainings']);
     Route::post('/me/trainings/{sessionId}/enroll', [SelfServiceController::class, 'selfEnroll'])->whereNumber('sessionId');
     Route::get('/me/loans', [SelfServiceController::class, 'myLoans']);
     Route::get('/me/loans/{loanId}/repayments', [SelfServiceController::class, 'myLoanRepayments'])->whereNumber('loanId');
@@ -96,6 +96,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/contracts/{contract}/amendments', [ContractController::class, 'amendments']);
         Route::post('/contracts/{contract}/amendments', [ContractController::class, 'storeAmendment']);
         Route::get('/contracts/{contract}/generate-pdf', [ContractController::class, 'generatePdf']);
+        // Alias exposed to web/mobile clients (issue #2226) — the Web App
+        // historically called GET /contracts/{id}/pdf before /generate-pdf
+        // existed; keep both working for backward compatibility.
+        Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);
 
         // ── Recruitment / ATS ────────────────────────────────────────────
         Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);
@@ -118,6 +122,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::delete('/recruitment/interviews/{id}', [JobPostingActionController::class, 'destroyInterview'])->whereNumber('id');
 
         // ── Training management ──────────────────────────────────────────
+        // Issue #2225 : vues dashboard admin (listes globales sessions/inscriptions).
+        Route::get('/training/sessions', [TrainingController::class, 'indexAllSessions']);
+        Route::get('/training/enrollments', [TrainingController::class, 'indexEnrollments']);
         Route::post('/training/courses', [TrainingController::class, 'storeCourse']);
         Route::put('/training/courses/{trainingCourse}', [TrainingController::class, 'updateCourse']);
         Route::post('/training/courses/{trainingCourse}/sessions', [TrainingController::class, 'storeSession']);
@@ -158,6 +165,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
 
         // ── Webhooks (module Billing gère les endpoints) ─────────────────
         Route::get('/webhooks/events', [WebhookController::class, 'events']);
+        // Définition canonique unique de POST /webhooks/{endpoint}/test
+        // (QA 2026-08-15, #2654 : un doublon était déclaré plus bas).
+        Route::post('/webhooks/{webhookEndpoint}/test', [WebhookController::class, 'test']);
         Route::get('/webhooks', [WebhookController::class, 'index']);
         Route::post('/webhooks', [WebhookController::class, 'store']);
         Route::get('/webhooks/{webhookEndpoint}', [WebhookController::class, 'show']);

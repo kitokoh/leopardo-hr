@@ -23,7 +23,9 @@ class PayrollAccountingExportService
      */
     public function generateCsvClosure(PayrollRun $run): Closure
     {
-        $slips = $run->paySlips()->with('employee')->get();
+        // Issue #2223 : seuls les bulletins validés sont exportés (le journal
+        // voisin suit la même règle) — pas de statuts intermédiaires.
+        $slips = $run->paySlips()->with('employee')->where('status', 'validated')->get();
         $currency = $this->resolveCurrency($run);
         $periodStart = $run->period_start->toDateString();
         $periodEnd = $run->period_end->toDateString();
@@ -52,10 +54,10 @@ class PayrollAccountingExportService
 
             foreach ($slips as $slip) {
                 fputcsv($file, [
-                    $slip->employee->matricule ?? '',
-                    $slip->employee->last_name ?? '',
-                    $slip->employee->first_name ?? '',
-                    $slip->employee->salary_type ?? '',
+                    $this->neutralizeCsvCell((string) ($slip->employee->matricule ?? '')),
+                    $this->neutralizeCsvCell((string) ($slip->employee->last_name ?? '')),
+                    $this->neutralizeCsvCell((string) ($slip->employee->first_name ?? '')),
+                    $this->neutralizeCsvCell((string) ($slip->employee->salary_type ?? '')),
                     $countryCode,
                     $currency,
                     $periodStart,
@@ -69,6 +71,20 @@ class PayrollAccountingExportService
 
             fclose($file);
         };
+    }
+
+    /**
+     * Issue #2223 — neutralisation des champs TEXTE contrôlés par l'employé
+     * contre l'injection de formule CSV (OWASP) : `=`, `+`, `-`, `@` en tête
+     * de cellule → préfixe apostrophe. Les montants ne passent jamais ici.
+     */
+    private function neutralizeCsvCell(string $cell): string
+    {
+        if ($cell !== '' && ! is_numeric($cell) && str_contains('=+-@'."\t".chr(13), $cell[0])) {
+            return "'".$cell;
+        }
+
+        return $cell;
     }
 
     /**

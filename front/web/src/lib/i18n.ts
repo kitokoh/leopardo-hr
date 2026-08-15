@@ -50,6 +50,8 @@ type CopyTree = {
     submit: string;
     loading: string;
     demoAccess: string;
+    accountCreatedFree: string;
+    accountCreatedPaid: string;
     demoTitle: string;
     demoSubtitle: string;
     close: string;
@@ -65,6 +67,7 @@ type CopyTree = {
     heading: string;
     employees: string;
     present: string;
+    live: string;
     late: string;
     activity: string;
     team: string;
@@ -91,6 +94,7 @@ type CopyTree = {
     columnGross: string;
     columnNet: string;
     columnStatus: string;
+    columnCompliance: string;
     columnActions: string;
     columnEmployees: string;
     columnTotalGross: string;
@@ -104,19 +108,17 @@ type CopyTree = {
     downloadPdf: string;
     viewDetail: string;
     resultsCount: string;
-    detailDeductions: string;
-    detailEmployerCost: string;
+    detailTitle: string;
+    detailClose: string;
+    detailLoading: string;
     detailError: string;
-  };
-  dashboardPage: {
-    leoCongratsTitle: string;
-    leoCongratsBody: string;
-    leoSendError: string;
-    searchPlaceholder: string;
-    noSearchResults: string;
-    collapseActivity: string;
-    viewAllActivity: string;
-    sendingInProgress: string;
+    detailDeductions: string;
+    detailEmployerContributions: string;
+    detailTotalCost: string;
+    detailWorkingDays: string;
+    detailDaysWorked: string;
+    detailOvertimeHours: string;
+    detailSalaryBreakdown: string;
   };
   smartAttendancePage: {
     title: string;
@@ -356,11 +358,11 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion a Leopardo RH',
-      subtitle: 'Accedez a votre espace RH, suivez vos equipes et pilotez les modules actifs de votre entreprise.',
+      subtitle: 'Accedez a votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
       clientSpace: 'Espace client',
-      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque equipe.',
+      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque équipe.',
       heroCopy: 'Votre portail client reste connecte a l API Leopardo RH, avec permissions, langue et contexte tenant appliques des la connexion.',
-      secureBadge: 'Connexion securisee',
+      secureBadge: 'Connexion sécurisée',
       trustPoints: [
         'Session liee a votre tenant',
         'Permissions appliquees par role',
@@ -376,6 +378,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Se connecter',
       loading: 'Connexion...',
       demoAccess: 'Tester avec un compte demo',
+    accountCreatedFree: 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.',
+    accountCreatedPaid: 'Inscription reçue ! Connectez-vous pour continuer.',
       demoTitle: 'Choisir un compte demo',
       demoSubtitle: 'Selectionnez un role pour pre-remplir le formulaire, puis lancez la connexion.',
       close: 'Fermer',
@@ -391,6 +395,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Tableau de bord',
       employees: 'Employes actifs',
       present: 'presents',
+      live: 'En direct',
       late: 'Retards',
       activity: 'Activite recente',
       team: 'Employes',
@@ -417,6 +422,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'Brut',
       columnNet: 'Net',
       columnStatus: 'Statut',
+      columnCompliance: 'Conformite',
       columnActions: 'Actions',
       columnEmployees: 'Employes',
       columnTotalGross: 'Total Brut',
@@ -430,23 +436,21 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'Telecharger PDF',
       viewDetail: 'Voir detail',
       resultsCount: 'resultats',
-      detailDeductions: 'Retenues',
-      detailEmployerCost: 'Cout employeur',
-      detailError: 'Impossible de charger le detail du bulletin.',
-    },
-    dashboardPage: {
-      leoCongratsTitle: 'Felicitations de l equipe',
-      leoCongratsBody: 'Bravo a toute l equipe : vos retards sont en baisse de 15% cette semaine. Continuons sur cette dynamique !',
-      leoSendError: 'Impossible d envoyer le message.',
-      searchPlaceholder: 'Rechercher dans l activite...',
-      noSearchResults: 'Aucune activite ne correspond a votre recherche.',
-      collapseActivity: 'Replier l activite',
-      viewAllActivity: 'Voir toute l activite',
-      sendingInProgress: 'Envoi en cours...',
+      detailTitle: 'Detail du bulletin',
+      detailClose: 'Fermer',
+      detailLoading: 'Chargement du detail...',
+      detailError: 'Detail indisponible pour le moment — affichage des données de la liste.',
+      detailDeductions: 'Deductions',
+      detailEmployerContributions: 'Charges patronales',
+      detailTotalCost: 'Cout total employeur',
+      detailWorkingDays: 'Jours ouvres',
+      detailDaysWorked: 'Jours travailles',
+      detailOvertimeHours: 'Heures supplementaires',
+      detailSalaryBreakdown: 'Composition du salaire',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
-      subtitle: 'Suivi intelligent de presence par geolocalisation — validation des sessions en attente et statistiques du jour.',
+      subtitle: 'Suivi intelligent de présence par geolocalisation — validation des sessions en attente et statistiques du jour.',
       allSessions: 'Toutes les sessions →',
       settings: 'Parametres',
       pendingSessionsTitle: 'Sessions en attente de validation',
@@ -489,7 +493,7 @@ const copy: Record<AppLocale, CopyTree> = {
       cancel: 'Annuler',
     },
     smartAttendanceSessionsPage: {
-      title: 'Sessions de presence',
+      title: 'Sessions de présence',
       subtitle: 'Liste complete des sessions Smart Attendance avec filtres avances et pagination.',
       backToDashboard: '← Tableau de bord',
       loadError: 'Impossible de charger les sessions.',
@@ -512,7 +516,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnDuration: 'Duree',
       columnStatus: 'Statut',
       columnDetail: 'Detail',
-      noSessions: 'Aucune session trouvee pour ces criteres.',
+      noSessions: 'Aucune session trouvee pour ces critères.',
       viewDetail: 'Voir →',
       employeeFallback: 'Employe',
       pageLabel: 'Page',
@@ -528,7 +532,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSessionDetailPage: {
       title: 'Detail de session',
-      subtitle: 'Informations completes de la session de presence geolocalisee.',
+      subtitle: 'Informations completes de la session de présence geolocalisee.',
       backToSessions: '← Retour aux sessions',
       loadError: 'Impossible de charger la session.',
       notFound: 'Session introuvable.',
@@ -644,7 +648,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noTokens: 'Aucune cle API creee pour le moment.',
       createdOn: 'Creee le {date}',
       unknownDate: 'Date inconnue',
-      lastUsedOn: ' · derniere utilisation le {date}',
+      lastUsedOn: ' · dernière utilisation le {date}',
       neverUsed: ' · jamais utilisee',
       revoke: 'Revoquer',
       tokenNamePlaceholder: 'Nom de la cle (ex: Production)',
@@ -700,6 +704,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'تسجيل الدخول',
       loading: 'جار تسجيل الدخول...',
       demoAccess: 'تجربة حساب تجريبي',
+    accountCreatedFree: 'تم إنشاء الحساب! سجّل الدخول للوصول إلى مساحتك المجانية.',
+    accountCreatedPaid: 'تم استلام التسجيل! سجّل الدخول للمتابعة.',
       demoTitle: 'اختيار حساب تجريبي',
       demoSubtitle: 'اختر دورا لملء النموذج ثم سجل الدخول.',
       close: 'إغلاق',
@@ -715,6 +721,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'لوحة التحكم',
       employees: 'الموظفون النشطون',
       present: 'حاضرون',
+      live: 'مباشر',
       late: 'التأخيرات',
       activity: 'النشاط الأخير',
       team: 'الموظفون',
@@ -741,6 +748,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'الإجمالي',
       columnNet: 'الصافي',
       columnStatus: 'الحالة',
+      columnCompliance: 'المطابقة',
       columnActions: 'الإجراءات',
       columnEmployees: 'الموظفون',
       columnTotalGross: 'إجمالي الإجمالي',
@@ -754,19 +762,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'تحميل PDF',
       viewDetail: 'عرض التفاصيل',
       resultsCount: 'نتائج',
+      detailTitle: 'تفاصيل كشف الراتب',
+      detailClose: 'إغلاق',
+      detailLoading: 'جار تحميل التفاصيل...',
+      detailError: 'التفاصيل غير متوفرة حاليا — عرض بيانات القائمة.',
       detailDeductions: 'الخصومات',
-      detailEmployerCost: 'تكلفة صاحب العمل',
-      detailError: 'تعذر تحميل تفاصيل كشف الراتب.',
-    },
-    dashboardPage: {
-      leoCongratsTitle: 'تهنئة من الفريق',
-      leoCongratsBody: 'أحسنت أيها الفريق: انخفضت حالات التأخر بنسبة 15٪ هذا الأسبوع. لنواصل بهذا الزخم!',
-      leoSendError: 'تعذر إرسال الرسالة.',
-      searchPlaceholder: 'ابحث في النشاط...',
-      noSearchResults: 'لا يوجد نشاط يطابق بحثك.',
-      collapseActivity: 'طي النشاط',
-      viewAllActivity: 'عرض كل النشاط',
-      sendingInProgress: 'جارٍ الإرسال...',
+      detailEmployerContributions: 'اشتراكات صاحب العمل',
+      detailTotalCost: 'التكلفة الإجمالية لصاحب العمل',
+      detailWorkingDays: 'أيام العمل',
+      detailDaysWorked: 'أيام العمل الفعلية',
+      detailOvertimeHours: 'ساعات العمل الإضافي',
+      detailSalaryBreakdown: 'تفاصيل الراتب',
     },
     smartAttendancePage: {
       title: 'الحضور الذكي',
@@ -881,7 +887,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSettingsPage: {
       title: 'إعدادات Smart Attendance',
-      subtitle: 'إعداد وضع التسجيل والنطاق الجمارافي للشركة.',
+      subtitle: 'إعداد وضع التسجيل والنطاق الجغرافي للشركة.',
       backToDashboard: '← لوحة التحكم',
       loadError: 'تعذر تحميل الإعدادات.',
       saveError: 'خطأ أثناء الحفظ.',
@@ -900,7 +906,7 @@ const copy: Record<AppLocale, CopyTree> = {
       modeFreeHint: 'يسمح الوضع الحر للموظف باختيار الطريقة المتاحة.',
       gpsToggleTitle: 'تحديد الموقع GPS',
       gpsToggleSubtitle: 'تفعيل التحقق من الموقع',
-      geofenceConfigTitle: 'إعداد النطاق الجمارافي',
+      geofenceConfigTitle: 'إعداد النطاق الجغرافي',
       latitudeLabel: 'خط العرض',
       longitudeLabel: 'خط الطول',
       radiusFieldLabel: 'النطاق (متر)',
@@ -950,17 +956,17 @@ const copy: Record<AppLocale, CopyTree> = {
       syncCompleteMessage: 'اكتملت المزامنة — مرسل: {sent}، التعارضات: {conflicts}',
     },
     developerSettingsPage: {
-      title: 'مساد المطور',
-      subtitle: 'أدر مفاتيح API والردود الويب لدمج Leopardo RH مع أدواتك.',
+      title: 'إعدادات المطور',
+      subtitle: 'أدر مفاتيح API والويب هوكس لدمج Leopardo RH مع أدواتك.',
       loadTokensError: 'تعذر تحميل مفاتيح API.',
       loadWebhooksError: 'تعذر تحميل الردود.',
       createTokenError: 'تعذر إنشاء مفتاح API.',
       deleteTokenError: 'تعذر إلغاء مفتاح API.',
-      createWebhookError: 'تعذر إنشاء الرد الويب.',
-      deleteWebhookError: 'تعذر حذف الرد الويب.',
-      updateWebhookError: 'تعذر تحديث الرد الويب.',
-      revokeTokenConfirm: 'هل تريد إلعاء مفتاح API هذا؟ ستوقف التكاملات المستخدمة له عن العمل.',
-      deleteWebhookConfirm: 'حذف نقطة الرد الويب هذه؟',
+      createWebhookError: 'تعذر إنشاء الويب هوك.',
+      deleteWebhookError: 'تعذر حذف الويب هوك.',
+      updateWebhookError: 'تعذر تحديث الويب هوك.',
+      revokeTokenConfirm: 'هل تريد إلغاء مفتاح API هذا؟ ستوقف التكاملات المستخدمة له عن العمل.',
+      deleteWebhookConfirm: 'حذف نقطة الويب هوك هذه؟',
       revealedTokenNotice: 'مفتاح "{name}" تم إنشاؤه — انسخه الآن، لن يعرض مرة أخرى:',
       revealedTokenDismiss: 'لقد نسخت المفتاح، إخفاء',
       apiKeysTitle: 'مفاتيح API',
@@ -970,9 +976,9 @@ const copy: Record<AppLocale, CopyTree> = {
       unknownDate: 'تاريخ مفقود',
       lastUsedOn: ' · آخر استعمال في {date}',
       neverUsed: ' · لم يستخدم قط',
-      revoke: 'إلعاء',
+      revoke: 'إلغاء',
       tokenNamePlaceholder: 'اسم المفتاح (مثلاً: الإنتاج)',
-      webhooksTitle: 'الردود الويب',
+      webhooksTitle: 'الويب هوكس',
       noWebhooks: 'لا توجد نقاط رد ويب مكوّنة.',
       eventsCount: '{count} حدث(ان)',
       failuresCount: '{count} فشل(ات)',
@@ -1024,6 +1030,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Giris yap',
       loading: 'Giris yapiliyor...',
       demoAccess: 'Demo hesapla dene',
+    accountCreatedFree: 'Hesap oluşturuldu! Ücretsiz alanınıza erişmek için giriş yapın.',
+    accountCreatedPaid: 'Kayıt alındı! Devam etmek için giriş yapın.',
       demoTitle: 'Demo hesabi sec',
       demoSubtitle: 'Formu doldurmak icin bir rol secin, sonra girisi baslatin.',
       close: 'Kapat',
@@ -1039,6 +1047,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Kontrol paneli',
       employees: 'Aktif calisanlar',
       present: 'mevcut',
+      live: 'Canlı',
       late: 'Gecikmeler',
       activity: 'Son etkinlik',
       team: 'Calisanlar',
@@ -1065,6 +1074,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'Brut',
       columnNet: 'Net',
       columnStatus: 'Durum',
+      columnCompliance: 'Uyumluluk',
       columnActions: 'Islemler',
       columnEmployees: 'Calisanlar',
       columnTotalGross: 'Toplam Brut',
@@ -1078,19 +1088,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'PDF indir',
       viewDetail: 'Detayi gor',
       resultsCount: 'sonuc',
+      detailTitle: 'Bordro Detayi',
+      detailClose: 'Kapat',
+      detailLoading: 'Detay yukleniyor...',
+      detailError: 'Detay su anda mevcut degil — liste verileri gosteriliyor.',
       detailDeductions: 'Kesintiler',
-      detailEmployerCost: 'Isveren maliyeti',
-      detailError: 'Bordro detayi yuklenemedi.',
-    },
-    dashboardPage: {
-      leoCongratsTitle: 'Ekip tebrikleri',
-      leoCongratsBody: 'Tebrikler ekip: gecikmeler bu hafta %15 azaldi. Bu ivmeyi surdurelim!',
-      leoSendError: 'Mesaj gonderilemedi.',
-      searchPlaceholder: 'Etkinlikte ara...',
-      noSearchResults: 'Aramanizla eslesen etkinlik yok.',
-      collapseActivity: 'Etkinligi daralt',
-      viewAllActivity: 'Tum etkinligi gor',
-      sendingInProgress: 'Gonderiliyor...',
+      detailEmployerContributions: 'Isveren katkilari',
+      detailTotalCost: 'Isveren toplam maliyeti',
+      detailWorkingDays: 'Calisma gunleri',
+      detailDaysWorked: 'Filii calisilan gunler',
+      detailOvertimeHours: 'Fazla mesai saatleri',
+      detailSalaryBreakdown: 'Maas detayi',
     },
     smartAttendancePage: {
       title: 'Akilli Devam',
@@ -1348,6 +1356,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Sign in',
       loading: 'Signing in...',
       demoAccess: 'Try a demo account',
+    accountCreatedFree: 'Account created! Sign in to access your free workspace.',
+    accountCreatedPaid: 'Registration received! Sign in to continue.',
       demoTitle: 'Choose a demo account',
       demoSubtitle: 'Select a role to prefill the form, then sign in.',
       close: 'Close',
@@ -1363,6 +1373,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Dashboard',
       employees: 'Active employees',
       present: 'present',
+      live: 'Live',
       late: 'Late arrivals',
       activity: 'Recent activity',
       team: 'Employees',
@@ -1389,6 +1400,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnGross: 'Gross',
       columnNet: 'Net',
       columnStatus: 'Status',
+      columnCompliance: 'Compliance',
       columnActions: 'Actions',
       columnEmployees: 'Employees',
       columnTotalGross: 'Total Gross',
@@ -1402,19 +1414,17 @@ const copy: Record<AppLocale, CopyTree> = {
       downloadPdf: 'Download PDF',
       viewDetail: 'View detail',
       resultsCount: 'results',
+      detailTitle: 'Pay slip details',
+      detailClose: 'Close',
+      detailLoading: 'Loading details...',
+      detailError: 'Details temporarily unavailable — showing list data.',
       detailDeductions: 'Deductions',
-      detailEmployerCost: 'Employer cost',
-      detailError: 'Unable to load pay slip details.',
-    },
-    dashboardPage: {
-      leoCongratsTitle: 'Team congratulations',
-      leoCongratsBody: 'Well done team: late arrivals are down 15% this week. Let us keep this momentum going!',
-      leoSendError: 'Unable to send the message.',
-      searchPlaceholder: 'Search activity...',
-      noSearchResults: 'No activity matches your search.',
-      collapseActivity: 'Collapse activity',
-      viewAllActivity: 'View all activity',
-      sendingInProgress: 'Sending...',
+      detailEmployerContributions: 'Employer contributions',
+      detailTotalCost: 'Total employer cost',
+      detailWorkingDays: 'Working days',
+      detailDaysWorked: 'Actual days worked',
+      detailOvertimeHours: 'Overtime hours',
+      detailSalaryBreakdown: 'Salary breakdown',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',

@@ -45,14 +45,47 @@ Lire `.specify/constitution.md` — c'est la loi fondamentale du projet.
 6. /speckit-implement (coder)
 ```
 
-### Regle anti-doublon (CRITIQUE)
+### Regle anti-doublon (CRITIQUE — protocole durci issue #2400)
 
-Avant de commencer a coder, **toujours** verifier :
-```bash
-gh issue list --state open --assignee @me
-gh issue list --state open --label "payroll" --json number,title,assignees | head -20
-```
-Si une spec/issue similaire existe et est assignee → contribuer dessus, pas creer une nouvelle PR.
+L'auto-assignation seule ne protege pas la fenetre implementation : plusieurs
+agents peuvent travailler en parallele sur la meme issue (constate le
+2026-08-15 : #2333 ×3 PRs, #2329 ×2 PRs, #2264 ×2, #2326 ×2 branches...).
+Protocol OBLIGATOIRE avant de commencer a coder :
+
+1. **Verifier TOUTES les branches, pas seulement les PRs** — le nom de
+   branche EST le lock :
+   ```bash
+   gh api repos/kitokoh/leopardo-hr/branches --paginate | grep -i "<issue>"
+   gh pr list --state open --json number,title,headRefName
+   ```
+   Une branche `fix/<issue>-*` existante = l'issue est prise → contribuer
+   dessus ou s'arreter (constitution §I « deux agents ne peuvent pas
+   implementer la meme spec »).
+2. **Marker branch immediat** : des le self-assign
+   (`gh issue edit <N> --add-assignee @me`), pousser une branche
+   `fix/<issue>-<slug>` avec un commit vide de claim (message
+   « claim marker #N »). Le premier-arrive conserve sa branche ; tout agent
+   qui voit la branche pour la meme issue contribue dessus ou s'arrete.
+3. **Nommage de branche UNIQUE par issue** : un seul `fix/<issue>-*` par
+   issue. Pas de suffixes multiples (`fix/2333-a`, `fix/2333-b`...).
+4. **Fermeture des doublons** : toute PR dupliquee sur une meme issue est
+   fermee avec un commentaire de renvoi vers la PR canonique (1 PR = 1 issue).
+
+## Garde post-merge `Closes #` (issue #2512)
+
+Une PR qui **mentionne** une issue (`#1234`) sans mot-clé `Closes #` (ou
+Fixes/Resolves) dans le **body** ne ferme JAMAIS l'issue au merge : elle
+reste ouverte même une fois le correctif livré. Règles :
+
+- Le mot-clé `Closes #N` doit être dans le **body** de la PR (le titre seul
+  est fragile : GitHub ne le traite pas toujours).
+- Les mentions entre parenthèses `(#1234)` ou dans le contexte ne ferment
+  rien — si l'issue doit être close, ajouter `Closes #1234` dans le body.
+- Garde de détection : `dev-hub/tools/check-issues-left-open-by-merged-prs.sh
+  <owner/repo>` liste les issues référencées par des PRs mergées mais restées
+  ouvertes sans PR en cours (rapport non bloquant — fermeture manuelle avec
+  preuve code : commentaire + état closed).
+- Fallback : fermeture manuelle avec vérification du code sur main.
 
 ## Regles obligatoires
 
@@ -64,6 +97,7 @@ Si une spec/issue similaire existe et est assignee → contribuer dessus, pas cr
 - Apres un merge dans `main`, supprimer la branche distante et nettoyer les branches locales devenues inutiles.
 - Ne jamais perdre les stashes existants. Verifier `git stash list` avant toute operation destructive.
 - Chaque changement de comportement, migration, CI ou procedure doit avoir une entree `CHANGELOG.md`.
+- **CHANGELOG.md (issue #2417)** : toute PR ajoute son entree sous `## [Unreleased]` avec la categorie adaptee (`### Added` / `### Changed` / `### Fixed` / `### Removed`) — Keep a Changelog. Les sections versionnees (`## [x.y.z] - date`) sont creees a la release ; l'historique integral vit dans `CHANGELOG_ARCHIVE.md`.
 - Chaque connaissance utile pour les prochains agents doit etre ajoutee ici.
 
 ## 🗺️ Cartographie de l'Ecosysteme Leopardo RH (A respecter strictement)
@@ -181,7 +215,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le positionnement marche courant vit dans `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/`. Le produit doit etre vendu comme `Mobile-First Company OS` pour PME terrain, pas comme simple SIRH generaliste.
 - Le smoke auth marche exige toujours `POST /api/v1/auth/login` puis `GET /api/v1/auth/me` avec le token. En mode shared, `TenantMiddleware` doit pouvoir rehydrater l'employe Sanctum via `public.user_lookups` avant de poser le tenant.
 - En auth shared PostgreSQL, ne pas supposer que `Company` se resout via le `search_path` courant : si un schema tenant contient une table `companies`, il peut masquer `public.companies`. `AuthService` et `TenantMiddleware` doivent recharger l'entreprise depuis `public.companies` avant de conclure `COMPANY_NOT_FOUND`.
-- Depuis v4.16.128, `/api/v1/demo-users` est un contrat public de documentation QA, pas un endpoint secret : ne pas le rebloquer via `DEMO_MODE_ENABLED=false`. Pour desactiver l'auto-seed Render, utiliser `DISABLE_DEMO_SEEDING=true`.
+- Depuis v4.16.128, `/api/v1/demo-users` expose les credentials de demo : le controller applique un hard gate delibere (`abort(404)` si `DEMO_MODE_ENABLED` n'est pas vrai) pour ne jamais fuiter l'existence de la route en production — voir `docs/security/AUDIT_API_2026-07-19.md` (section 1) et `docs/DEMO_ACCOUNTS.md`. Ne pas retirer ce gate ; pour desactiver l'auto-seed Render, utiliser `DISABLE_DEMO_SEEDING=true` (le gate 404 et `DISABLE_DEMO_SEEDING` sont independants).
 - `DemoCompanyOnceSeeder` doit verifier les slugs demo (`techcorp-algerie`, `pharmaplus-casablanca`, `digitalflow-tunis`) et non la simple presence d'une entreprise en `shared_tenants`; en mode shared, les vrais clients utilisent aussi ce schema.
 - Si le lock `demo_company_seed_v2` existe mais que ces slugs demo manquent, il doit etre considere stale et supprime par le seeder avant de relancer le seed. Ne pas reparer ce cas par SQL manuel tant que le seeder sait le faire.
 - Depuis v4.16.246, `DemoCompanyOnceSeeder` doit aussi backfiller les signaux readiness des demos existantes quand le lock est deja pose : salaire actif minimal, geofence, kiosque actif et client event recent. Si `/api/v1/launch-readiness` reste sous 70 sur TechCorp apres deploy, verifier ce backfill avant de modifier le controleur.
@@ -332,6 +366,14 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le kiosque ZKTeco emet `leopardo:kiosk-status` et affiche la derniere synchronisation. Garder cet etat offline-first lisible lors des evolutions kiosk/bridge, car c est le signal terrain principal pour les clients.
 - Depuis v4.16.134, le mobile utilise un socle visuel sombre inspire du mockup pointage v3 via `front/mobile_apps/leopardo_core/lib/core/widgets/mobile_surface.dart` (package partage `leopardo_core`, consomme par les 3 apps tenant). Pour tout nouvel ecran mobile, privilegier `MobileTopBar`, `MobilePanel`, `MobileStatusPill`, `MobileIconBubble` et les couleurs `MobileSurface.*` afin de garder une experience 2026 coherente sans dupliquer des `BoxDecoration`.
 
+
+### 2026-08-15 - Regression par merge de branches perimees (SystemView)
+
+- La PR #2316 (Analytics/System reels, suppression des fakes `setTimeout`) a ete **ecrasee** par les merges ulterieurs de #2321 et #2247 : ces branches, creees AVANT le merge de #2316, portaient l'ancienne version simulee de `SystemView.vue` et l'ont remise sur main (meme symptome possible pour tout fichier touche par plusieurs branches en parallele).
+- Symptome : le code « fixe » reapparait sur main alors que le commit de la PR est bien dans l'historique (`git log` du fichier montre le fix puis son ecrasement).
+- Garde : avant de merger une PR dont la branche a ete creee il y a plus de quelques heures, verifier que ses fichiers n'ecrasent pas des fixes plus recents — `git diff origin/main...HEAD -- <fichiers>` et comparer avec `git log --oneline -3 origin/main -- <fichiers>`.
+- Correction type : restaurer la version validee du fix (ex. `git show <sha-du-fix>:<fichier> > <fichier>`) dans une nouvelle PR dediee (issue #2186).
+
 ## Pieges connus
 
 ### 2026-05-14 - Integration branche Devin Plan 14
@@ -438,6 +480,17 @@ Procedure recommandee :
 - Pour les vieilles branches mobiles ou mixtes tres en retard sur `main`, ne pas merger la branche complete si le diff embarque des centaines de suppressions hors sujet.
 - Preferer recuperer uniquement les fichiers utiles avec `git checkout <branche> -- <fichier>` dans une branche federatrice propre creee depuis `origin/main`.
 - Cette approche a ete confirmee utile le 2026-05-06 pour reutiliser seulement les apports de `#269`, `#275` et `#298` sans reintroduire le bruit historique de branches anciennes.
+
+## Lecon 2026-08-14 — Vague QA hardening : endpoints reels, mocks cockpit, contrats
+
+- **Les vues admin appellent parfois des chemins `/v1/...` alors que le backend sert le cockpit sous `/admin/...`** (auth `super_admin_api`). Avant de déclarer une vue cassée, vérifier `php artisan route:list` et le mapping du client (`normalizeApiPath` ne touche que `/v1/`).
+- **Cockpit admin : ne jamais afficher de données fabriquées.** Users/Analytics/System ont été réécrits sur des endpoints réels (`/admin/users`, `/admin/dashboard/stats|activities|alerts`, `/health/live`, `/health/ready`). Les sections sans backend affichent un état « non disponible » explicite. Toute nouvelle vue cockpit doit consommer un endpoint réel ou un état vide honnête.
+- **Mobile employee : les écrans Formation et Véhicules appelaient `/me/training-enrollments` et `/me/vehicles` inexistants (404).** La règle : tout repository mobile doit être cross-checké contre `php artisan route:list` (extraire les chaînes `'/...'` des repositories Dart et vérifier chaque endpoint — pattern réutilisable, cf. `check-openapi-route-coverage.py`).
+- **`TrainingEnrollmentResource`** expose désormais `course_title`, `session_date`, `progress` (additif, charge `session.course`) — l'écran Formation employee attend cette shape.
+- **`/me/vehicles`** renvoie les véhicules `assigned_driver_id` = employé courant avec position Traccar best-effort (null-safe — ne jamais faire échouer la liste si le traqueur est hors ligne).
+- **Webhooks : `POST /webhooks/{webhookEndpoint}/test`** dispatche `webhook.test` (tracé dans `webhook_deliveries`), 403 hors `principal`, 404 cross-tenant.
+- **`legal_reference`** est maintenant une colonne nullable sur `tax_slabs` et `social_contributions` (migration additive) — le champ du formulaire TaxRates est réellement persisté.
+- **`.env.example`** : garder la parité avec `config/` (`check-env-example-parity.sh`), sinon le check CI rouge.
 
 ## Historique utile
 
@@ -746,6 +799,12 @@ Procedure recommandee :
 - Main rouge 2026-08-09 (43 tests) : les causes racines étaient (1) `employees.national_id` varchar(50) vs cast `encrypted` (~230 chars) → élargi varchar(500) ; (2) `languages.updated_at` manquant (0003 créé sans, 00015 early-return) → réconcilié ; (3) tests encore calés sur le schéma manuel permissif (plan_id/first_name NOT NULL, statuts attendance_logs, PDF non compressés, PendingCommand lazy). Toute nouvelle migration touchant une table existante doit réconcilier (pattern 00015) et jamais early-return sans ALTER additif.
 - Spec S-1 (#1661) : la rétention biométrique vit dans `POLITIQUE_RETENTION_DOCUMENTS.md` (v2) et la purge dans `biometric:purge-expired` (hebdo, `--company`/`--dry-run`). Règle de purge : contrat terminé depuis > N mois, OU consentement datant de > N mois quand aucune fin de contrat n'est renseignée. Ne pas purger un employé encore en poste même si son consentement est ancien.
 
+## Lecon 2026-08-14 — QA pass plateforme : les gates locales ne mentent pas quand CI est saturee
+
+Pendant la saturation de la file GitHub Actions (#2131), des merges/poussées directes successives ont laisse `main` **rouge latent** : les checks requis restaient pending/queued et ne s'exprimaient pas. Le QA pass local (issues #2172/#2173/#2174) a retrouve sur main : un test unitaire CI perime post-#1913 (`AbstractCountryRulesCapTest::test_ivory_coast_cnss_capped_at_1647315_xof` — la vague #1913/573c1f05 avait realise les goldens SN/CI mais oublie ce test), 43 erreurs PHPStan Strict level 8 (7 app + 36 tests, dont le docblock `compliance` du `PayrollCalculationPresenter` sans `warning_key`), la dette Pint `tests/Unit` (14 fichiers), le doublon perime `tests/Unit/Payroll/CedeaoRulesUnitTest.php` (valeurs pre-#1918 — la « suppression » annoncee par 573c1f05 n'avait jamais ete commitee), et 5 tests unitaires pays perimes (BF/ML/G A passes pilot — les loops placeholder attendaient encore `placeholder`).
+
+Conduite a tenir quand la CI est saturee : ne jamais declarer « main vert » sur un merge recent sans relancer localement les gates (suite Unit, `phpstan-strict.neon`, `phpstan-modules.neon`, `pint --test`) ; verifier aussi les tests unitaires pays quand une vague change `confidenceLevel()` (les loops `other_*_members_unaffected` sont les premiers a casser) ; verifier qu'une « suppression de doublon » annoncee dans un CHANGELOG est reellement commitee (`git show --stat <sha>`). Les corrections type `fix/main-*` en poussée directe ne suffisent pas : sans run local, on ne voit pas les rouges qui attendent dans la file.
+
 ## Lecon 2026-08-14 — Triage des branches distantes apres une vague multi-agents
 
 Apres une vague ou plusieurs agents mergent en parallele, la plupart des branches
@@ -767,3 +826,11 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
   perimee qui REVERTIRAIT main : verifier la direction du diff).
 - Ne jamais merger une branche dont l'approche a ete remplacee sur main (ex. barème
   ITSAS CI annuel remplace par l'ITS 2024 unifie, art. 119 bis).
+
+## Lecon 2026-08-14 — Campagne QA fonctionnelle multi-agents (convergence sur les memes correctifs)
+
+- **Plusieurs agents convergent sur les MEMES fixes** (ex. PHPStan 43 erreurs, golden CI SMIG 8 800,00) : avant de pousser un correctif, faire `git fetch origin` et comparer `git log origin/main` — si un commit recouvre deja le changement, NE PAS dupliquer : rebaser et ne garder que le reliquat. Les doubles fixes creent des conflits de merge inutiles (observé : golden CI SMIG corrigé 2× dans la meme session).
+- **Ne jamais lancer deux processus `artisan test` en parallele sur la meme base `leopardo_test`** : deadlocks PostgreSQL (`40P01`), courses de migration (`23505 pg_type_typname_nsp_index`), faux rouges en cascade. Recréer la base (`DROP/CREATE leopardo_test`) avant un run propre.
+- **Les goldens paie sont la source de verite des montants** : quand un test unitaire contredit un golden, c'est le test unitaire qui est perime (aligner sur le golden + la doc `docs/payroll/{CC}_COMPLIANCE.md`), jamais l'inverse. Exemple : CNSS CI famille/AT plafonnees a 70 000 (guide CNPS, #1913) — les goldens CI/SN portaient encore les valeurs non plafonnees.
+- **Le preavis CI est au niveau employe/technicien** (CI_COMPLIANCE.md §8) : `< 5 ans 30 j / ≥ 5 ans 60 j`, cadres 90 j, ouvriers 8/15 j — le palier 90 j par anciennete (≥ 10 ans) n'est PAS documente et a ete retire du moteur (issue #2289). La categorie vient de `employees.ipres_category` via `EndOfContractService`.
+- **Le login admin ne doit plus contenir de `href="#"`** : « Mot de passe oublie » n'existe pas en self-service super-admin (ops : `php artisan super-admin:reset-password`) ; « Support » = `mailto:support@leopardo-rh.com` (email canonique vitrine).

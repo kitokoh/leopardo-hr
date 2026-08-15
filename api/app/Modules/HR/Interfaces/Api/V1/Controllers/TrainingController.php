@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\TrainingCourseResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Http\Resources\Api\V1\TrainingSessionResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
@@ -105,6 +105,23 @@ class TrainingController extends Controller
 
     // â”€â”€ Sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+    /**
+     * Issue #2225 — liste TOUTES les sessions de formation de la société
+     * (indépendamment du cours), pour l'écran Training du dashboard admin.
+     */
+    public function indexAllSessions(Request $request): JsonResponse
+    {
+        /** @var Employee $user */
+        $user = $request->user();
+
+        $sessions = TrainingSession::query()
+            ->where('company_id', $user->company_id)
+            ->with(['course:id,title', 'trainer:id,first_name,last_name'])
+            ->orderByDesc('start_date')
+            ->paginate($request->integer('per_page', 20));
+
+        return TrainingSessionResource::collection($sessions)->response();
+    }
     public function indexSessions(Request $request, TrainingCourse $trainingCourse): JsonResponse
     {
         /** @var Employee $user */
@@ -115,6 +132,58 @@ class TrainingController extends Controller
 
         return TrainingSessionResource::collection($trainingCourse->sessions()->with('trainer:id,first_name,last_name')->orderByDesc('start_date')->get())
             ->response();
+    }
+
+    /**
+     * GET /training/sessions — liste globale (toutes formations) scopée tenant,
+     * paginée. QA wave 2026-08-14 — T003 (#2228) : l'admin SPA (TrainingView.vue)
+     * appelait cet endpoint sans route derriere → onglet Sessions vide.
+     */
+    public function indexSessionsAll(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $query = TrainingSession::query()
+            ->with('trainer:id,first_name,last_name')
+            ->where('company_id', $actor->company_id);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+        if ($request->filled('course_id')) {
+            $query->where('training_course_id', $request->integer('course_id'));
+        }
+
+        return TrainingSessionResource::collection(
+            $query->orderByDesc('start_date')->paginate($request->integer('per_page', 15))
+        )->response();
+    }
+
+    /**
+     * GET /training/enrollments — liste globale des inscriptions scopée tenant,
+     * paginée. QA wave 2026-08-14 — T003 (#2228) : l'admin SPA (TrainingView.vue)
+     * appelait cet endpoint sans route derriere → onglet Inscriptions vide.
+     */
+    public function indexEnrollments(Request $request): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $query = TrainingEnrollment::query()
+            ->with(['employee:id,first_name,last_name', 'session:id,training_course_id,start_date,status'])
+            ->where('company_id', $actor->company_id);
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+        if ($request->filled('session_id')) {
+            $query->where('training_session_id', $request->integer('session_id'));
+        }
+
+        return TrainingEnrollmentResource::collection(
+            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+        )->response();
     }
 
     public function storeSession(Request $request, TrainingCourse $trainingCourse): JsonResponse
@@ -242,4 +311,3 @@ class TrainingController extends Controller
         return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
     }
 }
-

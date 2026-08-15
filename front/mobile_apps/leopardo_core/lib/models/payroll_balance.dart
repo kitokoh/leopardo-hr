@@ -1,3 +1,4 @@
+import 'package:leopardo_core/models/payroll.dart';
 class PayrollBalance {
   final int employeeId;
   final String employeeName;
@@ -17,6 +18,10 @@ class PayrollBalance {
   final int? paySlipId;
   final String? paySlipStatus;
   final bool receiptAvailable;
+  // Issue #2143/#1872 — bloc de conformité paie du pays (niveau, message,
+  // source légale, date de vérification). Null si le backend ne l'expose
+  // pas encore (rétro-compatible : aucun affichage, pas d'erreur).
+  final PayrollCompliance? compliance;
 
   const PayrollBalance({
     required this.employeeId,
@@ -37,11 +42,13 @@ class PayrollBalance {
     this.paySlipId,
     this.paySlipStatus,
     this.receiptAvailable = false,
+    this.compliance,
   });
 
   factory PayrollBalance.fromJson(Map<String, dynamic> json) {
     final period = _asMap(json['period']);
     final paySlip = _asMap(json['pay_slip']);
+    final complianceJson = _asMap(json['compliance']);
 
     return PayrollBalance(
       employeeId: _asInt(json['employee_id']),
@@ -66,6 +73,10 @@ class PayrollBalance {
       paySlipId: _nullableInt(paySlip['id']),
       paySlipStatus: paySlip['status']?.toString(),
       receiptAvailable: paySlip['receipt_available'] == true,
+      // #2143 : null si le bloc compliance est absent du payload.
+      compliance: complianceJson.isEmpty
+          ? null
+          : PayrollCompliance.fromJson(complianceJson),
     );
   }
 

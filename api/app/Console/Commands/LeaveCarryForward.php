@@ -40,12 +40,17 @@ class LeaveCarryForward extends Command
             foreach ($balances as $oldBalance) {
                 try {
                     DB::transaction(function () use ($policy, $oldBalance, $toYear, &$carried): void {
-                        $unused = max(0, $oldBalance->balance - $oldBalance->used);
+                        // Issue #2416 : les jours `pending` (demandes en attente,
+                        // réservés par AbsenceService depuis #2329) doivent être
+                        // déduits du solde reportable — sinon une demande
+                        // approuvée après le report consomme le solde de la
+                        // nouvelle année.
+                        $unused = max(0, $oldBalance->balance - $oldBalance->used - $oldBalance->pending);
                         if ($unused <= 0) {
                             return;
                         }
 
-                        $maxCarry = $policy->max_carry_forward ?? $unused;
+                        $maxCarry = $policy->carry_forward_max ?? $unused;
                         $carryAmount = min($unused, $maxCarry);
 
                         $newBalance = LeaveBalance::firstOrCreate(

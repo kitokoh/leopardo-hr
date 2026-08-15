@@ -141,8 +141,15 @@ export async function POST(request: NextRequest) {
             id: lead.id,
             email: signupResult.email,
             status: signupResult.status,
+            // #2469 : le provisioning_token permet au prospect de suivre
+            // l'état du sandbox (GET /api/forms/trial-status) sans email OTP.
+            provisioning_token:
+              typeof signupResult.provisioning_token === 'string'
+                ? signupResult.provisioning_token
+                : undefined,
             confirmationSent: lead.emailForwarded,
             crmForwarded: lead.crmForwarded,
+
           },
         },
         { status: 200 }

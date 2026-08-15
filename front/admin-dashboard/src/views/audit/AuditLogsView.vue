@@ -73,7 +73,7 @@
 
     <!-- Audit Log Detail Panel -->
     <div v-if="selectedLog" class="fixed inset-0 z-50 overflow-hidden" @click.self="closeDetail">
-      <div class="absolute inset-0 glass-bg0/50 transition-opacity" @click="closeDetail" />
+      <div class="absolute inset-0 glass-bg/50 transition-opacity" @click="closeDetail" />
       <div class="absolute inset-y-0 right-0 flex max-w-full pl-10">
         <div class="w-screen max-w-lg">
           <div class="flex h-full flex-col overflow-y-auto shadow-xl">
@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import api, { downloadApiFile } from '@/services/api'
 import DataTable from '@/components/common/DataTable.vue'
 import { useLocaleStore } from '@/stores/locale'

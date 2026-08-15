@@ -1,4 +1,3 @@
-import { FormSubmission } from "./analytics";
 import {
   SignupFormData,
   DemoFormData,
@@ -35,6 +34,21 @@ function getSearchMetadata(): Record<string, string> {
   });
 
   return metadata;
+}
+
+/**
+ * #2823 — la source d'acquisition de l'URL (ex. `source=download_employee_android`
+ * posée par /download et les guides) doit être propagée au lead, pas écrasée par
+ * un défaut codé en dur.
+ */
+export function getLeadSource(): string {
+  if (typeof window === "undefined") {
+    return "signup_form";
+  }
+
+  const source = new URLSearchParams(window.location.search).get("source");
+
+  return source && source.trim().length > 0 ? source.trim() : "signup_form";
 }
 
 /**
@@ -80,7 +94,7 @@ export async function submitSignupForm(
         ...sanitizedData,
         ...getSearchMetadata(),
         locale: getBrowserLocale(),
-        source: "signup_form",
+        source: getLeadSource(),
         page,
         timestamp: new Date().toISOString(),
         requestedWorkflow: "guided_trial",
@@ -115,6 +129,45 @@ export async function submitSignupForm(
           ? 'Le serveur met du temps a repondre. Veuillez reessayer dans quelques instants.'
           : "Erreur lors de la demande d'essai",
       error: error instanceof Error ? error.message : "Erreur inconnue",
+    };
+  }
+}
+
+/**
+ * Fetch trial provisioning status via the same-origin proxy
+ * (GET /api/forms/trial-status?token=…). #2469
+ */
+export async function fetchTrialStatus(token: string): Promise<FormSubmissionResponse> {
+  try {
+    const response = await fetch(`/api/forms/trial-status?token=${encodeURIComponent(token)}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok || payload === null || payload.success === false) {
+      return {
+        success: false,
+        message: payload?.message || "Suivi temporairement indisponible.",
+        error: payload?.error || "TRIAL_STATUS_UNAVAILABLE",
+        data: payload?.data,
+      };
+    }
+
+    return {
+      success: true,
+      message: payload.message || "",
+      data: payload.data,
+    };
+  } catch (error) {
+    safeLog("Trial status error:", error);
+    return {
+      success: false,
+      message: "Suivi temporairement indisponible.",
+      error: error instanceof Error ? error.message : "NETWORK_ERROR",
     };
   }
 }
@@ -331,59 +384,6 @@ export async function submitNewsletterForm(
       message: "Erreur lors de l'inscription à la newsletter",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
-  }
-}
-
-/**
- * Get form submission from data
- */
-export function getFormSubmission(
-  type: "signup" | "demo" | "contact" | "newsletter",
-  data: any,
-  page: string
-): FormSubmission {
-  return {
-    id: `${type}-${Date.now()}`,
-    type,
-    email: data.email,
-    name: data.name,
-    company: data.company,
-    message: data.message,
-    timestamp: new Date(),
-    page,
-  };
-}
-
-/**
- * Form submission tracking
- */
-export async function trackFormSubmission(
-  submission: FormSubmission
-): Promise<void> {
-  try {
-    await fetch("/api/analytics/track", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(submission),
-    });
-  } catch (error) {
-    safeLog("Form submission tracking error:", error);
-  }
-}
-
-/**
- * CSRF token management
- */
-export async function getCSRFToken(): Promise<string> {
-  try {
-    const response = await fetch("/api/csrf-token");
-    const data = await response.json();
-    return data.token;
-  } catch (error) {
-    safeLog("CSRF token error:", error);
-    return "";
   }
 }
 

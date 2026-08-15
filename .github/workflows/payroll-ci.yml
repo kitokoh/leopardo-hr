@@ -35,7 +35,10 @@ env:
 
 concurrency:
   group: payroll-ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Issue #2131 : sur main, ne jamais annuler le run du commit précédent
+  # (chaque merge relançait l'annulation en cascade des runs paie utiles).
+  # Les runs PR gardent l'annulation (feedback rapide sur une même branche).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   golden:
@@ -205,11 +208,14 @@ jobs:
             --coverage-text 2>&1 | tee storage/coverage/payroll-summary.txt
 
       - name: Gate coverage Payroll ≥ 80 % (F-14)
+        id: coverage
         run: |
           # Calcule le coverage uniquement sur app/Modules/Payroll depuis le clover.
           # Note: PHPUnit Clover XML place les compteurs sur l'élément <metrics> enfant
           # de <file>, pas directement sur <file>. Le premier <metrics> direct d'un
           # <file> donne les totaux au niveau du fichier (statement coverage).
+          # Issue #2415 : le résultat est exposé (GITHUB_OUTPUT + artifact + comment
+          # PR) pour distinguer « couverture réellement < 80 % » d'un gate cassé.
           python3 - <<'PY'
           import xml.etree.ElementTree as ET
           import os, sys
@@ -223,6 +229,7 @@ jobs:
           root = tree.getroot()
           total_stmt = 0
           covered_stmt = 0
+          files = []  # (pct, total, covered, path)
           for f in root.iter('file'):
               path = f.get('name', '').replace('\\', '/')
               if '/app/Modules/Payroll/' not in path:
@@ -231,16 +238,88 @@ jobs:
               # au niveau fichier (PHPUnit Clover format).
               metrics = f.find('metrics')
               if metrics is not None:
-                  total_stmt   += int(metrics.get('statements', 0))
-                  covered_stmt += int(metrics.get('coveredstatements', 0))
+                  t = int(metrics.get('statements', 0))
+                  c = int(metrics.get('coveredstatements', 0))
+                  total_stmt += t
+                  covered_stmt += c
+                  files.append((c / t * 100 if t else 100.0, t, c, path))
           pct = (covered_stmt / total_stmt * 100) if total_stmt else 0.0
           print(f'Payroll coverage: {pct:.1f}% ({covered_stmt}/{total_stmt})')
+          # Écrit le résultat pour les steps suivants (artifact + comment PR).
+          with open(os.environ.get('GITHUB_OUTPUT', '/dev/null'), 'a') as out:
+              out.write(f'payroll_pct={pct:.1f}\n')
+              out.write(f'payroll_covered={covered_stmt}\n')
+              out.write(f'payroll_total={total_stmt}\n')
+          # Top 10 fichiers les moins couverts du module — diagnostic direct si < 80 %.
+          worst = sorted(files, key=lambda x: (x[0], -x[1]))[:10]
+          if worst:
+              print('\nFichiers Payroll les moins couverts :')
+              for fpct, ft, fc, fpath in worst:
+                  print(f'  {fpct:5.1f}%  {ft - fc:4d} stmt non couverts  {os.path.basename(fpath)}')
           # S-4 (#1664) : gate BLOQUANTE (F-14) — ≥ 80 % requis, sinon échec.
           if pct < 80.0:
               print(f'::error::Coverage Payroll {pct:.1f}% < 80% (F-14) — gate bloquante S-4 (#1664).')
               sys.exit(1)
           print('Coverage Payroll ≥ 80 % : gate OK.')
           PY
+
+      # Issue #2415 : artefact systématique (même en échec) pour mesurer la
+      # couverture réelle du module sans rejouer toute la suite.
+      - name: Upload payroll coverage artifacts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: payroll-coverage-report
+          path: |
+            api/storage/coverage/payroll-clover.xml
+            api/storage/coverage/payroll-summary.txt
+          if-no-files-found: ignore
+          retention-days: 30
+
+      # Issue #2415 : le % est affiché sur la PR — fini le gate rouge sans chiffre.
+      - name: Comment payroll coverage on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        with:
+          script: |
+            const pct = `${{ steps.coverage.outputs.payroll_pct }}`;
+            const covered = `${{ steps.coverage.outputs.payroll_covered }}`;
+            const total = `${{ steps.coverage.outputs.payroll_total }}`;
+            const ok = pct !== '' && parseFloat(pct) >= 80;
+            const icon = ok ? ':white_check_mark:' : ':x:';
+            const body = [
+              `## ${icon} Payroll Coverage (module Payroll, F-14)`,
+              '',
+              '| Metric | Value |',
+              '|--------|-------|',
+              `| **Coverage** | ${pct || 'n/a'}% |`,
+              `| **Statements** | ${covered || 'n/a'} / ${total || 'n/a'} |`,
+              `| **Threshold (S-4 #1664)** | ≥ 80 % |`,
+              `| **Status** | ${ok ? 'PASSED' : pct === '' ? 'n/a (échec en amont)' : 'FAILED'} |`,
+              '',
+              '> Mesure : statements couverts dans `api/app/Modules/Payroll/**` (issue #2415).',
+              '> Artefacts `payroll-coverage-report` (clover + summary) téléchargeables sur le run.',
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('Payroll Coverage (module Payroll, F-14)')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
 
   phpstan:
     name: PHPStan module Payroll

@@ -16,7 +16,6 @@ import {
   X,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import { getApiBaseUrl } from '@/lib/backend-url';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
   applyDocumentLocale,
@@ -83,35 +82,6 @@ function goToPostLoginTarget(target: string, router: ReturnType<typeof useRouter
   router.push(target);
 }
 
-const fallbackDemoCompanies: DemoCompany[] = [
-  {
-    name: 'TechCorp Algerie SARL', slug: 'techcorp-algerie', country: 'DZ',
-    users: [
-      { email: 'ahmed.benali@techcorp-algerie.dz', name: 'Ahmed Benali', role: 'manager', managerRole: 'principal', password: 'password123' },
-      { email: 'fatima.meziane@techcorp-algerie.dz', name: 'Fatima Meziane', role: 'manager', managerRole: 'rh', password: 'password123' },
-      { email: 'samir.boukhalfa@techcorp-algerie.dz', name: 'Samir Boukhalfa', role: 'manager', managerRole: 'dept', password: 'password123' },
-      { email: 'lina.haddad@techcorp-algerie.dz', name: 'Lina Haddad', role: 'manager', managerRole: 'comptable', password: 'password123' },
-      { email: 'karim.aouad@techcorp-algerie.dz', name: 'Karim Aouad', role: 'employee', managerRole: null, password: 'password123' },
-    ],
-  },
-  {
-    name: 'PharmaPlus Casablanca', slug: 'pharmaplus-casablanca', country: 'MA',
-    users: [
-      { email: 'amina.tahiri@pharmaplus.ma', name: 'Amina Tahiri', role: 'manager', managerRole: 'principal', password: 'password123' },
-      { email: 'sara.mansouri@pharmaplus.ma', name: 'Sara Mansouri', role: 'manager', managerRole: 'rh', password: 'password123' },
-      { email: 'rachid.benjelloun@pharmaplus.ma', name: 'Rachid Benjelloun', role: 'manager', managerRole: 'comptable', password: 'password123' },
-      { email: 'youssef.bennani@pharmaplus.ma', name: 'Youssef Bennani', role: 'employee', managerRole: null, password: 'password123' },
-    ],
-  },
-  {
-    name: 'DigitalFlow Tunis', slug: 'digitalflow-tunis', country: 'TN',
-    users: [
-      { email: 'sofiane.mrad@digitalflow.tn', name: 'Sofiane Mrad', role: 'manager', managerRole: 'principal', password: 'password123' },
-      { email: 'olfa.trabelsi@digitalflow.tn', name: 'Olfa Trabelsi', role: 'manager', managerRole: 'rh', password: 'password123' },
-      { email: 'aziz.khelifi@digitalflow.tn', name: 'Aziz Khelifi', role: 'employee', managerRole: null, password: 'password123' },
-    ],
-  },
-];
 
 function normalizeDemoCompanies(payload: DemoUsersPayload): DemoCompany[] {
   return (payload.data?.companies ?? [])
@@ -133,12 +103,9 @@ function normalizeDemoCompanies(payload: DemoUsersPayload): DemoCompany[] {
 }
 
 function googleAuthHref(): string {
-  const directApi = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, '');
-  const baseUrl = process.env.NEXT_PUBLIC_API_DIRECT === 'true' && directApi
-    ? directApi
-    : getApiBaseUrl();
-
-  return `${baseUrl}/auth/google`;
+  // QA #2277 : passer par le proxy Next.js (même origine) pour que le
+  // cookie de session soit posé sur le domaine vitrine, pas sur l'API.
+  return '/api/v1/auth/google';
 }
 
 function LoginInner() {
@@ -152,7 +119,7 @@ function LoginInner() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDemoModal, setShowDemoModal] = useState(false);
-  const [demoCompanies, setDemoCompanies] = useState<DemoCompany[]>(fallbackDemoCompanies);
+  const [demoCompanies, setDemoCompanies] = useState<DemoCompany[]>([]);
   const locale: AppLocale = localeOverride ?? storedLocale;
   const labels = useMemo(() => getCopy(locale), [locale]);
 
@@ -177,8 +144,11 @@ function LoginInner() {
         }
       })
       .catch(() => {
+        // Issue #2730 — pas de repli sur des comptes codés en dur
+        // (password123) : si /demo-users ne répond pas, la section démo
+        // reste masquée (aucune proposition d'un compte inutilisable).
         if (active) {
-          setDemoCompanies(fallbackDemoCompanies);
+          setDemoCompanies([]);
         }
       });
 
@@ -398,8 +368,8 @@ function LoginInner() {
                 <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   {registeredPlan === 'free'
-                    ? 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.'
-                    : 'Inscription reçue ! Connectez-vous pour continuer.'}
+                    ? labels.login.accountCreatedFree
+                    : labels.login.accountCreatedPaid}
                 </div>
               )}
               {error ? (
@@ -519,14 +489,16 @@ function LoginInner() {
                 </div>
               ) : null}
 
-              <button
-                type="button"
-                onClick={() => setShowDemoModal(true)}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-4 text-xs font-black uppercase tracking-widest text-emerald-600 transition hover:bg-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
-              >
-                <Sparkles className="h-4 w-4" aria-hidden="true" />
-                {labels.login.demoAccess}
-              </button>
+              {demoCompanies.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setShowDemoModal(true)}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-4 text-xs font-black uppercase tracking-widest text-emerald-600 transition hover:bg-emerald-500/10 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                >
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                  {labels.login.demoAccess}
+                </button>
+              ) : null}
 
               <p className="text-center text-xs leading-5 text-slate-500">
                 {labels.login.supportCopy}{' '}

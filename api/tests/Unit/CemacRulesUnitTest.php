@@ -79,29 +79,39 @@ class CemacRulesUnitTest extends TestCase
     {
         $rules = $this->cm();
 
-        $this->assertSame(15.0, $rules->noticePeriodDays(0.4));  // < 6 mois
-        $this->assertSame(30.0, $rules->noticePeriodDays(3.0));  // 6 mois – 5 ans
-        $this->assertSame(60.0, $rules->noticePeriodDays(7.0));  // 5 – 10 ans
-        $this->assertSame(90.0, $rules->noticePeriodDays(12.0)); // > 10 ans
+        $this->assertSame(11.0, $rules->noticePeriodDays(0.4));  // < 6 mois (11 j ouvrés, #2219)
+        $this->assertSame(22.0, $rules->noticePeriodDays(3.0));  // 6 mois – 5 ans (22 j ouvrés, #2219)
+        $this->assertSame(44.0, $rules->noticePeriodDays(7.0));  // 5 – 10 ans (44 j ouvrés, #2219)
+        $this->assertSame(66.0, $rules->noticePeriodDays(12.0)); // > 10 ans (66 j ouvrés, #2219)
     }
 
-    public function test_other_cemac_members_unaffected(): void
+    public function test_ga_is_pilot_with_legal_rules(): void
     {
-        // GA est passé 'pilot' (#1824) — on vérifie le placeholder sur un
-        // membre non encore implémenté (CF/TD/GQ).
-        $ga = (new CemacPayrollRules)->forMemberCountry('CF');
+        // GA est pilot (#1824) : 8 tranches IRPP + abattement 20 % + préavis
+        // OHADA 1 mois + CNSS plafonnée (GoldenGaPayrollTest en couvre les
+        // montants). Les membres placeholder restent CF/TD/GQ.
+        $ga = (new CemacPayrollRules)->forMemberCountry('GA');
+        $this->assertSame('pilot', $ga->confidenceLevel());
+        $this->assertCount(8, $ga->taxSlabs());
+        $this->assertSame('pilot', $ga->confidenceLevel());
+        // Préavis OHADA 1 mois (30 j calendaires) converti en jours ouvrés
+        // (#2219/#2280, même conversion que CM/GA/CG) → 22 j ouvrés.
+        $this->assertSame(22.0, $ga->noticePeriodDays(3.0));
 
-        // Placeholder conservé : 5 tranches génériques, pas d'abattement,
-        // pas de préavis, confidence placeholder.
-        $this->assertCount(5, $ga->taxSlabs());
-        $this->assertSame(['rate' => 0.0, 'cap' => null], $ga->professionalExpensesDeduction());
-        $this->assertSame(0.0, $ga->noticePeriodDays(3.0));
-        $this->assertSame('placeholder', $ga->confidenceLevel());
-
-        // CNPS placeholder non plafonnée (2 000 000 × 4,2 % / × 16,2 %).
+        // CNSS GA (2 000 000 < plafond 3 000 000) : salarié 2,5 % = 50 000 ;
+        // patronal (5 % + 8 %) + AT 3 % = 260 000 + 60 000 = 320 000.
         $charges = $ga->calculateSocialCharges(2000000.0);
-        $this->assertSame(84000.0, $charges['employee']);
-        $this->assertSame(324000.0, $charges['employer']);
+        $this->assertSame(50000.0, $charges['employee']);
+        $this->assertSame(320000.0, $charges['employer']);
+
+        // CF/TD/GQ restent placeholder (5 tranches génériques, pas de préavis).
+        $td = (new CemacPayrollRules)->forMemberCountry('TD');
+        $this->assertCount(5, $td->taxSlabs());
+        $this->assertSame('placeholder', $td->confidenceLevel());
+        $this->assertSame(0.0, $td->noticePeriodDays(3.0));
+        $chargesTd = $td->calculateSocialCharges(2000000.0);
+        $this->assertSame(84000.0, $chargesTd['employee']);
+        $this->assertSame(324000.0, $chargesTd['employer']);
     }
 
     public function test_cm_confidence_level_is_pilot(): void
