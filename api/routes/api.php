@@ -43,6 +43,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
@@ -267,6 +268,16 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/announcements', [PlatformAnnouncementController::class, 'store']);
         Route::get('/announcements/{announcement}', [PlatformAnnouncementController::class, 'show']);
         Route::delete('/announcements/{announcement}', [PlatformAnnouncementController::class, 'destroy']);
+
+        // QA wave 2026-08-14 — T004 (#2229) : CRUD utilisateurs plateforme.
+        Route::get('/users', [PlatformUserController::class, 'index']);
+        Route::post('/users', [PlatformUserController::class, 'store']);
+        Route::get('/users/{user}', [PlatformUserController::class, 'show'])->whereNumber('user');
+        Route::patch('/users/{user}', [PlatformUserController::class, 'update'])->whereNumber('user');
+        Route::delete('/users/{user}', [PlatformUserController::class, 'destroy'])->whereNumber('user');
+        Route::post('/users/{user}/activate', [PlatformUserController::class, 'activate'])->whereNumber('user');
+        Route::post('/users/{user}/deactivate', [PlatformUserController::class, 'deactivate'])->whereNumber('user');
+        Route::post('/users/{user}/suspend', [PlatformUserController::class, 'suspend'])->whereNumber('user');
 
         // PA2-ADM-006 — Secure super-admin impersonation ("log in as this
         // employee"): mandatory reason, hard time limit, fully audited.

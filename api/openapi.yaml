@@ -1130,6 +1130,222 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
+  /platform/users:
+    get:
+      tags: ["Platform"]
+      summary: "Lister les utilisateurs plateforme (super-admins)"
+      description: "QA wave 2026-08-14 T004 (#2229). Pagine, filtrable par `search` (nom/email) et `status`."
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string, maxLength: 100 }
+        - name: status
+          in: query
+          schema: { type: string, enum: [active, deactivated, suspended] }
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: "Utilisateurs pagines"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PlatformUser"
+                  meta:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Platform"]
+      summary: "Creer un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string, maxLength: 100 }
+                email: { type: string, format: email, maxLength: 150 }
+                password: { type: string, minLength: 12 }
+      responses:
+        "201":
+          description: "Utilisateur cree"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/users/{user}:
+    get:
+      tags: ["Platform"]
+      summary: "Detail d'un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Platform"]
+      summary: "Mettre a jour un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, maxLength: 100 }
+                email: { type: string, format: email, maxLength: 150 }
+                password: { type: string, minLength: 12 }
+                status: { type: string, enum: [active, deactivated, suspended] }
+      responses:
+        "200":
+          description: "Utilisateur mis a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["Platform"]
+      summary: "Desactiver un utilisateur plateforme (jamais de suppression physique)"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Compte desactive"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/users/{user}/activate:
+    post:
+      tags: ["Platform"]
+      summary: "Activer un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur active"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/users/{user}/deactivate:
+    post:
+      tags: ["Platform"]
+      summary: "Desactiver un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur desactive"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /platform/users/{user}/suspend:
+    post:
+      tags: ["Platform"]
+      summary: "Suspendre un utilisateur plateforme"
+      security:
+        - SuperAdminBearerAuth: []
+      parameters:
+        - name: user
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Utilisateur suspendu"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PlatformUser"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /platform/company-requests:
     get:
       tags: ["Platform"]
@@ -13749,6 +13965,16 @@ components:
         active:
           type: boolean
           description: "Passer a true remet failure_count a 0."
+
+    PlatformUser:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        status: { type: string, enum: [active, deactivated, suspended] }
+        last_login_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
 
     WebhookDelivery:
       type: object
