@@ -167,13 +167,9 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // BF/ML (#1829) : IUTS/ITS + CNSS/INPS implémentés depuis sources
-        // légales publiques — niveau 'pilot' (pas de placeholder).
-        foreach (['ML', 'BF'] as $memberCode) {
-            $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
-            $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
-        }
-
+        // ML/BF sont passés 'pilot' (#1829) — leurs barèmes/charges sont
+        // couverts par PayrollCountryRulesTest ; seuls les membres restés
+        // 'placeholder' (BJ/TG/NE) sont vérifiés ici.
         foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 

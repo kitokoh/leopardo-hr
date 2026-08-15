@@ -100,7 +100,7 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame('Africa/Casablanca', $morocco->timezone());
         self::assertSame([7], $morocco->weeklyRestDays());
         self::assertSame(['daily', 'weekly', 'monthly'], $morocco->supportedPayCycles());
-        self::assertStringContainsString('placeholder', $morocco->publicHolidaysSource());
+        self::assertStringContainsString('MA fixed public holidays', $morocco->publicHolidaysSource());
         self::assertSame('pilot', $morocco->confidenceLevel());
 
         $tunisia = new TunisiaPayrollRules;
@@ -108,7 +108,7 @@ class PayrollCountryRulesTest extends TestCase
         self::assertSame('Africa/Tunis', $tunisia->timezone());
         self::assertSame([7], $tunisia->weeklyRestDays());
         self::assertSame(['daily', 'weekly', 'monthly'], $tunisia->supportedPayCycles());
-        self::assertStringContainsString('placeholder', $tunisia->publicHolidaysSource());
+        self::assertStringContainsString('TN fixed public holidays', $tunisia->publicHolidaysSource());
         self::assertSame('pilot', $tunisia->confidenceLevel());
     }
 
@@ -262,8 +262,10 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
             if ($memberCode === 'GA') {
                 self::assertCount(8, $rules->taxSlabs()); // IRPP GA 8 tranches
+                self::assertStringContainsString('GA fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'CG') {
                 self::assertCount(6, $rules->taxSlabs()); // IRPP CG 6 tranches
+                self::assertStringContainsString('CG fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'CM') {
                 self::assertStringContainsString('CM fixed public holidays', $rules->publicHolidaysSource());
             } else {
@@ -342,14 +344,14 @@ class PayrollCountryRulesTest extends TestCase
             self::assertSame($expectedConfidence, $rules->confidenceLevel(), "{$memberCode} confidenceLevel");
             if ($memberCode === 'CI') {
                 self::assertStringContainsString('CI fixed public holidays', $rules->publicHolidaysSource());
+            } elseif ($memberCode === 'ML') {
+                self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
+                self::assertStringContainsString('ML fixed public holidays', $rules->publicHolidaysSource());
             } elseif ($memberCode === 'BF') {
                 self::assertCount(6, $rules->taxSlabs()); // IUTS 6 tranches (#1915 : +27,5 % > 6 M)
                 self::assertSame(12.1, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
-            } elseif ($memberCode === 'ML') {
-                self::assertCount(6, $rules->taxSlabs()); // ITS 6 tranches
-            } elseif ($memberCode === 'TG') {
-                self::assertCount(8, $rules->taxSlabs()); // IRPP 8 tranches art. 74
-                self::assertSame(3.0, $rules->taxSlabs()[1]['rate']); // ≠ placeholder 12.0
+                // #2255 : BF conserve le placeholder fériés (réforme légale 2026)
+                self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
             } else {
                 self::assertStringContainsString('placeholder', $rules->publicHolidaysSource());
             }

@@ -123,7 +123,7 @@ class MoroccoPayrollRules extends AbstractCountryRules
 
     public function publicHolidaysSource(): string
     {
-        return 'placeholder: no official Moroccan public-holiday calendar is wired in yet; do not assume dates are complete or correct. Pending PA2-COUNTRY-012.';
+        return 'MA fixed public holidays (décrets royaux, seed PublicHolidaySeeder, issue #2255): 1er jan, 11 jan, 1er mai, 30 juil, 14 août, 20 août, 21 août, 6 nov, 18 nov + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, 1er Moharrem, Aïd el-Mawlid) — PA2-COUNTRY-012.';
     }
 
     public function confidenceLevel(): string

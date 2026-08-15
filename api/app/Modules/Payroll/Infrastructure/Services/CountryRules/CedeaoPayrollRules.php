@@ -481,10 +481,16 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return 'CI fixed public holidays: 1er jan, lundi de Pâques, 1er mai, Ascension, lundi de Pentecôte, 7 août, 15 août, 1er nov, 15 nov, 25 déc (CI_COMPLIANCE.md §7) + mobile Islamic holidays (Aïd el-Fitr, Aïd el-Adha, Maouloud) — Islamic calendar wiring pending.';
         }
 
-        if ($this->memberCountryCode === 'TG') {
-            return 'TG fixed public holidays: 1er jan, 13 jan (Fête de la Libération), lundi de Pâques, 27 avril (Fête de l\'Indépendance), 1er mai, Ascension, lundi de Pentecôte, 15 août, 1er nov, 25 déc (TG_COMPLIANCE.md §Statut) + mobile Islamic holidays (Aïd el-Fitr, Aïd el-Adha, Maouloud) — Islamic calendar wiring pending, dates `confirmed` requises (#1930).';
+        if ($this->memberCountryCode === 'SN') {
+            return 'SN fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques (Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
         }
 
+        if ($this->memberCountryCode === 'ML') {
+            return 'ML fixed public holidays (seed PublicHolidaySeeder, issue #2255): 1er jan, 20 jan, 1er mars, 26 mars, 1er mai, 25 mai, 22 sept, 25 déc + mobiles (Pâques, Aïds) — PA2-COUNTRY-012.';
+        }
+
+        // BF : réforme légale 2026 (loi portant fêtes légales, 15 → 11 jours)
+        // — placeholder maintenu jusqu'au texte officiel complet (issue #2255).
         return 'placeholder: no official CEDEAO/UEMOA member-state public-holiday calendar wired in yet; '.
             'national/religious holidays must be entered manually per company '.
             'until PA2-COUNTRY-012 delivers a real source.';
