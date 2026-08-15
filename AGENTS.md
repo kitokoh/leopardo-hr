@@ -45,14 +45,31 @@ Lire `.specify/constitution.md` — c'est la loi fondamentale du projet.
 6. /speckit-implement (coder)
 ```
 
-### Regle anti-doublon (CRITIQUE)
+### Regle anti-doublon (CRITIQUE — protocole durci issue #2400)
 
-Avant de commencer a coder, **toujours** verifier :
-```bash
-gh issue list --state open --assignee @me
-gh issue list --state open --label "payroll" --json number,title,assignees | head -20
-```
-Si une spec/issue similaire existe et est assignee → contribuer dessus, pas creer une nouvelle PR.
+L'auto-assignation seule ne protege pas la fenetre implementation : plusieurs
+agents peuvent travailler en parallele sur la meme issue (constate le
+2026-08-15 : #2333 ×3 PRs, #2329 ×2 PRs, #2264 ×2, #2326 ×2 branches...).
+Protocol OBLIGATOIRE avant de commencer a coder :
+
+1. **Verifier TOUTES les branches, pas seulement les PRs** — le nom de
+   branche EST le lock :
+   ```bash
+   gh api repos/kitokoh/leopardo-hr/branches --paginate | grep -i "<issue>"
+   gh pr list --state open --json number,title,headRefName
+   ```
+   Une branche `fix/<issue>-*` existante = l'issue est prise → contribuer
+   dessus ou s'arreter (constitution §I « deux agents ne peuvent pas
+   implementer la meme spec »).
+2. **Marker branch immediat** : des le self-assign
+   (`gh issue edit <N> --add-assignee @me`), pousser une branche
+   `fix/<issue>-<slug>` avec un commit vide de claim (message
+   « claim marker #N »). Le premier-arrive conserve sa branche ; tout agent
+   qui voit la branche pour la meme issue contribue dessus ou s'arrete.
+3. **Nommage de branche UNIQUE par issue** : un seul `fix/<issue>-*` par
+   issue. Pas de suffixes multiples (`fix/2333-a`, `fix/2333-b`...).
+4. **Fermeture des doublons** : toute PR dupliquee sur une meme issue est
+   fermee avec un commentaire de renvoi vers la PR canonique (1 PR = 1 issue).
 
 ## Regles obligatoires
 
