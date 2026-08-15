@@ -169,7 +169,7 @@ async function downloadReport(report) {
 async function generateHrReport() {
   generatingReport.value = true
   try {
-    const res = await api.get('/v1/hr-reports', { params: hrReport })
+    const res = await api.get('/admin/hr-reports', { params: hrReport })
     hrReportResult.value = res.data.data || res.data || null
   } catch {
     hrReportResult.value = null
