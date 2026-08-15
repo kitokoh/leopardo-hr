@@ -97,17 +97,6 @@
       "response": []
     },
     {
-      "name": "Login employé/manager",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/auth/login"
-        }
-      },
-      "response": []
-    },
-    {
       "name": "Inscription (invitation-only)",
       "request": {
         "method": "POST",
@@ -130,34 +119,12 @@
       "response": []
     },
     {
-      "name": "Login super-admin",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/platform/auth/login"
-        }
-      },
-      "response": []
-    },
-    {
       "name": "Defaults pays (super-admin)",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
           "raw": "{{baseUrl}}/platform/country-defaults"
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "Plans (super-admin)",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/platform/plans"
         }
       },
       "response": []

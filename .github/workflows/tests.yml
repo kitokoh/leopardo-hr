@@ -619,8 +619,8 @@ jobs:
       - name: Self-test mojibake guard (#1612)
         run: pwsh dev-hub/tools/check-governance-mojibake-test.ps1
 
-      - name: APP_VERSION sync guard (#3528)
-        run: bash dev-hub/tools/check-app-version-sync.sh api
+      - name: Postman collection dedupe guard (#3602)
+        run: python3 dev-hub/tools/check-postman-collection-dupes.py
 
   dependency-review:
     name: Dependency Review (PR Security)
