@@ -93,7 +93,6 @@ class PlatformAdminDashboardController extends Controller
             return (int) DB::table(self::TENANT_SCHEMA.'.'.$table)->count();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0;
         }
     }
 
@@ -103,7 +102,6 @@ class PlatformAdminDashboardController extends Controller
             return (int) DB::table($table)->count();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0;
         }
     }
 
@@ -113,7 +111,6 @@ class PlatformAdminDashboardController extends Controller
             return (int) DB::table(self::TENANT_SCHEMA.'.'.$table)->where($column, $value)->count();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0;
         }
     }
 
@@ -123,7 +120,6 @@ class PlatformAdminDashboardController extends Controller
             return (int) DB::table($table)->where($column, $value)->count();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0;
         }
     }
 
@@ -135,7 +131,6 @@ class PlatformAdminDashboardController extends Controller
                 ->count();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0;
         }
     }
 
@@ -147,7 +142,6 @@ class PlatformAdminDashboardController extends Controller
                 ->count();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0;
         }
     }
 
@@ -163,7 +157,6 @@ class PlatformAdminDashboardController extends Controller
             return round((float) $total, 2);
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 0.0;
         }
     }
 
@@ -173,7 +166,6 @@ class PlatformAdminDashboardController extends Controller
             DB::selectOne('SELECT 1');
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return 'error';
         }
 
         $queue = config('queue.default');
@@ -182,7 +174,6 @@ class PlatformAdminDashboardController extends Controller
                 Redis::connection()->ping();
             } catch (\Throwable $e) {
                 $this->reportDashboardFailure(__FUNCTION__.':redis', $e);
-                return 'warning';
             }
         }
 
@@ -209,7 +200,6 @@ class PlatformAdminDashboardController extends Controller
                 ->all();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return [];
         }
     }
 
@@ -231,7 +221,6 @@ class PlatformAdminDashboardController extends Controller
                 ->all();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return [];
         }
     }
 
@@ -254,7 +243,6 @@ class PlatformAdminDashboardController extends Controller
                 ->all();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return [];
         }
     }
 
@@ -276,7 +264,6 @@ class PlatformAdminDashboardController extends Controller
                 ->all();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return [];
         }
     }
 
@@ -289,11 +276,10 @@ class PlatformAdminDashboardController extends Controller
             return DB::table('platform_alert_dismissals')->pluck('alert_key')->all();
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return [];
         }
     }
 
-    /** @return array<string, mixed>|null */
+    /** @return null (toujours — une panne Redis remonte un 503 via reportDashboardFailure, spec #3001) */
     private function redisAlert(): ?array
     {
         if (config('cache.default') !== 'redis' && config('queue.default') !== 'redis' && config('session.driver') !== 'redis') {
@@ -306,7 +292,6 @@ class PlatformAdminDashboardController extends Controller
             return null;
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return $this->alert('redis_unreachable', 'critical', __('platform.alert_redis_unreachable'));
         }
     }
 
@@ -326,7 +311,6 @@ class PlatformAdminDashboardController extends Controller
             return $this->alert('queue_depth', 'warning', __('platform.alert_queue_depth', ['count' => $depth]));
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return null;
         }
     }
 
@@ -341,7 +325,6 @@ class PlatformAdminDashboardController extends Controller
                 : null;
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return null;
         }
     }
 
@@ -359,7 +342,6 @@ class PlatformAdminDashboardController extends Controller
                 : null;
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return null;
         }
     }
 
@@ -378,7 +360,6 @@ class PlatformAdminDashboardController extends Controller
                 : null;
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return null;
         }
     }
 
@@ -396,7 +377,6 @@ class PlatformAdminDashboardController extends Controller
                 : null;
         } catch (\Throwable $e) {
             $this->reportDashboardFailure(__FUNCTION__, $e);
-            return null;
         }
     }
 

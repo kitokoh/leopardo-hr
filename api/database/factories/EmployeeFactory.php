@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
+/** @extends \Illuminate\Database\Eloquent\Factories\Factory<Employee> */
 /**
  * EmployeeFactory — Génère des employés de test (schéma tenant actif)
  *

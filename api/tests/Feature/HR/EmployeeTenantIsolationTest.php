@@ -102,6 +102,7 @@ class EmployeeTenantIsolationTest extends TestCase
         ];
     }
 
+    /** @return array<string, string> */
     private function authHeader(Employee $actor): array
     {
         return ['Authorization' => 'Bearer '.$actor->createToken('tests')->plainTextToken];

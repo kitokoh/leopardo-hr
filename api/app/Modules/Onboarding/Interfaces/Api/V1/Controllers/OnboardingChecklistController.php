@@ -31,7 +31,7 @@ class OnboardingChecklistController extends Controller
 {
     public function __invoke(): JsonResponse
     {
-        /** @var Employee $actor */
+        /** @var Employee|null $actor */
         $actor = request()->user();
 
         // #3239 — plus de 403 : tout utilisateur authentifié du tenant peut
