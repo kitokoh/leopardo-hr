@@ -153,7 +153,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payment-batches/{paymentBatch}/mark-paid', [PaymentBatchController::class, 'markPaid'])->whereNumber('paymentBatch');
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
-        Route::get('/payroll-runs/{payrollRun}/payment-documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
         Route::get('/payments/{payrollRun}/documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
     });
 

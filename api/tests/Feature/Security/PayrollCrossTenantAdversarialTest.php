@@ -82,7 +82,7 @@ class PayrollCrossTenantAdversarialTest extends TestCase
 
         Sanctum::actingAs($this->managerB);
 
-        $this->getJson("/api/v1/payroll-runs/{$run->id}/payment-documents")->assertStatus(404);
+        $this->getJson("/api/v1/payments/{$run->id}/documents")->assertStatus(404);
     }
 
     public function test_cross_tenant_payroll_run_export_is_forbidden(): void

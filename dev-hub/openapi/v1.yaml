@@ -6687,33 +6687,6 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
 
-  /payroll-runs/{payrollRun}/payment-documents:
-    get:
-      tags: ["Payroll"]
-      summary: "Documents de paiement d'un cycle paie"
-      parameters:
-        - in: path
-          name: payrollRun
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Documents du cycle"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PaymentDocument"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
   /payment-batches:
     get:
       tags: ["Payroll"]
@@ -6813,7 +6786,7 @@ paths:
   /payments/{payrollRun}/documents:
     get:
       tags: ["Payroll"]
-      summary: "Alias mobile pour documents de paiement d'un cycle"
+      summary: "Documents de paiement d.un cycle paie"
       parameters:
         - in: path
           name: payrollRun
