@@ -118,6 +118,12 @@ La gestion du projet Leopardo RH se fait desormais **exclusivement via GitHub Is
 - Ne jamais merger sa propre PR sans que les checks CI obligatoires (`gh pr checks <numero>`) soient verts.
 - Assurez-vous que la description de la PR indique clairement quelle issue P0/P1 est resolue.
 
+### Politique de merge des agents (decision #2414, 2026-08-15)
+
+- `main` exige **0 review humaine** : la CI verte (5 checks requis, voir `dev-hub/tools/branch-protection-canonical.json`) EST le gate de merge. Ne PAS remettre `required_approving_review_count: 1` — tous les agents utilisent le compte `kitokoh` et GitHub interdit l'auto-approbation (deadlock historique #2414).
+- Toute PR agent doit rester `draft` tant que les checks ne sont pas verts, puis etre merger avec `gh pr merge --merge --delete-branch` (ou l'equivalent API). Ne jamais merger une PR rouge.
+- `enforce_admins: false` : le proprietaire peut debloquer un merge en urgence, mais la CI reste la source de verite.
+
 ### Bibliotheque de prompts operationnels
 
 Le dossier `dev-hub/prompts/` contient des prompts numerotes prets a l'emploi pour piloter les agents. Chaque prompt est un fichier Markdown autonome avec des instructions executables.

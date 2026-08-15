@@ -6,6 +6,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **gov(branch-protection): canonical aligné sur le workflow agent — reviews 0, CI verte = gate (Closes #2414).** Le canonique `dev-hub/tools/branch-protection-canonical.json` exigeait `required_approving_review_count: 1` + `enforce_admins: true` alors que toutes les PRs sont créées par le compte `kitokoh` (agents) : GitHub interdit l'auto-approbation → aucune PR ne pouvait être mergée (deadlock, ~90 PRs accumulées). Décision (Option A de l'issue) : `required_approving_review_count: 0` et `enforce_admins: false` — la CI verte (5 checks requis : Backend Coverage, PHPStan Strict, Module Structure, ESLint+TS, actionlint) EST le gate de merge ; `required_merge_queue` retiré (jamais actif en réalité). Les 5 checks + `strict: true` + interdiction force-push/deletion sont conservés. La garde `branch-protection-guard.yml` (issue #2011) compare la protection RÉELLE au canonique : le fichier est désormais la seule source à changer (la protection réelle était déjà relâchée).
+
 ### Fixed
 
 - **fix(web): locale AR — mojibake UTF-8 double-encodé corrigé dans 11 fichiers + garde anti-régression (Closes #2275).** Les chaînes AR inline de la vitrine (`Navbar`, `PricingSection`, `TrustedBrands`, `LaunchOperatingSystemSection`, pages pricing/download/demo/branding/mobile, page login et layout dashboard) étaient double-encodées (`Ø§Ù„Ø£Ø³Ø¹Ø§Ø±` au lieu de `الأسعار`) : décodées proprement (latin-1/cp1252 → UTF-8). Au passage, mojibake FR/EN/TR inline corrigé (apostrophes « â€™ », tirets « â€” », guillemets « Â« » », caractères turcs « ÅŸ »/« Ä± »/« Ã– »…) dans ~20 autres fichiers `src`. Nouveau garde anti-régression `front/web/scripts/check-mojibake.mjs` (`npm run check:mojibake`) branché sur le CI vitrine (`web-marketing-ci.yml`) : scanne `front/web/src` et fait échouer le job si un pattern mojibake (arabe ou latin) réapparaît. Les catalogues JSON + `locale-catalog.ts` étaient déjà propres (aucun changement).
