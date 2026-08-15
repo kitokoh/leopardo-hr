@@ -1,4 +1,3 @@
-import { FormSubmission } from "./analytics";
 import {
   SignupFormData,
   DemoFormData,
@@ -331,59 +330,6 @@ export async function submitNewsletterForm(
       message: "Erreur lors de l'inscription à la newsletter",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
-  }
-}
-
-/**
- * Get form submission from data
- */
-export function getFormSubmission(
-  type: "signup" | "demo" | "contact" | "newsletter",
-  data: any,
-  page: string
-): FormSubmission {
-  return {
-    id: `${type}-${Date.now()}`,
-    type,
-    email: data.email,
-    name: data.name,
-    company: data.company,
-    message: data.message,
-    timestamp: new Date(),
-    page,
-  };
-}
-
-/**
- * Form submission tracking
- */
-export async function trackFormSubmission(
-  submission: FormSubmission
-): Promise<void> {
-  try {
-    await fetch("/api/analytics/track", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(submission),
-    });
-  } catch (error) {
-    safeLog("Form submission tracking error:", error);
-  }
-}
-
-/**
- * CSRF token management
- */
-export async function getCSRFToken(): Promise<string> {
-  try {
-    const response = await fetch("/api/csrf-token");
-    const data = await response.json();
-    return data.token;
-  } catch (error) {
-    safeLog("CSRF token error:", error);
-    return "";
   }
 }
 
