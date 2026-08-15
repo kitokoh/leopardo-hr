@@ -12,6 +12,7 @@ use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -181,11 +182,37 @@ class RecruitmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $applicant = Applicant::create([
-            ...$validated,
-            'company_id' => $actor->company_id,
-            'job_posting_id' => $jobPosting->id,
-        ]);
+        // Issue #3860 — pas de doublon (job_posting_id, email), même garde
+        // que le portail public : un doublon retourne 409 ALREADY_APPLIED.
+        $alreadyApplied = Applicant::query()
+            ->where('company_id', $actor->company_id)
+            ->where('job_posting_id', $jobPosting->id)
+            ->where('email', $validated['email'])
+            ->exists();
+
+        if ($alreadyApplied) {
+            return new JsonResponse([
+                'error' => 'ALREADY_APPLIED',
+                'message' => 'A candidate with this email has already applied for this position.',
+            ], 409);
+        }
+
+        try {
+            $applicant = Applicant::create([
+                ...$validated,
+                'company_id' => $actor->company_id,
+                'job_posting_id' => $jobPosting->id,
+            ]);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23505') {
+                return new JsonResponse([
+                    'error' => 'ALREADY_APPLIED',
+                    'message' => 'A candidate with this email has already applied for this position.',
+                ], 409);
+            }
+
+            throw $e;
+        }
 
         return (new ApplicantResource($applicant))
             ->response()
