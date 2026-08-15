@@ -69,6 +69,14 @@ jobs:
             version_prefix: platform-admin
             firebase_secret: FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID
             android_package: com.leopardo.platformadmin
+          # QA 2026-08-15 (#2661) : leopardo_hr manquait dans la matrice de
+          # distribution staging (parité avec mobile-distribute.yml).
+          - name: hr
+            project_path: front/mobile_apps/leopardo_hr
+            artifact_name: leopardo-hr-staging
+            version_prefix: hr
+            firebase_secret: FIREBASE_APP_ID
+            android_package: com.leopardo.rh
 
     steps:
       # Security note (CodeQL actions/untrusted-checkout fix):
