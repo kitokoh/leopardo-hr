@@ -6,6 +6,7 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Domain\Models\ZktecoSyncLog;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,6 +80,28 @@ class ZktecoIntegrationService
                 $time = substr($timestamp, 11, 8);
                 $action = $this->resolveAction($record['punch_type'] ?? 0);
 
+                // #2330 : `attendance_logs.status` est un enum PostgreSQL
+                // (ontime/late/absent/leave/holiday/incomplete) — 'present'
+                // levait 22P02 et faisait échouer CHAQUE punch (jamais
+                // persisté). Statut calculé comme AttendanceService::checkIn :
+                // retard vs horaire planifié (start_time − tolérance).
+                $status = 'ontime';
+                $lateMinutes = 0;
+                if ($action === 'check_in' && isset($employee->schedule_id)) {
+                    $schedule = DB::table('schedules')
+                        ->where('id', $employee->schedule_id)
+                        ->where('company_id', $device->company_id)
+                        ->first();
+                    if ($schedule !== null && ! empty($schedule->start_time)) {
+                        $checkIn = Carbon::parse($timestamp);
+                        $start = Carbon::parse($date.' '.$schedule->start_time);
+                        $diffMinutes = $start->diffInMinutes($checkIn, false);
+                        $tolerance = (int) ($schedule->late_tolerance_minutes ?? 0);
+                        $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
+                        $status = $lateMinutes > 0 ? 'late' : 'ontime';
+                    }
+                }
+
                 $existing = DB::table('attendance_logs')
                     ->where('employee_id', $employee->id)
                     ->where('date', $date)
@@ -102,7 +125,8 @@ class ZktecoIntegrationService
                         'check_in' => $action === 'check_in' ? $timestamp : null,
                         'check_out' => $action === 'check_out' ? $timestamp : null,
                         'method' => 'zkteco',
-                        'status' => 'present',
+                        'status' => $status,
+                        'late_minutes' => $lateMinutes,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
