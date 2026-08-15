@@ -31,7 +31,7 @@ class EmployeeFactory extends Factory
      * (forceFill) pour préserver les états de test (manager, archived, ...)
      * sans affaiblir la protection applicative.
      */
-    protected function newModel(array $attributes)
+    public function newModel(array $attributes = [])
     {
         $model = new $this->model();
         $model->forceFill($attributes);
