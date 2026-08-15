@@ -277,6 +277,8 @@ async function rejectRequest(id, comment) {
 
 function escapeCsvCell(value) {
   const s = String(value ?? '')
+  // Anti-injection de formule (cellules = + - @) — cohérent UsersView #2700 / AnalyticsView #3045.
+  if (/^[=+\-@]/.test(s)) return `'${s}`
   if (/[;"'\n]/.test(s)) {
     return `"${s.replace(/"/g, '""')}"`
   }
