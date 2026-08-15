@@ -215,6 +215,63 @@ class SelfServiceTrialTest extends TestCase
             ]);
     }
 
+
+    public function test_resend_generates_new_otp_and_invalidates_old(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/signup', [
+            'email' => 'founder@newtech.dz',
+            'company' => 'NewTech Algeria',
+            'role' => 'founder',
+            'country' => 'DZ',
+        ])->assertStatus(200);
+
+        $oldOtp = CompanyRequest::where('email', 'founder@newtech.dz')->first()->verification_token;
+
+        $this->postJson('/api/v1/trial/resend', [
+            'email' => 'founder@newtech.dz',
+        ])->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => ['status' => 'pending_verification'],
+            ]);
+
+        $fresh = CompanyRequest::where('email', 'founder@newtech.dz')->first();
+        $this->assertNotNull($fresh);
+        $this->assertNotSame($oldOtp, $fresh->verification_token);
+
+        Mail::assertSent(TrialVerificationMail::class, function ($mail) use ($fresh) {
+            return $mail->hasTo('founder@newtech.dz')
+                && str_contains($mail->render(), $fresh->verification_token);
+        });
+
+        // l'ancien code ne fonctionne plus, le nouveau provisionne le tenant
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@newtech.dz',
+            'code' => $oldOtp,
+        ])->assertStatus(400);
+
+        $this->postJson('/api/v1/trial/verify', [
+            'email' => 'founder@newtech.dz',
+            'code' => $fresh->verification_token,
+        ])->assertStatus(201);
+    }
+
+    public function test_resend_returns_404_without_pending_request(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/api/v1/trial/resend', [
+            'email' => 'ghost@nowhere.dz',
+        ])
+            ->assertStatus(404)
+            ->assertJson([
+                'success' => false,
+                'error' => 'NO_PENDING_REQUEST',
+            ]);
+    }
+
     public function test_validates_required_fields()
     {
         $response = $this->postJson('/api/v1/trial/signup', []);
