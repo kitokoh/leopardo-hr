@@ -595,5 +595,6 @@
   "navigationTraining": "التدريب",
   "navigationUsers": "المستخدمون",
   "navigationWebhooks": "خطافات الويب",
-  "webhooksConfirmDelete": "حذف خطاف الويب هذا؟"
+  "webhooksConfirmDelete": "حذف خطاف الويب هذا؟",
+  "a11ySkipToContent": "الانتقال إلى المحتوى الرئيسي"
 }

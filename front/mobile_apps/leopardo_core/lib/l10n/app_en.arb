@@ -595,5 +595,6 @@
   "navigationTraining": "Training",
   "navigationUsers": "Users",
   "navigationWebhooks": "Webhooks",
-  "webhooksConfirmDelete": "Delete this webhook?"
+  "webhooksConfirmDelete": "Delete this webhook?",
+  "a11ySkipToContent": "Skip to main content"
 }
