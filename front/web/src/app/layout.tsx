@@ -11,6 +11,7 @@ import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
+import { t } from '@/lib/i18n/locale-catalog';
 import type { AppLocale } from '@/lib/i18n';
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
@@ -200,7 +201,7 @@ export default async function RootLayout({
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-indigo-600 focus:shadow-lg"
         >
-          {{ 'fr': 'Aller au contenu principal', 'en': 'Skip to main content', 'tr': 'Ana içeriğe geç', 'ar': 'الانتقال إلى المحتوى الرئيسي' }[ssrLang]}
+          {t(ssrLang, 'a11y.skip_to_content', 'Aller au contenu principal')}
         </a>
         <OrganizationJsonLd />
         <DarkModeProvider>
