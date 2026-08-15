@@ -35,14 +35,6 @@
                 <p class="mt-1 text-sm text-gray-500">
                   {{ notification.message }}
                 </p>
-                <div v-if="notification.action" class="mt-3 flex space-x-7">
-                  <button
-                    @click="handleNotificationAction(notification)"
-                    class="rounded-md bg-white text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    {{ notification.action.label }}
-                  </button>
-                </div>
               </div>
               <div class="ml-4 flex flex-shrink-0">
                 <button
@@ -61,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
@@ -89,24 +81,22 @@ const visibleNotifications = computed(() => {
 let dismissTimers = new Map()
 
 onMounted(() => {
-  // Listen for new real-time notifications
-  const unsubscribe = realtimeStore.$subscribe((mutation, state) => {
-    // Garde de forme #2747 : `events` peut être absent ou non-tableau selon
-    // la mutation Pinia — ne jamais supposer `events.some` disponible.
-    const events = mutation?.events
-    const hasNewNotification = Array.isArray(events) &&
-      events.some(event => event.key === 'notifications' && event.type === 'add')
-    if (hasNewNotification) {
-      const newNotification = state.notifications[0]
-      if (newNotification && !localNotifications.value.find(n => n.id === newNotification.id)) {
+  // Issue #2716 — $subscribe(mutation.events) ne se déclenche jamais pour les
+  // mutations directes Pinia (events === null) : on écoute l'état du store.
+  const stopWatch = watch(
+    () => realtimeStore.notifications[0],
+    (newNotification, oldNotification) => {
+      if (!newNotification) return
+      if (oldNotification && oldNotification.id === newNotification.id) return
+      if (!localNotifications.value.find(n => n.id === newNotification.id)) {
         showNotification(newNotification)
       }
     }
-  })
+  )
 
   // Cleanup subscription
   onUnmounted(() => {
-    unsubscribe()
+    stopWatch()
     // Clear all timers
     dismissTimers.forEach(timer => clearTimeout(timer))
     dismissTimers.clear()
@@ -147,13 +137,6 @@ function dismissNotification(notificationId) {
     clearTimeout(timer)
     dismissTimers.delete(notificationId)
   }
-}
-
-function handleNotificationAction(notification) {
-  if (notification.action?.callback) {
-    notification.action.callback()
-  }
-  dismissNotification(notification.id)
 }
 
 function getNotificationIcon(type) {

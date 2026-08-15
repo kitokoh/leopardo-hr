@@ -29,6 +29,20 @@ class ProcessBulkPaymentJobTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // QA #2997 — les claims Redis `bulk_pay:*` (TTL 6 h) et les IDs de
+        // payroll_run/slips réutilisés entre tests : purge avant chaque test
+        // (flushdb fiable : suite séquentielle, préfixe predis ignoré).
+        try {
+            \Illuminate\Support\Facades\Redis::connection('default')->flushdb();
+        } catch (\Throwable) {
+            // Redis indisponible : garde non bloquante.
+        }
+    }
+
     public function test_bulk_payment_processes_all_slips_marks_run_paid_and_notifies_trigger_on_full_success(): void
     {
         Queue::fake();

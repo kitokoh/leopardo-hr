@@ -38,7 +38,7 @@ class ConversationController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $perPage = (int) $request->integer('per_page', 20);
+        $perPage = max(1, min(100, (int) $request->integer('per_page', 20)));
         $threads = $this->conversationService->threadsFor($actor, $perPage);
 
         return ConversationThreadResource::collection($threads)->response();

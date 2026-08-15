@@ -677,6 +677,7 @@ CREATE TABLE shared_tenants.departments (
     id serial PRIMARY KEY,
     company_id uuid NULL,
     name varchar(150) NOT NULL,
+    manager_id integer NULL,
     created_at timestamp NULL,
     updated_at timestamp NULL
 );
@@ -733,6 +734,7 @@ CREATE TABLE public.super_admins (
     name varchar(100) NOT NULL,
     email varchar(150) NOT NULL,
     password_hash varchar(255) NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'active',
     two_fa_secret varchar(32) NULL,
     last_login_at timestamptz NULL,
     created_at timestamptz NULL
@@ -879,6 +881,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.device_tokens (
 -- Calendar connections (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
     id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
     employee_id bigint NOT NULL,
     provider varchar(20) NOT NULL,
     access_token text NULL,
@@ -897,6 +900,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
 -- Calendar events (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_events (
     id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
     employee_id bigint NOT NULL,
     external_event_id varchar(255) NULL,
     provider varchar(20) NOT NULL DEFAULT 'google',

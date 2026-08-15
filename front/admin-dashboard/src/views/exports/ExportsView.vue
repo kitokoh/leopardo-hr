@@ -103,7 +103,7 @@
       search-placeholder="Rechercher dans l'historique..."
       default-sort="created_at"
       default-sort-dir="desc"
-      empty-message="Aucun export recent."
+      :empty-message="historyError || 'Aucun export recent.'"
     >
       <template #cell-status="{ value }">
         <StatusBadge :status="value" :map="exportStatusMap" />
@@ -124,11 +124,15 @@ import {
   AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon
 } from '@heroicons/vue/24/outline'
 import api, { downloadApiFile } from '@/services/api'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const exportHistory = ref([])
 const historyLoading = ref(false)
+const historyError = ref('')
 const hrReportResult = ref(null)
 const generatingReport = ref(false)
 const hrReportError = ref('')
@@ -165,9 +169,13 @@ const exportStatusMap = {
 async function downloadReport(report) {
   report.downloading = true
   try {
+    // Issue #2710 — état de téléchargement réel (plus de setTimeout simulé).
     await downloadApiFile(`${report.endpoint}?format=${report.format}`, `${report.key}.${report.format}`)
+  } catch (error) {
+    console.error('Download failed:', error)
+    toast.error('Erreur lors du téléchargement du rapport')
   } finally {
-    setTimeout(() => { report.downloading = false }, 1000)
+    report.downloading = false
   }
 }
 
@@ -187,9 +195,15 @@ async function generateHrReport() {
 
 async function fetchHistory() {
   historyLoading.value = true
+  historyError.value = ''
   try {
-    const res = await api.get('/v1/export/history').catch(() => ({ data: { data: [] } }))
+    // Issue #2710 — un échec backend s'affiche comme une erreur explicite
+    // (plus de catch silencieux qui ressemble à « aucun export »).
+    const res = await api.get('/v1/export/history')
     exportHistory.value = res.data.data || res.data || []
+  } catch (err) {
+    // #3395 : état d'erreur visible + retry au lieu d'une liste vide trompeuse.
+    historyError.value = err?.response?.data?.message || 'Impossible de charger l\'historique des exports.'
   } finally {
     historyLoading.value = false
   }

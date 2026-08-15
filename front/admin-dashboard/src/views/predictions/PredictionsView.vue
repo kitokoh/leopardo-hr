@@ -45,6 +45,9 @@
         >Voir</a>
       </div>
     </div>
+    <div v-if="loadError" class="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+      {{ loadError }}
+    </div>
     <div v-else-if="!loading" class="rounded-lg bg-green-50 p-4 text-center text-sm text-green-700">
       Aucune notification proactive — tout est en ordre.
     </div>
@@ -150,14 +153,19 @@ const loadingAbsenteeism = ref(false)
 const notifications = ref([])
 const turnover = ref(null)
 const absenteeism = ref(null)
+// QA #3491 : un échec d'appel API s'affiche comme un succès (« tout est en
+// ordre » / valeurs vides) — état d'erreur explicite + retry requis.
+const loadError = ref('')
 
 async function fetchNotifications() {
   loading.value = true
   try {
     const res = await api.get('/v1/predictions/notifications')
     notifications.value = res.data.data || []
-  } catch {
+    loadError.value = ''
+  } catch (e) {
     notifications.value = []
+    loadError.value = e?.response?.data?.message || 'Impossible de charger les notifications prédictives.'
   } finally {
     loading.value = false
   }
@@ -168,8 +176,10 @@ async function fetchTurnover() {
   try {
     const res = await api.get('/v1/predictions/turnover')
     turnover.value = res.data.data || null
-  } catch {
+    loadError.value = ''
+  } catch (e) {
     turnover.value = null
+    loadError.value = e?.response?.data?.message || 'Impossible de charger la prédiction de turnover.'
   } finally {
     loadingTurnover.value = false
   }
@@ -180,8 +190,10 @@ async function fetchAbsenteeism() {
   try {
     const res = await api.get('/v1/predictions/absenteeism')
     absenteeism.value = res.data.data || null
-  } catch {
+    loadError.value = ''
+  } catch (e) {
     absenteeism.value = null
+    loadError.value = e?.response?.data?.message || 'Impossible de charger la prédiction d\'absentéisme.'
   } finally {
     loadingAbsenteeism.value = false
   }

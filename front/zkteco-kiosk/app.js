@@ -142,6 +142,28 @@ function setPunchButtonsDisabled(disabled) {
   if (els.checkOutBtn) els.checkOutBtn.disabled = disabled;
 }
 
+function hasKioskConfiguration() {
+  return Boolean((CONFIG.apiBaseUrl || '').trim() && (CONFIG.deviceCode || '').trim());
+}
+
+function setUnconfiguredState() {
+  els.companyName.textContent = t('config.unconfigured.title');
+  els.locationLabel.textContent = t('config.unconfigured.description');
+  els.syncDot.classList.remove('ok');
+  els.syncDot.classList.add('bad');
+  els.syncLabel.textContent = t('config.unconfigured.sync');
+  if (els.lastSyncAt) els.lastSyncAt.textContent = t('config.unconfigured.lastSync');
+  setStatus('#statusBox', t('config.unconfigured.description'), true);
+  setPunchButtonsDisabled(true);
+  ['#demoAccessBtn', '#infoSearchBtn', '#leaveSearchBtn', '#qrCheckInBtn', '#qrCheckOutBtn', '#syncRetryBtn']
+    .map((selector) => $(selector))
+    .filter(Boolean)
+    .forEach((button) => {
+      button.disabled = true;
+      button.setAttribute('aria-disabled', 'true');
+    });
+}
+
 async function findLocalRosterEmployee(identifier) {
   try {
     const payload = await fetchJson(`${CONFIG.localBridgeUrl}/roster`);
@@ -576,9 +598,15 @@ function init() {
   window.KioskI18n.initLangSelector('langSelect');
   document.addEventListener('leopardo:lang-changed', () => {
     if (state.status) renderStatus();
+    else if (!hasKioskConfiguration()) setUnconfiguredState();
   });
 
   initTabs();
+
+  if (!hasKioskConfiguration()) {
+    setUnconfiguredState();
+    return;
+  }
 
   // Punch
   els.checkInBtn.addEventListener('click', () => submitPunch('check_in'));
@@ -613,6 +641,16 @@ function init() {
 
   // Demo access
   initDemoAccess();
+
+  // Issue #2911 : sans apiBaseUrl/deviceCode (config.json absent), la borne
+  // appelait /api/v1/kiosks//… → alerte « Error 404 » brute. Afficher un
+  // état « borne non configurée » explicite et désactiver les actions.
+  if (!CONFIG.apiBaseUrl || !CONFIG.deviceCode) {
+    setStatus('#statusBox', t('error.kioskNotConfigured'), true);
+    setPunchButtonsDisabled(true);
+    if (els.syncRetryBtn) els.syncRetryBtn.disabled = true;
+    return;
+  }
 
   // Initial loads
   refreshStatus();

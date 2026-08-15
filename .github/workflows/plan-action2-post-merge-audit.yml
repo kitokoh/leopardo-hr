@@ -30,7 +30,7 @@ env:
 
 concurrency:
   group: plan-action2-post-merge-audit-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   post-merge-audit:

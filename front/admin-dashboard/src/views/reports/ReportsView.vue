@@ -1,5 +1,8 @@
 <template>
   <div class="space-y-6">
+    <div v-if="metricsError" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+      {{ metricsError }}
+    </div>
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
       <MetricCard title="Effectif total" :value="metrics.headcount" />
       <MetricCard title="Taux absenteisme" :value="metrics.absenteeism_rate" format="percent" />
@@ -97,6 +100,7 @@ const loading = ref(false)
 const error = ref('')
 const activeTab = ref('headcount')
 const reportData = ref(null)
+const metricsError = ref('')
 const metrics = ref({
   headcount: 0,
   absenteeism_rate: 0,
@@ -134,11 +138,17 @@ async function loadReport(key) {
 }
 
 async function loadMetrics() {
+  metricsError.value = ''
   try {
-    const [hc, ab, to] = await Promise.allSettled([
+    // QA #3494 : les cartes « Heures supp. » et « Masse salariale » restaient
+    // à 0 même en succès — les endpoints /v1/reports/overtime et
+    // /v1/reports/payroll-summary existent mais n'étaient jamais appelés.
+    const [hc, ab, to, ot, ps] = await Promise.allSettled([
       api.get('/v1/reports/headcount'),
       api.get('/v1/reports/absenteeism'),
       api.get('/v1/reports/turnover'),
+      api.get('/v1/reports/overtime'),
+      api.get('/v1/reports/payroll-summary'),
     ])
 
     if (hc.status === 'fulfilled') {
@@ -150,7 +160,23 @@ async function loadMetrics() {
     if (to.status === 'fulfilled') {
       metrics.value.turnover_rate = to.value.data?.data?.rate ?? 0
     }
+    if (ot.status === 'fulfilled') {
+      const employees = ot.value.data?.data?.employees ?? []
+      metrics.value.overtime_hours = employees.reduce(
+        (sum, e) => sum + (Number(e?.total_overtime) || 0),
+        0
+      )
+    }
+    if (ps.status === 'fulfilled') {
+      metrics.value.payroll_total = ps.value.data?.data?.total_gross ?? 0
+    }
+
+    const failed = [hc, ab, to, ot, ps].filter((r) => r.status === 'rejected').length
+    if (failed > 0) {
+      metricsError.value = `Impossible de charger ${failed} indicateur(s) — données partielles.`
+    }
   } catch (e) {
+    metricsError.value = 'Impossible de charger les indicateurs.'
     console.warn('Metrics load failed', e)
   }
 }

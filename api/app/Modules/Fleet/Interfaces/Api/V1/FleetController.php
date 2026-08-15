@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Fleet\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\Fleet\Domain\Models\VehicleAlert;
 use App\Modules\Fleet\Domain\Models\VehicleMaintenance;
 use App\Modules\Fleet\Domain\Models\VehicleTrip;
-use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -51,19 +51,19 @@ class FleetController extends Controller
             ->get();
 
         $positions = [];
+        // Issue #3148 : un seul appel Traccar agrégé (deviceId=1,2,3…) au lieu
+        // d'un appel HTTP par véhicule actif.
+        $positionsByDevice = $traccar->getLastPositions(
+            array_values($vehicles->pluck('traccar_device_id')->filter()->map(fn ($id): int => (int) $id)->all())
+        );
         foreach ($vehicles as $vehicle) {
-            if ($vehicle->traccar_device_id === null) {
-                continue;
-            }
-
-            $pos = $traccar->getLastPosition((int) $vehicle->traccar_device_id);
             $positions[] = [
                 'vehicle_id' => $vehicle->id,
                 'plate_number' => $vehicle->plate_number,
                 'brand' => $vehicle->brand,
                 'model' => $vehicle->model,
                 'type' => $vehicle->type,
-                'position' => $pos,
+                'position' => $positionsByDevice[(int) $vehicle->traccar_device_id] ?? null,
             ];
         }
 
@@ -118,5 +118,3 @@ class FleetController extends Controller
         return response()->json(['data' => $upcoming]);
     }
 }
-
-

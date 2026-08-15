@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Feature\Infrastructure\Services;
 
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Support\Facades\Cache;
@@ -55,7 +56,7 @@ class FeatureService
                     ->latest()
                     ->first();
 
-                return $sub ? $sub->plan : 'trial';
+                return PlanCode::normalize($sub?->plan ?? PlanCode::Free->value)->value;
             }
         );
     }
