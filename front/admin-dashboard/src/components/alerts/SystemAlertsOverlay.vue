@@ -30,6 +30,7 @@
             <button
               @click="dismissCriticalAlert"
               class="-mr-1 flex rounded-md p-2 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2"
+              aria-label="Fermer les alertes système"
             >
               <XMarkIcon class="h-6 w-6 text-white" />
             </button>

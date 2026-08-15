@@ -128,6 +128,7 @@
                 @click="$emit('view', user)"
                 class="p-1.5 rounded-lg text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all duration-200"
                 title="Voir les détails"
+                aria-label="Voir les détails"
               >
                 <EyeIcon class="h-4 w-4" />
               </button>
@@ -135,6 +136,7 @@
                 @click="$emit('delete', user)"
                 class="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200"
                 title="Supprimer"
+                aria-label="Supprimer"
               >
                 <TrashIcon class="h-4 w-4" />
               </button>
