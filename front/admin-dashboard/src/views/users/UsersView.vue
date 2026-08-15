@@ -149,8 +149,8 @@
     />
 
     <!-- Impersonation modal (PA2-ADM-006, issue #2518) -->
-    <div v-if="showImpersonateModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md" role="dialog" aria-modal="true">
-      <div class="w-full max-w-md rounded-3xl border border-white/10 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-950">
+    <div v-if="showImpersonateModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
         <h3 class="text-lg font-bold text-gray-900 dark:text-white">
           {{ t('users.impersonation.title', 'Impersonner un employé') }}
         </h3>

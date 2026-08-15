@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "User Management",
-      "summary": ":count platform user(s)"
+      "summary": ":count user(s)"
     },
     "actions": {
       "bulk": "Actions (:count)",
@@ -255,8 +255,7 @@
       "exportInProgress": "Export in progress...",
       "exportDone": "Export completed",
       "exportError": "Export failed",
-      "selectionExportDone": "Selection export completed",
-      "bulkDone": "Bulk action completed"
+      "selectionExportDone": "Selection export completed"
     },
     "confirm": {
       "delete": "Are you sure you want to delete :name?"
@@ -264,7 +263,6 @@
     "errors": {
       "name_required": "The full name is required.",
       "password_required": "The password is required.",
-      "password_min": "Password must contain at least 8 characters.",
       "fix_fields": "Please fix the highlighted fields"
     }
   },
@@ -703,8 +701,5 @@
     "pricing": {
       "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
-  },
-  "webhooks": {
-    "confirm_delete": "Delete this webhook?"
   }
 }

@@ -131,15 +131,14 @@ Objectif : garder les frontends admin, mobile et kiosk alignes avec le backend L
 | Platform admin mobile | Detail demande client | `GET /api/v1/platform/company-requests/{id}` | super-admin | `FrontendApiContractTest` |
 | Platform admin mobile | Validation demande client | `PATCH /api/v1/platform/company-requests/{id}` | super-admin | `PlatformCompanyRequestProvisioningTest`, `FrontendApiContractTest` |
 
-| Manager web/mobile | CNSS Côte d'Ivoire — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnss-ci` | manager principal/comptable | `CiSnDeclarationTest` |
-| Manager web/mobile | IPRES/CSS Sénégal — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/ipres-sn` | manager principal/comptable | `CiSnDeclarationTest` |
-| Manager web/mobile | CNPS Cameroun — déclaration DAS CSV (CEMAC/CM #1823) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm` | manager principal/comptable | `CnpsDeclarationTest` |
-| Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
-| Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |
-
 ## Regles
 
 - `front/admin-dashboard` utilise `VITE_API_URL` pointe sur `.../api/v1`; les anciens appels `/v1/*` sont normalises par le client Axios.
 - `front/zkteco-kiosk` accepte une base API avec ou sans `/api/v1`.
 - Les exports admin passent par Axios authentifie afin de conserver le bearer token sur Cloudflare Pages.
 - Une route critique supprimee ou renommee doit mettre a jour cette matrice, les appels frontend, la spec OpenAPI si exposee et le test contractuel.
+| Manager web/mobile | CNSS Côte d'Ivoire — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnss-ci` | manager principal/comptable | `CiSnDeclarationTest` |
+| Manager web/mobile | IPRES/CSS Sénégal — déclaration CSV (CEDEAO #1830) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/ipres-sn` | manager principal/comptable | `CiSnDeclarationTest` |
+| Manager web/mobile | CNPS Cameroun — déclaration DAS CSV (CEMAC/CM #1823) | `GET /api/v1/payroll-runs/{payrollRun}/declarations/cnps-cm` | manager principal/comptable | `CnpsDeclarationTest` |
+| Manager web/mobile | Run paie — régularisation (DZ-DEPTH #1818) | `POST /api/v1/payroll-runs/{payrollRun}/regularize` | manager principal/comptable | `PayrollRegularizationTest` |
+| Manager web/mobile | Run paie — liste des régularisations | `GET /api/v1/payroll-runs/{payrollRun}/regularizations` | manager principal/comptable | `PayrollRegularizationTest` |

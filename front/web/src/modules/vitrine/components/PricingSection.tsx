@@ -12,20 +12,27 @@ function showsCurrency(price: string) {
 }
 
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
+  if (!showsCurrency(price)) return '/contact?topic=enterprise'
   const billing = isAnnual ? 'annual' : 'monthly'
-  // #3247 : clés canoniques du checkout = plans backend starter/business/enterprise.
-  // Starter → essai guidé sans carte (/signup) ; Business/Enterprise → checkout.
+  // #2907 : mappe le NOM de plan affiché vers la clé canonique du checkout.
+  // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :
+  // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
   const name = (planName ?? '').toLowerCase()
-  if (name.includes('starter')) return `/signup?source=home_starter`
-  if (name.includes('enterprise')) return `/checkout?plan=enterprise&billing=${billing}`
-  return `/checkout?plan=business&billing=${billing}`
+  // #3329 : « Lancer un pilote gratuit » doit mener au parcours d'essai sans
+  // carte (/signup), comme /pricing — pas au checkout payant Pilot.
+  if (name.includes('pilot')) return `/signup?source=home_pilot`
+  const planKey = name.includes('free') ? 'free'
+    : name.includes('operations') ? 'business'
+    : name.includes('scale') || name.includes('enterprise') ? 'enterprise'
+    : 'free'
+  return `/checkout?plan=${planKey}&billing=${billing}`
 }
 
 const savingsLabel: Record<string, string> = {
-  fr: 'Economisez 17%',
-  en: 'Save 17%',
-  tr: '%17 tasarruf',
-  ar: 'وفّر 17%',
+  fr: 'Economisez 20%',
+  en: 'Save 20%',
+  tr: '%20 tasarruf',
+  ar: 'وفّر 20%',
 }
 
 const billingToggle: Record<string, { monthly: string; annual: string }> = {

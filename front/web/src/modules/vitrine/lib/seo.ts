@@ -158,7 +158,10 @@ export const pageMetadata = {
   pricing: {
     title: "Tarification Transparente | Plans Flexibles",
     description:
-      t('fr', 'seo.pricing.description', 'Tarification transparente : plans Starter 29€/mois, Business 79€/mois, Enterprise 199€/mois. Essai gratuit 14 jours.'),
+      // Issue #3487 : la locale n'est pas résolue ici (metadata statique du
+      // module) — le layout /pricing lit ?lang= et appelle t(locale, ...).
+      // Ce fallback FR ne sert que si la clé i18n manque.
+      t('fr', 'seo.pricing.description', 'Pricing transparent: plan Free, Pilot 29€/mois, Operations 99€/mois, Enterprise sur devis. Essai gratuit 14 jours.'),
     keywords: [
       "prix logiciel RH",
       "tarification paie",
@@ -347,24 +350,10 @@ export const pageMetadata = {
     robots: "noindex, follow",
   },
 
-  integrations: {
-    title: "Intégrations & API | Connectez Leopardo RH à vos Outils",
-    description:
-      "API publique documentée, webhooks signés, calendrier, SSO et exports paie : connectez Leopardo RH à votre écosystème en quelques minutes.",
-    keywords: [
-      "intégrations RH",
-      "API paie",
-      "webhooks RH",
-      "SSO entreprise",
-      "connecteurs logiciel RH",
-    ],
-    ogImage: `${siteUrl}/og/default.png`,
-  },
-
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Free, Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",

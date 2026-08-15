@@ -66,7 +66,7 @@ class BulkPaymentController extends Controller
         ]);
         try {
             $acquired = Redis::connection('default')
-                ->set($progressKey, $claimPayload, ['EX' => 21600, 'NX' => true]);
+                ->set($progressKey, $claimPayload, 'EX', 21600, 'NX'); // @phpstan-ignore argument.type, arguments.count
 
             if (! $acquired) {
                 $existing = Redis::connection('default')->get($progressKey);
@@ -78,7 +78,7 @@ class BulkPaymentController extends Controller
                     ], 409);
                 }
                 // Statut stale (completed*/crash) : on reprend la main.
-                Redis::connection('default')->set($progressKey, $claimPayload, ['EX' => 21600]);
+                Redis::connection('default')->set($progressKey, $claimPayload, 'EX', 21600); // @phpstan-ignore argument.type, arguments.count
             }
         } catch (Throwable) {
             // Redis unavailable — allow dispatch to continue

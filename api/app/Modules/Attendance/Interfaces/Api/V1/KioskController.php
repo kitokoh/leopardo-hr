@@ -25,6 +25,7 @@ class KioskController extends Controller
 {
     public function __construct(
         private readonly KioskAttendanceService $kioskAttendanceService,
+        private readonly \App\Modules\HR\Domain\Contracts\OnboardingQrInterface $onboardingQr,
     ) {}
 
     public function register(Request $request): JsonResponse
@@ -427,8 +428,33 @@ class KioskController extends Controller
         $this->setTenantSearchPath($company);
 
 
-        $qrPayload = json_decode(base64_decode($validated['qr_data'], true), true);
-        $identifier = $qrPayload['employee_id'] ?? $qrPayload['matricule'] ?? $validated['qr_data'];
+        // #3365 : le QR punch n'accepte QUE le jeton signé+expirant émis par
+        // /me/qr-profile (OnboardingQrService, type employee_profile) — les
+        // payloads JSON base64 nus (forgeables) sont rejetés.
+        try {
+            $qrPayload = $this->onboardingQr->decodeEmployeeProfile($validated['qr_data']);
+        } catch (\Illuminate\Validation\ValidationException) {
+            return new JsonResponse([
+                'error' => 'INVALID_QR_TOKEN',
+                'message' => 'INVALID_QR_TOKEN',
+            ], 422);
+        }
+
+        $employeeId = $qrPayload['employee']['id'] ?? null;
+        $employee = $employeeId !== null
+            ? Employee::query()->where('company_id', $company->id)->whereKey($employeeId)->first()
+            : null;
+
+        if (! $employee) {
+            return new JsonResponse([
+                'error' => 'EMPLOYEE_NOT_FOUND',
+                'message' => 'EMPLOYEE_NOT_FOUND',
+            ], 404);
+        }
+
+        // Le service punch résout par email/matricule/zkteco_id — on lui passe
+        // l'identifiant le plus fiable de l'employé déjà résolu (scopé tenant).
+        $identifier = $employee->email ?? $employee->matricule ?? (string) $employee->id;
 
         $allowedWorkTypes = ['normal', 'overtime', 'break', 'resume', 'mission', 'travel', 'training', 'other'];
         $qrWorkType = is_array($qrPayload) ? ($qrPayload['work_type'] ?? null) : null;

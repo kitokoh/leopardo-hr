@@ -111,7 +111,10 @@ class TrackingSyncController extends Controller
                     continue;
                 }
 
-                VehicleTrip::create([
+                // #3369 : insertOrIgnore + index unique partiel
+                // (company_id, traccar_trip_id) — deux syncs concurrents ne
+                // créent plus de doublons (le exists() seul n'est pas atomique).
+                VehicleTrip::query()->insertOrIgnore([
                     'vehicle_id' => $vehicle->id,
                     'company_id' => $user->company_id,
                     'driver_id' => $vehicle->assigned_driver_id,

@@ -3,7 +3,7 @@
 # PA2-ARCH-007 — CI guard: fail if a module Interfaces controller is never
 # referenced from any routes file (dead code / duplicate migration residue).
 #
-# Context: docs/archive/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md section 2 found
+# Context: docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md section 2 found
 # 4 controllers fully duplicated across two modules where only one copy was
 # actually wired into routes/ — the "logical" copy silently received zero
 # traffic. This script makes that class of bug fail CI instead of rotting.

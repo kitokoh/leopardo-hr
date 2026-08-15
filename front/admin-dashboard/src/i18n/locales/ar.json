@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "إدارة المستخدمين",
-      "summary": ":count مستخدم على المنصة"
+      "summary": ":count مستخدم"
     },
     "actions": {
       "bulk": "إجراءات (:count)",
@@ -255,8 +255,7 @@
       "exportInProgress": "التصدير قيد التنفيذ...",
       "exportDone": "تم التصدير",
       "exportError": "فشل التصدير",
-      "selectionExportDone": "تم تصدير التحديد",
-      "bulkDone": "اكتمل الإجراء الجماعي"
+      "selectionExportDone": "تم تصدير التحديد"
     },
     "confirm": {
       "delete": "هل انت متأكد من رغبتك في حذف :name؟"
@@ -264,7 +263,6 @@
     "errors": {
       "name_required": "الاسم الكامل مطلوب.",
       "password_required": "كلمة المرور مطلوبة.",
-      "password_min": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
       "fix_fields": "يرجى تصحيح الحقول المميزة"
     }
   },
@@ -703,8 +701,5 @@
     "pricing": {
       "description": "تسعير شفاف: خطة مجانية، بايلوت 29 يورو شهريًا، عمليات 99 يورو شهريًا، المؤسسات حسب العرض. تجربة مجانية 14 يومًا."
     }
-  },
-  "webhooks": {
-    "confirm_delete": "حذف هذا ال webhook؟"
   }
 }

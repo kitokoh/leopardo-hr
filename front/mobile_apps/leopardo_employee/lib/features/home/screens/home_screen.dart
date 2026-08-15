@@ -14,6 +14,7 @@ import 'package:leopardo_core/core/branding/tenant_branding.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -161,7 +162,7 @@ class _HeroHeader extends StatelessWidget {
     const text = MobileSurface.text;
     const muted = MobileSurface.muted;
     final dateLabel = DateFormat.EEEE(
-      'fr_FR',
+      deviceIntlDateLocale,
     ).add_d().add_MMMM().format(DateTime.now());
 
     return Container(

@@ -4,7 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use App\Mail\PasswordResetMail;
+use App\Core\Auth\Infrastructure\Mail\PasswordResetMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -64,13 +64,12 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJson(['success' => true, 'message' => 'PASSWORD_RESET_SENT']);
+            ->assertJson(['message' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.']);
 
         Mail::assertSent(PasswordResetMail::class);
 
         $this->assertDatabaseHas('password_reset_tokens', [
             'email' => 'reset.me@example.com',
-            'company_id' => $this->company->id,
         ]);
     }
 
@@ -83,7 +82,7 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJson(['success' => true, 'message' => 'PASSWORD_RESET_SENT']);
+            ->assertJson(['message' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.']);
 
         Mail::assertNothingSent();
     }
@@ -94,12 +93,9 @@ class PasswordResetTest extends TestCase
 
         DB::table('password_reset_tokens')->insert([
             'email' => 'reset.me@example.com',
-            'company_id' => $this->company->id,
-            'employee_id' => $this->employee->id,
             'token_hash' => hash('sha256', $token),
             'expires_at' => now()->addMinutes(60),
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         $this->employee->createToken('legacy-device');
@@ -112,7 +108,7 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-            ->assertJson(['success' => true, 'message' => 'PASSWORD_RESET_DONE']);
+            ->assertJson(['message' => 'Mot de passe réinitialisé. Connectez-vous avec votre nouveau mot de passe.']);
 
         $this->employee->refresh();
         $this->assertTrue(Hash::check('new-password-123', (string) $this->employee->password_hash));
@@ -130,13 +126,10 @@ class PasswordResetTest extends TestCase
 
         DB::table('password_reset_tokens')->insert([
             'email' => 'reset.me@example.com',
-            'company_id' => $this->company->id,
-            'employee_id' => $this->employee->id,
             'token_hash' => hash('sha256', $token),
             'expires_at' => now()->addMinutes(60),
             'used_at' => now(),
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         $this->postJson('/api/v1/auth/reset-password', [

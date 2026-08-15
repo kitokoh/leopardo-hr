@@ -171,7 +171,7 @@
   "users": {
     "page": {
       "title": "Kullanici Yonetimi",
-      "summary": ":count platform kullanıcısı"
+      "summary": ":count kullanici"
     },
     "actions": {
       "bulk": "Islemler (:count)",
@@ -255,8 +255,7 @@
       "exportInProgress": "Disa aktarim yapiliyor...",
       "exportDone": "Disa aktarim tamamlandi",
       "exportError": "Disa aktarim basarisiz oldu",
-      "selectionExportDone": "Secim disa aktarimi tamamlandi",
-      "bulkDone": "Toplu islem tamamlandi"
+      "selectionExportDone": "Secim disa aktarimi tamamlandi"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
@@ -264,7 +263,6 @@
     "errors": {
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
-      "password_min": "Şifre en az 8 karakter içermelidir.",
       "fix_fields": "Lütfen kırmızı alanları düzeltin"
     }
   },
@@ -703,8 +701,5 @@
     "pricing": {
       "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
-  },
-  "webhooks": {
-    "confirm_delete": "Bu webhook silinsin mi?"
   }
 }

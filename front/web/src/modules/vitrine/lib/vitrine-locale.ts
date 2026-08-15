@@ -246,7 +246,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Tarifs',
       title: 'Des offres',
       titleHighlight: 'pour lancer vite',
-      subtitle: 'Commencez par un essai gratuit de 14 jours, puis optez pour un tarif fixe par plan, employes inclus.',
+      subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employes actifs et vos besoins terrain.',
       recommended: 'Recommande',
       currency: 'EUR',
     },
@@ -390,7 +390,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Pricing',
       title: 'Plans built',
       titleHighlight: 'for real rollout',
-      subtitle: 'Start with a 14-day free trial, then pick a flat-rate plan with employees included.',
+      subtitle: 'Start with a free pilot, then pay based on active employees and field operations needs.',
       recommended: 'Recommended',
       currency: 'EUR',
     },
@@ -534,7 +534,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Fiyatlar',
       title: 'Gercek kurulum',
       titleHighlight: 'icin paketler',
-      subtitle: '14 gun ucretsiz denemeyle baslayin, ardindan calisanlar dahil sabit fiyatli bir plan secin.',
+      subtitle: 'Ucretsiz pilotla baslayin, sonra aktif calisan ve saha ihtiyaclarina gore odeyin.',
       recommended: 'Onerilen',
       currency: 'EUR',
     },
@@ -567,7 +567,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Saha, ofis ve uzaktan calisanlarinizi yonetmek icin Mobile-First Company OS. Employee, Manager ve Platform Admin mobilde kullanilabilir.',
       sections: [
-        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkinda', 'Videolar'] },
+        { title: 'Urun', links: ['Ozellikler', 'Fiyatlar', 'Entegrasyonlar', 'API', 'Degisiklikler', 'Windows icin Leopardo', 'Hakkında', 'Videolar'] },
         { title: 'Kaynaklar', links: ['Dokumantasyon', 'Rehberler', 'Blog', 'Iletisim', 'Topluluk'] },
         { title: 'Mobil Uygulamalar', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'Yasal', links: ['Gizlilik', 'Kullanim Kosullari', 'Yasal Bildirim', 'KVKK/GDPR'] },
@@ -678,7 +678,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'الاسعار',
       title: 'باقات',
       titleHighlight: 'لإطلاق حقيقي',
-      subtitle: 'ابدأ بتجربة مجانية لمدة 14 يوما ثم اختر خطة بسعر ثابت تشمل الموظفين.',
+      subtitle: 'ابدأ بتشغيل تجريبي مجاني ثم ادفع حسب الموظفين النشطين واحتياجات الميدان.',
       recommended: 'موصى به',
       currency: 'EUR',
     },
@@ -711,7 +711,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     footer: {
       description: 'Mobile-First Company OS لإدارة فريقك في الميدان والمكتب وعن بُعد. Employee وManager وPlatform Admin متاحة على الجوال.',
       sections: [
-        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديو'] },
+        { title: 'المنتج', links: ['الميزات', 'الاسعار', 'التكاملات', 'API', 'سجل التغييرات', 'ليوباردو لويندوز', 'من نحن', 'فيديوهات'] },
         { title: 'الموارد', links: ['التوثيق', 'أدلة', 'المدونة', 'اتصل بنا', 'المجتمع'] },
         { title: 'تطبيقات الجوال', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
         { title: 'قانوني', links: ['الخصوصية', 'الشروط', 'الاشعارات القانونية', 'GDPR'] },
@@ -758,33 +758,6 @@ export function setVitrineLocale(locale: AppLocale): void {
   storePreferredLocale(locale)
   applyDocumentLocale(locale, locale === 'ar')
   broadcastLocaleChange()
-}
-
-// #3246 — preuve sociale honnête. Aucun client payant à ce jour
-// (PILOTAGE.md « Clients payants | 0 ») : tout contenu « client » de la
-// vitrine est illustratif. Ces libellés sont consommés par TestimonialCard,
-// TestimonialHighlight et MiniCaseStudies pour marquer explicitement les
-// citations/cas comme des exemples (voir TESTIMONIALS_ARE_DEMO).
-export const ILLUSTRATIVE_EXAMPLE_LABEL: Record<AppLocale, string> = {
-  fr: 'Exemple illustratif',
-  en: 'Illustrative example',
-  tr: 'Temsili örnek',
-  ar: 'مثال توضيحي',
-}
-
-export const ILLUSTRATIVE_EXAMPLE_SUFFIX: Record<AppLocale, string> = {
-  fr: '(exemple)',
-  en: '(example)',
-  tr: '(örnek)',
-  ar: '(مثال)',
-}
-
-export function getIllustrativeExampleLabel(locale: AppLocale): string {
-  return ILLUSTRATIVE_EXAMPLE_LABEL[locale] ?? ILLUSTRATIVE_EXAMPLE_LABEL.fr
-}
-
-export function getIllustrativeExampleSuffix(locale: AppLocale): string {
-  return ILLUSTRATIVE_EXAMPLE_SUFFIX[locale] ?? ILLUSTRATIVE_EXAMPLE_SUFFIX.fr
 }
 
 export function useVitrineLocale() {

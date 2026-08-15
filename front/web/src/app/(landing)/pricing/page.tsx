@@ -53,7 +53,7 @@ type FaqItem = {
 
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
-  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; periodMonthly: string; periodAnnual: string; trialNote: string };
+  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; savings: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
@@ -79,7 +79,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Commencez petit, montez en puissance sans changer de plateforme.',
       monthly: 'Mensuel',
       annual: 'Annuel',
-      savings: 'Économisez 17%',
+      savings: 'Économisez 20%',
+      customPrice: 'Sur devis',
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
       trialNote: '14 jours offerts · Aucune CB requise',
@@ -90,7 +91,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'Essai gratuit de 14 jours sans CB',
+        'Plan gratuit sans CB',
         'Support inclus dès le premier jour',
         'Données hébergées en Europe',
         'Résiliation à tout moment',
@@ -116,11 +117,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
             { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
             { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -140,7 +141,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
             { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
@@ -155,15 +156,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'Tous',
       categories: ['Facturation', 'Essai', 'Support', 'Sécurité', 'Technique'],
       items: [
-        { id: 'free-plan', question: 'Y a-t-il un plan gratuit ?', answer: 'Pas de plan gratuit permanent. Chaque plan démarre par un essai gratuit de 14 jours, sans carte bancaire. Ensuite, choisissez Starter (29€/mois), Business (79€/mois) ou Enterprise (199€/mois).', category: 'Essai' },
+        { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: 'Oui, 100% gratuit. Aucune carte bancaire requise, jamais. Accès immédiat jusqu\'à 5 employés. Vous pouvez passer à un plan payant à tout moment.', category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
-        { id: 'per-employee', question: 'Comment sont comptés les employés ?', answer: 'Chaque plan inclut un plafond d\'employés dans son tarif fixe : 20 pour Starter, 200 pour Business, illimité pour Enterprise. Pas de supplément par employé actif : au-delà du plafond, passez au plan supérieur.', category: 'Facturation' },
-        { id: 'free-trial', question: 'L\'essai est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités du plan Starter. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'per-employee', question: 'Comment fonctionne la facturation par employé ?', answer: 'Chaque plan inclut un socle fixe + un tarif par employé actif (qui a pointé au moins une fois dans le mois). Les employés inactifs ne sont pas comptés.', category: 'Facturation' },
+        { id: 'free-trial', question: 'L\'essai payant est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités du plan Pilot. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
         { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
-        { id: 'support', question: 'Quel support est disponible ?', answer: 'Starter : email sous 48h. Business : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
+        { id: 'support', question: 'Quel support est disponible ?', answer: 'Free : communauté. Pilot : email sous 48h. Operations : priorité 24h. Enterprise : account manager dédié + SLA contractuel.', category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
         { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
-        { id: 'api', question: 'L\'API est-elle disponible sur tous les plans ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Business. Sur Starter, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
+        { id: 'api', question: 'L\'API est-elle disponible sur le plan Free ?', answer: 'L\'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Free et Pilot, vous pouvez exporter vos données en CSV/Excel.', category: 'Technique' },
       ],
     },
     cta: {
@@ -188,7 +189,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Start small, scale up without switching platforms.',
       monthly: 'Monthly',
       annual: 'Annual',
-      savings: 'Save 17%',
+      savings: 'Save 20%',
+      customPrice: 'Custom',
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
       trialNote: '14 days free · No credit card required',
@@ -199,7 +201,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        '14-day free trial — no credit card',
+        'Free plan — no credit card',
         'Support included from day one',
         'Data hosted in Europe',
         'Cancel anytime',
@@ -225,11 +227,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Payroll & finance',
           features: [
-            { name: 'Automated payroll', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
             { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
             { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-country & currency', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
             { name: 'Advanced legal compliance', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -249,7 +251,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Document vault', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Immutable audit trail', free: false, starter: false, business: false, enterprise: true },
             { name: 'Isolated PostgreSQL schema', free: false, starter: false, business: false, enterprise: true },
             { name: 'Dedicated SLA & support', free: false, starter: false, business: false, enterprise: true },
@@ -264,15 +266,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'All',
       categories: ['Billing', 'Trial', 'Support', 'Security', 'Technical'],
       items: [
-        { id: 'free-plan', question: 'Is there a free plan?', answer: 'No permanent free plan. Every plan starts with a 14-day free trial, no credit card required. Then pick Starter (29€/month), Business (79€/month) or Enterprise (199€/month).', category: 'Trial' },
+        { id: 'free-plan', question: 'Is the Free plan really free?', answer: 'Yes, 100% free. No credit card ever required. Immediate access for up to 5 employees. Upgrade to a paid plan anytime.', category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
-        { id: 'per-employee', question: 'How are employees counted?', answer: 'Each plan includes an employee cap in its flat rate: 20 for Starter, 200 for Business, unlimited for Enterprise. No per-active-employee fee: above the cap, upgrade to the next plan.', category: 'Billing' },
-        { id: 'free-trial', question: 'Is the trial really free?', answer: 'Yes. 14 full days with all the features of the Starter plan. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
+        { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 14 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
         { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
-        { id: 'support', question: 'What support is available?', answer: 'Starter: email within 48h. Business: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
+        { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
-        { id: 'api', question: 'Is the API available on every plan?', answer: 'REST API and webhooks are available from the Business plan. On Starter you can export your data as CSV/Excel.', category: 'Technical' },
+        { id: 'api', question: 'Is the API available on the Free plan?', answer: 'REST API and webhooks are available from the Operations plan. On Free / Pilot you can export data as CSV/Excel.', category: 'Technical' },
       ],
     },
     cta: {
@@ -297,7 +299,8 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Küçük başlayın, platform değiştirmeden büyüyün.',
       monthly: 'Aylık',
       annual: 'Yıllık',
-      savings: '%17 tasarruf',
+      savings: '%20 tasarruf',
+      customPrice: 'Teklif alın',
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
       trialNote: '14 gün ücretsiz · Kredi kartı gerekmez',
@@ -308,7 +311,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        '14 gün ücretsiz deneme — kredi kartı yok',
+        'Ücretsiz plan — kredi kartı yok',
         'İlk günden destek dahil',
         'Avrupa\'da barındırılan veriler',
         'İstediğiniz zaman iptal',
@@ -334,11 +337,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
             { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
             { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -358,7 +361,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
             { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
             { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
@@ -373,15 +376,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'Tümü',
       categories: ['Faturalama', 'Deneme', 'Destek', 'Güvenlik', 'Teknik'],
       items: [
-        { id: 'free-plan', question: 'Ücretsiz bir plan var mı?', answer: 'Kalıcı ücretsiz plan yoktur. Her plan 14 günlük ücretsiz denemeyle başlar, kredi kartı gerekmez. Ardından Starter (29€/ay), Business (79€/ay) veya Enterprise (199€/ay) seçin.', category: 'Deneme' },
+        { id: 'free-plan', question: 'Free plan gerçekten ücretsiz mi?', answer: 'Evet, %100 ücretsiz. Hiçbir zaman kredi kartı gerekmez. 5 çalışana kadar anında erişim. İstediğiniz zaman ücretli plana geçin.', category: 'Deneme' },
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
-        { id: 'per-employee', question: 'Çalışanlar nasıl sayılır?', answer: 'Her plan sabit fiyatına bir çalışan sınırı içerir: Starter 20, Business 200, Enterprise sınırsız. Aktif çalışan başına ek ücret yoktur: sınırın üzerinde bir üst plana geçin.', category: 'Faturalama' },
-        { id: 'free-trial', question: 'Deneme gerçekten ücretsiz mi?', answer: 'Evet. Starter planının tüm özellikleriyle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'per-employee', question: 'Çalışan başı faturalama nasıl çalışır?', answer: 'Her plan sabit bir temel ücret artı aktif çalışan başına ücret içerir. O ay en az bir kez giriş yapan çalışanlar aktif sayılır.', category: 'Faturalama' },
+        { id: 'free-trial', question: 'Ücretli deneme gerçekten ücretsiz mi?', answer: 'Evet. Pilot planın tüm özellikleriyle 30 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
         { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
-        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Starter: 48 saatte e-posta. Business: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
+        { id: 'support', question: 'Hangi destek sağlanır?', answer: 'Free: topluluk. Pilot: 48 saatte e-posta. Operations: 24 saatte öncelikli yanıt. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.', category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
         { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
-        { id: 'api', question: 'API tüm planlarda kullanılabilir mi?', answer: 'REST API ve webhook\'lar Business planından itibaren kullanılabilir. Starter\'da verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
+        { id: 'api', question: 'Free planda API kullanılabilir mi?', answer: 'REST API ve webhook\'lar Operations planından itibaren kullanılabilir. Free ve Pilot\'ta verileri CSV/Excel olarak dışa aktarabilirsiniz.', category: 'Teknik' },
       ],
     },
     cta: {
@@ -406,10 +409,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'ابدأ صغيرًا، توسع دون تغيير المنصة.',
       monthly: 'شهري',
       annual: 'سنوي',
-      savings: 'وفّر 17%',
+      savings: 'وفّر 20%',
+      customPrice: 'حسب الطلب',
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
-      trialNote: '14 يوما مجانا · لا بطاقة ائتمان مطلوبة',
+      trialNote: '14 يومًا مجانًا · لا بطاقة ائتمان مطلوبة',
     },
     currency: {
       label: 'عرض الأسعار بعملة',
@@ -417,7 +421,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
     },
     trust: {
       items: [
-        'تجربة مجانية 14 يوما بلا بطاقة ائتمان',
+        'خطة مجانية بلا بطاقة ائتمان',
         'دعم مشمول من اليوم الأول',
         'بيانات مستضافة في أوروبا',
         'إلغاء في أي وقت',
@@ -443,7 +447,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'الرواتب والمالية',
           features: [
-            { name: 'حساب رواتب آلي', free: false, starter: true, business: true, enterprise: true },
+            { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
             { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
             { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
@@ -467,7 +471,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
             { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
             { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },
@@ -482,15 +486,15 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       all: 'الكل',
       categories: ['الفوترة', 'التجربة', 'الدعم', 'الأمان', 'التقني'],
       items: [
-        { id: 'free-plan', question: 'هل توجد خطة مجانية؟', answer: 'لا توجد خطة مجانية دائمة. كل خطة تبدأ بتجربة مجانية لمدة 14 يوما بدون بطاقة ائتمان. ثم اختر Starter (29€/شهر) أو Business (79€/شهر) أو Enterprise (199€/شهر).', category: 'التجربة' },
+        { id: 'free-plan', question: 'هل الخطة المجانية مجانية حقًا؟', answer: 'نعم، مجانية 100%. لا بطاقة ائتمان مطلوبة أبدًا. وصول فوري لحتى 5 موظفين. يمكنك الترقية إلى خطة مدفوعة في أي وقت.', category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
-        { id: 'per-employee', question: 'كيف يُحسب عدد الموظفين؟', answer: 'تتضمن كل خطة سقفا للموظفين ضمن سعرها الثابت: 20 لـ Starter و200 لـ Business وغير محدود لـ Enterprise. لا رسوم إضافية لكل موظف نشط: فوق السقف، انتقل إلى الخطة الأعلى.', category: 'الفوترة' },
-        { id: 'free-trial', question: 'هل التجربة مجانية حقًا؟', answer: 'نعم. 14 يوما كاملة بجميع مزايا خطة Starter. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
-        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يوما إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
-        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Starter: بريد إلكتروني خلال 48 ساعة. Business: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
+        { id: 'per-employee', question: 'كيف تعمل الفوترة لكل موظف؟', answer: 'تتضمن كل خطة رسومًا أساسية ثابتة بالإضافة إلى سعر لكل موظف نشط (من سجّل حضورًا مرة واحدة على الأقل في الشهر).', category: 'الفوترة' },
+        { id: 'free-trial', question: 'هل التجربة المدفوعة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع مزايا خطة Pilot. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
+        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: 'Free: مجتمع. Pilot: بريد إلكتروني خلال 48 ساعة. Operations: أولوية 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.', category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
         { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
-        { id: 'api', question: 'هل API متاح في جميع الخطط؟', answer: 'REST API والـ Webhooks متاحة من خطة Business. في Starter يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
+        { id: 'api', question: 'هل API متاح في خطة Free؟', answer: 'REST API والـ Webhooks متاحة من خطة Operations. في Free وPilot يمكنك تصدير البيانات بصيغة CSV/Excel.', category: 'التقني' },
       ],
     },
     cta: {
@@ -637,12 +641,15 @@ export default function PricingPage() {
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
-    // Starter → essai guidé 14 jours (aucun paiement à l'inscription) : le
+    // Free plan → direct account creation, no payment
+    if (plan.price === '0') return '/checkout?plan=free';
+    // Enterprise → contact
+    if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
+    // Paid plans → checkout with payment
+    if (plan.popular) return '/checkout?plan=business';
+    // Pilot → essai guidé 14 jours (aucun paiement à l'inscription) : le
     // checkout ne doit pas être présenté comme « gratuit » (#2649).
-    if (plan.name.toLowerCase() === 'starter') return '/signup?source=pricing_starter';
-    // Business et Enterprise → checkout avec paiement (3 plans backend, #3247).
-    if (plan.name.toLowerCase() === 'enterprise') return '/checkout?plan=enterprise';
-    return '/checkout?plan=business';
+    return '/signup?source=pricing_pilot';
   }
 
   const filteredFaq = faqCategory
@@ -700,7 +707,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/checkout?plan=starter"
+              href="/checkout?plan=free"
               className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -817,12 +824,17 @@ export default function PricingPage() {
             </AnimatePresence>
           </div>
 
-          {/* Cards — 3 plans backend (Starter/Business/Enterprise) */}
+          {/* Cards — 4 plans in a responsive grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {plans.map((plan, index) => {
               const Icon = planIcons[index % planIcons.length];
               const iconColor = planIconColors[index % planIconColors.length];
               const displayPrice = isAnnual ? plan.annualPrice : plan.price;
+              // #3023 — le vrai period du plan (avec surcoût par employé actif
+              // pour Pilot/Operations), sinon le libellé générique localisé.
+              const displayPeriod = (isAnnual ? plan.annualPeriod : plan.period)
+                || (isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly);
+              const isFree = plan.price === '0';
               const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
               const ctaHref = getPlanHref(plan);
 
@@ -837,7 +849,9 @@ export default function PricingPage() {
                   className={`relative rounded-3xl ${
                     plan.popular
                       ? 'bg-gradient-to-b from-emerald-400 via-emerald-500 to-cyan-600 p-px shadow-2xl shadow-emerald-500/25'
-                      : 'bg-slate-200/70 dark:bg-slate-800/70 p-px'
+                      : isFree
+                        ? 'bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 p-px'
+                        : 'bg-slate-200/70 dark:bg-slate-800/70 p-px'
                   }`}
                 >
                   <div className="relative h-full rounded-[23px] bg-white dark:bg-slate-950 flex flex-col p-8">
@@ -847,6 +861,14 @@ export default function PricingPage() {
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
                           <Star className="w-3 h-3 fill-white" />
                           Le plus populaire
+                        </div>
+                      </div>
+                    )}
+                    {isFree && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                        <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                          <Gift className="w-3 h-3" />
+                          100% Gratuit
                         </div>
                       </div>
                     )}
@@ -863,7 +885,11 @@ export default function PricingPage() {
                     {/* Price */}
                     <div className="mb-6">
                       <div className="flex items-baseline gap-1.5">
-                        {hasNumericPrice ? (
+                        {isFree ? (
+                          <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                            Gratuit
+                          </span>
+                        ) : hasNumericPrice ? (
                           <>
                             <span className="text-lg font-bold text-slate-500 dark:text-slate-400">
                               {isEurSelected ? 'EUR' : currencyOption.currency}
@@ -878,10 +904,14 @@ export default function PricingPage() {
                           </span>
                         )}
                       </div>
-                      {hasNumericPrice ? (
+                      {isFree ? (
+                        <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
+                          Sans carte bancaire · Pour toujours
+                        </p>
+                      ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
                           <p className="text-sm text-slate-500">
-                            {isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly}
+                            {displayPeriod}
                           </p>
                           {isAnnual && (
                             <p className="text-xs text-slate-400 dark:text-slate-600">
@@ -912,7 +942,7 @@ export default function PricingPage() {
                     <ul className="flex-1 space-y-3 mb-8">
                       {plan.features.map((feature, fi) => (
                         <li key={fi} className="flex items-start gap-3">
-                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`} />
+                          <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.popular ? 'text-emerald-500' : isFree ? 'text-slate-500' : 'text-slate-400 dark:text-slate-500'}`} />
                           <span className="text-sm text-slate-700 dark:text-slate-300 leading-snug">{feature}</span>
                         </li>
                       ))}
@@ -924,9 +954,11 @@ export default function PricingPage() {
                       className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${
                         plan.popular
                           ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-cyan-600 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]'
-                          : hasNumericPrice
-                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 hover:scale-[1.01] active:scale-[0.98]'
-                            : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700 shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                          : isFree
+                            ? 'bg-gradient-to-r from-slate-700 to-slate-900 text-white hover:from-slate-800 hover:to-black hover:scale-[1.01] active:scale-[0.98] shadow-md'
+                            : hasNumericPrice
+                              ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 hover:scale-[1.01] active:scale-[0.98]'
+                              : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700 shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                       }`}
                     >
                       {plan.cta}
@@ -979,6 +1011,7 @@ export default function PricingPage() {
                   </th>
                   {plans.map((plan, i) => {
                     const Icon = planIcons[i % planIcons.length];
+                    const isFree = plan.price === '0';
                     return (
                       <th
                         key={plan.name}
@@ -994,6 +1027,11 @@ export default function PricingPage() {
                           {plan.popular && (
                             <span className="text-[9px] px-2 py-0.5 bg-emerald-500 text-white rounded-full font-black uppercase tracking-wider">
                               ★ top
+                            </span>
+                          )}
+                          {isFree && (
+                            <span className="text-[9px] px-2 py-0.5 bg-slate-600 text-white rounded-full font-black uppercase tracking-wider">
+                              gratuit
                             </span>
                           )}
                         </div>
@@ -1045,6 +1083,7 @@ export default function PricingPage() {
                 <tr className="border-t border-slate-200 dark:border-slate-800 bg-transparent dark:bg-slate-900">
                   <td className="py-6 px-6" />
                   {plans.map((plan) => {
+                    const isFree = plan.price === '0';
                     const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(plan.price);
                     return (
                       <td key={plan.name} className={`py-6 px-4 text-center ${plan.popular ? 'bg-emerald-50/40 dark:bg-emerald-950/10' : ''}`}>
@@ -1053,9 +1092,11 @@ export default function PricingPage() {
                           className={`inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] ${
                             plan.popular
                               ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/20'
-                              : hasNumericPrice
-                                ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
-                                : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700'
+                              : isFree
+                                ? 'bg-slate-700 text-white hover:bg-slate-800'
+                                : hasNumericPrice
+                                  ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100'
+                                  : 'bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white hover:from-violet-600 hover:to-fuchsia-700'
                           }`}
                         >
                           {plan.cta}
@@ -1199,7 +1240,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/checkout?plan=starter"
+              href="/checkout?plan=free"
               className="group relative px-10 py-4 bg-white text-emerald-600 font-black rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] text-base"
             >
               <span className="relative z-10 flex items-center gap-2.5">

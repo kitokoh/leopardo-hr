@@ -3,7 +3,7 @@
 # PA2-ARCH-009 — CI guard (incremental): refuse any newly added PHP file
 # under api/app that is missing `declare(strict_types=1);`.
 #
-# Context: docs/archive/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md section 5 found
+# Context: docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md section 5 found
 # `declare(strict_types=1)` (required by CONVENTIONS.md §2.1) applied 100% on
 # recently-added modules but missing on 40-60% of files in older modules
 # (HR, Payroll, Attendance, Cameras). The retrofit on existing files is a
