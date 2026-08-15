@@ -30,6 +30,9 @@ export default defineConfig({
       ]
     : 'list',
   use: {
+    // Les assertions des specs sont en français — force navigator.language
+    // (sinon headless = en-US → libellés anglais → échecs).
+    locale: 'fr-FR',
     baseURL,
     headless: true,
     trace: 'on-first-retry',

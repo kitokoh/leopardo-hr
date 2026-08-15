@@ -103,6 +103,18 @@ test('falls back to REST polling when the push (Socket.IO) channel is unavailabl
     })
   })
 
+  // Cockpit plateforme (DashboardView) : 3 appels au mount — sans mock,
+  // le token factice reçoit un 401 réel → logout global → spec cassée.
+  await page.route(/\/api\/v1\/platform\/companies\/health(?:\?.*)?$/, async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { summary: { totalCompanies: 0, activeSubscriptions: 0, monthlyRevenue: 0 }, items: [] } }) })
+  })
+  await page.route(/\/api\/v1\/platform\/metrics\/overview(?:\?.*)?$/, async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) })
+  })
+  await page.route(/\/api\/v1\/platform\/company-requests(?:\?.*)?$/, async (route) => {
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], meta: { total: 0 } }) })
+  })
+
   await page.goto('/login')
   await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
   await page.locator('#password').fill('password123')
