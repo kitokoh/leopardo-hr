@@ -10,3 +10,4 @@
 | E3-06 | Vitrine | P3 | /blog 404 local — gating `NEXT_PUBLIC_ENABLE_BLOG` ; nav/footer/sitemap masquent correctement le lien | Voulu ; vérifier le flag en prod |
 | E3-07 | API | P3 | Seeder backend « Starter/Business/Enterprise » vs frontend « Free/Pilot/Operations » | #2977 |
 | E3-08 | Demo | P3 | Backfill readiness démo : payroll=0, kiosks=0, events=0 (signaux non backfillés au premier seed) | Suivi possible (faible) |
+| E3-09 | Vitrine | P2 | /checkout?plan=pilot affiche « 30 jours gratuits » alors que les cartes /pricing et le backend sont à 14 j (incohérence #3012 — carte complète des surfaces : pricing 14j/Enterprise 30j, checkout 30j, home mixte, backend 14j, verify days=30/ends_at=+14) | #3012/#3056/#2909 — arbitrage propriétaire 14 vs 30 requis |
