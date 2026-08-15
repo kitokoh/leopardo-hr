@@ -156,6 +156,7 @@
 - **chore(deps): bump github-actions-dependencies — 5 actions (#1754).** Dependabot : `github/codeql-action` v4, `actions/github-script` v9, `dorny/paths-filter` v4.0.2 → v4.0.3, `actions/download-artifact` v7 → v8.0.1 (SHA pinnées actualisées dans 8 workflows).
 
 ### Fixed
+- **fix(web): vitrine — OG images réelles (Closes #2752).** `seo-metadata.ts` référençait 21 OG images `/og/*.png` inexistantes (404 pour tous les partages sociaux) + fallback `/og-image.png` mort + `logo.png` manquant pour le JSON-LD Organization. Génération d'assets réels depuis les SVG canoniques (`rsvg-convert`) : `public/og/default.png` (1200×630, depuis `brand/opengraph.svg`) et `public/logo.png` (512×512, depuis `icon.svg`) ; toutes les références OG pointent désormais sur `/og/default.png` (plus aucune URL morte). Au passage (mêmes fichiers) : 2 occurrences « 14 jours » → « 30 jours » dans seo-metadata/seo (coordination PR #2753).
 
 - **fix(mobile): Android 14 + locale platform_admin (Closes #2762, #2761).** `FOREGROUND_SERVICE_LOCATION` + `android:foregroundServiceType="location"` (crash géofencing Android 14+) ; `usesCleartextTraffic` en debug uniquement (URL dev 10.0.2.2) ; locale platform_admin résolue depuis les préférences.
 - **fix(mobile): 403 différencié — suspension (payload) vs défaut de permission (Closes #2743).** Fini le « Compte suspendu » systématique qui bloquait l'utilisateur sans explication.
