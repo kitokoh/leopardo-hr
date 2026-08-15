@@ -264,6 +264,137 @@ class BankExportControllerTest extends TestCase
         $this->getJson("/api/v1/bank-exports/{$foreignExport->id}")->assertNotFound();
     }
 
+    // ── Issue #2267 — collection /bank-exports (GET index / POST store) ──
+
+    public function test_index_lists_own_company_exports_paginated(): void
+    {
+        [$company, $manager, $employee] = $this->actors();
+        [$run] = $this->payrollSlip($company, $employee);
+
+        [$foreignCompany, , $foreignEmployee] = $this->actors();
+        [$foreignRun] = $this->payrollSlip($foreignCompany, $foreignEmployee);
+
+        BankExport::query()->create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'format' => 'sepa_xml',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_GENERATED,
+        ]);
+        BankExport::query()->create([
+            'payroll_run_id' => $foreignRun->id,
+            'company_id' => $foreignCompany->id,
+            'format' => 'csv_generic',
+            'file_path' => null,
+            'total_amount' => 0,
+            'transfer_count' => 0,
+            'status' => BankExport::STATUS_PENDING,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/bank-exports?per_page=10')->assertOk();
+
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.format', 'sepa_xml');
+        $response->assertJsonPath('meta.total', 1);
+    }
+
+    public function test_index_requires_manager_role(): void
+    {
+        [$company, , $employee] = $this->actors();
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/bank-exports')->assertForbidden();
+    }
+
+    public function test_store_creates_pending_export_and_dispatches_job(): void
+    {
+        Queue::fake();
+
+        [$company, $manager, $employee] = $this->actors();
+        [$run] = $this->payrollSlip($company, $employee);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson('/api/v1/bank-exports', [
+            'payroll_run_id' => $run->id,
+            'format' => 'sepa_xml',
+        ]);
+
+        $response->assertStatus(202)
+            ->assertJsonPath('data.status', BankExport::STATUS_PENDING);
+
+        $export = BankExport::query()->where('payroll_run_id', $run->id)->first();
+        $this->assertNotNull($export);
+
+        Queue::assertPushed(GenerateBankExportJob::class, fn (GenerateBankExportJob $job): bool => $job->bankExportId === $export->id);
+    }
+
+    public function test_store_rejects_unknown_run(): void
+    {
+        Queue::fake();
+
+        [$company, $manager] = $this->actors();
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/bank-exports', [
+            'payroll_run_id' => 999_999,
+            'format' => 'sepa_xml',
+        ])->assertStatus(422);
+
+        Queue::assertNotPushed(GenerateBankExportJob::class);
+    }
+
+    public function test_store_rejects_unvalidated_run(): void
+    {
+        Queue::fake();
+
+        [$company, $manager, $employee] = $this->actors();
+        $run = PayrollRun::query()->create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => '2026-05-01',
+            'period_end' => '2026-05-31',
+            'status' => 'draft',
+            'employee_count' => 1,
+            'total_gross' => 120000,
+            'total_deductions' => 22000,
+            'total_net' => 98000,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/bank-exports', [
+            'payroll_run_id' => $run->id,
+            'format' => 'sepa_xml',
+        ])->assertStatus(422);
+
+        Queue::assertNotPushed(GenerateBankExportJob::class);
+    }
+
+    public function test_store_rejects_run_from_another_company(): void
+    {
+        Queue::fake();
+
+        [$company, $manager] = $this->actors();
+        [$foreignCompany, , $foreignEmployee] = $this->actors();
+        [$foreignRun] = $this->payrollSlip($foreignCompany, $foreignEmployee);
+
+        Sanctum::actingAs($manager);
+
+        $this->postJson('/api/v1/bank-exports', [
+            'payroll_run_id' => $foreignRun->id,
+            'format' => 'sepa_xml',
+        ])->assertStatus(422);
+
+        Queue::assertNotPushed(GenerateBankExportJob::class);
+    }
+
     /**
      * @return array{0: Company, 1: Employee, 2: Employee}
      */
