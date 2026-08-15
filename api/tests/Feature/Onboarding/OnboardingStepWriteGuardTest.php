@@ -30,9 +30,15 @@ class OnboardingStepWriteGuardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->company = Company::factory()->create();
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        $this->employee = Employee::factory()->create(['company_id' => $this->company->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        $this->manager = $manager;
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(['company_id' => $this->company->id]);
+        $this->employee = $employee;
 
         $this->step = OnboardingStep::create([
             'company_id' => $this->company->id,
@@ -51,7 +57,8 @@ class OnboardingStepWriteGuardTest extends TestCase
             ->patchJson("/api/v1/onboarding-setup/{$this->step->step_key}/complete");
 
         $response->assertForbidden();
-        $this->assertSame('pending', $this->step->fresh()->status);
+        $this->step->refresh();
+        $this->assertSame('pending', $this->step->status);
     }
 
     /** @test */
@@ -61,7 +68,8 @@ class OnboardingStepWriteGuardTest extends TestCase
             ->patchJson("/api/v1/onboarding-setup/{$this->step->step_key}/skip");
 
         $response->assertForbidden();
-        $this->assertSame('pending', $this->step->fresh()->status);
+        $this->step->refresh();
+        $this->assertSame('pending', $this->step->status);
     }
 
     /** @test */
@@ -72,7 +80,8 @@ class OnboardingStepWriteGuardTest extends TestCase
 
         $response->assertOk()
             ->assertJsonPath('data.status', 'completed');
-        $this->assertSame('completed', $this->step->fresh()->status);
+        $this->step->refresh();
+        $this->assertSame('completed', $this->step->status);
     }
 
     /** @test */
