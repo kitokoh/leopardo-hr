@@ -74,18 +74,27 @@
     },
     "or": "ou",
     "countries": {
-      "DZ": "Algérie",
-      "CM": "Cameroun",
-      "CI": "Côte d'Ivoire",
-      "SN": "Sénégal",
-      "MA": "Maroc",
-      "TN": "Tunisie",
-      "FR": "France",
-      "TR": "Turquie",
-      "CG": "Congo",
-      "GA": "Gabon",
       "BF": "Burkina Faso",
-      "ML": "Mali"
+      "BJ": "Bénin",
+      "CA": "Canada",
+      "CF": "République centrafricaine",
+      "CG": "Congo",
+      "CI": "Côte d'Ivoire",
+      "CM": "Cameroun",
+      "DZ": "Algérie",
+      "FR": "France",
+      "GA": "Gabon",
+      "GB": "Royaume-Uni",
+      "GQ": "Guinée équatoriale",
+      "MA": "Maroc",
+      "ML": "Mali",
+      "NE": "Niger",
+      "SN": "Sénégal",
+      "TD": "Tchad",
+      "TG": "Togo",
+      "TN": "Tunisie",
+      "TR": "Turquie",
+      "US": "États-Unis"
     }
   },
   "modules": {
@@ -302,8 +311,14 @@
     "recent_activity": "Activite recente",
     "recent_activity_hint": "Dernieres actions de votre equipe",
     "leo_ia_announcement_title": "Felicitations equipe",
-    "leo_ia_announcement_body": "Felicitations a toute l'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !",
-    "leo_ia_announcement_error": "Impossible d'envoyer le message. Reessayez dans quelques instants."
+    "leo_ia_announcement_body": "Felicitations a toute l'equipe pour votre engagement de cette semaine. Continuez sur cette dynamique !",
+    "leo_ia_announcement_error": "Impossible d'envoyer le message. Reessayez dans quelques instants.",
+    "leo_presence_insight": "Aujourd'hui, {today} presence(s) sur {active} employe(s) actif(s). Souhaitez-vous envoyer un message de felicitations a l'equipe ?",
+    "leo_presence_empty": "Aucune donnee de presence disponible pour le moment. Souhaitez-vous quand meme envoyer un message de felicitations a l'equipe ?",
+    "leo_announcements_count": "{count} annonce(s) publiee(s) dans votre entreprise.",
+    "presence_today_title": "Presence aujourd hui",
+    "presence_today_summary": "{present} presence(s) sur {active} employe(s) actif(s) aujourd hui",
+    "presence_today_empty": "Aucune donnee de presence disponible."
   },
   "marketing": {
     "oauth": {
@@ -692,6 +707,7 @@
     "credsSentByEmail": "Ces identifiants ont aussi été envoyés par email à",
     "credsEmailed": "Vos identifiants de connexion viennent de vous être envoyés par email.",
     "trialNote": "Essai gratuit de",
+    "trialDaysUnit": "jours",
     "trialNoteSuffix": "aucune carte bancaire requise",
     "downloadApp": "Télécharger l'app",
     "changePasswordNote": "Changez votre mot de passe dès la première connexion.",
@@ -718,7 +734,7 @@
   },
   "seo": {
     "pricing": {
-      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+      "description": "Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours."
     }
   }
 }
