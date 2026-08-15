@@ -264,23 +264,6 @@
       "name_required": "Ad soyad gereklidir.",
       "password_required": "Şifre gereklidir.",
       "fix_fields": "Lütfen kırmızı alanları düzeltin"
-    },
-    "impersonation": {
-      "title": "Bir çalışanı taklit et",
-      "subtitle": ":name adına oturum aç",
-      "reason": "Gerekçe (zorunlu, en az 5 karakter)",
-      "reasonMin": "Gerekçe zorunludur (en az 5 karakter).",
-      "noLink": "Bu hesaba bağlı çalışan yok — taklit edilemiyor.",
-      "start": "Oturum oluştur",
-      "cancel": "İptal",
-      "tokenTitle": "Taklit belirteci (tek kullanımlık)",
-      "expires": ":date tarihinde sona erer",
-      "copy": "Belirteci kopyala",
-      "copied": "Belirteç kopyalandı",
-      "created": "Taklit oturumu oluşturuldu",
-      "error": "Taklit oturumu oluşturulurken hata oluştu",
-      "done": "Tamam",
-      "employee": "Bağlı çalışan #:id"
     }
   },
   "dashboard": {
@@ -614,6 +597,14 @@
       "unknown": {
         "message": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."
       }
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Şirket detayları yüklenemedi.",
+      "tickets_failed": "Destek talepleri yüklenemedi.",
+      "subscription_failed": "Abonelik güncellenemedi.",
+      "features_failed": "Modül ayarları kaydedilemedi."
     }
   }
 }
