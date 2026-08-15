@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Hash;
 final class RegisterAction
 {
     /**
-     * @param  array{first_name: string, last_name: string, email: string, password: string, invitation_token: string, device_name?: string}  $data
+     * @param  array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string}  $data
      * @return array{employee: Employee, token: string, token_type: string}
      */
     public function execute(array $data): array
