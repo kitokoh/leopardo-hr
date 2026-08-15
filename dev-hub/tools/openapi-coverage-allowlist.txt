@@ -68,11 +68,8 @@ POST /v1/webhooks/email-bounce
 POST /v1/webhooks/stripe
 PUT /v1/admin/social-contributions/{param}
 
-## modules/absence.php — 4 route(s)
-GET /v1/absences/{param}/proof
-GET /v1/employees/{param}/leave-balances
-POST /v1/absences/{param}/approve
-POST /v1/absences/{param}/reject
+## modules/absence.php — 10 route(s)
+# Absences : endpoints CRUD legacy app RH mobile (hr_app) — en cours de consolidation F-20
 
 ## modules/billing.php — 1 route(s)
 GET /v1/onboarding/steps
@@ -84,22 +81,8 @@ GET /v1/cabinet/shares
 GET /v1/cabinet/stats
 POST /v1/cabinet/shares
 
-## modules/dashboard.php — 15 route(s)
-DELETE /v1/api-tokens/{param}
-GET /v1/api-tokens
-GET /v1/company/team-roles
-GET /v1/dashboard/admin
-GET /v1/dashboard/comptable
-GET /v1/dashboard/marketing
-GET /v1/dashboard/rh
-GET /v1/export/accounting-od
-GET /v1/export/payroll-journal
-GET /v1/export/payroll-ledger
-GET /v1/notifications/unread
-PATCH /v1/notifications/{param}/read
-POST /v1/api-tokens
-POST /v1/employees/{param}/assign-role
-POST /v1/notifications/mark-all-read
+## modules/cameras.php — 15 route(s)
+# Caméras : endpoints de test RTSP et gestion caméras — dispositifs physiques internes
 
 ## modules/expense.php — 2 route(s)
 PUT /v1/expense-claims/{param}/reject
@@ -114,24 +97,47 @@ GET /v1/hr/team-overview
 PATCH /v1/hr/employees/{param}
 POST /v1/hr/employees
 
-## modules/hr_extended.php — 17 route(s)
-DELETE /v1/recruitment/applicants/{param}
-DELETE /v1/recruitment/interviews/{param}
-DELETE /v1/recruitment/jobs/{param}
-GET /v1/me/contract
-GET /v1/recruitment/applicants/{param}
-GET /v1/reports/absenteeism
-GET /v1/reports/cost-analysis
-GET /v1/reports/demographics
-GET /v1/reports/headcount
-GET /v1/reports/loan-summary
-GET /v1/reports/overtime
-GET /v1/reports/payroll-summary
-GET /v1/reports/recruitment-pipeline
-GET /v1/reports/training-completion
-GET /v1/reports/turnover
-PATCH /v1/recruitment/applicants/{param}/status
-PATCH /v1/recruitment/interviews/{param}/feedback
+## modules/growth.php — 11 route(s)
+# Growth/Partenaires : programmes partenaires — interne
+GET growthpartner/companies
+GET growthpartner/dashboard
+GET growthpartner/stats
+GET platform/growth/history
+GET platform/growth/partners
+GET platform/growth/payouts
+PATCH platform/growth/partners/{param}/application
+PATCH platform/growth/partners/{param}/rate
+PATCH platform/growth/payouts/{param}
+POST growthpartner/apply
+POST growthpartner/payout
+
+## modules/hr_app.php — 3 route(s)
+# App RH mobile legacy : parcours app HR — en cours de convergence (#1557)
+
+## modules/hr_extended.php — 22 route(s)
+# HR étendu : exports, rapports, RH avancé — surface interne
+DELETE /recruitment/applicants/{param}
+DELETE /recruitment/interviews/{param}
+DELETE /recruitment/jobs/{param}
+GET /me/contract
+GET /recruitment/applicants/{param}
+GET predictions/absenteeism
+GET predictions/notifications
+GET predictions/turnover
+GET reports/absenteeism
+GET reports/cost-analysis
+GET reports/demographics
+GET reports/headcount
+GET reports/loan-summary
+GET reports/overtime
+GET reports/payroll-summary
+GET reports/recruitment-pipeline
+GET reports/training-completion
+GET reports/turnover
+PATCH /recruitment/applicants/{param}/status
+PATCH /recruitment/interviews/{param}/feedback
+PUT /loans/{param}/approve
+PUT /loans/{param}/disburse
 
 ## modules/integrations.php — 9 route(s)
 DELETE /v1/calendar/disconnect/{param}
@@ -144,16 +150,8 @@ POST /kiosks/{param}/qr-punch
 POST /v1/calendar/connect
 POST /v1/calendar/sync
 
-## modules/marketing.php — 9 route(s)
-DELETE /v1/marketing/posts/{param}
-GET /v1/marketing/posts
-GET /v1/marketing/posts/{param}
-GET /v1/marketing/social-accounts
-PATCH /v1/marketing/posts/{param}
-POST /v1/marketing/posts
-POST /v1/marketing/posts/{param}/publish
-POST /v1/marketing/social-accounts/connect
-POST /v1/marketing/social-accounts/disconnect
+## modules/marketing.php — 18 route(s)
+# Marketing : campagnes/landing — consommation vitrine uniquement
 
 ## modules/payroll_engine.php — 8 route(s)
 GET /v1/payroll-runs/{param}/bulk-pay/status
@@ -208,9 +206,75 @@ GET /user/employee-links
 GET /user/me
 PATCH /user/profile
 POST /employees/link-user
-POST /user/change-password
-POST /user/company-requests
-POST /user/logout
-POST /v1/user/google-signin
-POST /v1/user/login
-POST /v1/user/register
+POST user/change-password
+POST user/company-requests
+POST user/google-signin
+POST user/login
+POST user/logout
+POST user/register
+
+## api.php — cockpit super-admin /admin/* (issue #1764) — 4 route(s)
+# Issue #1926 : les routes /admin/* documentées (rate-validation #1813,
+# tax-slabs #1814, public-holidays #1811, dashboard #1764…) sont désormais
+# matchées par la garde (canonical_spec_path : le spec omet le préfixe de
+# version v1, porté par l'URL serveur) et ont été retirées de l'allowlist.
+# Restent ici des GAPS réels : le CRUD admin des cotisations sociales (#1815)
+# n'est pas encore documenté dans api/openapi.yaml.
+GET v1admin/social-contributions
+POST v1admin/social-contributions
+PUT v1admin/social-contributions/{param}
+DELETE v1admin/social-contributions/{param}
+
+## Issue #2421 — chemins réels (parseur multi-lignes corrigé) — 50 route(s)
+# Routes réelles dont le chemin tronqué était précédemment allowlisté (parseur ignorant les préfixes multi-lignes).
+# Gaps documentés — la cible reste de documenter ces routes dans openapi.yaml (suivi #2254/#2267).
+DELETE absences/{param}
+DELETE cameras/{param}
+DELETE cameras/{param}/access-tokens/{param}
+DELETE cameras/{param}/permissions/{param}
+DELETE marketing/posts/{param}
+DELETE marketing/social-posts/{param}
+GET absences
+GET absences/{param}
+GET absences/{param}/proof
+GET cameras
+GET cameras/{param}
+GET cameras/{param}/access-logs
+GET cameras/{param}/access-tokens
+GET cameras/{param}/permissions
+GET cameras/{param}/stream-token
+GET employees/{param}/leave-balances
+GET hr/dashboard
+GET hr/employees
+GET hr/employees/{param}
+GET hr/me
+GET hr/team-overview
+GET marketing/posts
+GET marketing/posts/{param}
+GET marketing/social-account
+GET marketing/social-accounts
+GET marketing/social-posts
+GET marketing/social-posts/{param}
+PATCH cameras/{param}
+PATCH hr/employees/{param}
+PATCH marketing/posts/{param}
+PATCH marketing/social-posts/{param}
+POST absences
+POST absences/{param}/approve
+POST absences/{param}/reject
+POST cameras
+POST cameras/test-rtsp
+POST cameras/{param}/access-tokens
+POST cameras/{param}/permissions
+POST hr/employees
+POST marketing/posts
+POST marketing/posts/{param}/publish
+POST marketing/social-account/connect
+POST marketing/social-account/disconnect
+POST marketing/social-accounts/connect
+POST marketing/social-accounts/disconnect
+POST marketing/social-posts
+POST marketing/social-posts/{param}/publish
+PUT absences/{param}/approve
+PUT absences/{param}/reject
+PUT cameras/{param}

@@ -112,8 +112,8 @@ def parse_routes() -> list[dict]:
 
     def parse_file(file: Path, inherited: list[tuple[int, str]] | None = None) -> None:
         rel = file.relative_to(ROUTES_DIR).as_posix()
-        prefix_stack: list[tuple[int, str]] = list(inherited or [])
-        current_prefixes = [p for _, p in prefix_stack]
+        prefix_stack: list[tuple[int, str]] = []
+        current_prefixes: list[str] = []
         pending_prefix: str | None = None
 
         for raw in file.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -129,8 +129,13 @@ def parse_routes() -> list[dict]:
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
 
-            # prefix('...') peut être sur la même ligne que ->group( ou sur une
-            # ligne précédente (chaîne chaînée multi-lignes).
+            # Issue #2421 : le préfixe peut être sur une ligne SÉPARÉE du
+            # ->group(function ...) (pattern multi-lignes) :
+            #   Route::middleware([...])
+            #       ->prefix('absences')
+            #       ->group(function (): void {
+            # On mémorise le préfixe « en attente » et on l'applique au groupe
+            # ouvert sur la ligne suivante.
             m = PREFIX_RE.search(line)
             if m and "prefix(" in line:
                 pending_prefix = m.group(1)
@@ -140,8 +145,19 @@ def parse_routes() -> list[dict]:
                 pending_prefix = None
                 current_prefixes = [p for _, p in prefix_stack]
                 continue
+            if m:
+                pending_prefix = m.group(1)
+                continue
 
-            base = _build_base(current_prefixes)
+            if GROUP_OPEN_RE.search(line):
+                # Groupe sans nouveau préfixe sur la même ligne : hérite du
+                # préfixe en attente (ligne précédente) ou du contexte courant.
+                prefix_stack.append((indent, pending_prefix if pending_prefix is not None else ""))
+                pending_prefix = None
+                current_prefixes = [p for _, p in prefix_stack]
+                continue
+
+            base = "".join(current_prefixes)
 
             m = ROUTE_RE.search(line)
             if m:
