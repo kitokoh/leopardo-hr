@@ -274,7 +274,10 @@
     "priority_actions": "إجراءات ذات أولوية",
     "launch_readiness": "جاهزية الإطلاق",
     "recent_activity": "النشاط الأخير",
-    "recent_activity_hint": "آخر إجراءات فريقك"
+    "recent_activity_hint": "آخر إجراءات فريقك",
+    "leo_ia_announcement_title": "تهانينا للفريق",
+    "leo_ia_announcement_body": "تهانينا للفريق بأكمله: انخفض التأخير بنسبة 15٪ هذا الأسبوع. واصلوا هذه الديناميكية!",
+    "leo_ia_announcement_error": "تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل."
   },
   "marketing": {
     "oauth": {

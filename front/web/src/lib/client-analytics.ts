@@ -6,7 +6,9 @@ export type ClientAnalyticsEventName =
   | 'dashboard_loaded'
   | 'feature_blocked'
   | 'demo_user_selected'
-  | 'kiosk_status';
+  | 'kiosk_status'
+  | 'leo_ia_announcement_sent'
+  | 'leo_ia_card_dismissed';
 
 export type ClientAnalyticsPayload = {
   name: ClientAnalyticsEventName;

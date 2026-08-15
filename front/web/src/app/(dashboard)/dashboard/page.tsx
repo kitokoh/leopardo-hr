@@ -30,6 +30,9 @@ import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 const emptySubscribe = () => () => {};
 
+// Persistance « Plus tard » de la carte Leo IA (localStorage, pas de cookie).
+const LEO_IA_CARD_DISMISS_KEY = 'leopardo_ia_card_dismissed';
+
 type DashboardStat = {
   title: string;
   value: number;
@@ -113,6 +116,10 @@ export default function DashboardPage() {
   const [readiness, setReadiness] = useState<LaunchReadiness | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [leoCardDismissed, setLeoCardDismissed] = useState(false);
+  const [announcementSending, setAnnouncementSending] = useState(false);
+  const [announcementSent, setAnnouncementSent] = useState(false);
+  const [announcementError, setAnnouncementError] = useState<string | null>(null);
   const dashboardStartRef = useRef<number>(0);
   const dashboardTrackedRef = useRef(false);
   const role = user?.role?.toLowerCase() ?? null;
@@ -131,6 +138,70 @@ export default function DashboardPage() {
     dashboardStartRef.current = performance.now();
     setUser(getStoredUser());
     setUserLoaded(true);
+  }, []);
+
+  // Carte Leo IA : « Plus tard » masque la carte de facon persistante
+  // (localStorage) — verifie au montage, jamais via useSyncExternalStore.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(LEO_IA_CARD_DISMISS_KEY) === 'true') {
+        setLeoCardDismissed(true);
+      }
+    } catch {
+      // localStorage indisponible (navigation privee) — la carte reste visible.
+    }
+  }, []);
+
+  const sendCongratsAnnouncement = useCallback(async () => {
+    if (announcementSending) {
+      return;
+    }
+
+    setAnnouncementSending(true);
+    setAnnouncementError(null);
+    const startedAt = performance.now();
+
+    try {
+      // POST /api/v1/announcements — Store AnnouncementController (PA2-COMM-004) :
+      // title/body obligatoires, audience_type 'company' (broadcast entreprise).
+      await apiFetch('/announcements', {
+        method: 'POST',
+        body: JSON.stringify({
+          title: i18nT(locale, 'dashboard.leo_ia_announcement_title'),
+          body: i18nT(locale, 'dashboard.leo_ia_announcement_body'),
+          priority: 'normal',
+          audience_type: 'company',
+        }),
+      });
+
+      setAnnouncementSent(true);
+      trackClientEvent('leo_ia_announcement_sent', {
+        status: 'success',
+        audience_type: 'company',
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
+    } catch (error) {
+      setAnnouncementError(error instanceof ApiError ? error.message : i18nT(locale, 'dashboard.leo_ia_announcement_error'));
+      trackClientEvent('leo_ia_announcement_sent', {
+        status: 'error',
+        audience_type: 'company',
+        duration_ms: Math.round(performance.now() - startedAt),
+      });
+    } finally {
+      setAnnouncementSending(false);
+    }
+  }, [announcementSending, locale]);
+
+  const dismissLeoCard = useCallback(() => {
+    try {
+      localStorage.setItem(LEO_IA_CARD_DISMISS_KEY, 'true');
+    } catch {
+      // localStorage indisponible — masquee pour la session uniquement.
+    }
+    setLeoCardDismissed(true);
+    trackClientEvent('leo_ia_card_dismissed', {
+      surface: 'manager_dashboard',
+    });
   }, []);
 
   const trackDashboardLoaded = useCallback((extra: Record<string, unknown> = {}) => {
@@ -467,61 +538,91 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            <button className="mt-4 w-full rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent">
+            <Link
+              href="/dashboard/reports"
+              className="mt-4 flex w-full items-center justify-center rounded-xl border border-app-border py-3 font-bold text-slate-600 transition-colors hover:bg-transparent"
+            >
               Voir toute l&apos;activite
-            </button>
+            </Link>
           </div>
         </GlassCard>
 
         <div className="space-y-6">
-          <GlassCard delay={0.5}>
-            <div className="bg-gradient-to-br from-ia/5 to-ia-light p-6">
-              <div className="mb-4 flex items-start gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ia to-ia-dark shadow-lg shadow-ia/30">
-                  <Sparkles className="h-6 w-6 text-white" />
+          {!leoCardDismissed ? (
+            <GlassCard delay={0.5}>
+              <div className="bg-gradient-to-br from-ia/5 to-ia-light p-6">
+                <div className="mb-4 flex items-start gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-ia to-ia-dark shadow-lg shadow-ia/30">
+                    <Sparkles className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-950">Leo IA</h4>
+                    <p className="text-xs text-slate-500">Assistant intelligent</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-950">Leo IA</h4>
-                  <p className="text-xs text-slate-500">Assistant intelligent</p>
+
+                <div className="mb-4 rounded-xl bg-white/50 p-4">
+                  <p className="text-sm leading-relaxed text-slate-700">
+                    &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
+                  </p>
                 </div>
-              </div>
 
-              <div className="mb-4 rounded-xl bg-white/50 p-4">
-                <p className="text-sm leading-relaxed text-slate-700">
-                  &quot;Vos retards sont en baisse de 15% cette semaine. Souhaitez-vous que j&apos;envoie un message de felicitations a l&apos;equipe ?&quot;
-                </p>
+                {announcementSent ? (
+                  <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                    Message envoye a l&apos;equipe
+                  </div>
+                ) : (
+                  <>
+                    {announcementError ? (
+                      <p className="mb-3 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-700">
+                        {announcementError}
+                      </p>
+                    ) : null}
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void sendCongratsAnnouncement()}
+                        disabled={announcementSending}
+                        className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {announcementSending ? 'Envoi...' : 'Oui, envoyer'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={dismissLeoCard}
+                        disabled={announcementSending}
+                        className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        Plus tard
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
-
-              <div className="flex gap-2">
-                <button className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30">
-                  Oui, envoyer
-                </button>
-                <button className="flex-1 rounded-xl border border-app-border py-2.5 text-sm font-bold text-slate-600 transition-colors hover:bg-transparent">
-                  Plus tard
-                </button>
-              </div>
-            </div>
-          </GlassCard>
+            </GlassCard>
+          ) : null}
 
           <GlassCard delay={0.6}>
             <div className="p-6">
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employe', color: 'bg-security' },
-                  { icon: Calendar, label: 'Conges', color: 'bg-rh' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia' },
-                  { icon: Download, label: 'Export', color: 'bg-finance' },
+                  { icon: Users, label: 'Nouvel employe', color: 'bg-security', href: '/dashboard/employees' },
+                  { icon: Calendar, label: 'Conges', color: 'bg-rh', href: '/dashboard/absences' },
+                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/dashboard/reports' },
+                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/dashboard/reports' },
                 ].map((action) => (
-                  <button
+                  <Link
                     key={action.label}
+                    href={action.href}
                     className="group flex flex-col items-center gap-2 rounded-xl p-4 transition-colors hover:bg-transparent"
                   >
                     <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${action.color} transition-transform group-hover:scale-110`}>
                       <action.icon className="h-5 w-5 text-white" />
                     </div>
                     <span className="text-xs font-bold text-slate-600">{action.label}</span>
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
