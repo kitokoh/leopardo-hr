@@ -456,7 +456,7 @@
   "payrollConfidencePilotMessage": "Règles pilotes pour {country} : montants issus de références publiques générales (code du travail) mais non encore validés juridiquement sur place. Confirmez avec un conseil juridique ou fiscal local avant de vous appuyer sur ces chiffres (tranches d'impôt, cotisations sociales, seuils d'heures supplémentaires) pour vos obligations légales.",
   "payrollConfidencePlaceholderMessage": "Maquette sans valeurs pour {country} : les montants d'impôt et de cotisations sociales ne sont pas encore documentés et ne doivent pas être utilisés pour de vrais cycles de paie tant qu'ils n'ont pas été remplacés.",
   "payrollConfidenceUnknownMessage": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays.",
-  "signupBadge": "Essai gratuit 30 jours",
+  "signupBadge": "Essai gratuit 14 jours",
   "signupTitle": "Tester Leopardo avec votre entreprise",
   "signupSubtitle": "Créez votre espace d'essai en 2 minutes. Aucune carte bancaire requise.",
   "signupLabelemail": "Email professionnel",
@@ -538,5 +538,6 @@
   "companiesToastLoadFailed": "Impossible de charger la fiche entreprise.",
   "companiesToastTicketsFailed": "Impossible de charger les tickets support.",
   "companiesToastSubscriptionFailed": "Échec de la mise à jour de l'abonnement.",
-  "companiesToastFeaturesFailed": "Échec de la configuration des modules."
+  "companiesToastFeaturesFailed": "Échec de la configuration des modules.",
+  "seoPricingDescription": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
 }
