@@ -78,7 +78,6 @@ import {
   BuildingOfficeIcon,
   CreditCardIcon,
   ChartBarIcon,
-  DocumentTextIcon,
   CogIcon,
   ArrowDownTrayIcon,
   CalendarDaysIcon,
@@ -91,7 +90,6 @@ import {
   ArrowTrendingUpIcon,
   ServerIcon,
   GlobeAltIcon,
-  ShieldCheckIcon,
   MegaphoneIcon,
   LifebuoyIcon,
   PresentationChartLineIcon,
@@ -120,8 +118,8 @@ const items = [
   { id: 'edge', label: 'Edge Nodes', description: 'Nœuds edge synchronises', icon: ServerIcon, route: '/edge' },
   { id: 'globe', label: 'Globe', description: 'Presence mondiale en temps reel', icon: GlobeAltIcon, route: '/globe' },
   { id: 'fleet', label: 'Flotte', description: 'Alertes flotte vehicules', icon: TruckIcon, route: '/fleet' },
-  { id: 'reports', label: 'Rapports RH', description: 'Rapports avances', icon: DocumentTextIcon, route: '/reports' },
-  { id: 'audit', label: 'Journal audit', description: 'Traces et evenements', icon: ShieldCheckIcon, route: '/audit' },
+  // Routes tenant encore guardées (reports/audit/predictions, guard #2272) :
+  // retirées de la palette pour éviter toast + redirection muette vers /.
   { id: 'marketing', label: 'Marketing OAuth', description: 'Configuration OAuth marketing', icon: MegaphoneIcon, route: '/marketing/oauth' },
   { id: 'support', label: 'Support', description: 'Tickets support clients', icon: LifebuoyIcon, route: '/support' },
   { id: 'crm', label: 'CRM', description: 'Pipeline CRM', icon: PresentationChartLineIcon, route: '/crm/pipeline' },
