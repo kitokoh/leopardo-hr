@@ -130,6 +130,26 @@ class AuthServiceTest extends TestCase
         app(AuthService::class)->login('employee@a.test', 'wrong-password');
     }
 
+    public function test_login_with_orphaned_schema_returns_invalid_credentials(): void
+    {
+        // Issue #2902 : un compte dont le user_lookups pointe vers un schéma
+        // tenant inexistant (état prod avec seed partiel) doit produire un
+        // 401 explicite — JAMAIS un 500 « Server Error ».
+        // Le schéma MVP de test (CreatesMvpSchema) n'a pas de timestamps
+        // sur user_lookups — insertion sans created_at/updated_at.
+        DB::table('user_lookups')->insert([
+            'email' => 'ghost@orphan.test',
+            'company_id' => '99999999-9999-9999-9999-999999999999',
+            'employee_id' => 999999,
+            'schema_name' => 'schema_inexistant_xyz',
+            'role' => 'employee',
+        ]);
+
+        $this->expectException(InvalidCredentialsException::class);
+
+        app(AuthService::class)->login('ghost@orphan.test', 'password123', 'unit-tests');
+    }
+
     public function test_login_rejects_suspended_company(): void
     {
         $company = Company::query()->create([
