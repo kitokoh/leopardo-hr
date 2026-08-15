@@ -26,6 +26,9 @@ class NotificationController extends Controller
         $validated = $request->validate([
             'per_page'    => ['nullable', 'integer', 'min:1', 'max:100'],
             'type'        => ['nullable', 'string', 'max:80'],
+            // #2331 : contrat v4.16.185 — `unread=true` (mobile) est l'alias
+            // canonique ; `unread_only` reste accepté pour compatibilité.
+            'unread'      => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
             'unread_only' => ['nullable', 'in:true,false,1,0,on,off,yes,no'],
             'sort_dir'    => ['nullable', 'in:asc,desc'],
         ]);
@@ -37,7 +40,10 @@ class NotificationController extends Controller
         if (($validated['type'] ?? '') !== '') {
             $query->where('type', $validated['type']);
         }
-        if ($request->has('unread_only') && $request->boolean('unread_only')) {
+        $unreadFilter = $request->has('unread')
+            ? $request->boolean('unread')
+            : $request->boolean('unread_only');
+        if ($unreadFilter) {
             $query->where('is_read', false);
         }
 
