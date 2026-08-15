@@ -11,7 +11,6 @@ import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:leopardo_core/offline/database/edge_database.dart';
-import 'package:leopardo_core/offline/services/attendance_offline_service.dart';
 import 'package:leopardo_core/offline/services/sync_service.dart';
 import 'package:leopardo_employee/features/auth/data/auth_repository.dart';
 import 'package:leopardo_employee/features/attendance/data/attendance_repository.dart';
@@ -24,11 +23,7 @@ import 'package:leopardo_employee/features/evaluations/data/evaluation_repositor
 import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_employee/features/home/data/project_repository.dart';
 import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
-import 'package:leopardo_employee/features/contracts/data/contract_repository.dart';
-import 'package:leopardo_employee/features/training/data/training_repository.dart';
-import 'package:leopardo_employee/features/expenses/data/expense_repository.dart';
 import 'package:leopardo_employee/features/ai_chat/data/ai_chat_repository.dart';
-import 'package:leopardo_employee/features/ai_voice/data/ai_voice_repository.dart';
 import 'package:leopardo_employee/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
@@ -84,14 +79,7 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   final db = ref.watch(edgeDatabaseProvider);
   final service = SyncService(
     db: db,
-    // #3290 : timeouts explicites — un nœud Edge mort ne doit pas bloquer la
-    // synchro ni la file offline indéfiniment (connect 5s / receive 8s).
-    dio: Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 8),
-      ),
-    ),
+    dio: Dio(),
     edgeBaseUrl: preferences.edgeBaseUrl.isNotEmpty
         ? preferences.edgeBaseUrl
         : 'http://leopardo.local:7878',
@@ -109,26 +97,6 @@ final syncServiceProvider = Provider<SyncService>((ref) {
   );
   ref.onDispose(service.stop);
   return service;
-});
-
-/// Offline-first check-in/check-out backed by [EdgeDatabase] + [SyncService]
-/// (see issue #1287). Distinct from [offlineSyncServiceProvider], which only
-/// drains the legacy Hive `offline_punches` fallback queue.
-final attendanceOfflineServiceProvider = Provider<AttendanceOfflineService>((
-  ref,
-) {
-  return AttendanceOfflineService(
-    db: ref.watch(edgeDatabaseProvider),
-    syncService: ref.watch(syncServiceProvider),
-    // #3290 : timeouts explicites — un nœud Edge mort ne doit pas bloquer la
-    // synchro ni la file offline indéfiniment (connect 5s / receive 8s).
-    dio: Dio(
-      BaseOptions(
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 8),
-      ),
-    ),
-  );
 });
 
 final attendanceLocationServiceProvider = Provider<AttendanceLocationService>((
@@ -199,29 +167,9 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   return UserAuthRepository(apiClient, storage, preferences);
 });
 
-final contractRepositoryProvider = Provider<ContractRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ContractRepository(apiClient);
-});
-
-final trainingRepositoryProvider = Provider<TrainingRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return TrainingRepository(apiClient);
-});
-
-final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ExpenseRepository(apiClient);
-});
-
 final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return AiChatRepository(apiClient);
-});
-
-final aiVoiceRepositoryProvider = Provider<AiVoiceRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AiVoiceRepository(apiClient);
 });
 
 final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((
