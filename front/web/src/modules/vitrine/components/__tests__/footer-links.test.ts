@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest'
 import { getFooterHref } from '../Footer'
 
 describe('getFooterHref', () => {
