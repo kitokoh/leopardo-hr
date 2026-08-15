@@ -23,14 +23,14 @@ use Illuminate\Support\Facades\Hash;
 final class RegisterAction
 {
     /**
-     * @param  array{first_name: string, last_name: string, email: string, password: string, invitation_token: string, device_name?: string}  $data
+     * @param  array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string}  $data
      * @return array{employee: Employee, token: string, token_type: string}
      */
     public function execute(array $data): array
     {
         $invitationToken = $data['invitation_token'] ?? null;
         if (! is_string($invitationToken) || $invitationToken === '') {
-            throw new RegistrationNotAvailableException();
+            throw new RegistrationNotAvailableException;
         }
 
         $email = strtolower(trim($data['email']));
@@ -45,18 +45,18 @@ final class RegisterAction
         if ($invitation === null) {
             // Token absent, expiré, déjà consommé ou email différent : on ne
             // dit pas lequel (pas de fuite d'information sur les invitations).
-            throw new RegistrationNotAvailableException();
+            throw new RegistrationNotAvailableException;
         }
 
         /** @var Employee $employee */
         $employee = Employee::create([
-            'first_name'    => $data['first_name'],
-            'last_name'     => $data['last_name'],
-            'email'         => $email,
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'email' => $email,
             'password_hash' => Hash::make($data['password']),
-            'role'          => $invitation->role ?? 'ordinary',
-            'status'        => 'active',
-            'company_id'    => $invitation->company_id,
+            'role' => $invitation->role ?? 'ordinary',
+            'status' => 'active',
+            'company_id' => $invitation->company_id,
         ]);
 
         // Invitation consommée (idempotence : seule la première passe).
@@ -68,8 +68,8 @@ final class RegisterAction
         $token = $employee->createToken($tokenName);
 
         return [
-            'employee'   => $employee,
-            'token'      => $token->plainTextToken,
+            'employee' => $employee,
+            'token' => $token->plainTextToken,
             'token_type' => 'Bearer',
         ];
     }
