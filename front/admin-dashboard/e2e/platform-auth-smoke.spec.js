@@ -1,54 +1,84 @@
 import { expect, test } from '@playwright/test'
 
+// Mock helpers — les GET du client portent un cache-buster `_t=<ts>` :
+// les patterns doivent tolérer la query string (sinon la requête part en
+// vrai réseau → 401 sur token factice → logout global → spec cassée).
+const withQuery = (path) => new RegExp(`\\/api\\/v1\\/${path}(?:\\?.*)?$`)
+const json = (body) => ({ status: 200, contentType: 'application/json', body: JSON.stringify(body) })
+
 test('platform administrator can sign in and reach the admin dashboard', async ({ page }) => {
   let loginRequestSeen = false
 
   await page.route('**/api/v1/platform/auth/login', async (route) => {
     loginRequestSeen = true
-
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          id: 1,
-          name: 'Super Administrateur',
-          email: 'admin@leopardo-rh.com',
-          role: 'super_admin',
-          two_fa_enabled: false,
-        },
-        token: 'platform-admin-token',
-        token_type: 'Bearer',
-      }),
-    })
+    await route.fulfill(json({
+      data: {
+        id: 1,
+        name: 'Super Administrateur',
+        email: 'admin@leopardo-rh.com',
+        role: 'super_admin',
+        two_fa_enabled: false,
+      },
+      token: 'platform-admin-token',
+      token_type: 'Bearer',
+    }))
   })
 
-  await page.route('**/api/v1/platform/auth/me', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        data: {
-          id: 1,
-          name: 'Super Administrateur',
-          email: 'admin@leopardo-rh.com',
-          role: 'super_admin',
-          two_fa_enabled: false,
-        },
-      }),
-    })
+  await page.route(withQuery('platform/auth/me'), async (route) => {
+    await route.fulfill(json({
+      data: {
+        id: 1,
+        name: 'Super Administrateur',
+        email: 'admin@leopardo-rh.com',
+        role: 'super_admin',
+        two_fa_enabled: false,
+      },
+    }))
   })
 
-  // Cockpit plateforme (DashboardView) : 3 appels au mount — sans mock,
-  // le token factice reçoit un 401 réel → logout global → spec cassée.
-  await page.route(/\/api\/v1\/platform\/companies\/health(?:\?.*)?$/, async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { summary: { totalCompanies: 0, activeSubscriptions: 0, monthlyRevenue: 0 }, items: [] } }) })
+  // Cockpit plateforme (DashboardView) : 3 appels au mount.
+  await page.route(withQuery('platform/companies/health'), async (route) => {
+    await route.fulfill(json({
+      data: {
+        summary: { active_companies: 42, companies: 50, mrr: 12345, risk: { high: 2, medium: 3, low: 5 } },
+        items: [],
+      },
+    }))
   })
-  await page.route(/\/api\/v1\/platform\/metrics\/overview(?:\?.*)?$/, async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: {} }) })
+  await page.route(withQuery('platform/metrics/overview'), async (route) => {
+    await route.fulfill(json({
+      data: {
+        revenue: { currency: 'EUR', mrr: 12345, arr: 148140 },
+        companies: { total: 50, active: 42, trial: 3, suspended: 1, expired: 0 },
+        subscriptions: { total: 40, active: 35 },
+      },
+    }))
   })
-  await page.route(/\/api\/v1\/platform\/company-requests(?:\?.*)?$/, async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [], meta: { total: 0 } }) })
+  await page.route(withQuery('platform/company-requests'), async (route) => {
+    await route.fulfill(json({ data: [], meta: { total: 7 } }))
+  })
+
+  // Dashboard store + polling notifications (mount de DashboardLayout).
+  await page.route(withQuery('admin/dashboard/stats'), async (route) => {
+    await route.fulfill(json({
+      totalUsers: 12,
+      totalCompanies: 50,
+      activeSubscriptions: 40,
+      monthlyRevenue: 12345,
+      newUsersToday: 1,
+      newCompaniesToday: 0,
+      supportTickets: 3,
+      systemHealth: 'good',
+    }))
+  })
+  await page.route(withQuery('admin/dashboard/activities'), async (route) => {
+    await route.fulfill(json({ data: [] }))
+  })
+  await page.route(withQuery('admin/dashboard/alerts'), async (route) => {
+    await route.fulfill(json({ data: [] }))
+  })
+  await page.route(withQuery('notifications'), async (route) => {
+    await route.fulfill(json({ data: [], meta: { total: 0 } }))
   })
 
   await page.goto('/login')
