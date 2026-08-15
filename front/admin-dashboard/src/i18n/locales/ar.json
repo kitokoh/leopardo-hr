@@ -615,5 +615,33 @@
         "message": "لا تتوفر قواعد رواتب لـ {country}: حساب الرواتب غير متاح لهذا البلد."
       }
     }
+  },
+  "navigation": {
+    "dashboard": "لوحة التحكم",
+    "analytics": "التحليلات",
+    "globe": "العالم في الوقت الفعلي",
+    "users": "المستخدمون",
+    "companies": "الشركات",
+    "subscriptions": "الاشتراكات",
+    "payroll": "الرواتب",
+    "leaves": "الإجازات والغياب",
+    "contracts": "العقود",
+    "recruitment": "التوظيف",
+    "training": "التدريب",
+    "fleet": "أسطول المركبات",
+    "chat": "محادثة الذكاء الاصطناعي",
+    "reports": "تقارير الموارد البشرية",
+    "audit": "سجل التدقيق",
+    "webhooks": "Webhooks",
+    "marketing": "التسويق",
+    "exports": "التصدير والتقارير",
+    "support": "الدعم",
+    "supportTickets": "مركز دعم العملاء",
+    "crm": "مسار CRM",
+    "predictions": "لوحة التنبؤ بالذكاء الاصطناعي",
+    "growth": "إدارة Growth",
+    "edge": "عُقد Edge",
+    "system": "النظام",
+    "mainMenu": "القائمة الرئيسية"
   }
 }

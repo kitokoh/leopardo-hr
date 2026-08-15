@@ -615,5 +615,33 @@
         "message": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."
       }
     }
+  },
+  "navigation": {
+    "dashboard": "Gösterge Paneli",
+    "analytics": "Analitik",
+    "globe": "Gerçek Zamanlı Küre",
+    "users": "Kullanıcılar",
+    "companies": "Şirketler",
+    "subscriptions": "Abonelikler",
+    "payroll": "Bordro",
+    "leaves": "İzin ve Devamsızlık",
+    "contracts": "Sözleşmeler",
+    "recruitment": "İşe Alım",
+    "training": "Eğitimler",
+    "fleet": "Araç Filosu",
+    "chat": "Yapay Zekâ Sohbeti",
+    "reports": "İK Raporları",
+    "audit": "Denetim Günlüğü",
+    "webhooks": "Webhooklar",
+    "marketing": "Pazarlama",
+    "exports": "Dışa Aktarmalar ve Raporlar",
+    "support": "Destek",
+    "supportTickets": "Müşteri Destek Merkezi",
+    "crm": "CRM Hattı",
+    "predictions": "Yapay Zekâ Tahmin Paneli",
+    "growth": "Growth Yönetimi",
+    "edge": "Edge Düğümleri",
+    "system": "Sistem",
+    "mainMenu": "Ana menü"
   }
 }

@@ -28,7 +28,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="mt-6 px-4" role="navigation" aria-label="Menu principal">
+    <nav class="mt-6 px-4" role="navigation" :aria-label="t('navigation.mainMenu', 'Menu principal')">
       <div class="space-y-1">
         <router-link
           v-for="item in navigation"
@@ -202,97 +202,97 @@ const tenantRouteNames = new Set(
 const navigation = computed(() => [
   {
     name: 'dashboard',
-    title: 'Tableau de bord',
+    title: t('navigation.dashboard', 'Tableau de bord'),
     path: '/',
     icon: HomeIcon
   },
   {
     name: 'analytics',
-    title: 'Analytics',
+    title: t('navigation.analytics', 'Analytics'),
     path: '/analytics',
     icon: ChartBarIcon
   },
   {
     name: 'globe',
-    title: 'Globe Temps Réel',
+    title: t('navigation.globe', 'Globe Temps Réel'),
     path: '/globe',
     icon: GlobeAltIcon
   },
   {
     name: 'users',
-    title: 'Utilisateurs',
+    title: t('navigation.users', 'Utilisateurs'),
     path: '/users',
     icon: UsersIcon
   },
   {
     name: 'companies',
-    title: 'Entreprises',
+    title: t('navigation.companies', 'Entreprises'),
     path: '/companies',
     icon: BuildingOfficeIcon
   },
   {
     name: 'subscriptions',
-    title: 'Abonnements',
+    title: t('navigation.subscriptions', 'Abonnements'),
     path: '/subscriptions',
     icon: CreditCardIcon
   },
   {
     name: 'payroll',
-    title: 'Paie',
+    title: t('navigation.payroll', 'Paie'),
     path: '/payroll',
     icon: CurrencyEuroIcon
   },
   {
     name: 'leaves',
-    title: 'Congés & Absences',
+    title: t('navigation.leaves', 'Congés & Absences'),
     path: '/leaves',
     icon: CalendarDaysIcon
   },
   {
     name: 'contracts',
-    title: 'Contrats',
+    title: t('navigation.contracts', 'Contrats'),
     path: '/contracts',
     icon: DocumentDuplicateIcon
   },
   {
     name: 'recruitment',
-    title: 'Recrutement',
+    title: t('navigation.recruitment', 'Recrutement'),
     path: '/recruitment',
     icon: UserPlusIcon
   },
   {
     name: 'training',
-    title: 'Formations',
+    title: t('navigation.training', 'Formations'),
     path: '/training',
     icon: AcademicCapIcon
   },
   {
     name: 'fleet',
-    title: 'Flotte véhicules',
+    title: t('navigation.fleet', 'Flotte véhicules'),
     path: '/fleet',
     icon: TruckIcon
   },
   {
     name: 'chat',
-    title: 'Chat IA',
+    title: t('navigation.chat', 'Chat IA'),
     path: '/chat',
     icon: SparklesIcon
   },
   {
     name: 'reports',
-    title: 'Rapports RH',
+    title: t('navigation.reports', 'Rapports RH'),
     path: '/reports',
     icon: ChartPieIcon
   },
   {
     name: 'audit',
-    title: 'Journal d\'audit',
+    title: t('navigation.audit', "Journal d'audit"),
     path: '/audit',
     icon: ShieldCheckIcon
   },
   {
     name: 'webhooks',
-    title: 'Webhooks',
+    title: t('navigation.webhooks', 'Webhooks'),
     path: '/webhooks',
     icon: LinkIcon
   },
@@ -304,50 +304,50 @@ const navigation = computed(() => [
   },
   {
     name: 'exports',
-    title: 'Exports & Rapports',
+    title: t('navigation.exports', 'Exports & Rapports'),
     path: '/exports',
     icon: ArrowDownTrayIcon
   },
   {
     name: 'support',
-    title: 'Support',
+    title: t('navigation.support', 'Support'),
     path: '/support',
     icon: ChatBubbleLeftRightIcon,
     badge: dashboardStore.stats.supportTickets
   },
   {
     name: 'support-tickets',
-    title: 'Centre support client',
+    title: t('navigation.supportTickets', 'Centre support client'),
     path: '/support-tickets',
     icon: LifebuoyIcon
   },
   {
     name: 'crm-pipeline',
-    title: 'Pipeline CRM',
+    title: t('navigation.crm', 'Pipeline CRM'),
     path: '/crm/pipeline',
     icon: FunnelIcon
   },
   {
     name: 'predictions',
-    title: 'Dashboard Prédictif IA',
+    title: t('navigation.predictions', 'Dashboard Prédictif IA'),
     path: '/predictions',
     icon: ChartBarSquareIcon
   },
   {
     name: 'growth',
-    title: 'Administration Growth',
+    title: t('navigation.growth', 'Administration Growth'),
     path: '/growth',
     icon: ArrowTrendingUpIcon
   },
   {
     name: 'edge',
-    title: 'Edge Nodes',
+    title: t('navigation.edge', 'Edge Nodes'),
     path: '/edge',
     icon: ServerIcon
   },
   {
     name: 'system',
-    title: 'Système',
+    title: t('navigation.system', 'Système'),
     path: '/system',
     icon: CogIcon
   },

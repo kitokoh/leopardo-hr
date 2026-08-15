@@ -615,5 +615,33 @@
         "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
       }
     }
+  },
+  "navigation": {
+    "dashboard": "Tableau de bord",
+    "analytics": "Analytique",
+    "globe": "Globe Temps Réel",
+    "users": "Utilisateurs",
+    "companies": "Entreprises",
+    "subscriptions": "Abonnements",
+    "payroll": "Paie",
+    "leaves": "Congés & Absences",
+    "contracts": "Contrats",
+    "recruitment": "Recrutement",
+    "training": "Formations",
+    "fleet": "Flotte véhicules",
+    "chat": "Chat IA",
+    "reports": "Rapports RH",
+    "audit": "Journal d'audit",
+    "webhooks": "Webhooks",
+    "marketing": "Marketing",
+    "exports": "Exports & Rapports",
+    "support": "Support",
+    "supportTickets": "Centre support client",
+    "crm": "Pipeline CRM",
+    "predictions": "Dashboard Prédictif IA",
+    "growth": "Administration Growth",
+    "edge": "Nœuds Edge",
+    "system": "Système",
+    "mainMenu": "Menu principal"
   }
 }

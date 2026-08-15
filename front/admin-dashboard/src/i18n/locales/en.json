@@ -615,5 +615,33 @@
         "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
       }
     }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "globe": "Real-time Globe",
+    "users": "Users",
+    "companies": "Companies",
+    "subscriptions": "Subscriptions",
+    "payroll": "Payroll",
+    "leaves": "Leave & Absence",
+    "contracts": "Contracts",
+    "recruitment": "Recruitment",
+    "training": "Training",
+    "fleet": "Vehicle Fleet",
+    "chat": "AI Chat",
+    "reports": "HR Reports",
+    "audit": "Audit Log",
+    "webhooks": "Webhooks",
+    "marketing": "Marketing",
+    "exports": "Exports & Reports",
+    "support": "Support",
+    "supportTickets": "Customer Support Center",
+    "crm": "CRM Pipeline",
+    "predictions": "AI Predictive Dashboard",
+    "growth": "Growth Administration",
+    "edge": "Edge Nodes",
+    "system": "System",
+    "mainMenu": "Main menu"
   }
 }
