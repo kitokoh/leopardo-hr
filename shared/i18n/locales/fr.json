@@ -74,18 +74,27 @@
     },
     "or": "ou",
     "countries": {
-      "DZ": "Algérie",
-      "CM": "Cameroun",
-      "CI": "Côte d'Ivoire",
-      "SN": "Sénégal",
-      "MA": "Maroc",
-      "TN": "Tunisie",
-      "FR": "France",
-      "TR": "Turquie",
-      "CG": "Congo",
-      "GA": "Gabon",
       "BF": "Burkina Faso",
-      "ML": "Mali"
+      "BJ": "Bénin",
+      "CA": "Canada",
+      "CF": "République centrafricaine",
+      "CG": "Congo",
+      "CI": "Côte d'Ivoire",
+      "CM": "Cameroun",
+      "DZ": "Algérie",
+      "FR": "France",
+      "GA": "Gabon",
+      "GB": "Royaume-Uni",
+      "GQ": "Guinée équatoriale",
+      "MA": "Maroc",
+      "ML": "Mali",
+      "NE": "Niger",
+      "SN": "Sénégal",
+      "TD": "Tchad",
+      "TG": "Togo",
+      "TN": "Tunisie",
+      "TR": "Turquie",
+      "US": "États-Unis"
     }
   },
   "modules": {
@@ -725,7 +734,7 @@
   },
   "seo": {
     "pricing": {
-      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+      "description": "Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours."
     }
   }
 }

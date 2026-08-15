@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Console\Command;
@@ -17,8 +18,9 @@ class GenerateMonthlyInvoices extends Command
     protected $description = 'Generate monthly invoices for active subscriptions';
 
     private const PLAN_PRICES = [
-        'starter' => ['amount' => 29.00, 'currency' => 'EUR'],
-        'business' => ['amount' => 99.00, 'currency' => 'EUR'],
+        'free' => ['amount' => 0.00, 'currency' => 'EUR'],
+        'pilot' => ['amount' => 29.00, 'currency' => 'EUR'],
+        'operations' => ['amount' => 99.00, 'currency' => 'EUR'],
         'enterprise' => ['amount' => 299.00, 'currency' => 'EUR'],
     ];
 
@@ -33,7 +35,8 @@ class GenerateMonthlyInvoices extends Command
         foreach ($activeSubscriptions as $subscription) {
             try {
                 DB::transaction(function () use ($subscription, &$generated): void {
-                    $pricing = self::PLAN_PRICES[$subscription->plan] ?? self::PLAN_PRICES['starter'];
+                    $plan = PlanCode::normalize((string) $subscription->plan)->value;
+                    $pricing = self::PLAN_PRICES[$plan] ?? self::PLAN_PRICES[PlanCode::Pilot->value];
                     $year = now()->format('Y');
                     $seq = Invoice::where('company_id', $subscription->company_id)->count() + 1;
 

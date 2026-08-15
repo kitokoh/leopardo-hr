@@ -10,6 +10,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
@@ -19,7 +20,8 @@ class ProjectController extends Controller
         $actor = $request->user();
         $request->validate(['status' => ['nullable', 'in:active,completed,archived'], 'per_page' => ['nullable', 'integer', 'min:1', 'max:100']]);
 
-        $query = Project::query();
+        $query = Project::query()
+            ->where('company_id', $actor->company_id);
         if (! $actor->isManager()) {
             $query->whereJsonContains('members', $actor->id);
         }
@@ -27,7 +29,7 @@ class ProjectController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
 
         return ProjectResource::collection($query->orderByDesc('created_at')->paginate($perPage))
             ->response();
@@ -41,7 +43,7 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $data = $request->validate(['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d', 'gte:start_date'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1'], 'status' => ['nullable', 'in:active,completed,archived']]);
+        $data = $request->validate(['name' => ['required', 'string', 'max:150'], 'description' => ['nullable', 'string'], 'start_date' => ['nullable', 'date_format:Y-m-d'], 'end_date' => ['nullable', 'date_format:Y-m-d', 'gte:start_date'], 'members' => ['nullable', 'array'], 'members.*' => ['integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $actor->company_id))], 'status' => ['nullable', 'in:active,completed,archived']]);
         $project = Project::create(['company_id' => $actor->company_id, 'created_by' => $actor->id, 'members' => $data['members'] ?? [], 'status' => $data['status'] ?? 'active', ...$data]);
 
         return (new ProjectResource($project))

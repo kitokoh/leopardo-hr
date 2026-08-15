@@ -74,6 +74,48 @@ class EdgeNodeSyncRouteTest extends TestCase
         }
     }
 
+    /**
+     * Issue #3427 : les routes admin Edge (store, sync, license) exposent
+     * edge_token + PII/biométrie via /edge-node/{id}/pull → réservées aux
+     * managers. Un employé non-manager doit recevoir 403.
+     */
+    public function test_employee_cannot_register_or_sync_edge_node(): void
+    {
+        $company = Company::factory()->create([
+            'slug' => 'sync-employee-'.uniqid(),
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+        ]);
+
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        // POST /api/v1/edge (store) → 403 pour un employé simple.
+        $this->actingAs($employee)
+            ->postJson('/api/v1/edge', ['name' => 'Node Pirate'])
+            ->assertForbidden()
+            ->assertJsonPath('error', 'MANAGER_REQUIRED');
+
+        $node = EdgeNode::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Node Legit',
+            'slug' => 'node-legit-'.uniqid(),
+            'status' => 'active',
+        ]);
+
+        // Sync + license → 403 aussi (même groupe api.manager).
+        $this->actingAs($employee)
+            ->postJson("/api/v1/edge/{$node->id}/sync")
+            ->assertForbidden();
+        $this->actingAs($employee)
+            ->postJson("/api/v1/edge/{$node->id}/license", ['valid_days' => 3650])
+            ->assertForbidden();
+    }
+
     public function test_manual_sync_route_works_for_tenant_owner(): void
     {
         /** @var \App\Core\Tenant\Domain\Models\Company $company */

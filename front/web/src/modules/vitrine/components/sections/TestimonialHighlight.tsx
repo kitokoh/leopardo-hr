@@ -3,6 +3,11 @@
 import { motion } from 'framer-motion';
 import { Quote, Star } from 'lucide-react';
 import type { AppLocale } from '@/lib/i18n';
+import { TESTIMONIALS_ARE_DEMO } from '@/modules/vitrine/data/testimonials';
+import {
+  getIllustrativeExampleLabel,
+  getIllustrativeExampleSuffix,
+} from '@/modules/vitrine/lib/vitrine-locale';
 
 type HighlightTestimonial = {
   quote: string;
@@ -10,8 +15,6 @@ type HighlightTestimonial = {
   role: string;
   company: string;
   avatar: string;
-  metric: string;
-  metricLabel: string;
 };
 
 const highlightByLocale: Record<AppLocale, HighlightTestimonial> = {
@@ -21,8 +24,6 @@ const highlightByLocale: Record<AppLocale, HighlightTestimonial> = {
     role: 'Directrice des Ressources Humaines',
     company: 'Entreprise IT · 350 employés, 3 pays',
     avatar: 'AD',
-    metric: '-40%',
-    metricLabel: 'temps admin RH',
   },
   en: {
     quote: "Since adopting Leopardo RH, we cut HR admin time by 40%. Multi-country payroll and biometric attendance transformed our day-to-day operations across three offices.",
@@ -30,8 +31,6 @@ const highlightByLocale: Record<AppLocale, HighlightTestimonial> = {
     role: 'HR Director',
     company: 'IT Company · 350 employees, 3 countries',
     avatar: 'AD',
-    metric: '-40%',
-    metricLabel: 'HR admin time',
   },
   tr: {
     quote: "Leopardo RH'yi kullanmaya basladigimizdan beri IK yonetim surelerimizi %40 azalttik. Cok ulkeli bordro ve biyometrik devam takibi operasyonlarimizi donusturdu.",
@@ -39,8 +38,6 @@ const highlightByLocale: Record<AppLocale, HighlightTestimonial> = {
     role: 'IK Direktoru',
     company: 'BT Şirketi · 350 çalışan, 3 ülke',
     avatar: 'AD',
-    metric: '-40%',
-    metricLabel: 'IK yonetim suresi',
   },
   ar: {
     quote: "منذ اعتمادنا Leopardo RH، خفضنا وقت إدارة الموارد البشرية بنسبة 40%. الرواتب متعددة البلدان والحضور البيومتري غيّرا عملياتنا اليومية.",
@@ -48,8 +45,6 @@ const highlightByLocale: Record<AppLocale, HighlightTestimonial> = {
     role: 'مديرة الموارد البشرية',
     company: 'شركة تقنية · 350 موظف، 3 دول',
     avatar: 'AD',
-    metric: '-40%',
-    metricLabel: 'وقت إدارة الموارد البشرية',
   },
 };
 
@@ -72,6 +67,12 @@ export function TestimonialHighlight({ locale = 'fr' }: TestimonialHighlightProp
           transition={{ duration: 0.7 }}
           className="relative bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-10 md:p-14 shadow-xl"
         >
+          {TESTIMONIALS_ARE_DEMO && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-amber-100/70 dark:bg-amber-500/10 border border-amber-300/50 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-semibold tracking-wide uppercase mb-6">
+              {getIllustrativeExampleLabel(locale)}
+            </span>
+          )}
+
           <Quote className="w-12 h-12 text-emerald-200 dark:text-emerald-900/50 mb-6" />
 
           <div className="flex gap-1 mb-6">
@@ -90,18 +91,16 @@ export function TestimonialHighlight({ locale = 'fr' }: TestimonialHighlightProp
                 {testimonial.avatar}
               </div>
               <div>
-                <div className="text-base font-bold text-slate-900 dark:text-white">{testimonial.name}</div>
+                <div className="text-base font-bold text-slate-900 dark:text-white">
+                  {testimonial.name}
+                  {TESTIMONIALS_ARE_DEMO && (
+                    <span className="ml-1.5 font-normal text-slate-500 dark:text-slate-400">
+                      {getIllustrativeExampleSuffix(locale)}
+                    </span>
+                  )}
+                </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400">{testimonial.role}</div>
                 <div className="text-sm text-slate-400 dark:text-slate-500">{testimonial.company}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 px-6 py-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl border border-emerald-100 dark:border-emerald-800/30">
-              <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-                {testimonial.metric}
-              </div>
-              <div className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
-                {testimonial.metricLabel}
               </div>
             </div>
           </div>
