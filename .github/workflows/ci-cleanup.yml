@@ -1,0 +1,111 @@
+name: CI Queue Cleanup
+
+# Issue #2413 : la file GitHub Actions se sature quand le swarm d'agents
+# accumule des runs orphelins (branches de PRs fermées/mergées) et des runs
+# supersédés (pushes successifs sur une même branche). À 470+ runs queued,
+# aucun check requis ne démarre et aucun merge n'est possible.
+#
+# Ce workflow est le « script de nettoyage » recommandé par #2413 :
+#   - il annule les runs `queued`/`pending` des branches SANS PR ouverte
+#     (runs orphelins de branches mortes) ;
+#   - il annule les runs `queued`/`pending` supersédés (tous sauf le plus
+#     récent par couple branche+workflow) ;
+#   - il annule aussi les runs `in_progress` des branches mortes (un run en
+#     cours sur une branche sans PR ne sert à rien, il consomme un runner).
+#
+# Volontairement déclenché uniquement par `schedule` + `workflow_dispatch` :
+# il ne doit jamais s'auto-déclencher et ajouter lui-même du bruit à la file.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: ci-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cancel-orphaned-runs:
+    name: Cancel orphaned and superseded runs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel stale queued/pending/in_progress runs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # 1. Branches qui portent encore une PR ouverte.
+          gh pr list --state open --limit 300 --json headRefName \
+            --jq '.[].headRefName' | sort -u > /tmp/open_branches.txt
+
+          # 2. Collecte de tous les runs queued/pending/in_progress.
+          python3 - <<'PY' > /tmp/stale_runs.json
+          import json, subprocess
+          runs = []
+          for st in ("queued", "pending", "in_progress"):
+              page = 1
+              while True:
+                  out = subprocess.run(
+                      ["gh", "api",
+                       f"repos/${{ github.repository }}/actions/runs?status={st}&per_page=100&page={page}"],
+                      capture_output=True, text=True, check=True).stdout
+                  batch = json.loads(out).get("workflow_runs", [])
+                  runs += batch
+                  if len(batch) < 100:
+                      break
+                  page += 1
+          json.dump(runs, open("/tmp/stale_runs.json", "w"))
+          print(f"runs actifs (queued/pending/in_progress): {len(runs)}", file=sys.stderr)
+          PY
+          # shellcheck disable=SC2016
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          from collections import defaultdict
+
+          runs = json.load(open("/tmp/stale_runs.json"))
+          open_prs = set()
+          with open("/tmp/open_branches.txt") as fh:
+              open_prs = set(l.strip() for l in fh if l.strip())
+
+          by_branch_wf = defaultdict(list)
+          for r in runs:
+              by_branch_wf[(r["head_branch"], r["name"])].append(r)
+
+          to_cancel = {}  # run_id -> raison
+          # a) Runs supersédés : garder le plus récent par (branche, workflow).
+          for (branch, wf), rs in by_branch_wf.items():
+              rs_sorted = sorted(rs, key=lambda r: r["created_at"], reverse=True)
+              for r in rs_sorted[1:]:
+                  to_cancel[r["id"]] = "superseded"
+          # b) Branches mortes (sans PR ouverte) : tout annuler, y compris le
+          #    plus récent, et aussi les runs in_progress.
+          for (branch, wf), rs in by_branch_wf.items():
+              if branch in open_prs:
+                  continue
+              for r in rs:
+                  to_cancel[r["id"]] = "orphan-branch"
+
+          print(f"total à annuler: {len(to_cancel)}")
+          ok = fail = 0
+          for run_id, reason in sorted(to_cancel.items()):
+              rc = subprocess.run(
+                  ["gh", "api", "-X", "POST",
+                   f"repos/${{ github.repository }}/actions/runs/{run_id}/cancel"],
+                  capture_output=True, text=True).returncode
+              if rc == 0:
+                  ok += 1
+                  print(f"  annulé {run_id} ({reason})")
+              else:
+                  fail += 1
+          print(f"annulés: {ok}, échecs (déjà terminés): {fail}")
+          if ok == 0 and fail == 0:
+              print("File CI propre — aucun run à annuler.")
+          PY
