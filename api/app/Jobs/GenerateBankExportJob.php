@@ -9,7 +9,6 @@ use App\Jobs\Middleware\EnsureTenantContext;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BankExportGenerator;
-use App\Support\CompanyBankDetails;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -93,15 +92,11 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
 
             $format = $export->format ?? 'csv_generic';
 
-            // Issue #2198 — debtor IBAN/BIC for SEPA read from
-            // companies.metadata via the public schema (never the tenant
-            // search_path). The generator throws MISSING_COMPANY_IBAN when
-            // absent; the job then marks the export failed with that message.
-            $companyBank = $format === 'sepa_xml'
-                ? CompanyBankDetails::forCompany((string) $run->company_id)
-                : [];
-
-            $content = $generator->generate($run, $format, $companyBank);
+            // Issue #2198 — debtor IBAN/BIC for SEPA are resolved inside the
+            // generator (BankExportGenerator::companyBankDetails) via the
+            // public schema; it throws MISSING_COMPANY_IBAN when absent and
+            // the job marks the export failed with that message.
+            $content = $generator->generate($run, $format);
             $extension = $generator->fileExtension($format);
 
             $filePath = sprintf(

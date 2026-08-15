@@ -1531,6 +1531,18 @@ parameters:
 			path: app/Mail/TrialDripMail.php
 
 		-
+			message: '#^Strict comparison using \!\=\= between Illuminate\\Support\\Carbon and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Mail/TrialWelcomeMail.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 2
+			path: app/Mail/TrialWelcomeMail.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -2747,6 +2759,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Fleet/Infrastructure/Services/FleetService.php
+
+		-
+			message: '#^Parameter \#1 \$deviceIds of method App\\Modules\\Attendance\\Infrastructure\\Services\\TraccarService\:\:getLastPositions\(\) expects list\<int\>, array\<int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Modules/Fleet/Interfaces/Api/V1/FleetController.php
 
 		-
 			message: '#^Call to an undefined method App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:isManager\(\)\.$#'
@@ -5209,6 +5227,18 @@ parameters:
 			path: tests/Feature/CalendarSyncServiceTest.php
 
 		-
+			message: '#^Method Tests\\Feature\\Cameras\\CameraRtspSecurityTest\:\:authHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Cameras/CameraRtspSecurityTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Cameras\\CameraRtspSecurityTest\:\:createCompanyWithCameras\(\) has parameter \$features with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Cameras/CameraRtspSecurityTest.php
+
+		-
 			message: '#^Cannot access property \$last_used_at on App\\Modules\\Cameras\\Domain\\CameraAccessToken\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -6262,12 +6292,6 @@ parameters:
 			message: '#^Method Tests\\Feature\\GenerateBankExportJobTest\:\:companyAndEmployee\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
 			identifier: return.type
 			count: 1
-			path: tests/Feature/GenerateBankExportJobTest.php
-
-		-
-			message: '#^Parameter \#1 \$path of method Illuminate\\Filesystem\\FilesystemAdapter\:\:get\(\) expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 2
 			path: tests/Feature/GenerateBankExportJobTest.php
 
 		-
@@ -8577,13 +8601,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 11
+			count: 13
 			path: tests/Feature/VehicleControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 6
+			count: 7
 			path: tests/Feature/VehicleControllerTest.php
 
 		-
@@ -8693,6 +8717,18 @@ parameters:
 			identifier: property.nonObject
 			count: 1
 			path: tests/Unit/AuthServiceTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\Cameras\\TestRtspSsidGuardTest\:\:privateTargets\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Cameras/TestRtspSsidGuardTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\Cameras\\TestRtspSsidGuardTest\:\:publicTargets\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Unit/Cameras/TestRtspSsidGuardTest.php
 
 		-
 			message: '#^Method Tests\\Unit\\CountryDefaultsTest\:\:acceptanceCriteriaCountryCodesProvider\(\) should return array\<int, array\{string\}\> but returns array\{''Algeria \(DZ\)''\: array\{''DZ''\}, ''Morocco \(MA\)''\: array\{''MA''\}, ''Tunisia \(TN\)''\: array\{''TN''\}, ''France \(FR\)''\: array\{''FR''\}, ''Turkey \(TR\)''\: array\{''TR''\}, ''Cameroon \(CM, CEMAC\)''\: array\{''CM''\}, ''Central African Republic \(CF, CEMAC\)''\: array\{''CF''\}, ''Chad \(TD, CEMAC\)''\: array\{''TD''\}, \.\.\.\}\.$#'
