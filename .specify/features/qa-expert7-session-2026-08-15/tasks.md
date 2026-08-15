@@ -1,48 +1,39 @@
-# Tasks: Session QA Expert 7 2026-08-15
+# Tasks — Session QA Expert 7 (2026-08-15)
 
-**Input**: spec.md + findings-registry.md (`.specify/features/qa-expert7-session-2026-08-15/`)
+## Phase 1 : Issues implémentées (PRs de la session)
 
-**Anti-duplication (#2400)** : avant chaque implémentation, vérifier branches + PRs ouvertes
-contenant le numéro d'issue ; une seule branche `fix/<issue>-*` par issue ; pousser la branche
-(claim) dès le self-assign ; `Closes #N` dans le body de la PR.
+- [x] T001 #3328 — Enterprise quote-only au checkout (PR #3472, MERGED)
+- [x] T002 #2984 — /download FAQ sans « Starter » (PR #3473)
+- [x] T003 #2985 — /branding plans réels (PR #3474)
+- [x] T004 #2987 — StickyMobileCTA aria localisé (PR #3475)
+- [x] T005 #3266 — badges TR/AR + suffixe AR (PR #3476)
+- [x] T006 #3264 — FAQ catégories + 9 moteurs pays (PR #3477)
+- [x] T007 #3435 — case-studies metadata + sitemap (PR #3483)
+- [x] T008 #3254 — paramètres contact (PR #3484)
+- [x] T009 #3280 — route morte /users/:id supprimée (PR #3501)
+- [x] T010 #3275 — raccourcis source unique + Alt+R (PR #3502)
+- [x] T011 #3320 — RateLimiter trial-status dédupliqué (PR #3506)
+- [x] T012 #3002 — magic link unique (PR #3507, MERGED)
+- [x] T013 #3244 — link-user sous api.manager (PR #3508, MERGED)
+- [x] T014 #3309 — PII retirées de la liste /employees (PR #3509, MERGED)
+- [x] T015 #3005 — mark-all notifications POST canonique (PR #3511, MERGED)
+- [x] T016 #3432 — start_date nullable (PR #3512, MERGED)
+- [x] T017 #3433 — tryParse 3 modèles core (PR #3513, MERGED)
 
-## Phase 1 — Registre + session docs (branche docs)
+## Phase 2 : Clôtures sans code
 
-- [ ] T001 [P1] Issue vitrine DOWN (E7-01) : `[QA][P1][ops]` leopardo-rh.com NXDOMAIN — DNS
-      à restaurer + code à ne plus référencer d'URL mortes.
-- [ ] T002 [P3] PR `docs/qa-expert7-session-2026-08-15` (spec + findings-registry + tasks).
+- [x] T018 #3330 — déjà corrigé sur main (#3212) → fermé avec preuve
 
-## Phase 2 — Implémentation issues ouvertes sans lock (par priorité)
+## Phase 3 : Duplicats fermés (protocole #2400)
 
-- [ ] T010 [P1][admin] #3388 MarketingOAuthView — template string inline → composant jamais
-      rendu (build Vue runtime-only).
-- [ ] T011 [P2][web] #3434 Résidus « 30 jours » d'essai après arbitrage 14j (FAQ EN/TR +
-      TrialWelcomeMail 30 j).
-- [ ] T012 [P3][admin] #3393 KeyboardShortcutsModal annonce Alt+R → Recrutement retiré.
-- [ ] T013 [P3][admin] #3391 realtime store — « Tout marquer comme lu » POST → 405 (PUT).
-- [ ] T014 [P3][admin] #3394 GrowthDashboardView — affectation morte + fetch jamais consommé.
-- [ ] T015 [P3][admin] #3395 ExportsView — fetchHistory sans catch.
-- [ ] T016 [P3][admin] #3436 PayrollView — 3 exports CSV sans anti-injection de formule.
-- [ ] T017 [P3][admin] #3437 formatFeatureLabel 0/11 + CompanyDetailView 2/5 libellés bruts.
-- [ ] T018 [P3][tooling] #3414 openapi-coverage-allowlist.txt — 2 entrées mortes.
-- [ ] T019 [P3][tooling] #3416 front/web-offline — NEXT_PUBLIC_EDGE_API documenté nulle part.
-- [ ] T020 [P3][docs] #3412 RBAC_ROUTE_MATRIX.md — famille dupliquée 4× + F-10 journal 2×.
-- [ ] T021 [P3][docs] #3411 FRONTEND_API_CONTRACT_MATRIX.md — lignes orphelines + header dupliqué.
-- [ ] T022 [P3][docs] #3409 CHANGELOG.md — historique release dupliqué (lignes 1207-1656).
-- [ ] T023 [P3][api] #3366 RateLimiter trial-status enregistré DEUX fois.
-- [ ] T024 [P3][api] #3367 Limiteur kiosk-punch défini mais jamais appliqué.
-- [ ] T025 [P3][api] #3370 PasswordResetMail dupliqué (2 classes + 2 fichiers de test).
-- [ ] T026 [P3][api] #3429 SalaryAdvanceController::markPaid — TOCTOU double écriture.
+- [x] T019 #3329 — dupliquée par PR #3440 → PR #3467 fermée
 
-## Phase 3 — Tests approfondis (pendant implémentation)
+## Phase 4 : Nouveaux constats d'audit
 
-- [ ] T030 Vitrine : build `npm run build` + lint + jest ; vérifier sitemap/robots/i18n.
-- [ ] T031 Admin : build Vite + ESLint ; vérifier les composants touchés.
-- [ ] T032 API : PHPStan strict 0 erreur sur les modules touchés ; tests ciblés si possible.
-- [ ] T033 Vérification `main` vert : attendre fin des checks CI des derniers merges.
+- [x] T020 #3540 — release-readiness.ps1 variable morte (PR #3550)
+- [x] T021 #3541 — CHANGELOG entrées dupliquées (PR #3551)
 
-## Convergence
+## Phase 5 : Hygiène
 
-- [ ] T040 Mettre à jour CHANGELOG.md (entrées `## [Unreleased]` par PR).
-- [ ] T041 Merger les PRs vertes du backlog quand les checks le permettent (sans casser main).
-- [ ] T042 Mettre à jour registre + mémoire `.specify/memory/project-state.md` si pertinent.
+- [x] T022 — CHANGELOG entrée ajoutée sur les 17 PRs de la session
+- [x] T023 — 11 branches rebasées sur origin/main (conflits résolus)

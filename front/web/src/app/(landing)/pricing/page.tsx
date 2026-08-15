@@ -144,7 +144,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
             { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
@@ -257,7 +257,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Document vault', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'Immutable audit trail', free: false, starter: false, business: false, enterprise: true },
             { name: 'Isolated PostgreSQL schema', free: false, starter: false, business: false, enterprise: true },
             { name: 'Dedicated SLA & support', free: false, starter: false, business: false, enterprise: true },
@@ -370,7 +370,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
             { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
             { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
@@ -483,7 +483,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           features: [
             { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
             { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SSO SAML / OIDC (bientot)', free: false, starter: false, business: false, enterprise: true },
             { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
             { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
             { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },

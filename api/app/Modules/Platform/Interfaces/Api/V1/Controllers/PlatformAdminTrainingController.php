@@ -33,7 +33,7 @@ class PlatformAdminTrainingController extends Controller
             ->leftJoin('companies', 'companies.id', '=', 'training_courses.company_id')
             ->select('training_courses.*', 'companies.name as company_name')
             ->orderBy('training_courses.title')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingCourseResource::collection($courses)->response();
     }
@@ -50,7 +50,7 @@ class PlatformAdminTrainingController extends Controller
             ->leftJoin('companies', 'companies.id', '=', 'training_sessions.company_id')
             ->select('training_sessions.*', 'companies.name as company_name')
             ->orderByDesc('training_sessions.start_date')
-            ->paginate($request->integer('per_page', 20));
+            ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingSessionResource::collection($sessions)->response();
     }
@@ -71,7 +71,7 @@ class PlatformAdminTrainingController extends Controller
         }
 
         return TrainingEnrollmentResource::collection(
-            $query->orderByDesc('training_enrollments.created_at')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('training_enrollments.created_at')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 }
