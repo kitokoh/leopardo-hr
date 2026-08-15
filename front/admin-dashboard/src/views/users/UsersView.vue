@@ -236,10 +236,6 @@ const totalItems = ref(0)
 const isLoading = ref(false)
 const showBulkActions = ref(false)
 const showDetailModal = ref(false)
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
 // Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
   status: ''
