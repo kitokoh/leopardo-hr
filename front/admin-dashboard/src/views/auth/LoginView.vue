@@ -269,7 +269,6 @@ const fieldErrors = computed(() => {
   return errors
 })
 
-/* eslint-disable no-unused-vars */
 async function selectDemoUser(email, password) {
   form.email = email
   form.password = password

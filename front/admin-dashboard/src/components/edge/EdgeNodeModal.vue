@@ -76,7 +76,7 @@ import { toIntlLocale } from '@/i18n/index.js';
 
 const localeStore = useLocaleStore();
 
-const props = defineProps({
+defineProps({
   node: { type: Object, required: true },
 });
 

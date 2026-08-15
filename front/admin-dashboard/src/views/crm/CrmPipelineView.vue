@@ -217,7 +217,7 @@ function formatSource(source) {
   return SOURCE_LABELS[source] || source
 }
 
-function openRequest(id) {
+function openRequest() {
   router.push('/support')
 }
 

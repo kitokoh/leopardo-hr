@@ -319,7 +319,7 @@ async function handleSubmit() {
     toast.success('Utilisateur mis à jour avec succès')
     emit('updated', updatedUser)
 
-  } catch (error) {
+  } catch {
     console.error('Failed to update user:', error)
     toast.error('Erreur lors de la mise à jour de l\'utilisateur')
   } finally {
@@ -331,7 +331,7 @@ async function resetPassword() {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000))
     toast.success('Mot de passe réinitialisé • Email envoyé à l\'utilisateur')
-  } catch (error) {
+  } catch {
     toast.error('Erreur lors de la réinitialisation du mot de passe')
   }
 }
@@ -340,7 +340,7 @@ async function sendWelcomeEmail() {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000))
     toast.success('Email de bienvenue envoyé')
-  } catch (error) {
+  } catch {
     toast.error('Erreur lors de l\'envoi de l\'email')
   }
 }
@@ -349,7 +349,7 @@ async function forceLogout() {
   try {
     await new Promise(resolve => setTimeout(resolve, 500))
     toast.success('Utilisateur déconnecté de toutes ses sessions')
-  } catch (error) {
+  } catch {
     toast.error('Erreur lors de la déconnexion forcée')
   }
 }

@@ -139,10 +139,6 @@
 import { computed, onMounted, ref } from 'vue'
 import {
   ArrowPathIcon,
-  BanknotesIcon,
-  CheckBadgeIcon,
-  ClockIcon,
-  ExclamationCircleIcon,
   Squares2X2Icon
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'

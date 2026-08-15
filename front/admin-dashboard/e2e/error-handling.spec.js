@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test.describe('Error handling smoke tests', () => {
   test('404 page renders for unknown routes', async ({ page }) => {
-    const response = await page.goto('/this-route-does-not-exist-12345')
+    await page.goto('/this-route-does-not-exist-12345')
 
     // Should either redirect to login or show a proper error page
     // Not a browser-level error

@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import api, { downloadApiFile } from '@/services/api'
 import DataTable from '@/components/common/DataTable.vue'
 import { useLocaleStore } from '@/stores/locale'
