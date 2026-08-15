@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+### Fixed
+- **fix(ci): main vert round 3 — 29 erreurs PHPStan reintroduites par les merges swarm corrigées.** KioskController (bug runtime `undefined $kiosk` dans doRoster, `$deviceCode` non câblé dans doAnnouncements, @param validated ×4), `@property company` sur AttendanceKiosk, `@property Carbon|null` subscription_start/end sur Company + TrialWelcomeMail null-safe, GenerateBankExportJob (3e argument redondant retiré), tests réalignés (GrowthModuleTest doublon country, OnboardingStepWriteGuardTest, TrackingSyncTripsDateRangeTest, VehicleControllerTest, CreatesCameraFixtures, TestRtspSsidGuardTest).
 
 - **fix(web): suppression de l'orphelin `structured-data.ts` (0 import) (Closes #3265).**- **fix(admin/mobile/api): vague hygiène — modal morte TaxRates, composables orphelins, routes RH mortes, N+1 (Closes #3144, #3145, #3148, #3151).** `TaxRatesView` : modale « historique » inatteignable retirée (+ historyBadge/historyLabel/formatDate morts) ; composables `useFocusTrap`/`useAnnouncer` supprimés (0 référence) ; app RH : routes GoRouter `/approvals`, `/manager/anomalies`, `/manager/corrections` (aucune entrée UI) retirées ; `PaymentBatchController::markPaid` eager-load `items.employee` et `FleetController::liveMap` utilise `TraccarService::getLastPositions` (un seul appel agrégé au lieu d'un par véhicule).
 ### Fixed

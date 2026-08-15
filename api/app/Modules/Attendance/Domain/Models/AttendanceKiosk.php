@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property string $company_id
+ * @property \App\Core\Tenant\Domain\Models\Company $company
  * @property string $name
  * @property string|null $location_label
  * @property string $device_code

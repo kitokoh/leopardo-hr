@@ -24,6 +24,9 @@ class TestRtspSsidGuardTest extends TestCase
         return (bool) $method->invoke($service, $url);
     }
 
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function privateTargets(): iterable
     {
         yield 'loopback IPv4' => ['rtsp://127.0.0.1:8554/stream'];
@@ -43,6 +46,9 @@ class TestRtspSsidGuardTest extends TestCase
         yield 'hôte .local' => ['rtsp://printer.local:8554/stream'];
     }
 
+    /**
+     * @return iterable<string, array{string}>
+     */
     public static function publicTargets(): iterable
     {
         // IP publique réelle (93.184.216.34 = example.com résolue) — cible

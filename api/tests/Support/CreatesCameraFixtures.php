@@ -14,9 +14,13 @@ use Illuminate\Support\Facades\Hash;
  */
 trait CreatesCameraFixtures
 {
+    /**
+     * @param  array<string, mixed>  $features
+     */
     protected function createCompanyWithCameras(string $slug = 'alpha', array $features = ['cameras' => true, 'max_cameras' => 4]): Company
     {
-        return Company::query()->create([
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::query()->create([
             'name' => ucfirst($slug),
             'slug' => $slug,
             'sector' => 'services',

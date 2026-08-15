@@ -53,12 +53,12 @@ class TrialWelcomeMail extends Mailable
      */
     private function resolveTrialDays(): int
     {
-        $start = $this->company->subscription_start
-            ? Carbon::parse($this->company->subscription_start)->startOfDay()
+        $start = $this->company->subscription_start !== null
+            ? $this->company->subscription_start->copy()->startOfDay()
             : Carbon::today();
 
-        $end = $this->company->subscription_end
-            ? Carbon::parse($this->company->subscription_end)->startOfDay()
+        $end = $this->company->subscription_end !== null
+            ? $this->company->subscription_end->copy()->startOfDay()
             : null;
 
         if ($end !== null && $end->greaterThan($start)) {
