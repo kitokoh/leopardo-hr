@@ -60,6 +60,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/rh-startup', today, 'monthly', 0.7),
     page('/guides/checklist-paie', today, 'monthly', 0.7),
     page('/guides/planning-employes', today, 'monthly', 0.7),
+    page('/signup', today, 'monthly', 0.7),
+    page('/checkout', today, 'monthly', 0.6),
+    page('/offline', today, 'monthly', 0.4),
+    page('/share', today, 'monthly', 0.4),
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).

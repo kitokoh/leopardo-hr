@@ -101,7 +101,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
 }
 
 const ALLOWED_CORS_ORIGINS = [
-  'https://gestionemployer-backend.vercel.app',
   'https://leopardo-rh.com',
   'https://www.leopardo-rh.com',
   'http://localhost:3000',

@@ -373,6 +373,7 @@ export function generateOrganizationSchema() {
       "https://twitter.com/leopardo",
       "https://linkedin.com/company/leopardo",
       "https://facebook.com/leopardo",
+      "https://github.com/kitokoh/leopardo-hr",
     ],
     contactPoint: {
       "@type": "ContactPoint",
