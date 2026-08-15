@@ -62,7 +62,7 @@ class AttendanceOfflineService {
         },
       );
       return CheckInResult(
-        id: response.data['data']['id'] as String,
+        id: (response.data['data']['id'] as num).toString(),
         savedLocally: false,
         synced: true,
       );
