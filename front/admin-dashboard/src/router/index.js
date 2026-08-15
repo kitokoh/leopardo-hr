@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import NProgress from 'nprogress'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
 import 'nprogress/nprogress.css'
 
 // Configuration NProgress
@@ -398,7 +400,14 @@ router.beforeEach(async (to, from, next) => {
 
   // Mettre à jour le titre de la page
   if (to.meta.title) {
-    document.title = `${to.meta.title} - Leopardo RH Admin`
+    // Issue #2708 — meta.title peut être une clé i18n brute
+    // (marketing.oauth.nav_title, holidays.nav.title) : on la traduit via la
+    // locale active si elle correspond à une clé connue.
+    const raw = String(to.meta.title)
+    const title = raw.includes('.')
+      ? translate(useLocaleStore().current, raw, raw)
+      : raw
+    document.title = `${title} - Leopardo RH Admin`
   }
 
   next()

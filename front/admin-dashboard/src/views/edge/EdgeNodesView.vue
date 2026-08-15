@@ -18,6 +18,15 @@
       </button>
     </div>
 
+    <!-- Error banner (QA 2026-08-15, #2658) -->
+    <div
+      v-if="loadError"
+      class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/40 dark:bg-red-950/40 dark:text-red-300"
+      role="alert"
+    >
+      {{ loadError }}
+    </div>
+
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
@@ -129,6 +138,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import EdgeStatCard from '@/components/edge/EdgeStatCard.vue';
 import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
 import { useEdgeNodesStore } from '@/stores/edgeNodes';
@@ -139,6 +149,10 @@ const store = useEdgeNodesStore();
 const localeStore = useLocaleStore();
 const loading = ref(false);
 const syncingNodeId = ref(null);
+// QA 2026-08-15 (#2658) : état d'erreur visible (avant : rejections non
+// gérées, aucun retour utilisateur).
+const loadError = ref(null);
+const toast = useToast();
 const selectedNode = ref(null);
 let refreshTimer = null;
 
@@ -152,8 +166,14 @@ const stats = computed(() => ({
 
 async function refresh() {
   loading.value = true;
+  loadError.value = null;
   try {
     await store.fetchNodes();
+  } catch (err) {
+    loadError.value = err?.response?.data?.localized_message
+      || err?.message
+      || 'Erreur lors du chargement des nodes Edge.';
+    toast.error(loadError.value);
   } finally {
     loading.value = false;
   }
@@ -161,9 +181,16 @@ async function refresh() {
 
 async function triggerSync(node) {
   syncingNodeId.value = node.id;
+  loadError.value = null;
   try {
     await store.triggerSync(node.id);
     await refresh();
+    toast.success(`Synchronisation lancée pour ${node.node_id || node.name || node.id}`);
+  } catch (err) {
+    loadError.value = err?.response?.data?.localized_message
+      || err?.message
+      || 'Erreur lors du déclenchement de la synchronisation.';
+    toast.error(loadError.value);
   } finally {
     syncingNodeId.value = null;
   }

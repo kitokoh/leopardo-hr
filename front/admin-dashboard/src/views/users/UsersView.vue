@@ -236,6 +236,10 @@ const totalItems = ref(0)
 const isLoading = ref(false)
 const showBulkActions = ref(false)
 const showDetailModal = ref(false)
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
 // Filters — seuls ceux supportés par le backend /admin/users (issue #2269)
 const filters = reactive({
   status: ''
@@ -430,7 +434,7 @@ async function submitImpersonation() {
   impersonateBusy.value = true
   impersonateError.value = ''
   try {
-    const res = await api.post('/admin/impersonations', {
+    const res = await api.post('/platform/impersonations', {
       company_id: company.id,
       employee_id: company.employee_id,
       reason: impersonateReason.value.trim(),

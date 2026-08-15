@@ -111,7 +111,9 @@ class PlatformUsersController extends Controller
         $rows = collect([$row]);
         $this->enrichWithCompanies($rows);
 
-        return response()->json(['data' => $this->formatUser($rows->first(), withRoles: true)]);
+        /** @var \stdClass $enriched */
+        $enriched = $rows->first();
+        return response()->json(['data' => $this->formatUser($enriched, withRoles: true)]);
     }
 
     public function update(Request $request, int $user): JsonResponse
@@ -155,7 +157,9 @@ class PlatformUsersController extends Controller
         $rows = collect([$fresh]);
         $this->enrichWithCompanies($rows);
 
-        return response()->json(['data' => $this->formatUser($rows->first(), withRoles: true)]);
+        /** @var \stdClass $enriched */
+        $enriched = $rows->first();
+        return response()->json(['data' => $this->formatUser($enriched, withRoles: true)]);
     }
 
     /**
