@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **fix(mobile): DateTime.parse résiduels → tryParse dans 3 modèles core (Closes #3433).** attendance_log (date/check_in/check_out), payroll (validated_at), project_task (start/end/due_date) : plus de FormatException sur données malformées.
 - **fix(mobile): Contract.fromJson — start_date nullable gardé (Closes #3432).** Cast « as String » non gardé → TypeError au parsing de la liste contrats ; repli '' (comme endDate).
 - **fix(api): vague QA expert 5 2026-08-15 — reset password tenants à schéma (public.user_lookups + search_path), rate limiters trial-status/kiosk-punch, restauration search_path kiosque (middleware), syncTrips borné + index unique, mail/test PasswordReset dédupliqués (Closes #3363, #3366, #3367, #3368, #3369, #3370).**
 - **fix(ci): `cancel-in-progress` conditionnel sur 20 workflows — les runs de `main` ne sont plus annulés (Closes #3532).** Les workflows avec `cancel-in-progress: true` keyed sur `github.ref` s'annulaient mutuellement pendant les vagues de merges multi-agents : CodeQL, secret-scan, openapi-ci, owasp-zap, lighthouse… ne produisaient jamais d'upload sur main (observé : 5 runs main `cancelled` en 3 minutes). Pattern du repo (`actionlint.yml`, issue #2131) généralisé : `cancel-in-progress: ${{ github.event_name == 'pull_request' }}` — annulation conservée sur PR, jamais sur main. Règle 4 de `.github/workflows/README.md` mise à jour.
