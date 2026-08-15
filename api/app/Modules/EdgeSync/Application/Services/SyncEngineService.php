@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Log;
  * and resolves conflicts against the Cloud database.
  *
  * IMPORTANT: this service only ever runs on Cloud, invoked by
- * {@see \App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController::sync()}
+ * {@see \App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController::forceSync()}
  * (manual admin-triggered sync) and
  * {@see \App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob}
  * (async processing after a real Edge push landed in sync_queue via

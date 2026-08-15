@@ -159,6 +159,7 @@ class TrainingControllerTest extends TestCase
 
         $response->assertStatus(401);
     }
+
     /** @test */
     public function rh_can_create_session(): void
     {
@@ -166,14 +167,14 @@ class TrainingControllerTest extends TestCase
 
         $course = TrainingCourse::create([
             'company_id' => $this->company->id,
-            'title' => 'Formation PHP',
-            'type' => 'internal',
+            'title'      => 'Formation PHP',
+            'type'       => 'internal',
         ]);
 
         $response = $this->postJson("/api/v1/training/courses/{$course->id}/sessions", [
-            'start_date' => now()->addWeek()->toDateString(),
-            'end_date' => now()->addWeeks(2)->toDateString(),
-            'location' => 'Salle A',
+            'start_date'       => now()->addWeek()->toDateString(),
+            'end_date'         => now()->addWeeks(2)->toDateString(),
+            'location'         => 'Salle A',
             'external_trainer' => 'Mohamed',
         ]);
 
@@ -182,20 +183,20 @@ class TrainingControllerTest extends TestCase
     }
 
     /** @test */
-    public function manager_can_enroll_employee_in_session(): void
+    public function employee_can_enroll_in_session(): void
     {
         $course = TrainingCourse::create([
             'company_id' => $this->company->id,
-            'title' => 'Formation',
-            'type' => 'internal',
+            'title'      => 'Formation',
+            'type'       => 'internal',
         ]);
 
         $session = TrainingSession::create([
             'training_course_id' => $course->id,
-            'company_id' => $this->company->id,
-            'start_date' => now()->addWeek(),
-            'end_date' => now()->addWeeks(2),
-            'status' => 'planned',
+            'company_id'         => $this->company->id,
+            'start_date'         => now()->addWeek(),
+            'end_date'           => now()->addWeeks(2),
+            'status'             => 'planned',
         ]);
 
         Sanctum::actingAs($this->manager);
@@ -203,43 +204,37 @@ class TrainingControllerTest extends TestCase
         $response = $this->postJson("/api/v1/training/sessions/{$session->id}/enroll", [
             'employee_id' => $this->employee->id,
         ]);
-        $response->assertCreated();
+        $response->assertStatus(201);
     }
 
     /** @test */
-    public function cross_tenant_course_hidden_and_foreign_enrollment_rejected(): void
+    public function training_isolated_by_tenant_and_rejects_foreign_enrollment(): void
     {
-        // Course appartenant à un autre tenant
-        Sanctum::actingAs($this->otherManager);
         $foreignCourse = TrainingCourse::create([
             'company_id' => $this->otherCompany->id,
-            'title' => 'Foreign Course',
-            'type' => 'internal',
+            'title'      => 'Foreign Course',
+            'type'       => 'internal',
         ]);
-
-        // Session du tenant courant
         $course = TrainingCourse::create([
             'company_id' => $this->company->id,
-            'title' => 'Internal Course',
-            'type' => 'internal',
+            'title'      => 'Internal Course',
+            'type'       => 'internal',
         ]);
         $session = TrainingSession::create([
             'training_course_id' => $course->id,
-            'company_id' => $this->company->id,
-            'start_date' => now()->addWeek(),
-            'end_date' => now()->addWeeks(2),
-            'status' => 'planned',
+            'company_id'         => $this->company->id,
+            'start_date'         => now()->addWeek(),
+            'end_date'           => now()->addWeeks(2),
+            'status'             => 'planned',
         ]);
+
+        $foreignEmployee = Employee::factory()->create(['company_id' => $this->otherCompany->id]);
 
         Sanctum::actingAs($this->manager);
 
-        // Le cours étranger est invisible (404, isolation tenant)
         $this->getJson("/api/v1/training/courses/{$foreignCourse->id}")->assertNotFound();
-
-        // L'inscription d'un employé d'un autre tenant est rejetée (422)
         $this->postJson("/api/v1/training/sessions/{$session->id}/enroll", [
-            'employee_id' => $this->otherManager->id,
+            'employee_id' => $foreignEmployee->id,
         ])->assertUnprocessable();
     }
 }
-
