@@ -391,8 +391,11 @@ const supportTickets = ref([])
 const supportSummary = ref({ open_count: 0 })
 
 const scoreColor = computed(() => {
-  if (healthScore.value >= 75) return 'green'
-  if (healthScore.value >= 50) return 'yellow'
+  // Issue #2335 : healthScore.value n'existait pas — la donnée réelle est
+  // health.adoption.health_score (accès défensif, health peut être null au chargement).
+  const score = Number(health.value?.adoption?.health_score ?? 0)
+  if (score >= 75) return 'green'
+  if (score >= 50) return 'yellow'
   return 'red'
 })
 
