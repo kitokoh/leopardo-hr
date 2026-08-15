@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 
+- **fix(security): headers de version retirés — x-powered-by PHP/FrankenPHP masqué (Closes #3601, volet divulgation).** L'API exposait `x-powered-by: PHP/8.4.x` + `x-render-origin-server` (ciblage CVE facilité). `api/Caddyfile` : `header -Server` / `header -X-Powered-By` (image Docker API). Le volet CSP report-only → enforce reste ouvert dans l'issue (nonces/hashes, workstream séparé).
 - **fix(test): main vert — factories `newModel()` en `public` (fatal PHP) + doublon PasswordResetTest retiré.** PR #3680 (#3597) a introduit des overrides `protected function newModel()` dans Employee/User/SalaryAdvanceFactory → fatal « access level » chargeant toute la suite ; visibilité alignée sur le parent (`public function newModel(array $attributes = [])`). `tests/Feature/Auth/PasswordResetTest.php` (4 tests, contrat pré-#2626 réintroduit par mégarde) supprimé — doublon strict de `tests/Feature/PasswordResetTest.php` (6 tests, contrat courant avec codes machine PASSWORD_RESET_SENT/DONE).
 
 
