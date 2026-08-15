@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -98,17 +98,40 @@ readonly class AuthService
                 ]);
             }
 
+            // Audit expert 2026-08-15 (issue #2617/#2618) : le statut est
+            // vérifié AVANT toute résolution de company — un compte suspendu
+            // ne peut jamais obtenir de token, même sans entreprise.
+            if ($employee->status !== 'active') {
+                throw new EmployeeNotActiveException;
+            }
+
             $company = $this->resolveCompanyForEmployee($employee);
+
+            // Audit expert 2026-08-15 (issue #2617) : un compte "ordinary"
+            // auto-inscrit (parcours self-onboarding → company request) n'a
+            // pas encore de company — l'ancien code jetait
+            // CompanyNotFoundException → login impossible pour ces comptes.
+            // Le login reste permis (token sans abilities tenant), le
+            // TenantMiddleware confine déjà ces comptes aux routes pré-tenant.
             if (! $company) {
-                throw new CompanyNotFoundException;
+                if ($employee->role !== 'ordinary') {
+                    throw new CompanyNotFoundException;
+                }
+
+                $employee->forceFill(['last_login_at' => now()])->saveQuietly();
+
+                $token = $employee->createToken($deviceName ?: 'api', ['company-request']);
+
+                return [
+                    'employee' => $employee,
+                    'token' => $token->plainTextToken,
+                    'token_type' => 'Bearer',
+                    'token_expires_at' => null,
+                ];
             }
 
             if (in_array($company->status, ['suspended', 'expired'], true)) {
                 throw new AccountSuspendedException;
-            }
-
-            if ($employee->status !== 'active') {
-                throw new EmployeeNotActiveException;
             }
 
             $employee->forceFill(['last_login_at' => now()])->saveQuietly();
@@ -369,4 +392,3 @@ readonly class AuthService
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
     }
 }
-

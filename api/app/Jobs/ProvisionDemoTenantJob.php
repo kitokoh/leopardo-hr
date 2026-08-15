@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Tenant\TenantManager;
 use App\Mail\CommunicationMail;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
 use Illuminate\Bus\Queueable;
@@ -52,7 +50,18 @@ class ProvisionDemoTenantJob implements ShouldQueue
                     ]);
             }
 
-            // TODO: Generate magic link and send email to the user
+            // Audit expert 2026-08-15 (issue #2620) : le magic link n'était
+            // plus émis — issueDemoAccess() (hash SHA-256 + email) était devenue
+            // du code mort quand le tail de handle() a été remplacé (#2437), et
+            // ProvisionDemoTenantJobTest échouait. Restauration de l'appel.
+            if (isset($result['manager']) && $result['manager'] instanceof Employee) {
+                $this->issueDemoAccess($result['manager']);
+            } else {
+                Log::warning('ProvisionDemoTenantJob: no manager in provisioning result — magic link not issued', [
+                    'company_id' => $result['company']->id ?? null,
+                ]);
+            }
+
             Log::info('Sandbox provisioned successfully', ['company_id' => $result['company']->id]);
 
         } catch (\Throwable $e) {
@@ -70,10 +79,7 @@ class ProvisionDemoTenantJob implements ShouldQueue
         }
     }
 
-    /**
-     * @param  \App\Core\Auth\Domain\Models\Employee  $manager
-     */
-    private function issueDemoAccess(\App\Core\Auth\Domain\Models\Employee $manager): void
+    private function issueDemoAccess(Employee $manager): void
     {
         $token = Str::random(48);
         $expiresAt = now()->addHours(72);

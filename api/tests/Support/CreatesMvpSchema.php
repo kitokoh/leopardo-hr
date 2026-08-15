@@ -1922,6 +1922,8 @@ trait CreatesMvpSchema
         if (! Schema::hasTable($this->moduleTable('calendar_events'))) {
             Schema::create($this->moduleTable('calendar_events'), function (Blueprint $table): void {
                 $table->id();
+                // Audit expert 2026-08-15 (issue #2623) : company_id NOT NULL.
+                $table->uuid('company_id');
                 $table->unsignedBigInteger('employee_id');
                 $table->string('external_event_id')->nullable();
                 $table->string('provider', 20)->default('google');

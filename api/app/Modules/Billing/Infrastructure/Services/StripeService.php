@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Infrastructure\Services;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Events\SubscriptionPaid;
 use App\Modules\Billing\Domain\Models\Invoice;
-use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
+use App\Modules\Payroll\Domain\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -49,7 +50,7 @@ class StripeService
     public function createCheckoutSession(Company $company, string $plan, string $successUrl, string $cancelUrl): array
     {
         $priceId = $this->priceIds[$plan] ?? null;
-        if (!$priceId) {
+        if (! $priceId) {
             throw new InvalidArgumentException("Unknown plan: {$plan}");
         }
 
@@ -72,7 +73,7 @@ class StripeService
                 'subscription_data[trial_period_days]' => 0,
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('Stripe: Failed to create checkout session', [
                 'status' => $response->status(),
                 'body' => $response->json(),
@@ -101,7 +102,7 @@ class StripeService
                 'return_url' => $returnUrl,
             ]);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('Stripe: Failed to create portal session', [
                 'status' => $response->status(),
                 'customer' => $stripeCustomerId,
@@ -119,10 +120,13 @@ class StripeService
      */
     public function verifyWebhookSignature(string $payload, string $sigHeader): ?array
     {
-        if (!$this->webhookSecret) {
-            Log::warning('Stripe: Webhook secret not configured, skipping verification.');
+        if (! $this->webhookSecret) {
+            // Audit expert 2026-08-15 (issues #2614) : fail-closed. Un secret
+            // absent ne doit JAMAIS conduire à accepter un payload non vérifié
+            // (fraude de facturation possible). Le controller renvoie 400 sur null.
+            Log::error('Stripe: Webhook secret not configured — refusing unverified payload.');
 
-            return json_decode($payload, true);
+            return null;
         }
 
         $elements = [];
@@ -134,7 +138,7 @@ class StripeService
         $timestamp = $elements['t'] ?? null;
         $signature = $elements['v1'] ?? null;
 
-        if (!$timestamp || !$signature) {
+        if (! $timestamp || ! $signature) {
             return null;
         }
 
@@ -183,7 +187,7 @@ class StripeService
         $subscriptionId = $session['subscription'] ?? null;
         $customerId = $session['customer'] ?? null;
 
-        if (!$companyId) {
+        if (! $companyId) {
             Log::warning('Stripe: checkout.session.completed without company_id', $session);
 
             return;
@@ -194,7 +198,7 @@ class StripeService
         }
 
         $company = Company::query()->find($companyId);
-        if (!$company) {
+        if (! $company) {
             Log::warning('Stripe: Company not found', ['company_id' => $companyId]);
 
             return;
@@ -266,7 +270,7 @@ class StripeService
             );
 
             // GROWTH MODULE: Dispatch SubscriptionPaid event
-            event(new \App\Events\SubscriptionPaid($payment));
+            event(new SubscriptionPaid($payment));
 
             if ($invoiceModel->subscription) {
                 $invoiceModel->subscription->update(['status' => 'active']);
@@ -274,7 +278,7 @@ class StripeService
         }
 
         $subscriptionId = $invoice['subscription'] ?? null;
-        if (!$subscriptionId) {
+        if (! $subscriptionId) {
             return;
         }
 
@@ -318,7 +322,7 @@ class StripeService
             ->where('stripe_subscription_id', $subscription['id'] ?? '')
             ->first();
 
-        if (!$sub) {
+        if (! $sub) {
             return;
         }
 
@@ -372,7 +376,7 @@ class StripeService
 
             // GROWTH MODULE: Cancel pending commissions
             try {
-                $partnerService = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
+                $partnerService = app(PartnerService::class);
                 $partnerService->handlePaymentRefunded($payment);
             } catch (\Throwable $e) {
                 Log::warning('PartnerService: Failed to handle refund', [
@@ -383,4 +387,3 @@ class StripeService
         }
     }
 }
-

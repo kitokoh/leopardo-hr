@@ -16,14 +16,16 @@ use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
 use App\Exceptions\CompanyNotFoundException;
+use App\Exceptions\EmployeeNotActiveException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\GoogleProvider;
 
 class AuthController extends Controller
 {
@@ -157,11 +159,29 @@ class AuthController extends Controller
 
     public function redirectToGoogle(): mixed
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        // Audit expert 2026-08-15 (issue #2619) : paramètre `state` anti-CSRF
+        // (account-linking / login CSRF). Le state est stocké en session —
+        // les routes google portent le middleware `web` (routes/api.php).
+        $state = Str::random(40);
+        session()->put('google_oauth_state', $state);
+
+        /** @var GoogleProvider $driver */
+        $driver = Socialite::driver('google');
+
+        return $driver->with(['state' => $state])->stateless()->redirect();
     }
 
-    public function handleGoogleCallback(): JsonResponse
+    public function handleGoogleCallback(Request $request): JsonResponse
     {
+        // Validation du state (anti-CSRF). Le flux navigateur doit fournir le
+        // state émis par redirectToGoogle ; à défaut, refus net.
+        $expectedState = session()->pull('google_oauth_state');
+        $providedState = (string) $request->query('state', '');
+
+        if ($expectedState === null || $providedState === '' || ! hash_equals($expectedState, $providedState)) {
+            return new JsonResponse(['error' => 'GOOGLE_OAUTH_STATE_MISMATCH', 'message' => 'Invalid OAuth state.'], 400);
+        }
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
@@ -172,15 +192,15 @@ class AuthController extends Controller
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
-            /** @var Employee $employee */
-            $employee = Employee::create([
-                'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
-                'last_name' => $googleUser->offsetGet('family_name') ?? '',
-                'email' => $googleUser->getEmail(),
-                'password_hash' => Hash::make(str()->random(24)),
-                'role' => 'ordinary',
-                'status' => 'active',
-            ]);
+            // Audit expert 2026-08-15 (issue #2617) : ne plus créer d'employé
+            // sans company_id (compte inutilisable, impossible à connecter).
+            // L'auto-création ténantless est remplacée par un refus clair —
+            // le compte doit exister (invitation/trial) avant le SSO Google.
+            return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account. Ask your HR team for an invitation.'], 401);
+        }
+
+        if ($employee->status !== 'active') {
+            throw new EmployeeNotActiveException;
         }
 
         $token = $employee->createToken('google-auth');
@@ -191,7 +211,7 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ])
             ->response()
-            ->setStatusCode($employee->wasRecentlyCreated ? 201 : 200);
+            ->setStatusCode(200);
     }
 
     public function handleGoogleToken(Request $request): JsonResponse
@@ -212,6 +232,10 @@ class AuthController extends Controller
 
         if (! $employee) {
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
+        }
+
+        if ($employee->status !== 'active') {
+            throw new EmployeeNotActiveException;
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

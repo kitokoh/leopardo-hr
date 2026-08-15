@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth\Interfaces\Api\V1\AuthController;
+use App\Core\Auth\Interfaces\Api\V1\PasswordResetController;
 use App\Core\Auth\Interfaces\Api\V1\PlatformAuthController;
 use App\Core\Feature\Interfaces\Api\V1\FeatureManifestController;
 use App\Http\Controllers\Web\PlatformCompanyController;
@@ -43,11 +44,11 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCountryDefaultsCo
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCrmPipelineController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformHrReportController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformImpersonationController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMarketingOAuthConfigController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformMetricsOverviewController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformNotificationObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformSupportTicketController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUserController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformUsersController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\QueueObservabilityController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\SupportedCountryController;
@@ -75,12 +76,21 @@ Route::prefix('v1')->group(function (): void {
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {
         Route::post('/auth/login', [AuthController::class, 'login']);
         Route::post('/auth/register', [AuthController::class, 'register']);
-        Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
-        Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
         Route::get('/i18n/catalog', [TranslationCatalogController::class, 'index']);
         Route::get('/i18n/catalog/{locale}', [TranslationCatalogController::class, 'show']);
+
+        // Audit expert 2026-08-15 (issue #2626) : forgot/reset password.
+        Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
+    });
+
+    // OAuth Google navigateur — middleware `web` pour disposer d'une session
+    // (stockage du `state` anti-CSRF émis dans redirectToGoogle, issue #2619).
+    Route::middleware(['web', 'throttle:auth-sensitive'])->group(function (): void {
+        Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
+        Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
     });
 
     // Demo users (public, disabled by default; opt-in only via DEMO_MODE_ENABLED=true
@@ -94,12 +104,18 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/invitation/{token}/activate', [OnboardingController::class, 'activate']);
     });
 
-    // Self-service trial provisioning (public, throttle strict)
+    // Self-service trial provisioning (public, throttle strict).
+    // Audit expert 2026-08-15 (issue #2621) : GET /trial/status partageait le
+    // bucket `5,15` avec signup/verify — l'UI vitrine qui poll toutes les 5 s
+    // (12 tentatives) était throttlée après 5 requêtes → « timed out ».
+    // Le status est désormais sur un limiteur dédié (60/min) ; seul signup et
+    // verify restent en 5,15 (mutations).
     Route::middleware(['throttle:5,15'])->group(function (): void {
         Route::post('/trial/signup', [SelfServiceTrialController::class, 'signup']);
         Route::post('/trial/verify', [SelfServiceTrialController::class, 'verify']);
-        Route::get('/trial/status', [SelfServiceTrialController::class, 'status']);
     });
+
+    Route::middleware(['throttle:trial-status'])->get('/trial/status', [SelfServiceTrialController::class, 'status']);
 
     // PA2-MKT-007 - Public vitrine lead capture (signup/demo/contact/
     // newsletter), called server-to-server from front/web's Next.js API
@@ -371,5 +387,14 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/users', [PlatformUsersController::class, 'index']);
         Route::get('/users/{user}', [PlatformUsersController::class, 'show'])->whereNumber('user');
         Route::patch('/users/{user}', [PlatformUsersController::class, 'update'])->whereNumber('user');
+
+        // Audit expert 2026-08-15 (issue #2624) : la SPA admin appelle
+        // POST /admin/impersonations (UsersView.vue:435) mais seule la route
+        // /platform/impersonations existait → 404. Alias du contrat SPA sur le
+        // même contrôleur/ImpersonationService (raison obligatoire, durée
+        // limitée 30-120 min, audit trail complet — PA2-ADM-006).
+        Route::get('/impersonations', [PlatformImpersonationController::class, 'index']);
+        Route::post('/impersonations', [PlatformImpersonationController::class, 'store']);
+        Route::delete('/impersonations/{session}', [PlatformImpersonationController::class, 'destroy'])->whereNumber('session');
     });
 });

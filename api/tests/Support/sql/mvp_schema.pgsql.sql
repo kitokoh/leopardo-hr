@@ -879,6 +879,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.device_tokens (
 -- Calendar connections (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
     id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
     employee_id bigint NOT NULL,
     provider varchar(20) NOT NULL,
     access_token text NULL,
@@ -897,6 +898,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.calendar_connections (
 -- Calendar events (shared_tenants)
 CREATE TABLE IF NOT EXISTS shared_tenants.calendar_events (
     id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
     employee_id bigint NOT NULL,
     external_event_id varchar(255) NULL,
     provider varchar(20) NOT NULL DEFAULT 'google',

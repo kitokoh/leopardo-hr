@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
-use App\Modules\Planning\Domain\Models\Absence;
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\CalendarConnection;
 use App\Modules\Attendance\Domain\Models\CalendarEvent;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Planning\Domain\Models\Absence;
 use DateTimeInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +25,10 @@ class CalendarSyncService
                 'provider' => $provider,
             ],
             [
+                // Audit expert 2026-08-15 (issue #2623) : company_id explicite —
+                // ne pas dépendre du hook du trait BelongsToCompany (aucun
+                // tenant courant dans certains contextes hors requête HTTP).
+                'company_id' => $employee->company_id,
                 'access_token' => encrypt($accessToken),
                 'refresh_token' => $refreshToken ? encrypt($refreshToken) : null,
                 'calendar_id' => $calendarId,
@@ -69,6 +73,7 @@ class CalendarSyncService
                             'provider' => $connection->provider,
                         ],
                         [
+                            'company_id' => $employee->company_id,
                             'title' => 'Congé : '.($absence->type ?? 'absence'),
                             'description' => $absence->reason ?? '',
                             'starts_at' => $absence->start_date,
@@ -125,6 +130,7 @@ class CalendarSyncService
                             'provider' => $connection->provider,
                         ],
                         [
+                            'company_id' => $employee->company_id,
                             'title' => 'Formation : '.($session->title ?? 'Session'),
                             'starts_at' => $session->start_date,
                             'ends_at' => $session->end_date ?? $session->start_date,
@@ -270,4 +276,3 @@ class CalendarSyncService
         return false;
     }
 }
-
