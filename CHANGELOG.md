@@ -611,6 +611,15 @@
 - **release.yml durci (#1722) :** vérifie que le tag pointe sur `main` et que les checks requis ne sont pas en échec avant de créer la release ; badge « Release » ajouté au README.
 - **hygiène CHANGELOG + docs/archive (#1729) :** CHANGELOG.md repassé sous 150 Ko (83 Ko), historique intégral préservé dans CHANGELOG_ARCHIVE.md (484 Ko, zéro perte) ; docs/archive réduit de 62 % (fichiers non référencés supprimés, git conserve tout) ; règle d'archivage ajoutée à CONVENTIONS.md §4.3.
 
+### Fixed
+- **fix(mobile): notifications — verbes canoniques POST read-all / PATCH {id}/read (Closes #3047).** `PUT` sur `POST /notifications/read-all` et `PATCH /notifications/{notification}/read` → 405 garanti : `notification_repository` employee + `modules_repository` manager/hr passent à POST/PATCH.
+- **fix(mobile): POST /user/company-requests sans retries auto — fin des demandes doublées sur timeout (Closes #3048).** `maxRetriesOverride: 0` ajouté sur le POST non idempotent dans les 3 `user_auth_repository` (employee/manager/hr), aligné sur la classe #2742.
+- **fix(mobile): manager — route GoRoute `/cabinet/folder/:folderId` dédoublonnée (Closes #3049).** Résidu du fix #2748 : la variante `int.parse` crash-prone supprimée, la variante `int.tryParse` (T121) conservée.
+- **fix(mobile): écran mort PersonalSpaceScreen retiré des 3 apps tenant (Closes #3050).** Aucune navigation/route n'atteignait « Créer mon entreprise » (0 référence) ; feature `personal_space` supprimée (employee/manager/hr), y compris la copie legacy manager de `company_request_screen.dart` (le routeur importe `features/user_auth/`).
+- **fix(mobile): leopardo_hr — ShellRoute/bottom-nav ajoutée (Closes #3051).** `HrMainShell` (Accueil/Pointage/Absences/Équipe/Réglages) calquée sur employee/manager ; routes publiques isolées, routes authentifiées wrappées.
+- **fix(mobile): cast tolerant de l'id de pointage — AttendanceLogResource renvoie un int (Closes #3052).** `as String` → `?.toString() ?? ''` dans `attendance_offline_service.dart` (fini le TypeError latent).
+- **fix(mobile): ThemeMode.dark forcé → ThemeMode.system dans les 5 apps (Closes #3053).** lightTheme/darkTheme redeviennent fonctionnels selon la préférence système (employee/manager/hr app.dart, marketing main.dart, platform_admin_app.dart).
+- **fix(mobile): DateTime.parse non gardés résiduels → tryParse + repli (Closes #3054).** hr attendance_repository:552, cabinet_folder/cabinet_document/monthly_summary/absence (leopardo_core), geo_attendance_session (hr + miroirs employee/manager) ; repli `DateTime.utc(1970)`.
 
 ## [4.24.0] - 2026-08-11
 
