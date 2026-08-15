@@ -1,16 +1,37 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
+import { t } from '@/lib/i18n/locale-catalog';
+import type { AppLocale } from '@/lib/i18n';
 
-export const metadata: Metadata = generateSEOMetadata({
-  title: pageMetadata.pricing.title,
-  description: pageMetadata.pricing.description,
-  keywords: pageMetadata.pricing.keywords,
-  ogImage: pageMetadata.pricing.ogImage,
-  ogType: 'website',
-  canonical: `${SITE_URL}/pricing`,
-  robots: 'index, follow',
-});
+interface PricingLayoutProps {
+  children: React.ReactNode;
+  searchParams: Promise<{
+    lang?: string;
+  }>;
+}
+
+/**
+ * Issue #3487 : la meta description /pricing était traduite avec une locale
+ * codée en dur ('fr') → SERP EN/TR/AR en français malgré des catalogues i18n
+ * complets. La locale réelle est lue depuis ?lang= (mécanisme vitrine).
+ */
+export async function generateMetadata({
+  searchParams,
+}: PricingLayoutProps): Promise<Metadata> {
+  const { lang } = await searchParams;
+  const locale: AppLocale = lang === 'en' || lang === 'tr' || lang === 'ar' ? lang : 'fr';
+
+  return generateSEOMetadata({
+    title: pageMetadata.pricing.title,
+    description: t(locale, 'seo.pricing.description', pageMetadata.pricing.description),
+    keywords: pageMetadata.pricing.keywords,
+    ogImage: pageMetadata.pricing.ogImage,
+    ogType: 'website',
+    canonical: `${SITE_URL}/pricing`,
+    robots: 'index, follow',
+  });
+}
 
 export default function PricingLayout({
   children,
