@@ -6,8 +6,8 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface;
+use App\Modules\Payroll\Domain\Contracts\CountryRulesInterface as CountryRulesContract;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
 use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Domain\Models\PayrollCalculationAudit;
@@ -52,7 +52,7 @@ class PayrollCalculator
         $this->resolver = new CountryRulesResolver($countryRules);
         // Issue #1874 — audit des calculs : jamais null (repli direct si le
         // conteneur n'injecte pas le service, ex. app(PayrollCalculator::class)).
-        $this->auditRecorder = $auditRecorder ?? new PayrollCalculationAuditRecorder();
+        $this->auditRecorder = $auditRecorder ?? new PayrollCalculationAuditRecorder;
     }
 
     /**
@@ -90,6 +90,72 @@ class PayrollCalculator
      * comme le bulletin) ; seuls les montants exposés sont arrondis à 2
      * décimales (demi au plus proche) ; le net a un plancher à 0.
      *
+     * Issue #2220 — décomposition de l'impôt par tranche, alignée sur la
+     * règle pays. L'assiette ET la convention (mensuelle/annualisée) varient
+     * par pays (ex. CI : ITS 2024 sur le BRUT mensuel ; DZ : progressif sur
+     * le net fiscal mensuel ; MA/FR : annualisé) : on évalue les 4 candidats
+     * (assiette gross/taxable × convention mensuelle/annualisée) et on
+     * retient celui dont le total est le plus proche de l'impôt réellement
+     * calculé par le moteur (`calculateIncomeTax()`). La somme des tranches
+     * converge ainsi vers l'impôt affiché (simulateur = bulletin).
+     *
+     * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
+     */
+    public function slabTaxBreakdown(CountryRulesContract $rules, float $gross, float $taxBase, float $expectedTax): array
+    {
+        $candidates = [
+            $this->progressiveSlabs($rules, $gross, 1.0),
+            $this->progressiveSlabs($rules, $taxBase, 1.0),
+            $this->progressiveSlabs($rules, $gross, 12.0),
+            $this->progressiveSlabs($rules, $taxBase, 12.0),
+        ];
+
+        $best = $candidates[0];
+        $bestDelta = PHP_FLOAT_MAX;
+        foreach ($candidates as $candidate) {
+            $delta = abs(array_sum(array_column($candidate, 'tax')) - $expectedTax);
+            if ($delta < $bestDelta) {
+                $best = $candidate;
+                $bestDelta = $delta;
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * @return array<int, array{min: float, max: float|null, rate: float, taxable_amount: float, tax: float}>
+     */
+    private function progressiveSlabs(CountryRulesContract $rules, float $taxBase, float $periods): array
+    {
+        $base = $taxBase * $periods;
+        $bySlab = [];
+
+        foreach ($rules->taxSlabs() as $slab) {
+            $lowerBound = (float) $slab['min'];
+            if ($lowerBound > 0) {
+                $lowerBound -= 1;
+            }
+            $upperBound = $slab['max'] === null ? PHP_FLOAT_MAX : (float) $slab['max'];
+            $taxableInSlab = min($base, $upperBound) - $lowerBound;
+            if ($taxableInSlab <= 0) {
+                continue;
+            }
+            $slabTax = round($taxableInSlab * ((float) $slab['rate'] / 100), 2);
+
+            $bySlab[] = [
+                'min' => (float) $slab['min'],
+                'max' => $slab['max'],
+                'rate' => (float) $slab['rate'],
+                'taxable_amount' => round($taxableInSlab / $periods, 2),
+                'tax' => round($slabTax / $periods, 2),
+            ];
+        }
+
+        return $bySlab;
+    }
+
+    /**
      * @return array{
      *     social: array{employee: float, employer: float},
      *     taxable_gross: float,

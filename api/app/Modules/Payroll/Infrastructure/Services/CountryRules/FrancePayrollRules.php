@@ -26,8 +26,11 @@ class FrancePayrollRules extends AbstractCountryRules
         return [
             ['name' => 'Securite sociale salariale', 'code' => 'SS_FR_EMP', 'type' => 'employee', 'rate' => 7.5, 'cap' => null],
             ['name' => 'Securite sociale patronale', 'code' => 'SS_FR_PAT', 'type' => 'employer', 'rate' => 30.0, 'cap' => null],
-            ['name' => 'CSG', 'code' => 'CSG_FR', 'type' => 'employee', 'rate' => 9.2, 'cap' => null],
-            ['name' => 'CRDS', 'code' => 'CRDS_FR', 'type' => 'employee', 'rate' => 0.5, 'cap' => null],
+            // Issue #2220 : CSG/CRDS assises sur 98,25 % du brut (constante
+            // légale, cf. calculateSocialCharges) — assiette_rate portée par
+            // la métadonnée pour que la simulation par item = moteur.
+            ['name' => 'CSG', 'code' => 'CSG_FR', 'type' => 'employee', 'rate' => 9.2, 'cap' => null, 'assiette_rate' => 98.25],
+            ['name' => 'CRDS', 'code' => 'CRDS_FR', 'type' => 'employee', 'rate' => 0.5, 'cap' => null, 'assiette_rate' => 98.25],
         ];
     }
 

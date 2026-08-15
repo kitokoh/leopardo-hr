@@ -13,7 +13,7 @@ interface CountryRulesInterface
     public function minimumWage(): float;
 
     /**
-     * @return array<int, array{name: string, code: string, type: string, rate: float, cap: float|null}>
+     * @return array<int, array{name: string, code: string, type: string, rate: float, cap: float|null, floor?: float, ceiling?: float, assiette_rate?: float}>
      */
     public function socialContributions(): array;
 

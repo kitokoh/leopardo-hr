@@ -82,6 +82,10 @@ class PayrollSimulationControllerTest extends TestCase
     {
         Sanctum::actingAs($this->manager);
 
+        // Aucune ligne créée/modifiée en base. NB : le backfill BF #2003
+        // (migration tenant) insère une ligne tax_slabs nationale — on
+        // compare donc AVANT/APRÈS, pas à 0.
+        $before = TaxSlab::query()->count();
         $this->postJson('/api/v1/payroll/simulate', [
             'country_code' => 'CM',
             'gross_salary' => 400000,
@@ -90,8 +94,7 @@ class PayrollSimulationControllerTest extends TestCase
             ],
         ])->assertOk();
 
-        // Aucune ligne créée/modifiée en base.
-        $this->assertSame(0, TaxSlab::query()->count());
+        $this->assertSame($before, TaxSlab::query()->count());
     }
 
     public function test_platform_admin_can_simulate_via_admin_route(): void
