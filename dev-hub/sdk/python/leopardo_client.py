@@ -164,6 +164,18 @@ class LeopardoClient:
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
 
+    def get_admin_impersonations(self, **kwargs):
+        """Lister les sessions d'impersonation (super-admin)"""
+        return self.request("GET", "/admin/impersonations", **kwargs)
+
+    def post_admin_impersonations(self, **kwargs):
+        """Créer une session d'impersonation"""
+        return self.request("POST", "/admin/impersonations", **kwargs)
+
+    def delete_admin_impersonations_by_session(self, **kwargs):
+        """Terminer une session d'impersonation"""
+        return self.request("DELETE", "/admin/impersonations/{session}", **kwargs)
+
     def listislamiccalendar(self, **kwargs):
         """Lister les fêtes islamiques d'une année (super-admin)"""
         return self.request("GET", "/admin/islamic-calendar", **kwargs)
@@ -260,6 +272,14 @@ class LeopardoClient:
         """Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"""
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
+    def get_admin_training_enrollments(self, **kwargs):
+        """Lister toutes les inscriptions formation (tous tenants)"""
+        return self.request("GET", "/admin/training/enrollments", **kwargs)
+
+    def get_admin_training_sessions(self, **kwargs):
+        """Lister toutes les sessions de formation (tous tenants)"""
+        return self.request("GET", "/admin/training/sessions", **kwargs)
+
     def get_admin_users(self, **kwargs):
         """Lister les utilisateurs plateforme (super-admin) — issue #2269"""
         return self.request("GET", "/admin/users", **kwargs)
@@ -271,6 +291,46 @@ class LeopardoClient:
     def patch_admin_users_by_user(self, **kwargs):
         """Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269"""
         return self.request("PATCH", "/admin/users/{user}", **kwargs)
+
+    def get_admin_webhooks(self, **kwargs):
+        """Lister les endpoints webhook (tous tenants)"""
+        return self.request("GET", "/admin/webhooks", **kwargs)
+
+    def post_admin_webhooks(self, **kwargs):
+        """Créer un endpoint webhook (cross-tenant)"""
+        return self.request("POST", "/admin/webhooks", **kwargs)
+
+    def delete_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Supprimer un endpoint webhook"""
+        return self.request("DELETE", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def get_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Détail d'un endpoint webhook + dernières livraisons"""
+        return self.request("GET", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def patch_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Mettre à jour un endpoint webhook (PATCH)"""
+        return self.request("PATCH", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def put_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Mettre à jour un endpoint webhook (PUT)"""
+        return self.request("PUT", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def get_admin_webhooks_by_webhookendpoint_dead_letters(self, **kwargs):
+        """Lister les livraisons en dead-letter d'un endpoint"""
+        return self.request("GET", "/admin/webhooks/{webhookEndpoint}/dead-letters", **kwargs)
+
+    def post_admin_webhooks_by_webhookendpoint_dead_letters_by_delivery_replay(self, **kwargs):
+        """Rejouer une livraison en dead-letter"""
+        return self.request("POST", "/admin/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay", **kwargs)
+
+    def post_admin_webhooks_by_webhookendpoint_test(self, **kwargs):
+        """Dispatcher un événement de test vers un endpoint"""
+        return self.request("POST", "/admin/webhooks/{webhookEndpoint}/test", **kwargs)
+
+    def get_admin_webhooks_events(self, **kwargs):
+        """Lister les événements webhook disponibles"""
+        return self.request("GET", "/admin/webhooks/events", **kwargs)
 
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
@@ -412,6 +472,10 @@ class LeopardoClient:
         """Changer le mot de passe"""
         return self.request("POST", "/auth/change-password", **kwargs)
 
+    def post_auth_forgot_password(self, **kwargs):
+        """Demander un lien de réinitialisation de mot de passe"""
+        return self.request("POST", "/auth/forgot-password", **kwargs)
+
     def post_auth_google_token(self, **kwargs):
         """Connexion Google OAuth"""
         return self.request("POST", "/auth/google/token", **kwargs)
@@ -443,6 +507,10 @@ class LeopardoClient:
     def post_auth_register(self, **kwargs):
         """Inscription employe"""
         return self.request("POST", "/auth/register", **kwargs)
+
+    def post_auth_reset_password(self, **kwargs):
+        """Réinitialiser le mot de passe avec le jeton reçu par email"""
+        return self.request("POST", "/auth/reset-password", **kwargs)
 
     def get_bank_exports(self, **kwargs):
         """Lister les exports bancaires du tenant (pagine)"""
@@ -720,6 +788,10 @@ class LeopardoClient:
         """Comptes demo publics pour la documentation QA"""
         return self.request("GET", "/demo-users", **kwargs)
 
+    def get_departments_by_department_hierarchy(self, **kwargs):
+        """Arbre de management d'un département"""
+        return self.request("GET", "/departments/{department}/hierarchy", **kwargs)
+
     def delete_device_tokens(self, **kwargs):
         """Supprimer le token FCM du device courant au logout"""
         return self.request("DELETE", "/device-tokens", **kwargs)
@@ -840,13 +912,13 @@ class LeopardoClient:
         """Approuver une note de frais"""
         return self.request("PUT", "/expense-claims/{expenseClaim}/approve", **kwargs)
 
-    def post_expense_claims_by_expenseclaim_reject(self, **kwargs):
+    def put_expense_claims_by_expenseclaim_reject(self, **kwargs):
         """Rejeter une note de frais"""
-        return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
+        return self.request("PUT", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
-    def post_expense_claims_by_expenseclaim_submit(self, **kwargs):
+    def put_expense_claims_by_expenseclaim_submit(self, **kwargs):
         """Soumettre une note de frais"""
-        return self.request("POST", "/expense-claims/{expenseClaim}/submit", **kwargs)
+        return self.request("PUT", "/expense-claims/{expenseClaim}/submit", **kwargs)
 
     def get_export_absences(self, **kwargs):
         """Exporter les absences"""
@@ -1236,13 +1308,13 @@ class LeopardoClient:
         """Supprimer une notification"""
         return self.request("DELETE", "/notifications/{notification}", **kwargs)
 
-    def put_notifications_by_notification_read(self, **kwargs):
+    def patch_notifications_by_notification_read(self, **kwargs):
         """Marquer une notification comme lue"""
-        return self.request("PUT", "/notifications/{notification}/read", **kwargs)
+        return self.request("PATCH", "/notifications/{notification}/read", **kwargs)
 
-    def put_notifications_read_all(self, **kwargs):
+    def post_notifications_read_all(self, **kwargs):
         """Marquer toutes les notifications comme lues"""
-        return self.request("PUT", "/notifications/read-all", **kwargs)
+        return self.request("POST", "/notifications/read-all", **kwargs)
 
     def patch_onboarding_setup_by_stepkey_complete(self, **kwargs):
         """Marquer une étape comme complète"""
@@ -2089,10 +2161,6 @@ class LeopardoClient:
         return self.request("POST", "/trial/signup", **kwargs)
 
     def get_trial_status(self, **kwargs):
-        """Statut de provisioning du guided trial"""
-        return self.request("GET", "/trial/status", **kwargs)
-
-    def get_trial_status_2(self, **kwargs):
         """Statut du provisioning d'un essai guidé (polling)"""
         return self.request("GET", "/trial/status", **kwargs)
 

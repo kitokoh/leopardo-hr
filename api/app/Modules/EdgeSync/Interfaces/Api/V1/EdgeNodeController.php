@@ -123,7 +123,7 @@ class EdgeNodeController extends Controller
             'data' => $log->fresh(),
             'node' => [
                 'id' => $node->id,
-                'last_sync_at' => $node->fresh()->last_sync_at,
+                'last_sync_at' => $node->fresh()?->last_sync_at,
             ],
         ]);
     }
