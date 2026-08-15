@@ -99,31 +99,73 @@ class AbsenceService
             $type = $absence->absenceType;
 
             if ($type->deducts_leave) {
-                // Lock last balance row to prevent race conditions
-                $lastLog = LeaveBalanceLog::where('employee_id', $absence->employee_id)
+                // Issue #2666 (QA 2026-08-15) — le snapshot `leave_balances` est
+                // la source de vérité du solde : les chemins de crédit
+                // (LeavePolicyController::credit, accruals, carry-forward)
+                // n'écrivent PAS de log, donc la chaîne `leave_balance_logs`
+                // est vide après un crédit et la première approbation échouait
+                // à tort (INSUFFICIENT_LEAVE_BALANCE). On vérifie et déduit sur
+                // le snapshot (balance − used − pending, même formule que
+                // currentAvailableBalance), ligne verrouillée pour éviter les
+                // courses ; le log reste une piste d'audit.
+                $year = (int) Carbon::parse($absence->start_date)->format('Y');
+                $days = (float) $absence->days_count;
+                $typeId = (int) $absence->absence_type_id;
+
+                $snapshot = LeaveBalance::query()
+                    ->where('company_id', $absence->company_id)
+                    ->where('employee_id', $absence->employee_id)
+                    ->where('absence_type_id', $typeId)
+                    ->where('year', $year)
                     ->lockForUpdate()
-                    ->orderByDesc('id')
                     ->first();
 
-                $currentBalance = $lastLog ? (float) $lastLog->balance_after : 0.0;
+                if ($snapshot === null) {
+                    // Données héritées sans snapshot : le solde est reconstruit
+                    // depuis la chaîne de logs (comportement historique, sans
+                    // réservation pending — les absences héritées créées hors
+                    // service n'ont pas de pending_add) et le snapshot est
+                    // initialisé sur cette valeur pour rester cohérent ensuite.
+                    $lastLog = LeaveBalanceLog::query()
+                        ->where('employee_id', $absence->employee_id)
+                        ->where('company_id', $absence->company_id)
+                        ->orderByDesc('id')
+                        ->first();
+                    $legacyBalance = $lastLog ? (float) $lastLog->balance_after : 0.0;
 
-                if ($currentBalance < $absence->days_count) {
-                    throw new InsufficientLeaveBalanceException($currentBalance, (float) $absence->days_count);
+                    $snapshot = LeaveBalance::query()->create([
+                        'company_id' => $absence->company_id,
+                        'employee_id' => $absence->employee_id,
+                        'absence_type_id' => $typeId,
+                        'year' => $year,
+                        'balance' => max(0.0, $legacyBalance),
+                        'used' => 0,
+                        'pending' => 0,
+                    ]);
                 }
 
-                $newBalance = $currentBalance - $absence->days_count;
+                $available = (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending;
+
+                if ($available < $days) {
+                    throw new InsufficientLeaveBalanceException(max(0.0, $available), $days);
+                }
+
+                $snapshot->update([
+                    'pending' => max(0, (float) $snapshot->pending - $days),
+                    'used' => (float) $snapshot->used + $days,
+                ]);
+
+                $newBalance = max(0.0, (float) $snapshot->balance - (float) $snapshot->used);
 
                 $this->logBalanceChange(
                     $absence->employee_id,
                     $absence->company_id,
-                    -(float) $absence->days_count,
+                    -$days,
                     'absence_approved',
                     $absence->id,
                     $newBalance
                 );
             }
-
-            $this->syncLeaveBalanceSnapshot($absence, 'approve');
 
             $absence->update([
                 'status' => 'approved',
@@ -147,17 +189,38 @@ class AbsenceService
         DB::transaction(function () use ($absence, $reason) {
             // If already approved and balance was deducted, restore it
             if ($absence->status === 'approved' && $absence->absenceType?->deducts_leave) {
-                $lastLog = LeaveBalanceLog::where('employee_id', $absence->employee_id)
-                    ->orderByDesc('id')
+                // Issue #2666 — même correction que approve() : le solde vit
+                // dans le snapshot leave_balances (source de vérité), pas dans
+                // la chaîne de logs. On restaure used -= days depuis le
+                // snapshot (verrouillé) ; le log reste une piste d'audit.
+                $type = $absence->absenceType;
+                $year = (int) Carbon::parse($absence->start_date)->format('Y');
+                $days = (float) $absence->days_count;
+
+                $snapshot = LeaveBalance::query()
+                    ->where('company_id', $absence->company_id)
+                    ->where('employee_id', $absence->employee_id)
+                    ->where('absence_type_id', (int) $absence->absence_type_id)
+                    ->where('year', $year)
+                    ->lockForUpdate()
                     ->first();
 
-                $currentBalance = $lastLog ? (float) $lastLog->balance_after : 0.0;
-                $newBalance = $currentBalance + $absence->days_count;
+                if ($snapshot !== null) {
+                    $usedAfter = max(0.0, (float) $snapshot->used - $days);
+                    $newBalance = max(0.0, (float) $snapshot->balance - $usedAfter);
+                } else {
+                    // Données héritées sans snapshot : comportement historique
+                    // (chaîne de logs).
+                    $lastLog = LeaveBalanceLog::where('employee_id', $absence->employee_id)
+                        ->orderByDesc('id')
+                        ->first();
+                    $newBalance = ($lastLog ? (float) $lastLog->balance_after : 0.0) + $days;
+                }
 
                 $this->logBalanceChange(
                     $absence->employee_id,
                     $absence->company_id,
-                    (float) $absence->days_count,
+                    $days,
                     'absence_rejected',
                     $absence->id,
                     $newBalance

@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.pricing.keywords,
   ogImage: pageMetadata.pricing.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/pricing',
+  canonical: `${SITE_URL}/pricing`,
   robots: 'index, follow',
 });
 
@@ -25,7 +26,7 @@ export default function PricingLayout({
     },
     {
       question: 'Essai gratuit inclus?',
-      answer: 'Oui, tous les plans incluent un essai gratuit de 14 jours sans carte bancaire requise.',
+      answer: 'Oui, tous les plans incluent un essai gratuit de 30 jours sans carte bancaire requise.',
     },
     {
       question: 'Contrat long terme?',

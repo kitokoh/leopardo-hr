@@ -146,8 +146,10 @@ class BankExportContractApiTest extends TestCase
      */
     private function context(bool $manager = true): array
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = Company::factory()->create();
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
         $employee = $manager
             ? Employee::factory()->manager()->create(['company_id' => $company->id])
             : Employee::factory()->create(['company_id' => $company->id]);

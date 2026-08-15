@@ -6,9 +6,9 @@ namespace Tests\Unit\Payroll;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
-use Tests\Support\SnPayrollFixtures;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\TestCase;
+use Tests\Support\SnPayrollFixtures;
 
 /**
  * Issue #1827 — Sénégal (SN) : SenegalPayrollRules « pilot » vers prêt pour
