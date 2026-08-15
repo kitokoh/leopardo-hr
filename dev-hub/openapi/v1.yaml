@@ -147,6 +147,45 @@ paths:
         "404":
           description: "Employe introuvable (isolation tenant)"
 
+  /demo-users:
+    get:
+      tags: ["Auth"]
+      summary: "Comptes demo publics pour la documentation QA"
+      description: "Contrat public de documentation QA (AGENTS.md v4.16.128) : personas demo employee/manager/super-admin. Throttle 10/min."
+      responses:
+        "200":
+          description: "Personas de demonstration"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+
+  /trial/status:
+    get:
+      tags: ["Trial"]
+      summary: "Statut de provisioning du guided trial"
+      description: "Statut de l'essai guide + jeton de provisioning (issue #2437)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Statut du trial"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      status: { type: string }
+                      provisioning_token: { type: string, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /health:
     get:
       tags: ["Health"]
@@ -6488,6 +6527,56 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /me/vehicles:
+    get:
+      tags: ["Vehicle Tracking"]
+      summary: "Vehicules assignes a l'employe connecte (mobile)"
+      description: "Liste des vehicules actifs assignes au conducteur connecte, avec la derniere position Traccar aplatie (shape alignee sur le modele mobile VehiclePosition)."
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Vehicules de l'employe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        vehicle_id: { type: integer }
+                        plate_number: { type: string }
+                        brand: { type: string, nullable: true }
+                        model: { type: string, nullable: true }
+                        type: { type: string, nullable: true }
+                        latitude: { type: number, format: double, nullable: true }
+                        longitude: { type: number, format: double, nullable: true }
+                        speed: { type: number, format: double, nullable: true }
+                        updated_at: { type: string, format: date-time, nullable: true }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /contracts/{contract}/pdf:
+    get:
+      tags: ["Contracts"]
+      summary: "Alias PDF du contrat (issue #2226)"
+      description: "Alias retro-compatible de GET /contracts/{contract}/generate-pdf — meme generateur, meme shape."
+      parameters:
+        - name: contract
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Donnees contrat pour generation PDF"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /me/contracts:
     get:
       tags: ["Me"]
@@ -7187,33 +7276,6 @@ paths:
                           warning_key: { type: string }
                           source: { type: string }
                           verification_date: { type: string, nullable: true }
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
-  /payroll-runs/{payrollRun}/payment-documents:
-    get:
-      tags: ["Payroll"]
-      summary: "Documents de paiement d'un cycle paie"
-      parameters:
-        - in: path
-          name: payrollRun
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: "Documents du cycle"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PaymentDocument"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -8025,6 +8087,43 @@ paths:
           description: "Totaux et statistiques"
         "401":
           $ref: "#/components/responses/Error401"
+
+  /payroll-runs/{payrollRun}/bank-export:
+    post:
+      tags: ["Payroll"]
+      summary: "Generer un export bancaire pour un run valide (alias chemin)"
+      description: "Variante chemin du POST /bank-exports (body payroll_run_id + format) : genere une ligne BankExport pending traitee par job."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format]
+              properties:
+                format:
+                  type: string
+                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+      responses:
+        "202":
+          description: "Export cree (generation asynchrone)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BankExport"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
 
   /payroll-runs/{payrollRun}/pay-slips:
     get:
@@ -12146,6 +12245,23 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /i18n/catalog:
+    get:
+      tags: ["Admin"]
+      summary: "Catalogue de traductions complet"
+      responses:
+        "200":
+          description: "Catalogue de traductions (toutes locales)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /i18n/catalog/{locale}:
     get:
       tags: ["Admin"]
@@ -12250,6 +12366,33 @@ paths:
         "200": { description: "Liste des paiements partenaires" }
 
   # ── Marketing (Ayrshare / reseaux sociaux) ─────────────────────────────────────
+  /marketing/leads:
+    post:
+      tags: ["Marketing"]
+      summary: "Persister un lead marketing (vitrine)"
+      description: "Appele par captureMarketingLead() (vitrine) avec le secret partage MARKETING_LEAD_WEBHOOK_TOKEN. Fire-and-forget cote vitrine."
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+                source: { type: string }
+                company_name: { type: string }
+                role: { type: string }
+                company_size: { type: string }
+                phone: { type: string, nullable: true }
+      responses:
+        "201":
+          description: "Lead persiste"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /marketing/social-account:
     get:
       tags: ["Marketing"]
@@ -12846,6 +12989,35 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /zkteco/devices/{id}/regenerate-token:
+    post:
+      tags: ["ZKTeco"]
+      summary: "Regenerer le jeton d'une pointeuse (manager)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Appareil avec nouveau jeton (device_token a usage unique)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ZktecoDevice"
+                  device_token:
+                    type: string
+                    description: "Nouveau jeton en clair — a transmettre au terminal"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /zkteco/devices/{id}/sync-logs:
     get:
       tags: ["ZKTeco"]
@@ -13190,54 +13362,6 @@ paths:
     delete:
       tags: ["Edge"]
       summary: "Révoquer un nœud edge (super-admin)"
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: nodeId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: "Nœud révoqué"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /platform/edge-nodes:
-    get:
-      tags: ["Edge"]
-      summary: "Alias SPA — lister les nœuds edge (super-admin)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Liste des nœuds edge"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /platform/edge-nodes/{nodeId}/sync:
-    post:
-      tags: ["Edge"]
-      summary: "Alias SPA — forcer la synchronisation d'un nœud edge"
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: nodeId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: "Synchronisation déclenchée"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /platform/edge-nodes/{nodeId}/revoke:
-    post:
-      tags: ["Edge"]
-      summary: "Alias SPA — révoquer un nœud edge"
       security:
         - BearerAuth: []
       parameters:
@@ -17586,7 +17710,6 @@ components:
           type: object
           allOf:
             - $ref: "#/components/schemas/Compliance"
-          type: object
           nullable: true
           description: >-
             Bloc conformité (issue #2116) — null quand le pays du run n'est
@@ -18564,56 +18687,6 @@ components:
           type: string
           nullable: true
 
-    TrainingSession:
-      type: object
-      description: "Session de formation (contrat GET /training/sessions, QA 2026-08-14)"
-      properties:
-        id: { type: integer }
-        training_course_id: { type: integer }
-        trainer_id: { type: integer, nullable: true }
-        external_trainer: { type: string, nullable: true }
-        start_date: { type: string, format: date, nullable: true }
-        end_date: { type: string, format: date, nullable: true }
-        location: { type: string, nullable: true }
-        status: { type: string, enum: [planned, scheduled, in_progress, completed, cancelled] }
-        notes: { type: string, nullable: true }
-        trainer:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string, nullable: true }
-            last_name: { type: string, nullable: true }
-        enrollments:
-          type: array
-          description: "Présent uniquement quand la relation est chargée"
-          items:
-            $ref: "#/components/schemas/TrainingEnrollment"
-        created_at: { type: string, format: date-time, nullable: true }
-
-    TrainingEnrollment:
-      type: object
-      description: "Inscription à une session de formation (contrat GET /training/enrollments, QA 2026-08-14)"
-      properties:
-        id: { type: integer }
-        training_session_id: { type: integer }
-        employee_id: { type: integer }
-        status: { type: string, enum: [enrolled, completed, cancelled] }
-        score: { type: number, nullable: true }
-        feedback: { type: string, nullable: true }
-        completed_at: { type: string, format: date-time, nullable: true }
-        course_title: { type: string, nullable: true, description: "Présent quand session.course est chargée" }
-        session_date: { type: string, format: date, nullable: true }
-        progress: { type: integer, nullable: true }
-        employee:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string, nullable: true }
-            last_name: { type: string, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
     TrainingCourse:
       type: object
       properties:
@@ -18641,72 +18714,6 @@ components:
           type: string
           format: date-time
 
-
-    TrainingSession:
-      type: object
-      description: "Session de formation (TrainingSessionResource)"
-      properties:
-        id:
-          type: integer
-        training_course_id:
-          type: integer
-        trainer_id:
-          type: integer
-          nullable: true
-        external_trainer:
-          type: string
-          nullable: true
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        location:
-          type: string
-          nullable: true
-        status:
-          type: string
-          enum: [planned, in_progress, completed, cancelled]
-        notes:
-          type: string
-          nullable: true
-        trainer:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string }
-            last_name: { type: string }
-        created_at:
-          type: string
-          format: date-time
-
-    TrainingEnrollment:
-      type: object
-      description: "Inscription à une session de formation (TrainingEnrollmentResource)"
-      properties:
-        id:
-          type: integer
-        training_session_id:
-          type: integer
-        employee_id:
-          type: integer
-        company_id:
-          type: integer
-        status:
-          type: string
-          enum: [enrolled, in_progress, completed, dropped]
-        employee:
-          type: object
-          nullable: true
-          properties:
-            id: { type: integer }
-            first_name: { type: string }
-            last_name: { type: string }
-        created_at:
-          type: string
-          format: date-time
 
     StoreTrainingCourseRequest:
       type: object
@@ -18952,33 +18959,3 @@ components:
         duration_days: { type: integer, minimum: 1, maximum: 5 }
         confirmed: { type: boolean, default: true }
         source: { type: string, enum: [manual, api, computed], default: manual }
-    TrainingSession:
-      type: object
-      description: "Session de formation (contrat TrainingSessionResource)."
-      properties:
-        id: { type: integer }
-        training_course_id: { type: integer }
-        trainer_id: { type: integer, nullable: true }
-        external_trainer: { type: string, nullable: true }
-        start_date: { type: string, format: date, nullable: true }
-        end_date: { type: string, format: date, nullable: true }
-        location: { type: string, nullable: true }
-        status: { type: string, enum: [planned, in_progress, completed, cancelled] }
-        notes: { type: string, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-
-    TrainingEnrollment:
-      type: object
-      description: "Inscription à une session de formation (contrat TrainingEnrollmentResource)."
-      properties:
-        id: { type: integer }
-        training_session_id: { type: integer }
-        employee_id: { type: integer }
-        status: { type: string, enum: [enrolled, attended, completed, no_show, cancelled] }
-        score: { type: number, nullable: true }
-        feedback: { type: string, nullable: true }
-        completed_at: { type: string, format: date-time, nullable: true }
-        course_title: { type: string, nullable: true }
-        session_date: { type: string, format: date, nullable: true }
-        progress: { type: integer, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }

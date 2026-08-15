@@ -800,6 +800,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/contracts/{contract}/generate-pdf", options);
     },
 
+    /** Alias PDF du contrat (issue #2226) */
+    getContractsByContractPdf(options = {}) {
+      return request("GET", "/contracts/{contract}/pdf", options);
+    },
+
     /** Renouveler un contrat */
     postContractsByContractRenew(options = {}) {
       return request("POST", "/contracts/{contract}/renew", options);
@@ -843,6 +848,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Resume dashboard */
     getDashboardSummary(options = {}) {
       return request("GET", "/dashboard/summary", options);
+    },
+
+    /** Comptes demo publics pour la documentation QA */
+    getDemoUsers(options = {}) {
+      return request("GET", "/demo-users", options);
     },
 
     /** Supprimer le token FCM du device courant au logout */
@@ -1155,6 +1165,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/health", options);
     },
 
+    /** Catalogue de traductions complet */
+    getI18nCatalog(options = {}) {
+      return request("GET", "/i18n/catalog", options);
+    },
+
     /** Traductions pour une locale */
     getI18nCatalogByLocale(options = {}) {
       return request("GET", "/i18n/catalog/{locale}", options);
@@ -1283,6 +1298,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Decaisser un pret */
     putLoansByEmployeeLoanDisburse(options = {}) {
       return request("PUT", "/loans/{employeeLoan}/disburse", options);
+    },
+
+    /** Persister un lead marketing (vitrine) */
+    postMarketingLeads(options = {}) {
+      return request("POST", "/marketing/leads", options);
     },
 
     /** Compte social connecte du tenant */
@@ -1440,6 +1460,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
+    /** Vehicules assignes a l'employe connecte (mobile) */
+    getMeVehicles(options = {}) {
+      return request("GET", "/me/vehicles", options);
+    },
+
     /** Lire les preferences de notification de l'utilisateur courant */
     getNotificationPreferences(options = {}) {
       return request("GET", "/notification-preferences", options);
@@ -1570,6 +1595,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/anomalies", options);
     },
 
+    /** Generer un export bancaire pour un run valide (alias chemin) */
+    postPayrollRunsByPayrollRunBankExport(options = {}) {
+      return request("POST", "/payroll-runs/{payrollRun}/bank-export", options);
+    },
+
     /** Calculer la paie */
     postPayrollRunsByPayrollRunCalculate(options = {}) {
       return request("POST", "/payroll-runs/{payrollRun}/calculate", options);
@@ -1628,11 +1658,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les bulletins de paie d'une session */
     listPayrollRunPaySlips(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/pay-slips", options);
-    },
-
-    /** Documents de paiement d'un cycle paie */
-    getPayrollRunsByPayrollRunPaymentDocuments(options = {}) {
-      return request("GET", "/payroll-runs/{payrollRun}/payment-documents", options);
     },
 
     /** Lister les régularisations d'un run (DZ-DEPTH #1818) */
@@ -1763,21 +1788,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Lister les pays supportes et leurs defaults */
     getPlatformCountryDefaults(options = {}) {
       return request("GET", "/platform/country-defaults", options);
-    },
-
-    /** Alias SPA — lister les nœuds edge (super-admin) */
-    getPlatformEdgeNodes2(options = {}) {
-      return request("GET", "/platform/edge-nodes", options);
-    },
-
-    /** Alias SPA — révoquer un nœud edge */
-    postPlatformEdgeNodesByNodeIdRevoke(options = {}) {
-      return request("POST", "/platform/edge-nodes/{nodeId}/revoke", options);
-    },
-
-    /** Alias SPA — forcer la synchronisation d'un nœud edge */
-    postPlatformEdgeNodesByNodeIdSync2(options = {}) {
-      return request("POST", "/platform/edge-nodes/{nodeId}/sync", options);
     },
 
     /** Lister les nœuds edge de la plateforme (super-admin) */
@@ -2475,6 +2485,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/training/sessions/{trainingSession}/enroll", options);
     },
 
+    /** Statut de provisioning du guided trial */
+    getTrialStatus(options = {}) {
+      return request("GET", "/trial/status", options);
+    },
+
     /** Liste de toutes les alertes vehicules */
     getVehicleAlerts(options = {}) {
       return request("GET", "/vehicle-alerts", options);
@@ -2648,6 +2663,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Modifier une pointeuse ZKTeco (manager) */
     updateZktecoDevice(options = {}) {
       return request("PUT", "/zkteco/devices/{id}", options);
+    },
+
+    /** Regenerer le jeton d'une pointeuse (manager) */
+    postZktecoDevicesByIdRegenerateToken(options = {}) {
+      return request("POST", "/zkteco/devices/{id}/regenerate-token", options);
     },
 
     /** Lister l'historique de synchronisation d'une pointeuse (manager) */
