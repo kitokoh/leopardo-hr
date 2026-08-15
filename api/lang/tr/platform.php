@@ -12,6 +12,7 @@ return [
     'activity_support_ticket' => 'Destek bileti: :subject',
     'activity_edge_sync' => 'Edge senkronizasyonu: :name',
     'activity_user_signup' => 'Yeni kullanıcı: :name (:email)',
+    'ai_assistant_not_configured' => 'Yapay zeka asistanı platform konsolu için yapılandırılmamıştır. Mesajınız kaydedildi.',
     'conversation_not_found' => 'Konuşma bulunamadı.',
     'oauth_save_failed' => 'Yapılandırma kaydedilemedi.',
 ];

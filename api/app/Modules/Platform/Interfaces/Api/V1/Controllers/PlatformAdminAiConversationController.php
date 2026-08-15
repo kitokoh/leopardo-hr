@@ -6,6 +6,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -74,5 +75,76 @@ class PlatformAdminAiConversationController extends Controller
         } catch (\Throwable) {
             return response()->json(['data' => []]);
         }
+    }
+
+    /**
+     * #2311 — envoi d'un message depuis la console super-admin. L'assistant
+     * IA n'est pas câblé pour la plateforme (pas de LLM cross-tenant) : le
+     * message utilisateur est persisté dans la conversation et la réponse est
+     * une structure honnête « assistant non configuré » — plus de 404
+     * silencieux côté vue.
+     */
+    public function chat(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'message' => 'required|string|max:2000',
+            'conversation_id' => 'nullable|integer',
+        ]);
+
+        $message = trim((string) $validated['message']);
+        $conversationId = isset($validated['conversation_id'])
+            ? (int) $validated['conversation_id']
+            : null;
+
+        $userMessage = [
+            'role' => 'user',
+            'content' => $message,
+            'created_at' => now()->toIso8601String(),
+        ];
+
+        try {
+            $table = DB::table(self::TENANT_SCHEMA.'.ai_conversations');
+
+            if ($conversationId === null) {
+                $conversationId = (int) $table->insertGetId([
+                    'company_id' => null,
+                    'user_id' => null,
+                    'title' => mb_strimwidth($message, 0, 80, '…'),
+                    'messages' => json_encode([$userMessage], JSON_THROW_ON_ERROR),
+                    'context' => '{}',
+                    'token_count' => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                $row = $table->where('id', $conversationId)->first(['messages']);
+
+                if ($row === null) {
+                    return response()->json([
+                        'error' => 'CONVERSATION_NOT_FOUND',
+                        'message' => __('platform.conversation_not_found'),
+                    ], 404);
+                }
+
+                $messages = json_decode((string) ($row->messages ?? '[]'), true);
+                if (! is_array($messages)) {
+                    $messages = [];
+                }
+                $messages[] = $userMessage;
+
+                $table->where('id', $conversationId)->update([
+                    'messages' => json_encode($messages, JSON_THROW_ON_ERROR),
+                    'updated_at' => now(),
+                ]);
+            }
+        } catch (\Throwable) {
+            // Persistance impossible (ex. contrainte hors périmètre super-admin) :
+            // l'envoi reste fonctionnel — réponse structurée sans écriture.
+        }
+
+        return response()->json([
+            'conversation_id' => $conversationId,
+            'response' => __('platform.ai_assistant_not_configured'),
+        ]);
     }
 }

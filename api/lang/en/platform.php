@@ -12,6 +12,7 @@ return [
     'activity_support_ticket' => 'Support ticket: :subject',
     'activity_edge_sync' => 'Edge sync: :name',
     'activity_user_signup' => 'New user: :name (:email)',
+    'ai_assistant_not_configured' => 'The AI assistant is not configured for the platform console. Your message has been recorded.',
     'conversation_not_found' => 'Conversation not found.',
     'oauth_save_failed' => 'Unable to save the configuration.',
 ];

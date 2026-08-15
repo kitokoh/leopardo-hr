@@ -12,6 +12,7 @@ return [
     'activity_support_ticket' => 'تذكرة دعم: :subject',
     'activity_edge_sync' => 'مزامنة إيدج: :name',
     'activity_user_signup' => 'مستخدم جديد: :name (:email)',
+    'ai_assistant_not_configured' => 'مساعد الذكاء الاصطناعي غير مهيأ لوحدة التحكم في المنصة. تم تسجيل رسالتك.',
     'conversation_not_found' => 'المحادثة غير موجودة.',
     'oauth_save_failed' => 'تعذر حفظ الإعدادات.',
 ];

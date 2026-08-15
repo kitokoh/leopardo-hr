@@ -12,6 +12,7 @@ return [
     'activity_support_ticket' => 'Ticket support : :subject',
     'activity_edge_sync' => 'Sync Edge : :name',
     'activity_user_signup' => 'Nouvel utilisateur : :name (:email)',
+    'ai_assistant_not_configured' => 'L'assistant IA n'est pas configuré pour la console plateforme. Votre message a été enregistré.',
     'conversation_not_found' => 'Conversation introuvable.',
     'oauth_save_failed' => 'Impossible d\'enregistrer la configuration.',
 ];

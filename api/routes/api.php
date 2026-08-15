@@ -303,6 +303,10 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/ai/conversations', [PlatformAdminAiConversationController::class, 'index']);
         Route::get('/ai/conversations/{conversation}/messages', [PlatformAdminAiConversationController::class, 'messages'])
             ->whereNumber('conversation');
+        // #2311 — envoi d'un message depuis la console super-admin : l'assistant
+        // IA n'est pas câblé pour la plateforme (lecture cross-tenant) → réponse
+        // structurée « assistant non configuré », message utilisateur persisté.
+        Route::post('/ai/chat', [PlatformAdminAiConversationController::class, 'chat']);
 
         Route::get('/fleet/alerts', [PlatformAdminFleetAlertController::class, 'index']);
 
