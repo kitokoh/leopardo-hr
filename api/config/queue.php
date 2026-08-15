@@ -13,7 +13,11 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sync'),
+    // Issue #3562 : en production, un QUEUE_CONNECTION absent ne doit JAMAIS
+    // retomber sur 'sync' (jobs lourds exécutés dans la requête web) — le
+    // worker redis est déployé (render.yaml leopardo-queue-worker). En
+    // dev/test, le défaut reste 'sync' pour la simplicité locale.
+    'default' => env('QUEUE_CONNECTION', app()->environment('production') ? 'redis' : 'sync'),
 
     /*
     |--------------------------------------------------------------------------

@@ -51,3 +51,11 @@ jobs:
       - name: i18n parity & usage tests
         working-directory: front/zkteco-kiosk
         run: npm test
+
+      # Issues #3586/#3587/#3588 : le bridge Python (auth locale, dead-letter,
+      # contrat skipped) est couvert par unittest — ne plus le laisser hors CI.
+      - name: Bridge Python tests (unittest)
+        working-directory: front/zkteco-kiosk
+        run: |
+          python3 tests/test_bridge_globals.py
+          python3 tests/test_bridge_security.py

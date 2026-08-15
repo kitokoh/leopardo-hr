@@ -16,13 +16,14 @@ export const useDashboardStore = defineStore('dashboard', () => {
     newUsersToday: 0,
     newCompaniesToday: 0,
     supportTickets: 0,
-    systemHealth: 'good'
+    systemHealth: 'unknown'
   })
 
   const recentActivities = ref([])
   const systemAlerts = ref([])
   const isLoading = ref(false)
   const lastUpdated = ref(null)
+  const loadError = ref(null)
 
   // Getters
   const formattedRevenue = computed(() => {
@@ -37,9 +38,10 @@ export const useDashboardStore = defineStore('dashboard', () => {
     const statusMap = {
       good: { label: 'Excellent', color: 'green', icon: 'CheckCircleIcon' },
       warning: { label: 'Attention', color: 'yellow', icon: 'ExclamationTriangleIcon' },
-      error: { label: 'Problème', color: 'red', icon: 'XCircleIcon' }
+      error: { label: 'Problème', color: 'red', icon: 'XCircleIcon' },
+      unknown: { label: 'Indisponible', color: 'gray', icon: 'QuestionMarkCircleIcon' }
     }
-    return statusMap[status] || statusMap.good
+    return statusMap[status] || statusMap.unknown
   })
 
   const criticalAlerts = computed(() => {
@@ -60,7 +62,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
         api.get('/admin/dashboard/alerts')
       ])
 
-      stats.value = statsResponse.data
+      stats.value = { systemHealth: 'unknown', ...statsResponse.data }
+      loadError.value = null
       // Issue #2747 — les endpoints /admin/dashboard/{activities,alerts} renvoient
       // une enveloppe Laravel {data: [...]} : déballer avant d'affecter, sinon
       // criticalAlerts() (filter) explose sur l'objet enveloppe → badge alertes /
@@ -70,6 +73,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
       lastUpdated.value = new Date()
 
     } catch (error) {
+      loadError.value = 'Impossible de charger les métriques du dashboard.'
+      stats.value = { ...stats.value, systemHealth: 'unknown' }
       console.error('Erreur lors du chargement du dashboard:', error)
       throw error
     } finally {
@@ -80,9 +85,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
   async function refreshStats() {
     try {
       const response = await api.get('/admin/dashboard/stats')
-      stats.value = response.data
+      stats.value = { systemHealth: 'unknown', ...response.data }
+      loadError.value = null
       lastUpdated.value = new Date()
     } catch (error) {
+      loadError.value = 'Impossible de rafraîchir les métriques du dashboard.'
+      stats.value = { ...stats.value, systemHealth: 'unknown' }
       console.error('Erreur lors du rafraîchissement des stats:', error)
     }
   }
@@ -121,6 +129,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     systemAlerts,
     isLoading,
     lastUpdated,
+    loadError,
 
     // Getters
     formattedRevenue,
