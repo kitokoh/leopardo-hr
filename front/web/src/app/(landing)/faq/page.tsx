@@ -41,7 +41,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Fonctionnalites',
     question: 'Peut-on generer des bulletins de paie multi-pays ?',
-    answer: 'Oui, Leopardo RH supporte la paie pour 6 pays (France, Algerie, Turquie, Senegal, Maroc, Tunisie) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
+    answer: 'Oui, Leopardo RH supporte la paie multi-pays (Algerie, Maroc, Tunisie, France, Turquie, Senegal + zones CEMAC et CEDEAO) avec les baremes fiscaux et cotisations sociales specifiques a chaque pays. Les bulletins sont generes en PDF.',
   },
   {
     category: 'Fonctionnalites',
@@ -71,7 +71,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Integration',
     question: 'Peut-on exporter les donnees vers des logiciels comptables ?',
-    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV compatible avec les principaux logiciels comptables (Sage, QuickBooks, etc.).',
+    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV compatible avec les principaux logiciels comptables (Sage, QuickBooks — bientot disponibles).',
   },
 ];
 
