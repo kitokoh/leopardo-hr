@@ -10,7 +10,7 @@ use App\Modules\Attendance\Interfaces\Api\V1\ZktecoController;
 use App\Modules\Notification\Interfaces\Api\V1\Controllers\DeviceTokenController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
     Route::post('/device-tokens', [DeviceTokenController::class, 'register']);
     Route::delete('/device-tokens', [DeviceTokenController::class, 'unregister']);
     Route::get('/device-tokens', [DeviceTokenController::class, 'index']);

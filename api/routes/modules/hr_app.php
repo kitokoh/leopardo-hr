@@ -20,7 +20,7 @@
 use App\Modules\HR\Interfaces\Api\V1\Controllers\HrController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'api.manager:rh,principal'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:rh,principal'])
     ->prefix('hr')
     ->group(function (): void {
 

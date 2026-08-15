@@ -16,7 +16,7 @@ use App\Modules\Onboarding\Interfaces\Api\V1\Controllers\OnboardingStepControlle
 use Illuminate\Support\Facades\Route;
 
 // ── Authenticated routes ──────────────────────────────────────────────────────
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
 
     // Onboarding Steps — tous les utilisateurs authentifiés du tenant
     // (l'app Employee complète son onboarding : T118 — plus de 403

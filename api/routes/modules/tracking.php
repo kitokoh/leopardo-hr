@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Route;
 //    pas manager (employé = son propre véhicule assigné uniquement)
 //  - GET /me/vehicles             → véhicules assignés à l'employé connecté
 //  (consommés par l'app mobile employé leopardo_employee)
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
     // Employee self-service (véhicule assigné uniquement)
     Route::get('/me/vehicles', [VehicleController::class, 'myVehicles']);
     Route::get('/vehicles/{id}/position', [VehicleController::class, 'position'])->whereNumber('id');
 });
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'api.manager'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager'])->group(function (): void {
     // Vehicles CRUD
     Route::get('/vehicles', [VehicleController::class, 'index']);
     Route::post('/vehicles', [VehicleController::class, 'store']);

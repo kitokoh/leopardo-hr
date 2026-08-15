@@ -31,7 +31,7 @@ use App\Modules\Payroll\Interfaces\Api\V1\SocialDeclarationController;
 use App\Modules\Payroll\Interfaces\Api\V1\TaxSlabController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'throttle:payroll-sensitive'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'throttle:payroll-sensitive'])->group(function (): void {
 
     // ── Self-service pay slips (all employees) ───────────────────────────
     Route::get('/me/pay-slips', [PaySlipController::class, 'myPaySlips']);

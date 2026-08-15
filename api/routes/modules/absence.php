@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 | Full paths: /api/v1/absences/...
 */
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])
     ->prefix('absences')
     ->group(function (): void {
         Route::get('/', [AbsenceController::class, 'index']);

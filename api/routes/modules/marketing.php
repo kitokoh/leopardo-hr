@@ -20,7 +20,7 @@ use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialAccountController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialPostController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan', 'api.manager:marketing,principal'])
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:marketing,principal'])
     ->prefix('marketing')
     ->group(function (): void {
         // ----------------------------------------------------------------

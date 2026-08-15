@@ -32,7 +32,7 @@ use App\Modules\Recruitment\Interfaces\Api\V1\JobPostingActionController;
 use App\Modules\Recruitment\Interfaces\Api\V1\RecruitmentController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'])->group(function (): void {
+Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
 
     // ── Self-Service (all employees) ─────────────────────────────────────
     Route::get('/me/leave-balances', [LeavePolicyController::class, 'myBalances']);
