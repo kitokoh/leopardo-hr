@@ -99,6 +99,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/contracts/{contract}/amendments', [ContractController::class, 'amendments']);
         Route::post('/contracts/{contract}/amendments', [ContractController::class, 'storeAmendment']);
         Route::get('/contracts/{contract}/generate-pdf', [ContractController::class, 'generatePdf']);
+        // Alias exposed to web/mobile clients (issue #2226) — the Web App
+        // historically called GET /contracts/{id}/pdf before /generate-pdf
+        // existed; keep both working for backward compatibility.
+        Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);
 
         // ── Recruitment / ATS ────────────────────────────────────────────
         Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);
