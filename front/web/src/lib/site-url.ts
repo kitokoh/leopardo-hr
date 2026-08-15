@@ -12,12 +12,12 @@
  *   1. NEXT_PUBLIC_SITE_URL — l'URL de marque réelle (à poser au déploiement,
  *      ex. https://www.leopardo-rh.com une fois le domaine en ligne).
  *   2. Domaine de marque documenté (fallback de build, jamais localhost en
- *      production).
+ *      production) — constant partagée depuis ./site (#3190 : source unique).
  *   3. localhost en développement uniquement (les canonicals n'ont pas
  *      d'impact SEO en dev).
  */
 
-const BRAND_SITE_URL = 'https://www.leopardo-rh.com';
+import { DEFAULT_SITE_URL } from './site';
 
 export function getSiteUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL;
@@ -30,7 +30,7 @@ export function getSiteUrl(): string {
     return 'http://localhost:3000';
   }
 
-  return BRAND_SITE_URL;
+  return DEFAULT_SITE_URL;
 }
 
 /** Forme normalisée (sans slash final) de l'URL du site. */
