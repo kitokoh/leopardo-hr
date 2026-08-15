@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Payroll\Golden;
 
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\SenegalPayrollRules;
+use Tests\Support\SnPayrollFixtures;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -47,8 +48,8 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(58900.0);
 
         $this->assertSame(3298.40, $charges['employee']);
-        $this->assertSame(11426.60, $charges['employer']);
-        $this->assertSame(2700.0, $rules->calculateBracketTax(58900.0));
+        $this->assertSame(9070.60, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::bracketTax(58900.0), $rules->calculateBracketTax(58900.0));
     }
 
     public function test_golden_sn_ouvrier_100000(): void
@@ -66,8 +67,8 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame(16440.0, $charges['employer']);
 
         $base = 100000.0 - $charges['employee'];
-        $this->assertSame(2380.0, $rules->calculateIncomeTax($base, 12, 100000.0));
-        $this->assertSame(5400.0, $rules->calculateBracketTax(100000.0));
+        $this->assertSame(SnPayrollFixtures::incomeTax(100000.0), $rules->calculateIncomeTax($base, 12, 100000.0));
+        $this->assertSame(SnPayrollFixtures::bracketTax(100000.0), $rules->calculateBracketTax(100000.0));
     }
 
     public function test_golden_sn_employe_250000(): void
@@ -86,8 +87,8 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame(33540.0, $charges['employer']);
 
         $base = 250000.0 - $charges['employee'];
-        $this->assertSame(25300.0, $rules->calculateIncomeTax($base, 12, 250000.0));
-        $this->assertSame(9000.0, $rules->calculateBracketTax(250000.0));
+        $this->assertSame(SnPayrollFixtures::incomeTax(250000.0), $rules->calculateIncomeTax($base, 12, 250000.0));
+        $this->assertSame(SnPayrollFixtures::bracketTax(250000.0), $rules->calculateBracketTax(250000.0));
     }
 
     public function test_golden_sn_plafond_ipres_t1_432000(): void
@@ -104,8 +105,11 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(432000.0);
 
         $this->assertSame(24192.0, $charges['employee']);
-        $this->assertSame(54288.0, $charges['employer']);
-        $this->assertSame(18000.0, $rules->calculateBracketTax(432000.0));
+        // Patronal (plafonds #1913) : IPRES 8,4 % = 36 288 + CSS famille
+        // min(432 000, 63 000) × 3 % = 1 890 + CSS AT 63 000 × 1 % = 630
+        // + CFCE 432 000 × 3 % = 12 960 → 51 768,00
+        $this->assertSame(51768.0, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::bracketTax(432000.0), $rules->calculateBracketTax(432000.0));
     }
 
     public function test_golden_sn_cadre_t1_t2_600000(): void
@@ -132,8 +136,8 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(1000000.0);
 
         $this->assertSame(37824.0, $charges['employee']);
-        $this->assertSame(91776.0, $charges['employer']);
-        $this->assertSame(36000.0, $rules->calculateBracketTax(1000000.0));
+        $this->assertSame(89256.0, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::bracketTax(1000000.0), $rules->calculateBracketTax(1000000.0));
     }
 
     public function test_golden_sn_cadre_haut_t2_max_2160000(): void
@@ -240,7 +244,7 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(3000000.0);
         $base = 3000000.0 - $charges['employee'];
 
-        $this->assertSame(726984.40, $rules->calculateIncomeTax($base, 12, 3000000.0));
+        $this->assertSame(SnPayrollFixtures::incomeTax(3000000.0), $rules->calculateIncomeTax($base, 12, 3000000.0));
     }
 
     public function test_golden_sn_prorata_entree_10(): void
@@ -313,7 +317,7 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame(0.0, $charges['employee']);
         $this->assertSame(0.0, $charges['employer']);
         $this->assertSame(0.0, $rules->calculateIncomeTax(0.0));
-        $this->assertSame(900.0, $rules->calculateBracketTax(0.0)); // tranche 1 forfaitaire
+        $this->assertSame(SnPayrollFixtures::bracketTax(0.0), $rules->calculateBracketTax(0.0)); // tranche 1 forfaitaire
     }
 
     #[DataProvider('irProvider')]
