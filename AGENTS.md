@@ -350,6 +350,14 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Le kiosque ZKTeco emet `leopardo:kiosk-status` et affiche la derniere synchronisation. Garder cet etat offline-first lisible lors des evolutions kiosk/bridge, car c est le signal terrain principal pour les clients.
 - Depuis v4.16.134, le mobile utilise un socle visuel sombre inspire du mockup pointage v3 via `front/mobile_apps/leopardo_core/lib/core/widgets/mobile_surface.dart` (package partage `leopardo_core`, consomme par les 3 apps tenant). Pour tout nouvel ecran mobile, privilegier `MobileTopBar`, `MobilePanel`, `MobileStatusPill`, `MobileIconBubble` et les couleurs `MobileSurface.*` afin de garder une experience 2026 coherente sans dupliquer des `BoxDecoration`.
 
+
+### 2026-08-15 - Regression par merge de branches perimees (SystemView)
+
+- La PR #2316 (Analytics/System reels, suppression des fakes `setTimeout`) a ete **ecrasee** par les merges ulterieurs de #2321 et #2247 : ces branches, creees AVANT le merge de #2316, portaient l'ancienne version simulee de `SystemView.vue` et l'ont remise sur main (meme symptome possible pour tout fichier touche par plusieurs branches en parallele).
+- Symptome : le code « fixe » reapparait sur main alors que le commit de la PR est bien dans l'historique (`git log` du fichier montre le fix puis son ecrasement).
+- Garde : avant de merger une PR dont la branche a ete creee il y a plus de quelques heures, verifier que ses fichiers n'ecrasent pas des fixes plus recents — `git diff origin/main...HEAD -- <fichiers>` et comparer avec `git log --oneline -3 origin/main -- <fichiers>`.
+- Correction type : restaurer la version validee du fix (ex. `git show <sha-du-fix>:<fichier> > <fichier>`) dans une nouvelle PR dediee (issue #2186).
+
 ## Pieges connus
 
 ### 2026-05-14 - Integration branche Devin Plan 14
