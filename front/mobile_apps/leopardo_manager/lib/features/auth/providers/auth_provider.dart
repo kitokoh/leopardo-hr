@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/session_expired_handler.dart';
 import 'package:leopardo_core/core/services/push_notification_service.dart';
 import 'package:leopardo_manager/features/auth/data/auth_repository.dart';
 import 'package:leopardo_core/models/employee.dart';
@@ -192,9 +193,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(
+  final notifier = AuthNotifier(
     ref.watch(authRepositoryProvider),
     ref.watch(pushNotificationServiceProvider),
     ref.watch(apiClientProvider),
   );
+  // Issue #3153 : enregistrement du handler de session expirée via un holder
+  // pour ne pas referencer `authProvider` depuis `apiClientProvider`
+  // (cycle statique de providers → top_level_cycle).
+  ref.watch(sessionExpiredHandlerProvider).callback = notifier.handleSessionExpired;
+  return notifier;
 });

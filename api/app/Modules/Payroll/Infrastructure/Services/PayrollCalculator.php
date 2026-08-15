@@ -587,6 +587,10 @@ class PayrollCalculator
         }
     }
 
+    /**
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
+     */
     private function calculateSlip(
         PayrollRun $run,
         Employee $employee,
@@ -634,6 +638,9 @@ class PayrollCalculator
      * Utilisé par calculateSlip() (bulletin standard) et par
      * calculateRegularizationRun() (valeur corrigée du différentiel).
      *
+     *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{
      *     gross_salary: float,
      *     total_deductions: float,
@@ -977,6 +984,7 @@ class PayrollCalculator
      * contrat quand aucun log valide n'existe (comportement historique).
      * has_attendance_data indique quelle source a été utilisée.
      *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
      * @return array{working_days: float, actual_days_worked: float, overtime_hours: float, has_attendance_data: bool}
      */
     public function computeWorkedDays(PayrollRun $run, Employee $employee, ?array $attendanceAgg = null): array
@@ -1217,6 +1225,8 @@ class PayrollCalculator
      *  - Absence approuvées (status=approved), ventilées payées (is_paid) /
      *    non payées via AbsenceType.
      *
+     * @param  array{distinct_days?: int, overtime_hours?: float}|null  $attendanceAgg
+     * @param  array{paid_leave_days?: float, unpaid_leave_days?: float}|null  $leaveAgg
      * @return array{overtime_hours: float, paid_leave_days: float, unpaid_leave_days: float}
      */
     public function collectWorkInputs(
@@ -1260,7 +1270,7 @@ class PayrollCalculator
      * sumApprovedLeaveDays). ~3 requêtes au total au lieu de ~5 par employé.
      *
      * @param  Collection<int, Employee>  $employees
-     * @return array{0: array<int, array{distinct_days: int, overtime_hours: float}>, 1: array<int, array{paid_leave_days: float, unpaid_leave_days: float}>}
+     * @return array{0: array<int, array{distinct_days?: int, overtime_hours?: float}>, 1: array<int, array{paid_leave_days?: float, unpaid_leave_days?: float}>}
      */
     private function aggregateWorkInputs(PayrollRun $run, Collection $employees): array
     {

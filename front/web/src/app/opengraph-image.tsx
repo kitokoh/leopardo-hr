@@ -96,9 +96,9 @@ export default function Image() {
           }}
         >
           {[
-            ['500+', 'entreprises accompagnees'],
-            ['50K+', 'employes geres'],
-            ['99.9%', 'disponibilite cible'],
+            ['19', 'modules metier'],
+            ['424', 'endpoints API'],
+            ['5', 'apps mobiles'],
           ].map(([value, label]) => (
             <div
               key={value}

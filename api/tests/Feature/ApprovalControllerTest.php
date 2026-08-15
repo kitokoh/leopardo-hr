@@ -118,4 +118,24 @@ class ApprovalControllerTest extends TestCase
 
         $this->assertSame('rejected', $pending2->fresh()?->status);
     }
+
+    public function test_plain_employee_cannot_approve_or_reject(): void
+    {
+        // QA #3146 — la policy ApprovalRequestPolicy n'était jamais invoquée :
+        // tout employé authentifié pouvait approuver/rejeter. Elle exige manager.
+        $pending = $this->makeApprovalRequest('pending');
+
+        $this->actingAs($this->employee)
+            ->postJson("/api/v1/approvals/{$pending->id}/approve", ['comment' => 'Nope'])
+            ->assertForbidden();
+
+        $this->assertSame('pending', $pending->fresh()?->status);
+
+        $pending2 = $this->makeApprovalRequest('pending');
+        $this->actingAs($this->employee)
+            ->postJson("/api/v1/approvals/{$pending2->id}/reject", ['comment' => 'Nope'])
+            ->assertForbidden();
+
+        $this->assertSame('pending', $pending2->fresh()?->status);
+    }
 }

@@ -164,6 +164,18 @@ class LeopardoClient:
         """Rapports RH cross-tenant (super-admin)"""
         return self.request("GET", "/admin/hr-reports", **kwargs)
 
+    def get_admin_impersonations(self, **kwargs):
+        """Lister les sessions d'impersonation super-admin"""
+        return self.request("GET", "/admin/impersonations", **kwargs)
+
+    def post_admin_impersonations(self, **kwargs):
+        """Creer une session d'impersonation (login en tant que)"""
+        return self.request("POST", "/admin/impersonations", **kwargs)
+
+    def delete_admin_impersonations_by_session(self, **kwargs):
+        """Terminer une session d'impersonation"""
+        return self.request("DELETE", "/admin/impersonations/{session}", **kwargs)
+
     def listislamiccalendar(self, **kwargs):
         """Lister les fêtes islamiques d'une année (super-admin)"""
         return self.request("GET", "/admin/islamic-calendar", **kwargs)
@@ -260,6 +272,18 @@ class LeopardoClient:
         """Réinitialiser les tranches nationales d'un pays aux valeurs légales (platform_admin) — issue #1814"""
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
+    def get_admin_training_courses(self, **kwargs):
+        """Formations cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/training/courses", **kwargs)
+
+    def get_admin_training_enrollments(self, **kwargs):
+        """Inscriptions aux formations cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/training/enrollments", **kwargs)
+
+    def get_admin_training_sessions(self, **kwargs):
+        """Sessions de formation cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/training/sessions", **kwargs)
+
     def get_admin_users(self, **kwargs):
         """Lister les utilisateurs plateforme (super-admin) — issue #2269"""
         return self.request("GET", "/admin/users", **kwargs)
@@ -271,6 +295,46 @@ class LeopardoClient:
     def patch_admin_users_by_user(self, **kwargs):
         """Activer/désactiver un utilisateur plateforme (super-admin) — issue #2269"""
         return self.request("PATCH", "/admin/users/{user}", **kwargs)
+
+    def get_admin_webhooks(self, **kwargs):
+        """Endpoints webhook cross-tenant (super-admin)"""
+        return self.request("GET", "/admin/webhooks", **kwargs)
+
+    def post_admin_webhooks(self, **kwargs):
+        """Creer un endpoint webhook"""
+        return self.request("POST", "/admin/webhooks", **kwargs)
+
+    def delete_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Supprimer un endpoint webhook"""
+        return self.request("DELETE", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def get_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Detail d'un endpoint webhook"""
+        return self.request("GET", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def patch_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Mettre a jour partiellement un endpoint webhook"""
+        return self.request("PATCH", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def put_admin_webhooks_by_webhookendpoint(self, **kwargs):
+        """Mettre a jour un endpoint webhook"""
+        return self.request("PUT", "/admin/webhooks/{webhookEndpoint}", **kwargs)
+
+    def get_admin_webhooks_by_webhookendpoint_dead_letters(self, **kwargs):
+        """Livraisons webhook en echec (dead letters)"""
+        return self.request("GET", "/admin/webhooks/{webhookEndpoint}/dead-letters", **kwargs)
+
+    def post_admin_webhooks_by_webhookendpoint_dead_letters_by_delivery_replay(self, **kwargs):
+        """Rejouer une livraison webhook en echec"""
+        return self.request("POST", "/admin/webhooks/{webhookEndpoint}/dead-letters/{delivery}/replay", **kwargs)
+
+    def post_admin_webhooks_by_webhookendpoint_test(self, **kwargs):
+        """Dispatcher un evenement de test sur l'endpoint"""
+        return self.request("POST", "/admin/webhooks/{webhookEndpoint}/test", **kwargs)
+
+    def get_admin_webhooks_events(self, **kwargs):
+        """Evenements webhook disponibles"""
+        return self.request("GET", "/admin/webhooks/events", **kwargs)
 
     def get_ai_analytics_costs(self, **kwargs):
         """Couts IA par periode"""
@@ -303,6 +367,86 @@ class LeopardoClient:
     def get_ai_tools(self, **kwargs):
         """Liste des outils IA disponibles"""
         return self.request("GET", "/ai/tools", **kwargs)
+
+    def get_announcements(self, **kwargs):
+        """Lister les annonces de l'entreprise"""
+        return self.request("GET", "/announcements", **kwargs)
+
+    def post_announcements(self, **kwargs):
+        """Creer une annonce d'entreprise (manager)"""
+        return self.request("POST", "/announcements", **kwargs)
+
+    def delete_announcements_by_announcement(self, **kwargs):
+        """Supprimer une annonce d'entreprise"""
+        return self.request("DELETE", "/announcements/{announcement}", **kwargs)
+
+    def post_announcements_by_announcement_cancel(self, **kwargs):
+        """Annuler une annonce programmee ou publiee (moderation PA2-COMM-011)"""
+        return self.request("POST", "/announcements/{announcement}/cancel", **kwargs)
+
+    def post_announcements_by_announcement_publish(self, **kwargs):
+        """Publier immediatement une annonce (moderation PA2-COMM-011)"""
+        return self.request("POST", "/announcements/{announcement}/publish", **kwargs)
+
+    def get_api_v1_edge(self, **kwargs):
+        """Lister les nœuds edge du tenant"""
+        return self.request("GET", "/api/v1/edge", **kwargs)
+
+    def post_api_v1_edge(self, **kwargs):
+        """Enregistrer un nœud edge"""
+        return self.request("POST", "/api/v1/edge", **kwargs)
+
+    def post_api_v1_edge_node_by_nodeid_heartbeat(self, **kwargs):
+        """Heartbeat d'un nœud edge (machine-to-cloud)"""
+        return self.request("POST", "/api/v1/edge-node/{nodeId}/heartbeat", **kwargs)
+
+    def get_api_v1_edge_node_by_nodeid_pull(self, **kwargs):
+        """Recuperer le delta de synchronisation pour le nœud edge"""
+        return self.request("GET", "/api/v1/edge-node/{nodeId}/pull", **kwargs)
+
+    def post_api_v1_edge_node_by_nodeid_push(self, **kwargs):
+        """Pousser les donnees du nœud edge vers le cloud"""
+        return self.request("POST", "/api/v1/edge-node/{nodeId}/push", **kwargs)
+
+    def post_api_v1_edge_node_validate_license(self, **kwargs):
+        """Valider une licence edge (machine-to-cloud)"""
+        return self.request("POST", "/api/v1/edge-node/validate-license", **kwargs)
+
+    def get_api_v1_edge_by_nodeid(self, **kwargs):
+        """Detail d'un nœud edge du tenant"""
+        return self.request("GET", "/api/v1/edge/{nodeId}", **kwargs)
+
+    def post_api_v1_edge_by_nodeid_license(self, **kwargs):
+        """Emettre une licence pour un nœud edge"""
+        return self.request("POST", "/api/v1/edge/{nodeId}/license", **kwargs)
+
+    def post_api_v1_edge_by_nodeid_sync(self, **kwargs):
+        """Declencher la synchronisation d'un nœud edge"""
+        return self.request("POST", "/api/v1/edge/{nodeId}/sync", **kwargs)
+
+    def get_api_v1_edge_download_docker_compose_yml(self, **kwargs):
+        """docker-compose.yml de reference pour le nœud edge (public)"""
+        return self.request("GET", "/api/v1/edge/download/docker-compose.yml", **kwargs)
+
+    def get_api_v1_edge_download_env_example(self, **kwargs):
+        """Exemple de fichier d'environnement pour le nœud edge (public)"""
+        return self.request("GET", "/api/v1/edge/download/env-example", **kwargs)
+
+    def get_api_v1_edge_health(self, **kwargs):
+        """Healthcheck edge (public, machine-to-cloud)"""
+        return self.request("GET", "/api/v1/edge/health", **kwargs)
+
+    def post_api_v1_edge_heartbeat(self, **kwargs):
+        """Heartbeat machine-to-cloud d'un nœud edge (public)"""
+        return self.request("POST", "/api/v1/edge/heartbeat", **kwargs)
+
+    def get_api_v1_edge_install_sh(self, **kwargs):
+        """Script d'installation du nœud edge (public)"""
+        return self.request("GET", "/api/v1/edge/install.sh", **kwargs)
+
+    def get_api_v1_edge_license_public_key(self, **kwargs):
+        """Cle publique de verification des licences edge (public)"""
+        return self.request("GET", "/api/v1/edge/license-public-key", **kwargs)
 
     def get_approval_workflows(self, **kwargs):
         """Lister les workflows d'approbation"""
@@ -412,6 +556,10 @@ class LeopardoClient:
         """Changer le mot de passe"""
         return self.request("POST", "/auth/change-password", **kwargs)
 
+    def post_auth_forgot_password(self, **kwargs):
+        """Demander un lien de reinitialisation de mot de passe"""
+        return self.request("POST", "/auth/forgot-password", **kwargs)
+
     def post_auth_google_token(self, **kwargs):
         """Connexion Google OAuth"""
         return self.request("POST", "/auth/google/token", **kwargs)
@@ -443,6 +591,10 @@ class LeopardoClient:
     def post_auth_register(self, **kwargs):
         """Inscription employe"""
         return self.request("POST", "/auth/register", **kwargs)
+
+    def post_auth_reset_password(self, **kwargs):
+        """Reinitialiser le mot de passe avec le jeton recu par email"""
+        return self.request("POST", "/auth/reset-password", **kwargs)
 
     def get_bank_exports(self, **kwargs):
         """Lister les exports bancaires du tenant (pagine)"""
@@ -555,6 +707,10 @@ class LeopardoClient:
     def put_cabinet_folders_by_cabinetfolder(self, **kwargs):
         """Modifier un dossier"""
         return self.request("PUT", "/cabinet/folders/{cabinetFolder}", **kwargs)
+
+    def get_cabinet_stats(self, **kwargs):
+        """Statistiques de stockage du placard de l'employe courant"""
+        return self.request("GET", "/cabinet/stats", **kwargs)
 
     def get_cameras(self, **kwargs):
         """Lister les cameras"""
@@ -696,6 +852,26 @@ class LeopardoClient:
         """Contrats expirant bientot"""
         return self.request("GET", "/contracts/expiring", **kwargs)
 
+    def get_conversations(self, **kwargs):
+        """Lister les conversations de l'employe courant"""
+        return self.request("GET", "/conversations", **kwargs)
+
+    def post_conversations(self, **kwargs):
+        """Ouvrir une conversation (fil de discussion)"""
+        return self.request("POST", "/conversations", **kwargs)
+
+    def get_conversations_by_thread(self, **kwargs):
+        """Detail d'une conversation avec ses messages"""
+        return self.request("GET", "/conversations/{thread}", **kwargs)
+
+    def post_conversations_by_thread_messages(self, **kwargs):
+        """Repondre dans une conversation"""
+        return self.request("POST", "/conversations/{thread}/messages", **kwargs)
+
+    def get_conversations_by_thread_messages_by_message_attachment(self, **kwargs):
+        """Telecharger la piece jointe d'un message de conversation"""
+        return self.request("GET", "/conversations/{thread}/messages/{message}/attachment", **kwargs)
+
     def simulatecotisations(self, **kwargs):
         """Simuler les cotisations sociales employe/employeur et l'impot sur le revenu pour un salaire brut donne, sans persister (manager)"""
         return self.request("POST", "/cotisation-simulation", **kwargs)
@@ -719,6 +895,10 @@ class LeopardoClient:
     def get_demo_users(self, **kwargs):
         """Comptes demo publics pour la documentation QA"""
         return self.request("GET", "/demo-users", **kwargs)
+
+    def get_departments_by_department_hierarchy(self, **kwargs):
+        """Organigramme d'un departement (arbre department/teams/managers/employees, scope tenant)"""
+        return self.request("GET", "/departments/{department}/hierarchy", **kwargs)
 
     def delete_device_tokens(self, **kwargs):
         """Supprimer le token FCM du device courant au logout"""
@@ -840,13 +1020,13 @@ class LeopardoClient:
         """Approuver une note de frais"""
         return self.request("PUT", "/expense-claims/{expenseClaim}/approve", **kwargs)
 
-    def post_expense_claims_by_expenseclaim_reject(self, **kwargs):
+    def put_expense_claims_by_expenseclaim_reject(self, **kwargs):
         """Rejeter une note de frais"""
-        return self.request("POST", "/expense-claims/{expenseClaim}/reject", **kwargs)
+        return self.request("PUT", "/expense-claims/{expenseClaim}/reject", **kwargs)
 
-    def post_expense_claims_by_expenseclaim_submit(self, **kwargs):
+    def put_expense_claims_by_expenseclaim_submit(self, **kwargs):
         """Soumettre une note de frais"""
-        return self.request("POST", "/expense-claims/{expenseClaim}/submit", **kwargs)
+        return self.request("PUT", "/expense-claims/{expenseClaim}/submit", **kwargs)
 
     def get_export_absences(self, **kwargs):
         """Exporter les absences"""
@@ -1236,13 +1416,13 @@ class LeopardoClient:
         """Supprimer une notification"""
         return self.request("DELETE", "/notifications/{notification}", **kwargs)
 
-    def put_notifications_by_notification_read(self, **kwargs):
+    def patch_notifications_by_notification_read(self, **kwargs):
         """Marquer une notification comme lue"""
-        return self.request("PUT", "/notifications/{notification}/read", **kwargs)
+        return self.request("PATCH", "/notifications/{notification}/read", **kwargs)
 
-    def put_notifications_read_all(self, **kwargs):
+    def post_notifications_read_all(self, **kwargs):
         """Marquer toutes les notifications comme lues"""
-        return self.request("PUT", "/notifications/read-all", **kwargs)
+        return self.request("POST", "/notifications/read-all", **kwargs)
 
     def patch_onboarding_setup_by_stepkey_complete(self, **kwargs):
         """Marquer une étape comme complète"""
@@ -1259,6 +1439,10 @@ class LeopardoClient:
     def get_onboarding_setup_progress(self, **kwargs):
         """Progression globale de l'onboarding"""
         return self.request("GET", "/onboarding-setup/progress", **kwargs)
+
+    def get_onboarding_steps(self, **kwargs):
+        """Checklist d'onboarding (alias /onboarding-setup/checklist)"""
+        return self.request("GET", "/onboarding/steps", **kwargs)
 
     def get_org_chart(self, **kwargs):
         """Organigramme complet"""
@@ -1464,6 +1648,22 @@ class LeopardoClient:
         """Optimisation hebdomadaire du planning (suggestions)"""
         return self.request("GET", "/planning/weekly-optimization", **kwargs)
 
+    def get_platform_announcements(self, **kwargs):
+        """Lister les annonces plateforme (super-admin)"""
+        return self.request("GET", "/platform/announcements", **kwargs)
+
+    def post_platform_announcements(self, **kwargs):
+        """Creer une annonce plateforme (maintenance, feature, incident, action requise)"""
+        return self.request("POST", "/platform/announcements", **kwargs)
+
+    def delete_platform_announcements_by_announcement(self, **kwargs):
+        """Supprimer une annonce plateforme"""
+        return self.request("DELETE", "/platform/announcements/{announcement}", **kwargs)
+
+    def get_platform_announcements_by_announcement(self, **kwargs):
+        """Detail d'une annonce plateforme"""
+        return self.request("GET", "/platform/announcements/{announcement}", **kwargs)
+
     def post_platform_auth_login(self, **kwargs):
         """Connexion super-admin"""
         return self.request("POST", "/platform/auth/login", **kwargs)
@@ -1528,6 +1728,10 @@ class LeopardoClient:
         """Lister les pays supportes et leurs defaults"""
         return self.request("GET", "/platform/country-defaults", **kwargs)
 
+    def get_platform_crm_pipeline(self, **kwargs):
+        """Pipeline CRM des demandes clients (leads, essais, actifs, rejetes)"""
+        return self.request("GET", "/platform/crm/pipeline", **kwargs)
+
     def get_platform_edge_nodes(self, **kwargs):
         """Lister les nœuds edge de la plateforme (super-admin)"""
         return self.request("GET", "/platform/edge/nodes", **kwargs)
@@ -1564,13 +1768,49 @@ class LeopardoClient:
         """Mettre à jour le statut d'un payout partenaire (super-admin)"""
         return self.request("PATCH", "/platform/growth/payouts/{payout}", **kwargs)
 
+    def get_platform_impersonations(self, **kwargs):
+        """Lister les sessions d'impersonation (super-admin)"""
+        return self.request("GET", "/platform/impersonations", **kwargs)
+
+    def post_platform_impersonations(self, **kwargs):
+        """Creer une session d'impersonation (login en tant que)"""
+        return self.request("POST", "/platform/impersonations", **kwargs)
+
+    def delete_platform_impersonations_by_session(self, **kwargs):
+        """Terminer une session d'impersonation"""
+        return self.request("DELETE", "/platform/impersonations/{session}", **kwargs)
+
     def get_platform_metrics_overview(self, **kwargs):
         """Agregats business du cockpit super-admin"""
         return self.request("GET", "/platform/metrics/overview", **kwargs)
 
+    def get_platform_observability_notifications(self, **kwargs):
+        """Taux d'echec de notifications cross-tenant sur 24h (super-admin)"""
+        return self.request("GET", "/platform/observability/notifications", **kwargs)
+
+    def get_platform_observability_queues(self, **kwargs):
+        """Profondeur des queues Redis et jobs echoues (super-admin)"""
+        return self.request("GET", "/platform/observability/queues", **kwargs)
+
     def get_platform_plans(self, **kwargs):
         """Lister le catalogue des plans SaaS"""
         return self.request("GET", "/platform/plans", **kwargs)
+
+    def get_platform_support_tickets(self, **kwargs):
+        """Lister tous les tickets de support (super-admin, cross-tenant)"""
+        return self.request("GET", "/platform/support-tickets", **kwargs)
+
+    def get_platform_support_tickets_by_supportticket(self, **kwargs):
+        """Detail d'un ticket de support (super-admin)"""
+        return self.request("GET", "/platform/support-tickets/{supportTicket}", **kwargs)
+
+    def post_platform_support_tickets_by_supportticket_reply(self, **kwargs):
+        """Repondre a un ticket (super-admin)"""
+        return self.request("POST", "/platform/support-tickets/{supportTicket}/reply", **kwargs)
+
+    def patch_platform_support_tickets_by_supportticket_triage(self, **kwargs):
+        """Trier un ticket (statut, priorite, assignation)"""
+        return self.request("PATCH", "/platform/support-tickets/{supportTicket}/triage", **kwargs)
 
     def get_platform_users(self, **kwargs):
         """Lister les utilisateurs plateforme (super-admins)"""
@@ -1968,6 +2208,22 @@ class LeopardoClient:
         """Statut SSO de l'entreprise"""
         return self.request("GET", "/sso/status", **kwargs)
 
+    def get_support_tickets(self, **kwargs):
+        """Lister les tickets de support ouverts par le tenant"""
+        return self.request("GET", "/support-tickets", **kwargs)
+
+    def post_support_tickets(self, **kwargs):
+        """Ouvrir un ticket de support (employe/manager)"""
+        return self.request("POST", "/support-tickets", **kwargs)
+
+    def get_support_tickets_by_supportticket(self, **kwargs):
+        """Detail d'un ticket de support (tenant)"""
+        return self.request("GET", "/support-tickets/{supportTicket}", **kwargs)
+
+    def post_support_tickets_by_supportticket_reply(self, **kwargs):
+        """Repondre a un ticket de support (tenant)"""
+        return self.request("POST", "/support-tickets/{supportTicket}/reply", **kwargs)
+
     def listsupportedcountries(self, **kwargs):
         """Registre des pays supportes"""
         return self.request("GET", "/supported-countries", **kwargs)
@@ -2089,10 +2345,6 @@ class LeopardoClient:
         return self.request("POST", "/trial/signup", **kwargs)
 
     def get_trial_status(self, **kwargs):
-        """Statut de provisioning du guided trial"""
-        return self.request("GET", "/trial/status", **kwargs)
-
-    def get_trial_status_2(self, **kwargs):
         """Statut du provisioning d'un essai guidé (polling)"""
         return self.request("GET", "/trial/status", **kwargs)
 

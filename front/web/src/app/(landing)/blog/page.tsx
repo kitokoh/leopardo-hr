@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Navbar,
   HeroSection,
@@ -167,22 +168,28 @@ const blogCopy: Record<AppLocale, {
 };
 
 export default function BlogPage() {
+  const searchParams = useSearchParams();
   const [isDark, setIsDark] = useState(false);
   const { locale, direction } = useVitrineLocale();
   const copy = blogCopy[locale] ?? blogCopy.fr;
   const posts = getBlogPosts(locale);
   useScrollReveal();
 
-  const blogCards = posts.map((post) => ({
-    slug: post.slug,
-    title: post.title,
-    excerpt: post.excerpt,
-    image: post.image,
-    date: post.date,
-    author: post.author,
-    category: post.category,
-    readingTime: post.readingTime,
-  }));
+  const blogCards = [...posts]
+    // #3263 : les posts archivés (2023-2024) ne doivent pas passer pour du
+    // contenu frais — ils sont triés en fin de liste et badgeés « Archivé ».
+    .sort((a, b) => Number(Boolean(a.archived)) - Number(Boolean(b.archived)))
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      image: post.image,
+      date: post.date,
+      author: post.author,
+      category: post.category,
+      readingTime: post.readingTime,
+      archived: post.archived,
+    }));
 
   const categories = Array.from(new Set(posts.map((post) => post.category)));
 
@@ -201,6 +208,7 @@ export default function BlogPage() {
         title={copy.grid.title}
         subtitle={copy.grid.subtitle}
         posts={blogCards}
+        initialCategory={searchParams.get('category')}
         categories={categories}
         itemsPerPage={9}
         showPagination
