@@ -146,7 +146,58 @@
       v-if="showDetailModal"
       :user="selectedUser"
       @close="showDetailModal = false"
+      @impersonate="openImpersonate"
     />
+
+    <!-- Impersonation modal (PA2-ADM-006, issue #2518) -->
+    <div v-if="showImpersonateModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4">
+      <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+          {{ t('users.impersonation.title', 'Impersonner un employé') }}
+        </h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {{ t('users.impersonation.subtitle', 'Ouvrir une session au nom de :name').replace(':name', impersonation?.name || '') }}
+        </p>
+
+        <div v-if="!impersonationResult" class="mt-4 space-y-3">
+          <div v-if="impersonation?.company" class="rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800">
+            <p class="font-semibold text-gray-800 dark:text-slate-200">{{ impersonation.company.name || '—' }}</p>
+            <p class="text-xs text-gray-500 dark:text-slate-400">
+              {{ t('users.impersonation.employee', 'Employé #:id').replace(':id', impersonation.company.employee_id) }}
+            </p>
+          </div>
+          <textarea
+            v-model="impersonateReason"
+            rows="3"
+            class="w-full rounded-xl border border-slate-300 p-3 text-sm dark:border-slate-700 dark:bg-slate-800"
+            :placeholder="t('users.impersonation.reason', 'Motif (obligatoire, 5 caractères minimum)')"
+          ></textarea>
+          <p v-if="impersonateError" class="text-sm font-medium text-red-600 dark:text-red-400">{{ impersonateError }}</p>
+          <div class="flex justify-end gap-2">
+            <button class="btn-secondary" @click="closeImpersonate">{{ t('users.impersonation.cancel', 'Annuler') }}</button>
+            <button class="btn-primary" :disabled="impersonateBusy" @click="submitImpersonation">
+              {{ impersonateBusy ? '…' : t('users.impersonation.start', 'Créer la session') }}
+            </button>
+          </div>
+        </div>
+
+        <div v-else class="mt-4 space-y-3">
+          <div class="rounded-xl bg-emerald-50 p-3 dark:bg-emerald-950/30">
+            <p class="text-sm font-bold text-emerald-800 dark:text-emerald-300">
+              {{ t('users.impersonation.tokenTitle', 'Jeton d’impersonation (usage unique)') }}
+            </p>
+            <code class="mt-2 block break-all rounded-lg bg-white p-2 text-xs dark:bg-slate-900">{{ impersonationResult.token }}</code>
+            <p class="mt-2 text-xs text-emerald-700 dark:text-emerald-400">
+              {{ t('users.impersonation.expires', 'Expire le :date').replace(':date', new Date(impersonationResult.expires_at).toLocaleString()) }}
+            </p>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button class="btn-secondary" @click="copyImpersonationToken">{{ t('users.impersonation.copy', 'Copier le jeton') }}</button>
+            <button class="btn-primary" @click="closeImpersonate">{{ t('users.impersonation.done', 'Terminé') }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -331,9 +382,82 @@ async function bulkAction(action) {
   }
 }
 
-function viewUser(user) {
+async function viewUser(user) {
+  // #2518 : le détail est rechargé depuis /admin/users/{id} — seule source du
+  // lien employé (company.employee_id) nécessaire à l'impersonation (#2519).
   selectedUser.value = user
   showDetailModal.value = true
+  try {
+    const res = await api.get(`/admin/users/${user.id}`)
+    const detail = res.data?.data ?? null
+    if (detail) {
+      selectedUser.value = {
+        ...user,
+        ...detail,
+        company: detail.company ?? user.company ?? null,
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to load impersonation link for user', user.id, error)
+  }
+}
+
+// #2518 — Impersonation PA2-ADM-006 : POST /admin/impersonations avec motif.
+const impersonation = ref(null)
+const showImpersonateModal = ref(false)
+const impersonateReason = ref('')
+const impersonateBusy = ref(false)
+const impersonateError = ref('')
+const impersonationResult = ref(null)
+
+function openImpersonate(user) {
+  impersonation.value = user
+  impersonateReason.value = ''
+  impersonateError.value = ''
+  impersonationResult.value = null
+  showImpersonateModal.value = true
+}
+
+async function submitImpersonation() {
+  const user = impersonation.value
+  const company = user?.company
+  if (!company?.id || !company?.employee_id) {
+    impersonateError.value = t('users.impersonation.noLink', 'Aucun employé lié à ce compte — impersonation impossible.')
+    return
+  }
+  if (impersonateReason.value.trim().length < 5) {
+    impersonateError.value = t('users.impersonation.reasonMin', 'Motif obligatoire (5 caractères minimum).')
+    return
+  }
+  impersonateBusy.value = true
+  impersonateError.value = ''
+  try {
+    const res = await api.post('/admin/impersonations', {
+      company_id: company.id,
+      employee_id: company.employee_id,
+      reason: impersonateReason.value.trim(),
+    })
+    impersonationResult.value = res.data
+    toast.success(t('users.impersonation.created', 'Session d’impersonation créée'))
+  } catch (error) {
+    impersonateError.value = error.response?.data?.message
+      || t('users.impersonation.error', "Erreur lors de la création de la session d'impersonation")
+  } finally {
+    impersonateBusy.value = false
+  }
+}
+
+function copyImpersonationToken() {
+  if (!impersonationResult.value?.token) return
+  navigator.clipboard?.writeText(impersonationResult.value.token)
+    .then(() => toast.success(t('users.impersonation.copied', 'Jeton copié')))
+    .catch(() => toast.info(impersonationResult.value.token))
+}
+
+function closeImpersonate() {
+  showImpersonateModal.value = false
+  impersonation.value = null
+  impersonationResult.value = null
 }
 
 async function deleteUser(user) {
@@ -352,49 +476,6 @@ async function deleteUser(user) {
 
 // Génère un mot de passe temporaire sûr (16 caractères) pour la création
 // d'un utilisateur plateforme (exigence API : ≥ 12 caractères).
-function generateTemporaryPassword() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*'
-  const bytes = new Uint32Array(16)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes, b => chars[b % chars.length]).join('')
-}
-
-async function handleUserCreated(user) {
-  try {
-    // QA #2238 : création réelle via l'API /platform/users (mot de passe ≥ 12
-    // caractères requis côté API — généré ici si la modal a coché l'option).
-    await api.post('/platform/users', {
-      name: user.name,
-      email: user.email,
-      password: user.password || generateTemporaryPassword()
-    })
-    toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
-  } catch (error) {
-    console.error('Create failed:', error)
-    toast.error(t('users.toast.createError', "Erreur lors de la création"))
-    return
-  }
-  showCreateModal.value = false
-  loadUsers()
-}
-
-async function handleUserUpdated(user) {
-  try {
-    // QA #2238 : mise à jour réelle via l'API.
-    const payload = { name: user.name, email: user.email }
-    if (user.password) payload.password = user.password
-    if (user.status) payload.status = user.status
-    await api.patch(`/platform/users/${user.id}`, payload)
-    toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
-  } catch (error) {
-    console.error('Update failed:', error)
-    toast.error(t('users.toast.updateError', 'Erreur lors de la mise à jour'))
-    return
-  }
-  showEditModal.value = false
-  loadUsers()
-}
-
 async function exportUsers() {
   try {
     // Export honnête de la page courante (pas de mock) — CSV côté client.
