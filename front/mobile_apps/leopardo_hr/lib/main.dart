@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'app.dart';
 
 Future<void> main() async {
@@ -18,13 +19,22 @@ Future<void> main() async {
   };
   ErrorWidget.builder = (details) => _StartupRuntimeError(details: details);
 
-  runApp(
-    StartupGate(
-      appName: 'Leopardo RH',
-      initializer: _bootstrap,
-      criticalInitializer: _bootstrapCritical,
-      optionalInitializer: _safeGoogleSignInInitialize,
-      child: const ProviderScope(child: LeopardoApp()),
+  // #2827 : Sentry initialisé comme les autres apps (employee/manager/platform admin),
+  // non bloquant — le premier rendu passe par StartupGate dans appRunner.
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(
+      StartupGate(
+        appName: 'Leopardo RH',
+        initializer: _bootstrap,
+        criticalInitializer: _bootstrapCritical,
+        optionalInitializer: _safeGoogleSignInInitialize,
+        child: const ProviderScope(child: LeopardoApp()),
+      ),
     ),
   );
 }

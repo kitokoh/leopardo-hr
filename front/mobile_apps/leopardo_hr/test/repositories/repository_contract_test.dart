@@ -174,8 +174,8 @@ void main() {
     await OnboardingRepository(client).skipStep(12);
 
     expect(recorder.requests, [
-      'PUT /notifications/read-all',
-      'PUT /notifications/7/read',
+      'POST /notifications/mark-all-read',
+      'PATCH /notifications/7/read',
       'POST /approvals/9/approve',
       'POST /approvals/10/reject',
       'POST /onboarding-setup/11/complete',
