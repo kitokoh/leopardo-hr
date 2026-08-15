@@ -77,9 +77,10 @@ RUN chown -R www-data:www-data storage bootstrap/cache
 COPY front/web-offline/ /app/public/edge-web/
 
 # ---------------------------------------------------------------------------
-# Caddyfile Edge
+# Caddyfile Edge (standalone) — sert PWA + API dans le même conteneur
+# (issue #3592 : Caddyfile.edge proxyait vers edge-ui/edge-api inexistants ici)
 # ---------------------------------------------------------------------------
-COPY edge/Caddyfile.edge /etc/caddy/Caddyfile
+COPY edge/Caddyfile.standalone /etc/caddy/Caddyfile
 
 # ---------------------------------------------------------------------------
 # Entrypoint
