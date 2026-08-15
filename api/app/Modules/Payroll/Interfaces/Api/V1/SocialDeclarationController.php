@@ -9,6 +9,7 @@ use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
@@ -384,6 +385,72 @@ class SocialDeclarationController extends Controller
         $content = $generator->generate($payrollRun);
 
         $filename = sprintf('CNPS_CM_DAS_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEMAC (#2155) — déclaration CNSS mensuelle Gabon (CSV).
+     * 422 si le run n'est pas un run GA.
+     */
+    public function generateCnssGaDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'GA') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Gabon (CNSS GA).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_ga_declaration');
+
+        $generator = new CemacCnpsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNSS_GA_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
+
+        return response()->streamDownload(function () use ($content): void {
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename='.$filename,
+        ]);
+    }
+
+    /**
+     * CEMAC (#2155) — déclaration CNSS mensuelle Congo-Brazzaville (CSV).
+     * 422 si le run n'est pas un run CG.
+     */
+    public function generateCnssCgDeclaration(Request $request, PayrollRun $payrollRun): Response
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($payrollRun->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'comptable')) {
+            abort(403);
+        }
+        if ($payrollRun->country_code !== 'CG') {
+            return response()->json(['message' => 'Ce run ne concerne pas le Congo-Brazzaville (CNSS CG).'], 422);
+        }
+
+        $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_cg_declaration');
+
+        $generator = new CemacCnpsDeclarationGenerator;
+        $content = $generator->generate($payrollRun);
+
+        $filename = sprintf('CNSS_CG_%d_%s.csv', $payrollRun->id, now()->format('Ymd'));
 
         return response()->streamDownload(function () use ($content): void {
             echo $content;
