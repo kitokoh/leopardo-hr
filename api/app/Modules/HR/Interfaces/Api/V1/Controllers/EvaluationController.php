@@ -32,6 +32,7 @@ class EvaluationController extends Controller
         $actor = $request->user();
 
         $query = Evaluation::query()
+            ->where('company_id', $actor->company_id)
             ->select([
                 'id',
                 'company_id',
