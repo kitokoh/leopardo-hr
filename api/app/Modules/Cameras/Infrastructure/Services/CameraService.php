@@ -12,6 +12,7 @@ use App\Modules\Cameras\Domain\CameraAccessLog;
 use App\Modules\Cameras\Domain\CameraAccessToken;
 use App\Modules\Cameras\Infrastructure\Streaming\CameraStreamTokenService;
 use Illuminate\Support\Carbon;
+use App\Rules\NotPrivateUrl;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -385,6 +386,14 @@ class CameraService
         // avant tout accès réseau, y compris après résolution DNS.
         if ($this->isPrivateRtspTarget($rtspUrl)) {
             return ['ok' => false, 'error' => 'invalid_url', 'skipped' => false];
+        }
+
+        // SSRF (issue #3147) : interdire les cibles loopback/privées/réservées
+        // (réutilise la garde fail-closed NotPrivateUrl des webhooks) pour que
+        // le serveur API ne puisse pas sonder le réseau interne via ffprobe.
+        $host = parse_url($rtspUrl, PHP_URL_HOST);
+        if (! is_string($host) || $host === '' || ! NotPrivateUrl::isPublicHost($host)) {
+            return ['ok' => false, 'error' => 'host_not_allowed', 'skipped' => false];
         }
 
         $cmd = sprintf(

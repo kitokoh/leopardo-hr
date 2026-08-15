@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): durcissement sécurité — SSRF test-rtsp fermé + RBAC rh.php en profondeur (Closes #3147, #3150).** `POST /cameras/test-rtsp` rejette desormais les cibles loopback/privées/réservées (`NotPrivateUrl::isPublicHost`, fail-closed) avant tout appel ffprobe — le serveur API ne peut plus sonder le réseau interne. Les routes d'écriture RH (employees store/import, approve/reject correction, update attendance log, payrolls store, departments/positions/sites/schedules store, announcements store, evaluations store) portent desormais `api.manager` en plus des policies existantes (défense en profondeur). Tests `CameraRtspSecurityTest` (loopback/privés/link-local → host_not_allowed).
 - **fix(api): webhook email-bounce — clé de config `services.mail_bounce_webhook.secret` + `.env.example` (Closes #3058).** Le controller exigeait `MAIL_BOUNCE_WEBHOOK_SECRET` sans que la clé existe dans `config/services.php` ni `.env.example` → 503 permanent (fail-closed #2616 rendait la feature inerte). Ajout du bloc de config (défaut vide = rejeté, comportement fail-closed conservé) + entrée `.env.example` documentée. Parité config/.env.example vérifiée (272 clés).
 ### Fixed
 - **fix(docs): matrice RBAC réalignée sur T118 (Closes #3064).** `/onboarding-setup*` documenté comme ouvert à tout employé authentifié du tenant (checklist/progress/complete/skip) conformément au code et à la décision T118 — fin du drift docs↔code.

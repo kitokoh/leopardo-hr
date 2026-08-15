@@ -128,6 +128,10 @@ class ApprovalController extends Controller
         if ($approvalRequest->status !== 'pending') {
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
+        // QA #3146 — la policy enregistrée n'était jamais invoquée : tout employé
+        // authentifié pouvait approuver/rejeter n'importe quelle demande. La policy
+        // exige manager + même société + statut pending.
+        $this->authorize('approve', $approvalRequest);
 
         $validated = $request->validate([
             'comment' => 'nullable|string|max:500',
@@ -168,6 +172,8 @@ class ApprovalController extends Controller
         if ($approvalRequest->status !== 'pending') {
             return response()->json(['message' => 'Request is not pending.'], 422);
         }
+        // QA #3146 — même garde que approve (policy ApprovalRequestPolicy).
+        $this->authorize('reject', $approvalRequest);
 
         $validated = $request->validate([
             'comment' => 'required|string|max:500',
