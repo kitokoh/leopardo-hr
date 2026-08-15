@@ -116,6 +116,10 @@ class LeopardoClient:
         """Rejeter une absence (manager)"""
         return self.request("PUT", "/absences/{absence}/reject", **kwargs)
 
+    def post_admin_ai_chat(self, **kwargs):
+        """Envoyer un message a l'assistant IA (super-admin)"""
+        return self.request("POST", "/admin/ai/chat", **kwargs)
+
     def get_admin_ai_conversations(self, **kwargs):
         """Conversations IA cross-tenant (super-admin)"""
         return self.request("GET", "/admin/ai/conversations", **kwargs)
@@ -828,8 +832,8 @@ class LeopardoClient:
         """Exporter les employes"""
         return self.request("GET", "/export/employees", **kwargs)
 
-    def get_export_history(self, **kwargs):
-        """Historique des exports"""
+    def exporthistory(self, **kwargs):
+        """Historique des exports du portail manager (issue #2199) - manager uniquement"""
         return self.request("GET", "/export/history", **kwargs)
 
     def exportpayslips(self, **kwargs):
@@ -1149,7 +1153,7 @@ class LeopardoClient:
         return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
 
     def get_me_vehicles(self, **kwargs):
-        """Vehicules assignes a l'employe connecte (self-service)"""
+        """Vehicules assignes a l'employe connecte (mobile)"""
         return self.request("GET", "/me/vehicles", **kwargs)
 
     def get_notification_preferences(self, **kwargs):
@@ -1272,9 +1276,17 @@ class LeopardoClient:
         """Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", **kwargs)
 
+    def downloadcnsscgdeclaration(self, **kwargs):
+        """Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", **kwargs)
+
     def downloadcnsscideclaration(self, **kwargs):
         """Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", **kwargs)
+
+    def downloadcnssgadeclaration(self, **kwargs):
+        """Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", **kwargs)
 
     def downloadipressndeclaration(self, **kwargs):
         """Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"""
@@ -1761,20 +1773,12 @@ class LeopardoClient:
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
 
     def get_smart_attendance_mode_settings(self, **kwargs):
-        """Config mode géolocalisation de l'entreprise (manager/RH)"""
+        """Lire la configuration du mode de pointage de l'entreprise"""
         return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
 
     def put_smart_attendance_mode_settings(self, **kwargs):
-        """Mettre à jour la config mode géolocalisation (principal)"""
+        """Mettre à jour la configuration GPS (admin)"""
         return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
-
-    def get_smart_attendance_my_sessions(self, **kwargs):
-        """Sessions GPS de l'employé courant"""
-        return self.request("GET", "/smart-attendance/my-sessions", **kwargs)
-
-    def get_smart_attendance_preferences(self, **kwargs):
-        """Lire les préférences de pointage de l'employé"""
-        return self.request("GET", "/smart-attendance/preferences", **kwargs)
 
     def put_smart_attendance_preferences(self, **kwargs):
         """Mettre à jour les préférences de pointage"""
@@ -1839,6 +1843,10 @@ class LeopardoClient:
     def delete_sso_disable(self, **kwargs):
         """Desactiver le SSO de l'entreprise"""
         return self.request("DELETE", "/sso/disable", **kwargs)
+
+    def get_sso_oidc_by_companyid_authorize(self, **kwargs):
+        """Demarrer le flux OpenID Connect (SP -> IdP)"""
+        return self.request("GET", "/sso/oidc/{companyId}/authorize", **kwargs)
 
     def get_sso_oidc_by_companyid_callback(self, **kwargs):
         """Callback OpenID Connect (IdP -> SP)"""
