@@ -106,6 +106,19 @@ async function fetchJson(url, options = {}) {
   return payload;
 }
 
+// #3586 — le bridge local exige desormais le token de session injecte dans le
+// HTML servi (window.__LOCAL_BRIDGE_TOKEN) via le header X-Local-Bridge-Token.
+// Reserve aux appels `/local/*` : ne jamais l'envoyer vers l'API cloud.
+async function localFetchJson(url, options = {}) {
+  return fetchJson(url, {
+    ...options,
+    headers: {
+      'X-Local-Bridge-Token': window.__LOCAL_BRIDGE_TOKEN || '',
+      ...(options.headers || {}),
+    },
+  });
+}
+
 async function kioskApi(path, options = {}) {
   const apiBaseUrl = (CONFIG.apiBaseUrl || '').replace(/\/$/, '');
   const versionedBaseUrl = apiBaseUrl.endsWith('/api/v1') ? apiBaseUrl : `${apiBaseUrl}/api/v1`;
@@ -166,7 +179,7 @@ function setUnconfiguredState() {
 
 async function findLocalRosterEmployee(identifier) {
   try {
-    const payload = await fetchJson(`${CONFIG.localBridgeUrl}/roster`);
+    const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/roster`);
     const roster = payload.data || [];
     const normalized = identifier.toLowerCase();
     return roster.find((employee) => {
@@ -237,7 +250,7 @@ function renderStatus() {
 
 async function refreshStatus() {
   try {
-    const payload = await fetchJson(`${CONFIG.localBridgeUrl}/status`);
+    const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/status`);
     state.status = payload.data;
     state.lastStatusRefreshAt = new Date().toISOString();
     renderStatus();
@@ -259,7 +272,7 @@ async function retrySync() {
   els.syncRetryBtn.disabled = true;
   setStatus('#statusBox', t('sync.retry.inProgress'));
   try {
-    await fetchJson(`${CONFIG.localBridgeUrl}/sync/all`, { method: 'POST', body: '{}' });
+    await localFetchJson(`${CONFIG.localBridgeUrl}/sync/all`, { method: 'POST', body: '{}' });
     setStatus('#statusBox', t('sync.retry.success'));
   } catch (error) {
     setStatus('#statusBox', t('sync.retry.failed', { error: error.message || t('error.networkUnavailable') }), true);
@@ -294,7 +307,7 @@ async function submitPunch(action) {
   setStatus('#statusBox', t('punch.recognizing', { type: els.biometricType.value, action: actionLabel(action) }));
   try {
     const employee = await findLocalRosterEmployee(identifier);
-    const payload = await fetchJson(`${CONFIG.localBridgeUrl}/punch`, {
+    const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/punch`, {
       method: 'POST',
       body: JSON.stringify({
         identifier,

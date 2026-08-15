@@ -1,0 +1,33 @@
+# Leopardo Edge — Caddy (FrankenPHP standalone, 1 conteneur)
+# Image standalone : edge/Dockerfile (leopardo/edge-api:1.0.0)
+# Sert la PWA offline (front/web-offline → /app/public/edge-web/) ET l'API
+# Laravel Edge dans le même conteneur FrankenPHP.
+# Issue #3592 : l'ancien Caddyfile.edge proxyait vers edge-ui:3000 / edge-api:80
+# (hôtes inexistants ici) → 502 sur tout le trafic, PWA jamais servie.
+
+:80 {
+    root * /app/public
+
+    # API Laravel Edge (FrankenPHP exécute le PHP en process)
+    handle /api/* {
+        php_server
+    }
+
+    # Santé — sonde réelle PHP (route EdgeSync /api/v1/edge/health)
+    handle /health {
+        respond "OK" 200
+    }
+
+    # PWA offline servie en statique (fallback SPA → index.html)
+    handle {
+        root * /app/public/edge-web
+        try_files {path} {path}/ /index.html
+        file_server
+    }
+
+    encode gzip
+    log {
+        output stdout
+        format console
+    }
+}
