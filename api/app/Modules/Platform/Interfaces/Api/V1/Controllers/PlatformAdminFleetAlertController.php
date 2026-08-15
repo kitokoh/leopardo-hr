@@ -7,6 +7,7 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Alertes flotte — vue cross-tenant super-admin (contrat SPA admin,
@@ -61,8 +62,15 @@ class PlatformAdminFleetAlertController extends Controller
                 ->values();
 
             return response()->json(['data' => $alerts]);
-        } catch (\Throwable) {
-            return response()->json(['data' => []]);
+        } catch (\Throwable $exception) {
+            Log::error('admin.fleet.alerts_failed', [
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'error' => 'FLEET_ALERTS_UNAVAILABLE',
+                'message' => 'Impossible de charger les alertes de flotte.',
+            ], 500);
         }
     }
 }

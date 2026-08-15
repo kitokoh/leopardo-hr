@@ -2,12 +2,12 @@ interface JsonLdProps {
   data: Record<string, unknown>;
 }
 
-// Issue #1775 : https://gestionemployer-backend.vercel.app appartient à une entreprise de
-// construction US sans rapport — ne jamais l'utiliser dans les données
-// structurées. On utilise l'URL réelle de la marque (configurable).
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+import { SITE_URL } from '@/lib/site-url';
 
+// Issue #1775 : le domaine Vercel « emprunté » ne doit jamais apparaître dans
+// les données structurées. L'URL de marque est centralisée dans
+// src/lib/site-url.ts (env NEXT_PUBLIC_SITE_URL prioritaire, fallback
+// www.leopardo-rh.com — docs/DEPLOYMENT_PRODUCTION.md).
 export function JsonLd({ data }: JsonLdProps) {
   return (
     <script
@@ -54,7 +54,7 @@ export function ArticleJsonLd({
           name: 'Leopardo RH',
           logo: {
             '@type': 'ImageObject',
-            url: `${SITE_URL}/logo.png`,
+            url: `${SITE_URL}/icon.svg`,
           },
         },
       }}
@@ -77,8 +77,10 @@ export function OrganizationJsonLd() {
         offers: {
           '@type': 'AggregateOffer',
           priceCurrency: 'EUR',
-          lowPrice: '0',
-          highPrice: '99',
+          // #3247 : 3 plans backend (PlanSeeder) — Starter 29€, Business 79€,
+          // Enterprise 199€/mois. Essai gratuit 14 jours non compté comme offre.
+          lowPrice: '29',
+          highPrice: '199',
           offerCount: '3',
         },
         creator: {

@@ -37,7 +37,6 @@ export const config = {
     '/billing/:path*',
     '/contracts/:path*',
     '/employees/:path*',
-    '/edge-nodes/:path*',
     '/partner/:path*',
     '/payroll/:path*',
     '/reports/:path*',

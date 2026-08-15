@@ -1,5 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
@@ -27,7 +28,7 @@ class AuthRepository {
       isLoginRequest: true,
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = _envelope(response.data);
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 
@@ -82,7 +83,7 @@ class AuthRepository {
       timeoutOverride: _actionTimeout,
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = _envelope(response.data);
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 
@@ -116,7 +117,7 @@ class AuthRepository {
       timeoutOverride: _actionTimeout,
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = _envelope(response.data);
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 
@@ -162,8 +163,15 @@ class AuthRepository {
       await _persistEmployeeContext(employee);
       return {'employee': employee};
     } catch (e) {
-      await storage.deleteToken();
-      await preferences.clearLocaleSettings();
+      // Issue #2736 (QA 2026-08-15) — ne supprimer le token que sur un 401
+      // explicite : une erreur réseau/timeout (mode hors-ligne, pointage
+      // offline #1290) ne doit pas détruire la session.
+      final isAuthError = e is ApiException &&
+          (e.statusCode == 401 || e.code == 'UNAUTHENTICATED');
+      if (isAuthError) {
+        await storage.deleteToken();
+        await preferences.clearLocaleSettings();
+      }
       return null;
     }
   }
@@ -227,6 +235,13 @@ class AuthRepository {
     await _persistEmployeeContext(employee);
     return employee;
   }
+
+
+  /// #3406 : lecture d'enveloppe racine sans TypeError sur payload non-Map
+  /// (les réponses d'erreur ne sont pas des maps) — contrairement à
+  /// extractDataMap, on garde la racine (token + data).
+  static Map<String, dynamic> _envelope(dynamic payload) =>
+      payload is Map ? payload.cast<String, dynamic>() : const <String, dynamic>{};
 
   static Map<String, dynamic> extractEmployeeJson(
     Map<String, dynamic> payload,

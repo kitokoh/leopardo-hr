@@ -15,12 +15,18 @@ use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AbsenceService
 {
+    public function __construct(
+        private readonly PublicHolidayService $publicHolidays,
+    ) {
+    }
+
     public function create(Employee $employee, array $data, ?UploadedFile $proof = null): Absence
     {
         $type = AbsenceType::findOrFail($data['absence_type_id']);
@@ -31,41 +37,76 @@ class AbsenceService
 
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
-        $daysCount = $startDate->diffInDays($endDate) + 1;
 
-        if ($type->deducts_leave) {
-            $balance = $this->currentAvailableBalance($employee, (int) $data['absence_type_id'], (int) $startDate->format('Y'));
-            if ($balance < $daysCount) {
-                throw new InsufficientLeaveBalanceException($balance, $daysCount);
+        // Issue #2671 (T010) : days_count = JOURS OUVRÉS (week-ends et fériés
+        // du pays de l'entreprise exclus) au lieu des jours calendaires — un
+        // congé vendredi→lundi consommait 4 jours. Convention documentée :
+        // la déduction de solde et l'indemnité portent sur les jours ouvrés
+        // (calendrier entreprise via PublicHolidayService, fallback week-ends
+        // seuls quand le pays est inconnu ou qu'aucun férié n'est configuré).
+        $countryCode = $employee->company->country ?? null;
+        $daysCount = $this->publicHolidays->workingDaysBetween(
+            $startDate,
+            $endDate,
+            (string) ($countryCode ?? ''),
+            null,
+            $employee->company_id !== null ? (string) $employee->company_id : null,
+        );
+
+        // Issue #2676 (QA 2026-08-15) — la garde de solde était en
+        // check-then-insert sans verrou : deux demandes simultanées pouvaient
+        // toutes deux passer la garde et sur-réserver le solde. La vérification
+        // se fait désormais dans une transaction avec verrouillage de la ligne
+        // snapshot (même pattern que approve(), #2666).
+        return DB::transaction(function () use ($employee, $data, $proof, $type, $startDate, $daysCount): Absence {
+            if ($type->deducts_leave) {
+                $year = (int) $startDate->format('Y');
+                $typeId = (int) $data['absence_type_id'];
+
+                $snapshot = LeaveBalance::query()
+                    ->where('company_id', $employee->company_id)
+                    ->where('employee_id', $employee->id)
+                    ->where('absence_type_id', $typeId)
+                    ->where('year', $year)
+                    ->lockForUpdate()
+                    ->first();
+
+                $balance = $snapshot !== null
+                    ? (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending
+                    : $this->currentAvailableBalance($employee, $typeId, $year);
+
+                if ($balance < $daysCount) {
+                    throw new InsufficientLeaveBalanceException($balance, $daysCount);
+                }
             }
-        }
 
-        if ($this->hasDateConflict($employee, $data['start_date'], $data['end_date'])) {
-            throw new AbsenceDateConflictException;
-        }
+            if ($this->hasDateConflict($employee, $data['start_date'], $data['end_date'])) {
+                throw new AbsenceDateConflictException;
+            }
 
-        // PA2-MOB-006: persist the optional supporting document (medical
-        // note, justification letter, etc.) under a company-scoped path so
-        // it is visible to both the employee and the deciding manager.
-        $proofPath = $proof?->store('absences/proofs/'.$employee->company_id, 'local');
+            // PA2-MOB-006: persist the optional supporting document (medical
+            // note, justification letter, etc.) under a company-scoped path so
+            // it is visible to both the employee and the deciding manager.
+            $proofPath = $proof?->store('absences/proofs/'.$employee->company_id, 'local');
 
-        $absence = Absence::create([
-            'company_id' => $employee->company_id,
-            'employee_id' => $employee->id,
-            'absence_type_id' => (int) $data['absence_type_id'],
-            'start_date' => $data['start_date'],
-            'end_date' => $data['end_date'],
-            'days_count' => $daysCount,
-            'status' => 'pending',
-            'reason' => $data['reason'] ?? null,
-            'proof_path' => $proofPath,
-        ]);
+            $absence = Absence::create([
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'absence_type_id' => (int) $data['absence_type_id'],
+                'start_date' => $data['start_date'],
+                'end_date' => $data['end_date'],
+                'days_count' => $daysCount,
+                'status' => 'pending',
+                'reason' => $data['reason'] ?? null,
+                'proof_path' => $proofPath,
+            ]);
 
-        AbsenceRequested::dispatch($absence);
+            AbsenceRequested::dispatch($absence);
 
-        $this->syncLeaveBalanceSnapshot($absence, 'pending_add');
+            $this->syncLeaveBalanceSnapshot($absence, 'pending_add');
 
-        return $absence;
+            return $absence;
+        });
     }
 
     public function approve(Absence $absence, Employee $approver): Absence

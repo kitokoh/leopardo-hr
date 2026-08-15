@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Domain\Models;
 
+use App\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
+ * @property string|null $company_id
  * @property int $employee_id
+ * @property int|string|null $company_id
  * @property string $provider
  * @property string|null $access_token
  * @property string|null $refresh_token
@@ -23,7 +26,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CalendarConnection extends Model
 {
+    use BelongsToCompany;
     protected $fillable = [
+        'company_id',
         'employee_id',
         'provider',
         'access_token',

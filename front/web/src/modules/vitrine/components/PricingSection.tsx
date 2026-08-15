@@ -12,20 +12,20 @@ function showsCurrency(price: string) {
 }
 
 function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
-  if (!showsCurrency(price)) return '/contact?type=enterprise'
   const billing = isAnnual ? 'annual' : 'monthly'
-  // Map plan name to plan key
-  const planKey = (planName ?? '').toLowerCase().includes('operations') ? 'business'
-    : (planName ?? '').toLowerCase().includes('scale') ? 'enterprise'
-    : 'starter'
-  return `/checkout?plan=${planKey}&billing=${billing}`
+  // #3247 : clés canoniques du checkout = plans backend starter/business/enterprise.
+  // Starter → essai guidé sans carte (/signup) ; Business/Enterprise → checkout.
+  const name = (planName ?? '').toLowerCase()
+  if (name.includes('starter')) return `/signup?source=home_starter`
+  if (name.includes('enterprise')) return `/checkout?plan=enterprise&billing=${billing}`
+  return `/checkout?plan=business&billing=${billing}`
 }
 
 const savingsLabel: Record<string, string> = {
-  fr: 'Economisez 20%',
-  en: 'Save 20%',
-  tr: '%20 tasarruf',
-  ar: 'وفّر 20%',
+  fr: 'Economisez 17%',
+  en: 'Save 17%',
+  tr: '%17 tasarruf',
+  ar: 'وفّر 17%',
 }
 
 const billingToggle: Record<string, { monthly: string; annual: string }> = {

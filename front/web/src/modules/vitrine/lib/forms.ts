@@ -37,6 +37,21 @@ function getSearchMetadata(): Record<string, string> {
 }
 
 /**
+ * #2823 — la source d'acquisition de l'URL (ex. `source=download_employee_android`
+ * posée par /download et les guides) doit être propagée au lead, pas écrasée par
+ * un défaut codé en dur.
+ */
+export function getLeadSource(): string {
+  if (typeof window === "undefined") {
+    return "signup_form";
+  }
+
+  const source = new URLSearchParams(window.location.search).get("source");
+
+  return source && source.trim().length > 0 ? source.trim() : "signup_form";
+}
+
+/**
  * Form submission handlers
  */
 
@@ -79,7 +94,7 @@ export async function submitSignupForm(
         ...sanitizedData,
         ...getSearchMetadata(),
         locale: getBrowserLocale(),
-        source: "signup_form",
+        source: getLeadSource(),
         page,
         timestamp: new Date().toISOString(),
         requestedWorkflow: "guided_trial",

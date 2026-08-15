@@ -6,15 +6,16 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
-use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
 use App\Core\Auth\Interfaces\Requests\LoginRequest;
 use App\Core\Auth\Interfaces\Requests\StoreRegistrationRequest;
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
+use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
@@ -57,7 +58,13 @@ class AuthController extends Controller
 
     public function register(StoreRegistrationRequest $request): JsonResponse
     {
-        $result = $this->registerAction->execute($request->validated());
+        // #2617 (main) : inscription réservée aux invitations valides — le
+        // RegisterAction refuse sans invitation_token et rattache l'employé au
+        // company_id de l'invitation (plus d'employé orphelin, #2636).
+        /** @var array{first_name: string, last_name: string, email: string, password: string, invitation_token?: string|null, device_name?: string} $validated */
+        $validated = $request->validated();
+
+        $result = $this->registerAction->execute($validated);
 
         return (new EmployeeResource($result['employee']))
             ->additional([
@@ -157,11 +164,28 @@ class AuthController extends Controller
 
     public function redirectToGoogle(): mixed
     {
-        return Socialite::driver('google')->stateless()->redirect();
+        // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
+        // au callback. Plus de Socialite stateless sans protection.
+        $state = \Illuminate\Support\Str::random(40);
+        session(['google_oauth_state' => $state]);
+
+        /** @var \Laravel\Socialite\Two\GoogleProvider $google */
+        $google = Socialite::driver('google');
+
+        return $google->with(['state' => $state])->redirect();
     }
 
-    public function handleGoogleCallback(): JsonResponse
+    public function handleGoogleCallback(Request $request): JsonResponse
     {
+        // Issue #2619 : validation du state — callback sans state ou avec un
+        // state inconnu → 400 (pas de login).
+        $expected = session('google_oauth_state');
+        $provided = $request->query('state');
+        if (! is_string($expected) || ! is_string($provided) || ! hash_equals($expected, $provided)) {
+            return new JsonResponse(['error' => 'INVALID_OAUTH_STATE'], 400);
+        }
+        session()->forget('google_oauth_state');
+
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
@@ -181,6 +205,18 @@ class AuthController extends Controller
                 'role' => 'ordinary',
                 'status' => 'active',
             ]);
+        }
+
+        // Sécurité #2630 : un employé suspendu (ou société suspendue/expirée)
+        // ne peut pas s'authentifier, y compris via Google.
+        if ($employee->status !== 'active') {
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
         }
 
         $token = $employee->createToken('google-auth');
@@ -212,6 +248,17 @@ class AuthController extends Controller
 
         if (! $employee) {
             return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
+        }
+
+        // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).
+        if ($employee->status !== 'active') {
+            throw new AccountSuspendedException;
+        }
+        if ($employee->company_id) {
+            $company = $employee->company;
+            if ($company && in_array($company->status, ['suspended', 'expired'], true)) {
+                throw new AccountSuspendedException;
+            }
         }
 
         $tokenName = $validated['device_name'] ?? 'google-mobile';

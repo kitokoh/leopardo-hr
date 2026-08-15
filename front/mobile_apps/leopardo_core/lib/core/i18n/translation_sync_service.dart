@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/i18n/translation_catalog_cache.dart';
 
@@ -52,9 +53,9 @@ class TranslationSyncService {
         ),
       );
 
-      final data = (response.data as Map).cast<String, dynamic>();
-      final payload = (data['data'] as Map).cast<String, dynamic>();
-      final catalog = (payload['catalog'] as Map).cast<String, dynamic>();
+      // #3406 : helper partagé extractDataMap (unwrap `data` + garde TypeError).
+      final payload = extractDataMap(response.data);
+      final catalog = (payload['catalog'] as Map?)?.cast<String, dynamic>() ?? const <String, dynamic>{};
       final checksum = payload['checksum']?.toString() ?? '';
       final version = payload['version']?.toString() ?? '1.0.0';
       final updatedAt = payload['updated_at']?.toString() ?? '';

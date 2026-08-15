@@ -16,7 +16,7 @@ class WebhookRoutesUniquenessTest extends TestCase
 {
     public function test_webhook_test_route_is_declared_once(): void
     {
-        $routes = collect(app('router')->getRoutes())
+        $routes = collect(app('router')->getRoutes()->getRoutes())
             ->filter(fn ($route) => $route->uri() === 'api/v1/webhooks/{webhookEndpoint}/test')
             ->filter(fn ($route) => in_array('POST', $route->methods(), true));
 
@@ -37,7 +37,7 @@ class WebhookRoutesUniquenessTest extends TestCase
         ];
 
         foreach ($pairs as [$uri, $method]) {
-            $count = collect(app('router')->getRoutes())
+            $count = collect(app('router')->getRoutes()->getRoutes())
                 ->filter(fn ($route) => $route->uri() === $uri)
                 ->filter(fn ($route) => in_array($method, $route->methods(), true))
                 ->count();

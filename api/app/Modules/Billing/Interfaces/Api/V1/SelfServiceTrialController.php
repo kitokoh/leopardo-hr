@@ -11,7 +11,9 @@ use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -94,10 +96,26 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $this->requestTrialSignup->execute($validated);
+        $otpSent = $this->requestTrialSignup->execute($validated);
+
+        if ($otpSent === false) {
+            // #3057 : le lead est capturé mais aucun code n'a pu partir —
+            // réponse honnête (provisioned=false → l'UI affiche l'état
+            // « demande reçue, contact sous 24 h » au lieu d'un écran OTP).
+            return new JsonResponse([
+                'success' => true,
+                'provisioned' => false,
+                'message' => 'Votre demande a bien été enregistrée. Notre équipe vous contacte sous 24 h ouvrables.',
+                'data' => [
+                    'email' => $email,
+                    'status' => 'pending_fallback',
+                ],
+            ], 200);
+        }
 
         return new JsonResponse([
             'success' => true,
+            'provisioned' => true,
             'message' => 'Code de vérification envoyé.',
             'data' => [
                 'email' => $email,
@@ -132,11 +150,17 @@ class SelfServiceTrialController extends Controller
             ], 404);
         }
 
+        // #2903 : provisioned_at est stocké en string (insert DB::table) —
+        // ne JAMAIS appeler ->toIso8601String() sur une string (500).
+        $provisionedAt = $row->provisioned_at
+            ? Carbon::parse($row->provisioned_at)->toIso8601String()
+            : null;
+
         $payload = [
             'success' => true,
             'data' => [
                 'status' => $row->status,
-                'provisioned_at' => $row->provisioned_at?->toIso8601String(),
+                'provisioned_at' => $provisionedAt,
             ],
         ];
 
@@ -166,7 +190,25 @@ class SelfServiceTrialController extends Controller
 
         $email = strtolower(trim($validated['email']));
 
-        $result = $this->verifyTrialSignup->execute($email, $validated['code']);
+        // Issue #2903 : le parcours d'essai guidé ne doit JAMAIS exposer un
+        // 500 brut « Server Error » (c'était le cas en prod v4.23.5 sur le
+        // verify) : toute exception inattendue du provisioning est convertie
+        // en réponse structurée réessayable.
+        try {
+            $result = $this->verifyTrialSignup->execute($email, $validated['code']);
+        } catch (\Throwable $e) {
+            Log::channel('structured')->error('trial.verify.unexpected', [
+                'email' => $email,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'TRIAL_VERIFY_UNAVAILABLE',
+                'message' => 'La vérification de votre demande est temporairement indisponible. Réessayez dans quelques instants.',
+            ], 503);
+        }
 
         if ($result['success'] === false) {
             return new JsonResponse([
@@ -189,11 +231,12 @@ class SelfServiceTrialController extends Controller
                     'email' => $result['manager_email'],
                     'first_name' => $result['first_name'],
                     'last_name' => $result['last_name'],
-                    'temp_password' => $result['temp_password'],
                 ],
                 'trial' => [
-                    'days' => 30,
-                    'ends_at' => now()->addDays(30)->toIso8601String(),
+                    // Durée canonique 14 jours (décision propriétaire D-E4-01, 594c68f2) :
+                    // la réponse doit refléter le provisioning réel (#3012) et la vitrine (#2944/#3135).
+                    'days' => (int) config('billing.trial_days'),
+                    'ends_at' => now()->addDays((int) config('billing.trial_days'))->toIso8601String(),
                 ],
                 'next_steps' => [
                     'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',

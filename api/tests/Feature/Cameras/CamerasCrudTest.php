@@ -217,4 +217,39 @@ class CamerasCrudTest extends TestCase
             ->patchJson('/api/v1/cameras/'.$cam->id, ['name' => 'Renamed'])
             ->assertStatus(403);
     }
+
+    public function test_store_permission_rejects_employee_from_another_company(): void
+    {
+        // Issue #3428 : l'employé cible d'une permission caméra doit appartenir
+        // à la société de la caméra (404, pas de FK cross-tenant).
+        $company = $this->createCompanyWithCameras('alpha-co');
+        $principal = $this->createManager($company, 'principal', 'principal@co.test');
+
+        $otherCompany = $this->createCompanyWithCameras('beta-co');
+        $foreignEmployee = $this->createEmployee($otherCompany, 'foreign@co.test');
+
+        $cam = Camera::query()->create([
+            'company_id' => $company->id,
+            'name' => 'Cam',
+            'rtsp_url' => 'rtsp://admin:pass@10.0.0.1:554/live',
+            'created_by' => $principal->id,
+        ]);
+
+        $this->withHeaders($this->authHeaders($principal))
+            ->postJson('/api/v1/cameras/'.$cam->id.'/permissions', [
+                'employee_id' => $foreignEmployee->id,
+                'can_view' => true,
+            ])
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'EMPLOYEE_NOT_FOUND');
+
+        // L'employé de la bonne société passe toujours.
+        $localEmployee = $this->createEmployee($company, 'local@co.test');
+        $this->withHeaders($this->authHeaders($principal, 't2'))
+            ->postJson('/api/v1/cameras/'.$cam->id.'/permissions', [
+                'employee_id' => $localEmployee->id,
+                'can_view' => true,
+            ])
+            ->assertStatus(201);
+    }
 }
