@@ -1968,6 +1968,10 @@ class LeopardoClient:
         """Rejouer une livraison webhook dead-letter"""
         return self.request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", **kwargs)
 
+    def post_webhooks_by_webhook_test(self, **kwargs):
+        """Tester un webhook (payload de test synchrone)"""
+        return self.request("POST", "/webhooks/{webhook}/test", **kwargs)
+
     def get_webhooks_events(self, **kwargs):
         """Lister les types d'evenements webhook disponibles"""
         return self.request("GET", "/webhooks/events", **kwargs)

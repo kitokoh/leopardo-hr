@@ -11225,6 +11225,57 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /webhooks/{webhook}/test:
+    post:
+      tags: ["Webhooks"]
+      summary: "Tester un webhook (payload de test synchrone)"
+      description: |
+        Envoie un payload de test (`event: test`) a l'URL du webhook de maniere synchrone, avec les memes
+        en-tetes de signature que les livraisons reelles, trace la tentative dans `webhook_deliveries`
+        et retourne le statut HTTP, la duree et la livraison creee. Necessite le role manager `principal`.
+        Renvoie 422 si l'URL n'est pas une URL https publique (garde anti-SSRF) ou si la livraison echoue.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: webhook
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Webhook teste (succes ou erreur HTTP cote endpoint)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  status: { type: string, enum: [success, error] }
+                  http_status: { type: integer }
+                  duration_ms: { type: integer }
+                  delivery:
+                    $ref: "#/components/schemas/WebhookDelivery"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Manager sans role principal"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: "Webhook introuvable ou appartenant a une autre entreprise"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "URL non publique/https ou livraison en erreur"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   # --- Features / i18n ---
   /features/manifest:
     get:
