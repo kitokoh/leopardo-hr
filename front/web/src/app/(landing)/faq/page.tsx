@@ -71,7 +71,7 @@ const faqItems: FaqItem[] = [
   {
     category: 'Integration',
     question: 'Peut-on exporter les donnees vers des logiciels comptables ?',
-    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV compatible avec les principaux logiciels comptables (Sage, QuickBooks — bientot disponibles).',
+    answer: 'Oui, Leopardo RH supporte l\'export des ecritures de paie en format SEPA XML, CCP DZ et CSV, compatible avec la plupart des logiciels comptables. Les connecteurs dedies Sage et QuickBooks arrivent prochainement.',
   },
 ];
 
