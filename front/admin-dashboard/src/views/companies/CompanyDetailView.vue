@@ -557,8 +557,6 @@ function priorityBadgeClass(priority) {
 }
 
 function formatFeatureName(key) {
-  // Modules FeatureFlag : Company::KNOWN_MODULES (rh, finance, cameras,
-  // muhasebe, leo_ai) — plus les clés de plans pour les cartes hybrides.
   const names = {
     rh: 'Ressources Humaines',
     finance: 'Finance & Gestion',
@@ -568,19 +566,17 @@ function formatFeatureName(key) {
     planning: 'Planning & Equipe',
     training: 'Centre de Formation',
     cabinet: 'Placard Numérique',
-    muhasebe: 'Muhasebe',
-    leo_ai: 'Leo IA',
-    biometric: 'Pointage biométrique',
+    biometric: 'Biométrie',
     tasks: 'Tâches',
     advanced_reports: 'Rapports avancés',
     excel_export: 'Export Excel',
     bank_export: 'Export bancaire',
     billing_auto: 'Facturation auto',
-    multi_managers: 'Multi-managers',
+    multi_managers: 'Multi-gérants',
     photo_attendance: 'Pointage photo',
     api_public: 'API publique',
     evaluations: 'Évaluations',
-    schema_isolation: 'Isolation schéma'
+    schema_isolation: 'Isolation schéma',
   }
   return names[key] || key.toUpperCase()
 }
