@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Share2, Link2, Check } from 'lucide-react';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
 interface SocialShareProps {
   url: string;
@@ -11,6 +12,12 @@ interface SocialShareProps {
 
 export function SocialShare({ url, title, description }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
+  const { locale } = useVitrineLocale();
+  const labels = {
+    share: { fr: 'Partager', en: 'Share', tr: 'Paylaş', ar: 'مشاركة' }[locale],
+    shareOn: { fr: 'Partager sur', en: 'Share on', tr: 'Paylaş', ar: 'مشاركة على' }[locale],
+    copyLink: { fr: 'Copier le lien', en: 'Copy link', tr: 'Bağlantıyı kopyala', ar: 'نسخ الرابط' }[locale],
+  } as const;
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedDesc = encodeURIComponent(description || '');
@@ -64,7 +71,7 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
     <div className="flex items-center gap-2">
       <span className="text-sm font-medium text-slate-600 dark:text-slate-400 mr-1">
         <Share2 className="w-4 h-4 inline mr-1" />
-        Partager
+        {labels.share}
       </span>
       {shareLinks.map((link) => (
         <a
@@ -72,7 +79,7 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Partager sur ${link.name}`}
+          aria-label={`${labels.shareOn} ${link.name}`}
           className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
         >
           {link.icon}
@@ -80,7 +87,7 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
       ))}
       <button
         onClick={handleCopyLink}
-        aria-label="Copier le lien"
+        aria-label={labels.copyLink}
         className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
       >
         {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
