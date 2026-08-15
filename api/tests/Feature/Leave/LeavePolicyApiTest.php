@@ -374,5 +374,57 @@ class LeavePolicyApiTest extends TestCase
             ->assertJsonPath('data.0.company_id', $company->id)
             ->assertJsonCount(1, 'data');
     }
+    public function test_employees_leave_balances_require_role_and_are_tenant_scoped(): void
+    {
+        // #3055 : GET /employees/{employeeId}/leave-balances — garde de rôle
+        // (EmployeePolicy::view) + isolation tenant.
+        [$company, $manager] = $this->makeManagerAndCompany();
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $colleague = Employee::factory()->create(['company_id' => $company->id]);
+        $otherCompanyEmployee = Employee::factory()->create(['company_id' => Company::factory()->create()->id]);
+
+        $absenceType = AbsenceType::query()->create([
+            'company_id' => $company->id,
+            'code' => 'ANNUAL-GUARD',
+            'name' => 'Annual Guard',
+            'requires_approval' => true,
+        ]);
+
+        foreach ([$employee, $colleague] as $emp) {
+            LeaveBalance::query()->create([
+                'company_id' => $company->id,
+                'employee_id' => $emp->id,
+                'absence_type_id' => $absenceType->id,
+                'balance' => 12,
+                'used' => 2,
+                'pending' => 1,
+                'year' => 2026,
+            ]);
+        }
+
+        // Manager principal : accès aux soldes d'un employé du tenant.
+        Sanctum::actingAs($manager);
+        $this->getJson("/api/v1/employees/{$employee->id}/leave-balances?year=2026")
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertJsonPath('0.employee_id', $employee->id);
+
+        // Employé : lecture de ses propres soldes autorisée.
+        Sanctum::actingAs($employee);
+        $this->getJson("/api/v1/employees/{$employee->id}/leave-balances?year=2026")
+            ->assertOk()
+            ->assertJsonCount(1);
+
+        // Employé : lecture des soldes d'un collègue refusée (403).
+        Sanctum::actingAs($employee);
+        $this->getJson("/api/v1/employees/{$colleague->id}/leave-balances?year=2026")
+            ->assertForbidden();
+
+        // Employé : employé d'un autre tenant introuvable (404, anti-énumération).
+        Sanctum::actingAs($employee);
+        $this->getJson("/api/v1/employees/{$otherCompanyEmployee->id}/leave-balances?year=2026")
+            ->assertNotFound();
+    }
+
 }
 
