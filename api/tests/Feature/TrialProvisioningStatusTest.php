@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Jobs\ProvisionDemoTenantJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Tests\RefreshTenantDatabase;
@@ -47,7 +48,7 @@ class TrialProvisioningStatusTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Queue::assertPushed(\App\Jobs\ProvisionDemoTenantJob::class);
+        Queue::assertPushed(ProvisionDemoTenantJob::class);
     }
 
     public function test_status_returns_pending_before_provisioning(): void

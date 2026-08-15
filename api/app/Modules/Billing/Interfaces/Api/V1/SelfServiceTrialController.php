@@ -11,6 +11,7 @@ use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
 use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -136,7 +137,7 @@ class SelfServiceTrialController extends Controller
         // #2903 : provisioned_at est stocké en string (insert DB::table) —
         // ne JAMAIS appeler ->toIso8601String() sur une string (500).
         $provisionedAt = $row->provisioned_at
-            ? \Illuminate\Support\Carbon::parse($row->provisioned_at)->toIso8601String()
+            ? Carbon::parse($row->provisioned_at)->toIso8601String()
             : null;
 
         $payload = [
