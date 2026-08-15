@@ -27,10 +27,6 @@ on:
         description: "Also run the progressive attendance punch scale test (10/20/50/100 VUs)"
         required: false
         default: "false"
-      attendance_punch_mode:
-        description: "attendance-punch-scale.js mode: manual or path"
-        required: false
-        default: "manual"
       attendance_stage_duration:
         description: "Duration of each attendance-punch-scale.js stage"
         required: false
@@ -134,7 +130,7 @@ jobs:
         env:
           BASE_URL: ${{ github.event.inputs.base_url }}
           EMPLOYEE_TOKENS: ${{ secrets.K6_EMPLOYEE_TOKENS }}
-          PUNCH_MODE: ${{ github.event.inputs.attendance_punch_mode }}
+          PUNCH_MODE: manual  # was github.event.inputs.attendance_punch_mode; hardcoded to reduce inputs to ≤10 (#3612)
           STAGE_DURATION: ${{ github.event.inputs.attendance_stage_duration }}
         run: |
           set -euo pipefail

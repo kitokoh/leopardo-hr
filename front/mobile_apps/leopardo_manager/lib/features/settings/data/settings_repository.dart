@@ -110,8 +110,7 @@ class SettingsRepository {
     );
 
     return NotificationPreferences.fromJson(
-      ((response.data ?? const <String, dynamic>{})['data'] as Map)
-          .cast<String, dynamic>(),
+      extractDataMap(response.data),
     );
   }
 
@@ -126,8 +125,7 @@ class SettingsRepository {
     );
 
     return NotificationPreferences.fromJson(
-      ((response.data ?? const <String, dynamic>{})['data'] as Map)
-          .cast<String, dynamic>(),
+      extractDataMap(response.data),
     );
   }
 
