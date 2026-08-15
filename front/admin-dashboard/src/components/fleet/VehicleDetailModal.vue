@@ -101,6 +101,8 @@
 import { ref, onMounted } from 'vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
+import { useLocaleStore } from '@/stores/locale.js'
+import { toIntlLocale } from '@/i18n/index.js'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
 const props = defineProps({
@@ -111,6 +113,8 @@ const props = defineProps({
 })
 
 defineEmits(['close'])
+
+const localeStore = useLocaleStore()
 
 const loading = ref(true)
 const error = ref('')
@@ -133,7 +137,7 @@ const severityMap = {
 
 function formatDate(date) {
   if (!date) return '\u2014'
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',

@@ -159,6 +159,8 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api.js'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
 
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
@@ -195,7 +197,7 @@ async function loadAll() {
     activities.value = activitiesRes.data?.data || []
     alerts.value = alertsRes.data?.data || []
     if (stats.monthlyRevenue) {
-      monthlyRevenueLabel.value = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(stats.monthlyRevenue)
+      monthlyRevenueLabel.value = new Intl.NumberFormat(toIntlLocale(localeStore.current), { style: 'currency', currency: 'EUR' }).format(stats.monthlyRevenue)
     } else {
       monthlyRevenueLabel.value = ''
     }
@@ -220,7 +222,7 @@ async function dismissAlert(alertKey) {
 
 function formatDate(date) {
   if (!date) return '-'
-  return new Date(date).toLocaleString('fr-FR', {
+  return new Date(date).toLocaleString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',

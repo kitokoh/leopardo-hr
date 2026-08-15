@@ -6,6 +6,9 @@
 
 ## [Unreleased]
 
+- **fix(admin): dates et nombres respectent la locale active (Closes #3277).** Analytics, barèmes fiscaux et modales recrutement/flotte n’imposent plus `fr-FR` pour l’affichage.
+
+- **docs(AGENTS.md): gate /api/v1/demo-users documenté conformément au code (Closes #2650).** La règle v4.16.128 affirmait à tort que l'endpoint ne devait pas être rebloqué via `DEMO_MODE_ENABLED=false` ; le hard gate `abort(404)` est délibéré (AUDIT_API_2026-07-19 §1, DEMO_ACCOUNTS.md). Renvoi vers les sources.
 - **fix(security): headers de version retirés — x-powered-by PHP/FrankenPHP masqué (Closes #3601, volet divulgation).** L'API exposait `x-powered-by: PHP/8.4.x` + `x-render-origin-server` (ciblage CVE facilité). `api/Caddyfile` : `header -Server` / `header -X-Powered-By` (image Docker API). Le volet CSP report-only → enforce reste ouvert dans l'issue (nonces/hashes, workstream séparé).
 - **fix(web): robots.txt — 14 préfixes protégés interdits à Googlebot/Bingbot + source unique (Closes #3377).** Les groupes dédiés `Googlebot`/`Bingbot` (`allow: /`) écrasaient le groupe `*` et gardaient un accès crawl total aux routes session-protégées (résidu #3375). Nouvelle source unique `PROTECTED_PREFIXES` consommée par robots.ts ; garde Jest anti-dérive avec le matcher middleware (littéraux imposés par Next.js).
 
