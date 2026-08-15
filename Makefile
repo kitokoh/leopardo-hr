@@ -120,6 +120,17 @@ queue-restart: ## Restart queue worker
 queue-status: ## Show queue status
 	$(ARTISAN) queue:monitor
 
+
+## — OpenAPI / SDK ————————————————————————————————
+
+.PHONY: openapi-sync
+openapi-sync: ## Régénère le miroir dev-hub/openapi/v1.yaml + les SDK JS/Python depuis api/openapi.yaml (issue #2450)
+	@node dev-hub/tools/generate-openapi-sdk.mjs
+
+.PHONY: openapi-check
+openapi-check: ## Vérifie que le miroir + les SDK sont synchronisés avec api/openapi.yaml (garde CI #2450)
+	@node dev-hub/tools/generate-openapi-sdk.mjs --check
+
 ## — Help —————————————————————————————————————————————
 
 .PHONY: help
