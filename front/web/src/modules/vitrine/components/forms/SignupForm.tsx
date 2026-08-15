@@ -207,8 +207,7 @@ export function SignupForm({
           // The lead was still captured, so tell the user honestly instead of
           // showing a vérification screen for a code that was never sent.
           setPendingMessage(
-            response.message ||
-              "c.pendingFallback"
+            response.message || c.pendingFallback
           );
           setCurrentStep('pending');
         } else {
@@ -271,7 +270,7 @@ export function SignupForm({
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
-      setOtpError('c.otpInvalidLength');
+      setOtpError(c.otpInvalidLength);
       return;
     }
 
@@ -287,10 +286,10 @@ export function SignupForm({
         reset();
         onSuccess?.({} as SignupFormData);
       } else {
-        setOtpError(response.message || 'c.otpInvalidCode');
+        setOtpError(response.message || c.otpInvalidCode);
       }
     } catch (error) {
-      setOtpError('c.otpVerifyError');
+      setOtpError(c.otpVerifyError);
     } finally {
       setIsVerifying(false);
     }
@@ -754,7 +753,7 @@ export function SignupForm({
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
                 <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <h3 className="text-lg font-black text-emerald-900 dark:text-emerald-100">
-                  Votre espace est pret !
+                  {c.successTitle}
                 </h3>
               </div>
 

@@ -626,7 +626,7 @@
     }
   },
   "signup": {
-    "badge": "Free 30-day trial",
+    "badge": "Free 14-day trial",
     "title": "Try Leopardo with your company",
     "subtitle": "Create your trial workspace in 2 minutes. No credit card required.",
     "labelEmail": "Work email",
@@ -706,6 +706,11 @@
       "employeesRequired": "Select a team size",
       "phoneInvalid": "Invalid phone number",
       "agreeTerms": "You must accept the terms of use"
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial."
     }
   },
   "companies": {
