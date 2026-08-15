@@ -72,6 +72,20 @@ CREATE TABLE public.users (
 
 CREATE UNIQUE INDEX users_email_unique ON public.users (email);
 
+CREATE TABLE public.user_employee_links (
+    id bigserial PRIMARY KEY,
+    user_id bigint NOT NULL REFERENCES public.users (id) ON DELETE CASCADE,
+    employee_id bigint NOT NULL,
+    company_id uuid NOT NULL,
+    status varchar(20) NOT NULL DEFAULT 'pending',
+    linked_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE UNIQUE INDEX user_employee_links_user_id_company_id_unique ON public.user_employee_links (user_id, company_id);
+
+
 
 CREATE TABLE public.companies (
     id uuid PRIMARY KEY,

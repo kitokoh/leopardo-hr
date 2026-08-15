@@ -221,13 +221,41 @@ final class OidcIdTokenValidator
         // Séquence SPKI : SEQUENCE { SEQUENCE { OID rsaEncryption, NULL }, BIT STRING { RSAPublicKey } }
         $rsaOid = "\x30\x0d\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01\x05\x00";
 
-        $rsaPublicKey = "\x30".$this->derLength(strlen($n) + strlen($e) + 12)
+        // DER INTEGER : un entier est signé — préfixer 0x00 si le bit de
+        // poids fort est à 1, sinon OpenSSL 3.x rejette la clé (« Supplied
+        // key param cannot be coerced into a public key »). #4092.
+        $n = $this->positiveInteger($n);
+        $e = $this->positiveInteger($e);
+
+        // Longueur du contenu RSAPublicKey = tag + champ-longueur + contenu
+        // pour chaque INTEGER (le champ-longueur de n fait 3 octets pour une
+        // clé 2048 bits — l'ancien « +12 »/« +4 » produisait un DER invalide).
+        $innerLength = 1 + $this->derLengthLength(strlen($n)) + strlen($n)
+            + 1 + $this->derLengthLength(strlen($e)) + strlen($e);
+
+        $rsaPublicKey = "\x30".$this->derLength($innerLength)
             ."\x02".$this->derLength(strlen($n)).$n
             ."\x02".$this->derLength(strlen($e)).$e;
 
         $bitString = "\x03".$this->derLength(strlen($rsaPublicKey) + 1)."\x00".$rsaPublicKey;
 
         return "\x30".$this->derLength(strlen($rsaOid) + strlen($bitString)).$rsaOid.$bitString;
+    }
+
+    private function positiveInteger(string $bytes): string
+    {
+        return $bytes !== '' && (ord($bytes[0]) & 0x80) ? "\x00".$bytes : $bytes;
+    }
+
+    private function derLengthLength(int $length): int
+    {
+        return match (true) {
+            $length < 0x80 => 1,
+            $length < 0x100 => 2,
+            $length < 0x10000 => 3,
+            $length < 0x1000000 => 4,
+            default => 5,
+        };
     }
 
     private function derLength(int $length): string
