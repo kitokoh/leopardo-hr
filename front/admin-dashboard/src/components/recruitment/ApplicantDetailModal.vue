@@ -124,6 +124,10 @@ import { ref, computed, onMounted } from 'vue'
 import { XMarkIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import { useLocaleStore } from '@/stores/locale.js'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 const props = defineProps({
   applicantId: {
@@ -162,7 +166,7 @@ const interviewStatusMap = {
 
 function formatDate(date) {
   if (!date) return '\u2014'
-  return new Date(date).toLocaleDateString('fr-FR', {
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
