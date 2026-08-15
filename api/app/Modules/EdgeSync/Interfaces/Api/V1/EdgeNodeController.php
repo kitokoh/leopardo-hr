@@ -93,20 +93,6 @@ class EdgeNodeController extends Controller
     }
 
     /**
-     * Trigger a manual sync for an Edge node.
-     * POST /api/v1/edge/{nodeId}/sync
-     */
-    public function sync(EdgeNodeActionRequest $request, string $nodeId): JsonResponse
-    {
-        $node = EdgeNode::where('company_id', $request->user()->company_id)
-            ->findOrFail($nodeId);
-
-        $log = $this->syncEngine->sync($node);
-
-        return response()->json(['data' => $log]);
-    }
-
-    /**
      * Issue or renew an Edge license.
      * POST /api/v1/edge/{nodeId}/license
      */
