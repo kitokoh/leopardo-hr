@@ -11,11 +11,11 @@ use App\Events\AbsenceRequested;
 use App\Exceptions\AbsenceDateConflictException;
 use App\Exceptions\AbsenceNotPendingException;
 use App\Exceptions\InsufficientLeaveBalanceException;
+use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Modules\Planning\Domain\Models\Absence;
 use App\Modules\Planning\Domain\Models\AbsenceType;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeaveBalanceLog;
-use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +24,7 @@ class AbsenceService
 {
     public function __construct(
         private readonly PublicHolidayService $publicHolidays,
-    ) {
-    }
+    ) {}
 
     public function create(Employee $employee, array $data, ?UploadedFile $proof = null): Absence
     {
@@ -44,13 +43,15 @@ class AbsenceService
         // la déduction de solde et l'indemnité portent sur les jours ouvrés
         // (calendrier entreprise via PublicHolidayService, fallback week-ends
         // seuls quand le pays est inconnu ou qu'aucun férié n'est configuré).
-        $countryCode = $employee->company?->country ?? null;
+        // `??` rend le nullsafe superflu (PHP le tolère aussi sur un objet
+        // null) — garde null-safe explicite conservée pour company_id.
+        $countryCode = $employee->company->country ?? null;
         $daysCount = $this->publicHolidays->workingDaysBetween(
             $startDate,
             $endDate,
             (string) ($countryCode ?? ''),
             null,
-            $employee->company_id !== null ? (string) $employee->company_id : null,
+            (string) $employee->company_id,
         );
 
         // Issue #2676 (QA 2026-08-15) — la garde de solde était en
