@@ -24,7 +24,7 @@ services:
       DB_DATABASE: /var/leopardo/edge.sqlite
       EDGE_NODE_ID: "${EDGE_NODE_ID}"
       EDGE_TOKEN: "${EDGE_TOKEN}"
-      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo-rh.com}"
+      CLOUD_API_URL: "${CLOUD_API_URL:-https://gestionemployerbackend.onrender.com}"
       CLOUD_SYNC_INTERVAL_MINUTES: "${SYNC_INTERVAL:-15}"
       LICENSE_PUBLIC_KEY_PATH: /var/leopardo/license.pub
     volumes:
@@ -76,7 +76,7 @@ services:
       DB_DATABASE: /var/leopardo/edge.sqlite
       EDGE_NODE_ID: "${EDGE_NODE_ID}"
       EDGE_TOKEN: "${EDGE_TOKEN}"
-      CLOUD_API_URL: "${CLOUD_API_URL:-https://api.leopardo-rh.com}"
+      CLOUD_API_URL: "${CLOUD_API_URL:-https://gestionemployerbackend.onrender.com}"
       CLOUD_SYNC_INTERVAL_MINUTES: "${SYNC_INTERVAL:-15}"
     volumes:
       - edge_data:/var/leopardo

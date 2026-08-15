@@ -24,10 +24,27 @@ chown www-data:www-data "${SQLITE_PATH}"
 # ---------------------------------------------------------------------------
 cd "${APP_DIR}"
 
+ENV_FILE="${DATA_DIR}/.env"
+
+# Issue #3592 : persister APP_KEY dans le volume /data — sans cela, chaque
+# redémarrage hors install.sh régénère une clé éphémère et invalide données
+# chiffrées et sessions.
+if [ -z "${APP_KEY}" ] && [ -f "${ENV_FILE}" ]; then
+    # Redémarrage : recharger la clé persistée au premier boot.
+    # shellcheck disable=SC1090
+    . "${ENV_FILE}"
+    export APP_KEY
+fi
+
 if [ -z "${APP_KEY}" ]; then
     echo "[edge-entrypoint] APP_KEY absent — génération automatique..."
     APP_KEY=$(php artisan key:generate --show --no-interaction)
     export APP_KEY
+    touch "${ENV_FILE}"
+    chown www-data:www-data "${ENV_FILE}"
+    if ! grep -q '^APP_KEY=' "${ENV_FILE}"; then
+        printf 'APP_KEY=%s\n' "${APP_KEY}" >> "${ENV_FILE}"
+    fi
 fi
 
 # ---------------------------------------------------------------------------

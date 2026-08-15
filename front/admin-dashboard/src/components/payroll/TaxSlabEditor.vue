@@ -96,6 +96,7 @@ import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
+import { toIntlLocale } from '@/i18n/index.js'
 
 const props = defineProps({
   countryCode: { type: String, required: true },
@@ -238,7 +239,7 @@ async function confirmReset() {
 }
 
 function fmt(value) {
-  return new Intl.NumberFormat('fr-FR').format(Number(value || 0))
+  return new Intl.NumberFormat(toIntlLocale(localeStore.current)).format(Number(value || 0))
 }
 
 defineExpose({ load })
