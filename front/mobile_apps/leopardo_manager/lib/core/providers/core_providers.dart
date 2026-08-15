@@ -18,9 +18,6 @@ import 'package:leopardo_manager/features/evaluations/data/evaluation_repository
 import 'package:leopardo_manager/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_manager/features/home/data/project_repository.dart';
 import 'package:leopardo_manager/features/user_auth/data/user_auth_repository.dart';
-import 'package:leopardo_manager/features/contracts/data/contract_repository.dart';
-import 'package:leopardo_manager/features/training/data/training_repository.dart';
-import 'package:leopardo_manager/features/expenses/data/expense_repository.dart';
 import 'package:leopardo_manager/features/ai_chat/data/ai_chat_repository.dart';
 import 'package:leopardo_manager/features/vehicle_position/data/vehicle_position_repository.dart';
 import 'package:leopardo_manager/features/approvals/data/approval_repository.dart';
@@ -132,11 +129,6 @@ final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
 final contractRepositoryProvider = Provider<ContractRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return ContractRepository(apiClient);
-});
-
-final trainingRepositoryProvider = Provider<TrainingRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return TrainingRepository(apiClient);
 });
 
 final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
