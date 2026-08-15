@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { sessionCookieHeader, setSessionCookie } from './session-helpers';
 
 type AnalyticsWindow = Window & {
   __LEOPARDO_ANALYTICS_EVENTS__?: Array<{
@@ -149,6 +150,7 @@ test.describe('Client web auth smoke', () => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
+        headers: { 'Set-Cookie': sessionCookieHeader },
         body: JSON.stringify({
           data: managerUser,
           token: 'client-web-token',
@@ -168,6 +170,10 @@ test.describe('Client web auth smoke', () => {
     await mockDashboardApis(page);
 
     await page.goto('/auth/login', { waitUntil: 'domcontentloaded' });
+    // Issue #2746 — le middleware serveur exige le cookie httpOnly
+    // `leopardo_token` : le poser avant la soumission du login mocké
+    // (le Set-Cookie de la réponse mockée n'est pas appliqué en Chromium).
+    await setSessionCookie(page);
     await expect(page.getByRole('button', { name: /sign in|se connecter/i })).toBeVisible();
     await page.getByLabel(/adresse email|email address/i).fill('fatima.meziane@techcorp-algerie.dz');
     await page.getByLabel(/^mot de passe$|^password$/i).fill('password123');
@@ -238,6 +244,7 @@ test.describe('Client web auth smoke', () => {
       }));
     });
 
+    await setSessionCookie(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/auth\/login$/);
@@ -275,6 +282,7 @@ test.describe('Client web auth smoke', () => {
       }));
     });
 
+    await setSessionCookie(page);
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
 
     await expect(page).toHaveURL(/\/dashboard$/);

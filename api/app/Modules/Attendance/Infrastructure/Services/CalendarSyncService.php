@@ -25,6 +25,9 @@ class CalendarSyncService
                 'provider' => $provider,
             ],
             [
+                // Issue #2623 : scoping tenant explicite (le trait auto-fill
+                // ne couvre pas updateOrCreate sur les lignes historiques).
+                'company_id' => $employee->company_id,
                 'access_token' => encrypt($accessToken),
                 'refresh_token' => $refreshToken ? encrypt($refreshToken) : null,
                 'calendar_id' => $calendarId,
@@ -64,6 +67,7 @@ class CalendarSyncService
                     $event = CalendarEvent::query()->updateOrCreate(
                         [
                             'employee_id' => $employee->id,
+                            'company_id' => $employee->company_id,
                             'source_type' => 'absence',
                             'source_id' => $absence->id,
                             'provider' => $connection->provider,
@@ -120,6 +124,7 @@ class CalendarSyncService
                     $event = CalendarEvent::query()->updateOrCreate(
                         [
                             'employee_id' => $employee->id,
+                            'company_id' => $employee->company_id,
                             'source_type' => 'training_session',
                             'source_id' => $session->id,
                             'provider' => $connection->provider,

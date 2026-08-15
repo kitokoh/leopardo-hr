@@ -226,6 +226,8 @@ import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useToast } from 'vue-toastification'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
+const supportedCountries = useSupportedCountries()
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -233,16 +235,6 @@ const localeStore = useLocaleStore()
 function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
-
-const supportedCountries = [
-  { code: 'DZ', labelKey: 'common.countries.DZ' },
-  { code: 'CM', labelKey: 'common.countries.CM' },
-  { code: 'CI', labelKey: 'common.countries.CI' },
-  { code: 'SN', labelKey: 'common.countries.SN' },
-  { code: 'MA', labelKey: 'common.countries.MA' },
-  { code: 'TN', labelKey: 'common.countries.TN' },
-  { code: 'FR', labelKey: 'common.countries.FR' },
-]
 
 const isPlatformAdmin = ref(false)
 const rates = ref([])
