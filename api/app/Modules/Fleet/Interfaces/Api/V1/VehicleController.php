@@ -164,9 +164,9 @@ class VehicleController extends Controller
                 'brand' => $vehicle->brand,
                 'model' => $vehicle->model,
                 'type' => $vehicle->type,
-                'latitude' => $position['latitude'] ?? null,
-                'longitude' => $position['longitude'] ?? null,
-                'speed' => $position['speed'] ?? null,
+                'latitude' => isset($position['latitude']) ? (float) $position['latitude'] : null,
+                'longitude' => isset($position['longitude']) ? (float) $position['longitude'] : null,
+                'speed' => isset($position['speed']) ? (float) $position['speed'] : null,
                 'updated_at' => $position['fixTime'] ?? null,
             ];
         }
