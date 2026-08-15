@@ -53,8 +53,10 @@ class Absence {
       employeeId: json['employee_id'] as int,
       absenceTypeId: json['absence_type_id'] as int,
       absenceTypeName: json['absence_type']?['name'] as String?,
-      startDate: DateTime.parse(json['start_date'] as String),
-      endDate: DateTime.parse(json['end_date'] as String),
+      startDate: DateTime.tryParse(json['start_date']?.toString() ?? '') ??
+          DateTime.utc(1970),
+      endDate: DateTime.tryParse(json['end_date']?.toString() ?? '') ??
+          DateTime.utc(1970),
       daysCount: (json['days_count'] as num).toDouble(),
       status: json['status'] as String,
       employeeName:

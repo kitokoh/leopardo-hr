@@ -95,9 +95,23 @@ readonly class AuthService
                 $this->setTenantSearchPath($employeeSchema);
             }
 
-            $lockedUntil = $employee->getAttributes()['locked_until'] ?? null;
+            // #2973 : getAttributes() renvoie la valeur BRUTE (string) — le
+            // instanceof \DateTimeInterface ne se déclenchait jamais depuis
+            // #2838 → le verrouillage de compte était silencieusement désactivé.
+            // Parse robuste → Carbon (type-safe pour isFuture()/AccountLockedException).
+            $lockedRaw = $employee->getAttributes()['locked_until'] ?? null;
+            $lockedUntil = null;
+            if (is_string($lockedRaw) && $lockedRaw !== '') {
+                try {
+                    $lockedUntil = \Illuminate\Support\Carbon::parse($lockedRaw);
+                } catch (\Throwable) {
+                    $lockedUntil = null;
+                }
+            } elseif ($lockedRaw instanceof \DateTimeInterface) {
+                $lockedUntil = \Illuminate\Support\Carbon::instance($lockedRaw);
+            }
             if ($this->supportsLoginLocking($employee)
-                && $lockedUntil instanceof \DateTimeInterface
+                && $lockedUntil instanceof \Illuminate\Support\Carbon
                 && $lockedUntil->isFuture()) {
                 throw new AccountLockedException($lockedUntil);
             }
@@ -110,7 +124,16 @@ readonly class AuthService
                 throw new InvalidCredentialsException;
             }
 
-            if (! Hash::check($password, $employee->password_hash)) {
+            // #2973 : un hash legacy malformé (non-bcrypt) fait lever
+            // Hash::check (RuntimeException → 500). Tout échec de vérification
+            // est traité comme identifiants invalides (401), jamais un 500.
+            try {
+                $passwordMatches = Hash::check($password, $employee->password_hash);
+            } catch (\Throwable) {
+                $passwordMatches = false;
+            }
+
+            if (! $passwordMatches) {
                 if ($this->supportsLoginLocking($employee)) {
                     $employee->increment('failed_login_attempts');
                     if ($employee->failed_login_attempts >= 5) {

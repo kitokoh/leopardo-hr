@@ -193,11 +193,13 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
     }
 
     /**
-     * Le module Cabinet stocke company_id en BIGINT (clé legacy) ; les UUID
-     * de `companies.id` ne tiennent pas → clé 0 (pattern CabinetService).
+     * Vague QA 2026-08-14 — company_id du Cabinet est désormais l'UUID
+     * réel de l'entreprise (migration 000019, plus de clé legacy 0).
      */
-    private function legacyCompanyKey(Company $company): int
+    private function legacyCompanyKey(Company $company): ?string
     {
-        return is_numeric($company->getKey()) ? (int) $company->getKey() : 0;
+        $key = $company->getKey();
+
+        return is_string($key) && $key !== '' ? $key : null;
     }
 }

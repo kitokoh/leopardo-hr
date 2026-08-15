@@ -217,7 +217,7 @@ class SelfServiceTrialController extends Controller
                     'last_name' => $result['last_name'],
                 ],
                 'trial' => [
-                    'days' => 30,
+                    'days' => 14,
                     'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [

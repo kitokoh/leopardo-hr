@@ -67,7 +67,7 @@ const copy: Record<AppLocale, {
       { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez a travailler sans internet. Les pointages sont stockes localement et synchronises automatiquement au retour du reseau.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Supervision multi-sites', description: "Surveillez plusieurs sites depuis un seul poste. Alertes en temps reel pour les anomalies d'acces." },
       { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les données biometriques restent sur le terminal, seuls les hash d'identification transitent." },
-      { icon: <Zap className="w-6 h-6" />, title: 'Installation rapide', description: "Installateur MSI silencieux. Deploiement GPO/SCCM possible pour les grandes organisations." },
+      { icon: <Zap className="w-6 h-6" />, title: 'Installation rapide', description: "Installateur MSI silencieux. Déploiement GPO/SCCM possible pour les grandes organisations." },
       { icon: <HardDrive className="w-6 h-6" />, title: 'Logs et audit', description: "Journal complet des operations. Export CSV pour conformité RGPD et audit interne." },
     ],
     requirements: [
@@ -86,7 +86,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Le client Windows est-il gratuit ?', answer: 'Oui, le client desktop est inclus dans tous les plans Leopardo RH, y compris Starter.' },
+      { question: 'Le client Windows est-il gratuit ?', answer: 'Oui, le client desktop est inclus dans tous les plans Leopardo RH (Free, Pilot, Operations, Enterprise).' },
       { question: 'Quelles bornes sont supportees ?', answer: 'Toutes les bornes ZKTeco (iClock, SpeedFace, ProFace, uFace). Support etendu pour d\'autres fabricants prevu en 2026.' },
       { question: 'Peut-on déployer via GPO ?', answer: 'Oui, l\'installateur MSI supporte le deploiement silencieux. Documentation disponible dans le guide d\'administration.' },
     ],
@@ -121,7 +121,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Is the Windows client free?', answer: 'Yes, the desktop client is included in all Leopardo RH plans, including Starter.' },
+      { question: 'Is the Windows client free?', answer: 'Yes, the desktop client is included in all Leopardo RH plans (Free, Pilot, Operations, Enterprise).' },
       { question: 'Which terminals are supported?', answer: 'All ZKTeco terminals (iClock, SpeedFace, ProFace, uFace). Extended support for other manufacturers planned for 2026.' },
       { question: 'Can it be deployed via GPO?', answer: 'Yes, the MSI installer supports silent deployment. Documentation available in the admin guide.' },
     ],
@@ -156,7 +156,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'Windows istemcisi ucretsiz mi?', answer: 'Evet, masaustu istemcisi Starter dahil tum Leopardo RH planlarinda yer alir.' },
+      { question: 'Windows istemcisi ucretsiz mi?', answer: 'Evet, masaustu istemcisi Free, Pilot, Operations ve Enterprise dahil tum Leopardo RH planlarinda yer alir.' },
       { question: 'Hangi terminaller destekleniyor?', answer: 'Tum ZKTeco terminalleri (iClock, SpeedFace, ProFace, uFace). Diger ureticiler icin genisletilmis destek 2026\'da planlanmaktadir.' },
       { question: 'GPO ile dagitilabilir mi?', answer: 'Evet, MSI yukleyici sessiz dagitimi destekler.' },
     ],
@@ -191,7 +191,7 @@ const copy: Record<AppLocale, {
       ],
     },
     faq: [
-      { question: 'هل عميل ويندوز مجاني؟', answer: 'نعم، عميل سطح المكتب مضمن في جميع خطط Leopardo RH بما في ذلك Starter.' },
+      { question: 'هل عميل ويندوز مجاني؟', answer: 'نعم، عميل سطح المكتب مضمن في جميع خطط Leopardo RH (Free وPilot وOperations وEnterprise).' },
       { question: 'ما الأجهزة المدعومة؟', answer: 'جميع أجهزة ZKTeco (iClock, SpeedFace, ProFace, uFace).' },
       { question: 'هل يمكن نشره عبر GPO؟', answer: 'نعم، مثبت MSI يدعم النشر الصامت.' },
     ],
@@ -218,7 +218,7 @@ const mobileAppsData: Record<AppLocale, {
       {
         slug: 'employee',
         name: 'Leopardo Employee',
-        description: 'Pointage mobile, demandes de conge, fiche de paie et notifications RH pour les collaborateurs.',
+        description: 'Pointage mobile, demandes de congé, fiche de paie et notifications RH pour les collaborateurs.',
         androidLabel: 'Bientot sur Google Play',
         iosLabel: "Bientot sur l'App Store",
       },
@@ -400,7 +400,7 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'Synchronisation ZKTeco, mode hors-ligne et supervision site.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Leopardo Desktop macOS', description: 'Client bureau pour les équipes terrain et administrateurs.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/download#mobile-apps'},
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employés sur iPhone.', href: '/download#mobile-apps'},
   ],
   en: [
     { platform: 'Windows', title: 'Leopardo Desktop Windows', description: 'ZKTeco sync, offline mode and site supervision.', href: '/contact?topic=download-windows' },
