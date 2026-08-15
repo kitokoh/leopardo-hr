@@ -166,7 +166,6 @@ const loadData = async () => {
     partners.value = pResponse.data.data;
 
     const hResponse = await api.get('/platform/growth/history');
-    payouts.value = []; // Handled via payouts endpoint now
     auditLogs.value = hResponse.data.audit_logs;
 
     const payResponse = await api.get('/platform/growth/payouts');
