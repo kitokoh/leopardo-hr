@@ -6,6 +6,7 @@
         <button
           @click="$emit('toggle-sidebar')"
           class="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 lg:hidden"
+          aria-label="Ouvrir le menu"
         >
           <Bars3Icon class="h-6 w-6" />
         </button>
@@ -83,6 +84,7 @@
             <button
               @click="showNotifications = !showNotifications"
               class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              aria-label="Notifications"
             >
               <BellIcon class="h-6 w-6" />
               <span
@@ -157,6 +159,7 @@
               v-if="dashboardStore.criticalAlerts.length > 0"
               @click="showAlerts = !showAlerts"
               class="relative rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200"
+              aria-label="Alertes système"
             >
               <ExclamationTriangleIcon class="h-5 w-5" />
               <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white">
@@ -195,6 +198,7 @@
             @click="themeStore.toggle()"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
             :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
+            :aria-label="themeStore.isDark ? 'Activer le mode clair' : 'Activer le mode sombre'"
           >
             <SunIcon v-if="themeStore.isDark" class="h-5 w-5" />
             <MoonIcon v-else class="h-5 w-5" />
@@ -205,6 +209,7 @@
             @click="refreshData"
             :disabled="isRefreshing"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 disabled:opacity-50"
+            aria-label="Actualiser les données"
           >
             <ArrowPathIcon
               :class="[

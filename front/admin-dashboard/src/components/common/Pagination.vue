@@ -55,6 +55,7 @@
             @click="previousPage"
             :disabled="currentPage <= 1"
             class="relative inline-flex items-center rounded-l-xl px-3 py-2 text-slate-400 hover:text-brand-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Page précédente"
           >
             <ChevronLeftIcon class="h-5 w-5" />
           </button>
@@ -86,6 +87,7 @@
             @click="nextPage"
             :disabled="currentPage >= totalPages"
             class="relative inline-flex items-center rounded-r-xl px-3 py-2 text-slate-400 hover:text-brand-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Page suivante"
           >
             <ChevronRightIcon class="h-5 w-5" />
           </button>
