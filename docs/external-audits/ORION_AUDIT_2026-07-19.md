@@ -2,7 +2,7 @@
 
 > Statut : proposition / revue externe, non affiliee a l'equipe du projet.
 > Perimetre : lecture publique du repo (clone HTTPS anonyme), lecture de la documentation
-> interne existante (`docs/audits/AUDIT.md`, `docs/audits/AUDIT_CICD_2026-07-19.md`, `docs/PLAN_ACTION2/*`,
+> interne existante (`docs/audits/AUDIT.md`, `docs/audits/AUDIT_CICD_2026-07-19.md`, `docs/archive/PLAN_ACTION2/*`,
 > `docs/security/AUDIT_API_2026-07-19.md`), verification API GitHub publique (issues, PRs,
 > Dependabot alerts, CodeQL alerts, workflow runs), et **un test en direct en lecture (GET)**
 > sur l'endpoint public de production `gestionemployerbackend.onrender.com`.
@@ -51,7 +51,7 @@ Trois PR ouvertes le jour meme, en reponse quasi directe a l'audit initial :
 | PR | Contenu | Statut au moment de la redaction |
 |---|---|---|
 | #873 | Resolution des 34 alertes Dependabot (symfony/yaml, form-data, vite, next 14.2->16.2.10, echarts, eslint 9) | Ouverte |
-| #874 | Audit structurel des 19 modules DDD (`docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md`) : 4 controllers dupliques jamais routes, divergence Policy `Invoice`, deficit d'Actions, `declare(strict_types=1)` partiel | Deja mergee sur `main` (le fichier existe sur `main`) |
+| #874 | Audit structurel des 19 modules DDD (`docs/archive/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md`) : 4 controllers dupliques jamais routes, divergence Policy `Invoice`, deficit d'Actions, `declare(strict_types=1)` partiel | Deja mergee sur `main` (le fichier existe sur `main`) |
 | #875 | Durcissement supply-chain CI (pin SHA `trufflehog`, uniformisation `checkout@v5`/`upload-artifact@v5`, dedup ~360 lignes setup PHP/Postgres/Redis et Flutter/Java via composite actions) | Ouverte |
 
 Le fragment de script orphelin dans `tests.yml` et la reference morte `front/mobile` dans
@@ -94,7 +94,7 @@ l'audit interne d'origine.
 
 ## 5. Nuance sur la divergence Policy `Invoice`
 
-`docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md` (deja merge) documente que
+`docs/archive/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md` (deja merge) documente que
 `AppServiceProvider::boot()` enregistre `Gate::policy(Invoice::class, BillingPolicy::class)`
 tandis que `AuthServiceProvider::boot()` enregistre `Gate::policy(Invoice::class,
 InvoicePolicy::class)` — confirme dans le code actuel de `main`.

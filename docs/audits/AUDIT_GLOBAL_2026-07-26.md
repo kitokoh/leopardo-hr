@@ -1,7 +1,7 @@
 # 🔍 Audit global consolidé — Leopardo RH
 > Généré le 2026-07-26 par KiloClaw | Périmètre : code complet (API Laravel, front/web Next.js, front/admin-dashboard Vue, apps mobiles Flutter, edge, CI/CD), historique git complet, GitHub API en direct (Dependabot, Code Scanning, Secret Scanning, PRs/issues ouverts, statut des checks sur `main`), et un test en direct (GET) sur l'instance de production.
 >
-> **Méthode** : ce dépôt contient déjà ~30 documents d'audit internes très détaillés (`docs/audits/`, `docs/security/`, `docs/external-audits/`, `docs/PLAN_ACTION2/`). Plutôt que de dupliquer ce travail, cet audit (1) vérifie l'état **réel actuel** du code par rapport aux points déjà documentés, (2) exécute des scans automatisés qui n'apparaissent dans aucun document existant (gitleaks sur les 1331 commits, `npm audit`, GitHub Dependabot/Code Scanning API), et (3) consolide tout en une vue d'ensemble unique avec verdicts à jour.
+> **Méthode** : ce dépôt contient déjà ~30 documents d'audit internes très détaillés (`docs/audits/`, `docs/security/`, `docs/external-audits/`, `docs/archive/PLAN_ACTION2/`). Plutôt que de dupliquer ce travail, cet audit (1) vérifie l'état **réel actuel** du code par rapport aux points déjà documentés, (2) exécute des scans automatisés qui n'apparaissent dans aucun document existant (gitleaks sur les 1331 commits, `npm audit`, GitHub Dependabot/Code Scanning API), et (3) consolide tout en une vue d'ensemble unique avec verdicts à jour.
 >
 > ⚠️ Accès révoqué en fin de session — token GitHub fourni par l'utilisateur, usage lecture uniquement, aucune écriture effectuée sur le dépôt (pas de push, pas de PR, pas de modification de secrets).
 
@@ -167,7 +167,7 @@ Par souci de non-duplication, les domaines suivants ont des documents d'audit d�
 - **XSS/CSRF admin dashboard** → `docs/security/ADMIN_CSRF_XSS_AUDIT.md` (bon état, risque résiduel documenté : token en `localStorage`)
 - **Injection SQL** → `docs/security/SQL_INJECTION_AUDIT.md` (aucune injection trouvée, garde-fous documentés)
 - **Accessibilité WCAG** → `docs/security/WCAG_ACCESSIBILITY_AUDIT.md`
-- **Architecture modules DDD / dette technique** → `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`, `09_AUDIT_MODULES_API_STRUCTURE.md`
+- **Architecture modules DDD / dette technique** → `docs/archive/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`, `09_AUDIT_MODULES_API_STRUCTURE.md`
 - **CI/CD bugs fonctionnels (paths filters, doublons)** → `docs/audits/AUDIT_CICD_2026-07-19.md` (déjà corrigé d'après vérification code)
 
 ---

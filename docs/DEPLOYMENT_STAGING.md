@@ -2,7 +2,7 @@
 
 > ⚠️ **`staging.leopardo.com` ne résout pas** (DNS non configuré, `leopardo.com` n'est pas possédé
 > pour ce produit — voir `docs/DEPLOYMENT_PRODUCTION.md` et
-> `docs/PLAN_ACTION2/11_AUDIT_VITRINE_ACQUISITION.md`, ticket `PA2-MKT-008`). Ce guide décrit la
+> `voir suivi GitHub Issues (PA2-MKT-008) (fichier 11_AUDIT_VITRINE_ACQUISITION.md archivé)`, ticket `PA2-MKT-008`). Ce guide décrit la
 > procédure cible pour le jour où un domaine sera acheté — ne pas le suivre comme si ce
 > sous-domaine était déjà opérationnel.
 
