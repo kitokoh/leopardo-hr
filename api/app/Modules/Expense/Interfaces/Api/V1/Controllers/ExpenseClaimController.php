@@ -35,7 +35,7 @@ class ExpenseClaimController extends Controller
         }
 
         return ExpenseClaimResource::collection(
-            $query->orderByDesc('created_at')->paginate($request->integer('per_page', 15))
+            $query->orderByDesc('created_at')->paginate(max(1, min(100, $request->integer('per_page', 15))))
         )->response();
     }
 

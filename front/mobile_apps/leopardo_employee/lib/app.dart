@@ -184,7 +184,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/cabinet/folder/:folderId',
             builder: (context, state) {
-              final folderId = int.parse(state.pathParameters['folderId']!);
+              final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
+              if (folderId == null) {
+                // T121 : deep-link avec folderId non numérique → écran vide
+                // plutôt qu'un crash int.parse.
+                return const Scaffold(body: SizedBox.shrink());
+              }
               final folderName = state.extra as String?;
               return CabinetScreen(folderId: folderId, folderName: folderName);
             },

@@ -23,7 +23,9 @@ Future<void> main() async {
     (options) {
       options.dsn =
           const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = 1.0;
+      // Issue #2766 — 100 % des traces (PII potentielle) → échantillonnage
+      // borné ; le DSN reste vide par défaut (env).
+      options.tracesSampleRate = 0.2;
     },
     appRunner: () => runApp(
       StartupGate(

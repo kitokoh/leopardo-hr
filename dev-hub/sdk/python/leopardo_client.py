@@ -968,6 +968,14 @@ class LeopardoClient:
         """Healthcheck live + ready"""
         return self.request("GET", "/health", **kwargs)
 
+    def get_health_live(self, **kwargs):
+        """Liveness probe — processus API vivant (sans dépendances)"""
+        return self.request("GET", "/health/live", **kwargs)
+
+    def get_health_ready(self, **kwargs):
+        """Readiness probe — base de données disponible"""
+        return self.request("GET", "/health/ready", **kwargs)
+
     def get_i18n_catalog(self, **kwargs):
         """Catalogue de traductions complet"""
         return self.request("GET", "/i18n/catalog", **kwargs)
@@ -1208,6 +1216,10 @@ class LeopardoClient:
         """Vehicules assignes a l'employe connecte (mobile)"""
         return self.request("GET", "/me/vehicles", **kwargs)
 
+    def get_metrics(self, **kwargs):
+        """Métriques plateforme (super-admin)"""
+        return self.request("GET", "/metrics", **kwargs)
+
     def get_notification_preferences(self, **kwargs):
         """Lire les preferences de notification de l'utilisateur courant"""
         return self.request("GET", "/notification-preferences", **kwargs)
@@ -1435,6 +1447,14 @@ class LeopardoClient:
     def simulatepayroll(self, **kwargs):
         """Simuler l'impact d'un barème (manager, dry-run) — issue #1814"""
         return self.request("POST", "/payroll/simulate", **kwargs)
+
+    def get_payrolls(self, **kwargs):
+        """Liste des campagnes de paie (tenant)"""
+        return self.request("GET", "/payrolls", **kwargs)
+
+    def post_payrolls(self, **kwargs):
+        """Crée une campagne de paie"""
+        return self.request("POST", "/payrolls", **kwargs)
 
     def get_planning_shift_rebalancing(self, **kwargs):
         """Suggestions de rééquilibrage des équipes"""
@@ -2064,9 +2084,33 @@ class LeopardoClient:
         """Inscrire un employe"""
         return self.request("POST", "/training/sessions/{trainingSession}/enroll", **kwargs)
 
+    def post_trial_signup(self, **kwargs):
+        """Demande d'essai guidé / auto-service (onboarding)"""
+        return self.request("POST", "/trial/signup", **kwargs)
+
     def get_trial_status(self, **kwargs):
         """Statut de provisioning du guided trial"""
         return self.request("GET", "/trial/status", **kwargs)
+
+    def get_trial_status_2(self, **kwargs):
+        """Statut du provisioning d'un essai guidé (polling)"""
+        return self.request("GET", "/trial/status", **kwargs)
+
+    def post_trial_verify(self, **kwargs):
+        """Vérifie le code OTP et provisionne l'espace d'essai"""
+        return self.request("POST", "/trial/verify", **kwargs)
+
+    def post_user_login(self, **kwargs):
+        """Connexion utilisateur sans entreprise (parcours legacy mobile)"""
+        return self.request("POST", "/user/login", **kwargs)
+
+    def get_user_me(self, **kwargs):
+        """Profil de l'utilisateur connecté"""
+        return self.request("GET", "/user/me", **kwargs)
+
+    def post_user_register(self, **kwargs):
+        """Crée un compte utilisateur sans entreprise (parcours legacy mobile)"""
+        return self.request("POST", "/user/register", **kwargs)
 
     def get_vehicle_alerts(self, **kwargs):
         """Liste de toutes les alertes vehicules"""

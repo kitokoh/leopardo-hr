@@ -75,7 +75,9 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         requiresTwoFactor: false,
-        message: error.response?.data?.message || 'Erreur de connexion',
+        message: error.response?.data?.localized_message
+          || error.response?.data?.message
+          || 'Erreur de connexion',
       }
     } finally {
       isLoading.value = false

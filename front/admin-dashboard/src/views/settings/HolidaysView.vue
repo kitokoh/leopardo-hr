@@ -228,6 +228,8 @@ import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
+const supportedCountries = useSupportedCountries()
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -240,15 +242,6 @@ function t(key, vars = {}) {
   }
   return msg
 }
-
-const supportedCountries = [
-  { code: 'DZ', labelKey: 'holidays.countries.DZ' },
-  { code: 'CM', labelKey: 'holidays.countries.CM' },
-  { code: 'CI', labelKey: 'holidays.countries.CI' },
-  { code: 'SN', labelKey: 'holidays.countries.SN' },
-  { code: 'MA', labelKey: 'holidays.countries.MA' },
-  { code: 'TN', labelKey: 'holidays.countries.TN' },
-]
 
 const years = Array.from({ length: 8 }, (_, i) => 2024 + i)
 

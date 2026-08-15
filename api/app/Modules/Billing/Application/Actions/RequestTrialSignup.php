@@ -51,6 +51,10 @@ class RequestTrialSignup
 
     public function findExistingManager(string $email): ?Employee
     {
+        // Issue #2678 — une erreur DB ne doit pas être confondue avec
+        // « aucun manager existant » (sinon l'entreprise peut être créée deux
+        // fois) : seules les recherches sans résultat renvoient null, les
+        // erreurs remontent.
         try {
             if (DB::getDriverName() === 'pgsql') {
                 DB::statement('SET search_path TO shared_tenants, public');
@@ -60,8 +64,6 @@ class RequestTrialSignup
                 ->where('email', $email)
                 ->where('role', 'manager')
                 ->first();
-        } catch (\Throwable) {
-            return null;
         } finally {
             if (DB::getDriverName() === 'pgsql') {
                 DB::statement('SET search_path TO public');
@@ -156,9 +158,14 @@ class RequestTrialSignup
                 'signup_payload' => $validated,
             ]);
         } catch (\Throwable $e) {
+            // Issue #2678 — ne pas avaler l'échec : sans CompanyRequest, le
+            // verify échouera (OTP sans demande en attente) et l'utilisateur
+            // reste dans un demi-état. L'échec fait échouer le signup.
             Log::error('SelfServiceTrial: Failed to create pending CompanyRequest record', [
                 'error' => $e->getMessage(),
             ]);
+
+            throw $e;
         }
     }
 }

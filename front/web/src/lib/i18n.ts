@@ -50,6 +50,8 @@ type CopyTree = {
     submit: string;
     loading: string;
     demoAccess: string;
+    accountCreatedFree: string;
+    accountCreatedPaid: string;
     demoTitle: string;
     demoSubtitle: string;
     close: string;
@@ -65,6 +67,7 @@ type CopyTree = {
     heading: string;
     employees: string;
     present: string;
+    live: string;
     late: string;
     activity: string;
     team: string;
@@ -355,11 +358,11 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion a Leopardo RH',
-      subtitle: 'Accedez a votre espace RH, suivez vos equipes et pilotez les modules actifs de votre entreprise.',
+      subtitle: 'Accedez a votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
       clientSpace: 'Espace client',
-      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque equipe.',
+      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque équipe.',
       heroCopy: 'Votre portail client reste connecte a l API Leopardo RH, avec permissions, langue et contexte tenant appliques des la connexion.',
-      secureBadge: 'Connexion securisee',
+      secureBadge: 'Connexion sécurisée',
       trustPoints: [
         'Session liee a votre tenant',
         'Permissions appliquees par role',
@@ -375,6 +378,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Se connecter',
       loading: 'Connexion...',
       demoAccess: 'Tester avec un compte demo',
+    accountCreatedFree: 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.',
+    accountCreatedPaid: 'Inscription reçue ! Connectez-vous pour continuer.',
       demoTitle: 'Choisir un compte demo',
       demoSubtitle: 'Selectionnez un role pour pre-remplir le formulaire, puis lancez la connexion.',
       close: 'Fermer',
@@ -390,6 +395,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Tableau de bord',
       employees: 'Employes actifs',
       present: 'presents',
+      live: 'En direct',
       late: 'Retards',
       activity: 'Activite recente',
       team: 'Employes',
@@ -433,7 +439,7 @@ const copy: Record<AppLocale, CopyTree> = {
       detailTitle: 'Detail du bulletin',
       detailClose: 'Fermer',
       detailLoading: 'Chargement du detail...',
-      detailError: 'Detail indisponible pour le moment — affichage des donnees de la liste.',
+      detailError: 'Detail indisponible pour le moment — affichage des données de la liste.',
       detailDeductions: 'Deductions',
       detailEmployerContributions: 'Charges patronales',
       detailTotalCost: 'Cout total employeur',
@@ -444,7 +450,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
-      subtitle: 'Suivi intelligent de presence par geolocalisation — validation des sessions en attente et statistiques du jour.',
+      subtitle: 'Suivi intelligent de présence par geolocalisation — validation des sessions en attente et statistiques du jour.',
       allSessions: 'Toutes les sessions →',
       settings: 'Parametres',
       pendingSessionsTitle: 'Sessions en attente de validation',
@@ -487,7 +493,7 @@ const copy: Record<AppLocale, CopyTree> = {
       cancel: 'Annuler',
     },
     smartAttendanceSessionsPage: {
-      title: 'Sessions de presence',
+      title: 'Sessions de présence',
       subtitle: 'Liste complete des sessions Smart Attendance avec filtres avances et pagination.',
       backToDashboard: '← Tableau de bord',
       loadError: 'Impossible de charger les sessions.',
@@ -510,7 +516,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnDuration: 'Duree',
       columnStatus: 'Statut',
       columnDetail: 'Detail',
-      noSessions: 'Aucune session trouvee pour ces criteres.',
+      noSessions: 'Aucune session trouvee pour ces critères.',
       viewDetail: 'Voir →',
       employeeFallback: 'Employe',
       pageLabel: 'Page',
@@ -526,7 +532,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSessionDetailPage: {
       title: 'Detail de session',
-      subtitle: 'Informations completes de la session de presence geolocalisee.',
+      subtitle: 'Informations completes de la session de présence geolocalisee.',
       backToSessions: '← Retour aux sessions',
       loadError: 'Impossible de charger la session.',
       notFound: 'Session introuvable.',
@@ -642,7 +648,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noTokens: 'Aucune cle API creee pour le moment.',
       createdOn: 'Creee le {date}',
       unknownDate: 'Date inconnue',
-      lastUsedOn: ' · derniere utilisation le {date}',
+      lastUsedOn: ' · dernière utilisation le {date}',
       neverUsed: ' · jamais utilisee',
       revoke: 'Revoquer',
       tokenNamePlaceholder: 'Nom de la cle (ex: Production)',
@@ -698,6 +704,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'تسجيل الدخول',
       loading: 'جار تسجيل الدخول...',
       demoAccess: 'تجربة حساب تجريبي',
+    accountCreatedFree: 'تم إنشاء الحساب! سجّل الدخول للوصول إلى مساحتك المجانية.',
+    accountCreatedPaid: 'تم استلام التسجيل! سجّل الدخول للمتابعة.',
       demoTitle: 'اختيار حساب تجريبي',
       demoSubtitle: 'اختر دورا لملء النموذج ثم سجل الدخول.',
       close: 'إغلاق',
@@ -713,6 +721,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'لوحة التحكم',
       employees: 'الموظفون النشطون',
       present: 'حاضرون',
+      live: 'مباشر',
       late: 'التأخيرات',
       activity: 'النشاط الأخير',
       team: 'الموظفون',
@@ -878,7 +887,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSettingsPage: {
       title: 'إعدادات Smart Attendance',
-      subtitle: 'إعداد وضع التسجيل والنطاق الجمارافي للشركة.',
+      subtitle: 'إعداد وضع التسجيل والنطاق الجغرافي للشركة.',
       backToDashboard: '← لوحة التحكم',
       loadError: 'تعذر تحميل الإعدادات.',
       saveError: 'خطأ أثناء الحفظ.',
@@ -897,7 +906,7 @@ const copy: Record<AppLocale, CopyTree> = {
       modeFreeHint: 'يسمح الوضع الحر للموظف باختيار الطريقة المتاحة.',
       gpsToggleTitle: 'تحديد الموقع GPS',
       gpsToggleSubtitle: 'تفعيل التحقق من الموقع',
-      geofenceConfigTitle: 'إعداد النطاق الجمارافي',
+      geofenceConfigTitle: 'إعداد النطاق الجغرافي',
       latitudeLabel: 'خط العرض',
       longitudeLabel: 'خط الطول',
       radiusFieldLabel: 'النطاق (متر)',
@@ -947,17 +956,17 @@ const copy: Record<AppLocale, CopyTree> = {
       syncCompleteMessage: 'اكتملت المزامنة — مرسل: {sent}، التعارضات: {conflicts}',
     },
     developerSettingsPage: {
-      title: 'مساد المطور',
-      subtitle: 'أدر مفاتيح API والردود الويب لدمج Leopardo RH مع أدواتك.',
+      title: 'إعدادات المطور',
+      subtitle: 'أدر مفاتيح API والويب هوكس لدمج Leopardo RH مع أدواتك.',
       loadTokensError: 'تعذر تحميل مفاتيح API.',
       loadWebhooksError: 'تعذر تحميل الردود.',
       createTokenError: 'تعذر إنشاء مفتاح API.',
       deleteTokenError: 'تعذر إلغاء مفتاح API.',
-      createWebhookError: 'تعذر إنشاء الرد الويب.',
-      deleteWebhookError: 'تعذر حذف الرد الويب.',
-      updateWebhookError: 'تعذر تحديث الرد الويب.',
-      revokeTokenConfirm: 'هل تريد إلعاء مفتاح API هذا؟ ستوقف التكاملات المستخدمة له عن العمل.',
-      deleteWebhookConfirm: 'حذف نقطة الرد الويب هذه؟',
+      createWebhookError: 'تعذر إنشاء الويب هوك.',
+      deleteWebhookError: 'تعذر حذف الويب هوك.',
+      updateWebhookError: 'تعذر تحديث الويب هوك.',
+      revokeTokenConfirm: 'هل تريد إلغاء مفتاح API هذا؟ ستوقف التكاملات المستخدمة له عن العمل.',
+      deleteWebhookConfirm: 'حذف نقطة الويب هوك هذه؟',
       revealedTokenNotice: 'مفتاح "{name}" تم إنشاؤه — انسخه الآن، لن يعرض مرة أخرى:',
       revealedTokenDismiss: 'لقد نسخت المفتاح، إخفاء',
       apiKeysTitle: 'مفاتيح API',
@@ -967,9 +976,9 @@ const copy: Record<AppLocale, CopyTree> = {
       unknownDate: 'تاريخ مفقود',
       lastUsedOn: ' · آخر استعمال في {date}',
       neverUsed: ' · لم يستخدم قط',
-      revoke: 'إلعاء',
+      revoke: 'إلغاء',
       tokenNamePlaceholder: 'اسم المفتاح (مثلاً: الإنتاج)',
-      webhooksTitle: 'الردود الويب',
+      webhooksTitle: 'الويب هوكس',
       noWebhooks: 'لا توجد نقاط رد ويب مكوّنة.',
       eventsCount: '{count} حدث(ان)',
       failuresCount: '{count} فشل(ات)',
@@ -1021,6 +1030,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Giris yap',
       loading: 'Giris yapiliyor...',
       demoAccess: 'Demo hesapla dene',
+    accountCreatedFree: 'Hesap oluşturuldu! Ücretsiz alanınıza erişmek için giriş yapın.',
+    accountCreatedPaid: 'Kayıt alındı! Devam etmek için giriş yapın.',
       demoTitle: 'Demo hesabi sec',
       demoSubtitle: 'Formu doldurmak icin bir rol secin, sonra girisi baslatin.',
       close: 'Kapat',
@@ -1036,6 +1047,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Kontrol paneli',
       employees: 'Aktif calisanlar',
       present: 'mevcut',
+      live: 'Canlı',
       late: 'Gecikmeler',
       activity: 'Son etkinlik',
       team: 'Calisanlar',
@@ -1344,6 +1356,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Sign in',
       loading: 'Signing in...',
       demoAccess: 'Try a demo account',
+    accountCreatedFree: 'Account created! Sign in to access your free workspace.',
+    accountCreatedPaid: 'Registration received! Sign in to continue.',
       demoTitle: 'Choose a demo account',
       demoSubtitle: 'Select a role to prefill the form, then sign in.',
       close: 'Close',
@@ -1359,6 +1373,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Dashboard',
       employees: 'Active employees',
       present: 'present',
+      live: 'Live',
       late: 'Late arrivals',
       activity: 'Recent activity',
       team: 'Employees',

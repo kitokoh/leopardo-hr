@@ -85,10 +85,14 @@ class SelfServiceTrialTest extends TestCase
             ->assertJsonStructure([
                 'data' => [
                     'company' => ['id', 'name', 'slug'],
-                    'manager' => ['email', 'first_name', 'last_name', 'temp_password'],
+                    'manager' => ['email', 'first_name', 'last_name'],
                     'trial' => ['days', 'ends_at'],
                 ],
             ]);
+
+        // #2680 — le mot de passe temporaire ne doit JAMAIS transiter dans la
+        // réponse JSON (fuite potentielle via logs/proxy) : il part par email.
+        $this->assertArrayNotHasKey('temp_password', $response->json('data.manager'));
 
         // Verify company created
         $companyId = $response->json('data.company.id');
