@@ -17356,6 +17356,40 @@ components:
               type: integer
               nullable: true
 
+    BankExport:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        payroll_run_id:
+          type: integer
+        format:
+          type: string
+          enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+        status:
+          type: string
+          enum: [pending, generating, generated, failed, sent, confirmed]
+        file_path:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        total_amount:
+          type: number
+        transfer_count:
+          type: integer
+        generated_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
     PaymentDocument:
       type: object
       properties:
