@@ -20,11 +20,9 @@ export function useKeyboardShortcuts() {
           e.preventDefault()
           themeStore.toggle()
           break
-        case 'k':
-          e.preventDefault()
-          // Focus search bar
-          document.getElementById('search')?.focus()
-          break
+        // #3865 : Ctrl+K est possédé par CommandPalette (toggle palette) —
+        // le double-binding précédent (focus #search ici) ouvrait la palette
+        // ET focusait la recherche en même temps.
       }
       return
     }
