@@ -7268,6 +7268,16 @@ paths:
           in: path
           required: true
           schema: { type: integer }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                acknowledge_placeholder:
+                  type: boolean
+                  description: "Confirmation explicite requise pour les pays en regle placeholder (issue #2332/#1872)"
       responses:
         "200":
           description: "Calcul lance"
@@ -7281,7 +7291,7 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
         "422":
-          description: "Session must be in draft status"
+          description: "Run non recalculable dans son statut, ou pays placeholder sans acknowledge_placeholder (issue #2332)"
 
   /payroll-runs/{payrollRun}/validate:
     post:
