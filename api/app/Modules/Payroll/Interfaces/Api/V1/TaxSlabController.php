@@ -82,7 +82,16 @@ class TaxSlabController extends Controller
 
     public function update(Request $request, TaxSlab $taxSlab): JsonResponse
     {
-        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        // Issue #1917 : Policy Laravel (manager + tenant isolation). Convention
+        // d'isolation (PayrollTenantIsolationTest) : cross-tenant = 404, pas
+        // 403 — le manager de l'autre société ne doit pas deviner l'existence.
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($taxSlab->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         $this->authorize('update', $taxSlab);
 
         // Issue #1813 : une ligne soumise/active ne se modifie plus directement —
@@ -115,7 +124,15 @@ class TaxSlabController extends Controller
 
     public function destroy(Request $request, TaxSlab $taxSlab): JsonResponse
     {
-        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        // Issue #1917 : Policy Laravel (manager + tenant isolation). Cross-tenant
+        // = 404 (convention isolation, cf. update()).
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($taxSlab->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         $this->authorize('delete', $taxSlab);
 
         // Issue #1813 : seules les lignes draft peuvent être supprimées.
@@ -133,6 +150,13 @@ class TaxSlabController extends Controller
      */
     public function submit(Request $request, TaxSlab $taxSlab): JsonResponse
     {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($taxSlab->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         // Issue #1917 : Policy Laravel (manager + tenant isolation).
         $this->authorize('submit', $taxSlab);
 
@@ -153,7 +177,15 @@ class TaxSlabController extends Controller
      */
     public function history(Request $request, TaxSlab $taxSlab): JsonResponse
     {
-        // Issue #1917 : Policy Laravel (manager + tenant isolation).
+        // Issue #1917 : Policy Laravel (manager + tenant isolation). Cross-tenant
+        // = 404 (convention isolation, cf. update()).
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($taxSlab->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         $this->authorize('view', $taxSlab);
 
         return response()->json([

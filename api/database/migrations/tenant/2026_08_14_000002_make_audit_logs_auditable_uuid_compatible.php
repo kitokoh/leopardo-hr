@@ -22,7 +22,10 @@ return new class extends Migration
         }
 
         Schema::table("{$schema}.audit_logs", function (Blueprint $table): void {
-            $table->string('auditable_id', 36)->change();
+            // Doit rester NULLABLE : des écritures d'audit sans modèle ciblé
+            // (ex. purge biométrique) insèrent auditable_id NULL — un
+            // `change()` sans nullable les cassait (NOT NULL, régression CI).
+            $table->string('auditable_id', 36)->nullable()->change();
         });
     }
 
@@ -34,7 +37,7 @@ return new class extends Migration
         }
 
         Schema::table("{$schema}.audit_logs", function (Blueprint $table): void {
-            $table->unsignedBigInteger('auditable_id')->change();
+            $table->unsignedBigInteger('auditable_id')->nullable()->change();
         });
     }
 };
