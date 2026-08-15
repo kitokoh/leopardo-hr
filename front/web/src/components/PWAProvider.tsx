@@ -51,6 +51,8 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    let updateInterval: ReturnType<typeof setInterval> | null = null;
+
     const registerServiceWorker = async () => {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js', {
@@ -60,8 +62,9 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
         safeLog('[PWA] Service Worker registered:', registration);
         setSwRegistration(registration);
 
-        // Check for updates periodically
-        setInterval(() => {
+        // Issue #3729 : l'interval de vérification doit être nettoyé au
+        // démontage (polling 60 s qui tournait indéfiniment sinon).
+        updateInterval = setInterval(() => {
           registration.update();
         }, 60000); // Check every minute
 
@@ -84,6 +87,12 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     };
 
     registerServiceWorker();
+
+    return () => {
+      if (updateInterval) {
+        clearInterval(updateInterval);
+      }
+    };
   }, []);
 
   // Handle beforeinstallprompt event

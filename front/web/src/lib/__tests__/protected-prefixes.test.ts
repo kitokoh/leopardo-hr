@@ -23,6 +23,19 @@ describe('protected prefixes (source unique #3377)', () => {
     }
   });
 
+  it.each(PROTECTED_PREFIXES)('sw.js ne met pas en cache le préfixe protégé %s (issue #3729)', (prefix) => {
+    const swSrc = readFileSync(join(__dirname, '../../../public/sw.js'), 'utf8');
+    expect(swSrc).toContain(prefix);
+  });
+
+  it('sw.js déclare exactement les préfixes protégés (source unique #3377/#3729)', () => {
+    const swSrc = readFileSync(join(__dirname, '../../../public/sw.js'), 'utf8');
+    const block = swSrc.match(/const PROTECTED_PREFIXES = \[([^\]]*)\]/);
+    expect(block).not.toBeNull();
+    const declared = [...(block?.[1]?.matchAll(/'([^']+)'/g) ?? [])].map((m) => m[1]);
+    expect(declared.sort()).toEqual([...PROTECTED_PREFIXES].sort());
+  });
+
   it('robots.txt interdit chaque préfixe protégé à TOUS les bots (Googlebot/Bingbot inclus)', () => {
     const result = robots();
     const rules = Array.isArray(result.rules) ? result.rules : [result.rules];
