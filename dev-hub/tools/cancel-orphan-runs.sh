@@ -59,10 +59,12 @@ is_protected() {
 CANCELLED=0
 CANCELLED_IDS=""
 
-# 3. Runs `queued` + `in_progress` (queued d'abord : ils libèrent la file sans
-# interrompre un job en cours ; in_progress sur branche morte = runner gâché,
-# annulé aussi — rien ne pourra merger ces résultats).
-for STATUS in queued in_progress; do
+# 3. Runs `queued` + `pending` + `in_progress` (queued/pending d'abord : ils
+# libèrent la file sans interrompre un job en cours ; in_progress sur branche
+# morte = runner gâché, annulé aussi — rien ne pourra merger ces résultats).
+# `pending` (runs créés mais pas encore affectés à un runner) était omis par la
+# version initiale : c'est pourtant l'état majoritaire pendant une saturation.
+for STATUS in queued pending in_progress; do
   while IFS=$'\t' read -r run_id branch; do
     if ! is_protected "${branch}"; then
       CANCELLED=$((CANCELLED + 1))
