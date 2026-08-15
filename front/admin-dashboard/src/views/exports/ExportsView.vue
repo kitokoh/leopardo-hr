@@ -15,19 +15,27 @@
             <p class="mt-1 text-xs text-gray-500">{{ report.description }}</p>
           </div>
         </div>
-        <div class="mt-4 flex items-center gap-2">
-          <select v-model="report.format" class="rounded-md border-gray-300 text-xs focus:border-indigo-500 focus:ring-indigo-500">
-            <option value="csv">CSV</option>
-            <option value="json">JSON</option>
-            <option value="xlsx" v-if="report.supportsXlsx">Excel</option>
-          </select>
-          <button
-            class="flex-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-            :disabled="report.downloading"
-            @click="downloadReport(report)"
+        <div class="mt-4">
+          <div
+            v-if="report.clientSpace"
+            class="rounded-md bg-slate-100 px-3 py-2 text-xs text-slate-600 ring-1 ring-slate-200"
           >
-            {{ report.downloading ? 'Telechargement...' : 'Telecharger' }}
-          </button>
+            {{ $t('exports.clientSpaceNote', "Disponible dans l'espace client") }}
+          </div>
+          <div v-else class="flex items-center gap-2">
+            <select v-model="report.format" class="rounded-md border-gray-300 text-xs focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="csv">CSV</option>
+              <option value="json">JSON</option>
+              <option value="xlsx" v-if="report.supportsXlsx">Excel</option>
+            </select>
+            <button
+              class="flex-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              :disabled="report.downloading"
+              @click="downloadReport(report)"
+            >
+              {{ report.downloading ? 'Telechargement...' : 'Telecharger' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -125,8 +133,15 @@ import {
 } from '@heroicons/vue/24/outline'
 import api, { downloadApiFile } from '@/services/api'
 import { useToast } from 'vue-toastification'
+import { translate } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const toast = useToast()
+const localeStore = useLocaleStore()
+
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 
@@ -144,12 +159,16 @@ const hrReport = reactive({
 })
 
 const reportTypes = reactive([
-  { key: 'employees', title: 'Employes', description: 'Liste complete avec postes, contrats, departements.', icon: UsersIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/employees' },
-  { key: 'attendance', title: 'Pointage', description: 'Registre de presence avec heures et anomalies.', icon: ClipboardDocumentListIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/attendance' },
-  { key: 'payslips', title: 'Bulletins de paie', description: 'Export mensuel bulletins avec details salaire.', icon: CurrencyEuroIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/pay-slips' },
-  { key: 'absences', title: 'Absences & conges', description: 'Historique demandes et soldes par employe.', icon: DocumentTextIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/absences' },
-  { key: 'training', title: 'Formations', description: 'Catalogue, sessions, inscriptions et progression.', icon: AcademicCapIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/training' },
-  { key: 'vehicles', title: 'Vehicules', description: 'Flotte, kilometrage, maintenances.', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/vehicles' },
+  // #3865 : ces exports appellent des endpoints TENANT (/v1/export/*, auth
+  // employee/manager) — le super-admin n'a pas de contrat equivalent dans le
+  // cockpit (/admin/*). Marques `clientSpace` : la carte affiche un etat
+  // honnete au lieu d'un bouton qui echoue en 401.
+  { key: 'employees', title: 'Employes', description: 'Liste complete avec postes, contrats, departements.', icon: UsersIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/employees', clientSpace: true },
+  { key: 'attendance', title: 'Pointage', description: 'Registre de presence avec heures et anomalies.', icon: ClipboardDocumentListIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/attendance', clientSpace: true },
+  { key: 'payslips', title: 'Bulletins de paie', description: 'Export mensuel bulletins avec details salaire.', icon: CurrencyEuroIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/pay-slips', clientSpace: true },
+  { key: 'absences', title: 'Absences & conges', description: 'Historique demandes et soldes par employe.', icon: DocumentTextIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/absences', clientSpace: true },
+  { key: 'training', title: 'Formations', description: 'Catalogue, sessions, inscriptions et progression.', icon: AcademicCapIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/training', clientSpace: true },
+  { key: 'vehicles', title: 'Vehicules', description: 'Flotte, kilometrage, maintenances.', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/vehicles', clientSpace: true },
 ])
 
 const historyColumns = [
@@ -203,7 +222,13 @@ async function fetchHistory() {
     exportHistory.value = res.data.data || res.data || []
   } catch (err) {
     // #3395 : état d'erreur visible + retry au lieu d'une liste vide trompeuse.
-    historyError.value = err?.response?.data?.message || 'Impossible de charger l\'historique des exports.'
+    // #3865 : l'historique des exports est un contrat TENANT (/v1/export/history)
+    // — pour le super-admin, afficher un etat honnete au lieu d'une erreur generique.
+    if (err?.response?.status === 401) {
+      historyError.value = t('exports.historyClientOnly', "Historique des exports disponible dans l'espace client")
+    } else {
+      historyError.value = err?.response?.data?.message || t('exports.historyError', "Impossible de charger l'historique des exports.")
+    }
   } finally {
     historyLoading.value = false
   }

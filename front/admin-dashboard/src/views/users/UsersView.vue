@@ -255,7 +255,10 @@ const filteredUsers = computed(() => users.value)
 // #2481 : export groupé = export client CSV de la page courante (aucun
 // endpoint d'export groupé côté API).
 function exportSelectedUsers() {
-  exportUsers()
+  // #3865 : l'export groupé respecte la sélection (avant : exportait toute
+  // la page courante, sélection ignorée).
+  const selected = users.value.filter(u => selectedUsers.value.includes(u.id))
+  exportUsers(selected)
 }
 const usersSummary = computed(() => {
   return t('users.page.summary', ':count utilisateur(s) plateforme')
@@ -475,12 +478,14 @@ async function deleteUser(user) {
 
 // Génère un mot de passe temporaire sûr (16 caractères) pour la création
 // d'un utilisateur plateforme (exigence API : ≥ 12 caractères).
-async function exportUsers() {
+async function exportUsers(rows = null) {
   try {
     // Export honnête de la page courante (pas de mock) — CSV côté client.
     // Issue #2700 — exporte les champs MAPÉS (createdAt/lastLoginAt, sinon les
     // colonnes dates étaient toujours vides) + échappement anti-injection de
     // formule (cellules commençant par = + - @).
+    // #3865 : `rows` optionnel — l'export groupé passe la sélection courante.
+    const exportRows = rows !== null ? rows : users.value
     const escapeCell = (value) => {
       const str = value === null || value === undefined ? '' : String(value)
       if (/^[=+\-@]/.test(str)) return `'${str}`
@@ -491,7 +496,7 @@ async function exportUsers() {
       : ''
     const csvContent = "data:text/csv;charset=utf-8," +
       "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
-      users.value.map(user =>
+      exportRows.map(user =>
         [user.name, user.email, user.status, user.company?.name || '', formatDate(user.createdAt), formatDate(user.lastLoginAt)]
           .map(escapeCell).join(',')
       ).join('\n')
