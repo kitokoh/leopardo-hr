@@ -157,6 +157,7 @@
 
 ### Fixed
 
+- **fix(api): un seul verbe par action approve/reject/submit (Closes #2684).** Routes PUT+POST dupliquées (absence.php, expense.php) → PUT seul (contrat clients vérifié).
 - **fix(api): URLs de prod retirées des fallbacks de config (Closes #2691).** `wss://proxy.leopardo-rh.com` (cameras) et `admin@leopardo-rh.com` (demo) → fallbacks neutres (`wss://localhost/cam`, `admin@example.com`) — valeurs réelles uniquement via env.
 - **fix(web): nettoyage — redirect mort supprimé, section apps honnête (Closes #2732, #2733).**
 - **fix(web): login/signup — démo conditionnelle, bannière localisée, locale réelle, typos arabes (Closes #2730, #2728, #2729).** Plus de comptes `password123` en dur ; bannière post-inscription localisée (4 locales) ; `locale: 'fr'` → `getCurrentLocale()` ; typos arabes corrigées.
