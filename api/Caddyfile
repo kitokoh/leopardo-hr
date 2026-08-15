@@ -6,4 +6,10 @@
     root * /app/public
     encode zstd br gzip
     php_server
+
+    # Issue #3601 : ne pas divulguer la version exacte de PHP/FrankenPHP
+    # (x-powered-by: PHP/8.4.x + x-render-origin-server) — facilite le
+    # ciblage de CVE. Les headers Serveur/X-Powered-By sont retirés.
+    header -Server
+    header -X-Powered-By
 }
