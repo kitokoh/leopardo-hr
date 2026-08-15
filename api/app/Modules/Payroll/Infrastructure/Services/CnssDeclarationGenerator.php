@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 
 /**
  * CEDEAO (#1830) — déclaration CNSS mensuelle Côte d'Ivoire (CSV).
@@ -15,22 +16,37 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
  * (3,2 %), retraite patronale (4,5 %), famille patronale (5,75 %), AT
  * patronale (2,0 %), totaux salarial/patronal par ligne + ligne TOTAUX.
  *
+ * ⚠️ Issue #2539 : les TAUX et PLAFONDS sont lus depuis
+ * CedeaoPayrollRules('CI')::socialContributions() (source unique) — toute
+ * constante locale dupliquée a été supprimée ; un changement de taux dans
+ * les règles pays est automatiquement répercuté dans le CSV.
+ *
  * ⚠️ Format interne documenté — à valider avec un comptable ivoirien.
  */
 class CnssDeclarationGenerator
 {
-    public const CNSS_CI_RETIREMENT_CAP = 1647315.0;
+    public function __construct(
+        private readonly CedeaoPayrollRules $rules = new CedeaoPayrollRules('CI'),
+    ) {}
 
-    /** #1913 : prestations familiales et AT/MP plafonnées séparément (CNPS). */
-    public const CNSS_CI_FAMILY_AT_CAP = 70000.0;
+    /**
+     * Rate lookup depuis les règles pays (issue #2539) — codes CI canoniques.
+     *
+     * @return array{rate: float, cap: float|null}
+     */
+    private function contribution(string $code): array
+    {
+        foreach ($this->rules->socialContributions() as $contrib) {
+            if ($contrib['code'] === $code) {
+                return [
+                    'rate' => (float) $contrib['rate'],
+                    'cap' => isset($contrib['cap']) ? (float) $contrib['cap'] : null,
+                ];
+            }
+        }
 
-    public const RATE_RETRAITE_EMP = 3.2;
-
-    public const RATE_RETRAITE_PAT = 4.5;
-
-    public const RATE_FAMILLE_PAT = 5.75;
-
-    public const RATE_AT_PAT = 2.0;
+        throw new \RuntimeException("CnssDeclarationGenerator: code {$code} absent de CedeaoPayrollRules::socialContributions().");
+    }
 
     public function generate(PayrollRun $run): string
     {
@@ -153,25 +169,32 @@ class CnssDeclarationGenerator
     private function contributionFor(PaySlip $slip): array
     {
         $gross = (float) $slip->gross_salary;
-        $retirementBase = min($gross, self::CNSS_CI_RETIREMENT_CAP);
-        $familyAtBase = min($gross, self::CNSS_CI_FAMILY_AT_CAP);
 
-        $retraiteEmp = round($retirementBase * self::RATE_RETRAITE_EMP / 100, 2);
-        $retraitePat = round($retirementBase * self::RATE_RETRAITE_PAT / 100, 2);
+        // Issue #2539 : taux/plafonds depuis les règles pays (source unique).
+        $retraite = $this->contribution('CNSS_CI_RET_EMP');
+        $retraitePat = $this->contribution('CNSS_CI_RET_PAT');
+        $famille = $this->contribution('CNSS_CI_FAM_PAT');
+        $at = $this->contribution('CNSS_CI_AT_PAT');
+
+        $retirementBase = min($gross, $retraite['cap'] ?? $gross);
         // #1913 : famille et AT/MP plafonnées séparément à 70 000 XOF/mois
         // (guide CNPS) — aligné sur CedeaoPayrollRules::calculateSocialCharges.
-        $famillePat = round($familyAtBase * self::RATE_FAMILLE_PAT / 100, 2);
-        $atPat = round($familyAtBase * self::RATE_AT_PAT / 100, 2);
+        $familyAtBase = min($gross, $famille['cap'] ?? $gross);
+
+        $retraiteEmp = round($retirementBase * $retraite['rate'] / 100, 2);
+        $retraitePatAmt = round($retirementBase * $retraitePat['rate'] / 100, 2);
+        $famillePat = round($familyAtBase * $famille['rate'] / 100, 2);
+        $atPatAmt = round($familyAtBase * $at['rate'] / 100, 2);
         $totalEmp = round($retraiteEmp, 2);
-        $totalPat = round($retraitePat + $famillePat + $atPat, 2);
+        $totalPat = round($retraitePatAmt + $famillePat + $atPatAmt, 2);
 
         return [
             'gross' => $gross,
             'capped_base' => $retirementBase,
             'retraite_emp' => $retraiteEmp,
-            'retraite_pat' => $retraitePat,
+            'retraite_pat' => $retraitePatAmt,
             'famille_pat' => $famillePat,
-            'at_pat' => $atPat,
+            'at_pat' => $atPatAmt,
             'total_emp' => $totalEmp,
             'total_pat' => $totalPat,
         ];
