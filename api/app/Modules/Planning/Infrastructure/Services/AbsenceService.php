@@ -33,39 +33,60 @@ class AbsenceService
         $endDate = Carbon::parse($data['end_date']);
         $daysCount = $startDate->diffInDays($endDate) + 1;
 
-        if ($type->deducts_leave) {
-            $balance = $this->currentAvailableBalance($employee, (int) $type->id, (int) $startDate->format('Y'));
-            if ($balance < $daysCount) {
-                throw new InsufficientLeaveBalanceException($balance, $daysCount);
+        // Issue #2676 (QA 2026-08-15) — la garde de solde était en
+        // check-then-insert sans verrou : deux demandes simultanées pouvaient
+        // toutes deux passer la garde et sur-réserver le solde. La vérification
+        // se fait désormais dans une transaction avec verrouillage de la ligne
+        // snapshot (même pattern que approve(), #2666).
+        return DB::transaction(function () use ($employee, $data, $proof, $type, $startDate, $daysCount): Absence {
+            if ($type->deducts_leave) {
+                $year = (int) $startDate->format('Y');
+                $typeId = (int) $data['absence_type_id'];
+
+                $snapshot = LeaveBalance::query()
+                    ->where('company_id', $employee->company_id)
+                    ->where('employee_id', $employee->id)
+                    ->where('absence_type_id', $typeId)
+                    ->where('year', $year)
+                    ->lockForUpdate()
+                    ->first();
+
+                $balance = $snapshot !== null
+                    ? (float) $snapshot->balance - (float) $snapshot->used - (float) $snapshot->pending
+                    : $this->currentAvailableBalance($employee, $typeId, $year);
+
+                if ($balance < $daysCount) {
+                    throw new InsufficientLeaveBalanceException($balance, $daysCount);
+                }
             }
-        }
 
-        if ($this->hasDateConflict($employee, $data['start_date'], $data['end_date'])) {
-            throw new AbsenceDateConflictException;
-        }
+            if ($this->hasDateConflict($employee, $data['start_date'], $data['end_date'])) {
+                throw new AbsenceDateConflictException;
+            }
 
-        // PA2-MOB-006: persist the optional supporting document (medical
-        // note, justification letter, etc.) under a company-scoped path so
-        // it is visible to both the employee and the deciding manager.
-        $proofPath = $proof?->store('absences/proofs/'.$employee->company_id, 'local');
+            // PA2-MOB-006: persist the optional supporting document (medical
+            // note, justification letter, etc.) under a company-scoped path so
+            // it is visible to both the employee and the deciding manager.
+            $proofPath = $proof?->store('absences/proofs/'.$employee->company_id, 'local');
 
-        $absence = Absence::create([
-            'company_id' => $employee->company_id,
-            'employee_id' => $employee->id,
-            'absence_type_id' => $type->id,
-            'start_date' => $data['start_date'],
-            'end_date' => $data['end_date'],
-            'days_count' => $daysCount,
-            'status' => 'pending',
-            'reason' => $data['reason'] ?? null,
-            'proof_path' => $proofPath,
-        ]);
+            $absence = Absence::create([
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
+                'absence_type_id' => (int) $data['absence_type_id'],
+                'start_date' => $data['start_date'],
+                'end_date' => $data['end_date'],
+                'days_count' => $daysCount,
+                'status' => 'pending',
+                'reason' => $data['reason'] ?? null,
+                'proof_path' => $proofPath,
+            ]);
 
-        AbsenceRequested::dispatch($absence);
+            AbsenceRequested::dispatch($absence);
 
-        $this->syncLeaveBalanceSnapshot($absence, 'pending_add');
+            $this->syncLeaveBalanceSnapshot($absence, 'pending_add');
 
-        return $absence;
+            return $absence;
+        });
     }
 
     public function approve(Absence $absence, Employee $approver): Absence
