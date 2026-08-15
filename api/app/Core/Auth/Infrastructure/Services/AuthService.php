@@ -95,8 +95,19 @@ readonly class AuthService
                 $this->setTenantSearchPath($employeeSchema);
             }
 
-            if ($this->supportsLoginLocking($employee) && $employee->locked_until && $employee->locked_until->isFuture()) {
-                throw new AccountLockedException($employee->locked_until);
+            $lockedUntil = $employee->getAttributes()['locked_until'] ?? null;
+            if ($this->supportsLoginLocking($employee)
+                && $lockedUntil instanceof \DateTimeInterface
+                && $lockedUntil->isFuture()) {
+                throw new AccountLockedException($lockedUntil);
+            }
+
+            // QA 2026-08-15 (#2652) : un `password_hash` null/absent ne doit
+            // jamais atteindre Hash::check (TypeError → 500 brut). Un compte
+            // sans mot de passe exploitable est traité comme identifiants
+            // invalides — même traitement que le mot de passe faux.
+            if (! is_string($employee->password_hash) || $employee->password_hash === '') {
+                throw new InvalidCredentialsException;
             }
 
             if (! Hash::check($password, $employee->password_hash)) {

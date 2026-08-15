@@ -107,6 +107,27 @@ class EdgeNodeController extends Controller
         return response()->json(['data' => $license]);
     }
 
+    /**
+     * Trigger a manual cloud sync for one of the company's Edge nodes.
+     * Scoped au tenant du manager (contrairement à forceSync, super-admin).
+     * POST /api/v1/edge/{nodeId}/sync
+     */
+    public function sync(Request $request, string $nodeId): JsonResponse
+    {
+        $node = EdgeNode::where('company_id', $request->user()->company_id)
+            ->findOrFail($nodeId);
+
+        $log = $this->syncEngine->sync($node);
+
+        return response()->json([
+            'data' => $log->fresh(),
+            'node' => [
+                'id' => $node->id,
+                'last_sync_at' => $node->fresh()->last_sync_at,
+            ],
+        ]);
+    }
+
     // ── Edge Node Machine Routes ──────────────────────────
 
     /**
