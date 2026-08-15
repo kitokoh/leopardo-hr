@@ -127,6 +127,7 @@ final class OidcIdTokenValidator
         $keys = Cache::get($cacheKey);
 
         if (is_array($keys)) {
+            /** @var list<array<string, mixed>> $keys */
             return $keys;
         }
 
