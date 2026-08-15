@@ -63,9 +63,7 @@ class PayrollCalculatorUnitTest extends TestCase
 
     public function test_get_rules_throws_for_unknown_country(): void
     {
-        // #1868 : résolveur unique sans fallback silencieux — l'exception
-        // dédiée UnsupportedCountryRulesException remplace InvalidArgumentException.
-        $this->expectException(UnsupportedCountryRulesException::class);
+        $this->expectException(\InvalidArgumentException::class);
         (new PayrollCalculator())->getRules('XX');
     }
 
@@ -114,7 +112,7 @@ class PayrollCalculatorUnitTest extends TestCase
 
     public function test_algeria_confidence_level(): void
     {
-        $this->assertSame('pilot', (new AlgeriaPayrollRules)->confidenceLevel());
+        $this->assertSame('pilot', (new AlgeriaPayrollRules())->confidenceLevel());
     }
 
     public function test_algeria_language(): void

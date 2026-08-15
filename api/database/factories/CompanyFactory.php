@@ -56,8 +56,8 @@ class CompanyFactory extends Factory
             'subscription_start' => now()->startOfMonth(),
             'subscription_end' => now()->addYear(),
             'language' => 'fr',
-            'timezone' => $timezones[$country],
-            'currency' => $currencies[$country],
+            'timezone' => $timezones[$country] ?? 'Africa/Algiers',
+            'currency' => $currencies[$country] ?? 'DZD',
         ];
     }
 

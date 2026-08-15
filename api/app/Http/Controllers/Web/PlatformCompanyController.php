@@ -285,16 +285,44 @@ class PlatformCompanyController extends Controller
      */
     public function updateCountry(Request $request, string $companyId): RedirectResponse|JsonResponse
     {
-        // #1873 — ce contrôleur bascule la connexion sur search_path=public
-        // (lecture déterministe de public.companies) puis sur le schéma du tenant
-        // (check invariant 9 + audit). Sans restauration finale, une session de test
-        // (connexion partagée) resterait sur public → requêtes suivantes (ex. lecture
-        // AuditLog) en échec « relation audit_logs does not exist » (42P01).
+        // Capturer le search_path ORIGINAL AVANT de basculer sur public : la
+        // restauration finale doit rendre la session à son état d'entrée
+        // (ex. 'public,shared_tenants'), sinon l'écriture d'audit (table
+        // tenant `audit_logs`) échoue en 500 (« relation does not exist »).
         $searchPathRow = DB::selectOne('SHOW search_path');
-        $initialSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
+        $originalSearchPath = is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')
             ? (string) $searchPathRow->search_path
             : 'public';
 
+        DB::statement('SET search_path TO public');
+
+        $company = Company::query()->findOrFail($companyId);
+
+        $validated = $request->validate([
+            'country' => ['required', 'string', 'size:2'],
+        ]);
+
+        $countryDefaults = CountryDefaults::find($validated['country']);
+        if ($countryDefaults === null) {
+            $message = 'Le pays est invalide ou non supporte ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => $message,
+                    'errors' => ['country' => [$message]],
+                ], 422);
+            }
+
+            return back()->withInput()->withErrors(['country' => $message]);
+        }
+
+        // INVARIANT 9 : verrouillage du pays après création de données de paie.
+        // Les tables `payroll_runs`/`salary_structures` vivent dans le schéma
+        // du TENANT (pas dans public) : bascule sur le search_path du tenant
+        // pour le check, puis RESTAURATION en `finally` (une session restée
+        // sur le schéma tenant fuirait vers les requêtes suivantes — même
+        // garde que `withTenantSearchPath()` de PlatformCompanyHealthService).
+        $hasPayrollData = false;
+        DB::statement('SET search_path TO '.$company->getSafeSearchPath());
         try {
                     DB::statement('SET search_path TO public');
 
@@ -412,8 +440,71 @@ class PlatformCompanyController extends Controller
                         ->route('platform.companies.edit', ['company' => $company->id])
                         ->with('status', 'Pays du tenant mis a jour.');
         } finally {
-            DB::statement('SET search_path TO '.$initialSearchPath);
+            DB::statement('SET search_path TO '.$originalSearchPath);
         }
+
+        if ($hasPayrollData) {
+            $message = 'Le pays d\'un tenant avec des donnees de paie (runs ou structures salariales) ne peut pas etre modifie (invariant 9). Purge/export prealable requis.';
+            if ($request->expectsJson()) {
+                return new JsonResponse([
+                    'message' => $message,
+                    'errors' => ['country' => [$message]],
+                ], 422);
+            }
+
+            return back()->withInput()->withErrors(['country' => $message]);
+        }
+
+        // Issue #1873 — toute modification du pays d'un tenant est journalisée
+        // (audit trail : avant/après, acteur, IP) pour traçabilité complète.
+        $oldCountry = $company->country;
+        $oldCurrency = $company->currency;
+        $oldTimezone = $company->timezone;
+        $oldLanguage = $company->language;
+
+        $company->country = $countryDefaults['country'];
+        // La devise/fuseau/langue suivent le pays (réparation cohérente).
+        $company->currency = strtoupper($countryDefaults['currency']);
+        $company->timezone = $countryDefaults['timezone'];
+        $company->language = strtolower($countryDefaults['language']);
+        $company->save();
+
+        AuditLog::create([
+            'company_id' => $company->id,
+            'user_id' => $request->user()?->id,
+            'action' => 'tenant_country_changed',
+            'auditable_type' => $company->getMorphClass(),
+            // auditable_id est unsignedBigInteger (schéma legacy) ; Company.id
+            // est un UUID → null ici (company_id identifie déjà le tenant,
+            // avant/après portés par old_values/new_values).
+            'auditable_id' => null,
+            'old_values' => [
+                'country' => $oldCountry,
+                'currency' => $oldCurrency,
+                'timezone' => $oldTimezone,
+                'language' => $oldLanguage,
+            ],
+            'new_values' => [
+                'country' => $company->country,
+                'currency' => $company->currency,
+                'timezone' => $company->timezone,
+                'language' => $company->language,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        if ($request->expectsJson()) {
+            return new JsonResponse([
+                'data' => [
+                    'company' => $company->fresh(),
+                ],
+            ]);
+        }
+
+        return redirect()
+            ->route('platform.companies.edit', ['company' => $company->id])
+            ->with('status', 'Pays du tenant mis a jour.');
     }
 
     /**

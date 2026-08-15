@@ -103,6 +103,9 @@ class GoldenSnPayrollTest extends TestCase
         $charges = $rules->calculateSocialCharges(432000.0);
 
         $this->assertSame(24192.0, $charges['employee']);
+        // Patronal (plafonds #1913) : IPRES 8,4 % = 36 288 + CSS famille
+        // min(432 000, 63 000) × 3 % = 1 890 + CSS AT 63 000 × 1 % = 630
+        // + CFCE 432 000 × 3 % = 12 960 → 51 768,00
         $this->assertSame(51768.0, $charges['employer']);
         $this->assertSame(18000.0, $rules->calculateBracketTax(432000.0));
     }

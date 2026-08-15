@@ -169,7 +169,8 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
-        // BJ/TG/NE restent placeholder — sans héritage des règles CI.
+        // ML/BF sont PILOT depuis #1829 (IUTS/ITS + CNSS/INPS sourcés) ;
+        // BJ/TG/NE restent placeholder.
         foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 

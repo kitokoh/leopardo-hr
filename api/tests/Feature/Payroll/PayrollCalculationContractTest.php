@@ -71,6 +71,7 @@ class PayrollCalculationContractTest extends TestCase
         $this->assertEquals(0.0, $contract['bracket_tax']);
         $this->assertEquals(0.0, $contract['other_deductions']);
         $this->assertEquals(403000.0, $contract['net_salary']);
+        // Plafonds #1913 : famille + AT plafonnés à 70 000 → 27 925,00.
         $this->assertEquals(27925.0, $contract['social_employer']);
         $this->assertEquals(527925.0, $contract['total_cost']);
     }
