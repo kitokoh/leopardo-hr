@@ -7,14 +7,9 @@ use Illuminate\Support\Facades\Route;
 // Espace Partenaire (Web Client)
 // Access via the main dashboard requires the sanctum guard (Employee token).
 Route::prefix('growth')->group(function () {
-<<<<<<< HEAD
-    // Issue #2622 : isolation tenant obligatoire (cross-tenant = 404).
-    Route::middleware(['auth:sanctum', 'tenant'])->prefix('partner')->group(function () {
-=======
-    // #2635 : middleware tenant complet (statut société/employé) + token.refresh,
-    // aligné sur le groupe standard de routes/api.php.
+    // Issue #2622 + #2635 : isolation tenant obligatoire (cross-tenant = 404) +
+    // alignement sur le groupe standard (token.refresh + throttle:api-plan).
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->prefix('partner')->group(function () {
->>>>>>> aadf77ab (fix(api): middleware tenant complet sur /ai/* et /growth/partner/* + SSO aligné (Closes #2635))
         Route::post('/apply', [PartnerDashboardController::class, 'apply']);
         Route::post('/payout', [PartnerDashboardController::class, 'requestPayout']);
         Route::get('/dashboard', [PartnerDashboardController::class, 'dashboard']);
