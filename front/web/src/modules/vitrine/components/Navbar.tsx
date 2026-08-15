@@ -378,6 +378,8 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               className="lg:hidden p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={copy.nav.menuLabel}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu-panel"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -388,11 +390,13 @@ export function Navbar({ isDark, onToggleDark }: Props) {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
+            id="mobile-menu-panel"
+            role="region"
+            aria-label={copy.nav.menuLabel}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            aria-label="Menu mobile"
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">
