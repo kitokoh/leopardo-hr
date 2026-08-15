@@ -13376,6 +13376,236 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+
+  /planning/weekly-optimization:
+    get:
+      tags: ["Planning"]
+      summary: "Optimisation hebdomadaire du planning (suggestions)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: week_start
+          in: query
+          required: false
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Suggestions d'optimisation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /planning/shift-rebalancing:
+    get:
+      tags: ["Planning"]
+      summary: "Suggestions de rééquilibrage des équipes"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Suggestions de rééquilibrage"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /payroll-runs/{payrollRun}/export:
+    get:
+      tags: ["Payroll"]
+      summary: "Export comptable du run (CSV/Excel streamé)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier d'export (stream)"
+          content:
+            text/csv: {}
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /payroll-runs/{payrollRun}/send-slips:
+    post:
+      tags: ["Payroll"]
+      summary: "Envoyer les bulletins du run aux employés"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Bulletins envoyés"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /payroll/cycles:
+    get:
+      tags: ["Payroll"]
+      summary: "Historique des cycles de paie"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Cycles de paie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { type: object } }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+
+  /payroll/cycles/current:
+    get:
+      tags: ["Payroll"]
+      summary: "Cycle de paie courant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Cycle courant (ou 404 si aucun)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /payroll/cycle-settings:
+    get:
+      tags: ["Payroll"]
+      summary: "Réglages du cycle de paie (société)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Réglages du cycle"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Payroll"]
+      summary: "Mettre à jour les réglages du cycle de paie"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                closing_day: { type: integer, nullable: true }
+                payment_day: { type: integer, nullable: true }
+                period_label: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "Réglages mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Error422"
+
+  /payroll-runs/{payrollRun}/bulk-pay:
+    post:
+      tags: ["Payroll"]
+      summary: "Lancer le paiement groupé du run (virements)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "202":
+          description: "Paiement groupé accepté (asynchrone)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/bulk-pay/status:
+    get:
+      tags: ["Payroll"]
+      summary: "Statut du paiement groupé du run"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Statut du bulk-pay"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: object }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
 components:
   securitySchemes:
     BearerAuth:

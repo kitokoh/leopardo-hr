@@ -1300,6 +1300,14 @@ class LeopardoClient:
         """Generer un export bancaire pour un run valide (alias chemin)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
 
+    def post_payroll_runs_by_payrollrun_bulk_pay(self, **kwargs):
+        """Lancer le paiement groupé du run (virements)"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/bulk-pay", **kwargs)
+
+    def get_payroll_runs_by_payrollrun_bulk_pay_status(self, **kwargs):
+        """Statut du paiement groupé du run"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/bulk-pay/status", **kwargs)
+
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/calculate", **kwargs)
@@ -1336,6 +1344,10 @@ class LeopardoClient:
         """Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/ipres-sn", **kwargs)
 
+    def get_payroll_runs_by_payrollrun_export(self, **kwargs):
+        """Export comptable du run (CSV/Excel streamé)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/export", **kwargs)
+
     def get_payroll_runs_by_payrollrun_journal(self, **kwargs):
         """Journal de paie mensuel CSV (F-10)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/journal", **kwargs)
@@ -1355,6 +1367,10 @@ class LeopardoClient:
     def regularizepayrollrun(self, **kwargs):
         """Créer un run de régularisation (DZ-DEPTH #1818)"""
         return self.request("POST", "/payroll-runs/{payrollRun}/regularize", **kwargs)
+
+    def post_payroll_runs_by_payrollrun_send_slips(self, **kwargs):
+        """Envoyer les bulletins du run aux employés"""
+        return self.request("POST", "/payroll-runs/{payrollRun}/send-slips", **kwargs)
 
     def get_payroll_runs_by_payrollrun_summary(self, **kwargs):
         """Resume de la session de paie"""
@@ -1376,6 +1392,22 @@ class LeopardoClient:
         """Détail d'un enregistrement d'audit de calcul de paie (manager principal/RH) — issue #1874"""
         return self.request("GET", "/payroll/audit/{correlationId}", **kwargs)
 
+    def get_payroll_cycle_settings(self, **kwargs):
+        """Réglages du cycle de paie (société)"""
+        return self.request("GET", "/payroll/cycle-settings", **kwargs)
+
+    def put_payroll_cycle_settings(self, **kwargs):
+        """Mettre à jour les réglages du cycle de paie"""
+        return self.request("PUT", "/payroll/cycle-settings", **kwargs)
+
+    def get_payroll_cycles(self, **kwargs):
+        """Historique des cycles de paie"""
+        return self.request("GET", "/payroll/cycles", **kwargs)
+
+    def get_payroll_cycles_current(self, **kwargs):
+        """Cycle de paie courant"""
+        return self.request("GET", "/payroll/cycles/current", **kwargs)
+
     def get_payroll_cycles_preview(self, **kwargs):
         """Previsualiser un cycle de paie candidat"""
         return self.request("GET", "/payroll/cycles/preview", **kwargs)
@@ -1387,6 +1419,14 @@ class LeopardoClient:
     def simulatepayroll(self, **kwargs):
         """Simuler l'impact d'un barème (manager, dry-run) — issue #1814"""
         return self.request("POST", "/payroll/simulate", **kwargs)
+
+    def get_planning_shift_rebalancing(self, **kwargs):
+        """Suggestions de rééquilibrage des équipes"""
+        return self.request("GET", "/planning/shift-rebalancing", **kwargs)
+
+    def get_planning_weekly_optimization(self, **kwargs):
+        """Optimisation hebdomadaire du planning (suggestions)"""
+        return self.request("GET", "/planning/weekly-optimization", **kwargs)
 
     def post_platform_auth_login(self, **kwargs):
         """Connexion super-admin"""
