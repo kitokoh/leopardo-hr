@@ -152,17 +152,20 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter analyze
 
-      - name: Run core widget tests
-        if: matrix.project.name == 'leopardo_core'
+      # #3822 : chaque app livrée exécute ses tests en CI. Avant, seuls
+      # leopardo_core et leopardo_employee lançaient `flutter test` — les
+      # 43 fichiers de test de HR (21), Manager (21) et Platform Admin (1)
+      # ne tournaient jamais, et une régression de compile (#3952) passait
+      # inaperçue. Marketing n'a pas encore de dossier test/ (socle smoke en
+      # follow-up) : l'étape est sautée proprement avec un warning.
+      - name: Run app test suite
         working-directory: ${{ matrix.project.path }}
-        run: flutter test
-
-      # F-30 (#1560) : l'app employee (noyau pointage) doit avoir des tests
-      # critiques verts en CI — check-in/check-out, offline, anomalies.
-      - name: Run employee critical tests
-        if: matrix.project.name == 'leopardo_employee'
-        working-directory: ${{ matrix.project.path }}
-        run: flutter test
+        run: |
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "::warning::Pas de dossier test/ — aucune suite à exécuter pour ${{ matrix.project.name }} (voir #3822)."
+          fi
 
   flutter-build-debug:
     name: Build Debug ${{ matrix.project.name }}
