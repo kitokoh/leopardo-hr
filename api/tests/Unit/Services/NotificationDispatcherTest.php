@@ -125,27 +125,27 @@ class NotificationDispatcherTest extends TestCase
     public function test_dispatch_fcm_failure_is_fail_open_and_traced_structured(): void
     {
         $employee = $this->makeEmployee();
-        DeviceToken::query()->create([
-            'employee_id' => $employee->id,
-            'token' => 'fcm-token-bad',
-            'platform' => 'ios',
-            'is_active' => true,
-        ]);
 
-        Http::fake([
-            'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send' => Http::response(['error' => ['status' => 'INVALID_ARGUMENT']], 400),
-        ]);
-
-        // Issue #2498 — l'échec FCM doit être tracé sur le channel structuré :
-        // on pointe le channel vers un fichier temporaire et on vérifie la
-        // trace écrite (observabilité réelle, sans mock Mockery).
+        // Issue #2498 — un échec remontant du push (exception) doit être tracé
+        // sur le channel structuré et rester fail-open : on pointe le channel
+        // vers un fichier temporaire et on vérifie la trace écrite
+        // (observabilité réelle, sans mock Mockery). Le service réel avale les
+        // 4xx FCM en interne (fail-open du service), donc on simule une panne
+        // remontante via une sous-classe qui jette une exception.
         $logPath = storage_path('logs/structured-'.uniqid('', true).'.log');
         Config::set('logging.channels.structured.path', $logPath);
 
-        try {
-            $dispatcher = new NotificationDispatcher(new PushNotificationService());
+        $failingPush = new class extends PushNotificationService {
+            public function sendToUser(int $userId, string $title, string $body, array $data = []): int
+            {
+                throw new \RuntimeException('FCM unavailable');
+            }
+        };
 
-            // La notification in-app est créée malgré l'échec FCM.
+        try {
+            $dispatcher = new NotificationDispatcher($failingPush);
+
+            // La notification in-app est créée malgré l'échec push (fail-open).
             $notification = $dispatcher->dispatch($employee->id, 'test_type', 'Titre', 'Corps');
             $this->assertInstanceOf(AppNotification::class, $notification);
 
