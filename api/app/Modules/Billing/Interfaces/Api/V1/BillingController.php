@@ -14,6 +14,7 @@ use App\Modules\Billing\Domain\Models\Subscription;
 use App\Modules\Billing\Infrastructure\Services\StripeService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -211,6 +212,11 @@ class BillingController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
+            Log::error('Échec création session checkout Stripe', [
+                'company_id' => $company->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return new JsonResponse([
                 'error' => 'CHECKOUT_FAILED',
                 'message' => 'Impossible de créer la session de paiement.',
@@ -255,6 +261,11 @@ class BillingController extends Controller
                 ],
             ]);
         } catch (\Throwable $e) {
+            Log::error('Échec ouverture portail Stripe', [
+                'company_id' => $company->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return new JsonResponse([
                 'error' => 'PORTAL_FAILED',
                 'message' => 'Impossible d\'accéder au portail de facturation.',
