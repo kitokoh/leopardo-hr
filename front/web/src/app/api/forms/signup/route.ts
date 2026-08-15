@@ -103,21 +103,10 @@ export async function POST(request: NextRequest) {
       if (trialResponse.ok && trialData.success) {
         signupResult = trialData.data;
       } else {
+        // Anti-énumération (#3945) : /trial/signup renvoie désormais une
+        // réponse uniforme — la détection « email déjà enregistré » se fait à
+        // l'étape verify (OTP), qui remonte EMAIL_ALREADY_REGISTERED (409).
         signupError = trialData.error || 'SIGNUP_FAILED';
-        // If email already registered, pass through the specific error
-        if (trialData.error === 'EMAIL_ALREADY_REGISTERED') {
-          return NextResponse.json(
-            {
-              success: false,
-              message: trialData.message || 'Un compte avec cet email existe deja.',
-              error: 'EMAIL_ALREADY_REGISTERED',
-              data: {
-                login_url: '/auth/login',
-              },
-            },
-            { status: 409 }
-          );
-        }
       }
     } catch (error) {
       signupError = error instanceof Error ? error.name : 'NETWORK_ERROR';

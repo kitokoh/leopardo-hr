@@ -56,19 +56,31 @@ class SelfServiceTrialController extends Controller
 
         $email = strtolower(trim($validated['email']));
 
+        // Anti-énumération (#3945) : la réponse de signup est UNIFORME que
+        // l'email ait déjà un compte manager ou non — la détection
+        // « compte déjà existant » est déplacée à l'étape verify, où le
+        // client a prouvé la possession de la boîte mail (OTP valide).
+        // L'existence est simplement loggée côté serveur ici.
         $existingManager = $this->requestTrialSignup->findExistingManager($email);
         if ($existingManager) {
-            return new JsonResponse([
-                'success' => false,
-                'error' => 'EMAIL_ALREADY_REGISTERED',
-                'message' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
-                'data' => [
-                    'login_url' => '/auth/login',
-                ],
-            ], 409);
+            Log::info('trial.signup_duplicate_email_uniform_response', ['email' => $email]);
         }
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
+            if ($existingManager) {
+                // Pas de double provisioning pour un email déjà enregistré :
+                // réponse uniforme uniquement (token aléatoire, aucun row/job).
+                return new JsonResponse([
+                    'success' => true,
+                    'message' => __('billing.trial_signup_received'),
+                    'data' => [
+                        'email' => $email,
+                        'status' => 'provisioning_sandbox',
+                        'provisioning_token' => Str::random(64),
+                    ],
+                ], 200);
+            }
+
             // MULTI-PAYS (#1950) : le pays validé du signup est transmis au job
             // (plus de fallback silencieux DZ — invariant 10 de la spec).
             // #2437 : un provisioning_token est créé pour permettre au prospect
