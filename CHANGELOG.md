@@ -7,6 +7,9 @@
 ## [Unreleased]
 
 ### Fixed
+
+- **fix(migrations): préfixes de séquence dupliqués — 5 migrations renommées, « Module Structure Validator » vert (Closes #2537).** Les merges parallèles du 2026-08-15 ont laissé 5 collisions de basename (issue #1962) : `public/2026_08_15_000001` ×2, `tenant/2026_08_14_000001` ×2, `tenant/2026_08_14_000020` ×2, `tenant/2026_08_15_000001` ×3 → le check requis échouait sur TOUTES les PRs (Laravel indexe les migrations par basename, la perdante est ignorée silencieusement). Renommées avec des préfixes libres (aucune référence dans le code, toutes datent du 2026-08-15, jamais sorties en prod) : `2026_08_15_000002_create_trial_provisionings_table`, `2026_08_14_000004_add_sync_token_hash_to_zkteco_devices_table`, `2026_08_14_000022_make_audit_logs_auditable_id_varchar`, `2026_08_15_000002_add_bf_ml_matricules_to_employees`, `2026_08_15_000003_create_export_history_table`. Vérifié : `check-migration-basename-collisions.sh` → aucune collision.
+
 ### Fixed
 
 - **fix(test): OpenApiDocsTest — séquences `<?php`/`<?=` brutes dans les commentaires retirées, parse PHP rétabli (Closes #2531).** Le `?>` d'un commentaire `//` ferme le mode PHP (comportement documenté) : les lignes 72-75 de `api/tests/Feature/OpenApiDocsTest.php` (commentaire de non-régression #2265) contenaient `<?php` et `<?= ... ?>` → le reste du fichier était traité en HTML → `PHP Parse error: Unclosed '{' on line 61` → PHPStan `phpstan.parse` échouait (main rouge « PHPStan — Strict » + « Module Structure Validator »). Commentaires reformulés (guillemets + `&lt;?php`), `php -l` vert. Même classe d'artifact de merge que #2415 (fatal `use` dupliqué, PR #2514).
