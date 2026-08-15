@@ -152,11 +152,14 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
     try {
       final sessions = await _repository.getMySessions();
 
-      // La session active est la première session sans date de fin
-      final active = sessions.firstWhere(
-        (s) => s.isActive,
-        orElse: () => sessions.isEmpty ? sessions.first : sessions.first,
-      );
+      // La session active est la première session sans date de fin.
+      // Issue #3953 : sur liste vide, l'orElse appelait `sessions.first`
+      // (StateError) → fausse erreur « Impossible de charger les sessions
+      // GPS » pour tout employé sans session. Le garde `isEmpty` renvoie
+      // null ; `activeSession` reste null (clearActive=true) ci-dessous.
+      final active = sessions.isEmpty
+          ? null
+          : sessions.firstWhere((s) => s.isActive, orElse: () => sessions.first);
 
       // Filtrage : session active uniquement si réellement en cours
       final activeSession = sessions.any((s) => s.isActive) ? active : null;
