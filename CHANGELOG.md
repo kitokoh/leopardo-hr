@@ -8,6 +8,9 @@
 
 ### Fixed
 ### Fixed
+- **fix(phpstan/php): artifacts de merge — méthodes dupliquées supprimées (fatals PHP runtime) + PHPStan Modules Architecture vert (Closes #2522).** Les merges de PRs concurrentes ont laissé des doublons : `WebhookController::test()` (2 versions — gardé celle alignée sur WebhookTestEndpointTest, événement 'test'), `VehicleController::myVehicles()` (gardé la shape aplatie alignée sur le modèle mobile VehiclePosition), `TrainingController::indexEnrollments()` (gardé la version avec filtres status/session_id). Au passage : clés `rules_version`/`rules_identifier`/`rules_period` dupliquées dans `PayrollCalculator` (même `$run->update()`), docblock `@return` périmé de `SSOService::handleOIDCCallback()`, méthode privée morte `BankExportGenerator::companyBankDetails()` retirée.
+
+### Fixed
 - **fix(test): PayrollCalculatorUnitTest — `use` dupliqué supprimé : fatal PHP, gate couverture cassé (Closes #2415).** Artifact de merge de PRs concurrentes : `use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;` déclaré DEUX fois (lignes 7 et 17) → `PHP Fatal error: name already in use` → le run `php artisan test --coverage-clover` mourait avant d'écrire `clover.xml` → le gate « Backend Coverage » reportait `Coverage clover file not found, defaulting to 0%` puis échouait (`0% < 65%`) sur main ET sur toutes les PRs (constat #2415). La couverture réelle n'était jamais mesurée. Suppression de l'import dupliqué (grep global : seul fichier concerné).
 
 ### Fixed

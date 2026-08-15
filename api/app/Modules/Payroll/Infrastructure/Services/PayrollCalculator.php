@@ -370,11 +370,6 @@ class PayrollCalculator
                 'total_employer_cost' => round($totalEmployerCost, 2),
                 'employee_count' => $run->paySlips()->count(),
                 'calculated_at' => now(),
-                // Issue #2221 : version/identifiant/période des règles EFFECTIVES
-                // persistées sur le run (promesse #1871) — pas seulement sur les bulletins.
-                'rules_version' => $rulesVersion,
-                'rules_identifier' => $rulesIdentifier,
-                'rules_period' => $rulesPeriod,
             ]);
         });
 

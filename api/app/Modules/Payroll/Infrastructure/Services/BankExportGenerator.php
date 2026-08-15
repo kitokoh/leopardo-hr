@@ -157,25 +157,6 @@ class BankExportGenerator
      *
      * @return array{iban: string, bic: string}
      */
-    private function companyBankDetails(PayrollRun $run): array
-    {
-        /** @var Company|null $company */
-        $company = $run->relationLoaded('company')
-            ? $run->getRelation('company')
-            : Company::query()->where('id', $run->company_id)->first();
-
-        $metadata = is_object($company) ? ($company->metadata ?? []) : [];
-        $iban = $metadata['bank']['iban'] ?? null;
-        $bic = $metadata['bank']['bic'] ?? null;
-
-        if (! is_string($iban) || $iban === '' || ! is_string($bic) || $bic === '') {
-            throw new \RuntimeException(
-                'SEPA export requires the company bank details (companies.metadata.bank.iban / .bic).'
-            );
-        }
-
-        return ['iban' => $iban, 'bic' => $bic];
-    }
 
     private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string
     {
