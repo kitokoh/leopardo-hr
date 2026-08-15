@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
 import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = generateSEOMetadata({
   keywords: pageMetadata.faq.keywords,
   ogImage: pageMetadata.faq.ogImage,
   ogType: 'website',
-  canonical: 'https://gestionemployer-backend.vercel.app/faq',
+  canonical: `${SITE_URL}/faq`,
 });
 
 export default function FaqLayout({

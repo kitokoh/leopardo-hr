@@ -109,8 +109,11 @@ npm run preview
 Créer un fichier `.env` :
 
 ```env
-VITE_API_URL=http://localhost:8000/api
-VITE_WEBSOCKET_URL=ws://localhost:6001
+# QA 2026-08-15 (#2659) : sans VITE_API_URL, le build pointe sur l'API de
+# production (https://gestionemployerbackend.onrender.com/api/v1). Pour le
+# dev local uniquement :
+VITE_API_URL=http://localhost:8000/api/v1
+VITE_WEBSOCKET_URL=ws://localhost:8000
 ```
 
 ### Configuration API
