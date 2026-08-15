@@ -2072,65 +2072,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /admin/users:
-    get:
-      tags: ["Platform Admin"]
-      summary: "Lister les utilisateurs plateforme (super-admin) — issue #2269"
-      description: "Liste paginée des utilisateurs public.users avec entreprise liée. Recherche nom/email, filtre statut, tri allowlisté."
-      security:
-        - SuperAdminBearerAuth: []
-      parameters:
-        - in: query
-          name: page
-          required: false
-          schema: { type: integer, default: 1 }
-        - in: query
-          name: per_page
-          required: false
-          schema: { type: integer, default: 25, maximum: 100 }
-        - in: query
-          name: search
-          required: false
-          schema: { type: string }
-        - in: query
-          name: status
-          required: false
-          schema:
-            type: string
-            enum: [active, disabled, pending, suspended]
-        - in: query
-          name: sort_by
-          required: false
-          schema:
-            type: string
-            enum: [created_at, last_login_at, email, last_name]
-        - in: query
-          name: sort_dir
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-      responses:
-        "200":
-          description: "Liste paginée d'utilisateurs plateforme"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PlatformUser"
-                  meta:
-                    type: object
-                    properties:
-                      current_page: { type: integer }
-                      last_page: { type: integer }
-                      per_page: { type: integer }
-                      total: { type: integer }
-        "401": { $ref: "#/components/responses/Error401" }
-        "403": { $ref: "#/components/responses/Error403" }
   /admin/users/{user}:
     get:
       tags: ["Platform Admin"]
@@ -7028,7 +6969,7 @@ paths:
                       warning: { type: string }
                       warning_key: { type: string }
                       source: { type: string }
-                      verification_date: { type: [string, "null"] }
+                      verification_date: { type: string, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -7363,36 +7304,6 @@ paths:
       responses:
         "200":
           description: "Liste de mes inscriptions formation"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /me/vehicles:
-    get:
-      tags: ["Me"]
-      summary: "Mes vehicules (employee)"
-      description: "Vehicules assignes a l'employe courant (assigned_driver_id) avec derniere position Traccar best-effort."
-      responses:
-        "200":
-          description: "Liste des vehicules de l'employe"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        vehicle_id: { type: integer }
-                        id: { type: integer }
-                        plate_number: { type: string }
-                        brand: { type: string, nullable: true }
-                        model: { type: string, nullable: true }
-                        latitude: { type: number, nullable: true }
-                        longitude: { type: number, nullable: true }
-                        speed: { type: number, nullable: true }
-                        updated_at: { type: string, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -9341,13 +9252,6 @@ paths:
         "403":
           $ref: "#/components/responses/Error403"
     post:
-      parameters:
-        - name: payrollRun
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: "Identifiant du cycle de paie"
       tags: ["Payroll"]
       summary: "Creer un export bancaire pour un run valide/paye (asynchrone)"
       requestBody:
@@ -11056,20 +10960,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /export/pay-slips:
-    get:
-      tags: ["Exports"]
-      summary: "Exporter les bulletins"
-      parameters:
-        - name: format
-          in: query
-          schema: { type: string, enum: [csv, xlsx, pdf], default: csv }
-      responses:
-        "200":
-          description: "Donnees export"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /export/absences:
     get:
       tags: ["Exports"]
@@ -11123,16 +11013,6 @@ paths:
       responses:
         "200":
           description: "Donnees export"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /export/history:
-    get:
-      tags: ["Exports"]
-      summary: "Historique des exports"
-      responses:
-        "200":
-          description: "Liste des exports precedents"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -11462,7 +11342,7 @@ paths:
                     properties:
                       token: { type: string }
                       token_type: { type: string }
-                      token_expires_at: { type: [string, "null"] }
+                      token_expires_at: { type: string, nullable: true }
                       employee:
                         type: object
                         properties:
@@ -11471,7 +11351,7 @@ paths:
                           last_name: { type: string }
                           email: { type: string }
                           role: { type: string }
-                          manager_role: { type: [string, "null"] }
+                          manager_role: { type: string, nullable: true }
         "400":
           description: "Code ou id_token manquant"
         "422":
@@ -12552,6 +12432,16 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Config mode géolocalisation de l'entreprise (manager/RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Réglages entreprise"
+        "401":
+          $ref: "#/components/responses/Error401"
     put:
       tags: ["SmartAttendance"]
       summary: "Mettre à jour la configuration GPS (admin)"
@@ -13039,30 +12929,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Config mode géolocalisation de l'entreprise (manager/RH)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Réglages entreprise"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour la config mode géolocalisation (principal)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Config mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
   /smart-attendance/employees/{employeeId}/preference:
     get:
       tags: ["SmartAttendance"]
@@ -13078,18 +12944,6 @@ paths:
       responses:
         "200":
           description: "Préférence de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /growth/partner/dashboard:
-    get:
-      tags: ["Growth"]
-      summary: "Tableau de bord de l'espace partenaire"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Données du tableau de bord partenaire"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -17660,6 +17514,7 @@ components:
         compliance:
           allOf:
             - $ref: "#/components/schemas/Compliance"
+          type: object
           nullable: true
           description: >-
             Bloc conformité (issue #2116) — null quand le pays du run n'est
@@ -18173,42 +18028,6 @@ components:
         cap: { type: number, nullable: true, minimum: 0 }
         effective_from: { type: string, format: date }
         effective_to: { type: string, format: date, nullable: true }
-    PlatformUser:
-      type: object
-      description: "Utilisateur plateforme (public.users) — contrat super-admin (issue #2269)"
-      properties:
-        id: { type: integer }
-        first_name: { type: string, nullable: true }
-        last_name: { type: string, nullable: true }
-        name: { type: string, nullable: true }
-        email: { type: string }
-        phone: { type: string, nullable: true }
-        status: { type: string, enum: [active, disabled, pending, suspended] }
-        is_active: { type: boolean }
-        preferred_language: { type: string }
-        last_login_at: { type: string, format: date-time, nullable: true }
-        failed_login_attempts: { type: integer }
-        locked_until: { type: string, format: date-time, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-        updated_at: { type: string, format: date-time, nullable: true }
-        company:
-          type: object
-          nullable: true
-          properties:
-            id: { type: string, format: uuid }
-            name: { type: string, nullable: true }
-            link_status: { type: string }
-            employee_id: { type: integer }
-        roles:
-          type: array
-          description: "Présent sur GET /admin/users/{id} uniquement"
-          items:
-            type: object
-            properties:
-              role: { type: string, nullable: true }
-              manager_role: { type: string, nullable: true }
-              company_id: { type: string, format: uuid, nullable: true }
-              link_status: { type: string }
     TaxSlab:
       type: object
       properties:
@@ -18601,6 +18420,77 @@ components:
           nullable: true
         cv_url:
           type: string
+          nullable: true
+
+    TrainingSession:
+      type: object
+      description: Session de formation (contract real TrainingSessionResource)
+      properties:
+        id:
+          type: integer
+        training_course_id:
+          type: integer
+        trainer_id:
+          type: integer
+          nullable: true
+        external_trainer:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        status:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    TrainingEnrollment:
+      type: object
+      description: Inscription a une session de formation (contract real TrainingEnrollmentResource)
+      properties:
+        id:
+          type: integer
+        training_session_id:
+          type: integer
+        employee_id:
+          type: integer
+        status:
+          type: string
+        score:
+          type: number
+          nullable: true
+        feedback:
+          type: string
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        course_title:
+          type: string
+          nullable: true
+        session_date:
+          type: string
+          format: date
+          nullable: true
+        progress:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
           nullable: true
 
     TrainingCourse:

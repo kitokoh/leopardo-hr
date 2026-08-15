@@ -1798,6 +1798,47 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+  /admin/users:
+    get:
+      tags: ["Platform Admin"]
+      summary: "Liste reelle des utilisateurs plateforme"
+      description: "Agregat super-admin depuis shared_tenants.employees joint a public.companies. Alimente la vue Users du cockpit admin (remplacement des donnees mock). Ajoute en vague QA 2026-08-14."
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, default: 25 }
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Utilisateurs pagines"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        name: { type: string }
+                        email: { type: string, nullable: true }
+                        status: { type: string }
+                        company_id: { type: string, nullable: true }
+                        company_name: { type: string, nullable: true }
+                        created_at: { type: string }
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Error401"
+
 
   /admin/dashboard/activities:
     get:
@@ -2042,65 +2083,6 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /admin/users:
-    get:
-      tags: ["Platform Admin"]
-      summary: "Lister les utilisateurs plateforme (super-admin) — issue #2269"
-      description: "Liste paginée des utilisateurs public.users avec entreprise liée. Recherche nom/email, filtre statut, tri allowlisté."
-      security:
-        - SuperAdminBearerAuth: []
-      parameters:
-        - in: query
-          name: page
-          required: false
-          schema: { type: integer, default: 1 }
-        - in: query
-          name: per_page
-          required: false
-          schema: { type: integer, default: 25, maximum: 100 }
-        - in: query
-          name: search
-          required: false
-          schema: { type: string }
-        - in: query
-          name: status
-          required: false
-          schema:
-            type: string
-            enum: [active, disabled, pending, suspended]
-        - in: query
-          name: sort_by
-          required: false
-          schema:
-            type: string
-            enum: [created_at, last_login_at, email, last_name]
-        - in: query
-          name: sort_dir
-          required: false
-          schema:
-            type: string
-            enum: [asc, desc]
-      responses:
-        "200":
-          description: "Liste paginée d'utilisateurs plateforme"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/PlatformUser"
-                  meta:
-                    type: object
-                    properties:
-                      current_page: { type: integer }
-                      last_page: { type: integer }
-                      per_page: { type: integer }
-                      total: { type: integer }
-        "401": { $ref: "#/components/responses/Error401" }
-        "403": { $ref: "#/components/responses/Error403" }
   /admin/users/{user}:
     get:
       tags: ["Platform Admin"]
@@ -6998,7 +6980,7 @@ paths:
                       warning: { type: string }
                       warning_key: { type: string }
                       source: { type: string }
-                      verification_date: { type: [string, "null"] }
+                      verification_date: { type: string, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -7322,6 +7304,17 @@ paths:
       responses:
         "200":
           description: "Liste de mes formations"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /me/training-enrollments:
+    get:
+      tags: ["Me"]
+      summary: "Mes inscriptions formation (alias mobile employee)"
+      description: "Alias de /me/trainings : liste des inscriptions de l'employe courant avec course_title, session_date, progress, status."
+      responses:
+        "200":
+          description: "Liste de mes inscriptions formation"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -7793,6 +7786,60 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cnss-bf:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"
+      description: "CSV burkinabè : une ligne par bulletin validé (matricule CNSS BF, nom, prénom, brut, assiette retraite plafonnée 900 000 XOF, retraite salariale/patronale 5,5 %/6,5 %, famille patronale 7,0 %, AT patronale 3,5 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas BF."
+      operationId: downloadCnssBfDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS BF"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/inps-ml:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"
+      description: "CSV malien : une ligne par bulletin validé (matricule INPS ML, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XOF, retraite salariale/patronale 3,6 %/7,4 %, famille patronale 4,0 % non plafonnée, AT patronale 2,0 % non plafonnée, totaux) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas ML."
+      operationId: downloadInpsMlDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV INPS ML"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/regularize:
     post:
       tags: ["Payroll Engine"]
@@ -7939,6 +7986,53 @@ paths:
                         description: "Contenu CSV brut, present seulement quand format=csv ou xlsx"
                       filename: { type: string }
                       count: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Reserve aux managers"
+
+  /export/history:
+    get:
+      tags: ["HR"]
+      summary: "Historique des exports du portail manager (issue #2199) - manager uniquement"
+      description: "Source reelle : table append-only `export_history`, tenant-scopee. Pagine, filtre par type."
+      operationId: exportHistory
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema: { type: string, maxLength: 100 }
+          description: "Filtre par type d'export (employees, attendance, pay_slips, absences, training, contracts, vehicles, payroll_journal, payroll_ledger, accounting_od)"
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      responses:
+        "200":
+          description: "Historique pagine des exports"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        type: { type: string }
+                        format: { type: string, nullable: true }
+                        record_count: { type: integer, nullable: true }
+                        filename: { type: string, nullable: true }
+                        created_at: { type: string, format: date-time }
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -9132,17 +9226,45 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   # --- Bank Export ---
-  /payroll-runs/{payrollRun}/bank-export:
-    post:
-      parameters:
-        - name: payrollRun
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: "Identifiant du cycle de paie"
+  /bank-exports:
+    get:
       tags: ["Payroll"]
-      summary: "Generer un export bancaire"
+      summary: "Lister les exports bancaires du tenant (pagine)"
+      parameters:
+        - name: per_page
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string, maxLength: 20 }
+      responses:
+        "200":
+          description: "Liste paginee des exports bancaires"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BankExport"
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      last_page: { type: integer }
+                      per_page: { type: integer }
+                      total: { type: integer }
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+    post:
+      tags: ["Payroll"]
+      summary: "Creer un export bancaire pour un run valide/paye (asynchrone)"
       requestBody:
         required: true
         content:
@@ -9155,12 +9277,18 @@ paths:
                   type: integer
                 format:
                   type: string
-                  enum: [sepa, csv, ach]
+                  enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
       responses:
-        "201":
-          description: "Export genere"
+        "202":
+          description: "Export cree (generation asynchrone)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BankExport"
         "401":
           $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
         "422":
           $ref: "#/components/responses/Validation422"
 
@@ -9895,48 +10023,58 @@ paths:
   /training/sessions:
     get:
       tags: ["Training"]
-      summary: "Lister toutes les sessions de formation (toutes formations, tenant scope)"
-      description: "Liste globale paginee des sessions du tenant, filtrable par `status` et `course_id`. QA wave 2026-08-14 T003 (#2228)."
+      summary: "Toutes les sessions de formation du tenant"
+      description: "Liste paginee des sessions (avec cours) — cockpit manager/admin. Ajoutee en vague QA 2026-08-14."
+      security:
+        - BearerAuth: []
       parameters:
-        - name: status
-          in: query
-          required: false
-          schema: { type: string, enum: [planned, in_progress, completed, cancelled] }
-        - name: course_id
-          in: query
-          required: false
-          schema: { type: integer }
         - name: per_page
           in: query
           required: false
           schema: { type: integer, default: 15 }
       responses:
         "200":
-          description: "Liste paginee des sessions"
+          description: "Sessions paginees"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TrainingSession"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
         "401":
           $ref: "#/components/responses/Error401"
 
   /training/enrollments:
     get:
       tags: ["Training"]
-      summary: "Lister toutes les inscriptions formation (tenant scope)"
-      description: "Liste globale paginee des inscriptions du tenant, filtrable par `status` et `session_id`. QA wave 2026-08-14 T003 (#2228)."
+      summary: "Toutes les inscriptions formation du tenant"
+      description: "Liste paginee des inscriptions (avec cours) — cockpit manager/admin. Ajoutee en vague QA 2026-08-14."
+      security:
+        - BearerAuth: []
       parameters:
-        - name: status
-          in: query
-          required: false
-          schema: { type: string, enum: [enrolled, attended, completed, no_show, cancelled] }
-        - name: session_id
-          in: query
-          required: false
-          schema: { type: integer }
         - name: per_page
           in: query
           required: false
           schema: { type: integer, default: 15 }
       responses:
         "200":
-          description: "Liste paginee des inscriptions"
+          description: "Inscriptions paginees"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TrainingEnrollment"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -10889,16 +11027,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /export/history:
-    get:
-      tags: ["Exports"]
-      summary: "Historique des exports"
-      responses:
-        "200":
-          description: "Liste des exports precedents"
-        "401":
-          $ref: "#/components/responses/Error401"
-
   /export/payroll-journal:
     get:
       tags: ["Exports"]
@@ -11225,7 +11353,7 @@ paths:
                     properties:
                       token: { type: string }
                       token_type: { type: string }
-                      token_expires_at: { type: [string, "null"] }
+                      token_expires_at: { type: string, nullable: true }
                       employee:
                         type: object
                         properties:
@@ -11234,7 +11362,7 @@ paths:
                           last_name: { type: string }
                           email: { type: string }
                           role: { type: string }
-                          manager_role: { type: [string, "null"] }
+                          manager_role: { type: string, nullable: true }
         "400":
           description: "Code ou id_token manquant"
         "422":
@@ -11283,15 +11411,22 @@ paths:
           application/json:
             schema:
               type: object
-              required: [provider, entity_id, sso_url]
+              required: [provider]
               properties:
                 provider: { type: string, enum: [saml, oidc] }
-                entity_id: { type: string, format: uri }
-                sso_url: { type: string, format: uri }
+                entity_id: { type: string, format: uri, nullable: true }
+                sso_url: { type: string, format: uri, nullable: true }
                 slo_url: { type: string, format: uri, nullable: true }
                 certificate: { type: string, nullable: true }
                 client_id: { type: string, nullable: true }
                 client_secret: { type: string, nullable: true }
+                # OpenID Connect (issue #2231)
+                issuer: { type: string, format: uri, nullable: true }
+                authorize_url: { type: string, format: uri, nullable: true }
+                token_url: { type: string, format: uri, nullable: true }
+                jwks_uri: { type: string, format: uri, nullable: true }
+                redirect_uri: { type: string, format: uri, nullable: true }
+                scopes: { type: string, nullable: true }
       responses:
         "200":
           description: "SSO configure avec succes"
@@ -11683,12 +11818,8 @@ paths:
   /webhooks/{webhook}/test:
     post:
       tags: ["Webhooks"]
-      summary: "Tester un webhook (payload de test synchrone)"
-      description: |
-        Envoie un payload de test (`event: test`) a l'URL du webhook de maniere synchrone, avec les memes
-        en-tetes de signature que les livraisons reelles, trace la tentative dans `webhook_deliveries`
-        et retourne le statut HTTP, la duree et la livraison creee. Necessite le role manager `principal`.
-        Renvoie 422 si l'URL n'est pas une URL https publique (garde anti-SSRF) ou si la livraison echoue.
+      summary: "Tester un endpoint webhook"
+      description: "Dispatch d'un evenement de test `webhook.test` vers l'endpoint. Necessite le role manager `principal`. Ajoute en vague QA 2026-08-14."
       security:
         - BearerAuth: []
       parameters:
@@ -11697,19 +11828,14 @@ paths:
           required: true
           schema: { type: integer }
       responses:
-        "200":
-          description: "Webhook teste (succes ou erreur HTTP cote endpoint)"
+        "202":
+          description: "Evenement de test dispatché"
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   message: { type: string }
-                  status: { type: string, enum: [success, error] }
-                  http_status: { type: integer }
-                  duration_ms: { type: integer }
-                  delivery:
-                    $ref: "#/components/schemas/WebhookDelivery"
         "401":
           $ref: "#/components/responses/Error401"
         "403":
@@ -11719,13 +11845,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
-          description: "Webhook introuvable ou appartenant a une autre entreprise"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "422":
-          description: "URL non publique/https ou livraison en erreur"
+          description: "Webhook inexistant ou appartenant a une autre entreprise"
           content:
             application/json:
               schema:
@@ -11926,15 +12046,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /i18n/catalog:
-    get:
-      tags: ["Core"]
-      summary: "Catalogue de traductions (locales disponibles)"
-      responses:
-        "200":
-          description: "Locales disponibles"
-        "401":
-          $ref: "#/components/responses/Error401"
   /i18n/catalog/{locale}:
     get:
       tags: ["Admin"]
@@ -12332,6 +12443,16 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Config mode géolocalisation de l'entreprise (manager/RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Réglages entreprise"
+        "401":
+          $ref: "#/components/responses/Error401"
     put:
       tags: ["SmartAttendance"]
       summary: "Mettre à jour la configuration GPS (admin)"
@@ -12819,30 +12940,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Config mode géolocalisation de l'entreprise (manager/RH)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Réglages entreprise"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour la config mode géolocalisation (principal)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Config mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
   /smart-attendance/employees/{employeeId}/preference:
     get:
       tags: ["SmartAttendance"]
@@ -12858,18 +12955,6 @@ paths:
       responses:
         "200":
           description: "Préférence de l'employé"
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /growth/partner/dashboard:
-    get:
-      tags: ["Growth"]
-      summary: "Tableau de bord de l'espace partenaire"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Données du tableau de bord partenaire"
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -17440,6 +17525,7 @@ components:
         compliance:
           allOf:
             - $ref: "#/components/schemas/Compliance"
+          type: object
           nullable: true
           description: >-
             Bloc conformité (issue #2116) — null quand le pays du run n'est
@@ -17544,6 +17630,40 @@ components:
             payroll_run_id:
               type: integer
               nullable: true
+
+    BankExport:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: string
+          format: uuid
+        payroll_run_id:
+          type: integer
+        format:
+          type: string
+          enum: [sepa_xml, ccp_dz, virement_ma, csv_generic]
+        status:
+          type: string
+          enum: [pending, generating, generated, failed, sent, confirmed]
+        file_path:
+          type: string
+          nullable: true
+        error_message:
+          type: string
+          nullable: true
+        total_amount:
+          type: number
+        transfer_count:
+          type: integer
+        generated_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
 
     PaymentDocument:
       type: object
@@ -17919,42 +18039,6 @@ components:
         cap: { type: number, nullable: true, minimum: 0 }
         effective_from: { type: string, format: date }
         effective_to: { type: string, format: date, nullable: true }
-    PlatformUser:
-      type: object
-      description: "Utilisateur plateforme (public.users) — contrat super-admin (issue #2269)"
-      properties:
-        id: { type: integer }
-        first_name: { type: string, nullable: true }
-        last_name: { type: string, nullable: true }
-        name: { type: string, nullable: true }
-        email: { type: string }
-        phone: { type: string, nullable: true }
-        status: { type: string, enum: [active, disabled, pending, suspended] }
-        is_active: { type: boolean }
-        preferred_language: { type: string }
-        last_login_at: { type: string, format: date-time, nullable: true }
-        failed_login_attempts: { type: integer }
-        locked_until: { type: string, format: date-time, nullable: true }
-        created_at: { type: string, format: date-time, nullable: true }
-        updated_at: { type: string, format: date-time, nullable: true }
-        company:
-          type: object
-          nullable: true
-          properties:
-            id: { type: string, format: uuid }
-            name: { type: string, nullable: true }
-            link_status: { type: string }
-            employee_id: { type: integer }
-        roles:
-          type: array
-          description: "Présent sur GET /admin/users/{id} uniquement"
-          items:
-            type: object
-            properties:
-              role: { type: string, nullable: true }
-              manager_role: { type: string, nullable: true }
-              company_id: { type: string, format: uuid, nullable: true }
-              link_status: { type: string }
     TaxSlab:
       type: object
       properties:
@@ -18347,6 +18431,77 @@ components:
           nullable: true
         cv_url:
           type: string
+          nullable: true
+
+    TrainingSession:
+      type: object
+      description: Session de formation (contract real TrainingSessionResource)
+      properties:
+        id:
+          type: integer
+        training_course_id:
+          type: integer
+        trainer_id:
+          type: integer
+          nullable: true
+        external_trainer:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        status:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    TrainingEnrollment:
+      type: object
+      description: Inscription a une session de formation (contract real TrainingEnrollmentResource)
+      properties:
+        id:
+          type: integer
+        training_session_id:
+          type: integer
+        employee_id:
+          type: integer
+        status:
+          type: string
+        score:
+          type: number
+          nullable: true
+        feedback:
+          type: string
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        course_title:
+          type: string
+          nullable: true
+        session_date:
+          type: string
+          format: date
+          nullable: true
+        progress:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
           nullable: true
 
     TrainingCourse:

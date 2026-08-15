@@ -241,7 +241,7 @@ class LeopardoClient:
         return self.request("POST", "/admin/tax-slabs/reset-defaults", **kwargs)
 
     def get_admin_users(self, **kwargs):
-        """Lister les utilisateurs plateforme (super-admin) — issue #2269"""
+        """Liste reelle des utilisateurs plateforme"""
         return self.request("GET", "/admin/users", **kwargs)
 
     def get_admin_users_by_user(self, **kwargs):
@@ -423,6 +423,14 @@ class LeopardoClient:
     def post_auth_register(self, **kwargs):
         """Inscription employe"""
         return self.request("POST", "/auth/register", **kwargs)
+
+    def get_bank_exports(self, **kwargs):
+        """Lister les exports bancaires du tenant (pagine)"""
+        return self.request("GET", "/bank-exports", **kwargs)
+
+    def post_bank_exports(self, **kwargs):
+        """Creer un export bancaire pour un run valide/paye (asynchrone)"""
+        return self.request("POST", "/bank-exports", **kwargs)
 
     def get_bank_exports_by_bankexport(self, **kwargs):
         """Détail d'un export bancaire"""
@@ -816,6 +824,10 @@ class LeopardoClient:
         """Exporter les absences"""
         return self.request("GET", "/export/absences", **kwargs)
 
+    def get_export_accounting_od(self, **kwargs):
+        """Exporter l'ordre de virement (OD)"""
+        return self.request("GET", "/export/accounting-od", **kwargs)
+
     def get_export_attendance(self, **kwargs):
         """Exporter le pointage"""
         return self.request("GET", "/export/attendance", **kwargs)
@@ -828,13 +840,21 @@ class LeopardoClient:
         """Exporter les employes"""
         return self.request("GET", "/export/employees", **kwargs)
 
-    def get_export_history(self, **kwargs):
-        """Historique des exports"""
+    def exporthistory(self, **kwargs):
+        """Historique des exports du portail manager (issue #2199) - manager uniquement"""
         return self.request("GET", "/export/history", **kwargs)
 
     def exportpayslips(self, **kwargs):
         """Exporter les bulletins de paie de l'entreprise (JSON ou CSV encode en JSON) - manager uniquement"""
         return self.request("GET", "/export/pay-slips", **kwargs)
+
+    def get_export_payroll_journal(self, **kwargs):
+        """Exporter le journal de paie"""
+        return self.request("GET", "/export/payroll-journal", **kwargs)
+
+    def get_export_payroll_ledger(self, **kwargs):
+        """Exporter le grand livre de paie"""
+        return self.request("GET", "/export/payroll-ledger", **kwargs)
 
     def get_export_training(self, **kwargs):
         """Exporter les formations"""
@@ -905,7 +925,7 @@ class LeopardoClient:
         return self.request("GET", "/growth/partner/companies", **kwargs)
 
     def get_growth_partner_dashboard(self, **kwargs):
-        """Tableau de bord de l'espace partenaire"""
+        """Tableau de bord partenaire connecté"""
         return self.request("GET", "/growth/partner/dashboard", **kwargs)
 
     def post_growth_partner_payout(self, **kwargs):
@@ -919,10 +939,6 @@ class LeopardoClient:
     def get_health(self, **kwargs):
         """Healthcheck live + ready"""
         return self.request("GET", "/health", **kwargs)
-
-    def get_i18n_catalog(self, **kwargs):
-        """Catalogue de traductions (locales disponibles)"""
-        return self.request("GET", "/i18n/catalog", **kwargs)
 
     def get_i18n_catalog_by_locale(self, **kwargs):
         """Traductions pour une locale"""
@@ -1140,6 +1156,10 @@ class LeopardoClient:
         """Estimation utilisateur courant"""
         return self.request("GET", "/me/quick-estimate", **kwargs)
 
+    def get_me_training_enrollments(self, **kwargs):
+        """Mes inscriptions formation (alias mobile employee)"""
+        return self.request("GET", "/me/training-enrollments", **kwargs)
+
     def get_me_trainings(self, **kwargs):
         """Mes formations"""
         return self.request("GET", "/me/trainings", **kwargs)
@@ -1256,10 +1276,6 @@ class LeopardoClient:
         """Rapport d'anomalies pre-cloture (F-20)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/anomalies", **kwargs)
 
-    def post_payroll_runs_by_payrollrun_bank_export(self, **kwargs):
-        """Generer un export bancaire"""
-        return self.request("POST", "/payroll-runs/{payrollRun}/bank-export", **kwargs)
-
     def post_payroll_runs_by_payrollrun_calculate(self, **kwargs):
         """Calculer la paie"""
         return self.request("POST", "/payroll-runs/{payrollRun}/calculate", **kwargs)
@@ -1272,9 +1288,17 @@ class LeopardoClient:
         """Déclaration CNPS mensuelle Cameroun — format DAS CSV (CEMAC/CM #1823)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnps-cm", **kwargs)
 
+    def downloadcnssbfdeclaration(self, **kwargs):
+        """Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", **kwargs)
+
     def downloadcnsscideclaration(self, **kwargs):
         """Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", **kwargs)
+
+    def downloadinpsmldeclaration(self, **kwargs):
+        """Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/inps-ml", **kwargs)
 
     def downloadipressndeclaration(self, **kwargs):
         """Déclaration IPRES/CSS mensuelle Sénégal — CSV (CEDEAO #1830)"""
@@ -1765,16 +1789,12 @@ class LeopardoClient:
         return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
 
     def put_smart_attendance_mode_settings(self, **kwargs):
-        """Mettre à jour la config mode géolocalisation (principal)"""
+        """Mettre à jour la configuration GPS (admin)"""
         return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
 
     def get_smart_attendance_my_sessions(self, **kwargs):
         """Sessions GPS de l'employé courant"""
         return self.request("GET", "/smart-attendance/my-sessions", **kwargs)
-
-    def get_smart_attendance_preferences(self, **kwargs):
-        """Lire les préférences de pointage de l'employé"""
-        return self.request("GET", "/smart-attendance/preferences", **kwargs)
 
     def put_smart_attendance_preferences(self, **kwargs):
         """Mettre à jour les préférences de pointage"""
@@ -1839,6 +1859,10 @@ class LeopardoClient:
     def delete_sso_disable(self, **kwargs):
         """Desactiver le SSO de l'entreprise"""
         return self.request("DELETE", "/sso/disable", **kwargs)
+
+    def get_sso_oidc_by_companyid_authorize(self, **kwargs):
+        """Demarrer le flux OpenID Connect (SP -> IdP)"""
+        return self.request("GET", "/sso/oidc/{companyId}/authorize", **kwargs)
 
     def get_sso_oidc_by_companyid_callback(self, **kwargs):
         """Callback OpenID Connect (IdP -> SP)"""
@@ -1953,7 +1977,7 @@ class LeopardoClient:
         return self.request("POST", "/training/courses/{trainingCourse}/sessions", **kwargs)
 
     def get_training_enrollments(self, **kwargs):
-        """Lister toutes les inscriptions formation (tenant scope)"""
+        """Toutes les inscriptions formation du tenant"""
         return self.request("GET", "/training/enrollments", **kwargs)
 
     def put_training_enrollments_by_trainingenrollment(self, **kwargs):
@@ -1961,7 +1985,7 @@ class LeopardoClient:
         return self.request("PUT", "/training/enrollments/{trainingEnrollment}", **kwargs)
 
     def get_training_sessions(self, **kwargs):
-        """Lister toutes les sessions de formation (toutes formations, tenant scope)"""
+        """Toutes les sessions de formation du tenant"""
         return self.request("GET", "/training/sessions", **kwargs)
 
     def put_training_sessions_by_trainingsession(self, **kwargs):
@@ -2085,7 +2109,7 @@ class LeopardoClient:
         return self.request("POST", "/webhooks/{webhook}/dead-letters/{delivery}/replay", **kwargs)
 
     def post_webhooks_by_webhook_test(self, **kwargs):
-        """Tester un webhook (payload de test synchrone)"""
+        """Tester un endpoint webhook"""
         return self.request("POST", "/webhooks/{webhook}/test", **kwargs)
 
     def get_webhooks_events(self, **kwargs):
