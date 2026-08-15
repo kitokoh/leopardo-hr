@@ -40,12 +40,29 @@ class AuthGoogleSignInTest extends TestCase
             ->assertJson(['error' => 'INVALID_OAUTH_STATE']);
     }
 
-    public function test_google_callback_with_valid_state_unknown_user_is_auto_created(): void
+    public function test_google_callback_unknown_user_is_rejected_without_demo_mode(): void
     {
-        // Comportement actuel du callback (post-audit) : un compte Google
-        // inconnu est auto-provisionné (rôle ordinary, sans tenant) et
-        // reçoit un token — 201. Le refus 401 EMPLOYEE_NOT_FOUND ne
-        // s'applique qu'à la variante /auth/google/token.
+        // Issue #3724 : en production (DEMO_MODE_ENABLED=false, défaut), un
+        // email Google inconnu ne doit PAS être auto-provisionné — 401 et
+        // aucune création en base (parité avec /auth/google/token).
+        config(['app.demo_mode_enabled' => false]);
+        $this->mockGoogleUser('unknown@example.com');
+
+        $response = $this->withSession(['google_oauth_state' => 'valid-state'])
+            ->getJson('/api/v1/auth/google/callback?state=valid-state');
+
+        $response->assertStatus(401)
+            ->assertJson(['error' => 'UNKNOWN_ACCOUNT']);
+
+        $this->assertDatabaseMissing('employees', ['email' => 'unknown@example.com']);
+    }
+
+    public function test_google_callback_with_valid_state_unknown_user_is_auto_created_in_demo_mode(): void
+    {
+        // Issue #3724 : l'auto-provisionnement des comptes inconnus reste
+        // possible uniquement sur les environnements de démo explicitement
+        // configurés (DEMO_MODE_ENABLED=true) — 201 + token.
+        config(['app.demo_mode_enabled' => true]);
         $this->mockGoogleUser('unknown@example.com');
 
         $response = $this->withSession(['google_oauth_state' => 'valid-state'])
