@@ -49,6 +49,7 @@ const PLAN_CONFIG = {
     trialDays: 0,
     employeeLimit: '1-5 employés',
     isFree: true,
+    quoteOnly: false,
   },
   pilot: {
     label: 'Pilot',
@@ -69,6 +70,7 @@ const PLAN_CONFIG = {
     trialDays: 14,
     employeeLimit: '1-30 employés',
     isFree: false,
+    quoteOnly: false,
   },
   operations: {
     label: 'Operations',
@@ -89,15 +91,21 @@ const PLAN_CONFIG = {
     trialDays: 14,
     employeeLimit: '15-250 employés',
     isFree: false,
+    quoteOnly: false,
   },
   enterprise: {
     label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
-    priceMonthly: 299,
-    priceAnnual: 239,
-    savings: 720,
+    // #3328 : Enterprise est « Sur devis » — pas de tarif fixe au checkout.
+    // Le pricing vitrine affiche « Sur devis » (500+ employés) ; ce plan passe
+    // par le contact commercial (/contact?topic=enterprise), jamais par la
+    // carte bancaire. Les montants 299/239 € (historiques) sont retirés.
+    priceMonthly: 0,
+    priceAnnual: 0,
+    savings: 0,
+    quoteOnly: true,
     features: [
       'Tout Operations inclus',
       'Multi-pays & multi-devises',
@@ -1136,6 +1144,7 @@ function CheckoutInner() {
 
   const cfg = PLAN_CONFIG[plan];
   const isFree = cfg.isFree;
+  const router = useRouter();
   const totalSteps = isFree ? 2 : 3;
   const stepLabels = isFree
     ? ['Récapitulatif', 'Créer mon compte']
@@ -1157,6 +1166,20 @@ function CheckoutInner() {
   useEffect(() => {
     if (rawBilling) setBilling(rawBilling);
   }, [rawBilling]);
+
+  // #3328 : Enterprise = « Sur devis » → contact commercial, jamais de
+  // checkout avec carte (harmonisé avec pricing.ts : Sur devis, 500+ employés).
+  useEffect(() => {
+    if (cfg.quoteOnly) router.replace('/contact?topic=enterprise');
+  }, [cfg.quoteOnly, router]);
+
+  if (cfg.quoteOnly) {
+    return (
+      <div dir={direction} className="min-h-screen flex items-center justify-center text-slate-500 dark:text-slate-400">
+        Redirection vers la demande de devis…
+      </div>
+    );
+  }
 
   return (
     <div
