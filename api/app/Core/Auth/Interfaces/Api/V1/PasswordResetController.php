@@ -50,10 +50,13 @@ class PasswordResetController
 
             DB::table('public.password_reset_tokens')->insert([
                 'email' => $email,
+                'company_id' => $employee->company_id,
+                'employee_id' => $employee->id,
                 'token_hash' => hash('sha256', $token),
                 'expires_at' => now()->addMinutes(self::TOKEN_TTL_MINUTES),
                 'used_at' => null,
                 'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             Mail::to($email)->send(new PasswordResetMail($token, $email));
