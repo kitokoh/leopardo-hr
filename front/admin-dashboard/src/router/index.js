@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useLocaleStore } from '@/stores/locale'
+import { translate } from '@/i18n'
 import NProgress from 'nprogress'
 import { useToast } from 'vue-toastification'
 import 'nprogress/nprogress.css'
@@ -218,7 +220,7 @@ const routes = [
         meta: {
           title: 'Formations',
           icon: 'AcademicCapIcon',
-          requiresTenant: true
+          // #2634 : désormais supporté cross-tenant via /admin/training/* (console super-admin).
         }
       },
       {
@@ -248,7 +250,7 @@ const routes = [
         meta: {
           title: 'Webhooks',
           icon: 'LinkIcon',
-          requiresTenant: true
+          // #2634 : désormais supporté cross-tenant via /admin/webhooks* (console super-admin).
         }
       },
       {
@@ -398,7 +400,14 @@ router.beforeEach(async (to, from, next) => {
 
   // Mettre à jour le titre de la page
   if (to.meta.title) {
-    document.title = `${to.meta.title} - Leopardo RH Admin`
+    // #2639 : le meta.title peut être une clé i18n (marketing.oauth.nav_title,
+    // holidays.nav.title) — la traduire avant de l'afficher dans l'onglet.
+    const rawTitle = to.meta.title || ''
+    const localeStore = useLocaleStore()
+    const title = rawTitle.includes('.')
+      ? translate(localeStore.current, rawTitle, rawTitle)
+      : rawTitle
+    document.title = `${title} - Leopardo RH Admin`
   }
 
   next()
