@@ -29,7 +29,7 @@ const docCategories = [
     icon: Zap,
     color: 'emerald',
     items: [
-      { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH â€” Mobile-First Company OS", href: '/docs#intro' },
+      { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
       { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
       { title: 'Inviter votre equipe', desc: 'Ajouter des managers et des employes', href: '/docs#api-quickstart' },
       { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
@@ -84,7 +84,7 @@ const docCategories = [
     icon: Package,
     color: 'orange',
     items: [
-      { title: 'leopardo_core (Flutter)', desc: 'Package partagé â€” ApiClient, SecureStorage, modeles', href: '/docs#sdk-overview' },
+      { title: 'leopardo_core (Flutter)', desc: 'Package partagé — ApiClient, SecureStorage, modeles', href: '/docs#sdk-overview' },
       { title: 'Auth & Google Sign-In', desc: 'GoogleSignIn v7+ initialize(), idToken, backend JWT', href: '/docs#sdk-overview' },
       { title: 'Notifications (FCM)', desc: 'FirebaseMessaging, foreground/background, deep links', href: '/docs#sdk-overview' },
       { title: 'Publication & CI', desc: 'GitHub Actions flutter-ci.yml, build, tests', href: '/docs#sdk-overview' },
