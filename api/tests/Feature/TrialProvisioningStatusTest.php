@@ -88,6 +88,10 @@ class TrialProvisioningStatusTest extends TestCase
 
     public function test_status_returns_failed_with_generic_message(): void
     {
+        // Le défaut app est « en » (.env.example) — fixer la locale FR pour
+        // asserter le message générique quelle que soit la config d'env.
+        $this->withHeader('Accept-Language', 'fr');
+
         DB::table('trial_provisionings')->insert([
             'email' => 'prospect@demo.com',
             'provisioning_token' => str_repeat('c', 64),

@@ -12,6 +12,7 @@ use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 /**
@@ -132,11 +133,17 @@ class SelfServiceTrialController extends Controller
             ], 404);
         }
 
+        // #2903 : provisioned_at est stocké en string (insert DB::table) —
+        // ne JAMAIS appeler ->toIso8601String() sur une string (500).
+        $provisionedAt = $row->provisioned_at
+            ? \Illuminate\Support\Carbon::parse($row->provisioned_at)->toIso8601String()
+            : null;
+
         $payload = [
             'success' => true,
             'data' => [
                 'status' => $row->status,
-                'provisioned_at' => $row->provisioned_at?->toIso8601String(),
+                'provisioned_at' => $provisionedAt,
             ],
         ];
 
@@ -166,7 +173,25 @@ class SelfServiceTrialController extends Controller
 
         $email = strtolower(trim($validated['email']));
 
-        $result = $this->verifyTrialSignup->execute($email, $validated['code']);
+        // Issue #2903 : le parcours d'essai guidé ne doit JAMAIS exposer un
+        // 500 brut « Server Error » (c'était le cas en prod v4.23.5 sur le
+        // verify) : toute exception inattendue du provisioning est convertie
+        // en réponse structurée réessayable.
+        try {
+            $result = $this->verifyTrialSignup->execute($email, $validated['code']);
+        } catch (\Throwable $e) {
+            Log::channel('structured')->error('trial.verify.unexpected', [
+                'email' => $email,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'TRIAL_VERIFY_UNAVAILABLE',
+                'message' => 'La vérification de votre demande est temporairement indisponible. Réessayez dans quelques instants.',
+            ], 503);
+        }
 
         if ($result['success'] === false) {
             return new JsonResponse([
@@ -192,8 +217,8 @@ class SelfServiceTrialController extends Controller
                     'temp_password' => $result['temp_password'],
                 ],
                 'trial' => [
-                    'days' => 30,
-                    'ends_at' => now()->addDays(30)->toIso8601String(),
+                    'days' => 14,
+                    'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [
                     'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',
