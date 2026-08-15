@@ -77,7 +77,6 @@ class FrontendApiContractTest extends TestCase
             'mobile manager payroll summary' => ['GET', 'api/v1/payroll/mobile-summary'],
             'mobile manager payroll cycle preview' => ['GET', 'api/v1/payroll/cycles/preview'],
             'mobile manager payroll payment documents' => ['GET', 'api/v1/payroll-runs/{payrollRun}/payment-documents'],
-            'mobile manager payments documents alias' => ['GET', 'api/v1/payments/{payrollRun}/documents'],
             'mobile manager payment batches list' => ['GET', 'api/v1/payment-batches'],
             'mobile manager payment batch create' => ['POST', 'api/v1/payment-batches'],
             'mobile manager payment batch detail' => ['GET', 'api/v1/payment-batches/{paymentBatch}'],

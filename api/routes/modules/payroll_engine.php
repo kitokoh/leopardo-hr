@@ -153,8 +153,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payment-batches/{paymentBatch}/mark-paid', [PaymentBatchController::class, 'markPaid'])->whereNumber('paymentBatch');
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
+        // Issue #2201 : chemin canonique unique — /payroll-runs/{payrollRun}/payment-documents
+        // (l'alias /payments/{payrollRun}/documents était un doublon, retiré).
         Route::get('/payroll-runs/{payrollRun}/payment-documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
-        Route::get('/payments/{payrollRun}/documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
     });
 
     // Issue #1874 — audit des calculs de paie (lecture seule, immuable).
