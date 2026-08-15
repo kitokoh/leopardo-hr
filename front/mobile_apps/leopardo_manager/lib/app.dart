@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_theme.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_manager/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
@@ -79,17 +80,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/user-login',
         '/user-home',
         '/company-request',
+        '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
+      final isAuthorized = authState.employee!.isManager || authState.employee!.isHr;
 
       if (!isAuth && !onPublic) return '/welcome';
-      if (isAuth && onPublic) return '/';
-      if (isAuth &&
-          (!authState.employee!.isManager || authState.employee!.isHr) &&
-          !onPublic) {
-        // Redirection si l'utilisateur n'est pas un Manager pur dans l'app Manager
-        return '/welcome';
+      if (isAuth && !isAuthorized) {
+        // T116 : plus de boucle /welcome ↔ / — écran « accès refusé » explicite
+        // pour un utilisateur connecté sans le rôle de l'app Manager.
+        return onPublic ? null : '/access-denied';
       }
+      if (isAuth && onPublic) return '/';
 
       return null;
     },
@@ -98,6 +100,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/access-denied',
+        builder: (context, state) => const AccessDeniedScreen(),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
       GoRoute(
@@ -178,7 +184,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/cabinet/:folderId',
             builder: (context, state) {
-              final folderId = int.parse(state.pathParameters['folderId']!);
+              final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
+              if (folderId == null) {
+                // T121 : deep-link avec folderId non numérique → écran vide
+                // plutôt qu'un crash int.parse.
+                return const Scaffold(body: SizedBox.shrink());
+              }
               final folderName = state.extra as String?;
               return CabinetScreen(folderId: folderId, folderName: folderName);
             },

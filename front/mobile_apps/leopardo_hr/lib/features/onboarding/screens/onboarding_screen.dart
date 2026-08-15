@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_hr/features/onboarding/providers/onboarding_provider.dart';
+import 'package:leopardo_core/models/onboarding_step.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -15,9 +16,9 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  Future<void> _complete(int stepId) async {
+  Future<void> _complete(OnboardingStep step) async {
     try {
-      await ref.read(onboardingRepositoryProvider).completeStep(stepId);
+      await ref.read(onboardingRepositoryProvider).completeStep(step.key);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -28,9 +29,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  Future<void> _skip(int stepId) async {
+  Future<void> _skip(OnboardingStep step) async {
     try {
-      await ref.read(onboardingRepositoryProvider).skipStep(stepId);
+      await ref.read(onboardingRepositoryProvider).skipStep(step.key);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -166,7 +167,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     size: 20,
                                   ),
                                   tooltip: 'Passer',
-                                  onPressed: () => _skip(step.id),
+                                  onPressed: () => _skip(step),
                                 ),
                                 IconButton(
                                   icon: const Icon(
@@ -175,7 +176,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                     size: 20,
                                   ),
                                   tooltip: 'Terminer',
-                                  onPressed: () => _complete(step.id),
+                                  onPressed: () => _complete(step),
                                 ),
                               ],
                             ),

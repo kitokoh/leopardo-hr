@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_employee/features/onboarding/providers/onboarding_provider.dart';
+import 'package:leopardo_core/models/onboarding_step.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -17,9 +18,9 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  Future<void> _complete(int stepId) async {
+  Future<void> _complete(OnboardingStep step) async {
     try {
-      await ref.read(onboardingRepositoryProvider).completeStep(stepId);
+      await ref.read(onboardingRepositoryProvider).completeStep(step.key);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -33,9 +34,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  Future<void> _skip(int stepId) async {
+  Future<void> _skip(OnboardingStep step) async {
     try {
-      await ref.read(onboardingRepositoryProvider).skipStep(stepId);
+      await ref.read(onboardingRepositoryProvider).skipStep(step.key);
       ref.invalidate(onboardingChecklistProvider);
     } catch (e) {
       if (mounted) {
@@ -209,7 +210,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                         color: MobileSurface.muted,
                                       ),
                                       tooltip: 'Passer',
-                                      onPressed: () => _skip(step.id),
+                                      onPressed: () => _skip(step),
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
@@ -222,7 +223,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                           color: AppColors.success,
                                         ),
                                         tooltip: 'Terminer',
-                                        onPressed: () => _complete(step.id),
+                                        onPressed: () => _complete(step),
                                       ),
                                     ),
                                   ],

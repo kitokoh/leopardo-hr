@@ -20,19 +20,22 @@ class OnboardingRepository {
     return items.map((e) => OnboardingStep.fromJson(e)).toList();
   }
 
-  Future<void> completeStep(int stepId) async {
+  // T115 (QA omnichannel 2026-08-15) : le backend expose
+  // PATCH /onboarding-setup/{stepKey}/complete|skip (clé string) — l'ancien
+  // appel POST + id numérique renvoyait 405/404.
+  Future<void> completeStep(String stepKey) async {
     await apiClient.requestWithRetry(
-      '/onboarding-setup/$stepId/complete',
-      method: 'POST',
+      '/onboarding-setup/$stepKey/complete',
+      method: 'PATCH',
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
   }
 
-  Future<void> skipStep(int stepId) async {
+  Future<void> skipStep(String stepKey) async {
     await apiClient.requestWithRetry(
-      '/onboarding-setup/$stepId/skip',
-      method: 'POST',
+      '/onboarding-setup/$stepKey/skip',
+      method: 'PATCH',
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
