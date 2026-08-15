@@ -45,7 +45,22 @@ class MoroccoPayrollRules extends AbstractCountryRules
 
     public function calculateIncomeTax(float $grossTaxable, float $annualBasis = 12, ?float $grossForAbatement = null): float
     {
-        $annualTaxable = $grossTaxable * $annualBasis;
+        // Issue #2260 — abattement frais professionnels (CGI MA art. 58)
+        // appliqué AVANT le barème IR : 35 % du brut réel
+        // ($grossForAbatement, passé par PayrollCalculator::calculateSlip()),
+        // plancher 2 500 MAD/an / plafond 30 000 MAD/an — soit ≈ 208,33 et
+        // 2 500 MAD par mois (annualBasis 12). Sans brut fourni, on retombe
+        // sur l'assiette passée (approximation pilot documentée MA_COMPLIANCE §1).
+        $grossForAbatement ??= $grossTaxable;
+        $abatement = $this->professionalExpensesDeduction();
+
+        $monthlyDeduction = $grossForAbatement * ($abatement['rate'] / 100);
+        $monthlyDeduction = max(
+            $abatement['min'] ?? 0.0,
+            min($monthlyDeduction, $abatement['cap'] ?? PHP_FLOAT_MAX)
+        );
+
+        $annualTaxable = max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
         $tax = 0.0;
         $fixedDeduction = 0.0;
 
@@ -59,6 +74,17 @@ class MoroccoPayrollRules extends AbstractCountryRules
         }
 
         return round(max(0, ($tax - $fixedDeduction)) / $annualBasis, 2);
+    }
+
+    /**
+     * @return array{rate: float, cap: float|null, min?: float}
+     */
+    public function professionalExpensesDeduction(): array
+    {
+        // CGI Maroc art. 58 (#2260) : abattement frais professionnels 35 %,
+        // plancher 2 500 MAD/an, plafond 30 000 MAD/an. Valeurs mensuelles
+        // (annualBasis 12) : min ≈ 208,33 · max 2 500 MAD/mois.
+        return ['rate' => 35.0, 'cap' => 2500.0, 'min' => 208.33];
     }
 
     public function calculateSocialCharges(float $grossSalary): array

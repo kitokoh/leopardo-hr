@@ -427,7 +427,9 @@ abstract class AbstractCountryRules implements CountryRulesInterface
      * Countries with a legal abatement (CM 30 % capped 350 000 XAF,
      * CI, SN...) override this and apply it inside calculateIncomeTax().
      *
-     * @return array{rate: float, cap: float|null}
+     * @return array{rate: float, cap: float|null, min?: float}
+     *                                  `min` : plancher mensuel optionnel (ex. MA art. 58,
+     *                                  abattement 35 % borné 2 500–30 000 MAD/an).
      */
     public function professionalExpensesDeduction(): array
     {

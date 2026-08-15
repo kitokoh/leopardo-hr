@@ -57,10 +57,16 @@ class PayrollCountryRulesTest extends TestCase
 
     public function test_morocco_uses_annual_ir_with_fixed_deduction(): void
     {
+        // #2260 : l'abattement frais professionnels 35 % (CGI MA art. 58,
+        // min 2 500 / max 30 000 MAD/an) s'applique AVANT le barème. Sans
+        // brut fourni (3e argument), l'assiette passée sert de brut.
         $rules = new MoroccoPayrollRules;
 
+        // 2 500 − 875 (35 %) = 1 625 → annuel 19 500 → tranche 0 %.
         self::assertSame(0.0, $rules->calculateIncomeTax(2500));
-        self::assertSame(333.33, $rules->calculateIncomeTax(5000));
+        // 5 000 − 1 750 (35 %) = 3 250 → annuel 39 000 → tranche 10 % :
+        // (39 000 × 10 %) − 3 000 = 900 → 75,00/mois.
+        self::assertSame(75.0, $rules->calculateIncomeTax(5000));
     }
 
     /**
