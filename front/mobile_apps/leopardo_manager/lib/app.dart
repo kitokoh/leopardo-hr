@@ -211,24 +211,16 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/cabinet',
             builder: (context, state) => const CabinetScreen(),
           ),
-          GoRoute(
-            path: '/cabinet/folder/:folderId',
-            builder: (context, state) {
-              final folderId = int.parse(state.pathParameters['folderId']!);
-              final folderName = state.extra as String?;
-              return CabinetScreen(folderId: folderId, folderName: folderName);
-            },
-          ),
           // Issue #2748 — l'écran Cabinet pousse /cabinet/folder/{id}
           // (même convention que employee/HR) : la route 3 segments
           // manquait ici → GoError au tap sur un dossier.
+          // T121/#3004 : garde int.tryParse — deep-link non numérique → écran
+          // vide plutôt qu'un crash FormatException (route déclarée UNE fois).
           GoRoute(
             path: '/cabinet/folder/:folderId',
             builder: (context, state) {
               final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
               if (folderId == null) {
-                // T121 : deep-link avec folderId non numérique → écran vide
-                // plutôt qu'un crash int.parse.
                 return const Scaffold(body: SizedBox.shrink());
               }
               final folderName = state.extra as String?;
