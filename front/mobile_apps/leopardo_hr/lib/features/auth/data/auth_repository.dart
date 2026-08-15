@@ -28,7 +28,7 @@ class AuthRepository {
       isLoginRequest: true,
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = _envelope(response.data);
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 
@@ -83,7 +83,7 @@ class AuthRepository {
       timeoutOverride: _actionTimeout,
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = _envelope(response.data);
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 
@@ -117,7 +117,7 @@ class AuthRepository {
       timeoutOverride: _actionTimeout,
     );
 
-    final data = response.data as Map<String, dynamic>;
+    final data = _envelope(response.data);
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 
@@ -226,6 +226,13 @@ class AuthRepository {
     await _persistEmployeeContext(employee);
     return employee;
   }
+
+
+  /// #3406 : lecture d'enveloppe racine sans TypeError sur payload non-Map
+  /// (les réponses d'erreur ne sont pas des maps) — contrairement à
+  /// extractDataMap, on garde la racine (token + data).
+  static Map<String, dynamic> _envelope(dynamic payload) =>
+      payload is Map ? payload.cast<String, dynamic>() : const <String, dynamic>{};
 
   static Map<String, dynamic> extractEmployeeJson(
     Map<String, dynamic> payload,

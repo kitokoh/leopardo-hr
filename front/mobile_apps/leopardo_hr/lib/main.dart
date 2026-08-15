@@ -11,6 +11,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'app.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ Future<void> main() async {
     (options) {
       options.dsn =
           const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
-      options.tracesSampleRate = 1.0;
+      options.tracesSampleRate = 0.2; // #2766 : échantillonnage borné (PII)
     },
     appRunner: () => runApp(
       StartupGate(
@@ -62,9 +63,9 @@ Future<void> _safeGoogleSignInInitialize() async {
         'GOOGLE_WEB_CLIENT_ID',
         // T095 (QA 2026-08-15) : l'ID n'est plus codé en dur — fourni par
         // --dart-define en build ; repli DEBUG uniquement (masqué en release).
-        defaultValue: kDebugMode
-            ? '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com'
-            : '',
+        // #3294 : aucun repli en dur — l'ID doit venir de --dart-define
+        // (GOOGLE_WEB_CLIENT_ID), sinon le sign-in Google est désactivé.
+        defaultValue: '',
       ),
     );
   } catch (error, stackTrace) {
@@ -87,7 +88,7 @@ Future<void> _openOfflineCache() async {
 }
 
 Future<void> _initializeLocales() async {
-  await initializeDateFormatting('fr_FR', null);
+  await initializeDateFormatting(deviceIntlDateLocale, null);
   await initializeDateFormatting('fr_CA', null);
   await initializeDateFormatting('fr_BE', null);
   await initializeDateFormatting('ar', null);

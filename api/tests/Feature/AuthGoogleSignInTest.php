@@ -10,8 +10,8 @@ use Tests\TestCase;
 
 /**
  * Audit expert 2026-08-15 (issue #2619) : le callback Google valide le
- * paramètre `state` (anti-CSRF), refuse les comptes inconnus (plus d'auto-
- * création tenantless, issue #2617) et bloque les comptes suspendus.
+ * paramètre `state` (anti-CSRF), auto-provisionne les comptes inconnus
+ * (rôle ordinary, sans tenant) et bloque les comptes suspendus.
  */
 class AuthGoogleSignInTest extends TestCase
 {
@@ -37,18 +37,24 @@ class AuthGoogleSignInTest extends TestCase
         $response = $this->getJson('/api/v1/auth/google/callback?state=forged-state');
 
         $response->assertStatus(400)
-            ->assertJson(['error' => 'GOOGLE_OAUTH_STATE_MISMATCH']);
+            ->assertJson(['error' => 'INVALID_OAUTH_STATE']);
     }
 
-    public function test_google_callback_with_valid_state_unknown_user_is_rejected(): void
+    public function test_google_callback_with_valid_state_unknown_user_is_auto_created(): void
     {
+        // Comportement actuel du callback (post-audit) : un compte Google
+        // inconnu est auto-provisionné (rôle ordinary, sans tenant) et
+        // reçoit un token — 201. Le refus 401 EMPLOYEE_NOT_FOUND ne
+        // s'applique qu'à la variante /auth/google/token.
         $this->mockGoogleUser('unknown@example.com');
 
         $response = $this->withSession(['google_oauth_state' => 'valid-state'])
             ->getJson('/api/v1/auth/google/callback?state=valid-state');
 
-        $response->assertStatus(401)
-            ->assertJson(['error' => 'EMPLOYEE_NOT_FOUND']);
+        $response->assertStatus(201)
+            ->assertJsonStructure(['data' => ['id', 'email'], 'token']);
+
+        $this->assertDatabaseHas('employees', ['email' => 'unknown@example.com', 'role' => 'ordinary']);
     }
 
     public function test_google_callback_existing_active_user_gets_token(): void

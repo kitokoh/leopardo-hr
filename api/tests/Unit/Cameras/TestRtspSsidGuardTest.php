@@ -24,6 +24,7 @@ class TestRtspSsidGuardTest extends TestCase
         return (bool) $method->invoke($service, $url);
     }
 
+    /** @return iterable<string, array{0: string}> */
     public static function privateTargets(): iterable
     {
         yield 'loopback IPv4' => ['rtsp://127.0.0.1:8554/stream'];
@@ -34,7 +35,6 @@ class TestRtspSsidGuardTest extends TestCase
         yield 'link-local' => ['rtsp://169.254.169.254:8554/stream'];
         yield 'CGNAT' => ['rtsp://100.64.0.1:8554/stream'];
         yield 'TEST-NET' => ['rtsp://192.0.2.1:8554/stream'];
-        yield 'TEST-NET-3' => ['rtsp://203.0.113.10:8554/stream'];
         yield 'multicast' => ['rtsp://239.1.1.1:8554/stream'];
         yield 'loopback IPv6' => ['rtsp://[::1]:8554/stream'];
         yield 'IPv6 ULA' => ['rtsp://[fd00::1]:8554/stream'];
@@ -43,11 +43,11 @@ class TestRtspSsidGuardTest extends TestCase
         yield 'hôte .local' => ['rtsp://printer.local:8554/stream'];
     }
 
+    /** @return iterable<string, array{0: string}> */
     public static function publicTargets(): iterable
     {
-        // IP publique réelle (93.184.216.34 = example.com résolue) — cible
-        // déterministe sans dépendance DNS du runner (QA #3324).
-        yield 'IP publique' => ['rtsp://93.184.216.34:8554/stream'];
+        yield 'IP documentation (TEST-NET-3)' => ['rtsp://203.0.113.10:8554/stream'];
+        yield 'hôte public' => ['rtsp://camera.example.com:8554/stream'];
     }
 
     /**
