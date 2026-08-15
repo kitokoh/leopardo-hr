@@ -92,3 +92,17 @@ au-delà (à confirmer pour GA).
 Fixes : 1ᵉʳ janvier, 12 mars (fête de la Rénovation), 1ᵉʳ mai, 17 août (Fête
 Nationale), 15 août, 1ᵉʳ novembre, 25 décembre + fêtes islamiques mobiles
 (via table `islamic_calendar`, #1812). Gestion dynamique via #1811.
+
+## 11. Déclarations mensuelles — périmètre du CSV CNSS (décision #2155)
+
+Générateur : `CemacCnpsDeclarationGenerator` — `GET /api/v1/payroll-runs/{run}/declarations/cnss-ga` (managers `principal`/`comptable`).
+
+| Rubrique | Salarial | Patronal | Plafond (XAF/mois) |
+|---|---|---|---|
+| Retraite | 2,5 % | 5,0 % | 3 000 000 |
+| Prestations familiales | — | 8,0 % | 3 000 000 |
+| Risques professionnels (AT) | — | 3,0 % | non plafonné |
+
+Une ligne par bulletin validé (matricule `employees.cnps_matricule`, repli `matricule`) + ligne TOTAUX.
+Centimes additionnels CM exclus. Canal déclaratif : CNSS Gabon — montants `pilot` à valider
+par expert-comptable local (registre `docs/payroll/VALIDATION_EXPERTE.md`, #1904).

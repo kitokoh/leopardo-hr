@@ -7434,6 +7434,60 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cnss-ga:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Gabon — CSV (CEMAC #2155)"
+      description: "CSV gabonais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 3 000 000 XAF, retraite salariale/patronale 2,5 %/5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas GA."
+      operationId: downloadCnssGaDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS GA"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/cnss-cg:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Déclaration CNSS mensuelle Congo-Brazzaville — CSV (CEMAC #2155)"
+      description: "CSV congolais : une ligne par bulletin validé (matricule CNPS, nom, prénom, brut, assiette retraite plafonnée 2 500 000 XAF, retraite salariale/patronale 4,0 %/8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnée, totaux) + ligne TOTAUX. Centimes additionnels CM exclus. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas CG."
+      operationId: downloadCnssCgDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CG"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/regularize:
     post:
       tags: ["Payroll Engine"]

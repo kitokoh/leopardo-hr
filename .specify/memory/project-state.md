@@ -25,8 +25,8 @@
 | Pays | Code | Niveau | Golden tests | Déclaration CNPS | Remarque |
 |------|------|--------|-------------|-----------------|---------|
 | Cameroun | CM | ✅ `pilot` | ✅ 17+ cas | ✅ DAS CSV | IRPP + CNPS + centimes additionnels validés |
-| Gabon | GA | 🟡 `pilot` | ✅ 6 cas | ❌ | |
-| Congo (Brazza) | CG | 🟡 `pilot` | ✅ 6 cas | ❌ | |
+| Gabon | GA | 🟡 `pilot` | ✅ 6 cas | ✅ CNSS CSV (#2155) | IRPP + abattement DGI |
+| Congo (Brazza) | CG | 🟡 `pilot` | ✅ 6 cas | ✅ CNSS CSV (#2155) | IRPP + CNSS |
 | RCA | CF | 🔴 `placeholder` | ❌ | ❌ | Faible priorité marché |
 | Tchad | TD | 🔴 `placeholder` | ❌ | ❌ | Faible priorité marché |
 | Guinée Éq. | GQ | 🔴 `placeholder` | ❌ | ❌ | Faible priorité marché |

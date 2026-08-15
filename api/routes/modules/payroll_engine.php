@@ -133,6 +133,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // Social Declarations — CNSS CI + IPRES/CSS SN (CEDEAO #1830)
         Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ci', [SocialDeclarationController::class, 'generateCnssCiDeclaration'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/declarations/ipres-sn', [SocialDeclarationController::class, 'generateIpresSnDeclaration'])->whereNumber('payrollRun');
+        // CEMAC (#2155) — CNSS Gabon + Congo-Brazzaville
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnss-ga', [SocialDeclarationController::class, 'generateCnssGaDeclaration'])->whereNumber('payrollRun');
+        Route::get('/payroll-runs/{payrollRun}/declarations/cnss-cg', [SocialDeclarationController::class, 'generateCnssCgDeclaration'])->whereNumber('payrollRun');
 
         // Plan 61 — Payroll cycles
         Route::get('/payroll/cycles', [PayrollCycleController::class, 'index']);
