@@ -39,7 +39,7 @@ implémentation des issues non verrouillées, `main` VERT.
 | #3928 og:url /demo relatif (fixé par #3798, layout sur generateSEOMetadata) | code main |
 | #3917 /download lien mort + stores absents (fixé #3628/#3629/#3634) | code main |
 | #3934 CommandPalette « Predictions IA » (retiré par #3837) | code main |
-| #3834 CTA/e2e signup i18n — **déjà corrigé par #3728** (e2e 24/24 verts sur main) | tests e2e |
+| #3834 CTA/e2e signup i18n — constat de base **déjà corrigé par #3728** (e2e 24/24 verts sur main) ; hardening sélecteurs en cours par `fix/3834-cta-e2e-i18n` → issue laissée OUVERTE | tests e2e |
 
 ### Vérifications d'audit (aucune issue nouvelle — déjà couvert)
 
