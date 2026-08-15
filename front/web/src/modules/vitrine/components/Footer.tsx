@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Globe } from 'lucide-react'
-import { useVitrineLocale } from '../lib/vitrine-locale'
+import { useVitrineLocale, hasLocaleInUrl } from '../lib/vitrine-locale'
 
 const SOCIAL_LINKS = [
   // Compte X/Twitter @leopardo_hr inexistant (404 constaté 2026-08-15, session
@@ -11,6 +11,7 @@ const SOCIAL_LINKS = [
   { label: 'Li', href: 'https://linkedin.com/company/leopardo', title: 'LinkedIn' },
 ]
 import { NewsletterForm } from './NewsletterForm'
+import { withLocaleHref } from './Navbar'
 import { getEnvConfig } from '../lib/env'
 
 export function getFooterHref(sectionIndex: number, linkIndex: number): string | null {
@@ -56,6 +57,8 @@ export function getFooterHref(sectionIndex: number, linkIndex: number): string |
 
 export function Footer() {
   const { copy, locale, options } = useVitrineLocale()
+  // Issue #3806 : préserver ?lang= sur les liens internes si porté par l'URL.
+  const langActive = hasLocaleInUrl()
   const activeLocale = options.find((option) => option.value === locale)
   // The Blog link ('1-2' -> /blog) is hidden when NEXT_PUBLIC_ENABLE_BLOG is
   // disabled, since the route itself now 404s in that case (issue #1305).
@@ -104,7 +107,7 @@ export function Footer() {
 
                   return (
                     <li key={`${section.title}-link-${linkIndex}`}>
-                      <Link href={href} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
+                      <Link href={withLocaleHref(href, locale, langActive)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
                         {link}
                       </Link>
                     </li>

@@ -25,7 +25,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
-import { useVitrineLocale } from '../lib/vitrine-locale'
+import { useVitrineLocale, hasLocaleInUrl } from '../lib/vitrine-locale'
 import { getEnvConfig } from '../lib/env'
 
 type Props = {
@@ -61,6 +61,32 @@ export function buildLocaleUrl(pathname: string, search: string, locale: string)
   params.set('lang', locale)
   const query = params.toString()
   return query ? `${pathname}?${query}` : pathname
+}
+
+/**
+ * withLocaleHref — préserve la locale active (?lang=) sur les liens internes
+ * (issue #3806). Contrat :
+ *  1. locale active via ?lang= → tout lien interne conserve ?lang= (Navbar,
+ *     Footer, CTA) ; ancres (#fonctionnalites) et liens externes préservés.
+ *  2. locale via localStorage SANS ?lang= → lien inchangé (aucun ?lang= forcé).
+ *  3. Un query string existant est conservé (ex. /contact?topic=community).
+ */
+export function withLocaleHref(href: string, locale: string, langActive: boolean): string {
+  if (!langActive) return href
+  if (!href || href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:')) {
+    return href
+  }
+  const [pathWithQuery, hash] = href.split('#')
+  const [pathname, query] = (() => {
+    const qIndex = pathWithQuery.indexOf('?')
+    if (qIndex === -1) return [pathWithQuery, '']
+    return [pathWithQuery.slice(0, qIndex), pathWithQuery.slice(qIndex + 1)]
+  })()
+  const params = new URLSearchParams(query)
+  params.set('lang', locale)
+  const qs = params.toString()
+  const base = qs ? `${pathname}?${qs}` : pathname
+  return hash ? `${base}#${hash}` : base
 }
 
 // Hide the Blog link when NEXT_PUBLIC_ENABLE_BLOG is disabled (issue #1305):
@@ -205,7 +231,7 @@ const navByLocale: Record<string, NavEntry[]> = {
   ],
 }
 
-function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => void }) {
+function DropdownMenu({ entry, onClose, locale, langActive }: { entry: NavDropdown; onClose: () => void; locale: string; langActive: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8, scale: 0.96 }}
@@ -218,7 +244,7 @@ function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => v
         {entry.items.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
+            href={withLocaleHref(item.href, locale, langActive)}
             onClick={onClose}
             className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-transparent dark:hover:bg-slate-800/80 transition-colors group"
           >
@@ -242,6 +268,8 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { copy, locale, options, setLocale } = useVitrineLocale()
+  // Issue #3806 : ne propager ?lang= que si la locale est portée par l'URL.
+  const langActive = hasLocaleInUrl()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -280,7 +308,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href={withLocaleHref('/', locale, langActive)} className="flex items-center gap-3 group">
             <div className="relative">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/50 transition-all duration-300 group-hover:scale-105">
                 <span className="text-white font-black text-lg">L</span>
@@ -312,14 +340,14 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                   </button>
                   <AnimatePresence>
                     {openDropdown === entry.label && (
-                      <DropdownMenu entry={entry} onClose={() => setOpenDropdown(null)} />
+                      <DropdownMenu entry={entry} onClose={() => setOpenDropdown(null)} locale={locale} langActive={langActive} />
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
                 <Link
                   key={entry.href}
-                  href={entry.href}
+                  href={withLocaleHref(entry.href, locale, langActive)}
                   className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80 ${
                     entry.href === '/download'
                       ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5'
@@ -360,14 +388,14 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             </button>
 
             <Link
-              href="/auth/login"
+              href={withLocaleHref('/auth/login', locale, langActive)}
               className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               {copy.nav.login}
             </Link>
 
             <Link
-              href="/signup"
+              href={withLocaleHref('/signup', locale, langActive)}
               className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98]"
             >
               {copy.nav.trial}
@@ -436,7 +464,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                           {entry.items.map((item) => (
                             <Link
                               key={item.href}
-                              href={item.href}
+                              href={withLocaleHref(item.href, locale, langActive)}
                               onClick={() => setMobileOpen(false)}
                               className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                             >
@@ -459,7 +487,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                     transition={{ delay: index * 0.05 }}
                   >
                     <Link
-                      href={entry.href}
+                      href={withLocaleHref(entry.href, locale, langActive)}
                       className={`block px-4 py-3 text-lg font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${
                         entry.href === '/download'
                           ? 'text-emerald-600 dark:text-emerald-400 flex items-center gap-2'
@@ -476,14 +504,14 @@ export function Navbar({ isDark, onToggleDark }: Props) {
 
               <div className="pt-4 space-y-2">
                 <Link
-                  href="/auth/login"
+                  href={withLocaleHref('/auth/login', locale, langActive)}
                   className="block w-full text-center py-3 text-slate-700 dark:text-slate-300 font-semibold rounded-xl border border-slate-200 dark:border-slate-800"
                   onClick={() => setMobileOpen(false)}
                 >
                   {copy.nav.login}
                 </Link>
                 <Link
-                  href="/signup"
+                  href={withLocaleHref('/signup', locale, langActive)}
                   className="block w-full text-center py-3.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20"
                   onClick={() => setMobileOpen(false)}
                 >

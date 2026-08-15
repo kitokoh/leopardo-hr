@@ -776,6 +776,20 @@ export function getCurrentLocale(): AppLocale {
   return normalizeLocale(getPreferredLocale())
 }
 
+/**
+ * hasLocaleInUrl — vrai si l'URL courante porte un ?lang= (ou ?locale=).
+ * Utilisé par withLocaleHref (#3806) : on ne propage ?lang= sur les liens
+ * internes QUE quand la locale est portée par l'URL (partage/refresh), jamais
+ * quand elle ne vit qu'en localStorage.
+ */
+export function hasLocaleInUrl(): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+  const params = new URLSearchParams(window.location.search)
+  return params.has('lang') || params.has('locale')
+}
+
 function broadcastLocaleChange(): void {
   if (typeof window === 'undefined') {
     return
