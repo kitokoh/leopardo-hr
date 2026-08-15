@@ -1,0 +1,19 @@
+diff a/front/web/src/modules/vitrine/lib/seo-metadata.ts b/front/web/src/modules/vitrine/lib/seo-metadata.ts	(rejected hunks)
+@@ -24,7 +24,7 @@ export interface PageMetadata {
+ export const landingMetadata: PageMetadata = {
+   title: 'Gestion Employés, Paie & Documents | Plateforme Complète',
+   description:
+-    'Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 14 jours, sans carte bancaire.',
++    'Gérez vos employés, paie et documents en un seul endroit. Essai gratuit 30 jours, sans carte bancaire.',
+   keywords: [
+     'gestion employés SaaS',
+     'logiciel RH PME',
+@@ -119,7 +119,7 @@ export const marketingMetadata: PageMetadata = {
+ export const pricingMetadata: PageMetadata = {
+   title: 'Tarification Transparente | Plans Flexibles',
+   description:
+-    'Pricing transparent: Starter 29€, Business 79€, Enterprise sur devis. Essai gratuit 14 jours.',
++    'Pricing transparent: Pilot 29€, Operations 99€, Enterprise sur devis. Essai gratuit 30 jours.',
+   keywords: [
+     'prix logiciel RH',
+     'tarification paie',

@@ -170,7 +170,7 @@ export const modulePageContent = {
     },
     cta: {
       headline: "Prêt à simplifier votre gestion RH?",
-      subheadline: "Commencez votre essai gratuit de 30 jours dès maintenant",
+      subheadline: "Commencez votre essai gratuit de 14 jours dès maintenant",
       ctaPrimary: {
         text: "Essai gratuit",
         href: "/signup?module=employes",
@@ -331,7 +331,7 @@ export const modulePageContent = {
         },
         {
           question: "Quel est l'espace de stockage?",
-          answer: "L'espace dépend de votre plan. Starter: 100GB, Business: 1TB, Enterprise: Illimité.",
+          answer: "L'espace dépend de votre plan. Pilot : 100GB, Operations : 1TB, Enterprise : Illimité.",
         },
         {
           question: "Comment fonctionne l'archivage?",
@@ -349,7 +349,7 @@ export const modulePageContent = {
     },
     cta: {
       headline: "Sécurisez vos documents dès maintenant",
-      subheadline: "Essai gratuit de 30 jours, sans engagement",
+      subheadline: "Essai gratuit de 14 jours, sans engagement",
       ctaPrimary: {
         text: "Essai gratuit",
         href: "/signup?module=documents",
@@ -528,7 +528,7 @@ export const modulePageContent = {
     },
     cta: {
       headline: "Automatisez votre paie dès maintenant",
-      subheadline: "Essai gratuit de 30 jours, sans engagement",
+      subheadline: "Essai gratuit de 14 jours, sans engagement",
       ctaPrimary: {
         text: "Essai gratuit",
         href: "/signup?module=comptabilite",
@@ -707,7 +707,7 @@ export const modulePageContent = {
     },
     cta: {
       headline: "Lancez vos campagnes marketing dès maintenant",
-      subheadline: "Essai gratuit de 30 jours, sans engagement",
+      subheadline: "Essai gratuit de 14 jours, sans engagement",
       ctaPrimary: {
         text: "Essai gratuit",
         href: "/signup?module=marketing",

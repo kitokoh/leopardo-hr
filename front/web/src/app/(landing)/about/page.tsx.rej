@@ -1,0 +1,10 @@
+diff a/front/web/src/app/(landing)/about/page.tsx b/front/web/src/app/(landing)/about/page.tsx	(rejected hunks)
+@@ -338,7 +338,7 @@ export default function AboutPage() {
+       {/* CTA Section */}
+       <CTASection
+         headline="Prêt à Rejoindre Leopardo?"
+-        subheadline="Commencez votre essai gratuit de 14 jours dès maintenant"
++        subheadline="Commencez votre essai gratuit de 30 jours dès maintenant"
+         ctaPrimary={{
+           text: 'Essai gratuit',
+           href: '/signup',

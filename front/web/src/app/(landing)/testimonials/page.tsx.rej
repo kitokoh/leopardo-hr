@@ -1,0 +1,10 @@
+diff a/front/web/src/app/(landing)/testimonials/page.tsx b/front/web/src/app/(landing)/testimonials/page.tsx	(rejected hunks)
+@@ -163,7 +163,7 @@ export default function TestimonialsPage() {
+ 
+       <CTASection
+         title="Rejoignez nos 500+ clients satisfaits"
+-        description="Démarrez votre essai gratuit de 14 jours"
++        description="Démarrez votre essai gratuit de 30 jours"
+         primaryCta={{ text: 'Commencer maintenant', href: '/signup' }}
+         secondaryCta={{ text: 'Demander une démo', href: '/demo' }}
+       />
