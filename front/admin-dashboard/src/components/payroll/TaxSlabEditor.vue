@@ -22,7 +22,7 @@
             <td class="py-2.5 pr-4 text-slate-700 dark:text-slate-300">{{ slab.effective_from }}</td>
             <td class="py-2.5 text-right whitespace-nowrap">
               <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="busy" @click="openEdit(slab)">{{ $t('tax_slabs.edit') }}</button>
-              <button class="btn-danger py-1 px-2.5" :disabled="busy" @click="removeSlab(slab)">{{ $t('tax_slabs.delete') }}</button>
+              <button class="btn-danger py-1 px-2.5" :disabled="busy" @click="askRemoveSlab(slab)">{{ $t('tax_slabs.delete') }}</button>
             </td>
           </tr>
           <tr v-if="slabs.length === 0">
@@ -88,10 +88,27 @@
       </div>
     </div>
   </div>
+  <ConfirmDialog
+    :open="deleteOpen"
+    :title="t('tax_slabs.delete_confirm_title', 'Supprimer ce barème ?')"
+    :message="deleteTarget ? t('tax_slabs.delete_confirm', { name: deleteTarget.name }) : ''"
+    confirm-label="Supprimer"
+    @confirm="removeSlab"
+    @cancel="deleteOpen = false"
+  />
+  <ConfirmDialog
+    :open="resetOpen"
+    :title="t('tax_slabs.reset_confirm_title', 'Réinitialiser les barèmes ?')"
+    :message="t('tax_slabs.reset_confirm')"
+    confirm-label="Réinitialiser"
+    @confirm="confirmReset"
+    @cancel="resetOpen = false"
+  />
 </template>
 
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
@@ -208,8 +225,19 @@ async function saveSlab() {
   }
 }
 
-async function removeSlab(slab) {
-  if (!window.confirm(t('tax_slabs.delete_confirm', { name: slab.name }))) return
+const deleteTarget = ref(null)
+const deleteOpen = ref(false)
+const resetOpen = ref(false)
+
+function askRemoveSlab(slab) {
+  deleteTarget.value = slab
+  deleteOpen.value = true
+}
+
+async function removeSlab() {
+  const slab = deleteTarget.value
+  if (!slab) return
+  deleteOpen.value = false
   busy.value = true
   try {
     await api.delete(`/admin/tax-slabs/${slab.id}`)
@@ -224,7 +252,7 @@ async function removeSlab(slab) {
 }
 
 async function confirmReset() {
-  if (!window.confirm(t('tax_slabs.reset_confirm'))) return
+  resetOpen.value = false
   busy.value = true
   try {
     await api.post('/admin/tax-slabs/reset-defaults', { country_code: props.countryCode })

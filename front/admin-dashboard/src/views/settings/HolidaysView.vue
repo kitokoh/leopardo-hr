@@ -64,7 +64,7 @@
                 <button class="btn-secondary py-1 px-2.5 mr-2" :disabled="saving" @click="openEdit(h)">
                   {{ $t('holidays.edit') }}
                 </button>
-                <button class="btn-danger py-1 px-2.5" :disabled="saving" @click="removeHoliday(h)">
+                <button class="btn-danger py-1 px-2.5" :disabled="saving" @click="askRemoveHoliday(h)">
                   {{ $t('holidays.delete') }}
                 </button>
               </td>
@@ -92,7 +92,7 @@
           <select v-model="islamicYear" class="form-input min-w-28" @change="loadIslamicCalendar">
             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
           </select>
-          <button class="btn-secondary" :disabled="saving || unconfirmedCount === 0" @click="confirmYear">
+          <button class="btn-secondary" :disabled="saving || unconfirmedCount === 0" @click="confirmYearOpen = true">
             ✅ {{ t('holidays.islamic.confirm', { year: islamicYear }) }}
           </button>
         </div>
@@ -220,10 +220,27 @@
       </div>
     </div>
   </div>
+  <ConfirmDialog
+    :open="deleteOpen"
+    :title="t('holidays.islamic.delete_confirm_title', 'Supprimer ce jour férié ?')"
+    :message="deleteTarget ? t('holidays.islamic.delete_confirm_dialog', { name: deleteTarget.name }) : ''"
+    confirm-label="Supprimer"
+    @confirm="removeHoliday"
+    @cancel="deleteOpen = false"
+  />
+  <ConfirmDialog
+    :open="confirmYearOpen"
+    :title="t('holidays.islamic.confirm_title', 'Confirmer l\'année ?')"
+    :message="t('holidays.islamic.confirm_dialog', { year: islamicYear.value })"
+    confirm-label="Confirmer"
+    @confirm="confirmYear"
+    @cancel="confirmYearOpen = false"
+  />
 </template>
 
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
@@ -352,8 +369,19 @@ async function saveHoliday() {
   }
 }
 
-async function removeHoliday(h) {
-  if (!window.confirm(t('holidays.islamic.delete_confirm_dialog', { name: h.name }))) return
+const deleteTarget = ref(null)
+const deleteOpen = ref(false)
+const confirmYearOpen = ref(false)
+
+function askRemoveHoliday(h) {
+  deleteTarget.value = h
+  deleteOpen.value = true
+}
+
+async function removeHoliday() {
+  const h = deleteTarget.value
+  if (!h) return
+  deleteOpen.value = false
   saving.value = true
   try {
     await api.delete(`/admin/public-holidays/${h.id}`)
@@ -397,7 +425,7 @@ async function saveIslamicEntry() {
 }
 
 async function confirmYear() {
-  if (!window.confirm(t('holidays.islamic.confirm_dialog', { year: islamicYear.value }))) return
+  confirmYearOpen.value = false
   saving.value = true
   try {
     const { data } = await api.post(`/admin/islamic-calendar/confirm-year/${islamicYear.value}`)

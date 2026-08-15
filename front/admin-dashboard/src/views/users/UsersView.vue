@@ -197,7 +197,15 @@
         </div>
       </div>
     </div>
-  </div>
+  <ConfirmDialog
+    :open="deleteOpen"
+    :title="t('users.confirm.title', 'Supprimer cet utilisateur ?')"
+    :message="deleteTarget ? t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', deleteTarget.name) : ''"
+    confirm-label="Supprimer"
+    @confirm="confirmDeleteUser"
+    @cancel="deleteOpen = false"
+  />
+</div>
 </template>
 
 <script setup>
@@ -461,18 +469,27 @@ function closeImpersonate() {
   impersonationResult.value = null
 }
 
+const deleteTarget = ref(null)
+const deleteOpen = ref(false)
+
 async function deleteUser(user) {
-  if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
-    try {
-      // Issue #2714 — désactivation RÉELLE via l'endpoint dédié (jamais de
-      // suppression physique : DELETE /platform/users/{id} détruit le compte).
-      await api.post(`/platform/users/${user.id}/deactivate`)
-      toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
-      await loadUsers()
-    } catch (error) {
-      console.error('Delete failed:', error)
-      toast.error(t('users.toast.deleteError', 'Erreur lors de la suppression'))
-    }
+  deleteTarget.value = user
+  deleteOpen.value = true
+}
+
+async function confirmDeleteUser() {
+  const user = deleteTarget.value
+  if (!user) return
+  deleteOpen.value = false
+  try {
+    // Issue #2714 — désactivation RÉELLE via l'endpoint dédié (jamais de
+    // suppression physique : DELETE /platform/users/{id} détruit le compte).
+    await api.post(`/platform/users/${user.id}/deactivate`)
+    toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
+    await loadUsers()
+  } catch (error) {
+    console.error('Delete failed:', error)
+    toast.error(t('users.toast.deleteError', 'Erreur lors de la suppression'))
   }
 }
 
