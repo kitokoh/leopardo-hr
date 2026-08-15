@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci): launch-observability-smoke — cancel-in-progress: true (Closes #3968).** Le cron */30 (48 runs/jour) s'empilait sur une queue saturée (#3545) : un run en retard remplace désormais le précédent.
 - **fix(web-offline): garde CI — les icônes du manifest PWA doivent exister (Closes #3963).** Les icônes 192/512 existent désormais sur main (ajoutées en parallèle) ; ce PR verrouille la non-régression : le workflow web-offline échoue si `manifest.json` déclare une icône absente de `public/`.
 - **fix(web-offline): service worker — fallback offline pour les navigations (Closes #3962).** `fetch()` sans `.catch()` sur la branche statique → toute route non visitée hors-ligne affichait la page d'erreur navigateur. Fallback : `caches.match('/index.html')` (app shell pré-cachée) pour `mode === 'navigate'`, 503 gracieux sinon. Cache bumpé v1 → v2.
 - **fix(mobile-hr): écran d'erreur de rendu — « Leopardo RH » au lieu de « Leopardo Manager » (copier-coller) (Closes #3955).**

@@ -30,7 +30,10 @@ env:
 
 concurrency:
   group: launch-observability-smoke
-  cancel-in-progress: false
+  # Issue #3968 : cron */30 (48 runs/jour) + cancel-in-progress: false → les
+  # runs en retard s'empilent sur une queue déjà saturée (#3545). Un run en
+  # retard REMPLACE le précédent au lieu d'attendre derrière.
+  cancel-in-progress: true
 
 jobs:
   smoke:
