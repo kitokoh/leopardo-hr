@@ -36,7 +36,7 @@ const blogCopy: Record<AppLocale, {
     },
     grid: {
       title: 'Nos articles',
-      subtitle: 'Conseils pratiques pour equipes RH ambitieuses',
+      subtitle: 'Conseils pratiques pour équipes RH ambitieuses',
       badge: 'Ressources',
       all: 'Tous',
       previous: 'Precedent',
@@ -55,7 +55,7 @@ const blogCopy: Record<AppLocale, {
     },
     cta: {
       headline: 'Besoin d un avis expert ?',
-      subheadline: 'Contactez notre equipe pour cadrer vos priorites RH et digitales.',
+      subheadline: 'Contactez notre équipe pour cadrer vos priorites RH et digitales.',
       primary: 'Nous contacter',
       secondary: 'Essai gratuit',
     },

@@ -119,8 +119,36 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
 
         $this->updateProgress(0, 'processing', $total);
 
+        // QA #2997 — idempotence : chaque slip est CLAIMÉ en Redis (SET NX EX)
+        // avant traitement. Un retry ($tries=3) ou un second job concurrent ne
+        // re-traite jamais un slip déjà traité (les documents de paiement ne
+        // sont pas générés 2×/3×) ; en cas d'échec le claim est libéré pour
+        // permettre le retry de CE slip uniquement.
+        $claimPrefix = "bulk_pay:slip:{$run->id}:";
+        $redis = Redis::connection('default');
+
         foreach ($slips as $slip) {
             try {
+                $claimed = false;
+                try {
+                    $claimed = (bool) $redis->set($claimPrefix.$slip->id, '1', ['EX' => 21600, 'NX' => true]);
+                } catch (Throwable $redisError) {
+                    // Redis indisponible : on traite sans garde (comportement
+                    // historique) mais on le trace pour l'observabilité.
+                    Log::warning('ProcessBulkPaymentJob: Redis claim unavailable, processing without guard', [
+                        'payroll_run_id' => $run->id,
+                        'pay_slip_id' => $slip->id,
+                        'error' => $redisError->getMessage(),
+                    ]);
+                    $claimed = true;
+                }
+
+                if (! $claimed) {
+                    // Slip déjà traité par une tentative précédente → skip.
+                    $done++;
+                    continue;
+                }
+
                 $this->processSlip($run, $slip);
             } catch (Throwable $e) {
                 Log::error('ProcessBulkPaymentJob: failed to process pay slip', [
@@ -129,6 +157,13 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
                     'employee_id' => $slip->employee_id,
                     'error' => $e->getMessage(),
                 ]);
+
+                // Libérer le claim : un retry pourra re-tenter CE slip.
+                try {
+                    $redis->del($claimPrefix.$slip->id);
+                } catch (Throwable) {
+                    // non bloquant
+                }
 
                 $failures[] = [
                     'pay_slip_id' => $slip->id,

@@ -64,6 +64,29 @@ class OnboardingStepControllerTest extends TestCase
         $response->assertJsonPath('data.progress', 50);
     }
 
+    public function test_employee_can_access_own_onboarding_without_manager_role(): void
+    {
+        // T118 (QA 2026-08-15) : les routes onboarding-setup vivent dans le
+        // groupe authentifié du tenant (auth:sanctum + tenant) — un employé
+        // non-manager doit pouvoir compléter son onboarding (plus de 403
+        // api.manager).
+        $company = Company::factory()->create();
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+        ]);
+        $this->step($company, 'company_info', 'pending', required: true);
+
+        Sanctum::actingAs($employee);
+
+        $this->getJson('/api/v1/onboarding-setup/checklist')->assertOk();
+        $this->getJson('/api/v1/onboarding-setup/progress')->assertOk();
+
+        $this->patchJson('/api/v1/onboarding-setup/company_info/complete')
+            ->assertOk()
+            ->assertJsonPath('data.status', 'completed');
+    }
+
     public function test_manager_can_complete_own_company_step(): void
     {
         $company = Company::factory()->create();

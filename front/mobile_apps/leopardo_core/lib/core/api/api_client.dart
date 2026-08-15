@@ -39,7 +39,13 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await _storage.getToken();
+          // T084 : session user_api (/user/*) → jeton dédié auth_token_user.
+          // Le header reste en place : onError le relit pour supprimer le bon
+          // jeton en cas de 401 (le serveur l'ignore).
+          final useUserSession = options.headers['X-User-Session'] == 'true';
+          final token = useUserSession
+              ? await _storage.getUserToken()
+              : await _storage.getToken();
           final preferredLanguage = _preferences.preferredLanguage;
 
           if (token != null) {
@@ -56,9 +62,14 @@ class ApiClient {
         },
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            await _storage.deleteToken();
-            if (onUnauthorized != null) {
-              onUnauthorized!();
+            final useUserSession = e.requestOptions.headers['X-User-Session'] == 'true';
+            if (useUserSession) {
+              await _storage.deleteUserToken();
+            } else {
+              await _storage.deleteToken();
+              if (onUnauthorized != null) {
+                onUnauthorized!();
+              }
             }
           }
           return handler.next(_handleError(e));
@@ -126,6 +137,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
     bool isLoginRequest = false,
+    bool useUserSession = false,
     int? maxRetriesOverride,
     Duration? timeoutOverride,
     RetryCallback? onRetry,
@@ -140,15 +152,20 @@ class ApiClient {
 
     for (int attempt = 0; attempt <= maxRetries; attempt++) {
       try {
+        final requestOptions = (options ?? Options()).copyWith(
+          method: method,
+          sendTimeout: timeout,
+          receiveTimeout: timeout,
+        );
+        if (useUserSession) {
+          // Consommé par l'intercepteur pour choisir le jeton user_api.
+          requestOptions.headers['X-User-Session'] = 'true';
+        }
         final response = await _dio.request<T>(
           path,
           data: data,
           queryParameters: queryParameters,
-          options: (options ?? Options()).copyWith(
-            method: method,
-            sendTimeout: timeout,
-            receiveTimeout: timeout,
-          ),
+          options: requestOptions,
         );
 
         final statusCode = response.statusCode ?? 0;
