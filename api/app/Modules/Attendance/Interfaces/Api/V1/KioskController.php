@@ -439,8 +439,18 @@ class KioskController extends Controller
         // (try/finally) pour ne pas laisser l'état de connexion PostgreSQL
         // pointer vers shared_tenants sur les requêtes suivantes du même
         // worker (pattern RequestTrialSignup).
-        $searchPathRow = DB::selectOne('SHOW search_path');
-        $previous = (string) ($searchPathRow->search_path ?? 'public,shared_tenants');
+        // #2973 : lecture du search_path — larastan type selectOne() non-null,
+        // les variantes nullsafe/?? sont refusées par PHPStan strict. Garde
+        // is_object + property_exists, défaut explicite si indisponible.
+        $previous = 'public,shared_tenants';
+        try {
+            $searchPathRow = DB::selectOne('SHOW search_path');
+            if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
+                $previous = (string) $searchPathRow->search_path;
+            }
+        } catch (\Throwable) {
+            // défaut conservé
+        }
         DB::statement('SET search_path TO shared_tenants,public');
 
         try {

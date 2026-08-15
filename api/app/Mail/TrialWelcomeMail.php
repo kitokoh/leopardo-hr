@@ -2,13 +2,12 @@
 
 namespace App\Mail;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class TrialWelcomeMail extends Mailable
@@ -34,7 +33,7 @@ class TrialWelcomeMail extends Mailable
         // épingler la locale applicative AVANT le rendu, sinon le corps du
         // mail se rend dans la locale ambiante (Accept-Language / défaut) et
         // le sujet/le corps peuvent être dans des langues différentes.
-        App::setLocale($locale);
+        \Illuminate\Support\Facades\App::setLocale($locale);
 
         return $this
             ->subject($this->resolveSubject($locale))
@@ -47,22 +46,28 @@ class TrialWelcomeMail extends Mailable
             ]);
     }
 
+
     /**
      * Durée d'essai réelle affichée dans l'email : dérivée du provisioning
      * (subscription_start → subscription_end), avec repli sur le plan.
      */
     private function resolveTrialDays(): int
     {
-        $start = filled($this->company->subscription_start)
-            ? Carbon::parse((string) $this->company->subscription_start)->startOfDay()
-            : Carbon::today();
+        // Les colonnes sont NULLables en base (tenants legacy, cf. #1952) —
+        // on passe par getAttribute() pour que PHPStan traite la valeur comme
+        // mixed et non comme Carbon non-nullable (docblock du modèle).
+        $startRaw = $this->company->getAttribute('subscription_start');
+        $endRaw = $this->company->getAttribute('subscription_end');
 
-        $end = filled($this->company->subscription_end)
-            ? Carbon::parse((string) $this->company->subscription_end)->startOfDay()
+        $start = $startRaw !== null && $startRaw !== ''
+            ? Carbon::parse($startRaw)->startOfDay()
+            : null;
+        $end = $endRaw !== null && $endRaw !== ''
+            ? Carbon::parse($endRaw)->startOfDay()
             : null;
 
-        if ($end !== null && $end->greaterThan($start)) {
-            return (int) $start->diffInDays($end);
+        if ($start !== null && $end !== null && $end->greaterThan($start)) {
+            return max(1, (int) $start->diffInDays($end));
         }
 
         if ($this->company->plan_id) {
@@ -85,3 +90,4 @@ class TrialWelcomeMail extends Mailable
         };
     }
 }
+

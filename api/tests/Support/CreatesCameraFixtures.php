@@ -2,8 +2,8 @@
 
 namespace Tests\Support;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -14,15 +14,9 @@ use Illuminate\Support\Facades\Hash;
  */
 trait CreatesCameraFixtures
 {
-    /**
-     * @param  array<string, mixed>  $features
-     */
+    /** @param  array<string, mixed>  $features */
     protected function createCompanyWithCameras(string $slug = 'alpha', array $features = ['cameras' => true, 'max_cameras' => 4]): Company
     {
-        // Slug unique par appel : plusieurs créations dans un même test (ex.
-        // CameraRtspSecurityTest::assertHostRejected) violaient companies_slug_unique.
-        $slug = $slug.'-'.substr((string) uniqid('', true), -6);
-
         return Company::query()->create([
             'name' => ucfirst($slug),
             'slug' => $slug,
@@ -42,10 +36,6 @@ trait CreatesCameraFixtures
         string $managerRole = 'principal',
         string $email = 'manager@company.test'
     ): Employee {
-        // Email unique par appel (employés_email_unique) — plusieurs managers
-        // par test (CameraRtspSecurityTest) violaient la contrainte.
-        $email = str_contains($email, '+') ? $email : preg_replace('/@/', '+'.substr((string) uniqid('', true), -6).'@', $email, 1);
-
         return Employee::query()->create([
             'company_id' => $company->id,
             'email' => $email,
@@ -58,8 +48,6 @@ trait CreatesCameraFixtures
 
     protected function createEmployee(Company $company, string $email = 'employee@company.test'): Employee
     {
-        $email = str_contains($email, '+') ? $email : preg_replace('/@/', '+'.substr((string) uniqid('', true), -6).'@', $email, 1);
-
         return Employee::query()->create([
             'company_id' => $company->id,
             'email' => $email,
@@ -69,9 +57,7 @@ trait CreatesCameraFixtures
         ]);
     }
 
-    /**
-     * @return array<string, string>
-     */
+    /** @return array<string, string> */
     protected function authHeaders(Employee $employee, string $tokenName = 'tests'): array
     {
         $token = $employee->createToken($tokenName)->plainTextToken;
@@ -79,3 +65,4 @@ trait CreatesCameraFixtures
         return ['Authorization' => 'Bearer '.$token];
     }
 }
+
