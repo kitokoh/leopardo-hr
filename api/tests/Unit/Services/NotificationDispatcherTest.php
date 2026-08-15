@@ -136,7 +136,7 @@ class NotificationDispatcherTest extends TestCase
         Config::set('logging.channels.structured.path', $logPath);
 
         $failingPush = new class extends PushNotificationService {
-            public function sendToUser(int $userId, string $title, string $body, array $data = []): int
+            public function sendToUser(int $userId, string $title, string $body, array<string, mixed> $data = []): int
             {
                 throw new \RuntimeException('FCM unavailable');
             }
