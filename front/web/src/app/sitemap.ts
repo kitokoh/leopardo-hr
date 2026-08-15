@@ -64,10 +64,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/checklist-paie', today, 'monthly', 0.7),
     page('/guides/planning-employes', today, 'monthly', 0.7),
     // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
-    page('/blog', today, 'weekly', 0.7),
+    // /blog n'existe que quand NEXT_PUBLIC_ENABLE_BLOG=true (#3376) —
+    // sinon blog/layout.tsx renvoie notFound() (flag off en prod, cf. #2906).
+    ...(enableBlog ? [page('/blog', today, 'weekly', 0.7)] : []),
     page('/signup', today, 'monthly', 0.6),
     page('/checkout', today, 'monthly', 0.5),
-    page('/offline', today, 'monthly', 0.4),
+    // /offline et /share sont des pages internes PWA (fallback SW / share_target) — pas de SEO.
   ];
 
   // Blog posts: source réelle = src/modules/vitrine/data/blog (getBlogPosts).

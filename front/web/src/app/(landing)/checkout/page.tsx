@@ -69,6 +69,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 14,
     employeeLimit: '1-30 employés',
+    perSeat: '+ 2 EUR/employé actif',
+    includedSeats: '10 employés inclus',
     isFree: false,
     quoteOnly: false,
   },
@@ -90,6 +92,8 @@ const PLAN_CONFIG = {
     ],
     trialDays: 14,
     employeeLimit: '15-250 employés',
+    perSeat: '+ 4 EUR/employé actif',
+    includedSeats: '40 employés inclus',
     isFree: false,
     quoteOnly: false,
   },
@@ -246,6 +250,11 @@ function PlanSummaryCard({
             {billing === 'annual' && (
               <p className="text-white/70 text-xs mt-1">
                 Facturé annuellement — économisez EUR {cfg.savings}/an
+              </p>
+            )}
+            {cfg.perSeat && (
+              <p className="text-white/80 text-xs mt-1.5 font-medium">
+                {cfg.perSeat} · {cfg.includedSeats}
               </p>
             )}
           </div>
@@ -1085,6 +1094,11 @@ function StepPayment({
             <span className="font-bold text-slate-900 dark:text-white">Dû aujourd&apos;hui</span>
             <span className="font-black text-lg text-emerald-600">EUR 0,00</span>
           </div>
+          {cfg.perSeat && (
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+              Après l&apos;essai : {cfg.priceMonthly} EUR/mois {cfg.perSeat.toLowerCase()} ({cfg.includedSeats}).
+            </p>
+          )}
         </div>
 
         {/* Submit */}
