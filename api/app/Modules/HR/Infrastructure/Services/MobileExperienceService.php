@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Modules\Planning\Domain\Models\Absence;
 
 /**
  * Construit une experience mobile coherente a partir du role utilisateur
@@ -36,9 +38,9 @@ class MobileExperienceService
     public function for(Employee $employee): array
     {
         return [
-            'stage'         => $this->stageFor($employee),
-            'app'           => $this->appContextFor($employee),
-            'modules'       => $this->modulesFor($employee),
+            'stage' => $this->stageFor($employee),
+            'app' => $this->appContextFor($employee),
+            'modules' => $this->modulesFor($employee),
             'quick_actions' => $this->quickActionsFor($employee),
         ];
     }
@@ -46,6 +48,10 @@ class MobileExperienceService
     /**
      * Identify which mobile app this employee should be using.
      * This is used by the frontend to redirect to the right app on first login.
+     *
+     * Seules 4 apps sont distribuées (employee, manager, rh, platform_admin —
+     * front/mobile_apps) : les rôles comptable/marketing/dept n'ont PAS d'app
+     * dédiée et retombent sur l'app Manager (T120).
      *
      * @return array{id: string, name: string, deep_link_scheme: string}
      */
@@ -55,21 +61,36 @@ class MobileExperienceService
             return ['id' => 'employee', 'name' => 'Leopardo Employee', 'deep_link_scheme' => 'leopardo-employee'];
         }
 
-        return match($employee->manager_role) {
-            'principal'  => ['id' => 'manager',   'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
-            'rh'         => ['id' => 'rh',         'name' => 'Leopardo RH',        'deep_link_scheme' => 'leopardo-rh'],
-            'comptable'  => ['id' => 'comptable',  'name' => 'Leopardo Comptable', 'deep_link_scheme' => 'leopardo-comptable'],
-            'marketing'  => ['id' => 'marketing',  'name' => 'Leopardo Marketing', 'deep_link_scheme' => 'leopardo-marketing'],
-            'dept'       => ['id' => 'dept',       'name' => 'Leopardo Dept',      'deep_link_scheme' => 'leopardo-dept'],
-            default      => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+        return match ($employee->manager_role) {
+            'principal' => ['id' => 'manager',   'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+            'rh' => ['id' => 'rh',         'name' => 'Leopardo RH',        'deep_link_scheme' => 'leopardo-rh'],
+            // Rôles sans app dédiée distribuée → app Manager (gestion des équipes).
+            'comptable',
+            'marketing',
+            'dept' => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
+            default => ['id' => 'manager',    'name' => 'Leopardo Manager',   'deep_link_scheme' => 'leopardo-manager'],
         };
     }
 
     private function stageFor(Employee $employee): string
     {
+        // Le compteur `extra_data.app_actions_count` n'est écrit nulle part
+        // (T119) : le stage repose désormais sur des signaux réels d'activité
+        // (pointages ou absences déclarées). Le compteur reste accepté comme
+        // surcharge si un client l'alimente.
         $count = data_get($employee->extra_data, 'app_actions_count');
+        if (is_numeric($count) && (int) $count < 10) {
+            return 'new';
+        }
 
-        return is_numeric($count) && (int) $count < 10 ? 'new' : 'regular';
+        $hasActivity = AttendanceLog::where('company_id', $employee->company_id)
+            ->where('employee_id', $employee->id)
+            ->exists()
+            || Absence::where('company_id', $employee->company_id)
+                ->where('employee_id', $employee->id)
+                ->exists();
+
+        return $hasActivity ? 'regular' : 'new';
     }
 
     /**
