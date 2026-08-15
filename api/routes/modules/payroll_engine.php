@@ -115,7 +115,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::get('/payroll-runs/{payrollRun}/pay-slips', [PaySlipController::class, 'indexForRun'])->whereNumber('payrollRun');
         Route::post('/payroll-runs/{payrollRun}/send-slips', [PaySlipController::class, 'sendSlips'])->whereNumber('payrollRun');
         Route::get('/pay-slips/{paySlip}', [PaySlipController::class, 'show'])->whereNumber('paySlip');
-        Route::get('/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
 
         Route::post('/payroll-runs/{payrollRun}/bank-export', [BankExportController::class, 'generate'])->whereNumber('payrollRun');
         // Issue #2267 : contrat OpenAPI GET/POST /bank-exports (liste + génération).
@@ -146,7 +145,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         // Plan 61 — Payroll cycles
         Route::get('/payroll/cycles', [PayrollCycleController::class, 'index']);
         Route::get('/payroll/cycles/current', [PayrollCycleController::class, 'current']);
-        Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
 
         // PA2-PAY-011 — Configurable company pay cycle rule (daily/weekly/monthly)
         Route::get('/payroll/cycle-settings', [PayrollCycleController::class, 'cycleSettings']);
@@ -162,6 +160,15 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'tenant', 'throttle:api-plan'
         Route::post('/payment-batches/{paymentBatch}/mark-paid', [PaymentBatchController::class, 'markPaid'])->whereNumber('paymentBatch');
         Route::post('/payroll-runs/{payrollRun}/bulk-pay', [BulkPaymentController::class, 'bulkPay'])->whereNumber('payrollRun');
         Route::get('/payroll-runs/{payrollRun}/bulk-pay/status', [BulkPaymentController::class, 'bulkPayStatus'])->whereNumber('payrollRun');
+    });
+
+    // ── Manager read-only payroll (principal, comptable, rh) ────────────
+    // Issue #2749 — l'app RH (leopardo_hr) consomme ces lectures depuis ses
+    // écrans paie ; le rôle rh était exclu du groupe principal/comptable
+    // → 403 systématique. Les écritures paie restent principal/comptable.
+    Route::middleware(['api.manager:principal,comptable,rh', 'tenant.country'])->group(function (): void {
+        Route::get('/pay-slips/{paySlip}/pdf', [PaySlipController::class, 'downloadPdf'])->whereNumber('paySlip');
+        Route::get('/payroll/mobile-summary', [PayrollCycleController::class, 'mobileSummary']);
         Route::get('/payments/{payrollRun}/documents', [PaymentDocumentController::class, 'payrollDocuments'])->whereNumber('payrollRun');
     });
 

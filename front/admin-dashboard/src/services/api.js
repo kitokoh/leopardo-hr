@@ -89,7 +89,11 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-const apiBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
+// QA 2026-08-15 (#2659) : tout build sans VITE_API_URL embarquait localhost
+// (déploiement GitHub Actions cassé, dev silencieusement pointé ailleurs).
+// Le défaut est désormais l'URL de production ; localhost reste utilisable
+// explicitement via VITE_API_URL pour le dev local.
+const apiBaseURL = import.meta.env.VITE_API_URL || 'https://gestionemployerbackend.onrender.com/api/v1'
 
 function baseEndsWithV1(baseURL) {
   return /\/api\/v1\/?$/.test(baseURL || '')
