@@ -14,7 +14,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="slab-country">{{ $t('tax_slabs.th_country') }}</label>
           <select id="slab-country" v-model="countryCode" class="form-input min-w-40" @change="onCountryChange">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
           </select>
         </div>
         <div>
@@ -124,6 +124,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import api from '@/services/api'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
 import TaxSlabEditor from '@/components/payroll/TaxSlabEditor.vue'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
@@ -141,20 +142,7 @@ function t(key, vars = {}) {
   return msg
 }
 
-const supportedCountries = [
-  { code: 'DZ', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
-  { code: 'CM', flag: '🇨🇲', labelKey: 'common.countries.CM' },
-  { code: 'CI', flag: '🇨🇮', labelKey: 'common.countries.CI' },
-  { code: 'SN', flag: '🇸🇳', labelKey: 'common.countries.SN' },
-  { code: 'MA', flag: '🇲🇦', labelKey: 'common.countries.MA' },
-  { code: 'TN', flag: '🇹🇳', labelKey: 'common.countries.TN' },
-  { code: 'TR', flag: '🇹🇷', labelKey: 'common.countries.TR' },
-  { code: 'FR', flag: '🇫🇷', labelKey: 'common.countries.FR' },
-  { code: 'CG', flag: '🇨🇬', labelKey: 'common.countries.CG' },
-  { code: 'GA', flag: '🇬🇦', labelKey: 'common.countries.GA' },
-  { code: 'BF', flag: '🇧🇫', labelKey: 'common.countries.BF' },
-  { code: 'ML', flag: '🇲🇱', labelKey: 'common.countries.ML' },
-]
+const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: true })
 
 const countryCode = ref('DZ')
 const scope = ref('national')

@@ -15,7 +15,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="sc-country">{{ $t('social_contrib.th_country') }}</label>
           <select id="sc-country" v-model="countryCode" class="form-input min-w-40" @change="load">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
           </select>
         </div>
         <div>
@@ -82,13 +82,13 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="simc-country">{{ $t('social_contrib.th_country') }}</label>
           <select id="simc-country" v-model="simCountry" class="form-input" @change="runSimulate">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
           </select>
         </div>
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="simc-compare">{{ $t('social_contrib.compare_country') }}</label>
           <select id="simc-compare" v-model="compareCountry" class="form-input" @change="runSimulate">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ $t(cc.labelKey) }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.flag }} {{ cc.label }}</option>
           </select>
         </div>
         <div class="flex items-end">
@@ -182,6 +182,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
@@ -198,18 +199,7 @@ function t(key, vars = {}) {
   return msg
 }
 
-const supportedCountries = [
-  { code: 'DZ', flag: '🇩🇿', labelKey: 'common.countries.DZ' },
-  { code: 'CM', flag: '🇨🇲', labelKey: 'common.countries.CM' },
-  { code: 'CI', flag: '🇨🇮', labelKey: 'common.countries.CI' },
-  { code: 'SN', flag: '🇸🇳', labelKey: 'common.countries.SN' },
-  { code: 'MA', flag: '🇲🇦', labelKey: 'common.countries.MA' },
-  { code: 'TN', flag: '🇹🇳', labelKey: 'common.countries.TN' },
-  { code: 'CG', flag: '🇨🇬', labelKey: 'common.countries.CG' },
-  { code: 'GA', flag: '🇬🇦', labelKey: 'common.countries.GA' },
-  { code: 'BF', flag: '🇧🇫', labelKey: 'common.countries.BF' },
-  { code: 'ML', flag: '🇲🇱', labelKey: 'common.countries.ML' },
-]
+const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: true })
 
 const countryCode = ref('DZ')
 const typeFilter = ref('')

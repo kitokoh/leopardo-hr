@@ -130,7 +130,7 @@
             <div>
               <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="rate-country">{{ $t('tax_rates.th_country') }}</label>
               <select id="rate-country" v-model="form.country_code" class="form-input" required>
-                <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t(cc.labelKey) }}</option>
+                <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.label }}</option>
               </select>
             </div>
           </div>
@@ -223,6 +223,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import { useToast } from 'vue-toastification'
@@ -234,15 +235,7 @@ function t(key, fallback = '') {
   return translate(localeStore.current, key, fallback)
 }
 
-const supportedCountries = [
-  { code: 'DZ', labelKey: 'common.countries.DZ' },
-  { code: 'CM', labelKey: 'common.countries.CM' },
-  { code: 'CI', labelKey: 'common.countries.CI' },
-  { code: 'SN', labelKey: 'common.countries.SN' },
-  { code: 'MA', labelKey: 'common.countries.MA' },
-  { code: 'TN', labelKey: 'common.countries.TN' },
-  { code: 'FR', labelKey: 'common.countries.FR' },
-]
+const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: true })
 
 const isPlatformAdmin = ref(false)
 const rates = ref([])

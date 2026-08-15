@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr')
+    Locale('tr'),
   ];
 
   /// No description provided for @appTitle.
@@ -1217,6 +1217,24 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dernieres actions de votre equipe'**
   String get dashboardRecentActivityHint;
+
+  /// No description provided for @dashboardLeoIaAnnouncementTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Felicitations equipe'**
+  String get dashboardLeoIaAnnouncementTitle;
+
+  /// No description provided for @dashboardLeoIaAnnouncementBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Felicitations a toute l\'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !'**
+  String get dashboardLeoIaAnnouncementBody;
+
+  /// No description provided for @dashboardLeoIaAnnouncementError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'envoyer le message. Reessayez dans quelques instants.'**
+  String get dashboardLeoIaAnnouncementError;
 
   /// No description provided for @marketingOauthNavTitle.
   ///
@@ -2720,8 +2738,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

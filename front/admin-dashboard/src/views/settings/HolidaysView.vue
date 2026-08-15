@@ -13,7 +13,7 @@
         <div>
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="holiday-country">{{ $t('holidays.country') }}</label>
           <select id="holiday-country" v-model="countryCode" class="form-input min-w-40" @change="loadHolidays">
-            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ $t(cc.labelKey) }}</option>
+            <option v-for="cc in supportedCountries" :key="cc.code" :value="cc.code">{{ cc.label }}</option>
           </select>
         </div>
         <div>
@@ -225,6 +225,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import api from '@/services/api'
+import { useSupportedCountries } from '@/composables/useSupportedCountries'
 import { useToast } from 'vue-toastification'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
@@ -241,14 +242,7 @@ function t(key, vars = {}) {
   return msg
 }
 
-const supportedCountries = [
-  { code: 'DZ', labelKey: 'holidays.countries.DZ' },
-  { code: 'CM', labelKey: 'holidays.countries.CM' },
-  { code: 'CI', labelKey: 'holidays.countries.CI' },
-  { code: 'SN', labelKey: 'holidays.countries.SN' },
-  { code: 'MA', labelKey: 'holidays.countries.MA' },
-  { code: 'TN', labelKey: 'holidays.countries.TN' },
-]
+const { countries: supportedCountries } = useSupportedCountries({ payrollOnly: false })
 
 const years = Array.from({ length: 8 }, (_, i) => 2024 + i)
 

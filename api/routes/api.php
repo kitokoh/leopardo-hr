@@ -302,6 +302,12 @@ Route::prefix('v1')->group(function (): void {
     // Endpoints appelés par le SPA sans exister côté API (issue #1764) :
     // création côté API des routes manquantes (décision produit).
     Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('admin')->group(function (): void {
+        // MULTI-PAYS (#2789) — registre unique des pays supportés pour la
+        // console super-admin (réutilise SupportedCountryController, sans
+        // contexte tenant : remplace les 4 tableaux codés en dur incohérents
+        // des vues Holidays/SocialContributions/TaxRates/TaxSlabs).
+        Route::get('/supported-countries', [SupportedCountryController::class, 'index']);
+
         Route::get('/dashboard/stats', [PlatformAdminDashboardController::class, 'stats']);
         Route::get('/dashboard/activities', [PlatformAdminDashboardController::class, 'activities']);
         Route::get('/dashboard/alerts', [PlatformAdminDashboardController::class, 'alerts']);

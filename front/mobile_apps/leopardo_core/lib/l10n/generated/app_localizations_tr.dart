@@ -588,6 +588,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardRecentActivityHint => 'Ekibinizin son eylemleri';
 
   @override
+  String get dashboardLeoIaAnnouncementTitle => 'Tebrikler ekip';
+
+  @override
+  String get dashboardLeoIaAnnouncementBody =>
+      'Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!';
+
+  @override
+  String get dashboardLeoIaAnnouncementError =>
+      'Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.';
+
+  @override
   String get marketingOauthNavTitle => 'Pazarlama OAuth';
 
   @override
