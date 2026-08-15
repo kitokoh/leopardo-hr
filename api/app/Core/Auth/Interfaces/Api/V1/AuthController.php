@@ -6,9 +6,9 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
-use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
@@ -24,7 +24,9 @@ use App\Shared\Models\Language;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
 
 class AuthController extends Controller
 {
@@ -166,10 +168,10 @@ class AuthController extends Controller
     {
         // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
         // au callback. Plus de Socialite stateless sans protection.
-        $state = \Illuminate\Support\Str::random(40);
+        $state = Str::random(40);
         session(['google_oauth_state' => $state]);
 
-        /** @var \Laravel\Socialite\Two\AbstractProvider $googleProvider */
+        /** @var AbstractProvider $googleProvider */
         $googleProvider = Socialite::driver('google');
 
         return $googleProvider->with(['state' => $state])->redirect();
