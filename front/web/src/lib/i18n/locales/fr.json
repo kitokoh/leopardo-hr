@@ -255,7 +255,8 @@
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
       "exportError": "Erreur lors de l'export",
-      "selectionExportDone": "Export de la selection termine"
+      "selectionExportDone": "Export de la selection termine",
+      "bulkDone": "Mise à jour effectuée"
     },
     "confirm": {
       "delete": "Etes-vous sur de vouloir supprimer :name ?"
@@ -263,7 +264,32 @@
     "errors": {
       "name_required": "Le nom complet est requis.",
       "password_required": "Le mot de passe est requis.",
-      "fix_fields": "Veuillez corriger les champs en rouge"
+      "fix_fields": "Veuillez corriger les champs en rouge",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères",
+      "search_no_match": "Aucune page ne correspond à votre recherche",
+      "update_failed": "Erreur lors de la mise à jour de l'utilisateur"
+    },
+    "impersonation": {
+      "title": "Impersonner un employé",
+      "subtitle": "Ouvrir une session au nom de :name",
+      "reason": "Motif (obligatoire, 5 caractères minimum)",
+      "reasonMin": "Motif obligatoire (5 caractères minimum).",
+      "noLink": "Aucun employé lié à ce compte — impersonation impossible.",
+      "start": "Créer la session",
+      "cancel": "Annuler",
+      "tokenTitle": "Jeton d'impersonation (usage unique)",
+      "expires": "Expire le :date",
+      "copy": "Copier le jeton",
+      "copied": "Jeton copié",
+      "created": "Session d'impersonation créée",
+      "error": "Erreur lors de la création de la session d'impersonation",
+      "done": "Terminé",
+      "employee": "Employé #:id"
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur",
+      "status": "Statut",
+      "save": "Mettre à jour"
     }
   },
   "dashboard": {
@@ -680,6 +706,14 @@
       "employeesRequired": "Sélectionnez une taille d'équipe",
       "phoneInvalid": "Numéro de téléphone invalide",
       "agreeTerms": "Vous devez accepter les conditions d'utilisation"
+    }
+  },
+  "companies": {
+    "toast": {
+      "load_failed": "Impossible de charger la fiche entreprise.",
+      "tickets_failed": "Impossible de charger les tickets support.",
+      "subscription_failed": "Échec de la mise à jour de l'abonnement.",
+      "features_failed": "Échec de la configuration des modules."
     }
   }
 }

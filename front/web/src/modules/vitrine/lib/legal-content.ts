@@ -43,7 +43,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Finalites',
           body: [
-            'Les traitements servent a securiser l acces, executer les processus RH, produire les rapports, notifier les utilisateurs, auditer les actions et maintenir la plateforme.',
+            'Les traitements servent a securiser l accès, executer les processus RH, produire les rapports, notifier les utilisateurs, auditer les actions et maintenir la plateforme.',
             'Les données ne sont pas revendues. Les acces internes sont limites aux besoins de support, sécurité, exploitation et conformité.',
           ],
         },
@@ -57,8 +57,8 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
         {
           title: 'Sécurité',
           body: [
-            'Leopardo RH applique l isolation multi-tenant, le controle d acces par roles, la journalisation des acces sensibles et une logique de moindre privilege.',
-            'Les clients restent responsables de la configuration de leurs utilisateurs, de leurs politiques internes et de la verification des obligations locales.',
+            'Leopardo RH applique l isolation multi-tenant, le controle d accès par roles, la journalisation des accès sensibles et une logique de moindre privilege.',
+            'Les clients restent responsables de la configuration de leurs utilisateurs, de leurs politiques internes et de la vérification des obligations locales.',
           ],
         },
       ],
@@ -72,15 +72,15 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       eyebrow: 'Conditions de service',
       title: 'Conditions generales d utilisation',
       intro:
-        'Ces conditions encadrent l utilisation de Leopardo RH par les entreprises, administrateurs, managers, employes, kiosques et integrateurs autorises.',
+        'Ces conditions encadrent l utilisation de Leopardo RH par les entreprises, administrateurs, managers, employés, kiosques et integrateurs autorises.',
       updatedAt: 'Dernière mise a jour : 14 mai 2026',
       backLabel: 'Retour a l accueil',
       languageLabel: 'Langue du document',
       sections: [
         {
-          title: 'Acces a la plateforme',
+          title: 'Accès a la plateforme',
           body: [
-            'L acces est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l administration de la plateforme.',
+            'L accès est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l administration de la plateforme.',
             'Chaque utilisateur doit proteger ses identifiants, respecter les permissions accordees et signaler toute activité suspecte.',
           ],
         },

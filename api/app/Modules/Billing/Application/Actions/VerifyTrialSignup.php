@@ -40,14 +40,47 @@ class VerifyTrialSignup
             DB::statement('SET search_path TO public');
         }
 
-        $companyRequest = CompanyRequest::query()
-            ->where('email', $email)
-            ->where('status', 'pending')
-            ->where('verification_token', $code)
-            ->where('verification_expires_at', '>=', now())
-            ->first();
+        // QA #2996 — verrou atomique anti double-provisioning : deux POST
+        // /trial/verify simultanés avec le même OTP valide créaient 2 tenants
+        // + 2 managers pour le même email (lecture pending → provisioning →
+        // approved sans verrou). La CompanyRequest est maintenant CLAIMÉE en
+        // `processing` sous transaction (lockForUpdate) : le 2e appel voit un
+        // statut non-pending et refuse, sans jamais provisionner deux fois.
+        $claimed = DB::transaction(function () use ($email, $code): ?CompanyRequest {
+            $request = CompanyRequest::query()
+                ->where('email', $email)
+                ->where('status', 'pending')
+                ->where('verification_token', $code)
+                ->where('verification_expires_at', '>=', now())
+                ->lockForUpdate()
+                ->first();
 
-        if (! $companyRequest) {
+            if ($request === null) {
+                return null;
+            }
+
+            $request->update(['status' => 'processing']);
+
+            return $request;
+        });
+
+        if ($claimed === null) {
+            // Distinguer « code invalide/expiré » de « déjà traité » : un
+            // code valide déjà consommé ne doit pas dire INVALID au client.
+            $existing = CompanyRequest::query()
+                ->where('email', $email)
+                ->where('verification_token', $code)
+                ->first();
+
+            if ($existing !== null && $existing->status !== 'pending') {
+                return [
+                    'success' => false,
+                    'error' => 'ALREADY_PROCESSED',
+                    'message' => 'Cette demande d\'essai a déjà été traitée.',
+                    'status' => 409,
+                ];
+            }
+
             return [
                 'success' => false,
                 'error' => 'INVALID_OR_EXPIRED_CODE',
@@ -56,6 +89,7 @@ class VerifyTrialSignup
             ];
         }
 
+        $companyRequest = $claimed;
         $payload = $companyRequest->signup_payload ?? [];
         $companyName = (string) ($companyRequest->company_name ?? '');
 
@@ -116,6 +150,17 @@ class VerifyTrialSignup
                 'company' => $companyName,
                 'error' => $e->getMessage(),
             ]);
+
+            // QA #2996 — libérer la demande pour permettre un retry (le claim
+            // `processing` ne doit pas bloquer définitivement le parcours).
+            try {
+                $companyRequest->update(['status' => 'pending']);
+            } catch (\Throwable $revertError) {
+                Log::error('SelfServiceTrial: Failed to revert claim after provisioning failure', [
+                    'email' => $email,
+                    'error' => $revertError->getMessage(),
+                ]);
+            }
 
             return [
                 'success' => false,
@@ -187,7 +232,7 @@ class VerifyTrialSignup
                 'tenancy_type' => 'shared',
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays(30)->toDateString(),
+                'subscription_end' => now()->addDays(14)->toDateString(),
                 'language' => $payload['language'],
                 'timezone' => $payload['timezone'],
                 'currency' => $payload['currency'],
@@ -271,7 +316,7 @@ class VerifyTrialSignup
                     'attendance' => true,
                     'mobile_apps' => true,
                 ], JSON_THROW_ON_ERROR),
-                'trial_days' => 30,
+                'trial_days' => 14,
                 'is_active' => true,
             ]);
 

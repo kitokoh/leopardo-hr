@@ -9,11 +9,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// durée de vie du process.
 class SecureStorage {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  static const String _tokenKey = 'auth_token';
+  // T084 (QA 2026-08-15) : les deux systèmes d'auth (sanctum /api/v1 et
+  // user_api /user/*) partageaient la MÊME clé 'auth_token' → les sessions
+  // s'écrasaient. Clés désormais distinctes ; 'auth_token' reste lu en
+  // fallback (migration de lecture pour les sessions existantes).
+  static const String _tokenKey = 'auth_token_employee';
+  static const String _userTokenKey = 'auth_token_user';
+  static const String _legacyTokenKey = 'auth_token';
   static const Duration _timeout = Duration(seconds: 2);
   static const String _legacyHiveBox = 'offlineCache';
   static const String _legacyHiveKey = 'auth_token';
   String? _cachedToken;
+  String? _cachedUserToken;
 
   /// Audit #1700 : purge ponctuelle du miroir Hive legacy — les anciennes
   /// versions écrivaient le JWT dans le box `offlineCache` non chiffré.
@@ -46,7 +53,11 @@ class SecureStorage {
     }
 
     try {
-      final token = await _storage.read(key: _tokenKey).timeout(_timeout);
+      var token = await _storage.read(key: _tokenKey).timeout(_timeout);
+      if (token == null || token.isEmpty) {
+        // Migration de lecture (T084) : sessions écrites sous l'ancienne clé.
+        token = await _storage.read(key: _legacyTokenKey).timeout(_timeout);
+      }
       if (token != null && token.isNotEmpty) {
         _cachedToken = token;
         return token;
@@ -63,6 +74,46 @@ class SecureStorage {
 
     try {
       await _storage.delete(key: _tokenKey).timeout(_timeout);
+      await _storage.delete(key: _legacyTokenKey).timeout(_timeout);
+    } catch (_) {
+      // ignore
+    }
+  }
+
+  // ── Session user_api (/user/*, comptes sans entreprise — T084) ──────────
+  Future<void> saveUserToken(String token) async {
+    _cachedUserToken = token;
+
+    try {
+      await _storage.write(key: _userTokenKey, value: token).timeout(_timeout);
+    } catch (_) {
+      // Cache mémoire conservé (même politique que saveToken).
+    }
+  }
+
+  Future<String?> getUserToken() async {
+    if (_cachedUserToken != null && _cachedUserToken!.isNotEmpty) {
+      return _cachedUserToken;
+    }
+
+    try {
+      final token = await _storage.read(key: _userTokenKey).timeout(_timeout);
+      if (token != null && token.isNotEmpty) {
+        _cachedUserToken = token;
+        return token;
+      }
+    } catch (_) {
+      // ignore : secure storage indisponible
+    }
+
+    return null;
+  }
+
+  Future<void> deleteUserToken() async {
+    _cachedUserToken = null;
+
+    try {
+      await _storage.delete(key: _userTokenKey).timeout(_timeout);
     } catch (_) {
       // ignore
     }

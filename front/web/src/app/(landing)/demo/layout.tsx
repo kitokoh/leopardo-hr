@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Demander une Demo | Leopardo RH',
   description:
-    'Planifiez une demo gratuite de Leopardo RH. Decouvrez la gestion RH automatisee : paie multi-pays, pointage, absences, formations et plus.',
+    'Planifiez une demo gratuite de Leopardo RH. Découvrez la gestion RH automatisee : paie multi-pays, pointage, absences, formations et plus.',
   openGraph: {
     title: 'Demander une Demo | Leopardo RH',
     description:

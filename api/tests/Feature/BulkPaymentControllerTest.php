@@ -126,4 +126,28 @@ class BulkPaymentControllerTest extends TestCase
 
         return [$company, $manager, $run, $slipA, $slipB];
     }
+
+    public function test_double_dispatch_is_rejected_with_409(): void
+    {
+        // QA #2997 — garde ATOMIQUE (SET NX) : un second dispatch pendant un
+        // bulk-pay en cours est refusé en 409 (avant : fenêtre TOCTOU entre
+        // le get et le dispatch → deux jobs pouvaient traiter les mêmes slips).
+        Bus::fake();
+
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        // 1er dispatch → accepté (claim posé en Redis, statut 'starting')
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertAccepted()
+            ->assertJsonPath('status', 'accepted');
+
+        // 2e dispatch immédiat → 409 (claim déjà posé)
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertStatus(409)
+            ->assertJsonPath('message', 'Bulk payment already in progress.');
+
+        // Un seul job dispatché au total
+        Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);
+    }
 }
