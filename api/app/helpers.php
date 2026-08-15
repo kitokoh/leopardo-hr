@@ -32,7 +32,10 @@ if (! function_exists('correlation_id')) {
             return (string) app('correlation_id');
         }
 
-        $header = request()?->header('X-Correlation-ID') ?: request()?->header('X-Request-Id');
+        $req = app()->bound('request') ? app('request') : null;
+        $header = $req instanceof \Illuminate\Http\Request
+            ? ($req->header('X-Correlation-ID') ?: $req->header('X-Request-Id'))
+            : null;
         $id = is_string($header) && $header !== '' ? $header : (string) Str::uuid();
         app()->instance('correlation_id', $id);
 
