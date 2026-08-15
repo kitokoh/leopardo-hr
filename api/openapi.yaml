@@ -7006,7 +7006,7 @@ paths:
                       warning: { type: string }
                       warning_key: { type: string }
                       source: { type: string }
-                      verification_date: { type: string, nullable: true }
+                      verification_date: { type: string, format: date, nullable: true }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -8026,7 +8026,7 @@ paths:
       parameters:
         - name: format
           in: query
-          schema: { type: string, enum: [json, csv, xlsx], default: json }
+          schema: { type: string, enum: [json, csv], default: json }
       responses:
         "200":
           description: "Export au format demande"
@@ -11415,7 +11415,7 @@ paths:
                     properties:
                       token: { type: string }
                       token_type: { type: string }
-                      token_expires_at: { type: string, nullable: true }
+                      token_expires_at: { type: string, format: date-time, nullable: true }
                       employee:
                         type: object
                         properties:
@@ -12958,30 +12958,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  /smart-attendance/mode-settings:
-    get:
-      tags: ["SmartAttendance"]
-      summary: "Config mode géolocalisation de l'entreprise (manager/RH)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Réglages entreprise"
-        "401":
-          $ref: "#/components/responses/Error401"
-    put:
-      tags: ["SmartAttendance"]
-      summary: "Mettre à jour la config mode géolocalisation (principal)"
-      security:
-        - BearerAuth: []
-      responses:
-        "200":
-          description: "Config mise à jour"
-        "401":
-          $ref: "#/components/responses/Error401"
-        "403":
-          $ref: "#/components/responses/Error403"
-
   /smart-attendance/employees/{employeeId}/preference:
     get:
       tags: ["SmartAttendance"]
@@ -14043,7 +14019,6 @@ components:
         active:
           type: boolean
           description: "Passer a true remet failure_count a 0."
-
 
     WebhookDelivery:
       type: object
@@ -18572,6 +18547,73 @@ components:
           nullable: true
         is_mandatory:
           type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+
+    TrainingSession:
+      type: object
+      description: "Session de formation (TrainingSessionResource)"
+      properties:
+        id:
+          type: integer
+        training_course_id:
+          type: integer
+        trainer_id:
+          type: integer
+          nullable: true
+        external_trainer:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        location:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [planned, in_progress, completed, cancelled]
+        notes:
+          type: string
+          nullable: true
+        trainer:
+          type: object
+          nullable: true
+          properties:
+            id: { type: integer }
+            first_name: { type: string }
+            last_name: { type: string }
+        created_at:
+          type: string
+          format: date-time
+
+    TrainingEnrollment:
+      type: object
+      description: "Inscription à une session de formation (TrainingEnrollmentResource)"
+      properties:
+        id:
+          type: integer
+        training_session_id:
+          type: integer
+        employee_id:
+          type: integer
+        company_id:
+          type: integer
+        status:
+          type: string
+          enum: [enrolled, in_progress, completed, dropped]
+        employee:
+          type: object
+          nullable: true
+          properties:
+            id: { type: integer }
+            first_name: { type: string }
+            last_name: { type: string }
         created_at:
           type: string
           format: date-time
