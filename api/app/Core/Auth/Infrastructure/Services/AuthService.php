@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Exceptions\AccountLockedException;
 use App\Exceptions\AccountSuspendedException;
 use App\Exceptions\CompanyNotFoundException;
 use App\Exceptions\EmployeeNotActiveException;
 use App\Exceptions\InvalidCredentialsException;
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -401,4 +401,3 @@ readonly class AuthService
         return (bool) preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema);
     }
 }
-
