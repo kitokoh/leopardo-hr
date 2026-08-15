@@ -277,7 +277,11 @@ function handleSearch() {
   const router = useRouter()
   const normalized = query.toLowerCase()
   const matches = router.getRoutes().filter((route) => {
+    // Issue #3042 : les routes tenant (requiresTenant: true — Paie, Congés,
+    // RH…) sont gardées pour le super-admin : y naviguer depuis la recherche
+    // rebondit en silence. On les exclut du périmètre de recherche.
     if (!route.path.startsWith('/') || route.path.includes(':') || route.path === '/') return false
+    if (route.meta?.requiresTenant) return false
     const haystack = `${route.path} ${route.meta?.title ?? ''} ${route.name ?? ''}`.toLowerCase()
     return haystack.includes(normalized)
   })
@@ -286,7 +290,7 @@ function handleSearch() {
     router.push(matches[0].path)
   } else {
     // Aucune route : cible la vue liste la plus proche par mot-clé du path.
-    const fallback = router.getRoutes().find((r) => r.path.includes(normalized) && !r.path.includes(':'))
+    const fallback = router.getRoutes().find((r) => r.path.includes(normalized) && !r.path.includes(':') && !r.meta?.requiresTenant)
     if (fallback) router.push(fallback.path)
   }
 }

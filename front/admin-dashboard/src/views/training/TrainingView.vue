@@ -242,12 +242,17 @@ function closeDetail() {
 async function fetchData() {
   loading.value = true
   error.value = ''
+  // Issue #3143 : les échecs (401 tenant sur /v1/training/courses, etc.)
+  // étaient avalés silencieusement → onglet Catalogue vide sans aucun signal.
+  const failures = []
   try {
     const [coursesRes, sessionsRes, enrollRes] = await Promise.all([
       // #2634 : sessions/enrollments en vue cross-tenant console (routes /admin/*).
-      api.get('/admin/training/courses').catch(() => ({ data: { data: [] } })),
-      api.get('/admin/training/sessions').catch(() => ({ data: { data: [] } })),
-      api.get('/admin/training/enrollments').catch(() => ({ data: { data: [] } })),
+      // #2634/#3143 : routes cross-tenant console (/admin/*) ; les échecs
+      // résiduels sont remontés dans `error` au lieu d'être avalés.
+      api.get('/admin/training/courses').catch((e) => { failures.push('catalogue'); return { data: { data: [] } } }),
+      api.get('/admin/training/sessions').catch(() => { failures.push('sessions'); return { data: { data: [] } } }),
+      api.get('/admin/training/enrollments').catch(() => { failures.push('inscriptions'); return { data: { data: [] } } }),
     ])
     courses.value = coursesRes.data.data || coursesRes.data || []
     sessions.value = sessionsRes.data.data || sessionsRes.data || []
@@ -259,8 +264,11 @@ async function fetchData() {
       total_enrollments: enrollments.value.length,
       completion_rate: enrollments.value.length > 0 ? Math.round(completed.length / enrollments.value.length * 100) : 0,
     }
+    if (failures.length > 0) {
+      error.value = `Certaines données n'ont pas pu être chargées (${failures.join(', ')}). Vérifiez les droits de la console.`
+    }
   } catch {
-    error.value = 'Impossible de charger les donnees de formation.'
+    error.value = 'Impossible de charger les données de formation.'
   } finally {
     loading.value = false
   }

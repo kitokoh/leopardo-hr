@@ -39,47 +39,12 @@
     </div>
   </div>
 
-  <!-- System maintenance banner -->
-  <div
-    v-if="isMaintenanceMode"
-    class="fixed inset-x-0 top-0 z-40"
-    :class="{ 'mt-16': showCriticalAlert }"
-  >
-    <div class="bg-yellow-400">
-      <div class="mx-auto max-w-7xl py-2 px-3 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between">
-          <div class="flex w-0 flex-1 items-center">
-            <span class="flex rounded-lg bg-yellow-600 p-2">
-              <WrenchScrewdriverIcon class="h-5 w-5 text-white" />
-            </span>
-            <p class="ml-3 font-medium text-yellow-900">
-              <span class="md:hidden">Mode maintenance</span>
-              <span class="hidden md:inline">
-                Le système est en mode maintenance. Certaines fonctionnalités peuvent être indisponibles.
-              </span>
-            </p>
-          </div>
-          <div class="order-2 flex-shrink-0 sm:ml-3">
-            <button
-              @click="disableMaintenanceMode"
-              class="flex items-center justify-center rounded-md border border-transparent bg-yellow-600 px-4 py-1 text-sm font-medium text-white shadow-sm hover:bg-yellow-700"
-            >
-              Désactiver
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Connection status banner -->
   <div
     v-if="!realtimeStore.isConnected"
     class="fixed inset-x-0 top-0 z-30"
     :class="{
-      'mt-16': showCriticalAlert && !isMaintenanceMode,
-      'mt-12': !showCriticalAlert && isMaintenanceMode,
-      'mt-28': showCriticalAlert && isMaintenanceMode
+      'mt-16': showCriticalAlert
     }"
   >
     <div class="bg-gray-600">
@@ -121,7 +86,6 @@ import { useRouter } from 'vue-router'
 import {
   ExclamationTriangleIcon,
   XMarkIcon,
-  WrenchScrewdriverIcon,
   WifiIcon
 } from '@heroicons/vue/24/outline'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -134,7 +98,6 @@ const realtimeStore = useRealtimeStore()
 const toast = useToast()
 
 const showCriticalAlert = ref(false)
-const isMaintenanceMode = ref(false)
 const currentCriticalAlert = ref(null)
 
 // Auto-check for critical alerts
@@ -205,20 +168,10 @@ function viewSystemAlerts() {
   dismissCriticalAlert()
 }
 
-async function disableMaintenanceMode() {
-  // Issue #2693 (QA 2026-08-15) — aucun endpoint admin de maintenance
-  // n'existe : l'action était simulée (setTimeout + toast de succès).
-  // Désormais, état honnête : on ne peut pas désactiver le mode depuis l'UI.
-  toast.info('Mode maintenance : désactivation non disponible depuis la console (aucun endpoint admin).')
-  isMaintenanceMode.value = false
-}
 
 // Expose methods for external control
 defineExpose({
   showCriticalAlertBanner,
-  dismissCriticalAlert,
-  setMaintenanceMode: (enabled) => {
-    isMaintenanceMode.value = enabled
-  }
+  dismissCriticalAlert
 })
 </script>
