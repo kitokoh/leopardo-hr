@@ -120,7 +120,7 @@ describe('HeroSection Component', () => {
     it('should render with responsive classes', () => {
       const { container } = render(<HeroSection {...defaultProps} />);
       const section = container.querySelector('section');
-      expect(section).toHaveClass('min-h-screen', 'flex', 'items-center');
+      expect(section).toHaveClass('min-h-[100dvh]', 'flex', 'items-center');
     });
   });
 });
