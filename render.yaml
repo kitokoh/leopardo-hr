@@ -94,6 +94,9 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      # QA #2277 : doit pointer vers le callback VITRINE (proxy Next) —
+      # https://leopardo-rh.com/api/v1/auth/google/callback (à aligner dans la
+      # console Google Cloud). Le cookie de session est posé sur la vitrine.
       - key: GOOGLE_REDIRECT_URL
         sync: false
       # Firebase
