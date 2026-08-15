@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { setSessionCookie } from './session-helpers';
 
 /**
  * Issue #2168 — detail de bulletin accessible depuis la liste paie.
@@ -150,6 +151,10 @@ async function seedPayrollSession(page: Page) {
     window.localStorage.removeItem('auth_token');
     window.localStorage.setItem('auth_user', JSON.stringify(user));
   }, baseUser);
+
+  // Issue #2746 — middleware serveur : poser le cookie de session comme le
+  // proxy Next après un vrai login (sinon redirection /auth/login).
+  await setSessionCookie(page);
 }
 
 test.describe('Payroll pay slip detail', () => {

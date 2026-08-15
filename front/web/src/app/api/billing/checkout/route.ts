@@ -20,6 +20,13 @@ const LEOPARDO_API_URL =
   resolveBackendBaseUrl().replace(/\/api\/v1$/, '');
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 
+/**
+ * Sandbox checkout is an explicit opt-in (dev/staging only):
+ * SANDBOX_CHECKOUT=true. It is NEVER inferred from a missing Stripe key,
+ * otherwise production would silently simulate payments (see #2628).
+ */
+const SANDBOX_CHECKOUT = process.env.SANDBOX_CHECKOUT === 'true';
+
 /** Sandbox plan prices (EUR cents) — used when Stripe is not configured or in test mode */
 const SANDBOX_PRICES: Record<string, Record<string, number>> = {
   pilot: { monthly: 2900, annual: 2400 },
@@ -52,7 +59,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const body = await request.json();
     const data = checkoutSchema.parse(body);
 
-    const isSandbox = !STRIPE_SECRET_KEY || STRIPE_SECRET_KEY.startsWith('sk_test_') || STRIPE_SECRET_KEY === 'sandbox';
+    // Sandbox ONLY when explicitly enabled (dev/staging). In production, a
+    // missing/live-invalid Stripe key must fail loudly, never fake a payment.
+    const isSandbox = SANDBOX_CHECKOUT;
+
+    /* ── NO PAYMENT PATH CONFIGURED ─────────────────────────── */
+    if (!isSandbox && (!STRIPE_SECRET_KEY || STRIPE_SECRET_KEY.startsWith('sk_test_'))) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'CHECKOUT_UNAVAILABLE',
+          message:
+            'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.',
+        },
+        { status: 503 }
+      );
+    }
 
     /* ── SANDBOX MODE ──────────────────────────────── */
     if (isSandbox) {
