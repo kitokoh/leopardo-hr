@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string|null $company_id
+ * @property string|null $company_name
  * @property string|null $url
  * @property array<mixed> $events
  * @property string|null $secret

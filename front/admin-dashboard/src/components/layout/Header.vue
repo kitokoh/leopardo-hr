@@ -269,6 +269,14 @@ onUnmounted(() => {
 })
 
 // Methods
+// Issue #3042 — routes tenant gardées (meta requiresTenant, guard #2272) :
+// la console super-admin n'a pas de contexte tenant, l'accès rebondit vers /
+// (toast « Fonctionnalité entreprise »). Les exclure de la recherche pour
+// éviter une navigation qui finit en rebond muet.
+function isTenantGuarded(route) {
+  return Boolean(route.meta?.requiresTenant)
+}
+
 function handleSearch() {
   const query = searchQuery.value.trim()
   if (!query) return
@@ -278,6 +286,7 @@ function handleSearch() {
   const normalized = query.toLowerCase()
   const matches = router.getRoutes().filter((route) => {
     if (!route.path.startsWith('/') || route.path.includes(':') || route.path === '/') return false
+    if (isTenantGuarded(route)) return false
     const haystack = `${route.path} ${route.meta?.title ?? ''} ${route.name ?? ''}`.toLowerCase()
     return haystack.includes(normalized)
   })
@@ -286,7 +295,9 @@ function handleSearch() {
     router.push(matches[0].path)
   } else {
     // Aucune route : cible la vue liste la plus proche par mot-clé du path.
-    const fallback = router.getRoutes().find((r) => r.path.includes(normalized) && !r.path.includes(':'))
+    const fallback = router.getRoutes().find(
+      (r) => r.path.includes(normalized) && !r.path.includes(':') && !isTenantGuarded(r)
+    )
     if (fallback) router.push(fallback.path)
   }
 }

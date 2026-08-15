@@ -117,11 +117,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
             { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
             { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -227,11 +227,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Payroll & finance',
           features: [
-            { name: 'Automated payroll', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
             { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
             { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Multi-country & currency', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
             { name: 'Advanced legal compliance', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -270,7 +270,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
         { id: 'per-employee', question: 'How does per-employee billing work?', answer: 'Each plan includes a base fee plus a per-active-employee rate (employees who clocked in at least once that month). Inactive employees are not charged.', category: 'Billing' },
         { id: 'free-trial', question: 'Is the paid trial really free?', answer: 'Yes. 14 full days with all features of the Pilot plan. No credit card needed to sign up.', category: 'Trial' },
-        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 30 more days. No automatic billing without your consent.', category: 'Trial' },
+        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
         { id: 'support', question: 'What support is available?', answer: 'Free: community. Pilot: email within 48h. Operations: priority 24h. Enterprise: dedicated account manager + contractual SLA.', category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
         { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
@@ -337,11 +337,11 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
             { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
             { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
             { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
@@ -447,7 +447,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'الرواتب والمالية',
           features: [
-            { name: 'حساب رواتب آلي', free: false, starter: true, business: true, enterprise: true },
+            { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
             { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
             { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
             { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
