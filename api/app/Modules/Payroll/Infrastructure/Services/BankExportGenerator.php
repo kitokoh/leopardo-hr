@@ -149,15 +149,6 @@ class BankExportGenerator
         return $xml;
     }
 
-    /**
-     * Issue #2223 — coordonnées bancaires de l'entreprise pour le SEPA.
-     * Lues depuis `companies.metadata.bank.{iban,bic}` (jsonb) ; absent →
-     * exception claire (fail-closed, plus jamais de placeholder littéral
-     * dans un fichier de paiement).
-     *
-     * @return array{iban: string, bic: string}
-     */
-
 
     private function generateCcpAlgerie(PayrollRun $run, Collection $slips): string
     {

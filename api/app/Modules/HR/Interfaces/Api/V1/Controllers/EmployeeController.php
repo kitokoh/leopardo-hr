@@ -364,6 +364,8 @@ class EmployeeController extends Controller
             'target_employee_id' => $employee->id,
         ]);
 
+        // currentCompany() retourne toujours une Company résolue par le
+        // middleware tenant (jamais null ici) — pas de garde instanceof.
         $employee->setRelation('company', currentCompany());
 
         return (new EmployeeResource($employee))->response();

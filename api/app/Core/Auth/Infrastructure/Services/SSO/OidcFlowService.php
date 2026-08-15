@@ -152,9 +152,12 @@ final class OidcFlowService
 
         $key = $this->stateCacheKey($companyId, $state);
 
+        /** @var array{nonce?: string}|null $entry */
         $entry = Cache::get($key);
 
-        if (! is_array($entry) || empty($entry['nonce']) || ! is_string($entry['nonce'])) {
+        // Le docblock ci-dessus garantit nonce: string quand présent ; un
+        // nonce vide = état introuvable (expiré/consommé).
+        if (! is_array($entry) || empty($entry['nonce'])) {
             return null;
         }
 
