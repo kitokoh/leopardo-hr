@@ -736,5 +736,51 @@
     "pricing": {
       "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
+  },
+  "adminChat": {
+    "conversation": "Konuşma",
+    "error": "Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.",
+    "historyEmpty": "Konuşma yok.",
+    "new": "Yeni konuşma",
+    "placeholder": "Mesajınızı yazın...",
+    "send": "Gönder",
+    "start": "Yapay zekâ asistanıyla bir konuşma başlatın.",
+    "subtitle": "İK, bordro ve işe alım hakkında sorun...",
+    "thinking": "Düşünüyor...",
+    "title": "Leopardo Yapay Zekâ Asistanı",
+    "unavailableBadge": "Kullanılamıyor",
+    "unavailableBody": "Yapay zekâ sohbeti süper yönetici konsolunda etkin değil. Bu asistana erişmek için desteklenen bir şirket çalışma alanı kullanın.",
+    "unavailableTitle": "Yapay zekâ asistanı platform düzeyinde kullanılamıyor"
+  },
+  "navigation": {
+    "analytics": "Analitik",
+    "audit": "Denetim Günlüğü",
+    "chat": "Yapay Zekâ Sohbeti",
+    "companies": "Şirketler",
+    "contracts": "Sözleşmeler",
+    "crm": "CRM Hattı",
+    "dashboard": "Gösterge Paneli",
+    "edge": "Edge Düğümleri",
+    "exports": "Dışa Aktarmalar ve Raporlar",
+    "fleet": "Araç Filosu",
+    "globe": "Gerçek Zamanlı Küre",
+    "growth": "Growth Yönetimi",
+    "leaves": "İzin ve Devamsızlık",
+    "mainMenu": "Ana menü",
+    "marketing": "Pazarlama",
+    "payroll": "Bordro",
+    "predictions": "Yapay Zekâ Tahmin Paneli",
+    "recruitment": "İşe Alım",
+    "reports": "İK Raporları",
+    "subscriptions": "Abonelikler",
+    "support": "Destek",
+    "supportTickets": "Müşteri Destek Merkezi",
+    "system": "Sistem",
+    "training": "Eğitimler",
+    "users": "Kullanıcılar",
+    "webhooks": "Webhooklar"
+  },
+  "webhooks": {
+    "confirm_delete": "Bu webhook silinsin mi?"
   }
 }
