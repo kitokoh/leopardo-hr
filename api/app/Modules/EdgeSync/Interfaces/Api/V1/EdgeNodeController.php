@@ -118,13 +118,12 @@ class EdgeNodeController extends Controller
             ->findOrFail($nodeId);
 
         $log = $this->syncEngine->sync($node);
-        $node->refresh();
 
         return response()->json([
             'data' => $log->fresh(),
             'node' => [
                 'id' => $node->id,
-                'last_sync_at' => $node->last_sync_at,
+                'last_sync_at' => $node->fresh()?->last_sync_at,
             ],
         ]);
     }

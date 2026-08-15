@@ -49,9 +49,15 @@ const router = useRouter()
 // QA #2238 : le crash venait de `dashboardStore.users` (store inexistant).
 // Le détail est désormais chargé depuis l'API réelle /platform/users/{id}.
 const selectedUser = ref(null)
+// QA #2989 : états de chargement/erreur réellement déclarés (le template les
+// utilisait sans jamais les définir → spinner/bandeau inatteignables).
+const isLoading = ref(true)
+const errorMessage = ref('')
 
-onMounted(async () => {
+async function loadUser() {
   const id = Number(route.params.id)
+  isLoading.value = true
+  errorMessage.value = ''
   try {
     const res = await api.get(`/platform/users/${id}`)
     const user = res.data?.data ?? null
@@ -67,8 +73,13 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Failed to load user detail:', error)
+    errorMessage.value = 'Erreur lors du chargement de l\'utilisateur.'
+  } finally {
+    isLoading.value = false
   }
-})
+}
+
+onMounted(loadUser)
 
 function goBack() {
   router.push('/users')

@@ -16,6 +16,7 @@ import 'package:leopardo_hr/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
+import 'package:leopardo_hr/features/home/screens/hr_main_shell.dart';
 import 'package:leopardo_hr/features/modules/screens/modules_screen.dart';
 import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
@@ -36,7 +37,6 @@ import 'package:leopardo_hr/features/expenses/screens/expense_list_screen.dart';
 import 'package:leopardo_hr/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:leopardo_hr/features/ai_voice/screens/ai_voice_screen.dart';
 import 'package:leopardo_hr/features/vehicle_position/screens/vehicle_map_screen.dart';
-import 'package:leopardo_hr/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_hr/features/onboarding/screens/onboarding_screen.dart';
 import 'package:leopardo_hr/features/organigramme/screens/organigramme_screen.dart';
 import 'package:leopardo_hr/features/manager/screens/manager_attendance_monitoring_screen.dart';
@@ -137,11 +137,32 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
       ),
-      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(
-        path: '/modules',
-        builder: (context, state) => const ModulesHubScreen(),
+        path: '/user-register',
+        builder: (context, state) => const UserRegisterScreen(),
       ),
+      GoRoute(
+        path: '/user-login',
+        builder: (context, state) => const UserLoginScreen(),
+      ),
+      GoRoute(
+        path: '/user-home',
+        builder: (context, state) => const UserHomeScreen(),
+      ),
+      GoRoute(
+        path: '/company-request',
+        builder: (context, state) => const CompanyRequestScreen(),
+      ),
+
+      // --- Authenticated routes with bottom nav ---
+      ShellRoute(
+        builder: (context, state, child) => HrMainShell(child: child),
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/modules',
+            builder: (context, state) => const ModulesHubScreen(),
+          ),
       GoRoute(
         path: '/absences',
         builder: (context, state) => const AbsenceListScreen(),
@@ -205,22 +226,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
-        path: '/user-register',
-        builder: (context, state) => const UserRegisterScreen(),
-      ),
-      GoRoute(
-        path: '/user-login',
-        builder: (context, state) => const UserLoginScreen(),
-      ),
-      GoRoute(
-        path: '/user-home',
-        builder: (context, state) => const UserHomeScreen(),
-      ),
-      GoRoute(
-        path: '/company-request',
-        builder: (context, state) => const CompanyRequestScreen(),
-      ),
-      GoRoute(
         path: '/contracts',
         builder: (context, state) => const ContractScreen(),
       ),
@@ -245,10 +250,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const VehicleMapScreen(),
       ),
       GoRoute(
-        path: '/approvals',
-        builder: (context, state) => const ApprovalScreen(),
-      ),
-      GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
@@ -268,14 +269,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/manager/attendance',
         builder: (context, state) => const ManagerAttendanceMonitoringScreen(),
       ),
-      GoRoute(
-        path: '/manager/anomalies',
-        builder: (context, state) => const ManagerAnomaliesScreen(),
-      ),
-      GoRoute(
-        path: '/manager/corrections',
-        builder: (context, state) => const ManagerCorrectionsScreen(),
-      ),
       // ── Smart Attendance ──────────────────────────────────────────
       GoRoute(
         path: '/smart-attendance',
@@ -284,6 +277,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/smart-attendance/pending',
         builder: (context, state) => const PendingGeoSessionsScreen(),
+      ),
+        ],
       ),
     ],
   );
@@ -354,7 +349,7 @@ class LeopardoApp extends ConsumerWidget {
       title: branding?.displayName ?? 'Leopardo RH',
       theme: TenantTheme.apply(AppTheme.lightTheme, branding),
       darkTheme: TenantTheme.apply(AppTheme.darkTheme, branding),
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,

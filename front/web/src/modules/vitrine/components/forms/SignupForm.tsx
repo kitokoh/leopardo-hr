@@ -54,7 +54,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -205,10 +205,9 @@ export function SignupForm({
         if (response.provisioned === false) {
           // Backend could not send an OTP right now (e.g. cold-start timeout).
           // The lead was still captured, so tell the user honestly instead of
-          // showing a verification screen for a code that was never sent.
+          // showing a vérification screen for a code that was never sent.
           setPendingMessage(
-            response.message ||
-              "c.pendingFallback"
+            response.message || c.pendingFallback
           );
           setCurrentStep('pending');
         } else {
@@ -271,7 +270,7 @@ export function SignupForm({
   const handleVerify = async () => {
     const code = otpValues.join('');
     if (code.length !== 6) {
-      setOtpError('c.otpInvalidLength');
+      setOtpError(c.otpInvalidLength);
       return;
     }
 
@@ -287,10 +286,10 @@ export function SignupForm({
         reset();
         onSuccess?.({} as SignupFormData);
       } else {
-        setOtpError(response.message || 'c.otpInvalidCode');
+        setOtpError(response.message || c.otpInvalidCode);
       }
     } catch (error) {
-      setOtpError('c.otpVerifyError');
+      setOtpError(c.otpVerifyError);
     } finally {
       setIsVerifying(false);
     }
@@ -393,7 +392,7 @@ export function SignupForm({
                     aria-describedby={errors.employees ? 'signup-employees-error' : undefined}
                     {...register('employees')}
                   >
-                    <option value="">Choisir</option>
+                    <option value="">{c.teamPlaceholder}</option>
                     <option value="1-10">1-10</option>
                     <option value="11-50">11-50</option>
                     <option value="51-200">51-200</option>
@@ -475,7 +474,7 @@ export function SignupForm({
         )}
 
         {/* ═══════════════════════════════════════ */}
-        {/* STEP 2: OTP Verification                */}
+        {/* STEP 2: OTP Vérification                */}
         {/* ═══════════════════════════════════════ */}
         {currentStep === 'otp' && (
           <motion.div
@@ -602,17 +601,13 @@ export function SignupForm({
             </p>
 
             <div className="rounded-xl bg-transparent px-4 py-3 text-left text-xs leading-5 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400">
-              Notre systeme de creation d&apos;espace instantane est momentanement
-              indisponible (redemarrage serveur). Votre demande est bien
-              enregistree : une personne de l&apos;equipe Leopardo vous contactera
-              par email sous 24h ouvrables avec un acces adapte a votre
-              contexte.
+              {c.pendingNote}
             </div>
 
             <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
-              Vous avez deja un compte?{' '}
+              {c.haveAccount}{' '}
               <Link href="/auth/login" className="font-semibold text-emerald-600 hover:text-emerald-700">
-                Se connecter
+                {c.loginCta}
               </Link>
             </p>
 
@@ -623,7 +618,7 @@ export function SignupForm({
                 className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 transition hover:text-emerald-700 dark:text-emerald-400"
               >
                 <Rocket className="h-4 w-4" />
-                Suivre l&apos;etat de mon espace
+                {c.trackStatus}
               </button>
             )}
           </motion.div>
@@ -754,7 +749,7 @@ export function SignupForm({
               <div className="flex items-center gap-3 bg-emerald-500/10 px-5 py-3 dark:bg-emerald-500/5">
                 <Rocket className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <h3 className="text-lg font-black text-emerald-900 dark:text-emerald-100">
-                  Votre espace est pret !
+                  {c.successTitle}
                 </h3>
               </div>
 
@@ -796,7 +791,7 @@ export function SignupForm({
                   <p className="text-center text-sm text-slate-500 dark:text-slate-400">
                     {c.trialNote}{' '}
                     <span className="font-bold text-emerald-600">
-                      {provisionedData.trial.days} jours
+                      {provisionedData.trial.days} {c.trialDaysUnit}
                     </span>{' '}
                     — {c.trialNoteSuffix}
                   </p>
@@ -808,7 +803,7 @@ export function SignupForm({
                     className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-500/25 transition hover:bg-emerald-700"
                   >
                     <LogIn className="h-4 w-4" />
-                    Se connecter
+                    {c.loginCta}
                   </Link>
                   <Link
                     href="/download"

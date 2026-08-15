@@ -313,7 +313,7 @@ async function loadUsers() {
       // plus de valeur codée en dur, colonnes honnêtement vides.
       role: null,
       segment: null,
-      company: null,
+      company: user.company ?? null,
       createdAt: user.created_at ? new Date(user.created_at) : null,
       lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`

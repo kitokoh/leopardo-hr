@@ -169,10 +169,10 @@ class AuthController extends Controller
         $state = \Illuminate\Support\Str::random(40);
         session(['google_oauth_state' => $state]);
 
-        /** @var \Laravel\Socialite\Two\GoogleProvider $provider */
-        $provider = Socialite::driver('google');
+        /** @var \Laravel\Socialite\Two\GoogleProvider $google */
+        $google = Socialite::driver('google');
 
-        return $provider->with(['state' => $state])->redirect();
+        return $google->with(['state' => $state])->redirect();
     }
 
     public function handleGoogleCallback(Request $request): JsonResponse

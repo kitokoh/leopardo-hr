@@ -339,7 +339,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     try {
       // Issue #2705 — _skipAuthRedirect : en super-admin ces routes tenant
       // répondent 401 ; sans ce flag l'intercepteur détruisait la session.
-      await api.patch(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
+      await api.put(`/v1/notifications/${notificationId}/read`, null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist notification read state', err)
     }
@@ -347,9 +347,10 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
   async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
-    // Issue #2239 — persister côté backend (POST /notifications/mark-all-read).
+    // Issue #2239 — persister côté backend (PUT /notifications/read-all,
+    // contrat canonique #3121 — le POST répondait 405).
     try {
-      await api.post('/v1/notifications/mark-all-read', null, { _skipAuthRedirect: true })
+      await api.put('/v1/notifications/read-all', null, { _skipAuthRedirect: true })
     } catch (err) {
       console.warn('Failed to persist mark-all-read', err)
     }

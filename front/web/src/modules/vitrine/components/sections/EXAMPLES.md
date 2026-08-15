@@ -35,7 +35,7 @@ export default function Hero() {
         label: "New"
       }}
       ctaPrimary={{
-        text: "Essai gratuit 30 jours",
+        text: "Essai gratuit 14 jours",
         href: "/auth/login"
       }}
       ctaSecondary={{
@@ -59,7 +59,7 @@ export default function HeroWithStats() {
       headline="Gérez vos RH"
       subheadline="La plateforme tout-en-un pour moderniser votre gestion du personnel."
       ctaPrimary={{
-        text: "Essai gratuit 30 jours",
+        text: "Essai gratuit 14 jours",
         href: "/auth/login"
       }}
       stats={[
@@ -426,7 +426,7 @@ export default function FAQ() {
     {
       id: '3',
       question: 'Offrez-vous un essai gratuit?',
-      answer: 'Oui, nous offrons 30 jours d\'essai gratuit sans carte de crédit requise. Vous avez accès à toutes les fonctionnalités.',
+      answer: 'Oui, nous offrons 14 jours d\'essai gratuit sans carte de crédit requise. Vous avez accès à toutes les fonctionnalités.',
       category: 'Tarification',
     },
     {
@@ -476,7 +476,7 @@ export default function CTAGradient() {
       headline="Prêt à transformer votre RH?"
       subheadline="Rejoignez 500+ entreprises qui font confiance à Leopardo."
       ctaPrimary={{
-        text: "Essai gratuit 30 jours",
+        text: "Essai gratuit 14 jours",
         href: "/auth/login"
       }}
       ctaSecondary={{
@@ -496,7 +496,7 @@ export default function CTAGradient() {
   headline="Prêt à transformer votre RH?"
   subheadline="Rejoignez 500+ entreprises qui font confiance à Leopardo."
   ctaPrimary={{
-    text: "Essai gratuit 30 jours",
+    text: "Essai gratuit 14 jours",
     href: "/auth/login"
   }}
   background="solid"
@@ -510,7 +510,7 @@ export default function CTAGradient() {
   headline="Prêt à transformer votre RH?"
   subheadline="Rejoignez 500+ entreprises qui font confiance à Leopardo."
   ctaPrimary={{
-    text: "Essai gratuit 30 jours",
+    text: "Essai gratuit 14 jours",
     href: "/auth/login"
   }}
   background="image"
@@ -609,7 +609,7 @@ export default function LandingPage() {
           label: "New"
         }}
         ctaPrimary={{
-          text: "Essai gratuit 30 jours",
+          text: "Essai gratuit 14 jours",
           href: "/auth/login"
         }}
         ctaSecondary={{
@@ -726,7 +726,7 @@ export default function LandingPage() {
         headline="Prêt à transformer votre RH?"
         subheadline="Rejoignez 500+ entreprises qui font confiance à Leopardo."
         ctaPrimary={{
-          text: "Essai gratuit 30 jours",
+          text: "Essai gratuit 14 jours",
           href: "/auth/login"
         }}
         background="gradient"
