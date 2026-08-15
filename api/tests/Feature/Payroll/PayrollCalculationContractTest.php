@@ -52,9 +52,9 @@ class PayrollCalculationContractTest extends TestCase
         // Calcul manuel (CI #1918 — réforme ITS 2024, CGI art. 119 bis ; plafonds
         // par branche #1913 CNPS) — brut 500 000 XOF :
         //   CNSS retraite salariale 3,2 % = 16 000 (plafond 1 647 315 non atteint)
-        //   Patronal : retraite 4,5 % = 22 500 (plafond 1 647 315 non atteint) ·
-        //   famille 5,75 % × min(brut, 70 000) = 4 025 · AT 2,0 % × min(brut, 70 000)
-        //   = 1 400 (plafonds #1913, guide officiel CNPS) → 27 925
+        //   Patronal : retraite 4,5 % = 22 500 · famille 5,75 % plafonnée à
+        //   70 000 = 4 025 · AT 2,0 % plafonné à 70 000 = 1 400 → 27 925
+        //   (plafonds #1913)
         //   ITS unifié MENSUEL sur le BRUT (plus d'abattement ni de CN) :
         //     75 001–240 000 × 16 % = 26 400 · 240 001–500 000 × 21 %
         //     = 260 000 × 21 % = 54 600 → 81 000,00

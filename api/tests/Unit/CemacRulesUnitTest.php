@@ -85,22 +85,20 @@ class CemacRulesUnitTest extends TestCase
         $this->assertSame(66.0, $rules->noticePeriodDays(12.0)); // > 10 ans (66 j ouvrés, #2219)
     }
 
-    public function test_gabon_pilot_metadata(): void
+    public function test_ga_is_pilot_with_legal_rules(): void
     {
-        // GA/CG sont pilot (#1824) : préavis 1 mois = 22 j ouvrés (#2219).
+        // GA passé pilot (issues #1824/#2118, goldens) : 8 tranches IRPP DGI,
+        // préavis OHADA 30 j, CNSS retraite 2,5 % / 5 % + famille 8 %
+        // plafonnées à 3 000 000 XAF, AT 3 % non plafonné.
         $ga = (new CemacPayrollRules)->forMemberCountry('GA');
         $this->assertSame('pilot', $ga->confidenceLevel());
         $this->assertCount(8, $ga->taxSlabs());
 
-        // GA est passé pilot (#2118) : 8 tranches DGI, préavis 30 j,
-        // confidence pilot. L'abattement frais pro reste nul (l'abattement
-        // DGI vit dans une méthode dédiée — constitution §III).
         $this->assertCount(8, $ga->taxSlabs());
         $this->assertSame(['rate' => 0.0, 'cap' => null], $ga->professionalExpensesDeduction());
         $this->assertSame(30.0, $ga->noticePeriodDays(3.0));
         $this->assertSame('pilot', $ga->confidenceLevel());
 
-        // CNSS GA (2 000 000 × 2,5 % salariale / × 16 % patronale).
         $charges = $ga->calculateSocialCharges(2000000.0);
         $this->assertSame(50000.0, $charges['employee']);
         $this->assertSame(320000.0, $charges['employer']);
