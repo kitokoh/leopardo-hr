@@ -38,11 +38,11 @@
             <div
               :class="[
                 'h-2 w-2 rounded-full mr-2',
-                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : 'bg-red-400')
+                realtimeStore.isConnected ? 'bg-green-400' : (realtimeStore.isPolling ? 'bg-amber-400' : (realtimeStore.pushUnavailable ? 'bg-gray-400' : 'bg-red-400'))
               ]"
             ></div>
             <span class="text-xs text-gray-500 hidden sm:block">
-              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : 'Déconnecté') }}
+              {{ realtimeStore.isConnected ? 'Connecté' : (realtimeStore.isPolling ? 'Mode secours (polling)' : (realtimeStore.pushUnavailable ? 'Push non configuré' : 'Déconnecté')) }}
             </span>
           </div>
 
