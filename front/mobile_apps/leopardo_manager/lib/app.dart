@@ -33,7 +33,6 @@ import 'package:leopardo_manager/features/contracts/screens/contract_screen.dart
 import 'package:leopardo_manager/features/training/screens/training_screen.dart';
 import 'package:leopardo_manager/features/expenses/screens/expense_list_screen.dart';
 import 'package:leopardo_manager/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:leopardo_manager/features/ai_voice/screens/ai_voice_screen.dart';
 import 'package:leopardo_manager/features/vehicle_position/screens/vehicle_map_screen.dart';
 import 'package:leopardo_manager/features/approvals/screens/approval_screen.dart';
 import 'package:leopardo_manager/features/onboarding/screens/onboarding_screen.dart';
@@ -243,10 +242,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/ai-chat',
             builder: (context, state) => const AiChatScreen(),
-          ),
-          GoRoute(
-            path: '/ai-voice',
-            builder: (context, state) => const AiVoiceScreen(),
           ),
           GoRoute(
             path: '/vehicle-map',
