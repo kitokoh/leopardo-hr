@@ -782,5 +782,8 @@
     "edge": "Nœuds Edge",
     "system": "Système",
     "mainMenu": "Menu principal"
+  },
+  "a11y": {
+    "skip_to_content": "Aller au contenu principal"
   }
 }

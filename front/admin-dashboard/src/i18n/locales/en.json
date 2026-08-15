@@ -779,5 +779,11 @@
     "edge": "Edge Nodes",
     "system": "System",
     "mainMenu": "Main menu"
+  },
+  "webhooks": {
+    "confirm_delete": "Delete this webhook?"
+  },
+  "a11y": {
+    "skip_to_content": "Skip to main content"
   }
 }
