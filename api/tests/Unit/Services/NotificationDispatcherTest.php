@@ -10,7 +10,7 @@ use App\Modules\Notification\Domain\Models\DeviceToken;
 use App\Modules\Notification\Domain\Models\AppNotification;
 use App\Modules\Notification\Infrastructure\Services\NotificationDispatcher;
 use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
-use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
@@ -91,7 +91,7 @@ class NotificationDispatcherTest extends TestCase
         $dispatcher = new NotificationDispatcher(new PushNotificationService());
         $dispatcher->dispatch($employee->id, 'payroll_ready', 'Bulletin disponible', 'Votre bulletin est prêt.');
 
-        Http::assertSent(function (PendingRequest $request): bool {
+        Http::assertSent(function (Request $request): bool {
             return $request->url() === 'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send'
                 && $request['message']['token'] === 'fcm-token-1'
                 && $request['message']['notification']['title'] === 'Bulletin disponible';
