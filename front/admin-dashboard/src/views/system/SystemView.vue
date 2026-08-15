@@ -79,10 +79,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import {
-  HeartIcon,
-  InformationCircleIcon
-} from '@heroicons/vue/24/outline'
+import { HeartIcon } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
 
