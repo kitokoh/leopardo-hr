@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use Illuminate\Http\JsonResponse;
@@ -15,6 +16,22 @@ use Illuminate\Support\Facades\Schema;
 
 class ExportController extends Controller
 {
+    /**
+     * Resources journalisées en accès sensible et exposées par
+     * GET /export/history (issue #2199). Doit rester synchronisé avec la
+     * liste blanche `security.sensitive_access_logging.resources`.
+     */
+    private const EXPORT_RESOURCES = [
+        'hr.export.employees',
+        'hr.export.attendance',
+        'hr.export.pay_slips',
+        'hr.export.absences',
+        'hr.export.training',
+        'hr.export.contracts',
+        'hr.export.vehicles',
+        'payroll.accounting_export',
+    ];
+
     public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
 
     public function employees(Request $request): JsonResponse
@@ -51,6 +68,8 @@ class ExportController extends Controller
 
         $employees = $query->orderBy('last_name')->get();
         $format = $validated['format'] ?? 'json';
+
+        $this->auditLogger->recordSensitive($request, $user, 'hr.export.employees', null, ['report' => 'employees', 'format' => $format]);
 
         if ($format === 'csv') {
             $csv = $this->toCsv($employees);
@@ -100,6 +119,8 @@ class ExportController extends Controller
 
         $format = $validated['format'] ?? 'json';
 
+        $this->auditLogger->recordSensitive($request, $user, 'hr.export.attendance', null, ['report' => 'attendance', 'format' => $format]);
+
         if ($format === 'csv') {
             return response()->json([
                 'data' => [
@@ -140,6 +161,8 @@ class ExportController extends Controller
             'created_at',
         ]);
 
+            $this->auditLogger->recordSensitive($request, $user, 'hr.export.pay_slips', null, ['report' => 'pay_slips', 'format' => $request->input('format', 'json')]);
+
         return $this->exportResponse($request, $records, 'pay_slips_export');
     }
 
@@ -162,6 +185,8 @@ class ExportController extends Controller
             'created_at',
         ]);
 
+            $this->auditLogger->recordSensitive($request, $user, 'hr.export.absences', null, ['report' => 'absences', 'format' => $request->input('format', 'json')]);
+
         return $this->exportResponse($request, $records, 'absences_export');
     }
 
@@ -182,6 +207,8 @@ class ExportController extends Controller
             'score',
             'created_at',
         ]);
+
+            $this->auditLogger->recordSensitive($request, $user, 'hr.export.training', null, ['report' => 'training', 'format' => $request->input('format', 'json')]);
 
         return $this->exportResponse($request, $records, 'training_export');
     }
@@ -207,6 +234,8 @@ class ExportController extends Controller
             'created_at',
         ]);
 
+            $this->auditLogger->recordSensitive($request, $user, 'hr.export.contracts', null, ['report' => 'contracts', 'format' => $request->input('format', 'json')]);
+
         return $this->exportResponse($request, $records, 'contracts_export');
     }
 
@@ -229,6 +258,8 @@ class ExportController extends Controller
             'created_at',
         ]);
 
+            $this->auditLogger->recordSensitive($request, $user, 'hr.export.vehicles', null, ['report' => 'vehicles', 'format' => $request->input('format', 'json')]);
+
         return $this->exportResponse($request, $records, 'vehicles_export');
     }
 
@@ -240,7 +271,45 @@ class ExportController extends Controller
             abort(403);
         }
 
-        return response()->json(['data' => []]);
+        $perPage = max(1, min(100, $request->integer('per_page', 20)));
+
+        // Issue #2199 : l'historique s'appuie sur la piste d'audit réelle
+        // (audit_logs, écrits par DataAccessAuditLogger::recordSensitive sur
+        // chaque export) — plus de stub `data: []`. Tenant-scope + paginé.
+        $logs = AuditLog::query()
+            ->where('company_id', $user->company_id)
+            ->where('action', 'sensitive_data_access')
+            ->whereIn('metadata->resource', self::EXPORT_RESOURCES)
+            ->with('user:id,first_name,last_name')
+            ->orderByDesc('id')
+            ->paginate($perPage);
+
+        $data = $logs->map(function (AuditLog $log): array {
+            $metadata = $log->metadata ?? [];
+
+            return [
+                'id' => $log->id,
+                'type' => $metadata['report'] ?? ($metadata['resource'] ?? 'export'),
+                'format' => $metadata['format'] ?? 'json',
+                'requested_by' => $log->user !== null
+                    ? trim($log->user->first_name.' '.$log->user->last_name)
+                    : null,
+                'created_at' => $log->created_at?->toIso8601String(),
+                // Les exports sont synchrones : une ligne audit = un export
+                // livré immédiatement.
+                'status' => 'completed',
+            ];
+        });
+
+        return response()->json([
+            'data' => $data,
+            'meta' => [
+                'current_page' => $logs->currentPage(),
+                'per_page' => $logs->perPage(),
+                'total' => $logs->total(),
+                'last_page' => $logs->lastPage(),
+            ],
+        ]);
     }
 
     public function accountingJournal(Request $request): JsonResponse
@@ -251,11 +320,11 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_journal']);
-
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
             'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end'
         ]);
+
+            $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_journal', 'format' => $request->input('format', 'json')]);
 
         return $this->exportResponse($request, $records, 'payroll_journal');
     }
@@ -267,8 +336,6 @@ class ExportController extends Controller
         if (! $user->isManager()) {
             abort(403);
         }
-
-        $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_ledger']);
 
         // Summary representation for ledger
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
@@ -286,6 +353,8 @@ class ExportController extends Controller
             return $row;
         })->values();
 
+            $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_ledger', 'format' => $request->input('format', 'json')]);
+
         return $this->exportResponse($request, collect($grouped), 'payroll_ledger');
     }
 
@@ -296,8 +365,6 @@ class ExportController extends Controller
         if (! $user->isManager()) {
             abort(403);
         }
-
-        $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'accounting_od']);
 
         $records = $this->tableForCompany('pay_slips', $user->company_id, [
             'payroll_run_id', 'gross_salary', 'net_salary', 'period_end'
@@ -339,6 +406,8 @@ class ExportController extends Controller
                 'credit' => $totalNet
             ]);
         }
+
+            $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'accounting_od', 'format' => $request->input('format', 'json')]);
 
         return $this->exportResponse($request, $odEntries, 'accounting_od');
     }

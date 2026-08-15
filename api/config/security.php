@@ -56,6 +56,14 @@ return [
             'payroll.dsn_declaration',
             'payroll.bank_export',
             'payroll.accounting_export',
+            // Exports HR (issue #2199) — alimentent GET /export/history.
+            'hr.export.employees',
+            'hr.export.attendance',
+            'hr.export.pay_slips',
+            'hr.export.absences',
+            'hr.export.training',
+            'hr.export.contracts',
+            'hr.export.vehicles',
         ],
     ],
 ];
