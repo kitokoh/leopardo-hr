@@ -213,11 +213,14 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import api from '@/services/api'
+import { useToast } from 'vue-toastification'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
+
+const toast = useToast();
 
 const localeStore = useLocaleStore()
 const loading = ref(false)
@@ -425,18 +428,22 @@ async function fetchData() {
 async function calculateRun(id) {
   try {
     await api.post(`/v1/payroll-runs/${id}/calculate`)
+    toast.success('Calcul de paie lancé.')
     await fetchData()
   } catch (err) {
     console.warn('Failed to calculate payroll run', err)
+    toast.error(`Échec du calcul : ${err?.response?.data?.message || err.message}`)
   }
 }
 
 async function validateRun(id) {
   try {
     await api.post(`/v1/payroll-runs/${id}/validate`)
+    toast.success('Validation de paie effectuée.')
     await fetchData()
   } catch (err) {
     console.warn('Failed to validate payroll run', err)
+    toast.error(`Échec de la validation : ${err?.response?.data?.message || err.message}`)
   }
 }
 
@@ -446,6 +453,7 @@ async function viewRun(id) {
     runSummary.value = res.data.data
   } catch (err) {
     console.warn('Failed to load payroll summary', err)
+    toast.error(`Impossible de charger le récapitulatif : ${err?.response?.data?.message || err.message}`)
   }
 }
 
@@ -511,6 +519,7 @@ async function downloadPaySlipPdf(id) {
     URL.revokeObjectURL(url)
   } catch (err) {
     console.warn('Failed to download pay slip PDF', err)
+    toast.error('Échec du téléchargement du bulletin.')
   }
 }
 

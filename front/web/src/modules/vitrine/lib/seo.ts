@@ -353,7 +353,7 @@ export const pageMetadata = {
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Starter, Business ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Free, Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",

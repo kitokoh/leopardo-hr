@@ -105,6 +105,18 @@
         </form>
       </div>
     </div>
+
+    <!-- QA #3494 : dialog de suppression (remplace confirm() natif) -->
+    <div v-if="deleteOpen" class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4" @click.self="deleteOpen = false">
+      <div class="w-full max-w-md rounded-2xl glass-card p-6">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Supprimer ce webhook ?</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-slate-400">Cette action est irréversible. Les livraisons futures seront interrompues.</p>
+        <div class="mt-4 flex justify-end gap-2">
+          <button class="btn-secondary" @click="deleteOpen = false">Annuler</button>
+          <button class="btn-danger" @click="confirmDeleteWebhook">Supprimer</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -205,8 +217,19 @@ async function testWebhook(id) {
   }
 }
 
+const deleteOpen = ref(false)
+const deleteTarget = ref(null)
+
 async function deleteWebhook(id) {
-  if (!confirm('Supprimer ce webhook ?')) return
+  // QA #3494 : confirm() natif (non i18n, bloque le rendu) → dialog in-app.
+  deleteTarget.value = id
+  deleteOpen.value = true
+}
+
+async function confirmDeleteWebhook() {
+  const id = deleteTarget.value
+  if (!id) return
+  deleteOpen.value = false
   try {
     await api.delete(`/admin/webhooks/${id}`) // #2634
     fetchData()
