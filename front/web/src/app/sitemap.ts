@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
+import { getAllCaseStudies } from '@/modules/vitrine/lib/case-studies';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 
@@ -52,6 +53,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/faq', today, 'monthly', 0.6),
     page('/testimonials', today, 'monthly', 0.6),
     page('/case-studies', today, 'monthly', 0.6),
+    ...getAllCaseStudies().map((cs) =>
+      page(`/case-studies/${cs.slug}`, today, 'monthly', 0.5)
+    ),
     page('/videos', today, 'monthly', 0.55),
     page('/branding', today, 'monthly', 0.5),
     page('/careers', today, 'monthly', 0.5),
