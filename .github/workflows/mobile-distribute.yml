@@ -1,17 +1,12 @@
 name: Mobile - Build and Firebase Distribution
 
 on:
+  # Main pushes are handled exclusively by mobile-distribute-main.yml.
+  # Keep tag releases here so staging/prod tag distribution remains available.
   push:
-    branches:
-      - main
     tags:
       - "v*-staging"
       - "v*-prod"
-    paths:
-      - "front/mobile_apps/**"
-      - "dev-hub/tools/install-mobile-firebase-configs.ps1"
-      - ".github/workflows/mobile-distribute.yml"
-      - "docs/validation/MOBILE_FIREBASE_DISTRIBUTION.md"
   workflow_dispatch:
     inputs:
       environment:
