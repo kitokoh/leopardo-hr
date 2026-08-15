@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/mdx';
+import { getEnvConfig } from '@/modules/vitrine/lib/env';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
 const locales = ['fr', 'en', 'tr', 'ar'] as const;
@@ -31,6 +32,7 @@ function page(path: string, lastModified: Date, changeFrequency: MetadataRoute.S
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const today = new Date();
+  const { enableBlog } = getEnvConfig();
 
   const staticPages: MetadataRoute.Sitemap = [
     page('/', today, 'weekly', 1.0),
@@ -43,7 +45,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/integrations', today, 'monthly', 0.75),
     page('/about', today, 'monthly', 0.7),
     page('/changelog', today, 'weekly', 0.65),
-    page('/blog', today, 'weekly', 0.8),
     page('/docs', today, 'monthly', 0.7),
     page('/download', today, 'monthly', 0.75),
     page('/contact', today, 'monthly', 0.6),
@@ -61,14 +62,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/planning-employes', today, 'monthly', 0.7),
   ];
 
-  const blogPosts = getAllPosts();
-  const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: post.date ? new Date(post.date) : today,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-    alternates: localizedAlternates(`/blog/${post.slug}`),
-  }));
+  // Blog entries are only advertised when the blog is enabled (issue #2276):
+  // the route returns 404 via blog/layout.tsx when NEXT_PUBLIC_ENABLE_BLOG is off.
+  const blogPages: MetadataRoute.Sitemap = enableBlog
+    ? [
+        page('/blog', today, 'weekly', 0.8),
+        ...getAllPosts().map((post) => ({
+          url: `${siteUrl}/blog/${post.slug}`,
+          lastModified: post.date ? new Date(post.date) : today,
+          changeFrequency: 'monthly' as const,
+          priority: 0.6,
+          alternates: localizedAlternates(`/blog/${post.slug}`),
+        })),
+      ]
+    : [];
 
   return [...staticPages, ...blogPages];
 }
