@@ -17,15 +17,15 @@ describe('Input Component', () => {
 
     it('should render with different types', () => {
       const { rerender } = render(<Input type="email" />);
-      let input = screen.getByRole('textbox') as HTMLInputElement;
+      let input = document.querySelector('input') as HTMLInputElement;
       expect(input.type).toBe('email');
 
       rerender(<Input type="password" />);
-      input = screen.getByRole('textbox') as HTMLInputElement;
+      input = document.querySelector('input') as HTMLInputElement;
       expect(input.type).toBe('password');
 
       rerender(<Input type="number" />);
-      input = screen.getByRole('textbox') as HTMLInputElement;
+      input = document.querySelector('input') as HTMLInputElement;
       expect(input.type).toBe('number');
     });
   });
