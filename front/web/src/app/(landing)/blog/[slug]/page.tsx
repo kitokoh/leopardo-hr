@@ -20,6 +20,7 @@ const articleCopy: Record<AppLocale, {
   tableOfContents: string;
   authorRole: string;
   relatedTitle: string;
+  archived: string;
 }> = {
   fr: {
     dateLocale: 'fr-FR',
@@ -27,6 +28,7 @@ const articleCopy: Record<AppLocale, {
     tableOfContents: 'Table des matieres',
     authorRole: 'Auteur et expert en gestion RH',
     relatedTitle: 'Articles recommandes',
+    archived: "Article archivé — contenu publié en 2024, conservé pour référence.",
   },
   en: {
     dateLocale: 'en-US',
@@ -34,6 +36,7 @@ const articleCopy: Record<AppLocale, {
     tableOfContents: 'Table of contents',
     authorRole: 'Author and HR operations expert',
     relatedTitle: 'Recommended articles',
+    archived: 'Archived article — content published in 2024, kept for reference.',
   },
   tr: {
     dateLocale: 'tr-TR',
@@ -41,6 +44,7 @@ const articleCopy: Record<AppLocale, {
     tableOfContents: 'Icindekiler',
     authorRole: 'Yazar ve IK operasyonlari uzmani',
     relatedTitle: 'Onerilen yazilar',
+    archived: "Arsivlenmis makale — 2024'te yayinlanan icerik, referans icin saklaniyor.",
   },
   ar: {
     dateLocale: 'ar',
@@ -48,6 +52,7 @@ const articleCopy: Record<AppLocale, {
     tableOfContents: 'جدول المحتويات',
     authorRole: 'كاتب وخبير في عمليات الموارد البشرية',
     relatedTitle: 'مقالات مقترحة',
+    archived: 'مقالة مؤرشف — نُشر المحتوى في 2024، تم الاحتفاظ به للرجوع إليه.',
   },
 };
 
@@ -75,8 +80,8 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
       {post.archived && (
         <div className="mx-auto max-w-3xl px-4 pt-6">
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            ⚠️ Article archivé — contenu publié en 2024, conservé pour référence.
-            Les chiffres et recommandations peuvent ne plus refléter l&apos;état actuel du produit.
+            ⚠️ {copy.archived}{' '}
+            {{ 'fr': "Les chiffres et recommandations peuvent ne plus refléter l'état actuel du produit.", 'en': 'Figures and recommendations may no longer reflect the current state of the product.', 'tr': 'Rakamlar ve oneriler urunun guncel durumunu yansitmayabilir.', 'ar': 'قد لا تعكس الأرقام والتوصيات الحالة الحالية للمنتج.' }[locale]}
           </div>
         </div>
       )}
