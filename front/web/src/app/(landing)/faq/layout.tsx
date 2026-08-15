@@ -1,6 +1,10 @@
 import { SITE_URL } from '@/lib/site-url';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { cache } from 'react';
 import { generateMetadata as generateSEOMetadata, pageMetadata, generateFAQSchema } from '@/modules/vitrine/lib/seo';
+import { getFaqPageContent } from '@/modules/vitrine/data/faq-page';
+import type { AppLocale } from '@/lib/i18n';
 
 export const metadata: Metadata = generateSEOMetadata({
   title: pageMetadata.faq.title,
@@ -11,25 +15,29 @@ export const metadata: Metadata = generateSEOMetadata({
   canonical: `${SITE_URL}/faq`,
 });
 
-export default function FaqLayout({
+// Issue #3921 : le schéma FAQPage doit suivre la locale SSR (Accept-Language),
+// comme le lang/dir du document racine — plus de Q/R FR codées en dur pour
+// les visiteurs en/tr/ar (le contenu visible est déjà localisé).
+const getSsrLocale = cache(async (): Promise<AppLocale> => {
+  const headerList = await headers();
+  const base = (headerList.get('accept-language') ?? '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .slice(0, 2);
+  return (['fr', 'en', 'ar', 'tr'] as const).includes(base as AppLocale) ? (base as AppLocale) : 'fr';
+});
+
+export default async function FaqLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const faqSchema = generateFAQSchema([
-    {
-      question: 'Leopardo RH propose-t-il un essai gratuit ?',
-      answer: 'Oui, un essai guidé gratuit de 14 jours est disponible sans carte bancaire.',
-    },
-    {
-      question: 'Mes donnees sont-elles securisees ?',
-      answer: 'Oui, toutes les donnees sont chiffrees (AES-256) et isolees par entreprise (multi-tenant).',
-    },
-    {
-      question: 'Puis-je integrer mes pointeuses biometriques existantes ?',
-      answer: 'Oui, Leopardo RH prend en charge nativement les dispositifs ZKTeco via synchronisation automatique.',
-    },
-  ]);
+  const locale = await getSsrLocale();
+  const content = getFaqPageContent(locale);
+  const faqSchema = generateFAQSchema(
+    content.items.map((item) => ({ question: item.question, answer: item.answer }))
+  );
 
   return (
     <>
