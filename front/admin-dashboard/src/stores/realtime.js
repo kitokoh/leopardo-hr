@@ -327,15 +327,28 @@ export const useRealtimeStore = defineStore('realtime', () => {
     }
   }
 
-  function markNotificationAsRead(notificationId) {
+  async function markNotificationAsRead(notificationId) {
     const notification = notifications.value.find(n => n.id === notificationId)
     if (notification) {
       notification.read = true
     }
+    // Issue #2239 — persister côté backend (PATCH /notifications/{id}/read).
+    // Best-effort : un échec réseau ne doit pas casser l'UX locale.
+    try {
+      await api.patch(`/v1/notifications/${notificationId}/read`)
+    } catch (err) {
+      console.warn('Failed to persist notification read state', err)
+    }
   }
 
-  function markAllNotificationsAsRead() {
+  async function markAllNotificationsAsRead() {
     notifications.value.forEach(n => n.read = true)
+    // Issue #2239 — persister côté backend (POST /notifications/mark-all-read).
+    try {
+      await api.post('/v1/notifications/mark-all-read')
+    } catch (err) {
+      console.warn('Failed to persist mark-all-read', err)
+    }
   }
 
   function clearNotifications() {
