@@ -215,21 +215,25 @@ class PayrollCalculator
             throw new PayrollRunLockedException('Payroll run is locked (closing done). Unlock with reason first.');
         }
 
+        // Issue #1874 : le run hérite du header X-Correlation-ID/X-Request-Id
+        // (correlation_id() est lié au conteneur — un id par requête).
+        // Issue #2551 (cause 8) : si DEUX runs sont calculés dans la même
+        // requête/test, correlation_id() renvoie le même id → violation de la
+        // contrainte UNIQUE shared_tenants_payroll_runs_correlation_id_unique.
+        // On suffixe alors l'id d'un UUID : traçabilité conservée (préfixe =
+        // header d'origine) et unicité garantie par run.
         $correlationId = $run->correlation_id;
         if ($correlationId === null) {
-            // Issue #1874 : corrélation requête ↔ calcul — on reprend le
-            // header X-Correlation-ID/X-Request-Id de la REQUÊTE COURANTE
-            // (frais par requête via RequestIdMiddleware), sinon UUID frais.
-            // NB : ne pas utiliser correlation_id() ici — sa valeur est liée
-            // au conteneur et peut être STALE entre deux tests PHPUnit du
-            // même process → deux runs avec le même ID → violation de la
-            // contrainte unique payroll_runs.correlation_id (#2551 cause 8).
-            $header = request()?->header('X-Correlation-ID') ?: request()?->header('X-Request-Id');
-            $correlationId = is_string($header) && $header !== '' ? $header : (string) \Illuminate\Support\Str::uuid();
+            $correlationId = correlation_id();
+            $taken = PayrollRun::query()->where('correlation_id', $correlationId)->exists();
+            if ($taken) {
+                $correlationId .= ':' . (string) Str::uuid();
+            }
+        }
+        Log::withContext(['correlation_id' => $correlationId]);
+        if ($run->correlation_id === null) {
             $run->forceFill(['correlation_id' => $correlationId])->save();
         }
-        // Corrélation des logs de ce calcul (issue #1874).
-        Log::withContext(['correlation_id' => $correlationId]);
 
         try {
             $result = $this->executeCalculateRun($run);
