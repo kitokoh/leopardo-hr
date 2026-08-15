@@ -6,34 +6,75 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 /**
- * PlanSeeder — Crée les 3 plans tarifaires
+ * PlanSeeder — source de vérité des plans tarifaires publics.
  *
- * Source de vérité : docs/dossierdeConception/03_modele_economique/03_MODELE_ECONOMIQUE.md
- *
- * DÉCISIONS :
- * - excel_export = true pour Starter (corrigé v3.1 — était false)
- * - evaluations + schema_isolation inclus dans tous les plans
- * - Trial est géré via companies.status='trial', pas un plan séparé
+ * Les codes métier sont consommés par le checkout et la matrice de
+ * fonctionnalités ; les noms affichés restent Free/Pilot/Operations/Enterprise.
  */
 class PlanSeeder extends Seeder
 {
+    /** @var array<string, string> */
+    private const LEGACY_NAMES = [
+        'Starter' => 'Pilot',
+        'Business' => 'Operations',
+    ];
+
     public function run(): void
     {
         DB::statement('SET search_path TO public');
+        DB::transaction(function (): void {
+            $this->migrateLegacyPlanNames();
 
-        $plans = [
+            foreach ($this->plans() as $plan) {
+                DB::table('plans')->updateOrInsert(
+                    ['name' => $plan['name']],
+                    $plan,
+                );
+            }
+        });
+
+        $this->command->info('Plans créés : Free (0€/5emp), Pilot (29€/30emp), Operations (99€/250emp), Enterprise (sur devis).');
+    }
+
+    /**
+     * Preserve existing plan IDs when the old seed has already run. If both
+     * names exist, move company references before removing the duplicate.
+     */
+    private function migrateLegacyPlanNames(): void
+    {
+        foreach (self::LEGACY_NAMES as $legacyName => $canonicalName) {
+            $legacyId = DB::table('plans')->where('name', $legacyName)->value('id');
+            if ($legacyId === null) {
+                continue;
+            }
+
+            $canonicalId = DB::table('plans')->where('name', $canonicalName)->value('id');
+            if ($canonicalId === null) {
+                DB::table('plans')->where('id', $legacyId)->update(['name' => $canonicalName]);
+                continue;
+            }
+
+            DB::table('companies')->where('plan_id', $legacyId)->update(['plan_id' => $canonicalId]);
+            DB::table('plans')->where('id', $legacyId)->delete();
+        }
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function plans(): array
+    {
+        return [
             [
-                'name' => 'Starter',
-                'price_monthly' => 29.00,
-                'price_yearly' => 290.00,     // -17% vs mensuel
-                'max_employees' => 20,
-                'trial_days' => (int) config('billing.trial_days'),
+                'name' => 'Free',
+                'price_monthly' => 0.00,
+                'price_yearly' => 0.00,
+                'max_employees' => 5,
+                'trial_days' => 30,
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => false,
                     'tasks' => false,
                     'advanced_reports' => false,
-                    'excel_export' => true,   // ✅ CORRECTION v3.1 — était false
+                    'excel_export' => false,
                     'bank_export' => false,
                     'billing_auto' => false,
                     'multi_managers' => false,
@@ -41,14 +82,35 @@ class PlanSeeder extends Seeder
                     'api_public' => false,
                     'evaluations' => false,
                     'schema_isolation' => false,
-                ]),
+                ], JSON_THROW_ON_ERROR),
             ],
             [
-                'name' => 'Business',
-                'price_monthly' => 79.00,
-                'price_yearly' => 790.00,
-                'max_employees' => 200,
-                'trial_days' => (int) config('billing.trial_days'),
+                'name' => 'Pilot',
+                'price_monthly' => 29.00,
+                'price_yearly' => 290.00,
+                'max_employees' => 30,
+                'trial_days' => 30,
+                'is_active' => true,
+                'features' => json_encode([
+                    'biometric' => false,
+                    'tasks' => false,
+                    'advanced_reports' => false,
+                    'excel_export' => true,
+                    'bank_export' => false,
+                    'billing_auto' => false,
+                    'multi_managers' => false,
+                    'photo_attendance' => false,
+                    'api_public' => false,
+                    'evaluations' => false,
+                    'schema_isolation' => false,
+                ], JSON_THROW_ON_ERROR),
+            ],
+            [
+                'name' => 'Operations',
+                'price_monthly' => 99.00,
+                'price_yearly' => 948.00,
+                'max_employees' => 250,
+                'trial_days' => 30,
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,
@@ -61,15 +123,15 @@ class PlanSeeder extends Seeder
                     'photo_attendance' => true,
                     'api_public' => false,
                     'evaluations' => true,
-                    'schema_isolation' => false,  // Schéma partagé (shared_tenants)
-                ]),
+                    'schema_isolation' => false,
+                ], JSON_THROW_ON_ERROR),
             ],
             [
                 'name' => 'Enterprise',
-                'price_monthly' => 199.00,
-                'price_yearly' => 1990.00,
-                'max_employees' => null,         // NULL = illimité
-                'trial_days' => (int) config('billing.trial_days'),           // Trial plus long pour Enterprise
+                'price_monthly' => 0.00,
+                'price_yearly' => 0.00,
+                'max_employees' => null,
+                'trial_days' => 30,
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,
@@ -82,18 +144,9 @@ class PlanSeeder extends Seeder
                     'photo_attendance' => true,
                     'api_public' => true,
                     'evaluations' => true,
-                    'schema_isolation' => true,   // Schéma PostgreSQL dédié
-                ]),
+                    'schema_isolation' => true,
+                ], JSON_THROW_ON_ERROR),
             ],
         ];
-
-        foreach ($plans as $plan) {
-            DB::table('plans')->updateOrInsert(
-                ['name' => $plan['name']],
-                $plan
-            );
-        }
-
-        $this->command->info('✅ Plans créés : Starter (29€/20emp), Business (79€/200emp), Enterprise (199€/illimité)');
     }
 }
