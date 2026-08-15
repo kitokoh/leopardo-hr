@@ -70,18 +70,13 @@ class ProvisionGuidedTrial
 
             try {
                 $manager = Employee::query()->create([
-                    'company_id' => $company->id,
                     'first_name' => 'Manager',
                     'last_name' => 'Sandbox',
                     'email' => $email,
                     'password_hash' => Hash::make(Str::random(16)),
-                    'role' => 'manager',
-                    'manager_role' => 'principal',
-                    'status' => 'active',
                     'contract_type' => 'CDI',
                     'contract_start' => now()->toDateString(),
                     'salary_type' => 'fixed',
-                    'salary_base' => 0,
                     'biometric_face_enabled' => false,
                     'biometric_fingerprint_enabled' => false,
                     'extra_data' => [
@@ -89,6 +84,13 @@ class ProvisionGuidedTrial
                         'guided_trial' => true,
                     ],
                 ]);
+                // Sensitive fields set explicitly (not mass-assignable, #3677).
+                $manager->company_id = $company->id;
+                $manager->role = 'manager';
+                $manager->manager_role = 'principal';
+                $manager->status = 'active';
+                $manager->salary_base = 0;
+                $manager->save();
 
                 // Basic Seeding to make it look active
                 $this->seedBasicSandboxData($company->id, $manager->id);
