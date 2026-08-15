@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): /case-studies/[slug] — metadata propres par page + sitemap (Closes #3435).** Les 12 études de cas héritaient du layout parent avec un canonical fixe `/case-studies` et aucun title/description propres → SEO dupliqué. Ajout de `generateMetadata` par slug (title/description/canonical via `getCaseStudy`, pattern blog `[slug]/layout.tsx`) + inclusion des 12 slugs dans `sitemap.ts`.
 ### Fixed
 - **fix(ci): main vert — PHPStan Strict/Modules (level 8/5), Module Structure Validator, I18N sync, AIGatewayAndAnalyticsTest.** (1) App : `AuthService::login` convertit `locked_until` en Carbon avant `isFuture()`/`AccountLockedException` (DateTimeInterface → Carbon) ; `AuthController::redirectToGoogle` type le provider Socialite (GoogleProvider) pour `with()` ; `KioskController::resolveAuthorizedKiosk` ne caste plus un `??` non nullable ; `EdgeNodeController::sync` refresh le nœud avant de lire `last_sync_at` (null-safe). (2) Tests : 29 fichiers réalignés PHPStan level 8 (collect(RouteCollection) → getRoutes()->getRoutes(), @var FQCN sur factory()->create(), Mockery typé, `assertExitCode` sur PendingCommand instancié, casts null-safe, dead props retirées, `@property company_id` ajouté à CalendarConnection). (3) `AIGatewayAndAnalyticsTest` attend 2 workflows (prepare_payroll, weekly_report) — le workflow fantôme `new_employee_onboarding` a été retiré (Closes #3118, #2808). Closes #1962 (préfixes migrations doublés) via #2969.
 

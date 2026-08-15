@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getBlogPosts, type BlogPost } from '@/modules/vitrine/data/blog';
+import { getAllCaseStudies } from '@/modules/vitrine/lib/case-studies';
 import { getEnvConfig } from '@/modules/vitrine/lib/env';
 import { getSiteUrl } from '@/lib/site';
 
@@ -96,5 +97,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return [...staticPages, ...blogPages];
   }
 
-  return staticPages;
+  // Issue #3435 : les 12 études de cas dynamiques (/case-studies/[slug]) sont
+  // indexées individuellement (avant : seule la page /case-studies l'était).
+  const caseStudies: MetadataRoute.Sitemap = getAllCaseStudies().map((study) => ({
+    url: `${siteUrl}/case-studies/${study.slug}`,
+    lastModified: today,
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+    alternates: localizedAlternates(`/case-studies/${study.slug}`),
+  }));
+
+  return [...staticPages, ...caseStudies];
 }
