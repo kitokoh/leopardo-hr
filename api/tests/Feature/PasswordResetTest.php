@@ -126,6 +126,26 @@ class PasswordResetTest extends TestCase
             ->assertJsonPath('error', 'INVALID_RESET_TOKEN');
     }
 
+    public function test_reset_token_consumption_is_atomic(): void
+    {
+        $token = $this->issueToken('reset-me@example.com');
+
+        // Simule deux requêtes concurrentes ayant TOUTES DEUX passé la
+        // lecture initiale (check-then-update classique) : seule la première
+        // consommation conditionnelle affecte une ligne (issue #3944).
+        $consume = static function () use ($token): int {
+            return (int) DB::table('public.password_reset_tokens')
+                ->where('email', 'reset-me@example.com')
+                ->where('token_hash', hash('sha256', $token))
+                ->whereNull('used_at')
+                ->where('expires_at', '>', now())
+                ->update(['used_at' => now()]);
+        };
+
+        $this->assertSame(1, $consume(), 'Premier consommateur : jeton consommé.');
+        $this->assertSame(0, $consume(), 'Second consommateur concurrent : aucune ligne affectée (jeton déjà consommé).');
+    }
+
     public function test_reset_password_rejects_expired_token(): void
     {
         $token = $this->issueToken('reset-me@example.com', now()->subMinute()->toDateTimeString());
