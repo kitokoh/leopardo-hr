@@ -2,6 +2,9 @@
 
 return [
     // Sujets
+    'demo_access_subject' => 'مساحة العرض التجريبي الخاصة بك في Leopardo RH جاهزة',
+    'demo_access_body' => 'مرحباً! تم تجهيز بيئة الاختبار الخاصة بك. اضغط على الرابط أدناه للوصول إلى مساحتك (صالح لمدة 72 ساعة، للاستخدام مرة واحدة). الرابط: :url',
+
     'invoice_subject' => 'فاتورة :number — :company',
     'welcome_subject' => 'مرحباً بك في :company',
     'password_reset_subject' => 'إعادة تعيين كلمة المرور',

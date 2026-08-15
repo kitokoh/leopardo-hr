@@ -2,6 +2,9 @@
 
 return [
     // Sujets
+    'demo_access_subject' => 'Votre espace démo Leopardo RH est prêt',
+    'demo_access_body' => 'Bienvenue ! Votre sandbox est provisionné. Cliquez sur le lien ci-dessous pour accéder à votre espace (valable 72 h, à usage unique). Lien : :url',
+
     'invoice_subject' => 'Facture :number — :company',
     'welcome_subject' => 'Bienvenue chez :company',
     'password_reset_subject' => 'Réinitialisation de votre mot de passe',
