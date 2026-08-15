@@ -126,7 +126,6 @@
         @select-all="handleSelectAll"
         @view="viewUser"
         @delete="deleteUser"
-        @impersonate="impersonateUser"
       />
 
       <!-- Pagination -->
@@ -160,6 +159,7 @@ import {
   InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 import api from '@/services/api'
@@ -231,28 +231,32 @@ watch([currentPage, perPage], () => {
 async function loadUsers() {
   isLoading.value = true
   try {
-    const params = new URLSearchParams({
-      page: String(currentPage.value),
-      per_page: String(perPage.value)
-    })
-    if (searchQuery.value.trim()) params.set('search', searchQuery.value.trim())
-    if (filters.status) params.set('status', filters.status)
+    // QA #2238 : données réelles via l'API /platform/users (issue #2229).
+    // Le contrat API expose active/deactivated/suspended ; l'UI admin utilise
+    // active/inactive/suspended/pending → mapping bidirectionnel ci-dessous.
+    const params = {}
+    if (searchQuery.value) params.search = searchQuery.value
+    if (filters.status) {
+      const apiStatus = { inactive: 'deactivated' }[filters.status] || filters.status
+      if (apiStatus !== 'pending') params.status = apiStatus // 'pending' n'existe pas côté API
+    }
+    params.per_page = 100
 
-    const response = await api.get(`/admin/users?${params.toString()}`)
-    const payload = response.data || {}
-    users.value = (payload.data || []).map((user) => ({
-      ...user,
-      avatar: null,
-      // UserTable affiche un statut par libellé connu
-      status: user.is_active ? 'active' : 'inactive',
-      role: user.roles?.[0]?.role || null,
+    const res = await api.get('/platform/users', { params })
+    const items = res.data?.data ?? res.data ?? []
+    users.value = items.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      status: user.status === 'deactivated' ? 'inactive' : user.status,
+      role: 'admin',
       segment: null,
-      lastLoginAt: user.last_login_at,
-      createdAt: user.created_at
+      company: null,
+      createdAt: user.created_at ? new Date(user.created_at) : new Date(),
+      lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
     }))
-    totalItems.value = payload.meta?.total ?? users.value.length
-    totalPages.value = payload.meta?.last_page ?? 1
-    clearSelection()
+    updateStats()
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -263,10 +267,10 @@ async function loadUsers() {
 
 async function loadCompanies() {
   try {
-    // Cockpit clients réel — alimente le filtre entreprise (si ré-ajouté).
-    const response = await api.get('/platform/companies/health')
-    const items = response.data?.data?.items || []
-    companies.value = items.map((c) => ({ id: c.id, name: c.name }))
+    // QA #2238 : liste réelle des sociétés de la plateforme (filtre).
+    const res = await api.get('/platform/companies', { params: { per_page: 100 } })
+    const items = res.data?.data ?? []
+    companies.value = items.map(c => ({ id: c.id, name: c.name }))
   } catch (error) {
     console.error('Failed to load companies:', error)
     companies.value = []
@@ -291,30 +295,18 @@ function clearSelection() {
 }
 
 async function bulkAction(action) {
-  if (action === 'export') {
-    exportUsers()
-    return
-  }
-
-  const isActive = action === 'activate'
-  let ok = 0
-
   try {
-    for (const id of selectedUsers.value) {
-      try {
-        await api.patch(`/admin/users/${id}`, { is_active: isActive })
-        ok++
-      } catch (patchError) {
-        console.error('Bulk action failed for user', id, patchError)
-      }
-    }
-
-    if (ok === 0) {
-      toast.error(t('users.toast.bulkError', "Erreur lors de l'action groupée"))
+    // QA #2238 : actions réelles via l'API /platform/users/{id}/{action}.
+    if (action !== 'export') {
+      await Promise.all(selectedUsers.value.map(id =>
+        api.post(`/platform/users/${id}/${action}`)
+      ))
+    } else {
+      exportSelectedUsers()
       return
     }
 
-    toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) mis à jour').replace(':count', String(ok)))
+    toast.success(t('users.toast.bulkDone', ':count utilisateur(s) mis à jour').replace(':count', String(selectedUsers.value.length)))
     clearSelection()
     await loadUsers()
   } catch (error) {
@@ -334,10 +326,63 @@ function deleteUser() {
   toast.info(t('users.toast.deleteError', 'Suppression non disponible pour les utilisateurs plateforme en v1 — désactiver le compte à la place.'))
 }
 
-function impersonateUser() {
-  // Pas de backend d'impersonation utilisateurs plateforme en v1 (issue #2269) :
-  // l'action est retirée de l'UI (UserTable émet, la vue ignore) — aucun bouton mort.
-  toast.info(t('users.toast.impersonating', 'Impersonation non disponible pour les utilisateurs plateforme en v1'))
+async function deleteUser(user) {
+  if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
+    try {
+      // QA #2238 : désactivation via l'API (jamais de suppression physique).
+      await api.delete(`/platform/users/${user.id}`)
+      toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
+      await loadUsers()
+    } catch (error) {
+      console.error('Delete failed:', error)
+      toast.error(t('users.toast.deleteError', 'Erreur lors de la suppression'))
+    }
+  }
+}
+
+// Génère un mot de passe temporaire sûr (16 caractères) pour la création
+// d'un utilisateur plateforme (exigence API : ≥ 12 caractères).
+function generateTemporaryPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*'
+  const bytes = new Uint32Array(16)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, b => chars[b % chars.length]).join('')
+}
+
+async function handleUserCreated(user) {
+  try {
+    // QA #2238 : création réelle via l'API /platform/users (mot de passe ≥ 12
+    // caractères requis côté API — généré ici si la modal a coché l'option).
+    await api.post('/platform/users', {
+      name: user.name,
+      email: user.email,
+      password: user.password || generateTemporaryPassword()
+    })
+    toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
+  } catch (error) {
+    console.error('Create failed:', error)
+    toast.error(t('users.toast.createError', "Erreur lors de la création"))
+    return
+  }
+  showCreateModal.value = false
+  loadUsers()
+}
+
+async function handleUserUpdated(user) {
+  try {
+    // QA #2238 : mise à jour réelle via l'API.
+    const payload = { name: user.name, email: user.email }
+    if (user.password) payload.password = user.password
+    if (user.status) payload.status = user.status
+    await api.patch(`/platform/users/${user.id}`, payload)
+    toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
+  } catch (error) {
+    console.error('Update failed:', error)
+    toast.error(t('users.toast.updateError', 'Erreur lors de la mise à jour'))
+    return
+  }
+  showEditModal.value = false
+  loadUsers()
 }
 
 async function exportUsers() {
