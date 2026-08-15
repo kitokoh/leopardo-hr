@@ -222,7 +222,6 @@
         @view="viewUser"
         @edit="editUser"
         @delete="deleteUser"
-        @impersonate="impersonateUser"
       />
 
       <!-- Pagination -->
@@ -272,6 +271,7 @@ import {
   ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
+import api from '@/services/api'
 import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
@@ -407,11 +407,27 @@ async function loadUsers() {
   isLoading.value = true
 
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // QA #2238 : données réelles via l'API /platform/users (issue #2229).
+    const params = {}
+    if (searchQuery.value) params.search = searchQuery.value
+    if (filters.status) params.status = filters.status
+    params.per_page = 100
 
-    // Generate mock users
-    users.value = generateMockUsers(150)
+    const res = await api.get('/platform/users', { params })
+    const items = res.data?.data ?? res.data ?? []
+    users.value = items.map(user => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      status: user.status,
+      role: 'admin',
+      segment: null,
+      company: null,
+      createdAt: user.created_at ? new Date(user.created_at) : new Date(),
+      lastLoginAt: user.last_login_at ? new Date(user.last_login_at) : null,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`
+    }))
+    updateStats()
   } catch (error) {
     console.error('Failed to load users:', error)
     toast.error(t('users.toast.loadError', 'Erreur lors du chargement des utilisateurs'))
@@ -421,38 +437,15 @@ async function loadUsers() {
 }
 
 async function loadCompanies() {
-  // Generate mock companies
-  companies.value = [
-    { id: 1, name: 'Acme Corp' },
-    { id: 2, name: 'TechStart Inc' },
-    { id: 3, name: 'Global Solutions' },
-    { id: 4, name: 'Innovation Labs' },
-    { id: 5, name: 'Digital Dynamics' }
-  ]
-}
-
-function generateMockUsers(count) {
-  const mockUsers = []
-  const statuses = ['active', 'inactive', 'suspended', 'pending']
-  const roles = ['admin', 'manager', 'employee', 'hr']
-  const segments = ['champions', 'loyal', 'potential', 'new', 'at-risk']
-
-  for (let i = 1; i <= count; i++) {
-    mockUsers.push({
-      id: i,
-      name: `Utilisateur ${i}`,
-      email: `user${i}@example.com`,
-      status: statuses[Math.floor(Math.random() * statuses.length)],
-      role: roles[Math.floor(Math.random() * roles.length)],
-      segment: segments[Math.floor(Math.random() * segments.length)],
-      company: companies.value[Math.floor(Math.random() * companies.value.length)],
-      createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000),
-      lastLoginAt: Math.random() > 0.2 ? new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000) : null,
-      avatar: `https://ui-avatars.com/api/?name=Utilisateur+${i}&background=random`
-    })
+  try {
+    // QA #2238 : liste réelle des sociétés de la plateforme (filtre).
+    const res = await api.get('/platform/companies', { params: { per_page: 100 } })
+    const items = res.data?.data ?? []
+    companies.value = items.map(c => ({ id: c.id, name: c.name }))
+  } catch (error) {
+    console.error('Failed to load companies:', error)
+    companies.value = []
   }
-
-  return mockUsers
 }
 
 function updateStats() {
@@ -488,24 +481,17 @@ function clearSelection() {
 
 async function bulkAction(action) {
   try {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    switch (action) {
-      case 'activate':
-        toast.success(t('users.toast.bulkActivated', ':count utilisateur(s) activé(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'deactivate':
-        toast.success(t('users.toast.bulkDeactivated', ':count utilisateur(s) désactivé(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'suspend':
-        toast.success(t('users.toast.bulkSuspended', ':count utilisateur(s) suspendu(s)').replace(':count', String(selectedUsers.value.length)))
-        break
-      case 'export':
-        exportSelectedUsers()
-        return
+    // QA #2238 : actions réelles via l'API /platform/users/{id}/{action}.
+    if (action !== 'export') {
+      await Promise.all(selectedUsers.value.map(id =>
+        api.post(`/platform/users/${id}/${action}`)
+      ))
+    } else {
+      exportSelectedUsers()
+      return
     }
 
+    toast.success(t('users.toast.bulkDone', ':count utilisateur(s) mis à jour').replace(':count', String(selectedUsers.value.length)))
     clearSelection()
     await loadUsers()
   } catch (error) {
@@ -527,10 +513,9 @@ function editUser(user) {
 async function deleteUser(user) {
   if (confirm(t('users.confirm.delete', 'Êtes-vous sûr de vouloir supprimer :name ?').replace(':name', user.name))) {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      toast.success(t('users.toast.deleted', 'Utilisateur supprimé'))
+      // QA #2238 : désactivation via l'API (jamais de suppression physique).
+      await api.delete(`/platform/users/${user.id}`)
+      toast.success(t('users.toast.deleted', 'Utilisateur désactivé'))
       await loadUsers()
     } catch (error) {
       console.error('Delete failed:', error)
@@ -539,19 +524,37 @@ async function deleteUser(user) {
   }
 }
 
-function impersonateUser(user) {
-  toast.info(t('users.toast.impersonating', 'Connexion en tant que :name').replace(':name', user.name))
-  // Implement impersonation logic
-}
-
-function handleUserCreated() {
-  toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
+async function handleUserCreated(user) {
+  try {
+    // QA #2238 : création réelle via l'API.
+    await api.post('/platform/users', {
+      name: user.name,
+      email: user.email,
+      password: user.password || user.generatedPassword || 'ChangeMe123!'
+    })
+    toast.success(t('users.toast.created', 'Utilisateur créé avec succès'))
+  } catch (error) {
+    console.error('Create failed:', error)
+    toast.error(t('users.toast.createError', "Erreur lors de la création"))
+    return
+  }
   showCreateModal.value = false
   loadUsers()
 }
 
-function handleUserUpdated() {
-  toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
+async function handleUserUpdated(user) {
+  try {
+    // QA #2238 : mise à jour réelle via l'API.
+    const payload = { name: user.name, email: user.email }
+    if (user.password) payload.password = user.password
+    if (user.status) payload.status = user.status
+    await api.patch(`/platform/users/${user.id}`, payload)
+    toast.success(t('users.toast.updated', 'Utilisateur mis à jour'))
+  } catch (error) {
+    console.error('Update failed:', error)
+    toast.error(t('users.toast.updateError', 'Erreur lors de la mise à jour'))
+    return
+  }
   showEditModal.value = false
   loadUsers()
 }

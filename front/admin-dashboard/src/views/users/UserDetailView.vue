@@ -18,22 +18,39 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import UserDetailModal from '@/components/users/UserDetailModal.vue'
-import { useDashboardStore } from '@/stores/dashboard'
+import api from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
-const dashboardStore = useDashboardStore()
 
-const selectedUser = computed(() => {
+// QA #2238 : le crash venait de `dashboardStore.users` (store inexistant).
+// Le détail est désormais chargé depuis l'API réelle /platform/users/{id}.
+const selectedUser = ref(null)
+
+onMounted(async () => {
   const id = Number(route.params.id)
-  return dashboardStore.users.find(user => user.id === id) || dashboardStore.users[0] || null
+  try {
+    const res = await api.get(`/platform/users/${id}`)
+    const user = res.data?.data ?? null
+    if (user) {
+      selectedUser.value = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        status: user.status,
+        createdAt: user.created_at,
+        lastLoginAt: user.last_login_at
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load user detail:', error)
+  }
 })
 
 function goBack() {
   router.push('/users')
 }
 </script>
-
