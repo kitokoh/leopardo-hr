@@ -18,8 +18,6 @@ class GrowthPartnerTenantIsolationTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $company;
-
     private Employee $manager;
 
     protected function setUp(): void
@@ -28,7 +26,6 @@ class GrowthPartnerTenantIsolationTest extends TestCase
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->company = $company;
 
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
@@ -37,7 +34,7 @@ class GrowthPartnerTenantIsolationTest extends TestCase
 
     public function test_growth_partner_routes_carry_tenant_middleware(): void
     {
-        $route = collect(app('router')->getRoutes())
+        $route = collect(app('router')->getRoutes()->getRoutes())
             ->first(fn ($r) => $r->uri() === 'api/v1/growth/partner/dashboard' && in_array('GET', $r->methods(), true));
 
         $this->assertNotNull($route, 'Route GET /api/v1/growth/partner/dashboard introuvable.');

@@ -15,6 +15,20 @@ class UserFactory extends Factory
     protected $model = User::class;
 
     /**
+     * Issue #3597 : les champs sensibles (role/status/company_id/...) ne sont
+     * plus mass-assignables sur le modèle. La factory force l'assignation
+     * (forceFill) pour préserver les états de test (manager, archived, ...)
+     * sans affaiblir la protection applicative.
+     */
+    public function newModel(array $attributes = [])
+    {
+        $model = new $this->model();
+        $model->forceFill($attributes);
+
+        return $model;
+    }
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>

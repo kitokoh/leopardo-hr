@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,7 +9,9 @@ import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'app.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +21,22 @@ Future<void> main() async {
   };
   ErrorWidget.builder = (details) => _StartupRuntimeError(details: details);
 
-  runApp(
-    StartupGate(
-      appName: 'Leopardo RH',
-      initializer: _bootstrap,
-      criticalInitializer: _bootstrapCritical,
-      optionalInitializer: _safeGoogleSignInInitialize,
-      child: const ProviderScope(child: LeopardoApp()),
+  // #2827 : Sentry initialisé comme les autres apps (employee/manager/platform admin),
+  // non bloquant — le premier rendu passe par StartupGate dans appRunner.
+  await SentryFlutter.init(
+    (options) {
+      options.dsn =
+          const String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+      options.tracesSampleRate = 0.2; // #2766 : échantillonnage borné (PII)
+    },
+    appRunner: () => runApp(
+      StartupGate(
+        appName: 'Leopardo RH',
+        initializer: _bootstrap,
+        criticalInitializer: _bootstrapCritical,
+        optionalInitializer: _safeGoogleSignInInitialize,
+        child: const ProviderScope(child: LeopardoApp()),
+      ),
     ),
   );
 }
@@ -47,8 +59,14 @@ Future<void> _safeGoogleSignInInitialize() async {
     await GoogleSignIn.instance.initialize(
       // serverClientId est le web client id (type 3) — obligatoire pour que
       // authenticate() retourne un idToken vérifiable par le backend.
-      serverClientId:
-          '201283742683-3tad975gn325vvr3qpq85vcotsr0cplt.apps.googleusercontent.com',
+      serverClientId: const String.fromEnvironment(
+        'GOOGLE_WEB_CLIENT_ID',
+        // T095 (QA 2026-08-15) : l'ID n'est plus codé en dur — fourni par
+        // --dart-define en build ; repli DEBUG uniquement (masqué en release).
+        // #3294 : aucun repli en dur — l'ID doit venir de --dart-define
+        // (GOOGLE_WEB_CLIENT_ID), sinon le sign-in Google est désactivé.
+        defaultValue: '',
+      ),
     );
   } catch (error, stackTrace) {
     debugPrint('Google Sign-In init skipped: $error');
@@ -70,7 +88,7 @@ Future<void> _openOfflineCache() async {
 }
 
 Future<void> _initializeLocales() async {
-  await initializeDateFormatting('fr_FR', null);
+  await initializeDateFormatting(deviceIntlDateLocale, null);
   await initializeDateFormatting('fr_CA', null);
   await initializeDateFormatting('fr_BE', null);
   await initializeDateFormatting('ar', null);

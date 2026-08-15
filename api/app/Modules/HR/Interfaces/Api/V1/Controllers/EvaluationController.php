@@ -32,6 +32,7 @@ class EvaluationController extends Controller
         $actor = $request->user();
 
         $query = Evaluation::query()
+            ->where('company_id', $actor->company_id)
             ->select([
                 'id',
                 'company_id',
@@ -80,7 +81,7 @@ class EvaluationController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $perPage = $request->integer('per_page', 15);
+        $perPage = max(1, min(100, $request->integer('per_page', 15)));
 
         return EvaluationResource::collection($query->orderByDesc('created_at')->paginate($perPage))
             ->response();

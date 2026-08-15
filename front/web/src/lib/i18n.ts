@@ -11,6 +11,9 @@ export type StoredAuthUser = {
   role?: string | null;
   manager_role?: string | null;
   capabilities?: Record<string, unknown> | null;
+  // Features tenant (FeatureFlag::for) renvoyées au niveau racine par
+  // /auth/me (EmployeeResource) : {rh, finance, cameras, muhasebe, leo_ai}.
+  features?: Record<string, unknown> | null;
   company?: {
     id?: number | string | null;
     name?: string | null;
@@ -31,7 +34,7 @@ export const AUTH_TOKEN_KEY = 'auth_token';
 export const AUTH_USER_KEY = 'auth_user';
 export const PREFERRED_LOCALE_KEY = 'preferred_locale';
 
-type CopyTree = {
+export type CopyTree = {
   login: {
     title: string;
     subtitle: string;
@@ -50,6 +53,8 @@ type CopyTree = {
     submit: string;
     loading: string;
     demoAccess: string;
+    accountCreatedFree: string;
+    accountCreatedPaid: string;
     demoTitle: string;
     demoSubtitle: string;
     close: string;
@@ -65,6 +70,7 @@ type CopyTree = {
     heading: string;
     employees: string;
     present: string;
+    live: string;
     late: string;
     activity: string;
     team: string;
@@ -76,6 +82,10 @@ type CopyTree = {
     presentBadge: string;
     employeeLabel: string;
     checkInAt: string;
+    featureLockedRole: string;
+    featureLockedPlan: string;
+    featureLockedBadge: string;
+    featureLockedExplanation: string;
   };
   payrollPage: {
     title: string;
@@ -258,46 +268,6 @@ type CopyTree = {
     saving: string;
     cancel: string;
   };
-  edgeNodesPage: {
-    title: string;
-    subtitle: string;
-    loadError: string;
-    syncError: string;
-    createError: string;
-    newNode: string;
-    nodeCreatedTitle: string;
-    copy: string;
-    statTotalNodes: string;
-    statOnline: string;
-    statOffline: string;
-    statValidLicenses: string;
-    configuredNodesTitle: string;
-    loadingNodes: string;
-    noNodes: string;
-    licenseExpired: string;
-    addressMissing: string;
-    lastSyncLabel: string;
-    lastSyncNever: string;
-    statusOnline: string;
-    statusOffline: string;
-    syncing: string;
-    sync: string;
-    modeCloud: string;
-    modeHybrid: string;
-    modeOffline: string;
-    modalTitle: string;
-    siteNameLabel: string;
-    siteNamePlaceholder: string;
-    siteAddressLabel: string;
-    siteAddressPlaceholder: string;
-    modeLabel: string;
-    modeHybridOption: string;
-    modeOfflineOption: string;
-    modeCloudOption: string;
-    cancel: string;
-    createNode: string;
-    syncCompleteMessage: string;
-  };
   developerSettingsPage: {
     title: string;
     subtitle: string;
@@ -355,15 +325,15 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion a Leopardo RH',
-      subtitle: 'Accedez a votre espace RH, suivez vos equipes et pilotez les modules actifs de votre entreprise.',
+      subtitle: 'Accedez a votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
       clientSpace: 'Espace client',
-      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque equipe.',
+      heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque équipe.',
       heroCopy: 'Votre portail client reste connecte a l API Leopardo RH, avec permissions, langue et contexte tenant appliques des la connexion.',
-      secureBadge: 'Connexion securisee',
+      secureBadge: 'Connexion sécurisée',
       trustPoints: [
         'Session liee a votre tenant',
         'Permissions appliquees par role',
-        'Interface prete pour manager, RH et employe',
+        'Interface prete pour manager, RH et employé',
       ],
       back: 'Retour au site',
       email: 'Adresse email',
@@ -375,32 +345,39 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Se connecter',
       loading: 'Connexion...',
       demoAccess: 'Tester avec un compte demo',
+    accountCreatedFree: 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.',
+    accountCreatedPaid: 'Inscription reçue ! Connectez-vous pour continuer.',
       demoTitle: 'Choisir un compte demo',
       demoSubtitle: 'Selectionnez un role pour pre-remplir le formulaire, puis lancez la connexion.',
       close: 'Fermer',
-      supportCopy: 'Besoin d aide pour recuperer un acces ?',
+      supportCopy: 'Besoin d aide pour recuperer un accès ?',
       supportLink: 'Contacter le support',
       errors: {
         generic: 'Une erreur est survenue.',
-        missingToken: 'Le jeton de connexion est absent de la reponse API.',
-        missingUser: 'Le profil utilisateur est absent de la reponse API.',
+        missingToken: 'Le jeton de connexion est absent de la réponse API.',
+        missingUser: 'Le profil utilisateur est absent de la réponse API.',
       },
     },
     dashboard: {
       heading: 'Tableau de bord',
-      employees: 'Employes actifs',
+      employees: 'Employés actifs',
       present: 'presents',
+      live: 'En direct',
       late: 'Retards',
-      activity: 'Activite recente',
-      team: 'Employes',
+      activity: 'Activité recente',
+      team: 'Employés',
       attendance: 'Pointages',
       payroll: 'Paie',
       settings: 'Parametres',
       logout: 'Deconnexion',
       language: 'Langue',
       presentBadge: 'Present',
-      employeeLabel: 'Employe',
+      employeeLabel: 'Employé',
       checkInAt: 'Check-in a',
+      featureLockedRole: "Votre role actuel ne permet pas d'acceder a ce module.",
+      featureLockedPlan: "Ce module n'est pas inclus dans votre plan actuel.",
+      featureLockedBadge: 'Module non inclus',
+      featureLockedExplanation: "Leopardo RH garde l'interface explicite afin d'eviter les 404 confuses et les erreurs API inutiles.",
     },
     payrollPage: {
       title: 'Paie',
@@ -411,14 +388,14 @@ const copy: Record<AppLocale, CopyTree> = {
       tabSlips: 'Bulletins de paie',
       tabRuns: 'Cycles de paie',
       searchPlaceholder: 'Rechercher par nom ou periode...',
-      columnEmployee: 'Employe',
-      columnPeriod: 'Periode',
+      columnEmployee: 'Employé',
+      columnPeriod: 'Période',
       columnGross: 'Brut',
       columnNet: 'Net',
       columnStatus: 'Statut',
-      columnCompliance: 'Conformite',
+      columnCompliance: 'Conformité',
       columnActions: 'Actions',
-      columnEmployees: 'Employes',
+      columnEmployees: 'Employés',
       columnTotalGross: 'Total Brut',
       columnTotalNet: 'Total Net',
       loading: 'Chargement...',
@@ -427,13 +404,13 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'Valide',
       statusDraft: 'Brouillon',
       statusCompleted: 'Termine',
-      downloadPdf: 'Telecharger PDF',
+      downloadPdf: 'Télécharger PDF',
       viewDetail: 'Voir detail',
       resultsCount: 'resultats',
       detailTitle: 'Detail du bulletin',
       detailClose: 'Fermer',
       detailLoading: 'Chargement du detail...',
-      detailError: 'Detail indisponible pour le moment — affichage des donnees de la liste.',
+      detailError: 'Detail indisponible pour le moment — affichage des données de la liste.',
       detailDeductions: 'Deductions',
       detailEmployerContributions: 'Charges patronales',
       detailTotalCost: 'Cout total employeur',
@@ -444,7 +421,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
-      subtitle: 'Suivi intelligent de presence par geolocalisation — validation des sessions en attente et statistiques du jour.',
+      subtitle: 'Suivi intelligent de présence par geolocalisation — validation des sessions en attente et statistiques du jour.',
       allSessions: 'Toutes les sessions →',
       settings: 'Parametres',
       pendingSessionsTitle: 'Sessions en attente de validation',
@@ -457,7 +434,7 @@ const copy: Record<AppLocale, CopyTree> = {
       columnActions: 'Actions',
       approve: 'Approuver',
       reject: 'Refuser',
-      employeeFallback: 'Employe',
+      employeeFallback: 'Employé',
       dashboardLoadError: 'Impossible de charger le tableau de bord.',
       approveError: "Erreur lors de l'approbation.",
       rejectError: 'Erreur lors du refus.',
@@ -487,14 +464,14 @@ const copy: Record<AppLocale, CopyTree> = {
       cancel: 'Annuler',
     },
     smartAttendanceSessionsPage: {
-      title: 'Sessions de presence',
+      title: 'Sessions de présence',
       subtitle: 'Liste complete des sessions Smart Attendance avec filtres avances et pagination.',
       backToDashboard: '← Tableau de bord',
       loadError: 'Impossible de charger les sessions.',
       filtersTitle: 'Filtres',
       filterStatus: 'Statut',
       filterStatusAll: 'Tous les statuts',
-      filterEmployee: 'Employe (ID ou nom)',
+      filterEmployee: 'Employé (ID ou nom)',
       filterEmployeePlaceholder: 'Rechercher…',
       filterDateFrom: 'Date debut',
       filterDateTo: 'Date fin',
@@ -510,14 +487,14 @@ const copy: Record<AppLocale, CopyTree> = {
       columnDuration: 'Duree',
       columnStatus: 'Statut',
       columnDetail: 'Detail',
-      noSessions: 'Aucune session trouvee pour ces criteres.',
+      noSessions: 'Aucune session trouvee pour ces critères.',
       viewDetail: 'Voir →',
       employeeFallback: 'Employe',
       pageLabel: 'Page',
       previous: '← Precedent',
       next: 'Suivant →',
       csvHeaderId: 'ID',
-      csvHeaderEmployee: 'Employe',
+      csvHeaderEmployee: 'Employé',
       csvHeaderMatricule: 'Matricule',
       csvHeaderCheckIn: 'Arrivee',
       csvHeaderCheckOut: 'Depart',
@@ -526,7 +503,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSessionDetailPage: {
       title: 'Detail de session',
-      subtitle: 'Informations completes de la session de presence geolocalisee.',
+      subtitle: 'Informations completes de la session de présence geolocalisee.',
       backToSessions: '← Retour aux sessions',
       loadError: 'Impossible de charger la session.',
       notFound: 'Session introuvable.',
@@ -541,7 +518,7 @@ const copy: Record<AppLocale, CopyTree> = {
       checkInLabel: 'Check-in',
       checkOutLabel: 'Check-out',
       viewOnMaps: 'Voir sur Maps →',
-      gpsHistoryTitle: 'Historique des evenements GPS',
+      gpsHistoryTitle: 'Historique des événements GPS',
       columnType: 'Type',
       columnTime: 'Heure',
       columnLatitude: 'Latitude',
@@ -583,48 +560,8 @@ const copy: Record<AppLocale, CopyTree> = {
       saving: 'Enregistrement…',
       cancel: 'Annuler',
     },
-    edgeNodesPage: {
-      title: 'Edge Nodes',
-      subtitle: 'Gerez les noeuds locaux pour le mode offline-first : etat de connexion, licences et synchronisation.',
-      loadError: 'Impossible de charger les Edge nodes.',
-      syncError: 'Erreur lors de la synchronisation',
-      createError: 'Erreur lors de la creation du node',
-      newNode: 'Nouveau Node',
-      nodeCreatedTitle: 'Node cree ! Copiez et executez cette commande sur votre serveur local :',
-      copy: 'Copier',
-      statTotalNodes: 'Total nodes',
-      statOnline: 'En ligne',
-      statOffline: 'Hors ligne',
-      statValidLicenses: 'Licences valides',
-      configuredNodesTitle: 'Noeuds configures',
-      loadingNodes: 'Chargement des Edge nodes...',
-      noNodes: 'Aucun Edge node configure. Creez un nouveau node pour activer le mode offline-first.',
-      licenseExpired: 'Licence expiree',
-      addressMissing: 'Adresse non renseignee',
-      lastSyncLabel: 'Derniere sync : ',
-      lastSyncNever: 'jamais',
-      statusOnline: 'En ligne',
-      statusOffline: 'Hors ligne',
-      syncing: 'Sync...',
-      sync: 'Sync',
-      modeCloud: 'Cloud',
-      modeHybrid: 'Hybride',
-      modeOffline: 'Offline',
-      modalTitle: 'Nouveau Edge Node',
-      siteNameLabel: 'Nom du site',
-      siteNamePlaceholder: 'ex: Entrepot Nord',
-      siteAddressLabel: 'Adresse du site',
-      siteAddressPlaceholder: 'ex: Zone Industrielle, Batiment A',
-      modeLabel: 'Mode',
-      modeHybridOption: 'Hybride (recommande)',
-      modeOfflineOption: 'Offline total',
-      modeCloudOption: 'Cloud uniquement',
-      cancel: 'Annuler',
-      createNode: 'Creer le node',
-      syncCompleteMessage: 'Sync termine — envoyes: {sent}, conflits: {conflicts}',
-    },
     developerSettingsPage: {
-      title: 'Espace Developpeur',
+      title: 'Espace Développeur',
       subtitle: 'Gerez vos cles API et vos webhooks pour integrer Leopardo RH a vos outils.',
       loadTokensError: 'Impossible de charger les cles API.',
       loadWebhooksError: 'Impossible de charger les webhooks.',
@@ -642,7 +579,7 @@ const copy: Record<AppLocale, CopyTree> = {
       noTokens: 'Aucune cle API creee pour le moment.',
       createdOn: 'Creee le {date}',
       unknownDate: 'Date inconnue',
-      lastUsedOn: ' · derniere utilisation le {date}',
+      lastUsedOn: ' · dernière utilisation le {date}',
       neverUsed: ' · jamais utilisee',
       revoke: 'Revoquer',
       tokenNamePlaceholder: 'Nom de la cle (ex: Production)',
@@ -658,11 +595,11 @@ const copy: Record<AppLocale, CopyTree> = {
       delete: 'Supprimer',
       addEndpoint: 'Ajouter un endpoint',
       apiDocsTitle: 'Documentation API',
-      apiDocsBody: 'Decouvrez comment integrer nos webhooks signes (format Svix) et nos endpoints REST.',
+      apiDocsBody: 'Découvrez comment integrer nos webhooks signes (format Svix) et nos endpoints REST.',
       openExplorer: "Ouvrir l'Explorer",
       newWebhookModalTitle: 'Nouvel endpoint webhook',
       destinationUrlLabel: 'URL de destination',
-      eventsToListenLabel: 'Evenements a ecouter',
+      eventsToListenLabel: 'Événements a ecouter',
       cancel: 'Annuler',
       creating: 'Creation...',
       create: 'Creer',
@@ -698,6 +635,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'تسجيل الدخول',
       loading: 'جار تسجيل الدخول...',
       demoAccess: 'تجربة حساب تجريبي',
+    accountCreatedFree: 'تم إنشاء الحساب! سجّل الدخول للوصول إلى مساحتك المجانية.',
+    accountCreatedPaid: 'تم استلام التسجيل! سجّل الدخول للمتابعة.',
       demoTitle: 'اختيار حساب تجريبي',
       demoSubtitle: 'اختر دورا لملء النموذج ثم سجل الدخول.',
       close: 'إغلاق',
@@ -713,6 +652,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'لوحة التحكم',
       employees: 'الموظفون النشطون',
       present: 'حاضرون',
+      live: 'مباشر',
       late: 'التأخيرات',
       activity: 'النشاط الأخير',
       team: 'الموظفون',
@@ -724,6 +664,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'حاضر',
       employeeLabel: 'موظف',
       checkInAt: 'تسجيل الدخول في',
+      featureLockedRole: 'دورك الحالي لا يسمح بالوصول إلى هذه الوحدة.',
+      featureLockedPlan: 'هذه الوحدة غير مشمولة في خطتك الحالية.',
+      featureLockedBadge: 'الوحدة غير مشمولة',
+      featureLockedExplanation: 'يحافظ Leopardo RH على واجهة واضحة لتجنب أخطاء 404 المربكة وأخطاء API غير الضرورية.',
     },
     payrollPage: {
       title: 'الرواتب',
@@ -878,7 +822,7 @@ const copy: Record<AppLocale, CopyTree> = {
     },
     smartAttendanceSettingsPage: {
       title: 'إعدادات Smart Attendance',
-      subtitle: 'إعداد وضع التسجيل والنطاق الجمارافي للشركة.',
+      subtitle: 'إعداد وضع التسجيل والنطاق الجغرافي للشركة.',
       backToDashboard: '← لوحة التحكم',
       loadError: 'تعذر تحميل الإعدادات.',
       saveError: 'خطأ أثناء الحفظ.',
@@ -897,7 +841,7 @@ const copy: Record<AppLocale, CopyTree> = {
       modeFreeHint: 'يسمح الوضع الحر للموظف باختيار الطريقة المتاحة.',
       gpsToggleTitle: 'تحديد الموقع GPS',
       gpsToggleSubtitle: 'تفعيل التحقق من الموقع',
-      geofenceConfigTitle: 'إعداد النطاق الجمارافي',
+      geofenceConfigTitle: 'إعداد النطاق الجغرافي',
       latitudeLabel: 'خط العرض',
       longitudeLabel: 'خط الطول',
       radiusFieldLabel: 'النطاق (متر)',
@@ -906,58 +850,18 @@ const copy: Record<AppLocale, CopyTree> = {
       saving: 'جار التنفيذ…',
       cancel: 'إلغاء',
     },
-    edgeNodesPage: {
-      title: 'عقد Edge',
-      subtitle: 'إدارة العقد المحلية لوضع offline-first: حالة الاتصال، التراخيص والمزامنة.',
-      loadError: 'تعذر تحميل عقد Edge.',
-      syncError: 'خطأ أثناء المزامنة',
-      createError: 'خطأ أثناء إنشاء العقدة',
-      newNode: 'عقدة جديدة',
-      nodeCreatedTitle: 'تم إنشاء العقدة! انسخ ونفّذ هذا الأمر على خادمك المحلي:',
-      copy: 'نسخ',
-      statTotalNodes: 'إجمالي العقد',
-      statOnline: 'متصل',
-      statOffline: 'منقطع',
-      statValidLicenses: 'تراخيص سارية',
-      configuredNodesTitle: 'العقد المكوّنة',
-      loadingNodes: 'تحميل عقد Edge...',
-      noNodes: 'لا توجد عقدة Edge مكوّنة. أنشئ عقدة جديدة لتفعيل وضع offline-first.',
-      licenseExpired: 'الترخيص منتهٍ',
-      addressMissing: 'العنوان لم يرد',
-      lastSyncLabel: 'آخر مزامنة: ',
-      lastSyncNever: 'لم يجرِ',
-      statusOnline: 'متصل',
-      statusOffline: 'منقطع',
-      syncing: 'جارٍ المزامنة...',
-      sync: 'مزامنة',
-      modeCloud: 'سحابي',
-      modeHybrid: 'هجين',
-      modeOffline: 'دون اتصال',
-      modalTitle: 'عقدة Edge جديدة',
-      siteNameLabel: 'اسم الموقع',
-      siteNamePlaceholder: 'مثلاً: مستودع الشمال',
-      siteAddressLabel: 'عنوان الموقع',
-      siteAddressPlaceholder: 'مثلاً: المنطقة الصناعية، المبنى A',
-      modeLabel: 'الوضع',
-      modeHybridOption: 'هجين (موصى به)',
-      modeOfflineOption: 'دون اتصال كلي',
-      modeCloudOption: 'سحابي فقط',
-      cancel: 'إلغاء',
-      createNode: 'إنشاء العقدة',
-      syncCompleteMessage: 'اكتملت المزامنة — مرسل: {sent}، التعارضات: {conflicts}',
-    },
     developerSettingsPage: {
-      title: 'مساد المطور',
-      subtitle: 'أدر مفاتيح API والردود الويب لدمج Leopardo RH مع أدواتك.',
+      title: 'إعدادات المطور',
+      subtitle: 'أدر مفاتيح API والويب هوكس لدمج Leopardo RH مع أدواتك.',
       loadTokensError: 'تعذر تحميل مفاتيح API.',
       loadWebhooksError: 'تعذر تحميل الردود.',
       createTokenError: 'تعذر إنشاء مفتاح API.',
       deleteTokenError: 'تعذر إلغاء مفتاح API.',
-      createWebhookError: 'تعذر إنشاء الرد الويب.',
-      deleteWebhookError: 'تعذر حذف الرد الويب.',
-      updateWebhookError: 'تعذر تحديث الرد الويب.',
-      revokeTokenConfirm: 'هل تريد إلعاء مفتاح API هذا؟ ستوقف التكاملات المستخدمة له عن العمل.',
-      deleteWebhookConfirm: 'حذف نقطة الرد الويب هذه؟',
+      createWebhookError: 'تعذر إنشاء الويب هوك.',
+      deleteWebhookError: 'تعذر حذف الويب هوك.',
+      updateWebhookError: 'تعذر تحديث الويب هوك.',
+      revokeTokenConfirm: 'هل تريد إلغاء مفتاح API هذا؟ ستوقف التكاملات المستخدمة له عن العمل.',
+      deleteWebhookConfirm: 'حذف نقطة الويب هوك هذه؟',
       revealedTokenNotice: 'مفتاح "{name}" تم إنشاؤه — انسخه الآن، لن يعرض مرة أخرى:',
       revealedTokenDismiss: 'لقد نسخت المفتاح، إخفاء',
       apiKeysTitle: 'مفاتيح API',
@@ -967,9 +871,9 @@ const copy: Record<AppLocale, CopyTree> = {
       unknownDate: 'تاريخ مفقود',
       lastUsedOn: ' · آخر استعمال في {date}',
       neverUsed: ' · لم يستخدم قط',
-      revoke: 'إلعاء',
+      revoke: 'إلغاء',
       tokenNamePlaceholder: 'اسم المفتاح (مثلاً: الإنتاج)',
-      webhooksTitle: 'الردود الويب',
+      webhooksTitle: 'الويب هوكس',
       noWebhooks: 'لا توجد نقاط رد ويب مكوّنة.',
       eventsCount: '{count} حدث(ان)',
       failuresCount: '{count} فشل(ات)',
@@ -1021,6 +925,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Giris yap',
       loading: 'Giris yapiliyor...',
       demoAccess: 'Demo hesapla dene',
+    accountCreatedFree: 'Hesap oluşturuldu! Ücretsiz alanınıza erişmek için giriş yapın.',
+    accountCreatedPaid: 'Kayıt alındı! Devam etmek için giriş yapın.',
       demoTitle: 'Demo hesabi sec',
       demoSubtitle: 'Formu doldurmak icin bir rol secin, sonra girisi baslatin.',
       close: 'Kapat',
@@ -1036,6 +942,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Kontrol paneli',
       employees: 'Aktif calisanlar',
       present: 'mevcut',
+      live: 'Canlı',
       late: 'Gecikmeler',
       activity: 'Son etkinlik',
       team: 'Calisanlar',
@@ -1047,6 +954,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'Burada',
       employeeLabel: 'Calisan',
       checkInAt: 'Giris saati',
+      featureLockedRole: "Mevcut rolunuz bu module erisim izni vermiyor.",
+      featureLockedPlan: "Bu modul mevcut planiniza dahil degil.",
+      featureLockedBadge: 'Modul dahil degil',
+      featureLockedExplanation: "Leopardo RH, kafa karistiran 404'leri ve gereksiz API hatalarini onlemek icin arayuzu acik tutar.",
     },
     payrollPage: {
       title: 'Bordro',
@@ -1229,46 +1140,6 @@ const copy: Record<AppLocale, CopyTree> = {
       saving: 'Kaydediliyor…',
       cancel: 'Vazgec',
     },
-    edgeNodesPage: {
-      title: 'Edge Node\'lari',
-      subtitle: 'Offline-first modu icin yerel node\'lari yonetin: baglanti durumu, lisanslar ve senkronizasyon.',
-      loadError: 'Edge node\'lari yuklenemedi.',
-      syncError: 'Senkronizasyon sirasinda hata olustu',
-      createError: 'Node olusturma sirasinda hata olustu',
-      newNode: 'Yeni Node',
-      nodeCreatedTitle: 'Node olusturuldu! Bu komutu yerel sunucunuzda kopyalayip calistirin:',
-      copy: 'Kopyala',
-      statTotalNodes: 'Toplam node',
-      statOnline: 'Cevrimici',
-      statOffline: 'Cevrimdisi',
-      statValidLicenses: 'Gecerli lisanslar',
-      configuredNodesTitle: 'Yapilandirilmis node\'lar',
-      loadingNodes: 'Edge node\'lari yukleniyor...',
-      noNodes: 'Yapilandirilmis Edge node yok. Offline-first modunu etkinlestirmek icin yeni bir node olusturun.',
-      licenseExpired: 'Lisans suresi doldu',
-      addressMissing: 'Adres belirtilmedi',
-      lastSyncLabel: 'Son senkronizasyon: ',
-      lastSyncNever: 'hicbir zaman',
-      statusOnline: 'Cevrimici',
-      statusOffline: 'Cevrimdisi',
-      syncing: 'Senkronize ediliyor...',
-      sync: 'Senkronize et',
-      modeCloud: 'Bulut',
-      modeHybrid: 'Hibrit',
-      modeOffline: 'Cevrimdisi',
-      modalTitle: 'Yeni Edge Node',
-      siteNameLabel: 'Site adi',
-      siteNamePlaceholder: 'orn: Kuzey Deposu',
-      siteAddressLabel: 'Site adresi',
-      siteAddressPlaceholder: 'orn: Sanayi Bolgesi, A Blok',
-      modeLabel: 'Mod',
-      modeHybridOption: 'Hibrit (onerilir)',
-      modeOfflineOption: 'Tam cevrimdisi',
-      modeCloudOption: 'Sadece bulut',
-      cancel: 'Vazgec',
-      createNode: 'Node olustur',
-      syncCompleteMessage: 'Senkronizasyon tamamlandi — gonderilen: {sent}, catisma: {conflicts}',
-    },
     developerSettingsPage: {
       title: 'Gelistirici Alani',
       subtitle: 'Leopardo HR\'yi araclarinizla entegre etmek icin API anahtarlarinizi ve webhook\'larinizi yonetin.',
@@ -1344,6 +1215,8 @@ const copy: Record<AppLocale, CopyTree> = {
       submit: 'Sign in',
       loading: 'Signing in...',
       demoAccess: 'Try a demo account',
+    accountCreatedFree: 'Account created! Sign in to access your free workspace.',
+    accountCreatedPaid: 'Registration received! Sign in to continue.',
       demoTitle: 'Choose a demo account',
       demoSubtitle: 'Select a role to prefill the form, then sign in.',
       close: 'Close',
@@ -1359,6 +1232,7 @@ const copy: Record<AppLocale, CopyTree> = {
       heading: 'Dashboard',
       employees: 'Active employees',
       present: 'present',
+      live: 'Live',
       late: 'Late arrivals',
       activity: 'Recent activity',
       team: 'Employees',
@@ -1370,6 +1244,10 @@ const copy: Record<AppLocale, CopyTree> = {
       presentBadge: 'Present',
       employeeLabel: 'Employee',
       checkInAt: 'Check-in at',
+      featureLockedRole: "Your current role does not allow access to this module.",
+      featureLockedPlan: "This module is not included in your current plan.",
+      featureLockedBadge: 'Module not included',
+      featureLockedExplanation: "Leopardo RH keeps the interface explicit to avoid confusing 404s and unnecessary API errors.",
     },
     payrollPage: {
       title: 'Payroll',
@@ -1542,7 +1420,7 @@ const copy: Record<AppLocale, CopyTree> = {
       modeFieldLabel: 'Check-in mode',
       modeFreeHint: '"Free" lets the employee choose the available method.',
       gpsToggleTitle: 'GPS geolocation',
-      gpsToggleSubtitle: 'Enable position verification',
+      gpsToggleSubtitle: 'Enable position vérification',
       geofenceConfigTitle: 'Geofence configuration',
       latitudeLabel: 'Latitude',
       longitudeLabel: 'Longitude',
@@ -1551,46 +1429,6 @@ const copy: Record<AppLocale, CopyTree> = {
       save: 'Save',
       saving: 'Saving…',
       cancel: 'Cancel',
-    },
-    edgeNodesPage: {
-      title: 'Edge Nodes',
-      subtitle: 'Manage local nodes for offline-first mode: connection status, licenses and synchronization.',
-      loadError: 'Unable to load Edge nodes.',
-      syncError: 'Error during synchronization',
-      createError: 'Error while creating the node',
-      newNode: 'New Node',
-      nodeCreatedTitle: 'Node created! Copy and run this command on your local server:',
-      copy: 'Copy',
-      statTotalNodes: 'Total nodes',
-      statOnline: 'Online',
-      statOffline: 'Offline',
-      statValidLicenses: 'Valid licenses',
-      configuredNodesTitle: 'Configured nodes',
-      loadingNodes: 'Loading Edge nodes...',
-      noNodes: 'No Edge node configured. Create a new node to enable offline-first mode.',
-      licenseExpired: 'License expired',
-      addressMissing: 'No address provided',
-      lastSyncLabel: 'Last sync: ',
-      lastSyncNever: 'never',
-      statusOnline: 'Online',
-      statusOffline: 'Offline',
-      syncing: 'Syncing...',
-      sync: 'Sync',
-      modeCloud: 'Cloud',
-      modeHybrid: 'Hybrid',
-      modeOffline: 'Offline',
-      modalTitle: 'New Edge Node',
-      siteNameLabel: 'Site name',
-      siteNamePlaceholder: 'e.g. North Warehouse',
-      siteAddressLabel: 'Site address',
-      siteAddressPlaceholder: 'e.g. Industrial Zone, Building A',
-      modeLabel: 'Mode',
-      modeHybridOption: 'Hybrid (recommended)',
-      modeOfflineOption: 'Fully offline',
-      modeCloudOption: 'Cloud only',
-      cancel: 'Cancel',
-      createNode: 'Create node',
-      syncCompleteMessage: 'Sync complete — sent: {sent}, conflicts: {conflicts}',
     },
     developerSettingsPage: {
       title: 'Developer Area',
