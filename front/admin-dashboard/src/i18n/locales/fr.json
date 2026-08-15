@@ -69,7 +69,7 @@
     "leo_announcements_count": "{count} annonce(s) publiee(s) dans votre entreprise.",
     "presence_today_title": "Presence aujourd hui",
     "leo_presence_insight": "Aujourd'hui, {today} presence(s) sur {active} employe(s) actif(s). Souhaitez-vous envoyer un message de felicitations a l'equipe ?",
-    "leo_ia_announcement_body": "Felicitations a toute l'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !",
+    "leo_ia_announcement_body": "Felicitations a toute l'equipe pour votre engagement de cette semaine. Continuez sur cette dynamique !",
     "launch_readiness": "Readiness lancement",
     "presence_today_empty": "Aucune donnee de presence disponible.",
     "upgrade": "Upgrade",
@@ -263,7 +263,7 @@
   },
   "seo": {
     "pricing": {
-      "description": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours."
+      "description": "Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours."
     }
   },
   "tax_rates": {
@@ -715,7 +715,7 @@
       "exportError": "Erreur lors de l'export",
       "updated": "Utilisateur mis a jour",
       "deleted": "Utilisateur supprime",
-      "bulkDone": "Action groupee terminee"
+      "bulkDone": "Mise à jour effectuée"
     },
     "page": {
       "title": "Gestion des Utilisateurs",
@@ -728,9 +728,16 @@
     },
     "errors": {
       "password_required": "Le mot de passe est requis.",
-      "password_min": "Le mot de passe doit contenir au moins 8 caractères.",
+      "password_min": "Le mot de passe doit contenir au moins 8 caractères",
       "name_required": "Le nom complet est requis.",
-      "fix_fields": "Veuillez corriger les champs en rouge"
+      "fix_fields": "Veuillez corriger les champs en rouge",
+      "search_no_match": "Aucune page ne correspond à votre recherche",
+      "update_failed": "Erreur lors de la mise à jour de l'utilisateur"
+    },
+    "edit": {
+      "title": "Modifier l'utilisateur",
+      "status": "Statut",
+      "save": "Mettre à jour"
     }
   },
   "adminChat": {

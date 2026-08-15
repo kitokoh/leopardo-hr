@@ -4,7 +4,7 @@
     "presence_today_empty": "Katılım verisi mevcut değil.",
     "recent_activity": "Son Etkinlik",
     "recent_activity_hint": "Ekibinizin son eylemleri",
-    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
+    "leo_ia_announcement_body": "Bu haftaki ozveriniz icin tum ekibe tebrikler. Bu ivmeyi surdurun!",
     "leo_presence_insight": "Bugün {active} aktif çalışandan {today} giriş yaptı. Ekibe bir tebrik mesajı göndermek ister misiniz?",
     "leo_announcements_count": "Şirketinizde {count} duyuru yayınlandı.",
     "presence_today_title": "Bugünkü katılım",
@@ -179,7 +179,10 @@
     "errors": {
       "name_required": "Ad soyad gereklidir.",
       "fix_fields": "Lütfen kırmızı alanları düzeltin",
-      "password_required": "Şifre gereklidir."
+      "password_required": "Şifre gereklidir.",
+      "password_min": "Şifre en az 8 karakter olmalıdır",
+      "search_no_match": "Aramanızla eşleşen sayfa yok",
+      "update_failed": "Kullanıcı güncellenemedi"
     },
     "impersonation": {
       "title": "Bir çalışanı taklit et",
@@ -220,7 +223,8 @@
       "created": "Kullanici basariyla olusturuldu",
       "deleteError": "Kullanici silinirken hata olustu",
       "exportError": "Disa aktarim basarisiz oldu",
-      "bulkError": "Toplu islem basarisiz oldu"
+      "bulkError": "Toplu islem basarisiz oldu",
+      "bulkDone": "Güncelleme tamamlandı"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
@@ -283,6 +287,11 @@
         "label": "Sirket",
         "all": "Tum sirketler"
       }
+    },
+    "edit": {
+      "title": "Kullanıcıyı düzenle",
+      "status": "Durum",
+      "save": "Güncelle"
     }
   },
   "auth": {
@@ -464,7 +473,16 @@
       "CI": "Fildişi Sahili",
       "TN": "Tunus",
       "GA": "Gabon",
-      "MA": "Fas"
+      "MA": "Fas",
+      "BJ": "Benin",
+      "CA": "Kanada",
+      "CF": "Orta Afrika Cumhuriyeti",
+      "GB": "Birleşik Krallık",
+      "GQ": "Ekvator Ginesi",
+      "NE": "Nijer",
+      "TD": "Çad",
+      "TG": "Togo",
+      "US": "Amerika Birleşik Devletleri"
     },
     "language": {
       "variants": {

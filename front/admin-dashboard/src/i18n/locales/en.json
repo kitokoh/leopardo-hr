@@ -14,7 +14,10 @@
     "errors": {
       "name_required": "The full name is required.",
       "password_required": "The password is required.",
-      "fix_fields": "Please fix the highlighted fields"
+      "fix_fields": "Please fix the highlighted fields",
+      "password_min": "Password must be at least 8 characters",
+      "search_no_match": "No page matches your search",
+      "update_failed": "Failed to update user"
     },
     "impersonation": {
       "title": "Impersonate an employee",
@@ -106,12 +109,18 @@
       "bulkError": "Bulk action failed",
       "bulkDeactivated": ":count user(s) deactivated",
       "impersonating": "Signing in as :name",
-      "exportInProgress": "Export in progress..."
+      "exportInProgress": "Export in progress...",
+      "bulkDone": "Update completed"
     },
     "actions": {
       "new": "New",
       "export": "Export",
       "bulk": "Actions (:count)"
+    },
+    "edit": {
+      "title": "Edit user",
+      "status": "Status",
+      "save": "Update"
     }
   },
   "signup": {
@@ -540,7 +549,16 @@
       "CM": "Cameroon",
       "CG": "Congo",
       "GA": "Gabon",
-      "CI": "Côte d'Ivoire"
+      "CI": "Côte d'Ivoire",
+      "BJ": "Benin",
+      "CA": "Canada",
+      "CF": "Central African Republic",
+      "GB": "United Kingdom",
+      "GQ": "Equatorial Guinea",
+      "NE": "Niger",
+      "TD": "Chad",
+      "TG": "Togo",
+      "US": "United States"
     }
   },
   "_locale": "en",
@@ -671,7 +689,7 @@
     "leo_ia_announcement_error": "Couldn't send the message. Please try again in a few moments.",
     "recent_activity": "Recent activity",
     "active_employees": "Active",
-    "leo_ia_announcement_body": "Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!",
+    "leo_ia_announcement_body": "Congrats to the whole team for this week's engagement. Keep up the momentum!",
     "presence_today_title": "Attendance today",
     "presence_today_summary": "{present} check-in(s) out of {active} active employee(s) today",
     "upgrade": "Upgrade",
