@@ -32,6 +32,10 @@
           <p class="mt-1 text-sm font-medium text-slate-500">Source de vérité API pour les quotas et fonctionnalités.</p>
         </div>
 
+        <div v-if="errorMessage" class="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400">
+          {{ errorMessage }}
+          <button class="ml-3 underline" @click="loadSubscriptions">Réessayer</button>
+        </div>
         <div v-if="isLoading && plans.length === 0" class="flex h-64 items-center justify-center">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
         </div>
@@ -148,6 +152,7 @@ import { toIntlLocale } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
 const isLoading = ref(false)
+const errorMessage = ref('')
 const plans = ref([])
 const portfolioItems = ref([])
 const summary = ref({
@@ -198,6 +203,7 @@ async function loadSubscriptions() {
     platformMetrics.value = metricsResponse.data?.data || platformMetrics.value
   } catch (error) {
     console.error('Failed to load subscriptions cockpit:', error)
+    errorMessage.value = 'Erreur lors du chargement des abonnements.'
   } finally {
     isLoading.value = false
   }
