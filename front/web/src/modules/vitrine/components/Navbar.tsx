@@ -99,7 +99,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'Communaute',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Forum', description: 'Echangez avec la communaute' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Communaute', description: 'Echangez avec la communaute' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'FAQ', description: 'Questions frequentes' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contactez notre equipe' },
       ],
@@ -129,7 +129,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'Community',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Forum', description: 'Connect with the community' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Community', description: 'Connect with the community' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'FAQ', description: 'Frequently asked questions' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Support', description: 'Contact our team' },
       ],
@@ -159,7 +159,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'Topluluk',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Forum', description: 'Toplulukla baglanti kurun' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'Topluluk', description: 'Toplulukla baglanti kurun' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'SSS', description: 'Sik sorulan sorular' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'Destek', description: 'Ekibimize ulasin' },
       ],
@@ -189,7 +189,7 @@ const navByLocale: Record<string, NavEntry[]> = {
     {
       label: 'المجتمع',
       items: [
-        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المنتدى', description: 'تواصل مع المجتمع' },
+        { href: '/contact?topic=community', icon: <Users className="w-4 h-4" />, label: 'المجتمع', description: 'تواصل مع المجتمع' },
         { href: '/faq', icon: <HelpCircle className="w-4 h-4" />, label: 'الأسئلة الشائعة', description: 'إجابات سريعة قبل الإطلاق' },
         { href: '/contact?topic=support', icon: <MessageCircle className="w-4 h-4" />, label: 'الدعم', description: 'تواصل مع فريقنا' },
       ],
@@ -376,6 +376,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            aria-label="Menu mobile"
             className="lg:hidden bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl border-t border-slate-200/50 dark:border-slate-800/50 max-h-[80vh] overflow-y-auto"
           >
             <div className="px-6 py-6 space-y-1">

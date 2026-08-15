@@ -31,8 +31,8 @@ class ProvisionGuidedTrial
     public function execute(string $email, string $companyName, ?string $country = null): array
     {
         $slug = Str::slug($companyName);
-        if (!$slug) {
-            $slug = 'sandbox-' . Str::random(6);
+        if (! $slug) {
+            $slug = 'sandbox-'.Str::random(6);
         }
 
         $countryDefaults = CountryDefaults::find($country);
@@ -53,7 +53,7 @@ class ProvisionGuidedTrial
                 'tenancy_type' => 'shared',
                 'status' => 'trial',
                 'subscription_start' => now()->toDateString(),
-                'subscription_end' => now()->addDays(14)->toDateString(),
+                'subscription_end' => now()->addDays((int) config('billing.trial_days'))->toDateString(),
                 'language' => strtolower($countryDefaults['language']),
                 'timezone' => $countryDefaults['timezone'],
                 'currency' => strtoupper($countryDefaults['currency']),
@@ -113,14 +113,14 @@ class ProvisionGuidedTrial
         if ($plan) {
             return $plan->id;
         }
-        
+
         return DB::table('plans')->insertGetId([
             'name' => 'Sandbox Plan',
             'price_monthly' => 0,
             'price_yearly' => 0,
             'max_employees' => 50,
             'features' => json_encode(['rh' => true, 'tasks' => true, 'attendance' => true, 'mobile_apps' => true]),
-            'trial_days' => 14,
+            'trial_days' => (int) config('billing.trial_days'),
             'is_active' => true,
         ]);
     }
@@ -147,44 +147,48 @@ class ProvisionGuidedTrial
             'created_at' => now(),
         ]);
 
-        // 3. Fake Employee
-        $empId = DB::table('shared_tenants.employees')->insertGetId([
-            'company_id' => $companyId,
-            'matricule' => 'EMP-001',
-            'first_name' => 'Alice',
-            'last_name' => 'Dupont',
-            'email' => 'alice@demo.local',
-            'password_hash' => Hash::make('password'),
-            'role' => 'employee',
-            'department_id' => $deptId,
-            'schedule_id' => $scheduleId,
-            'manager_id' => $managerId,
-            'contract_type' => 'CDI',
-            'salary_base' => 100000,
-            'status' => 'active',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // 3. Fake Employee — réservé aux environnements démo explicites
+        // (DEMO_MODE_ENABLED=true) : jamais de compte `alice@demo.local`/
+        // `password` sur le chemin de trial public (Constitution §V).
+        if (config('app.demo_mode_enabled')) {
+            $empId = DB::table('shared_tenants.employees')->insertGetId([
+                'company_id' => $companyId,
+                'matricule' => 'EMP-001',
+                'first_name' => 'Alice',
+                'last_name' => 'Dupont',
+                'email' => 'alice@demo.local',
+                'password_hash' => Hash::make('password'),
+                'role' => 'employee',
+                'department_id' => $deptId,
+                'schedule_id' => $scheduleId,
+                'manager_id' => $managerId,
+                'contract_type' => 'CDI',
+                'salary_base' => 100000,
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
-        DB::table('public.user_lookups')->insert([
-            'email' => 'alice@demo.local',
-            'company_id' => $companyId,
-            'schema_name' => 'shared_tenants',
-            'employee_id' => $empId,
-            'role' => 'employee',
-        ]);
+            DB::table('public.user_lookups')->insert([
+                'email' => 'alice@demo.local',
+                'company_id' => $companyId,
+                'schema_name' => 'shared_tenants',
+                'employee_id' => $empId,
+                'role' => 'employee',
+            ]);
 
-        // 4. Attendance log
-        DB::table('shared_tenants.attendance_logs')->insert([
-            'company_id' => $companyId,
-            'employee_id' => $empId,
-            'date' => now()->format('Y-m-d'),
-            'session_number' => 1,
-            'check_in' => now()->setTime(8, 0, 0)->toIso8601String(),
-            'method' => 'mobile',
-            'status' => 'ontime',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            // 4. Attendance log
+            DB::table('shared_tenants.attendance_logs')->insert([
+                'company_id' => $companyId,
+                'employee_id' => $empId,
+                'date' => now()->format('Y-m-d'),
+                'session_number' => 1,
+                'check_in' => now()->setTime(8, 0, 0)->toIso8601String(),
+                'method' => 'mobile',
+                'status' => 'ontime',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

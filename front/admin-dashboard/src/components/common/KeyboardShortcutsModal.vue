@@ -51,7 +51,6 @@ const shortcuts = [
   { keys: 'Alt + U', description: 'Utilisateurs' },
   { keys: 'Alt + C', description: 'Entreprises' },
   { keys: 'Alt + S', description: 'Abonnements' },
-  { keys: 'Alt + R', description: 'Recrutement' },
   { keys: 'Escape', description: 'Fermer les modales' },
   { keys: '?', description: 'Aide raccourcis' },
 ]

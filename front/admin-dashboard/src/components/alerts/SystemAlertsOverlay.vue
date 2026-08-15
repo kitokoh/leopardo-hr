@@ -39,47 +39,13 @@
     </div>
   </div>
 
-  <!-- System maintenance banner -->
+  <!-- Connection status banner (masqué quand le push n'est pas configuré :
+       état neutre, pas une panne — issue #3269) -->
   <div
-    v-if="isMaintenanceMode"
-    class="fixed inset-x-0 top-0 z-40"
-    :class="{ 'mt-16': showCriticalAlert }"
-  >
-    <div class="bg-yellow-400">
-      <div class="mx-auto max-w-7xl py-2 px-3 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap items-center justify-between">
-          <div class="flex w-0 flex-1 items-center">
-            <span class="flex rounded-lg bg-yellow-600 p-2">
-              <WrenchScrewdriverIcon class="h-5 w-5 text-white" />
-            </span>
-            <p class="ml-3 font-medium text-yellow-900">
-              <span class="md:hidden">Mode maintenance</span>
-              <span class="hidden md:inline">
-                Le système est en mode maintenance. Certaines fonctionnalités peuvent être indisponibles.
-              </span>
-            </p>
-          </div>
-          <div class="order-2 flex-shrink-0 sm:ml-3">
-            <button
-              @click="disableMaintenanceMode"
-              class="flex items-center justify-center rounded-md border border-transparent bg-yellow-600 px-4 py-1 text-sm font-medium text-white shadow-sm hover:bg-yellow-700"
-            >
-              Désactiver
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Connection status banner -->
-  <div
-    v-if="!realtimeStore.isConnected"
+    v-if="!realtimeStore.isConnected && !realtimeStore.pushUnavailable"
     class="fixed inset-x-0 top-0 z-30"
     :class="{
-      'mt-16': showCriticalAlert && !isMaintenanceMode,
-      'mt-12': !showCriticalAlert && isMaintenanceMode,
-      'mt-28': showCriticalAlert && isMaintenanceMode
+      'mt-16': showCriticalAlert
     }"
   >
     <div class="bg-gray-600">
@@ -116,29 +82,26 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   ExclamationTriangleIcon,
   XMarkIcon,
-  WrenchScrewdriverIcon,
   WifiIcon
 } from '@heroicons/vue/24/outline'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRealtimeStore } from '@/stores/realtime'
-import { useToast } from 'vue-toastification'
 
 const router = useRouter()
 const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
-const toast = useToast()
 
 const showCriticalAlert = ref(false)
-const isMaintenanceMode = ref(false)
 const currentCriticalAlert = ref(null)
 
 // Auto-check for critical alerts
 let alertCheckInterval = null
+let stopNotificationWatch = null
 
 onMounted(() => {
   checkForCriticalAlerts()
@@ -146,29 +109,26 @@ onMounted(() => {
   // Check for alerts every 30 seconds
   alertCheckInterval = setInterval(checkForCriticalAlerts, 30000)
 
-  // Listen for new critical alerts from real-time
-  realtimeStore.$subscribe((mutation, state) => {
-    // Garde de forme #2747 : selon la mutation Pinia, `events` peut être
-    // absent ou non-tableau — ne jamais supposer `events.some` disponible.
-    const events = mutation?.events
-    const hasNewCriticalNotification = Array.isArray(events) &&
-      events.some(event =>
-        event.key === 'notifications' &&
-        event.type === 'add' &&
-        state.notifications[0]?.priority === 'critical'
-      )
-    if (hasNewCriticalNotification) {
-      const criticalNotification = state.notifications[0]
-      if (criticalNotification.type === 'system_alert') {
-        showCriticalAlertBanner(criticalNotification)
+  // Issue #2716 — $subscribe(mutation.events) ne se déclenche jamais pour les
+  // mutations directes Pinia (events === null) : on écoute l'état du store.
+  stopNotificationWatch = watch(
+    () => realtimeStore.notifications[0],
+    (newNotification, oldNotification) => {
+      if (!newNotification) return
+      if (oldNotification && oldNotification.id === newNotification.id) return
+      if (newNotification.priority === 'critical' && newNotification.type === 'system_alert') {
+        showCriticalAlertBanner(newNotification)
       }
     }
-  })
+  )
 })
 
 onUnmounted(() => {
   if (alertCheckInterval) {
     clearInterval(alertCheckInterval)
+  }
+  if (stopNotificationWatch) {
+    stopNotificationWatch()
   }
 })
 
@@ -207,25 +167,9 @@ function viewSystemAlerts() {
   dismissCriticalAlert()
 }
 
-async function disableMaintenanceMode() {
-  try {
-    // Simulate API call to disable maintenance mode
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    isMaintenanceMode.value = false
-    toast.success('Mode maintenance désactivé')
-  } catch (error) {
-    console.error('Failed to disable maintenance mode:', error)
-    toast.error('Erreur lors de la désactivation du mode maintenance')
-  }
-}
-
 // Expose methods for external control
 defineExpose({
   showCriticalAlertBanner,
-  dismissCriticalAlert,
-  setMaintenanceMode: (enabled) => {
-    isMaintenanceMode.value = enabled
-  }
+  dismissCriticalAlert
 })
 </script>

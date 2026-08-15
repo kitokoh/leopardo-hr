@@ -38,8 +38,8 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('Leopardo', {
         body: UPDATE_MESSAGES[getPreferredLocale()],
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
+        icon: '/icon.svg',
+        badge: '/icon.svg',
       });
     }
   };
@@ -121,17 +121,14 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     if (!swRegistration) return;
 
     try {
-      // Sync forms
+      // Issue #2983 : le service worker n'écoute QUE le tag 'leopardo-sync'
+      // (relecture de la file d'opérations hors-ligne). Les tags
+      // 'sync-forms'/'sync-analytics' enregistrés ici n'étaient écoutés par
+      // personne → le background sync ne se déclenchait jamais.
       const syncRegistration = swRegistration as SyncCapableRegistration;
       if (syncRegistration.sync) {
-        await syncRegistration.sync.register('sync-forms');
-        safeLog('[PWA] Sync forms registered');
-      }
-
-      // Sync analytics
-      if (syncRegistration.sync) {
-        await syncRegistration.sync.register('sync-analytics');
-        safeLog('[PWA] Sync analytics registered');
+        await syncRegistration.sync.register('leopardo-sync');
+        safeLog('[PWA] Sync registered (leopardo-sync)');
       }
     } catch (error) {
       safeLog('[PWA] Sync registration failed:', error);

@@ -1,4 +1,4 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -49,6 +49,14 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
       if (mounted) {
         ref.invalidate(expenseClaimsProvider);
         Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // #2596 : un échec d'envoi ne doit pas rester silencieux — retour
+      // visuel immédiat (l'exception se propageait sans catch).
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Echec de l envoi de la note de frais : $e')),
+        );
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -196,13 +204,13 @@ class _ExpenseListScreenState extends ConsumerState<ExpenseListScreen> {
                       margin: const EdgeInsets.only(bottom: 12),
                       child: ListTile(
                         title: Text(
-                          '${claim.category} â€” ${claim.amount.toStringAsFixed(2)} ${claim.currency}',
+                          '${claim.category} — ${claim.amount.toStringAsFixed(2)} ${claim.currency}',
                           style: AppTypography.subtitle.copyWith(
                             color: AppColors.textDark,
                           ),
                         ),
                         subtitle: Text(
-                          '${claim.date}${claim.description != null ? " â€¢ ${claim.description}" : ""}',
+                          '${claim.date}${claim.description != null ? " • ${claim.description}" : ""}',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMutedDark,
                           ),

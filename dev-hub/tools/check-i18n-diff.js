@@ -55,6 +55,12 @@ const ignorePathFragments = [
   'generated', '.g.dart', '.freezed.dart', '.gen.dart', 'node_modules',
   'dist', 'build', '.next', 'coverage', '/locales/', '/l10n/',
   '/i18n/locales/', '.test.', '.spec.', '_test.dart',
+  // Catalogues/contenus localisés de la vitrine : ces fichiers SONT le
+  // mécanisme i18n (pas des chaînes hardcodées hors catalogue) — la
+  // complétude des traductions reste couverte par validate-and-sync.
+  // Issue #3183 : la garde flaggait chaque PR de contenu (ex. #2972, 25 lignes).
+  '/vitrine/lib/vitrine-locale.ts', '/vitrine/data/', '/vitrine/lib/content.ts',
+  '/vitrine/lib/seo.ts', '/vitrine/lib/seo-metadata.ts',
 ];
 
 // Lines that already route text through a translation mechanism — never

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Planning\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LeaveAccrualResource;
 use App\Http\Resources\Api\V1\LeaveBalanceResource;
 use App\Http\Resources\Api\V1\LeavePolicyResource;
 use App\Modules\Planning\Domain\Models\AbsenceType;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
@@ -193,7 +193,7 @@ class LeavePolicyController extends Controller
             $query->where('employee_id', $request->integer('employee_id'));
         }
 
-        $perPage = $request->integer('per_page', 25);
+        $perPage = max(1, min(100, $request->integer('per_page', 25)));
 
         return LeaveAccrualResource::collection($query->paginate($perPage))->response();
     }
@@ -259,4 +259,3 @@ class LeavePolicyController extends Controller
             ->setStatusCode(201);
     }
 }
-

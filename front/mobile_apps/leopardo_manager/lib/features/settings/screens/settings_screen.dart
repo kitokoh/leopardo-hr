@@ -48,7 +48,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final TextEditingController _companyQrController = TextEditingController();
   static const Map<String, String> _languageLabels = {
     'fr': 'Francais',
-    'ar': 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
+    'ar': 'العربية',
     'tr': 'Turkce',
     'en': 'English',
   };

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { CheckCircle, Clock3, ShieldCheck, Sparkles } from 'lucide-react';
 import { Footer, HeroSection, Navbar, useScrollReveal } from '@/modules/vitrine';
 import { SignupForm } from '@/modules/vitrine/components/forms';
@@ -27,8 +28,8 @@ const signupCopy: Record<AppLocale, SignupCopy> = {
       badge: 'Essai guide',
       headline: 'Testez Leopardo RH sans tunnel complique',
       subheadline:
-        "Un email professionnel suffit pour lancer une demande d'essai claire. Notre equipe qualifie votre contexte et prepare l'acces adapte.",
-      cta: "Recevoir mon acces d'essai",
+        "Un email professionnel suffit pour lancer une demande d'essai claire. Notre équipe qualifie votre contexte et prepare l'accès adapte.",
+      cta: "Recevoir mon accès d'essai",
     },
     sideBadge: 'Funnel marketing operationnel',
     title: "Ce qui se passe apres votre demande",
@@ -113,7 +114,7 @@ const signupCopy: Record<AppLocale, SignupCopy> = {
 };
 
 export default function SignupPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const { locale, direction } = useVitrineLocale();
   const copy = signupCopy[locale] ?? signupCopy.fr;
   useScrollReveal();
@@ -123,7 +124,7 @@ export default function SignupPage() {
       dir={direction}
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       <HeroSection
         headline={copy.hero.headline}

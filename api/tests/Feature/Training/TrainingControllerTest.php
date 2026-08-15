@@ -50,6 +50,22 @@ class TrainingControllerTest extends TestCase
     }
 
     /** @test */
+    public function per_page_is_capped_at_100(): void
+    {
+        Sanctum::actingAs($this->manager);
+
+        // #3321 : per_page non borné sur les endpoints training — cap max(1, min(100, ...)).
+        $response = $this->getJson('/api/v1/training/courses?per_page=500');
+
+        $response->assertOk();
+        $response->assertJsonPath('meta.per_page', 100);
+
+        $capped = $this->getJson('/api/v1/training/courses?per_page=0');
+        $capped->assertOk();
+        $capped->assertJsonPath('meta.per_page', 1);
+    }
+
+    /** @test */
     public function employee_can_list_courses(): void
     {
         Sanctum::actingAs($this->employee);
@@ -228,6 +244,7 @@ class TrainingControllerTest extends TestCase
             'status'             => 'planned',
         ]);
 
+        /** @var \App\Core\Auth\Domain\Models\Employee $foreignEmployee */
         $foreignEmployee = Employee::factory()->create(['company_id' => $this->otherCompany->id]);
 
         Sanctum::actingAs($this->manager);

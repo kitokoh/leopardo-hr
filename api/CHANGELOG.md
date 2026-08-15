@@ -31,10 +31,109 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Tests Feature : `RoleAssignmentAuditTest` (6 tests couvrant nomination/revocation sur les deux endpoints, non-régression sur les champs non lies au rôle, et rejet d'un manager non-principal)
 
 ### Fixed
+- **fix(api): checklist onboarding unifiée — plus de 403 employé, shape unique (Closes #3239).**
+  - `GET /onboarding/checklist` (moteur calculé) ne requiert plus `viewAny` : tout utilisateur authentifié du tenant (employé non-manager inclus) peut lire sa checklist (données scopées à sa société par le middleware tenant) ; les écritures `complete`/`skip` gardent leur RBAC existant
+  - Shape canonique unique documentée (moteur calculé en référence) : `data{ completed_steps, total_steps, progress_percent, progress (alias), go_live_ready, next_actions, steps }` — `GET /onboarding-setup/checklist` (moteur DB) wrappe désormais sa collection sous `data.steps` et `GET /onboarding-setup/progress` expose aussi `progress_percent`
+  - Tests : `OnboardingChecklistTest` (employé → 200 + structure canonique) et `OnboardingStepControllerTest` (assertions alignées sur la shape unifiée)
 - **test(f-13b): migration des tests Feature HR + Attendance + SmartAttendance vers les vraies migrations (issues #1593 #1606).**
   - Les tests des modules HR (`HrControllerTest`), Attendance (13 fichiers) et SmartAttendance (5 fichiers) abandonnent le trait manuel `CreatesMvpSchema`/`CreatesSmartAttendanceSchema` (schéma SQL figé de ~2150 lignes, en dérive) au profit du trait `RefreshTenantDatabase` (vraies migrations `public` + `tenant`), sur le même pattern que Payroll et Absences
   - Créations `Company`/`Employee` alignées sur les colonnes NOT NULL du vrai schéma (`plan_id`, `subscription_start`/`subscription_end`, `language`, `currency`, `first_name`/`last_name`)
   - Le test de sécurité `KioskCrossTenantIsolationTest` (surface kiosk du module Attendance) est migré lui aussi ; les appels aux tables SmartAttendance créées à la main sont supprimés (tables désormais créées par les migrations)
+
+## [4.24.0] - 2026-08-11
+
+> Première release publique. Notes complètes : [GitHub Release v4.24.0](https://github.com/kitokoh/leopardo-hr/releases/tag/v4.24.0) et `CHANGELOG_ARCHIVE.md`. Seules les entrées backend marquantes sont reprises ici.
+
+### Security
+- Purge complète de l'historique git (secrets) + plan de rotation des forks (#1723).
+- Durcissement : SSO SAML/OIDC chiffre `certificate`/`client_secret` au repos, callbacks 501 explicites, uploads contraints (MIME allow-lists), `edge_token` haché au repos, `$guarded = []` remplacé par `$fillable` explicite sur 13 modèles.
+- `SENTRY_TRACES_SAMPLE_RATE` 0.1 ; `DISABLE_DEMO_SEEDING=true` en production.
+
+### Fixed
+- `app/Services/` supprimé (fin du shim backward-compat DDD) (#1728).
+- Tests + coverage : `BiometricPurgeExpiredTest` aligné, coverage par module dans le gate (#1726).
+
+## [4.23.5] - 2026-07-19
+### Added
+- Audit vitrine acquisition/conversion `PA2-MKT-008..014` (docs).
+### Changed
+- Archivage de `docs/PLAN_ACTION/` → `docs/archive/PLAN_ACTION/`.
+
+## [4.23.4] - 2026-07-19
+### Fixed
+- Compilation Dart : `main()` async dans les 3 apps mobiles.
+### Changed
+- CI : pinning SHA des actions tierces + actions composites `setup-backend-db` / `setup-flutter-android`.
+
+## [4.23.3] - 2026-07-19
+### Security
+- Résolution des 34 alertes Dependabot (composer + npm : symfony/yaml, form-data, vite, next…).
+
+## [4.23.2] - 2026-07-16
+### Fixed
+- CodeQL high sur `deploy-main.yml` (injection `head_branch`), permissions GITHUB_TOKEN explicites.
+- `phpstan-modules.neon` : include Larastan manquant (cause des 36 erreurs « Call to an undefined method »).
+### Added
+- Module Marketing Phase 2 : policies, actions applicatives, client Ayrshare (21 tests).
+- Fix contrainte CHECK Postgres `manager_role` incluant `marketing`.
+
+## [4.23.1] - 2026-07-16
+### Added
+- Module Marketing Phase 1 : schéma `social_accounts`/`social_posts`, modèles Eloquent chiffrés.
+
+## [4.23.0] - 2026-07-16
+### Fixed
+- `manager_role = 'marketing'` accepté par `StoreEmployeeRequest`/`UpdateEmployeeRequest`.
+
+## [4.22.8] - 2026-07-12
+### Added
+- Drip email onboarding (J+1/J+3/J+7) via `SendTrialDripEmailJob` ; modèle `OnboardingProgress` ; wizard onboarding mobile manager (`PATCH /onboarding-setup/{stepKey}/complete|skip`) ; k6 corrigé.
+### Fixed
+- Imports `App\Models\*` invalides dans les jobs trial → FQCN DDD.
+
+## [4.22.7] - 2026-07-05
+### Fixed
+- ParseError PHP (double backslash de namespace) sur 7 règles pays + 10 fichiers Core/Modules.
+- Bug métier : `break_minutes` jamais déduit des heures travaillées (relation `schedule()` manquante sur `AttendanceLog`).
+- Warning `Undefined array key "net_imposable"` dans `SocialDeclarationGenerator::generateDsnFr()`.
+
+## [4.22.6] - 2026-07-05
+### Security
+- Fuite du token SSE en query parameter (admin) → jeton court `sse-token`.
+- Mot de passe Upstash Redis exposé dans l'historique git (documenté, rotation requise).
+### Added
+- Vérification email OTP pour le signup trial : `POST /api/v1/trial/signup` (CompanyRequest pending + OTP 30 min) et `POST /api/v1/trial/verify` (provisionnement).
+- `front/web/.env.local.example` documenté.
+### Fixed
+- PHPStan Modules : `AbsenceService::request()`/`LeavePolicyController::balances()` lisaient des colonnes inexistantes (`allocated`, `carried_over`) → `balance - used`.
+
+## [4.22.5] - 2026-07-05
+### Fixed
+- Isolation multi-tenant des Jobs en file : interface `TenantScopedJob` + middleware `EnsureTenantContext` appliqué à tous les jobs tenant-scoped (paie, notifications, PDF, webhooks, EdgeSync).
+
+## [4.22.4] - 2026-07-04
+### Security
+- Suppression du code mort `PaymentWebhookController::stripe()` (payload Stripe sans vérification de signature).
+### Fixed
+- 136 échecs CI résolus (AbsenceType fillable/company_id, casts AttendanceLog, DROP TABLE CASCADE Edge, mojibake PHPDoc, `FeatureManifestController::filterFeaturesByPermissions` lisait `required_permissions` au lieu de `permissions`…).
+### Added
+- `.env.example` : variables Google OAuth + Firebase documentées.
+
+## [4.22.3] - 2026-07-04
+### Fixed
+- 160 échecs CI résolus (fillable `company_id` sur `Absence`/`ExpenseClaim`, colonne `rejection_reason`, shims `App\Models\*`).
+
+## [4.22.2] - 2026-07-04
+### Fixed
+- 75 shims `app/Models/*.php` (class_alias absolu), `Factory::guessFactoryNamesUsing()`, migration `edge_nodes` down() sans CASCADE, 21 modèles sans `use`, `updated_at` manquants.
+
+## [4.22.1] - 2026-07-02
+### Fixed
+- Nettoyage documentation : mojibake diagrammes UML, orphelins `assets/diagrams/`, doublon GOTO_MARKET, 9 liens Markdown cassés.
+
+## [4.22.0] - 2026-07-01
+### Changed
+- Nettoyage architectural Phase 2 : 17 modèles, 13 services, 64 FormRequests migrés vers les modules DDD (shims backward-compat en place).
 
 ## [4.21.0] - 2026-07-01
 

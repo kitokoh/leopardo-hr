@@ -87,6 +87,41 @@ class TraccarService
     }
 
     /**
+     * Dernière position de plusieurs appareils en UN appel (deviceId
+     * accepte une liste séparée par des virgules) — évite le N+1 HTTP
+     * de FleetController::liveMap (issue #3148).
+     *
+     * @param  list<int>  $deviceIds
+     * @return array<int, array<string, mixed>|null>  deviceId => position|null
+     */
+    public function getLastPositions(array $deviceIds): array
+    {
+        $deviceIds = array_values(array_unique(array_map('intval', $deviceIds)));
+        $deviceIds = array_filter($deviceIds, fn (int $id): bool => $id > 0);
+
+        if ($deviceIds === []) {
+            return [];
+        }
+
+        $positions = $this->get('/api/positions', ['deviceId' => implode(',', $deviceIds)]);
+
+        $byDevice = [];
+        foreach ($positions as $position) {
+            $deviceId = (int) ($position['deviceId'] ?? 0);
+            if ($deviceId > 0 && ! isset($byDevice[$deviceId])) {
+                $byDevice[$deviceId] = $position;
+            }
+        }
+
+        $result = [];
+        foreach ($deviceIds as $deviceId) {
+            $result[$deviceId] = $byDevice[$deviceId] ?? null;
+        }
+
+        return $result;
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function getTrips(int $deviceId, Carbon $from, Carbon $to): array
