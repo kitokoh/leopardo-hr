@@ -46,6 +46,9 @@ jobs:
       - name: Country catalog guard (issue #2600)
         run: bash dev-hub/tools/check-country-catalog.sh
 
+      - name: Canonical domains guard (issue #3706)
+        run: bash dev-hub/tools/check-canonical-domains.sh
+
   phpstan-modules:
     name: PHPStan — Modules Architecture
     runs-on: ubuntu-latest
