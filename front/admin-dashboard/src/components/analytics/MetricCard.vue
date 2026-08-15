@@ -28,18 +28,22 @@
                 {{ prefix }}{{ formattedValue }}{{ suffix }}
               </div>
               <div
-                v-if="trend"
+                v-if="trend || trendLabel"
                 :class="[
                   'ml-2 flex items-baseline text-sm font-semibold',
                   trendColor
                 ]"
               >
                 <component
+                  v-if="trendIcon"
                   :is="trendIcon"
                   class="self-center flex-shrink-0 h-4 w-4"
                 />
+                <!-- Issue #2706 — trendLabel affiche un libellé informatif
+                     (« +5 aujourd'hui », « Health: good ») ; sinon le chip
+                     numérique trendValue % est conservé. -->
                 <span class="ml-1">
-                  {{ trendValue }}%
+                  {{ trendLabel ?? `${trendValue}%` }}
                 </span>
               </div>
             </dd>
@@ -121,6 +125,10 @@ const props = defineProps({
   trendValue: {
     type: Number,
     default: 0
+  },
+  trendLabel: {
+    type: String,
+    default: null
   },
   icon: {
     type: String,
