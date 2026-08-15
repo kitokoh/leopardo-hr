@@ -1172,10 +1172,6 @@ class LeopardoClient:
         """Auto-inscription a une formation"""
         return self.request("POST", "/me/trainings/{session}/enroll", **kwargs)
 
-    def get_me_vehicles(self, **kwargs):
-        """Vehicules assignes a l'employe connecte (mobile)"""
-        return self.request("GET", "/me/vehicles", **kwargs)
-
     def get_notification_preferences(self, **kwargs):
         """Lire les preferences de notification de l'utilisateur courant"""
         return self.request("GET", "/notification-preferences", **kwargs)
@@ -1296,9 +1292,17 @@ class LeopardoClient:
         """Déclaration CNSS mensuelle Burkina Faso — CSV (CEDEAO #2158)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", **kwargs)
 
+    def downloadcnsscgdeclaration(self, **kwargs):
+        """Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", **kwargs)
+
     def downloadcnsscideclaration(self, **kwargs):
         """Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830)"""
         return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", **kwargs)
+
+    def downloadcnssgadeclaration(self, **kwargs):
+        """Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155)"""
+        return self.request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", **kwargs)
 
     def downloadinpsmldeclaration(self, **kwargs):
         """Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158)"""
@@ -1791,14 +1795,6 @@ class LeopardoClient:
     def post_smart_attendance_geo_events(self, **kwargs):
         """Envoyer un événement géographique (entrée/sortie de zone)"""
         return self.request("POST", "/smart-attendance/geo-events", **kwargs)
-
-    def get_smart_attendance_mode_settings(self, **kwargs):
-        """Lire la configuration du mode de pointage de l'entreprise"""
-        return self.request("GET", "/smart-attendance/mode-settings", **kwargs)
-
-    def put_smart_attendance_mode_settings(self, **kwargs):
-        """Mettre à jour la configuration GPS (admin)"""
-        return self.request("PUT", "/smart-attendance/mode-settings", **kwargs)
 
     def get_smart_attendance_my_sessions(self, **kwargs):
         """Sessions GPS de l'employé courant"""

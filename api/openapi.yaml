@@ -7820,6 +7820,60 @@ paths:
           description: "Le run ne concerne pas le Cameroun (CNPS CM)"
           $ref: "#/components/responses/Validation422"
 
+  /payroll-runs/{payrollRun}/declarations/cnss-ga:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155)"
+      description: "CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 2,5 % / patronale 5,0 %, famille patronale 8,0 %, AT patronale 3,0 % non plafonnee, plafond 3 000 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run GA."
+      operationId: downloadCnssGaDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS GA"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /payroll-runs/{payrollRun}/declarations/cnss-cg:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155)"
+      description: "CSV du run : une ligne par bulletin valide (matricule CNSS, nom, prenom, brut, retraite salariale 4,0 % / patronale 8,0 %, famille patronale 10,0 %, AT patronale 3,0 % non plafonnee, plafond 2 500 000 XAF) + ligne TOTAUX. RBAC : manager principal/comptable ; 404 cross-tenant ; 422 si le run n'est pas un run CG."
+      operationId: downloadCnssCgDeclaration
+      parameters:
+        - name: payrollRun
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier CSV CNSS CG"
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
   /payroll-runs/{payrollRun}/declarations/cnss-bf:
     get:
       tags: ["Payroll Engine"]

@@ -1440,11 +1440,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/me/trainings/{session}/enroll", options);
     },
 
-    /** Vehicules assignes a l'employe connecte (mobile) */
-    getMeVehicles(options = {}) {
-      return request("GET", "/me/vehicles", options);
-    },
-
     /** Lire les preferences de notification de l'utilisateur courant */
     getNotificationPreferences(options = {}) {
       return request("GET", "/notification-preferences", options);
@@ -1595,9 +1590,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-bf", options);
     },
 
+    /** Declaration CNSS mensuelle Congo — CSV (CEMAC/CG #2155) */
+    downloadCnssCgDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-cg", options);
+    },
+
     /** Déclaration CNSS mensuelle Côte d'Ivoire — CSV (CEDEAO #1830) */
     downloadCnssCiDeclaration(options = {}) {
       return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ci", options);
+    },
+
+    /** Declaration CNSS mensuelle Gabon — CSV (CEMAC/GA #2155) */
+    downloadCnssGaDeclaration(options = {}) {
+      return request("GET", "/payroll-runs/{payrollRun}/declarations/cnss-ga", options);
     },
 
     /** Déclaration INPS mensuelle Mali — CSV (CEDEAO #2158) */
@@ -2213,16 +2218,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Envoyer un événement géographique (entrée/sortie de zone) */
     postSmartAttendanceGeoEvents(options = {}) {
       return request("POST", "/smart-attendance/geo-events", options);
-    },
-
-    /** Lire la configuration du mode de pointage de l'entreprise */
-    getSmartAttendanceModeSettings(options = {}) {
-      return request("GET", "/smart-attendance/mode-settings", options);
-    },
-
-    /** Mettre à jour la configuration GPS (admin) */
-    putSmartAttendanceModeSettings(options = {}) {
-      return request("PUT", "/smart-attendance/mode-settings", options);
     },
 
     /** Sessions GPS de l'employé courant */
