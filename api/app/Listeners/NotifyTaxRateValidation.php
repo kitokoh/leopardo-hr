@@ -76,6 +76,7 @@ class NotifyTaxRateValidation
     {
         $this->notifySubmitter(
             $event->model,
+            TaxRateApproved::class,
             __('payroll.rate_approved_title'),
             __('payroll.rate_approved_body', ['label' => $this->label($event->model)]),
         );
@@ -85,6 +86,7 @@ class NotifyTaxRateValidation
     {
         $this->notifySubmitter(
             $event->model,
+            TaxRateRejected::class,
             __('payroll.rate_rejected_title'),
             __('payroll.rate_rejected_body', [
                 'label' => $this->label($event->model),
@@ -103,7 +105,7 @@ class NotifyTaxRateValidation
      * (`public.companies`, pattern PlatformCompanyLookup) et le traitement
      * in-app s'exécute via `TenantManager::withinTenant()`.
      */
-    private function notifySubmitter(Model $model, string $title, string $body): void
+    private function notifySubmitter(Model $model, string $event, string $title, string $body): void
     {
         /** @var int|null $submittedBy */
         $submittedBy = $model->submitted_by ?? null;
@@ -124,15 +126,18 @@ class NotifyTaxRateValidation
             try {
                 $company = PlatformCompanyLookup::findOrFail((string) $model->getAttribute('company_id'));
             } catch (\Throwable $e) {
-                Log::warning('tax-rate.submitter-company-lookup-failed', [
+                // Issue #2498 — observabilité structurée (channel `structured`) :
+                // un échec de résolution du tenant doit être traçable.
+                Log::channel('structured')->warning('tax-rate.submitter-company-lookup-failed', [
+                    'event'      => $event,
                     'company_id' => $model->getAttribute('company_id'),
-                    'error' => $e->getMessage(),
+                    'error'      => $e->getMessage(),
                 ]);
 
                 return;
             }
 
-            $this->tenantManager->withinTenant($company, function () use ($submittedBy, $title, $body, $model): void {
+            $this->tenantManager->withinTenant($company, function () use ($submittedBy, $event, $title, $body, $model): void {
                 $submitter = Employee::query()->find($submittedBy);
                 if ($submitter === null) {
                     return;
@@ -147,18 +152,24 @@ class NotifyTaxRateValidation
                         ['table' => $model->getTable(), 'record_id' => $model->getKey()],
                     );
                 } catch (\Throwable $e) {
-                    Log::warning('tax-rate.notification-inapp-failed', [
-                        'employee_id' => $submitter->id,
-                        'error' => $e->getMessage(),
+                    // Issue #2498 — échec du dispatch in-app : contexte complet
+                    // (événement, type de notification, destinataire, erreur).
+                    Log::channel('structured')->warning('tax-rate.notification-inapp-failed', [
+                        'event'      => $event,
+                        'type'       => 'tax_rate_validation',
+                        'user_id'    => $submitter->id,
+                        'company_id' => $model->getAttribute('company_id'),
+                        'error'      => $e->getMessage(),
                     ]);
                 }
 
                 $this->emailBestEffort($submitter->email, $title, $body);
             });
         } catch (\Throwable $e) {
-            Log::warning('tax-rate.notification-tenant-failed', [
+            Log::channel('structured')->warning('tax-rate.notification-tenant-failed', [
+                'event'      => $event,
                 'company_id' => $model->getAttribute('company_id'),
-                'error' => $e->getMessage(),
+                'error'      => $e->getMessage(),
             ]);
         } finally {
             if (is_string($previousSearchPath) && $previousSearchPath !== '') {

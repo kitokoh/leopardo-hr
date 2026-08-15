@@ -13,7 +13,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Mockery;
+use Psr\Log\LoggerInterface;
 use Tests\TestCase;
 
 class NotificationDispatcherTest extends TestCase
@@ -136,6 +139,19 @@ class NotificationDispatcherTest extends TestCase
             'https://fcm.googleapis.com/v1/projects/test-project-id/messages:send' => Http::response(['error' => ['status' => 'INVALID_ARGUMENT']], 400),
         ]);
 
+        // Issue #2498 — l'échec FCM doit être tracé sur le channel structuré
+        // (observabilité, pas seulement fail-open).
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger->shouldReceive('warning')
+            ->once()
+            ->with('notification.push-skipped', Mockery::on(static function (array $context): bool {
+                return ($context['user_id'] ?? null) !== null
+                    && $context['type'] === 'test_type'
+                    && isset($context['error'])
+                    && is_string($context['error']);
+            }));
+        Log::shouldReceive('channel')->once()->with('structured')->andReturn($logger);
+
         $dispatcher = new NotificationDispatcher(new PushNotificationService());
 
         // La notification in-app est créée malgré l'échec FCM.
@@ -143,5 +159,34 @@ class NotificationDispatcherTest extends TestCase
         $this->assertInstanceOf(AppNotification::class, $notification);
 
         $this->assertDatabaseHas('app_notifications', ['user_id' => $employee->id]);
+    }
+
+    public function test_dispatch_create_failure_is_traced_structured_and_rethrown(): void
+    {
+        $employee = $this->makeEmployee();
+
+        // Simule la dette #2398 : table absente → échec de création in-app.
+        Schema::drop('app_notifications');
+
+        $logger = Mockery::mock(LoggerInterface::class);
+        $logger->shouldReceive('error')
+            ->once()
+            ->with('notification.inapp-create-failed', Mockery::on(static function (array $context) use ($employee): bool {
+                return ($context['user_id'] ?? null) === $employee->id
+                    && $context['type'] === 'leave_approved'
+                    && isset($context['error'])
+                    && is_string($context['error']);
+            }));
+        Log::shouldReceive('channel')->once()->with('structured')->andReturn($logger);
+
+        $dispatcher = new NotificationDispatcher(new PushNotificationService());
+
+        try {
+            $dispatcher->dispatch($employee->id, 'leave_approved', 'Congé approuvé', 'Corps');
+            $this->fail('L’échec de création doit être relancé (contrat best-effort de l’appelant).');
+        } catch (\Throwable $exception) {
+            // Attendu : le dispatcher journalise (structured) puis relance.
+            $this->assertStringContainsString('app_notifications', $exception->getMessage());
+        }
     }
 }
