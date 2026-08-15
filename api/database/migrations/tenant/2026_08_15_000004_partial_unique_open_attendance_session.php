@@ -37,6 +37,23 @@ return new class extends Migration
             return;
         }
 
+        // Données héritées déjà invalides (deux sessions ouvertes le même
+        // jour) : fermer la session la plus ANCIENNE (check_out = check_in,
+        // durée nulle) pour que l'index unique partiel puisse être créé sans
+        // échec. La session la plus récente reste ouverte.
+        DB::statement(
+            "UPDATE {$schema}.attendance_logs a
+             SET check_out = a.check_in
+             WHERE a.check_out IS NULL
+               AND EXISTS (
+                   SELECT 1 FROM {$schema}.attendance_logs b
+                   WHERE b.employee_id = a.employee_id
+                     AND b.date = a.date
+                     AND b.check_out IS NULL
+                     AND b.id > a.id
+               )"
+        );
+
         DB::statement(
             "CREATE UNIQUE INDEX {$indexName}
              ON {$schema}.attendance_logs (employee_id, date)
