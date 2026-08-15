@@ -7,6 +7,8 @@
 ## [Unreleased]
 
 ### Fixed
+
+- **fix(web): blog gated cohérent — sitemap + section home (Closes #2904, #2905).** Régression du fix #2276 perdue au merge hybride #2469 : le sitemap publiait /blog/* (404 live) et la section MarketingReadiness de la home pointait vers /blog sans gate. Le sitemap filtre désormais les URLs blog sur `NEXT_PUBLIC_ENABLE_BLOG` et la home masque la carte blog quand le flag est off (même logique que Navbar/Footer).
 - **fix(api): routes /training/* — refs cassées `allSessions`/`allEnrollments` retirées (Closes #2502).** Le fatal PHP (indexEnrollments dupliqué) était corrigé, mais `hr_extended.php` référençait toujours `allSessions`/`allEnrollments` (méthodes inexistantes) dans le groupe général → `GET /training/sessions` + `/training/enrollments` répondaient 500 (Laravel matche la première déclaration). Les 2 routes du groupe général sont retirées ; le groupe manager porte les vraies routes (`indexAllSessions`, `indexEnrollments`).
 - **fix(gov): gardes de gouvernance — en-têtes CHANGELOG dupliqués interdits + scratch `.claude/` retiré du repo.** Les merges parallèles du swarm d'agents ont dupliqué l'en-tête `### Fixed` du CHANGELOG à plusieurs reprises (#2480/#2495/#2503…) : `check-governance.ps1` échoue désormais si un en-tête de section (`### Fixed`/`Added`/`Changed`/`Removed`) apparaît deux fois de suite. Le scratch de planification `.claude/planning/*.md` (fichiers locaux d'agent) avait fuité dans main : supprimé du suivi (`git rm --cached`, `.gitignore` déjà en place) + garde `check-governance.ps1` qui fait échouer toute PR committant des fichiers `.claude/`.
 ### Fixed
