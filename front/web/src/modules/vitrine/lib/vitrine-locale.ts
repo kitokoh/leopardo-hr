@@ -142,6 +142,22 @@ type LandingCopy = {
       error: string
     }
   }
+  caseStudies: {
+    heroBadge: string
+    heroTitle: string
+    heroSubtitle: string
+    heroPrimary: string
+    heroSecondary: string
+    demoBadge: string
+    demoNotice: string
+    challenge: string
+    solution: string
+    employees: string
+    ctaTitle: string
+    ctaDescription: string
+    ctaPrimary: string
+    ctaSecondary: string
+  }
 }
 
 export const vitrineLocaleOptions: LocaleOption[] = [
@@ -295,6 +311,22 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         error: 'Erreur. Veuillez réessayer.',
       },
     },
+    caseStudies: {
+      heroBadge: 'Succes Clients',
+      heroTitle: 'Etudes de Cas Clients',
+      heroSubtitle: 'Comment nos clients ont transforme leur gestion RH avec Leopardo',
+      heroPrimary: 'Demarrer gratuitement',
+      heroSecondary: 'Voir les temoignages',
+      demoBadge: 'Etude illustrative',
+      demoNotice: 'Ces etudes de cas sont des exemples illustratifs (donnees fictives) pour montrer les cas d\'usage de la plateforme.',
+      challenge: 'Le defi',
+      solution: 'La solution',
+      employees: 'employes',
+      ctaTitle: 'Votre entreprise pourrait etre la prochaine',
+      ctaDescription: 'Decouvrez Leopardo RH avec un essai gratuit de 14 jours.',
+      ctaPrimary: 'Essai gratuit 14 jours',
+      ctaSecondary: 'Demander une demo',
+    },
   },
   en: {
     nav: {
@@ -438,6 +470,22 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         success: 'Successfully subscribed!',
         error: 'Error. Please try again.',
       },
+    },
+    caseStudies: {
+      heroBadge: 'Success Stories',
+      heroTitle: 'Client Case Studies',
+      heroSubtitle: 'How our clients transformed their HR management with Leopardo',
+      heroPrimary: 'Start for free',
+      heroSecondary: 'See testimonials',
+      demoBadge: 'Illustrative example',
+      demoNotice: 'These case studies are illustrative examples (fictional data) showing platform use cases.',
+      challenge: 'The challenge',
+      solution: 'The solution',
+      employees: 'employees',
+      ctaTitle: 'Your company could be next',
+      ctaDescription: 'Discover Leopardo RH with a free 14-day trial.',
+      ctaPrimary: 'Free 14-day trial',
+      ctaSecondary: 'Request a demo',
     },
   },
   tr: {
@@ -583,6 +631,22 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         error: 'Hata. Lütfen tekrar deneyin.',
       },
     },
+    caseStudies: {
+      heroBadge: 'Basari Hikayeleri',
+      heroTitle: 'Musteri Vaka Calismalari',
+      heroSubtitle: 'Musterilerimiz Leopardo ile insan kaynaklari yonetimini nasil donusturdu',
+      heroPrimary: 'Ucretsiz baslayin',
+      heroSecondary: 'Gorusleri goruntule',
+      demoBadge: 'Ornek calisma',
+      demoNotice: 'Bu vaka calismalari, platformun kullanim senaryolarini gosteren orneklerdir (kurgusal veriler).',
+      challenge: 'Zorluk',
+      solution: 'Cozum',
+      employees: 'calisan',
+      ctaTitle: 'Sirketiniz siradaki olabilir',
+      ctaDescription: 'Leopardo RH\'yi 14 gunluk ucretsiz deneme ile kesfedin.',
+      ctaPrimary: '14 gunluk ucretsiz deneme',
+      ctaSecondary: 'Demo talep edin',
+    },
   },
   ar: {
     nav: {
@@ -726,6 +790,22 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
         success: 'تم الاشتراك بنجاح!',
         error: 'خطأ. يرجى المحاولة مرة أخرى.',
       },
+    },
+    caseStudies: {
+      heroBadge: 'قصص نجاح',
+      heroTitle: 'دراسات حالة العملاء',
+      heroSubtitle: 'كيف غيّر عملاؤنا إدارة الموارد البشرية مع Leopardo',
+      heroPrimary: 'ابدأ مجاناً',
+      heroSecondary: 'شاهد الشهادات',
+      demoBadge: 'مثال توضيحي',
+      demoNotice: 'دراسات الحالة هذه أمثلة توضيحية (بيانات افتراضية) لعرض حالات استخدام المنصة.',
+      challenge: 'التحدي',
+      solution: 'الحل',
+      employees: 'موظف',
+      ctaTitle: 'شركتك يمكن أن تكون التالية',
+      ctaDescription: 'اكتشف Leopardo RH مع تجربة مجانية لمدة 14 يوماً.',
+      ctaPrimary: 'تجربة مجانية 14 يوماً',
+      ctaSecondary: 'اطلب عرضاً توضيحياً',
     },
   },
 }

@@ -13,6 +13,7 @@ use App\Modules\Payroll\Infrastructure\Services\TaxRateValidationService;
 use App\Rules\SupportedCountry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class TaxSlabController extends Controller
@@ -85,7 +86,7 @@ class TaxSlabController extends Controller
         // Contrat isolation (PayrollTenantIsolationTest) : une ressource
         // d'un AUTRE tenant répond 404 (pas 403 — pas de fuite d'existence)
         // avant la Policy (rôle).
-        /** @var \App\Core\Auth\Domain\Models\Employee $actor */
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($taxSlab->company_id !== $actor->company_id) {
@@ -127,7 +128,7 @@ class TaxSlabController extends Controller
     {
         // Contrat isolation : 404 cross-tenant avant la Policy (voir update).
         // @var Employee : le middleware tenant garantit un employé authentifié.
-        /** @var \App\Core\Auth\Domain\Models\Employee $actor */
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($taxSlab->company_id !== $actor->company_id) {
@@ -161,7 +162,9 @@ class TaxSlabController extends Controller
         try {
             $this->validation->submit($taxSlab, $actor);
         } catch (\DomainException $e) {
-            abort(422, $e->getMessage());
+            // #3810 : code stable — le message brut (règle métier interne) reste en logs.
+            Log::error('tax_slab.submit_failed', ['slab_id' => $taxSlab->id, 'error' => $e->getMessage()]);
+            abort(422, __('errors.TAX_SLAB_SUBMIT_FAILED'));
         }
 
         return (new TaxSlabResource($taxSlab->refresh()))->response();

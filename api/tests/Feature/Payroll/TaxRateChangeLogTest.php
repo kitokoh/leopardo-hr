@@ -227,3 +227,23 @@ class TaxRateChangeLogTest extends TestCase
         DB::table('tax_rate_change_log')->truncate();
     }
 }
+
+    public function test_mass_assignment_allowlist_blocks_unknown_fields(): void
+    {
+        $log = TaxRateChangeLog::query()->create([
+            'table_name' => TaxRateChangeLog::TABLE_TAX_SLABS,
+            'record_id' => 1,
+            'action' => TaxRateChangeLog::ACTION_CREATED,
+            'actor_id' => 1,
+            'actor_role' => 'employee',
+            'new_value' => ['rate' => 23],
+            'previous_value' => null,
+            'reason' => 'création initiale',
+            'id' => 999_999, // tentative de forçage de la clé primaire
+            'company_id' => 'attacker-uuid', // colonne inexistante/forcée
+        ]);
+
+        $this->assertNotSame(999_999, $log->id);
+        $this->assertSame(TaxRateChangeLog::TABLE_TAX_SLABS, $log->table_name);
+        $this->assertNull($log->getAttribute('company_id'));
+    }

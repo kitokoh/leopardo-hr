@@ -51,6 +51,7 @@ class PlanSeeder extends Seeder
             $canonicalId = DB::table('plans')->where('name', $canonicalName)->value('id');
             if ($canonicalId === null) {
                 DB::table('plans')->where('id', $legacyId)->update(['name' => $canonicalName]);
+
                 continue;
             }
 
@@ -68,7 +69,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 0.00,
                 'price_yearly' => 0.00,
                 'max_employees' => 5,
-                'trial_days' => 30,
+                'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => false,
@@ -89,7 +90,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 29.00,
                 'price_yearly' => 290.00,
                 'max_employees' => 30,
-                'trial_days' => 30,
+                'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => false,
@@ -110,7 +111,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 99.00,
                 'price_yearly' => 948.00,
                 'max_employees' => 250,
-                'trial_days' => 30,
+                'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,
@@ -131,7 +132,7 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 0.00,
                 'price_yearly' => 0.00,
                 'max_employees' => null,
-                'trial_days' => 30,
+                'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => true,

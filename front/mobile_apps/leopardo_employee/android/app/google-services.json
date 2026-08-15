@@ -54,7 +54,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
         "android_client_info": {
-          "package_name": "com.leopardo.manager"
+          "package_name": "com.leopardo.employee"
         }
       },
       "oauth_client": [
@@ -62,7 +62,7 @@
           "client_id": "201283742683-gseug05jqjmcvdrar75jm7buoemnmcou.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.leopardo.manager",
+            "package_name": "com.leopardo.employee",
             "certificate_hash": "6480d1a63d320670a16c49881e9594d89accf243"
           }
         },
@@ -99,7 +99,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
         "android_client_info": {
-          "package_name": "com.leopardo.platformadmin"
+          "package_name": "com.leopardo.employee"
         }
       },
       "oauth_client": [
@@ -107,7 +107,7 @@
           "client_id": "201283742683-4kio2hulvb1go5bcro81r0lqub5g679j.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.leopardo.platformadmin",
+            "package_name": "com.leopardo.employee",
             "certificate_hash": "efe50bb78c09f421c07292778652d4db67ef24c0"
           }
         },
@@ -144,7 +144,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:000000000000:android:0000000000000000000000",
         "android_client_info": {
-          "package_name": "com.leopardo.rh"
+          "package_name": "com.leopardo.employee"
         }
       },
       "oauth_client": [

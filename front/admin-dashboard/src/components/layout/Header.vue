@@ -260,6 +260,10 @@ const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+// Issue #3858 : useRouter() doit être appelé dans setup() (inject), pas dans un
+// event handler — hors setup, inject() renvoie undefined et getRoutes() lève
+// une TypeError (recherche header morte depuis la refonte premium).
+const router = useRouter()
 
 const languageLabels = {
   fr: 'Français',
@@ -305,7 +309,6 @@ function handleSearch() {
   if (!query) return
 
   // Recherche réelle : filtre la navigation du router (chemin + titre + meta).
-  const router = useRouter()
   const normalized = query.toLowerCase()
   const matches = router.getRoutes().filter((route) => {
     if (!route.path.startsWith('/') || route.path.includes(':') || route.path === '/') return false

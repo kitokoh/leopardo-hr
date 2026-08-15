@@ -31,5 +31,13 @@ class BiometricEnrollmentRequest extends Model
         'approved_at',
         'rejected_at',
     ];
+
+    protected $casts = [
+        'requested_face_enabled'        => 'boolean',
+        'requested_fingerprint_enabled' => 'boolean',
+        'submitted_at'                  => 'datetime',
+        'approved_at'                   => 'datetime',
+        'rejected_at'                   => 'datetime',
+    ];
 }
 

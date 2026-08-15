@@ -295,6 +295,52 @@ paths:
               schema:
                 type: string
 
+  /api/v1/edge/download/sha256.txt:
+    get:
+      tags: ["Health"]
+      summary: "Empreintes SHA-256 des assets d'installation edge (public)"
+      description: "Fichier de sommes SHA-256 utilisé par install.sh pour vérifier l'intégrité des téléchargements (issue #3529)."
+      security: []
+      responses:
+        "200":
+          description: "Sommes SHA-256 des assets"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Fichier introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/docker-compose.yml.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Empreinte SHA-256 de docker-compose.yml (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256"
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/v1/edge/download/Caddyfile.edge.sha256:
+    get:
+      tags: ["Health"]
+      summary: "Empreinte SHA-256 de Caddyfile.edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Somme SHA-256"
+          content:
+            text/plain:
+              schema:
+                type: string
+
   /api/v1/edge/license-public-key:
     get:
       tags: ["Health"]

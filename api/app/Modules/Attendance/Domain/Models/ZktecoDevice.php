@@ -38,4 +38,14 @@ class ZktecoDevice extends Model
     protected $hidden = [
         'sync_token_hash',
     ];
+
+    protected $casts = [
+        'port'               => 'integer',
+        'employee_capacity'  => 'integer',
+        'fingerprint_capacity' => 'integer',
+        'face_capacity'      => 'integer',
+        'capabilities'       => 'array',
+        'last_heartbeat_at'  => 'datetime',
+        'last_sync_at'       => 'datetime',
+    ];
 }

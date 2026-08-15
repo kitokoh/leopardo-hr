@@ -6,9 +6,11 @@ interface JsonLdProps {
 
 // Issue #1775 : https://gestionemployer-backend.vercel.app appartient à une entreprise de
 // construction US sans rapport — ne jamais l'utiliser dans les données
-// structurées. On utilise l'URL réelle de la marque (configurable).
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://gestionemployer-backend.vercel.app';
+// structurées. Source unique : getSiteUrl() (#2656) — NEXT_PUBLIC_SITE_URL →
+// DEFAULT_SITE_URL (marque) → localhost en dev. (Closes #3852)
+import { getSiteUrl } from '@/lib/site-url';
+
+const SITE_URL = getSiteUrl();
 
 export function JsonLd({ data }: JsonLdProps) {
   return (

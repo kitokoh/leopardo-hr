@@ -6,12 +6,13 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\SSO\OidcFlowService;
-use App\Rules\NotPrivateUrl;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOService;
 use App\Core\Auth\Infrastructure\Services\SSO\SSOValidationNotImplementedException;
 use App\Http\Controllers\Controller;
+use App\Rules\NotPrivateUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SSOController extends Controller
 {
@@ -115,9 +116,11 @@ class SSOController extends Controller
                 'message' => 'SAML assertion recue.',
             ]);
         } catch (SSOValidationNotImplementedException $e) {
-            return response()->json(['error' => $e->getMessage()], 501);
+            return response()->json(['error' => 'SAML_AUTH_NOT_IMPLEMENTED'], 501);
         } catch (\RuntimeException $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
+            Log::error('sso.saml_auth_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);
+
+            return response()->json(['error' => 'SAML_AUTH_FAILED', 'message' => __('errors.SAML_AUTH_FAILED')], 422);
         }
     }
 
@@ -132,7 +135,9 @@ class SSOController extends Controller
                 'data' => $this->oidcFlowService->buildAuthorizeUrl($companyId),
             ]);
         } catch (\RuntimeException $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
+            Log::error('sso.oidc_authorize_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);
+
+            return response()->json(['error' => 'OIDC_AUTHORIZE_FAILED', 'message' => __('errors.OIDC_AUTHORIZE_FAILED')], 422);
         }
     }
 
@@ -152,7 +157,9 @@ class SSOController extends Controller
                 'message' => 'Connexion OIDC réussie.',
             ]);
         } catch (\RuntimeException $e) {
-            return response()->json(['error' => $e->getMessage()], 422);
+            Log::error('sso.oidc_callback_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);
+
+            return response()->json(['error' => 'OIDC_CALLBACK_FAILED', 'message' => __('errors.OIDC_CALLBACK_FAILED')], 422);
         }
     }
 }

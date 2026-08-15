@@ -16,21 +16,46 @@ use Tests\TestCase;
  * external CRM/email webhooks, so every signup/demo/contact/newsletter lead
  * is durably persisted regardless of whether those webhooks are configured
  * or reachable.
+ *
+ * The endpoint is fail-closed (#3888) : without a configured shared secret
+ * it returns 503 and never ingests a payload.
  */
 class MarketingLeadControllerTest extends TestCase
 {
     use CreatesMvpSchema;
 
+    private const SECRET = 'super-secret';
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpMvpSchema();
+        config()->set('services.marketing_lead_webhook.secret', self::SECRET);
     }
 
     protected function tearDown(): void
     {
         $this->tearDownMvpSchema();
         parent::tearDown();
+    }
+
+    private function authorizedHeaders(): array
+    {
+        return ['Authorization' => 'Bearer '.self::SECRET];
+    }
+
+    public function test_it_is_fail_closed_when_secret_is_not_configured(): void
+    {
+        config()->set('services.marketing_lead_webhook.secret', '');
+
+        $response = $this->postJson('/api/v1/marketing/leads', [
+            'external_id' => 'signup_poisoned_1',
+            'type' => 'signup',
+            'email' => 'attacker@example.test',
+        ]);
+
+        $response->assertStatus(503);
+        $this->assertDatabaseMissing('marketing_leads', ['external_id' => 'signup_poisoned_1']);
     }
 
     public function test_it_persists_a_signup_lead(): void
@@ -50,7 +75,7 @@ class MarketingLeadControllerTest extends TestCase
             'crm_forwarded' => true,
             'email_forwarded' => true,
             'captured_at' => '2026-07-26T10:00:00Z',
-        ]);
+        ], $this->authorizedHeaders());
 
         $response->assertCreated()
             ->assertJsonPath('data.external_id', 'signup_123_abc')
@@ -76,8 +101,8 @@ class MarketingLeadControllerTest extends TestCase
             'email' => 'reader@example.test',
         ];
 
-        $this->postJson('/api/v1/marketing/leads', $payload)->assertCreated();
-        $this->postJson('/api/v1/marketing/leads', $payload)->assertCreated();
+        $this->postJson('/api/v1/marketing/leads', $payload, $this->authorizedHeaders())->assertCreated();
+        $this->postJson('/api/v1/marketing/leads', $payload, $this->authorizedHeaders())->assertCreated();
 
         $this->assertSame(1, MarketingLead::query()->where('external_id', 'newsletter_456_def')->count());
     }
@@ -88,13 +113,11 @@ class MarketingLeadControllerTest extends TestCase
             'external_id' => 'bogus_1',
             'type' => 'not_a_real_type',
             'email' => 'someone@example.test',
-        ])->assertUnprocessable();
+        ], $this->authorizedHeaders())->assertUnprocessable();
     }
 
     public function test_it_rejects_an_invalid_shared_secret(): void
     {
-        config()->set('services.marketing_lead_webhook.secret', 'super-secret');
-
         $response = $this->postJson('/api/v1/marketing/leads', [
             'external_id' => 'contact_789',
             'type' => 'contact',
@@ -107,13 +130,11 @@ class MarketingLeadControllerTest extends TestCase
 
     public function test_it_accepts_a_valid_shared_secret_via_bearer_token(): void
     {
-        config()->set('services.marketing_lead_webhook.secret', 'super-secret');
-
         $response = $this->postJson('/api/v1/marketing/leads', [
             'external_id' => 'demo_request_321',
             'type' => 'demo_request',
             'email' => 'someone@example.test',
-        ], ['Authorization' => 'Bearer super-secret']);
+        ], $this->authorizedHeaders());
 
         $response->assertCreated();
         $this->assertDatabaseHas('marketing_leads', ['external_id' => 'demo_request_321']);

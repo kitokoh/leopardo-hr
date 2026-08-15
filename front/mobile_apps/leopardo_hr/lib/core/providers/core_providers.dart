@@ -19,11 +19,6 @@ import 'package:leopardo_hr/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_hr/features/home/data/project_repository.dart';
 import 'package:leopardo_hr/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
-import 'package:leopardo_hr/features/training/data/training_repository.dart';
-import 'package:leopardo_hr/features/expenses/data/expense_repository.dart';
-import 'package:leopardo_hr/features/ai_chat/data/ai_chat_repository.dart';
-import 'package:leopardo_hr/features/vehicle_position/data/vehicle_position_repository.dart';
-import 'package:leopardo_hr/features/approvals/data/approval_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
 import 'package:leopardo_hr/features/schedules/data/schedule_repository.dart';
 import 'package:leopardo_hr/features/company_branding/data/company_branding_repository.dart';
@@ -134,32 +129,13 @@ final contractRepositoryProvider = Provider<ContractRepository>((ref) {
   return ContractRepository(apiClient);
 });
 
-final trainingRepositoryProvider = Provider<TrainingRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return TrainingRepository(apiClient);
-});
 
-final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ExpenseRepository(apiClient);
-});
 
-final aiChatRepositoryProvider = Provider<AiChatRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return AiChatRepository(apiClient);
-});
 
-final vehiclePositionRepositoryProvider = Provider<VehiclePositionRepository>((
-  ref,
-) {
-  final apiClient = ref.watch(apiClientProvider);
-  return VehiclePositionRepository(apiClient);
-});
 
-final approvalRepositoryProvider = Provider<ApprovalRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ApprovalRepository(apiClient);
-});
+
+
+
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);

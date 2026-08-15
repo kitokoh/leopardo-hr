@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\SmartAttendance\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\SmartAttendance\Application\Actions\ProcessGeoEntry;
 use App\Modules\SmartAttendance\Application\Actions\ProcessGeoExit;
@@ -12,6 +13,7 @@ use App\Modules\SmartAttendance\Domain\Exceptions\OutsideGeofenceException;
 use App\Modules\SmartAttendance\Domain\Exceptions\SessionAlreadyOpenException;
 use App\Modules\SmartAttendance\Interfaces\Api\V1\Requests\GeoEventRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Endpoints mobiles — réception des événements GPS depuis l'app employé.
@@ -21,7 +23,7 @@ class GeoAttendanceController extends Controller
 {
     public function __construct(
         private readonly ProcessGeoEntry $processEntry,
-        private readonly ProcessGeoExit  $processExit,
+        private readonly ProcessGeoExit $processExit,
     ) {}
 
     /**
@@ -31,37 +33,37 @@ class GeoAttendanceController extends Controller
      */
     public function event(GeoEventRequest $request): JsonResponse
     {
-        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        /** @var Employee $employee */
         $employee = request()->user();
-        $company  = currentCompany();
+        $company = currentCompany();
 
         $dto = GeoEventDTO::fromRequest(
             employeeId: $employee->id,
-            companyId:  (string) $company->id,
-            data:       $request->validated(),
+            companyId: (string) $company->id,
+            data: $request->validated(),
         );
 
         try {
             $result = match ($dto->eventType) {
                 'zone_enter' => $this->processEntry->handle($dto),
-                'zone_exit'  => $this->processExit->handle($dto),
-                default      => null,
+                'zone_exit' => $this->processExit->handle($dto),
+                default => null,
             };
 
             if ($result === null) {
                 return response()->json([
                     'message' => 'Event processed (no open session found for exit).',
-                    'data'    => null,
+                    'data' => null,
                 ]);
             }
 
             return response()->json([
-                'message'    => 'Geo event processed successfully.',
-                'data'       => [
-                    'session_id'       => $result->id,
-                    'status'           => $result->status,
-                    'started_at'       => $result->started_at?->toIso8601String(),
-                    'ended_at'         => $result->ended_at?->toIso8601String(),
+                'message' => 'Geo event processed successfully.',
+                'data' => [
+                    'session_id' => $result->id,
+                    'status' => $result->status,
+                    'started_at' => $result->started_at?->toIso8601String(),
+                    'ended_at' => $result->ended_at?->toIso8601String(),
                     'duration_seconds' => $result->duration_seconds,
                 ],
             ], 201);
@@ -69,14 +71,17 @@ class GeoAttendanceController extends Controller
         } catch (SessionAlreadyOpenException $e) {
             return response()->json([
                 'message' => 'Une session est déjà ouverte pour cet employé.',
-                'code'    => 'SESSION_ALREADY_OPEN',
+                'code' => 'SESSION_ALREADY_OPEN',
             ], 409);
 
         } catch (OutsideGeofenceException $e) {
+            // #3810 : le message brut (distances en mètres) ne sort plus — le
+            // code stable suffit au client ; le détail reste en logs serveur.
+            Log::warning('geo_attendance.outside_geofence', ['employee_id' => $request->user()?->id, 'error' => $e->getMessage()]);
+
             return response()->json([
                 'message' => 'Position hors zone de présence.',
-                'code'    => 'OUTSIDE_GEOFENCE',
-                'detail'  => $e->getMessage(),
+                'code' => 'OUTSIDE_GEOFENCE',
             ], 422);
         }
     }

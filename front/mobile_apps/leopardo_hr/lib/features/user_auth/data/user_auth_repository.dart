@@ -111,24 +111,12 @@ class UserAuthRepository {
         method: 'POST', maxRetriesOverride: 0,
         useUserSession: true,
         timeoutOverride: const Duration(seconds: 8),
-        maxRetriesOverride: 0,
       );
     } catch (_) {
       // Ignore
     } finally {
       await storage.deleteUserToken();
     }
-  }
-
-  Future<List<Map<String, dynamic>>> getCompanyRequests() async {
-    final response = await apiClient.requestWithRetry(
-      '/user/company-requests',
-      useUserSession: true,
-      timeoutOverride: const Duration(seconds: 12),
-    );
-    return extractDataList(
-      response.data,
-    ).whereType<Map>().map((item) => item.cast<String, dynamic>()).toList();
   }
 
   Future<Map<String, dynamic>> submitCompanyRequest({
@@ -145,7 +133,6 @@ class UserAuthRepository {
       method: 'POST', maxRetriesOverride: 0,
       useUserSession: true,
       timeoutOverride: const Duration(seconds: 15),
-      maxRetriesOverride: 0,
       data: {
         'company_name': companyName,
         'email': email,
