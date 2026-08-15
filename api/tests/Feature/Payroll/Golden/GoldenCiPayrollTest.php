@@ -249,12 +249,26 @@ class GoldenCiPayrollTest extends TestCase
     #[DataProvider('preavisProvider')]
     public function test_golden_ci_preavis(float $years, float $expectedDays): void
     {
-        // Calcul manuel (CI_COMPLIANCE.md §6 — Code du travail art. 18) :
-        //  < 5 ans → 30 j · 5-10 ans → 60 j · ≥ 10 ans → 90 j
-        //  (palier employé/technicien — pilot, à valider).
+        // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18),
+        // niveau employé/technicien (catégorie absente) :
+        //  < 5 ans → 30 j (1 mois) · ≥ 5 ans → 60 j (2 mois)
+        //  — plus de palier 90 j sans catégorie (#2264 : il contredisait §8).
         $rules = $this->rules();
 
         $this->assertSame($expectedDays, $rules->noticePeriodDays($years));
+    }
+
+    #[DataProvider('preavisParCategorieProvider')]
+    public function test_golden_ci_preavis_par_categorie(string $category, float $years, float $expectedDays): void
+    {
+        // Calcul manuel (CI_COMPLIANCE.md §8 — Code du travail art. 18) :
+        //  ouvriers : < 5 ans → 8 j · ≥ 5 ans → 15 j
+        //  employés/techniciens : < 5 ans → 30 j · ≥ 5 ans → 60 j
+        //  cadres : 90 j (3 mois) quelle que soit l'ancienneté
+        //  — la catégorie est portée par employees.ipres_category (#2264).
+        $rules = $this->rules();
+
+        $this->assertSame($expectedDays, $rules->noticePeriodDays($years, $category));
     }
 
     /**
@@ -264,8 +278,22 @@ class GoldenCiPayrollTest extends TestCase
     {
         return [
             'moins de 5 ans'  => [2.0, 30.0],
-            '5 à 10 ans'      => [7.0, 60.0],
-            '10 ans et plus'  => [12.0, 90.0],
+            '5 ans et plus'   => [7.0, 60.0],
+            '12 ans'          => [12.0, 60.0],
+        ];
+    }
+
+    /**
+     * @return array<string, array{string, float, float}>
+     */
+    public static function preavisParCategorieProvider(): array
+    {
+        return [
+            'cadre 2 ans'      => ['cadre', 2.0, 90.0],
+            'cadre 12 ans'     => ['cadre', 12.0, 90.0],
+            'ouvrier 2 ans'    => ['ouvrier', 2.0, 8.0],
+            'ouvrier 7 ans'    => ['ouvrier', 7.0, 15.0],
+            'employe 12 ans'   => ['general', 12.0, 60.0],
         ];
     }
 
