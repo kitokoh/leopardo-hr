@@ -34,20 +34,20 @@ class TestRtspSsidGuardTest extends TestCase
         yield 'link-local' => ['rtsp://169.254.169.254:8554/stream'];
         yield 'CGNAT' => ['rtsp://100.64.0.1:8554/stream'];
         yield 'TEST-NET' => ['rtsp://192.0.2.1:8554/stream'];
+        yield 'TEST-NET-3' => ['rtsp://203.0.113.10:8554/stream'];
         yield 'multicast' => ['rtsp://239.1.1.1:8554/stream'];
         yield 'loopback IPv6' => ['rtsp://[::1]:8554/stream'];
         yield 'IPv6 ULA' => ['rtsp://[fd00::1]:8554/stream'];
         yield 'IPv6 link-local' => ['rtsp://[fe80::1]:8554/stream'];
         yield 'hôte .internal' => ['rtsp://db.internal:8554/stream'];
         yield 'hôte .local' => ['rtsp://printer.local:8554/stream'];
-        yield 'IP documentation (TEST-NET-3)' => ['rtsp://203.0.113.10:8554/stream'];
     }
 
     public static function publicTargets(): iterable
     {
-        // hôte réellement résoluble (camera.example.com n'existe pas → la
-        // garde fail-closed le bloque, comme il se doit).
-        yield 'hôte public' => ['rtsp://example.com:8554/stream'];
+        // IP publique réelle (93.184.216.34 = example.com résolue) — cible
+        // déterministe sans dépendance DNS du runner (QA #3324).
+        yield 'IP publique' => ['rtsp://93.184.216.34:8554/stream'];
     }
 
     /**
