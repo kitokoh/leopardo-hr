@@ -615,5 +615,20 @@
         "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
       }
     }
+  },
+  "adminChat": {
+    "title": "Leopardo AI Assistant",
+    "subtitle": "Ask about HR, payroll, recruitment...",
+    "unavailableTitle": "AI assistant unavailable at platform level",
+    "unavailableBody": "The AI chat is not enabled for the super-admin console. Use a supported company workspace to access this assistant.",
+    "unavailableBadge": "Unavailable",
+    "historyEmpty": "No conversations.",
+    "start": "Start a conversation with the AI assistant.",
+    "new": "New conversation",
+    "send": "Send",
+    "placeholder": "Type your message...",
+    "thinking": "Thinking...",
+    "error": "Sorry, an error occurred. Please try again.",
+    "conversation": "Conversation"
   }
 }

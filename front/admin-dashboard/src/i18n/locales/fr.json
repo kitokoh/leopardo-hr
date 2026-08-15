@@ -615,5 +615,20 @@
         "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
       }
     }
+  },
+  "adminChat": {
+    "title": "Assistant IA Leopardo",
+    "subtitle": "Posez vos questions RH, paie, recrutement...",
+    "unavailableTitle": "Assistant IA indisponible au niveau plateforme",
+    "unavailableBody": "Le chat IA n’est pas activé pour la console super-admin. Utilisez un espace entreprise pris en charge pour accéder à cet assistant.",
+    "unavailableBadge": "Indisponible",
+    "historyEmpty": "Aucune conversation.",
+    "start": "Commencez une conversation avec l’assistant IA.",
+    "new": "Nouvelle conversation",
+    "send": "Envoyer",
+    "placeholder": "Tapez votre message...",
+    "thinking": "Réflexion en cours...",
+    "error": "Désolé, une erreur est survenue. Veuillez réessayer.",
+    "conversation": "Conversation"
   }
 }

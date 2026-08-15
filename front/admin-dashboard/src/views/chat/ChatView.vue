@@ -6,7 +6,7 @@
           class="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
           @click="newConversation"
         >
-          Nouvelle conversation
+          {{ t('adminChat.new', 'Nouvelle conversation') }}
         </button>
       </div>
       <div class="flex-1 overflow-y-auto">
@@ -19,11 +19,11 @@
           ]"
           @click="selectConversation(conv)"
         >
-          <p class="truncate text-sm font-medium text-gray-900">{{ conv.title || 'Conversation' }}</p>
+          <p class="truncate text-sm font-medium text-gray-900">{{ conv.title || t('adminChat.conversation', 'Conversation') }}</p>
           <p class="mt-0.5 truncate text-xs text-gray-400">{{ formatDate(conv.updated_at) }}</p>
         </div>
         <div v-if="conversations.length === 0" class="p-4 text-center text-xs text-gray-400">
-          Aucune conversation.
+          {{ t('adminChat.historyEmpty', 'Aucune conversation.') }}
         </div>
       </div>
     </div>
@@ -31,16 +31,20 @@
     <div class="flex flex-1 flex-col">
       <div class="border-b border-gray-200 px-6 py-3">
         <h2 class="text-sm font-semibold text-gray-900">
-          {{ activeConversation?.title || 'Assistant IA Leopardo' }}
+          {{ activeConversation?.title || t('adminChat.title', 'Assistant IA Leopardo') }}
         </h2>
-        <p class="text-xs text-gray-500">Posez vos questions RH, paie, recrutement...</p>
+        <p class="text-xs text-gray-500">{{ t('adminChat.subtitle', 'Posez vos questions RH, paie, recrutement...') }}</p>
       </div>
 
       <div ref="messagesContainer" class="flex-1 space-y-4 overflow-y-auto p-6">
+        <div class="mx-auto mb-6 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900" role="status">
+          <p class="font-semibold">{{ t('adminChat.unavailableTitle', 'Assistant IA indisponible au niveau plateforme') }}</p>
+          <p class="mt-1 text-sm">{{ t('adminChat.unavailableBody', 'Le chat IA n’est pas activé pour la console super-admin.') }}</p>
+        </div>
         <div v-if="messages.length === 0" class="flex h-full items-center justify-center">
           <div class="text-center">
             <ChatBubbleLeftRightIcon class="mx-auto h-12 w-12 text-gray-300" />
-            <p class="mt-2 text-sm text-gray-500">Commencez une conversation avec l'assistant IA.</p>
+            <p class="mt-2 text-sm text-gray-500">{{ t('adminChat.start', "Commencez une conversation avec l'assistant IA.") }}</p>
           </div>
         </div>
         <div
@@ -64,7 +68,7 @@
         </div>
         <div v-if="streaming" class="flex justify-start">
           <div class="rounded-lg bg-gray-100 px-4 py-3 text-sm text-gray-500">
-            <span class="inline-block animate-pulse">Reflexion en cours...</span>
+            <span class="inline-block animate-pulse">{{ t('adminChat.thinking', 'Réflexion en cours...') }}</span>
           </div>
         </div>
       </div>
@@ -74,16 +78,16 @@
           <input
             v-model="inputMessage"
             type="text"
-            placeholder="Tapez votre message..."
+:placeholder="t('adminChat.placeholder', 'Tapez votre message...')"
             class="flex-1 rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-            :disabled="streaming"
+:disabled="true"
           />
           <button
             type="submit"
             class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-            :disabled="!inputMessage.trim() || streaming"
+:disabled="true"
           >
-            Envoyer
+            {{ t('adminChat.send', 'Envoyer') }}
           </button>
         </form>
       </div>
@@ -96,9 +100,10 @@ import { ref, onMounted, nextTick } from 'vue'
 import { ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const conversations = ref([])
 const activeConversation = ref(null)
 const messages = ref([])
@@ -150,46 +155,13 @@ function newConversation() {
   inputMessage.value = ''
 }
 
-async function sendMessage() {
-  const text = inputMessage.value.trim()
-  if (!text) return
-
-  const userMsg = { id: Date.now(), role: 'user', content: text, created_at: new Date().toISOString() }
-  messages.value.push(userMsg)
-  inputMessage.value = ''
-  scrollToBottom()
-  streaming.value = true
-
-  try {
-    const payload = {
-      message: text,
-      conversation_id: activeConversation.value?.id || null,
-    }
-    const res = await api.post('/v1/admin/ai/chat', payload)
-    const reply = res.data
-    if (!activeConversation.value && reply.conversation_id) {
-      activeConversation.value = { id: reply.conversation_id, title: text.slice(0, 50) }
-      fetchConversations()
-    }
-    messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: reply.response || reply.message || reply.content || '',
-      created_at: new Date().toISOString(),
-    })
-  } catch {
-    messages.value.push({
-      id: Date.now() + 1,
-      role: 'assistant',
-      content: 'Desole, une erreur est survenue. Veuillez reessayer.',
-      created_at: new Date().toISOString(),
-    })
-  } finally {
-    streaming.value = false
-    scrollToBottom()
-  }
+function sendMessage() {
+  // Intentionally disabled: the platform API returns 501 for cross-tenant AI chat.
 }
 
+
+// Conversation history stays readable, but the platform-level composer is disabled
+// because the backend intentionally returns 501 for cross-tenant AI chat.
 onMounted(fetchConversations)
 </script>
 
