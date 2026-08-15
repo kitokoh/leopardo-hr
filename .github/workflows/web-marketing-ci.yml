@@ -49,6 +49,10 @@ jobs:
         working-directory: front/web
         run: npm run lint
 
+      - name: Check for double-encoded UTF-8 (mojibake)
+        working-directory: front/web
+        run: npm run check:mojibake
+
   web-marketing-build:
     name: Web Marketing Build
     runs-on: ubuntu-latest

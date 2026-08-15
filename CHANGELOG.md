@@ -2,6 +2,12 @@
 # Format : Keep a Changelog (keepachangelog.com) 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [Unreleased]
+
+### Fixed
+
+- **fix(web): locale AR — mojibake UTF-8 double-encodé corrigé dans 11 fichiers + garde anti-régression (Closes #2275).** Les chaînes AR inline de la vitrine (`Navbar`, `PricingSection`, `TrustedBrands`, `LaunchOperatingSystemSection`, pages pricing/download/demo/branding/mobile, page login et layout dashboard) étaient double-encodées (`Ø§Ù„Ø£Ø³Ø¹Ø§Ø±` au lieu de `الأسعار`) : décodées proprement (latin-1/cp1252 → UTF-8). Au passage, mojibake FR/EN/TR inline corrigé (apostrophes « â€™ », tirets « â€” », guillemets « Â« » », caractères turcs « ÅŸ »/« Ä± »/« Ã– »…) dans ~20 autres fichiers `src`. Nouveau garde anti-régression `front/web/scripts/check-mojibake.mjs` (`npm run check:mojibake`) branché sur le CI vitrine (`web-marketing-ci.yml`) : scanne `front/web/src` et fait échouer le job si un pattern mojibake (arabe ou latin) réapparaît. Les catalogues JSON + `locale-catalog.ts` étaient déjà propres (aucun changement).
+
 ### Added
 - **fix(payroll/attendance/platform): 16 échecs CI backend neutralisés — audit rules_version persisté, isolation tax-slabs 404, migration auditable_id nullable (complète #2172).** Première passe CI complète (file #2131 drainée) : (1) **régression de ma migration** `audit_logs.auditable_id` bigint→varchar — un `change()` sans `->nullable()` rendait la colonne NOT NULL et cassait les écritures d'audit sans modèle ciblé (BiometricPurge ×5, SensitiveDataAccess ×6) → `->nullable()` + basename unique `2026_08_14_000002`. (2) **Bug produit** : `PayrollCalculator::calculateRun()` persistait `rules_version`/`rules_identifier` sur les bulletins mais JAMAIS sur le run → `payroll_calculation_audits.rules_version` NULL (PayrollAuditTest ×2) → le run les enregistre désormais. (3) **Isolation** : `PUT/DELETE /tax-slabs/{id}` (+ submit/history) cross-tenant → 404 (au lieu de 403, convention PayrollTenantIsolationTest). (4) **Tests périmés réalignés** : `PayrollCalculationContractTest` golden CI (#1913 : employer 27 925 au lieu de 61 250), `PayrollAuditTest` agrégats (le manager actif est un employé payé → 2 bulletins × 60 000). (5) **Harness** : `QueueObservabilityApiTest` — même double table `migrations` que MigrationSchemaPlacementTest → `SET search_path TO public,shared_tenants` avant `migrate:fresh`. Aucun changement de comportement API (le 404 tax-slabs aligne la convention d'isolation documentée).
 
