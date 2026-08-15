@@ -302,8 +302,14 @@
     "recent_activity": "Son Etkinlik",
     "recent_activity_hint": "Ekibinizin son eylemleri",
     "leo_ia_announcement_title": "Tebrikler ekip",
-    "leo_ia_announcement_body": "Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!",
-    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin."
+    "leo_ia_announcement_body": "Bu haftaki ozveriniz icin tum ekibe tebrikler. Bu ivmeyi surdurun!",
+    "leo_ia_announcement_error": "Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.",
+    "leo_presence_insight": "Bugün {active} aktif çalışandan {today} giriş yaptı. Ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_presence_empty": "Şu anda katılım verisi yok. Yine de ekibe bir tebrik mesajı göndermek ister misiniz?",
+    "leo_announcements_count": "Şirketinizde {count} duyuru yayınlandı.",
+    "presence_today_title": "Bugünkü katılım",
+    "presence_today_summary": "Bugün {active} aktif çalışandan {present} giriş yaptı",
+    "presence_today_empty": "Katılım verisi mevcut değil."
   },
   "marketing": {
     "oauth": {
@@ -692,6 +698,7 @@
     "credsSentByEmail": "Bu bilgiler e-postayla da gönderildi:",
     "credsEmailed": "Giriş bilgileriniz e-postayla gönderildi.",
     "trialNote": "Ücretsiz deneme:",
+    "trialDaysUnit": "gün",
     "trialNoteSuffix": "kredi kartı gerekmez",
     "downloadApp": "Uygulamayı indir",
     "changePasswordNote": "İlk girişte parolanızı değiştirin.",
@@ -708,17 +715,17 @@
       "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
     }
   },
-  "seo": {
-    "pricing": {
-      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
-    }
-  },
   "companies": {
     "toast": {
       "load_failed": "Şirket detayları yüklenemedi.",
       "tickets_failed": "Destek talepleri yüklenemedi.",
       "subscription_failed": "Abonelik güncellenemedi.",
       "features_failed": "Modül ayarları kaydedilemedi."
+    }
+  },
+  "seo": {
+    "pricing": {
+      "description": "Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme."
     }
   }
 }
