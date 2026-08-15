@@ -7,6 +7,8 @@ namespace App\Modules\Attendance\Interfaces\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\CalendarConnection;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\DisconnectCalendarRequest;
+use App\Modules\Attendance\Interfaces\Api\V1\Requests\SyncCalendarRequest;
 use App\Modules\Attendance\Infrastructure\Services\CalendarSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -83,7 +85,7 @@ class CalendarSyncController extends Controller
         ], 201);
     }
 
-    public function disconnect(Request $request, string $provider): JsonResponse
+    public function disconnect(DisconnectCalendarRequest $request, string $provider): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
@@ -93,7 +95,7 @@ class CalendarSyncController extends Controller
         return new JsonResponse(['message' => 'Calendar disconnected.']);
     }
 
-    public function sync(Request $request): JsonResponse
+    public function sync(SyncCalendarRequest $request): JsonResponse
     {
         /** @var Employee $user */
         $user = $request->user();
