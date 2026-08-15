@@ -12,6 +12,7 @@ return [
     'activity_support_ticket' => 'Ticket support : :subject',
     'activity_edge_sync' => 'Sync Edge : :name',
     'activity_user_signup' => 'Nouvel utilisateur : :name (:email)',
+    'admin_chat_unavailable' => "L'assistant IA est configuré par tenant : la console plateforme ne peut pas répondre au nom d'un tenant. Connectez-vous à l'espace du tenant pour utiliser l'assistant.",
     'conversation_not_found' => 'Conversation introuvable.',
     'oauth_save_failed' => 'Impossible d\'enregistrer la configuration.',
 ];
