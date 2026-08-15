@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # PA2-AUTO-011: refuse un PR PLAN_ACTION2 qui entre en collision de "claim"
 # avec un autre agent, conformement au protocole documente dans
-# docs/archive/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md (issue auto-assignee +
+# docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md (issue auto-assignee +
 # PR draft = signal officiel de prise de tache).
 #
 # Usage: check-plan-action2-claim.sh <owner/repo> <pr_number>
@@ -64,7 +64,7 @@ PYEOF
       [[ -z "$num" ]] && continue
       echo "::error::  PR #${num} (@${user}) — ${title}"
     done <<< "$COLLISION"
-    echo "::error::Conformement a docs/archive/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md, un seul agent doit travailler un ticket PA2-* a la fois. Verifier 'gh pr list --search \"${PA2_ID}\"' avant de reprendre, puis fermer/rebaser la PR en trop ou coordonner avec l'autre agent."
+    echo "::error::Conformement a docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md, un seul agent doit travailler un ticket PA2-* a la fois. Verifier 'gh pr list --search \"${PA2_ID}\"' avant de reprendre, puis fermer/rebaser la PR en trop ou coordonner avec l'autre agent."
     FAIL=1
   fi
 fi
@@ -94,7 +94,7 @@ if [[ -n "$ISSUE_JSON" && "$ISSUE_JSON" != "null" ]]; then
       fi
     done
     if [[ "$MATCH" -eq 0 ]]; then
-      echo "::error::L'issue #${ISSUE_NUMBER} (${PA2_ID}) est assignee a [${ASSIGNEES}], pas a l'auteur de cette PR (@${PR_AUTHOR}). Deux agents semblent travailler le meme ticket sans coordination — voir docs/archive/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md section 'Signal de prise de tache'."
+      echo "::error::L'issue #${ISSUE_NUMBER} (${PA2_ID}) est assignee a [${ASSIGNEES}], pas a l'auteur de cette PR (@${PR_AUTHOR}). Deux agents semblent travailler le meme ticket sans coordination — voir docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md section 'Signal de prise de tache'."
       FAIL=1
     fi
   else
