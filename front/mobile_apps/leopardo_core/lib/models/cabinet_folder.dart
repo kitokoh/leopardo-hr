@@ -28,7 +28,8 @@ class CabinetFolder {
       icon: json['icon'] as String?,
       documentsCount: (json['documents_count'] ?? 0) as int,
       childrenCount: (json['children_count'] ?? 0) as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+          DateTime.utc(1970),
     );
   }
 }
