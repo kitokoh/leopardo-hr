@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Heart, Zap, Globe, Users } from 'lucide-react';
@@ -14,29 +15,29 @@ interface JobOpening {
 }
 
 const openings: JobOpening[] = [
-  { title: 'Developpeur Full-Stack Senior', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: 'Rejoignez notre equipe pour developper les nouvelles fonctionnalites de la plateforme RH.' },
+  { title: 'Développeur Full-Stack Senior', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: 'Rejoignez notre équipe pour developper les nouvelles fonctionnalités de la plateforme RH.' },
   { title: 'Designer UI/UX', department: 'Design', location: 'Paris / Remote', type: 'CDI', description: 'Concevez des interfaces intuitives pour notre application web et mobile.' },
   { title: 'Customer Success Manager', department: 'Customer Success', location: 'Paris', type: 'CDI', description: 'Accompagnez nos clients dans l\'adoption de Leopardo RH.' },
-  { title: 'Developpeur Mobile Flutter', department: 'Engineering', location: 'Remote', type: 'CDI', description: 'Developpez et ameliorez notre application mobile multi-plateforme.' },
+  { title: 'Développeur Mobile Flutter', department: 'Engineering', location: 'Remote', type: 'CDI', description: 'Developpez et ameliorez notre application mobile multi-plateforme.' },
   { title: 'DevOps Engineer', department: 'Engineering', location: 'Paris / Remote', type: 'CDI', description: 'Optimisez notre infrastructure cloud et nos pipelines CI/CD.' },
 ];
 
 const values = [
   { icon: Heart, title: 'Impact reel', description: 'Nous construisons des outils qui simplifient la vie de milliers de professionnels RH chaque jour.' },
-  { icon: Zap, title: 'Innovation', description: 'Nous adoptons les dernieres technologies et experimentons constamment pour offrir le meilleur produit.' },
-  { icon: Globe, title: 'Diversite', description: 'Notre equipe est distribuee globalement. Nous valorisons les perspectives differentes.' },
+  { icon: Zap, title: 'Innovation', description: 'Nous adoptons les dernières technologies et experimentons constamment pour offrir le meilleur produit.' },
+  { icon: Globe, title: 'Diversité', description: 'Notre équipe est distribuée globalement. Nous valorisons les perspectives differentes.' },
   { icon: Users, title: 'Collaboration', description: 'Nous travaillons ensemble, partageons nos connaissances et celebrons nos reussites en equipe.' },
 ];
 
 export default function CareersPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
       <HeroSection
-        headline="Rejoignez l'Equipe"
+        headline="Rejoignez l'Équipe"
         subheadline="Construisez le futur de la gestion RH avec nous"
         ctaPrimary={{ text: 'Voir les Postes', href: '#openings' }}
         badge={{ text: 'Carrieres', icon: <Briefcase className="w-3 h-3" /> }}
@@ -82,7 +83,7 @@ export default function CareersPage() {
               'Materiel au choix (Mac/PC/Linux)',
               'Tickets restaurant',
               'Team buildings trimestriels',
-              'Conges supplementaires apres 2 ans',
+              'Congés supplementaires apres 2 ans',
               'Stock options pour les postes senior',
             ].map((benefit, i) => (
               <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-transparent dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">

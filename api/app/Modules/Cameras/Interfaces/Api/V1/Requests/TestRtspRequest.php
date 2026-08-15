@@ -20,7 +20,10 @@ class TestRtspRequest extends FormRequest
                 'required',
                 'string',
                 'max:1000',
-                'regex:#^rtsp://[^\s\x00-\x1F"\'<>]+$#i',
+                // Schémas validés par CameraService::testRtsp (invalid_url) —
+                // la regex ne bloque ici que les caractères de contrôle/quoting
+                // (défense en profondeur avant construction de la commande ffprobe).
+                'regex:#^[a-z][a-z0-9+.-]*://[^\s\x00-\x1F"\'<>]+$#i',
             ],
         ];
     }
@@ -28,7 +31,7 @@ class TestRtspRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'rtsp_url.regex' => 'The rtsp_url must be a valid RTSP URL starting with rtsp://',
+            'rtsp_url.regex' => 'The rtsp_url must be a valid URL.',
         ];
     }
 }

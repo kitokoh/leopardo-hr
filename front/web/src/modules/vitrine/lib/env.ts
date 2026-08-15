@@ -1,4 +1,4 @@
-
+import { getSiteUrl } from '@/lib/site-url';
 const safeLog = (..._args: unknown[]) => {};
 /**
  * Environment variables validation and access
@@ -32,7 +32,7 @@ export interface EnvironmentConfig {
 export function getEnvConfig(): EnvironmentConfig {
   return {
     // API
-    apiUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1",
+    apiUrl: process.env.NEXT_PUBLIC_API_URL || "/api/v1",
 
     // Analytics
     gaId: process.env.NEXT_PUBLIC_GA_ID || "",
@@ -43,7 +43,7 @@ export function getEnvConfig(): EnvironmentConfig {
     sendgridApiKey: process.env.SENDGRID_API_KEY || "",
 
     // SEO
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+    siteUrl: getSiteUrl(),
     siteName: process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo",
 
     // Feature flags

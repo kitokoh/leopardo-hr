@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int|null $company_id
+ * @property string|null $company_id
  * @property string $name
  * @property string $code
  * @property bool $is_paid

@@ -45,6 +45,9 @@
         >Voir</a>
       </div>
     </div>
+    <div v-if="loadError" class="rounded-lg bg-red-50 p-4 text-sm text-red-700" role="alert">
+      {{ loadError }}
+    </div>
     <div v-else-if="notificationsError" class="rounded-lg bg-amber-50 p-4 text-center text-sm text-amber-800" role="alert">
       {{ notificationsError }}
     </div>
@@ -158,6 +161,9 @@ const absenteeism = ref(null)
 const notificationsError = ref('')
 const turnoverError = ref('')
 const absenteeismError = ref('')
+// QA #3491 : un échec d'appel API s'affiche comme un succès (« tout est en
+// ordre » / valeurs vides) — état d'erreur explicite + retry requis.
+const loadError = ref('')
 
 async function fetchNotifications() {
   loading.value = true
@@ -165,9 +171,11 @@ async function fetchNotifications() {
     const res = await api.get('/v1/predictions/notifications')
     notifications.value = res.data.data || []
     notificationsError.value = ''
-  } catch {
+    loadError.value = ''
+  } catch (e) {
     notifications.value = []
-    notificationsError.value = 'Impossible de charger les notifications prédictives.'
+    notificationsError.value = e?.response?.data?.message || 'Impossible de charger les notifications prédictives.'
+    loadError.value = e?.response?.data?.message || 'Impossible de charger les notifications prédictives.'
   } finally {
     loading.value = false
   }
@@ -179,9 +187,11 @@ async function fetchTurnover() {
     const res = await api.get('/v1/predictions/turnover')
     turnover.value = res.data.data || null
     turnoverError.value = ''
-  } catch {
+    loadError.value = ''
+  } catch (e) {
     turnover.value = null
-    turnoverError.value = 'Impossible de charger la prédiction de turnover.'
+    turnoverError.value = e?.response?.data?.message || 'Impossible de charger la prédiction de turnover.'
+    loadError.value = e?.response?.data?.message || 'Impossible de charger la prédiction de turnover.'
   } finally {
     loadingTurnover.value = false
   }
@@ -193,9 +203,11 @@ async function fetchAbsenteeism() {
     const res = await api.get('/v1/predictions/absenteeism')
     absenteeism.value = res.data.data || null
     absenteeismError.value = ''
-  } catch {
+    loadError.value = ''
+  } catch (e) {
     absenteeism.value = null
-    absenteeismError.value = 'Impossible de charger la prédiction d’absentéisme.'
+    absenteeismError.value = e?.response?.data?.message || 'Impossible de charger la prédiction d\'absentéisme.'
+    loadError.value = e?.response?.data?.message || 'Impossible de charger la prédiction d\'absentéisme.'
   } finally {
     loadingAbsenteeism.value = false
   }

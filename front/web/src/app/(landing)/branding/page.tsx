@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
@@ -103,24 +104,28 @@ type PlanCopy = { name: string; price: string; features: string[]; highlight: bo
 
 const plansByLocale: Record<Lang, PlanCopy[]> = {
   fr: [
-    { name: 'Starter', price: 'Inclus', features: ['Logo entreprise', "Nom d'affichage"], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisées', 'Branding mobile'], highlight: true },
-    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Pro', 'Whitelabel complet', 'Domaine personnalisé', 'Splash screen mobile custom'], highlight: false },
+    { name: 'Free', price: 'Inclus', features: ['Logo entreprise', "Nom d'affichage"], highlight: false },
+    { name: 'Pilot', price: 'Inclus', features: ['Logo entreprise', "Nom d'affichage", 'Apps Employee et Manager'], highlight: false },
+    { name: 'Operations', price: 'Premium', features: ['Logo entreprise', "Nom d'affichage", 'Couleurs personnalisées', 'Branding mobile'], highlight: true },
+    { name: 'Enterprise', price: 'Sur devis', features: ['Tout Operations', 'Whitelabel complet', 'Domaine personnalisé', 'Splash screen mobile custom'], highlight: false },
   ],
   en: [
-    { name: 'Starter', price: 'Included', features: ['Company logo', 'Display name'], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Company logo', 'Display name', 'Custom colours', 'Mobile branding'], highlight: true },
-    { name: 'Enterprise', price: 'Custom quote', features: ['Everything in Pro', 'Full white-label', 'Custom domain', 'Custom mobile splash screen'], highlight: false },
+    { name: 'Free', price: 'Included', features: ['Company logo', 'Display name'], highlight: false },
+    { name: 'Pilot', price: 'Included', features: ['Company logo', 'Display name', 'Employee and Manager apps'], highlight: false },
+    { name: 'Operations', price: 'Premium', features: ['Company logo', 'Display name', 'Custom colours', 'Mobile branding'], highlight: true },
+    { name: 'Enterprise', price: 'Custom quote', features: ['Everything in Operations', 'Full white-label', 'Custom domain', 'Custom mobile splash screen'], highlight: false },
   ],
   tr: [
-    { name: 'Starter', price: 'Dahil', features: ['Şirket logosu', 'Görünen ad'], highlight: false },
-    { name: 'Pro', price: 'Premium', features: ['Şirket logosu', 'Görünen ad', 'Özel renkler', 'Mobil marka'], highlight: true },
-    { name: 'Enterprise', price: 'Teklif alın', features: ["Pro'daki her şey", 'Tam whitelabel', 'Özel alan adı', 'Özel mobil açılış ekranı'], highlight: false },
+    { name: 'Free', price: 'Dahil', features: ['Şirket logosu', 'Görünen ad'], highlight: false },
+    { name: 'Pilot', price: 'Dahil', features: ['Şirket logosu', 'Görünen ad', 'Çalışan ve Yönetici uygulamaları'], highlight: false },
+    { name: 'Operations', price: 'Premium', features: ['Şirket logosu', 'Görünen ad', 'Özel renkler', 'Mobil marka'], highlight: true },
+    { name: 'Enterprise', price: 'Teklif alın', features: ["Operations'daki her şey", 'Tam whitelabel', 'Özel alan adı', 'Özel mobil açılış ekranı'], highlight: false },
   ],
   ar: [
-    { name: 'Starter', price: 'مشمول', features: ['شعار الشركة', 'الاسم المعروض'], highlight: false },
-    { name: 'Pro', price: 'بريميوم', features: ['شعار الشركة', 'الاسم المعروض', 'ألوان مخصصة', 'هوية الموبايل'], highlight: true },
-    { name: 'Enterprise', price: 'حسب العرض', features: ['كل ما في Pro', 'علامة بيضاء كاملة', 'نطاق مخصص', 'شاشة بداية مخصصة للتطبيق'], highlight: false },
+    { name: 'Free', price: 'مشمول', features: ['شعار الشركة', 'الاسم المعروض'], highlight: false },
+    { name: 'Pilot', price: 'مشمول', features: ['شعار الشركة', 'الاسم المعروض', 'تطبيقا الموظف والمدير'], highlight: false },
+    { name: 'Operations', price: 'بريميوم', features: ['شعار الشركة', 'الاسم المعروض', 'ألوان مخصصة', 'هوية الموبايل'], highlight: true },
+    { name: 'Enterprise', price: 'حسب العرض', features: ['كل ما في Operations', 'علامة بيضاء كاملة', 'نطاق مخصص', 'شاشة بداية مخصصة للتطبيق'], highlight: false },
   ],
 };
 
@@ -189,7 +194,7 @@ const copy: Record<Lang, BrandingPageCopy> = {
 };
 
 export default function BrandingPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [lang, setLang] = useState<Lang>('fr');
   useScrollReveal();
 
@@ -203,7 +208,7 @@ export default function BrandingPage() {
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
       dir={isRtl ? 'rtl' : 'ltr'}
     >
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-4">
@@ -344,7 +349,7 @@ export default function BrandingPage() {
       <section className="py-16 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">{t.plansTitle}</h2>
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {plans.map((plan) => (
               <div
                 key={plan.name}
