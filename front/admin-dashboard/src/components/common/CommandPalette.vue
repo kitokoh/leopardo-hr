@@ -98,7 +98,7 @@ const query = ref('')
 const activeIndex = ref(0)
 const searchInput = ref(null)
 
-const items = [
+const baseItems = [
   { id: 'dashboard', label: 'Tableau de bord', description: 'Vue principale', icon: HomeIcon, route: '/', shortcut: 'Alt+H' },
   { id: 'analytics', label: 'Analytics', description: 'Statistiques et rapports', icon: ChartBarIcon, route: '/analytics' },
   { id: 'users', label: 'Utilisateurs', description: 'Gestion des utilisateurs', icon: UsersIcon, route: '/users', shortcut: 'Alt+U' },
@@ -108,13 +108,27 @@ const items = [
   { id: 'leaves', label: 'Conges', description: 'Gestion des conges et absences', icon: CalendarDaysIcon, route: '/leaves' },
   { id: 'recruitment', label: 'Recrutement', description: 'Pipeline de recrutement', icon: BriefcaseIcon, route: '/recruitment', shortcut: 'Alt+R' },
   { id: 'training', label: 'Formations', description: 'Catalogue de formations', icon: AcademicCapIcon, route: '/training' },
-  { id: 'vehicles', label: 'Vehicules', description: 'Flotte et suivi GPS', icon: TruckIcon, route: '/vehicles' },
+  { id: 'vehicles', label: 'Vehicules', description: 'Flotte et suivi GPS', icon: TruckIcon, route: '/fleet' },
   { id: 'exports', label: 'Exports', description: 'Rapports et exports CSV/PDF', icon: ArrowDownTrayIcon, route: '/exports' },
   { id: 'webhooks', label: 'Webhooks', description: 'Configuration des webhooks', icon: CogIcon, route: '/webhooks' },
   { id: 'chat', label: 'Chat IA', description: 'Assistant RH intelligent', icon: ChatBubbleLeftRightIcon, route: '/chat' },
   { id: 'settings', label: 'Parametres', description: 'Configuration systeme', icon: CogIcon, route: '/system' },
   { id: 'toggle-dark', label: 'Basculer mode sombre', description: 'Changer le theme', icon: themeStore.isDark ? SunIcon : MoonIcon, action: () => themeStore.toggle(), shortcut: 'Ctrl+D' },
 ]
+
+// Issue #2703 — mêmes règles que la sidebar : on masque les routes tenant-
+// scopées (meta.requiresTenant, 401 systématique en super-admin) et les
+// routes inexistantes (ex. '/vehicles' — la flotte est '/fleet').
+const accessibleRoutes = new Set(
+  router.getRoutes()
+    .filter((route) => !route.meta?.requiresTenant)
+    .map((route) => route.path),
+)
+const allItems = baseItems.filter((item) => {
+  if (item.action) return true
+  return accessibleRoutes.has(item.route)
+})
+const items = allItems
 
 const filteredItems = computed(() => {
   if (!query.value) return items
