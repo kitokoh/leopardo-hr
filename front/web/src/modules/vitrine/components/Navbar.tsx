@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight,
@@ -54,6 +54,13 @@ type NavEntry = NavLink | NavDropdown
 
 function isDropdown(entry: NavEntry): entry is NavDropdown {
   return 'items' in entry
+}
+
+export function buildLocaleUrl(pathname: string, search: string, locale: string): string {
+  const params = new URLSearchParams(search)
+  params.set('lang', locale)
+  const query = params.toString()
+  return query ? `${pathname}?${query}` : pathname
 }
 
 // Hide the Blog link when NEXT_PUBLIC_ENABLE_BLOG is disabled (issue #1305):
@@ -199,7 +206,6 @@ const navByLocale: Record<string, NavEntry[]> = {
 }
 
 function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => void }) {
-  const pathname = usePathname()
   return (
     <motion.div
       initial={{ opacity: 0, y: 8, scale: 0.96 }}
@@ -214,7 +220,6 @@ function DropdownMenu({ entry, onClose }: { entry: NavDropdown; onClose: () => v
             key={item.href}
             href={item.href}
             onClick={onClose}
-            aria-current={pathname === item.href ? 'page' : undefined}
             className="flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-transparent dark:hover:bg-slate-800/80 transition-colors group"
           >
             <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/50 transition-colors">
@@ -237,8 +242,15 @@ export function Navbar({ isDark, onToggleDark }: Props) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { copy, locale, options, setLocale } = useVitrineLocale()
+  const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const entries = filterNavEntries(navByLocale[locale] ?? navByLocale.fr)
+
+  const handleLocaleChange = (nextLocale: typeof locale) => {
+    setLocale(nextLocale)
+    router.replace(buildLocaleUrl(pathname, searchParams.toString(), nextLocale), { scroll: false })
+  }
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40)
@@ -308,7 +320,6 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                 <Link
                   key={entry.href}
                   href={entry.href}
-                  aria-current={pathname === entry.href ? 'page' : undefined}
                   className={`relative px-4 py-2 text-sm font-medium transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80 ${
                     entry.href === '/download'
                       ? 'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center gap-1.5'
@@ -328,7 +339,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
               <span className="sr-only">{copy.nav.localeLabel}</span>
               <select
                 value={locale}
-                onChange={(event) => setLocale(event.target.value as typeof locale)}
+                onChange={(event) => handleLocaleChange(event.target.value as typeof locale)}
                 className="bg-transparent outline-none"
                 aria-label={copy.nav.localeLabel}
               >
@@ -389,7 +400,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                 <Globe className="w-4 h-4" />
                 <select
                   value={locale}
-                  onChange={(event) => setLocale(event.target.value as typeof locale)}
+                  onChange={(event) => handleLocaleChange(event.target.value as typeof locale)}
                   className="w-full bg-transparent outline-none"
                   aria-label={copy.nav.localeLabel}
                 >
