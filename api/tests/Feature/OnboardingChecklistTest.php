@@ -62,17 +62,42 @@ class OnboardingChecklistTest extends TestCase
         $this->assertGreaterThanOrEqual(90, $response->json('data.progress_percent'));
     }
 
-    public function test_employee_cannot_view_client_onboarding_checklist(): void
+    public function test_employee_can_view_client_onboarding_checklist(): void
     {
+        // #3239 — un employé non-manager (role `employee`) doit pouvoir lire
+        // sa propre checklist : plus de 403 (l'ancien authorize viewAny était
+        // réservé aux managers). La lecture n'expose que les données de sa
+        // société (scopées par le middleware tenant).
         $company = Company::factory()->create();
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'employee',
         ]);
 
+        app()->instance('current_company', $company);
+        app()->forgetInstance('current_company');
+
         Sanctum::actingAs($employee);
 
-        $this->getJson('/api/v1/onboarding/checklist')->assertStatus(403);
+        $response = $this->getJson('/api/v1/onboarding/checklist');
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'data' => [
+                'completed_steps',
+                'total_steps',
+                'progress_percent',
+                'progress',
+                'go_live_ready',
+                'next_actions' => [
+                    ['key', 'label'],
+                ],
+                'steps',
+            ],
+        ]);
+        $response->assertJsonPath('data.total_steps', 8);
+        $this->assertCount(8, $response->json('data.steps'));
+        $this->assertIsInt($response->json('data.completed_steps'));
     }
 }
 
