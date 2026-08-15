@@ -107,7 +107,7 @@ const PLAN_CONFIG = {
       'Account manager dédié',
     ],
     trialDays: 14,
-    employeeLimit: '250+ employés',
+    employeeLimit: '500+ employés',
     isFree: false,
   },
 } as const;
@@ -1128,7 +1128,9 @@ function CheckoutInner() {
   // slugs (starter/business/scale) sont des alias doux pour la compat des URLs.
   const rawPlan = (searchParams.get('plan') || 'starter') as string;
   const resolvedPlan = PLAN_ALIASES[rawPlan] ?? rawPlan;
-  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'starter') as PlanKey;
+  // #3326 : fallback sur 'free' (clé réelle) — 'starter' n'existe pas dans
+  // PLAN_CONFIG et provoquait un TypeError (page blanche) sur plan inconnu.
+  const plan: PlanKey = (resolvedPlan in PLAN_CONFIG ? resolvedPlan : 'free') as PlanKey;
   const rawBilling = searchParams.get('billing') as 'monthly' | 'annual' | null;
   const { direction } = useVitrineLocale();
 
