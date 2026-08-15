@@ -45,8 +45,11 @@
         >Voir</a>
       </div>
     </div>
-    <div v-if="loadError" class="rounded-lg bg-red-50 p-4 text-sm text-red-700">
+    <div v-if="loadError" class="rounded-lg bg-red-50 p-4 text-sm text-red-700" role="alert">
       {{ loadError }}
+    </div>
+    <div v-else-if="notificationsError" class="rounded-lg bg-amber-50 p-4 text-center text-sm text-amber-800" role="alert">
+      {{ notificationsError }}
     </div>
     <div v-else-if="!loading" class="rounded-lg bg-green-50 p-4 text-center text-sm text-green-700">
       Aucune notification proactive — tout est en ordre.
@@ -57,6 +60,7 @@
       <div class="card p-6">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Prediction turnover</h2>
         <div v-if="loadingTurnover" class="py-8 text-center text-sm text-gray-500">Analyse en cours...</div>
+        <div v-else-if="turnoverError" class="rounded-lg bg-amber-50 p-4 text-center text-sm text-amber-800" role="alert">{{ turnoverError }}</div>
         <template v-else-if="turnover">
           <div class="mb-4 grid grid-cols-2 gap-4">
             <div class="rounded-md bg-orange-50 p-3 text-center">
@@ -105,6 +109,7 @@
       <div class="card p-6">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Prediction absenteisme</h2>
         <div v-if="loadingAbsenteeism" class="py-8 text-center text-sm text-gray-500">Analyse en cours...</div>
+        <div v-else-if="absenteeismError" class="rounded-lg bg-amber-50 p-4 text-center text-sm text-amber-800" role="alert">{{ absenteeismError }}</div>
         <template v-else-if="absenteeism">
           <div class="mb-4 rounded-md bg-blue-50 p-3 text-center">
             <p class="text-2xl font-bold text-blue-700">{{ absenteeism.predicted_days_next_month }}</p>
@@ -153,6 +158,9 @@ const loadingAbsenteeism = ref(false)
 const notifications = ref([])
 const turnover = ref(null)
 const absenteeism = ref(null)
+const notificationsError = ref('')
+const turnoverError = ref('')
+const absenteeismError = ref('')
 // QA #3491 : un échec d'appel API s'affiche comme un succès (« tout est en
 // ordre » / valeurs vides) — état d'erreur explicite + retry requis.
 const loadError = ref('')
@@ -162,9 +170,11 @@ async function fetchNotifications() {
   try {
     const res = await api.get('/v1/predictions/notifications')
     notifications.value = res.data.data || []
+    notificationsError.value = ''
     loadError.value = ''
   } catch (e) {
     notifications.value = []
+    notificationsError.value = e?.response?.data?.message || 'Impossible de charger les notifications prédictives.'
     loadError.value = e?.response?.data?.message || 'Impossible de charger les notifications prédictives.'
   } finally {
     loading.value = false
@@ -176,9 +186,11 @@ async function fetchTurnover() {
   try {
     const res = await api.get('/v1/predictions/turnover')
     turnover.value = res.data.data || null
+    turnoverError.value = ''
     loadError.value = ''
   } catch (e) {
     turnover.value = null
+    turnoverError.value = e?.response?.data?.message || 'Impossible de charger la prédiction de turnover.'
     loadError.value = e?.response?.data?.message || 'Impossible de charger la prédiction de turnover.'
   } finally {
     loadingTurnover.value = false
@@ -190,9 +202,11 @@ async function fetchAbsenteeism() {
   try {
     const res = await api.get('/v1/predictions/absenteeism')
     absenteeism.value = res.data.data || null
+    absenteeismError.value = ''
     loadError.value = ''
   } catch (e) {
     absenteeism.value = null
+    absenteeismError.value = e?.response?.data?.message || 'Impossible de charger la prédiction d\'absentéisme.'
     loadError.value = e?.response?.data?.message || 'Impossible de charger la prédiction d\'absentéisme.'
   } finally {
     loadingAbsenteeism.value = false
