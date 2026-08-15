@@ -63,8 +63,10 @@ class PayrollCalculatorUnitTest extends TestCase
 
     public function test_get_rules_throws_for_unknown_country(): void
     {
+        // #1868 : résolveur unique sans fallback silencieux — l'exception
+        // dédiée UnsupportedCountryRulesException remplace InvalidArgumentException.
         $this->expectException(UnsupportedCountryRulesException::class);
-        (new PayrollCalculator)->getRules('XX');
+        (new PayrollCalculator())->getRules('XX');
     }
 
     public function test_constructor_accepts_custom_rules(): void

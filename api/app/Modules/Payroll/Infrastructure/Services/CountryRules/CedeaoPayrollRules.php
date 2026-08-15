@@ -435,13 +435,13 @@ class CedeaoPayrollRules extends AbstractCountryRules
             return parent::noticePeriodDays($yearsOfService);
         }
 
-        // Issue #2219 : JOURS OUVRÉS — préavis CI (art. 18 Code du travail) :
-        // < 5 ans : 1 mois = 22 · < 10 ans : 2 mois = 44 · ≥ 10 ans :
-        // 3 mois = 66.
-        return match (true) {
-            $yearsOfService < 5.0 => 22.0,
-            $yearsOfService < 10.0 => 44.0,
-            default => 66.0,
+        // CI_COMPLIANCE.md §8 (Code du travail CI art. 18) : catégorie × ancienneté —
+        // ouvriers 8/15 j, employés-techniciens 1/2 mois, cadres 3 mois. Défaut
+        // (sans catégorie) = employé/technicien (pilot) : < 5 ans → 30 j ; ≥ 5 ans → 60 j.
+        return match (strtolower((string) $category)) {
+            'cadre' => 90.0,
+            'ouvrier', 'worker' => $yearsOfService < 5.0 ? 8.0 : 15.0,
+            default => $yearsOfService < 5.0 ? 30.0 : 60.0,
         };
     }
 

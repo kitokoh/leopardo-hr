@@ -97,10 +97,12 @@ class AbstractCountryRulesCapTest extends TestCase
     {
         $rules = (new CedeaoPayrollRules)->forMemberCountry('CI');
 
-        // Brut 3 000 000 XOF > plafond 1 647 315 → retraite assise sur
-        // 1 647 315 ; famille/AT plafonnés à 70 000 de base (#1913) :
+        // Brut 3 000 000 XOF > plafonds CNSS (guide CNPS, CI_COMPLIANCE.md §4 +
+        // #1913) : retraite salariale 3,2 % / patronale 4,5 % plafonnées à
+        // 1 647 315 ; prestations familiales 5,75 % et AT 2,0 % plafonnées à
+        // 70 000 FCFA/mois (branche, guide CNPS) :
         //   salariale : 1 647 315 × 3,2 % = 52 714,08
-        //   patronale : 1 647 315 × 4,5 % + 70 000 × (5,75 % + 2,0 %)
+        //   patronale : 1 647 315 × 4,5 % + 70 000 × 5,75 % + 70 000 × 2,0 %
         //             = 74 129,18 + 4 025,00 + 1 400,00 = 79 554,18
         $charges = $rules->calculateSocialCharges(3000000.0);
 

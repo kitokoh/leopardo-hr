@@ -131,15 +131,17 @@ class CedeaoRulesUnitTest extends TestCase
         $this->assertFalse((new CedeaoPayrollRules)->forMemberCountry('BF')->thirteenthMonthMandatory());
     }
 
-    public function test_ci_notice_period_days(): void
+    public function test_ci_notice_period_employee_level(): void
     {
-        // CI_COMPLIANCE.md §6 — palier ancienneté (approximation pilote,
-        // matrice complète ouvriers/employés/cadres documentée) :
-        //   < 5 ans : 22 j ouvrés · 5–10 ans : 44 · > 10 ans : 66
-        //   (issue #2219 — jours OUVRÉS, alignement DZ #1943).
-        $this->assertSame(22.0, $this->rules()->noticePeriodDays(3.0));
-        $this->assertSame(44.0, $this->rules()->noticePeriodDays(7.0));
-        $this->assertSame(66.0, $this->rules()->noticePeriodDays(12.0));
+        // CI_COMPLIANCE.md §8 — niveau employé/technicien (pilot) :
+        //   < 5 ans : 30 j · ≥ 5 ans : 60 j. Cadres → 90 j, ouvriers → 8/15 j
+        //   (catégorie passée par EndOfContractService via ipres_category).
+        $this->assertSame(30.0, $this->rules()->noticePeriodDays(3.0));
+        $this->assertSame(30.0, $this->rules()->noticePeriodDays(4.9));
+        $this->assertSame(60.0, $this->rules()->noticePeriodDays(7.0));
+        $this->assertSame(60.0, $this->rules()->noticePeriodDays(12.0));
+        $this->assertSame(90.0, $this->rules()->noticePeriodDays(12.0, 'cadre'));
+        $this->assertSame(8.0, $this->rules()->noticePeriodDays(3.0, 'ouvrier'));
     }
 
     public function test_ci_overtime_tiers(): void
@@ -167,6 +169,7 @@ class CedeaoRulesUnitTest extends TestCase
 
     public function test_other_uemoa_members_unaffected(): void
     {
+        // BJ/TG/NE restent placeholder — sans héritage des règles CI.
         foreach (['BJ', 'TG', 'NE'] as $memberCode) {
             $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
 
@@ -183,6 +186,13 @@ class CedeaoRulesUnitTest extends TestCase
             $charges = $rules->calculateSocialCharges(1000.0);
             $this->assertSame(36.0, $charges['employee'], $memberCode);
             $this->assertSame(164.0, $charges['employer'], $memberCode);
+        }
+
+        // BF/ML passés pilot (#1829) : barèmes IUTS/ITS + CNSS/INPS légaux.
+        foreach (['BF', 'ML'] as $memberCode) {
+            $rules = (new CedeaoPayrollRules)->forMemberCountry($memberCode);
+            $this->assertSame('pilot', $rules->confidenceLevel(), $memberCode);
+            $this->assertCount(6, $rules->taxSlabs(), $memberCode);
         }
     }
 
