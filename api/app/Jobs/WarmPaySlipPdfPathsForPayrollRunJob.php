@@ -85,5 +85,4 @@ class WarmPaySlipPdfPathsForPayrollRunJob implements ShouldQueue, TenantScopedJo
             'exception' => $e->getMessage(),
         ]);
     }
-
 }
