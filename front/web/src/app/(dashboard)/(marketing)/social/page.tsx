@@ -1,11 +1,12 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ListChecks, Plus, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getPreferredLocale, toIntlLocale } from '@/lib/i18n';
+import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { PostEditor, type PostEditorSubmitPayload } from '@/modules/marketing/components/PostEditor';
 import {
   STATUS_STYLES,
@@ -16,6 +17,16 @@ import {
 } from '@/modules/marketing/types';
 
 const WEEKDAY_LABELS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+// #4324 : libellés accessibilité localisés via le catalogue shared/i18n (a11y.*).
+function useA11yLabels(): { previousMonth: string; nextMonth: string; close: string } {
+  const locale = getPreferredLocale();
+  return {
+    previousMonth: i18nT(locale, 'a11y.previous_month'),
+    nextMonth: i18nT(locale, 'a11y.next_month'),
+    close: i18nT(locale, 'a11y.close'),
+  };
+}
 
 function startOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -53,6 +64,7 @@ function toDatetimeLocalValue(date: Date): string {
  * account-connect flow and the flat chronological list + pagination.
  */
 export default function SocialCalendarPage() {
+  const a11y = useA11yLabels();
   const [monthStart, setMonthStart] = useState(() => startOfMonth(new Date()));
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -202,7 +214,7 @@ export default function SocialCalendarPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              aria-label="Mois precedent"
+              aria-label={a11y.previousMonth}
               onClick={() => setMonthStart((prev) => addMonths(prev, -1))}
               className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100"
             >
@@ -213,7 +225,7 @@ export default function SocialCalendarPage() {
             </h2>
             <button
               type="button"
-              aria-label="Mois suivant"
+              aria-label={a11y.nextMonth}
               onClick={() => setMonthStart((prev) => addMonths(prev, 1))}
               className="rounded-lg p-1.5 text-slate-500 transition hover:bg-slate-100"
             >
@@ -319,7 +331,7 @@ export default function SocialCalendarPage() {
               type="button"
               onClick={() => setComposerDay(null)}
               className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-              aria-label="Fermer"
+              aria-label={a11y.close}
             >
               <X className="h-4 w-4" />
             </button>
@@ -357,7 +369,7 @@ export default function SocialCalendarPage() {
                 type="button"
                 onClick={() => setSelectedPost(null)}
                 className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                aria-label="Fermer"
+                aria-label={a11y.close}
               >
                 <X className="h-4 w-4" />
               </button>
