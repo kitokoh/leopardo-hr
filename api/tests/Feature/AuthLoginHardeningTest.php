@@ -57,10 +57,10 @@ class AuthLoginHardeningTest extends TestCase
         // l'état legacy équivalent : un hash corrompu/absent sémantiquement
         // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
         // (TypeError → 500) mais renvoyer 401.
-                $sensitiveEmployee2 = Employee::query()->create([
+                $sensitiveEmployee2 = new Employee([
             'email' => 'broken-hash@company.test',
-            'password_hash' => 'legacy-broken-hash',
         ]);
+        $sensitiveEmployee2->forceFill(['password_hash' => 'legacy-broken-hash'])->save();
         $sensitiveEmployee2->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -81,10 +81,10 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        $sensitiveEmployee1 = Employee::query()->create([
+        $sensitiveEmployee1 = new Employee([
             'email' => 'empty-hash@company.test',
-            'password_hash' => '',
         ]);
+        $sensitiveEmployee1->forceFill(['password_hash' => ''])->save();
         $sensitiveEmployee1->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -104,10 +104,10 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        $sensitiveEmployee0 = Employee::query()->create([
+        $sensitiveEmployee0 = new Employee([
             'email' => 'good-hash@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('password123')])->save();
         $sensitiveEmployee0->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

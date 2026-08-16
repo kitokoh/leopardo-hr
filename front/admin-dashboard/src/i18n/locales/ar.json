@@ -370,7 +370,7 @@
       "title": "حذف هذا المستخدم؟"
     },
     "page": {
-      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم",
+      "summary": ":count مستخدم",
       "title": "إدارة المستخدمين"
     },
     "toast": {
@@ -388,7 +388,7 @@
       "exportError": "فشل التصدير",
       "exportDone": "تم التصدير",
       "deleteError": "خطأ في حذف المستخدم",
-      "bulkDone": "تم التحديث"
+      "bulkDone": "تم تحديث :count مستخدم"
     },
     "edit": {
       "title": "تعديل المستخدم",
@@ -1043,5 +1043,18 @@
     "loadError": "تعذرت مزامنة طلبات العملاء.",
     "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
     "toastRejected": "تم رفض الطلب."
+  },
+  "api": {
+    "sessionExpired": "انتهت الجلسة. جارٍ إعادة الاتصال...",
+    "accessDenied": "تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.",
+    "notFound": "المورد غير موجود: :endpoint",
+    "tooManyRequests": "طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.",
+    "serverError": "خطأ في الخادم على :endpoint. :detail",
+    "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). حاول مرة أخرى بعد قليل.",
+    "genericError": "خطأ :status على :endpoint.",
+    "invalidData": "بيانات غير صالحة.",
+    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت.",
+    "unexpectedError": "حدث خطأ غير متوقع.",
+    "serverErrorRetry": "حاول مرة أخرى لاحقًا."
   }
 }

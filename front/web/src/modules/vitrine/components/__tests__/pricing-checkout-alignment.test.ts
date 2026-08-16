@@ -12,6 +12,8 @@ import { planNameToCheckoutKey } from '../PricingSection'
 
 // Contrat mirroré depuis checkout/page.tsx (PLAN_CONFIG + PLAN_ALIASES).
 // Si le checkout change, ce test casse → les deux surfaces restent alignées.
+// ADR-0014 (#4456) : Operations = 79 €/mois, 66 €/mois annuel (790 €/an) —
+// le 99 €/mois était une erreur du seeder historique (#4421/#4419).
 const CHECKOUT_PLANS = {
   free: { label: 'Free', monthly: 0, annual: 0 },
   pilot: { label: 'Pilot', monthly: 29, annual: 24 },

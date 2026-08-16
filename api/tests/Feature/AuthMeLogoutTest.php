@@ -39,10 +39,10 @@ class AuthMeLogoutTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -88,11 +88,11 @@ class AuthMeLogoutTest extends TestCase
             'language' => 'fr',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
             'preferred_language' => 'ar',
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -123,10 +123,10 @@ class AuthMeLogoutTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -157,10 +157,10 @@ class AuthMeLogoutTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'archived@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -190,10 +190,10 @@ class AuthMeLogoutTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

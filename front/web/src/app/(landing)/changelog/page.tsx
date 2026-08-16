@@ -4,14 +4,15 @@ import { useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { publicChangelogReleases } from '@/modules/vitrine/data/changelog-public';
+import { getChangelogReleases } from '@/modules/vitrine/data/changelog-public';
 import { Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function ChangelogPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
-  const { copy, direction } = useVitrineLocale();
+  const { locale, copy, direction } = useVitrineLocale();
+  const publicChangelogReleases = getChangelogReleases(locale);
   const ch = copy.changelog;
 
   const headline = `${ch.title} ${ch.titleHighlight}`;

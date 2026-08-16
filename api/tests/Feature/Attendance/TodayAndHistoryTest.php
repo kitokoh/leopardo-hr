@@ -35,12 +35,12 @@ class TodayAndHistoryTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -82,24 +82,24 @@ class TodayAndHistoryTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $employeeA = Employee::query()->create([
+        $employeeA = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employeeA->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employeeA->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
 
-        $employeeB = Employee::query()->create([
+        $employeeB = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@b.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employeeB->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employeeB->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -159,24 +159,24 @@ class TodayAndHistoryTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -238,12 +238,12 @@ class TodayAndHistoryTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $managerA = Employee::query()->create([
+        $managerA = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $managerA->forceFill(['password_hash' => Hash::make('password123')])->save();
         $managerA->forceFill([
             'company_id' => $companyA->id,
             'role' => 'manager',
