@@ -8,13 +8,13 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
+use App\Modules\Payroll\Application\Services\SocialDeclarationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\CedeaoCnsDeclarationGenerator;
-use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CemacCnpsDeclarationGenerator;
+use App\Modules\Payroll\Infrastructure\Services\CnpsDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\CnssDeclarationGenerator;
 use App\Modules\Payroll\Infrastructure\Services\IpresDeclarationGenerator;
-use App\Modules\Payroll\Application\Services\SocialDeclarationService;
 use App\Modules\Payroll\Infrastructure\Services\SocialDeclarationGenerator;
 use DateTimeInterface;
 use Illuminate\Http\JsonResponse;
@@ -46,12 +46,12 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnas_declaration');
 
-        $employees = $this->declarationService->activeEmployees($actor->company_id);
+        $employees = $this->declarationService->activeEmployees((string) $actor->company_id);
 
         $quarterMonths = $this->declarationService->quarterMonths((string) $validated['quarter']);
 
         $payrollData = $this->declarationService->quarterPayrollData(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $validated['year'],
             $quarterMonths,
             withMonthsCount: true,
@@ -114,12 +114,12 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.cnss_declaration');
 
-        $employees = $this->declarationService->activeEmployees($actor->company_id);
+        $employees = $this->declarationService->activeEmployees((string) $actor->company_id);
 
         $quarterMonths = $this->declarationService->quarterMonths((string) $validated['quarter']);
 
         $payrollData = $this->declarationService->quarterPayrollData(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $validated['year'],
             $quarterMonths,
         );
@@ -197,10 +197,10 @@ class SocialDeclarationController extends Controller
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.dsn_declaration');
 
-        $employees = $this->declarationService->activeEmployees($actor->company_id);
+        $employees = $this->declarationService->activeEmployees((string) $actor->company_id);
 
         $payrollData = $this->declarationService->monthPayrollData(
-            $actor->company_id,
+            (string) $actor->company_id,
             (int) $validated['year'],
             (int) $validated['month'],
         );
@@ -441,7 +441,6 @@ class SocialDeclarationController extends Controller
             'Content-Disposition' => 'attachment; filename='.$filename,
         ]);
     }
-
 
     /**
      * Gardes communes des déclarations par run : isolation tenant (404),

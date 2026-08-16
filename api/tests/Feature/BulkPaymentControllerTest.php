@@ -9,9 +9,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Redis;
 use Laravel\Sanctum\Sanctum;
+use Mockery;
+use Mockery\Expectation;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -36,7 +39,7 @@ class BulkPaymentControllerTest extends TestCase
         // (un del() ré-appliquerait le préfixe → échec silencieux). flushdb est
         // fiable et sûr : la suite tourne en séquentiel dans un job CI dédié.
         try {
-            \Illuminate\Support\Facades\Redis::connection('default')->flushdb();
+            Redis::connection('default')->flushdb();
         } catch (\Throwable) {
             // Redis indisponible : les tests continuent (garde non bloquante).
         }
@@ -181,9 +184,13 @@ class BulkPaymentControllerTest extends TestCase
         [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
         Sanctum::actingAs($manager);
 
-        $client = Mockery::mock();
-        $client->shouldReceive('set')->andThrow(new \RuntimeException('Redis connection refused'));
-        $client->shouldReceive('get')->andReturn(null);
+        $client = Mockery::mock(PhpRedisConnection::class);
+        /** @var Expectation $setExpectation */
+        $setExpectation = $client->shouldReceive('set');
+        $setExpectation->andThrow(new \RuntimeException('Redis connection refused'));
+        /** @var Expectation $getExpectation */
+        $getExpectation = $client->shouldReceive('get');
+        $getExpectation->andReturn(null);
         Redis::shouldReceive('connection')->with('default')->andReturn($client);
 
         $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
@@ -193,4 +200,3 @@ class BulkPaymentControllerTest extends TestCase
         Bus::assertNotDispatched(ProcessBulkPaymentJob::class);
     }
 }
-
