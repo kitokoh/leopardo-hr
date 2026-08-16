@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): garde de build — NEXT_PUBLIC_SITE_URL obligatoire en production (Closes #4600).** `DEFAULT_SITE_URL` pointe vers leopardo-rh.com, en NXDOMAIN (#3452) ; un build prod sans env var émettait des canonicals/sitemap/JSON-LD vers un domaine mort. `getSiteUrl()` lève désormais une erreur explicite au build (`NODE_ENV=production` + `NEXT_PHASE=phase-production-build`) si `NEXT_PUBLIC_SITE_URL` est absent — échec bruyant plutôt que canonicals invalides. Dev/test inchangés.
 
 - **fix(api): EdgeController::health — variable `$sqliteReady` restaurée (ParseError #4577).** Le merge #4577 a livré ` = true;` / `if (! )` (nom de variable avalé par une résolution de conflit) → ParseError PHP sur main. Correctif : `$sqliteReady` reconstruit, lint OK.
 
