@@ -51,6 +51,15 @@ const surfaces = [
     priority: ['login', 'account', 'team', 'attendance', 'approvals', 'notifications'],
   },
   {
+    // #4397 : la 4e app tenant (leopardo_hr, séparée de l'historique supprimé
+    // en #754) était absente du scanner — sa dette i18n (≈200 chaînes FR
+    // codées en dur) n'apparaissait ni dans le rapport ni dans #4194.
+    name: 'mobile_hr',
+    dir: 'front/mobile_apps/leopardo_hr/lib',
+    extensions: ['.dart'],
+    priority: ['login', 'account', 'attendance', 'absences', 'payroll', 'notifications', 'evaluations'],
+  },
+  {
     name: 'mobile_platform_admin',
     dir: 'front/mobile_apps/leopardo_platform_admin/lib',
     extensions: ['.dart'],
