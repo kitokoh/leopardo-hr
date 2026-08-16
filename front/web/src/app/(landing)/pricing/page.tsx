@@ -159,8 +159,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       items: [
         { id: 'starter-plan', question: 'Que comprend le plan Pilot ?', answer: "Le plan Pilot à 29 €/mois inclut jusqu'à 30 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.", category: 'Essai' },
         { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
-        { id: 'per-employee', question: 'Comment fonctionne la facturation ?', answer: "Chaque plan inclut un prix fixe par mois avec un plafond d'employés inclus (30 pour Pilot, 250 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.", category: 'Facturation' },
+        { id: 'per-employee', question: 'Comment fonctionne la facturation ?', answer: "Chaque plan inclut un prix fixe par mois avec un plafond d'employés inclus (5 pour Free, 30 pour Pilot, 250 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.", category: 'Facturation' },
         { id: 'free-trial', question: 'L\'essai est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités payantes. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'free-plan', question: 'Le plan Free est-il vraiment gratuit ?', answer: "Oui. Le plan Free (0 €/mois) inclut jusqu'à 5 employés : pointage web, absences et congés, dossiers employés et l'app mobile Employee. Aucune carte bancaire.", category: 'Essai' },
         { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
         { id: 'support', question: 'Quel support est disponible ?', answer: "Pilot : support email sous 48h. Operations : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.", category: 'Support' },
         { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
@@ -268,8 +269,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       items: [
         { id: 'starter-plan', question: 'What does the Pilot plan include?', answer: "The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.", category: 'Trial' },
         { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
-        { id: 'per-employee', question: 'How does billing work?', answer: "Each plan includes a fixed monthly price with an included employee cap (30 for Pilot, 250 for Operations, unlimited for Enterprise). No per-active-employee surcharge.", category: 'Billing' },
+        { id: 'per-employee', question: 'How does billing work?', answer: "Each plan includes a fixed monthly price with an included employee cap (5 for Free, 30 for Pilot, 250 for Operations, unlimited for Enterprise). No per-active-employee surcharge.", category: 'Billing' },
         { id: 'free-trial', question: 'Is the trial really free?', answer: 'Yes. 14 full days with all paid features included. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'free-plan', question: 'Is the Free plan really free?', answer: "Yes. The Free plan (€0/month) includes up to 5 employees: web attendance, leave and absences, employee records and the Employee mobile app. No credit card.", category: 'Trial' },
         { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
         { id: 'support', question: 'What support is available?', answer: "Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.", category: 'Support' },
         { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
@@ -377,8 +379,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       items: [
         { id: 'starter-plan', question: 'Pilot planı neler içerir?', answer: "Ayda 29 €'dan başlayan Pilot planı 30 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.", category: 'Deneme' },
         { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
-        { id: 'per-employee', question: 'Faturalama nasıl çalışır?', answer: "Her plan, dahil edilen çalışan sınırıyla (Pilot için 30, Operations için 250, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.", category: 'Faturalama' },
+        { id: 'per-employee', question: 'Faturalama nasıl çalışır?', answer: "Her plan, dahil edilen çalışan sınırıyla (Free için 5, Pilot için 30, Operations için 250, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.", category: 'Faturalama' },
         { id: 'free-trial', question: 'Deneme gerçekten ücretsiz mi?', answer: 'Evet. Tüm ücretli özelliklerle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'free-plan', question: 'Free planı gerçekten ücretsiz mi?', answer: "Evet. Free planı (0 €/ay) 5 çalışana kadar: web yoklama, izinler ve devamsızlık, çalışan dosyaları ve Employee mobil uygulaması. Kredi kartı gerekmez.", category: 'Deneme' },
         { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
         { id: 'support', question: 'Hangi destek sağlanır?', answer: "Pilot: 48 saat içinde e-posta desteği. Operations: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.", category: 'Destek' },
         { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
@@ -486,8 +489,9 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       items: [
         { id: 'starter-plan', question: 'ماذا تشمل خطة Pilot؟', answer: "خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.", category: 'التجربة' },
         { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
-        { id: 'per-employee', question: 'كيف تعمل الفوترة؟', answer: "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (30 لـ Pilot، 250 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.", category: 'الفوترة' },
+        { id: 'per-employee', question: 'كيف تعمل الفوترة؟', answer: "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (5 لـ Free، 30 لـ Pilot، 250 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.", category: 'الفوترة' },
         { id: 'free-trial', question: 'هل التجربة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع المزايا المدفوعة. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'free-plan', question: 'هل خطة Free مجانية حقًا؟', answer: "نعم. خطة Free (0 €/شهر) تشمل حتى 5 موظفين: الحضور عبر الويب، الإجازات والغيابات، ملفات الموظفين وتطبيق Employee للجوال. لا بطاقة ائتمان.", category: 'التجربة' },
         { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
         { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: "Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.", category: 'الدعم' },
         { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
@@ -641,8 +645,9 @@ export default function PricingPage() {
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
-    // Legacy free-plan fallback (aucun plan à 0 € dans pricing.ts — garde défensive)
-    if (plan.price === '0') return '/checkout?plan=free';
+    // #3883 : le plan Free (0 €) mène à l'essai guidé sans carte — jamais au
+    // paywall du checkout (leçon #2907 : « Start for free » → paywall 24 €/mois).
+    if (plan.price === '0') return '/signup?source=pricing_free';
     // Enterprise → contact
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
     // Paid plans → checkout with payment

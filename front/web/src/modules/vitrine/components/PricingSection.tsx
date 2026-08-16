@@ -28,6 +28,9 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
   // #3329 : le plan pilote gratuit doit mener au parcours d'essai sans carte.
   if (planNameToCheckoutKey(planName) === 'pilot') return `/signup?source=home_pilot`
+  // #3883 : le plan Free (0 €) suit le même funnel sans carte que l'essai guidé
+  // (#2907 : ne jamais mener « Start for free » vers le paywall du checkout).
+  if (planNameToCheckoutKey(planName) === 'free') return '/signup?source=pricing_free'
   const planKey = planNameToCheckoutKey(planName)
   return `/checkout?plan=${planKey}&billing=${billing}`
 }
@@ -102,7 +105,7 @@ export function PricingSection() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {pricingPlans.map((plan, index) => {
             const displayPrice = isAnnual ? plan.annualPrice : plan.price
             const displayPeriod = isAnnual ? plan.annualPeriod : plan.period
