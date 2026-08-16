@@ -1,8 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { Bell, Mail, MessageSquareText, Smartphone, Save, ShieldCheck } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 type NotificationPreferences = {
   app_enabled: boolean;
@@ -21,22 +23,23 @@ type NotificationPreferences = {
 };
 
 const CHANNELS = [
-  { key: 'app_enabled', label: 'Dans l app', description: 'Centre de notifications web et mobile.', icon: Bell },
-  { key: 'email_enabled', label: 'Email', description: 'Messages importants et confirmations.', icon: Mail },
-  { key: 'push_enabled', label: 'Push mobile/web', description: 'Alertes rapides sur les appareils enregistres.', icon: Smartphone },
-  { key: 'sms_enabled', label: 'SMS', description: 'Canal court pour urgences, active apres opt-in.', icon: MessageSquareText },
-  { key: 'whatsapp_enabled', label: 'WhatsApp', description: 'Canal conversationnel futur, avec opt-in explicite.', icon: MessageSquareText },
+  { key: 'app_enabled', label: 'notifications.channel_app', description: 'notifications.channel_app_desc', icon: Bell },
+  { key: 'email_enabled', label: 'notifications.channel_email', description: 'notifications.channel_email_desc', icon: Mail },
+  { key: 'push_enabled', label: 'notifications.channel_push', description: 'notifications.channel_push_desc', icon: Smartphone },
+  { key: 'sms_enabled', label: 'notifications.channel_sms', description: 'notifications.channel_sms_desc', icon: MessageSquareText },
+  { key: 'whatsapp_enabled', label: 'notifications.channel_whatsapp', description: 'notifications.channel_whatsapp_desc', icon: MessageSquareText },
 ] as const;
 
 const CATEGORIES = [
-  { key: 'hr', label: 'RH' },
-  { key: 'payroll', label: 'Paie' },
-  { key: 'security', label: 'Sécurité' },
-  { key: 'system', label: 'Système' },
-  { key: 'marketing', label: 'Conseils produit' },
+  { key: 'hr', label: 'notifications.cat_hr' },
+  { key: 'payroll', label: 'notifications.cat_payroll' },
+  { key: 'security', label: 'notifications.cat_security' },
+  { key: 'system', label: 'notifications.cat_system' },
+  { key: 'marketing', label: 'notifications.cat_marketing' },
 ] as const;
 
 export default function NotificationSettingsPage() {
+  const [locale] = useState<AppLocale>(() => getPreferredLocale());
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -119,9 +122,9 @@ export default function NotificationSettingsPage() {
       });
       const payload = await response.json() as { data?: NotificationPreferences };
       setPreferences(normalizePreferences(payload.data));
-      setMessage('Preferences enregistrees.');
+      setMessage(i18nT(locale, 'notifications.saved'));
     } catch {
-      setMessage('Impossible d enregistrer les preferences pour le moment.');
+      setMessage(i18nT(locale, 'notifications.save_error'));
     } finally {
       setSaving(false);
     }
@@ -145,10 +148,10 @@ export default function NotificationSettingsPage() {
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Communication interne</p>
-            <h1 className="mt-2 text-3xl font-black text-slate-950">Mes preferences de notifications</h1>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">{i18nT(locale, 'notifications.badge')}</p>
+            <h1 className="mt-2 text-3xl font-black text-slate-950">{i18nT(locale, 'notifications.heading')}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Choisissez les canaux utiles sans perdre les alertes critiques. Les messages courts restent limites aux contenus non sensibles.
+              {i18nT(locale, 'notifications.intro')}
             </p>
           </div>
           <button
@@ -158,7 +161,7 @@ export default function NotificationSettingsPage() {
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-4 w-4" aria-hidden="true" />
-            {saving ? 'Enregistrement...' : 'Enregistrer'}
+            {saving ? i18nT(locale, 'notifications.saving') : i18nT(locale, 'notifications.save')}
           </button>
         </div>
         {message ? (
@@ -185,11 +188,11 @@ export default function NotificationSettingsPage() {
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-bold ${enabled ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
-                  {enabled ? 'Actif' : 'Desactive'}
+                  {enabled ? i18nT(locale, 'notifications.enabled_badge') : i18nT(locale, 'notifications.disabled_badge')}
                 </span>
               </div>
-              <h2 className="mt-4 text-lg font-black text-slate-950">{channel.label}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{channel.description}</p>
+              <h2 className="mt-4 text-lg font-black text-slate-950">{i18nT(locale, channel.label)}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">{i18nT(locale, channel.description)}</p>
             </button>
           );
         })}
@@ -197,14 +200,14 @@ export default function NotificationSettingsPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-black text-slate-950">Catégories</h2>
+          <h2 className="text-xl font-black text-slate-950">{i18nT(locale, 'notifications.title')}</h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {CATEGORIES.map((category) => {
               const enabled = preferences.categories?.[category.key] ?? true;
 
               return (
                 <label key={category.key} className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3">
-                  <span className="text-sm font-bold text-slate-800">{category.label}</span>
+                  <span className="text-sm font-bold text-slate-800">{i18nT(locale, category.label)}</span>
                   <input
                     type="checkbox"
                     checked={enabled}
@@ -223,12 +226,12 @@ export default function NotificationSettingsPage() {
               <ShieldCheck className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-950">Heures calmes</h2>
-              <p className="text-xs text-slate-500">Les alertes critiques restent possibles.</p>
+              <h2 className="text-lg font-black text-slate-950">{i18nT(locale, 'notifications.quiet_hours')}</h2>
+              <p className="text-xs text-slate-500">{i18nT(locale, 'notifications.quiet_hours_hint')}</p>
             </div>
           </div>
           <label className="mt-5 flex items-center justify-between rounded-2xl bg-transparent px-4 py-3 text-sm font-bold text-slate-800">
-            Activer
+            {i18nT(locale, 'notifications.enable')}
             <input
               type="checkbox"
               checked={Boolean(preferences.quiet_hours?.enabled)}
@@ -238,7 +241,7 @@ export default function NotificationSettingsPage() {
           </label>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-              Debut
+              {i18nT(locale, 'notifications.start')}
               <input
                 type="time"
                 value={preferences.quiet_hours?.start ?? '20:00'}
@@ -247,7 +250,7 @@ export default function NotificationSettingsPage() {
               />
             </label>
             <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
-              Fin
+              {i18nT(locale, 'notifications.end')}
               <input
                 type="time"
                 value={preferences.quiet_hours?.end ?? '07:00'}

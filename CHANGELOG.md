@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(web): manager dashboard localisé ×4 — littéraux FR résiduels migrés vers le catalogue i18n (Closes #4579).** Pages `(dashboard)/dashboard`, `reports`, `settings/notifications` et `employees` : 60+ chaînes FR en dur (stats KPI, PriorityAction, empty states, cartes rapports + libellés de paramètres + messages succès/erreur, canaux/catégories/heures calmes des notifications, vue équipe) migrées vers `i18nT(locale, …)` avec clés `dashboard.*`, `reports.*`, `notifications.*`, `employees.*` ajoutées aux 4 catalogues shared (`shared/i18n/locales/{fr,en,tr,ar}.json` + sync-web). Validation : `tsc --noEmit` vert, `eslint` 0 erreur 0 warning, parité ×4 locales.
+
 - **fix(api): EdgeController::health — variable `$sqliteReady` restaurée (ParseError #4577).** Le merge #4577 a livré ` = true;` / `if (! )` (nom de variable avalé par une résolution de conflit) → ParseError PHP sur main. Correctif : `$sqliteReady` reconstruit, lint OK.
 
 - **fix(api): erreurs PHP sur main — littéral  retiré des 4 errors.php (#4565) +  dédupliqué sur SendTrialDripEmailJob/PublishScheduledPostJob (doublon #4296/#4399).** Le merge storm avait (1) injecté un littéral  cassant le parse PHP des 4 catalogues (régression de ma résolution de conflit sur #4441/#4444) et (2) doublé la méthode  via le merge commit 7795d9ec7 + le squash #4443. Correctif : catalogues réparés (comma rétabli), version enrichie conservée dans les 2 jobs. Validation : No syntax errors detected in Standard input code ×4 + ×2 OK.

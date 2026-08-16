@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
@@ -134,7 +134,7 @@ export default function DashboardPage() {
   const role = user?.role?.toLowerCase() ?? null;
   const isEmployee = role === 'employee';
   const isSuperAdmin = role === 'super_admin';
-  const companyName = user?.company?.name ?? 'Votre entreprise';
+  const companyName = user?.company?.name ?? i18nT(locale, 'dashboard.your_company');
   const modules = getClientModuleAccess(user);
   const activeModules = modules.filter((module) => module.enabled && module.key !== 'dashboard').length;
   const lockedModules = modules.filter((module) => !module.enabled).length;
@@ -288,7 +288,7 @@ export default function DashboardPage() {
         });
       } catch (error) {
         if (cancelled) return;
-        setLoadError(error instanceof ApiError ? error.message : 'Impossible de charger les donnees du dashboard.');
+        setLoadError(error instanceof ApiError ? error.message : i18nT(locale, 'dashboard.load_error'));
         trackDashboardLoaded({
           surface: 'manager',
           status: 'error',
@@ -305,20 +305,20 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isEmployee, isSuperAdmin, trackDashboardLoaded, userLoaded]);
+  }, [isEmployee, isSuperAdmin, locale, trackDashboardLoaded, userLoaded]);
 
   const stats: DashboardStat[] = [
     {
-      title: 'Employés actifs',
+      title: i18nT(locale, 'dashboard.stat_employees_active'),
       value: summary?.employees_active ?? 0,
-      change: `${summary?.employees_total ?? 0} total`,
+      change: `${summary?.employees_total ?? 0} ${i18nT(locale, 'dashboard.stat_total')}`,
       trend: 'up',
       icon: Users,
       color: 'from-security to-security-dark',
       bgColor: 'bg-security-light',
     },
     {
-      title: 'Presents aujourd hui',
+      title: i18nT(locale, 'dashboard.stat_present_today'),
       value: summary?.today_attendance ?? 0,
       change: summary && summary.employees_active > 0
         ? `${Math.round((summary.today_attendance / summary.employees_active) * 100)}%`
@@ -329,18 +329,18 @@ export default function DashboardPage() {
       bgColor: 'bg-rh-light',
     },
     {
-      title: 'Absences en attente',
+      title: i18nT(locale, 'dashboard.stat_pending_absences'),
       value: summary?.pending_absences ?? 0,
-      change: 'a traiter',
+      change: i18nT(locale, 'dashboard.stat_to_process'),
       trend: 'down',
       icon: Clock,
       color: 'from-finance to-finance-dark',
       bgColor: 'bg-finance-light',
     },
     {
-      title: 'Départements',
+      title: i18nT(locale, 'dashboard.stat_departments'),
       value: summary?.departments ?? 0,
-      change: 'actifs',
+      change: i18nT(locale, 'dashboard.stat_active'),
       trend: 'up',
       icon: Clock,
       color: 'from-ia to-ia-dark',
@@ -351,7 +351,7 @@ export default function DashboardPage() {
   const activityRows = activities.length > 0
     ? activities.map((activity) => ({
         key: String(activity.id),
-        name: activity.auditable_type?.split('\\').pop() ?? 'Système',
+        name: activity.auditable_type?.split('\\').pop() ?? i18nT(locale, 'dashboard.activity_system'),
         action: activity.action,
         time: activity.created_at ? new Date(activity.created_at).toLocaleTimeString(toIntlLocale(locale), { hour: '2-digit', minute: '2-digit' }) : '--:--',
         avatar: (activity.action || 'A').slice(0, 2).toUpperCase(),
@@ -380,7 +380,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-3xl font-black text-slate-950">{i18nT(locale, 'dashboard.title', 'Tableau de bord')}</h1>
           <p className="mt-1 text-slate-500">
-            {loading ? 'Chargement des donnees tenant...' : 'Bienvenue ! Voici ce qui se passe aujourd hui.'}
+            {loading ? i18nT(locale, 'dashboard.loading_tenant') : i18nT(locale, 'dashboard.welcome')}
           </p>
           {loadError ? (
             <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
@@ -430,8 +430,8 @@ export default function DashboardPage() {
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-5 text-white shadow-sm">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-200">{i18nT(locale, 'dashboard.priority_actions', 'Actions prioritaires')}</p>
           <div className="mt-4 grid gap-3 text-sm">
-            <PriorityAction label="Traiter les absences en attente" value={summary?.pending_absences ?? 0} href="/absences" />
-            <PriorityAction label="Vérifier les présences du jour" value={summary?.today_attendance ?? 0} href="/attendance" />
+            <PriorityAction label={i18nT(locale, 'dashboard.priority_process_absences')} value={summary?.pending_absences ?? 0} href="/absences" />
+            <PriorityAction label={i18nT(locale, 'dashboard.priority_check_presence')} value={summary?.today_attendance ?? 0} href="/attendance" />
           </div>
         </div>
       </section>
@@ -442,10 +442,10 @@ export default function DashboardPage() {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">{i18nT(locale, 'dashboard.launch_readiness', 'Readiness lancement')}</p>
               <h2 className="mt-2 text-2xl font-black text-slate-950">
-                {readiness.go_live_ready ? 'Votre espace est pret pour le go-live' : 'Actions requises avant le go-live'}
+                {readiness.go_live_ready ? i18nT(locale, 'dashboard.go_live_ready') : i18nT(locale, 'dashboard.go_live_actions')}
               </h2>
               <p className="mt-1 text-sm leading-6 text-slate-500">
-                Score {readiness.score}/100 base sur les donnees tenant, la communication, la paie, le pointage et l instrumentation client.
+                {i18nT(locale, 'dashboard.readiness_score').replace('{score}', String(readiness.score))}
               </p>
             </div>
             <div className={`flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl text-3xl font-black ${
@@ -512,7 +512,7 @@ export default function DashboardPage() {
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  Aujourd&apos;hui
+                  {i18nT(locale, 'dashboard.tab_today')}
                 </button>
                 <button
                   onClick={() => setActiveTab('week')}
@@ -522,7 +522,7 @@ export default function DashboardPage() {
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                 >
-                  Cette semaine
+                  {i18nT(locale, 'dashboard.tab_week')}
                 </button>
               </div>
             </div>
@@ -530,7 +530,7 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {activityRows.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-app-border p-6 text-sm text-slate-500">
-                  Aucune activité recente a afficher pour ce tenant.
+                  {i18nT(locale, 'dashboard.recent_activity_empty')}
                 </div>
               ) : activityRows.map((activity, index) => (
                 <motion.div
@@ -607,7 +607,7 @@ export default function DashboardPage() {
                 {announcementSent ? (
                   <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
-                    Message envoyé à l&apos;équipe
+                    {i18nT(locale, 'dashboard.announcement_sent')}
                   </div>
                 ) : (
                   <>
@@ -623,7 +623,7 @@ export default function DashboardPage() {
                         disabled={announcementSending}
                         className="flex-1 rounded-xl bg-gradient-to-r from-ia to-ia-dark py-2.5 text-sm font-bold text-white transition-all hover:shadow-lg hover:shadow-ia/30 disabled:cursor-not-allowed disabled:opacity-60"
                       >
-                        {announcementSending ? 'Envoi...' : 'Oui, envoyer'}
+                        {announcementSending ? i18nT(locale, 'dashboard.sending') : i18nT(locale, 'dashboard.send_yes')}
                       </button>
                       <button
                         type="button"
@@ -647,10 +647,10 @@ export default function DashboardPage() {
                   liens doublons/disablés feature-gated — sélecteur scopé). */}
               <div data-testid="quick-actions" className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Employés', color: 'bg-security', href: '/employees' },
-                  { icon: Calendar, label: 'Congés', color: 'bg-rh', href: '/absences' },
-                  { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
-                  { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
+                  { icon: Users, label: i18nT(locale, 'dashboard.quick_employees'), color: 'bg-security', href: '/employees' },
+                  { icon: Calendar, label: i18nT(locale, 'dashboard.quick_leave'), color: 'bg-rh', href: '/absences' },
+                  { icon: TrendingUp, label: i18nT(locale, 'dashboard.quick_reports'), color: 'bg-ia', href: '/reports' },
+                  { icon: Download, label: i18nT(locale, 'dashboard.quick_export'), color: 'bg-finance', href: '/reports' },
                 ].map((action) => (
                   <Link
                     key={action.label}
@@ -726,20 +726,21 @@ function PriorityAction({ label, value, href }: { label: string; value: number; 
 }
 
 function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const cards = [
-    { icon: CheckCircle2, title: 'Pointage', text: 'Voir votre etat du jour.', href: '/attendance' },
-    { icon: Calendar, title: 'Absences', text: 'Suivre vos demandes et soldes.', href: '/absences' },
-    { icon: FileCheck, title: 'Bulletins', text: 'Consulter vos documents de paie.', href: '/payroll' },
-    { icon: Languages, title: 'Langue', text: 'Votre interface suit vos preferences.', href: '/dashboard' },
+    { icon: CheckCircle2, title: i18nT(locale, 'dashboard.card_attendance_title'), text: i18nT(locale, 'dashboard.card_attendance_text'), href: '/attendance' },
+    { icon: Calendar, title: i18nT(locale, 'dashboard.card_leave_title'), text: i18nT(locale, 'dashboard.card_leave_text'), href: '/absences' },
+    { icon: FileCheck, title: i18nT(locale, 'dashboard.card_payslips_title'), text: i18nT(locale, 'dashboard.card_payslips_text'), href: '/payroll' },
+    { icon: Languages, title: i18nT(locale, 'dashboard.card_language_title'), text: i18nT(locale, 'dashboard.card_language_text'), href: '/dashboard' },
   ];
 
   return (
     <div className="space-y-6 p-6">
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">Espace employé</p>
-        <h1 className="mt-3 text-3xl font-black text-slate-950">Bonjour {getDisplayName(user)}</h1>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700">{i18nT(locale, 'dashboard.employee_space')}</p>
+        <h1 className="mt-3 text-3xl font-black text-slate-950">{i18nT(locale, 'dashboard.hello').replace('{name}', getDisplayName(user))}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-          Retrouvez vos actions utiles sans passer par les vues manager : pointage, absences, bulletins et langue.
+          {i18nT(locale, 'dashboard.employee_hint')}
         </p>
       </section>
 
@@ -757,6 +758,7 @@ function EmployeeDashboard({ user }: { user: StoredAuthUser | null }) {
 }
 
 function SuperAdminBridge({ user }: { user: StoredAuthUser | null }) {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL;
 
   return (
@@ -765,29 +767,29 @@ function SuperAdminBridge({ user }: { user: StoredAuthUser | null }) {
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
           <Building2 className="h-6 w-6" aria-hidden="true" />
         </div>
-        <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Super admin</p>
-        <h1 className="mt-2 text-3xl font-black text-slate-950">Bonjour {getDisplayName(user)}</h1>
+        <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{i18nT(locale, 'dashboard.super_admin_badge')}</p>
+        <h1 className="mt-2 text-3xl font-black text-slate-950">{i18nT(locale, 'dashboard.hello').replace('{name}', getDisplayName(user))}</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-          Cette surface est optimisee pour les espaces clients. L administration plateforme se fait depuis le dashboard admin dedie.
+          {i18nT(locale, 'dashboard.super_admin_hint')}
         </p>
         {adminUrl ? (
           <Link href={adminUrl} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
-            Ouvrir le dashboard admin
+            {i18nT(locale, 'dashboard.open_admin')}
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         ) : (
           <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            Configurez NEXT_PUBLIC_ADMIN_URL pour ajouter le lien direct vers l administration plateforme.
+            {i18nT(locale, 'dashboard.admin_url_hint')}
           </div>
         )}
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        {['Sante plateforme', 'Demandes clients', 'Tenants a risque'].map((item) => (
+        {[i18nT(locale, 'dashboard.admin_health'), i18nT(locale, 'dashboard.admin_requests'), i18nT(locale, 'dashboard.admin_at_risk')].map((item) => (
           <div key={item} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <ClipboardList className="h-6 w-6 text-slate-500" aria-hidden="true" />
             <h2 className="mt-4 text-lg font-bold text-slate-950">{item}</h2>
-            <p className="mt-2 text-sm text-slate-500">Disponible dans le dashboard plateforme.</p>
+            <p className="mt-2 text-sm text-slate-500">{i18nT(locale, 'dashboard.admin_available')}</p>
           </div>
         ))}
       </section>

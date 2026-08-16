@@ -1,8 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { ModulePageShell } from '@/components/module-page-shell';
 import {
   BarChart3,
@@ -32,13 +34,13 @@ interface ReportConfig {
 const reports: ReportConfig[] = [
   {
     id: 'attendance-summary',
-    title: 'Resume Presences',
-    description: 'Rapport mensuel des présences, retards et absences par employé.',
+    title: 'reports.attendance_title',
+    description: 'reports.attendance_desc',
     icon: Clock,
     color: 'text-security-dark bg-security-light',
     endpoint: '/attendance/monthly-report',
     params: [
-      { key: 'month', label: 'Mois', type: 'month' },
+      { key: 'month', label: 'reports.param_month', type: 'month' },
     ],
     supportsPdf: true,
     buildQuery: values => {
@@ -49,13 +51,13 @@ const reports: ReportConfig[] = [
   },
   {
     id: 'payroll-summary',
-    title: 'Resume Paie',
-    description: 'Total brut/net, cotisations et charges par période de paie.',
+    title: 'reports.payroll_title',
+    description: 'reports.payroll_desc',
     icon: DollarSign,
     color: 'text-emerald-600 bg-emerald-50',
     endpoint: '/reports/payroll-summary',
     params: [
-      { key: 'period', label: 'Periode', type: 'month' },
+      { key: 'period', label: 'reports.param_period', type: 'month' },
     ],
     buildQuery: values => {
       const qs = new URLSearchParams();
@@ -69,19 +71,19 @@ const reports: ReportConfig[] = [
   },
   {
     id: 'leave-balances',
-    title: 'Soldes Conges',
-    description: 'État des soldes de congés pour tous les employés.',
+    title: 'reports.leave_title',
+    description: 'reports.leave_desc',
     icon: Calendar,
     color: 'text-ia-dark bg-ia-light',
     endpoint: '/leave-balances',
     params: [
-      { key: 'year', label: 'Annee', type: 'number' },
+      { key: 'year', label: 'reports.param_year', type: 'number' },
     ],
   },
   {
     id: 'headcount',
-    title: 'Effectifs',
-    description: 'Repartition des effectifs actifs par departement, type de contrat et genre.',
+    title: 'reports.headcount_title',
+    description: 'reports.headcount_desc',
     icon: Users,
     color: 'text-amber-600 bg-amber-50',
     endpoint: '/reports/headcount',
@@ -89,8 +91,8 @@ const reports: ReportConfig[] = [
   },
   {
     id: 'training-progress',
-    title: 'Suivi Formations',
-    description: 'Taux de participation et completion des formations.',
+    title: 'reports.training_title',
+    description: 'reports.training_desc',
     icon: TrendingUp,
     color: 'text-emerald-600 bg-emerald-50',
     endpoint: '/reports/training-completion',
@@ -98,21 +100,22 @@ const reports: ReportConfig[] = [
   },
   {
     id: 'contract-expiry',
-    title: 'Echeances Contrats',
-    description: 'Contrats arrivant a echeance dans les 30, 60, 90 prochains jours.',
+    title: 'reports.contract_title',
+    description: 'reports.contract_desc',
     icon: FileText,
     color: 'text-red-500 bg-red-50',
     endpoint: '/contracts/expiring',
     params: [
-      { key: 'days', label: 'Jours', type: 'number' },
+      { key: 'days', label: 'reports.param_days', type: 'number' },
     ],
   },
 ];
 
 export default function ReportsPage() {
+  const [locale] = useState<AppLocale>(() => getPreferredLocale());
   const [generating, setGenerating] = useState<string | null>(null);
   const [params, setParams] = useState<Record<string, Record<string, string>>>({});
-  const [results, setResults] = useState<Record<string, string>>({});
+  const [results, setResults] = useState<Record<string, { ok: boolean; text: string }>>({});
 
   const updateParam = (reportId: string, key: string, value: string) => {
     setParams(prev => ({
@@ -123,7 +126,7 @@ export default function ReportsPage() {
 
   const generateReport = useCallback(async (report: ReportConfig) => {
     setGenerating(report.id);
-    setResults(prev => ({ ...prev, [report.id]: '' }));
+    setResults(prev => ({ ...prev, [report.id]: { ok: true, text: '' } }));
     try {
       const queryParams = params[report.id] || {};
       const qs = report.buildQuery
@@ -151,18 +154,18 @@ export default function ReportsPage() {
       a.download = `${report.id}-${new Date().toISOString().slice(0, 10)}.${extension}`;
       a.click();
       URL.revokeObjectURL(downloadUrl);
-      setResults(prev => ({ ...prev, [report.id]: 'Rapport telecharge avec succes.' }));
+      setResults(prev => ({ ...prev, [report.id]: { ok: true, text: i18nT(locale, 'reports.success') } }));
     } catch {
-      setResults(prev => ({ ...prev, [report.id]: 'Erreur lors de la generation du rapport.' }));
+      setResults(prev => ({ ...prev, [report.id]: { ok: false, text: i18nT(locale, 'reports.error') } }));
     } finally {
       setGenerating(null);
     }
-  }, [params]);
+  }, [locale, params]);
 
   return (
     <ModulePageShell
-      title="Rapports"
-      subtitle="Générez et téléchargez vos rapports RH : présences, paie, congés, effectifs, formations et contrats."
+      title={i18nT(locale, 'reports.title')}
+      subtitle={i18nT(locale, 'reports.subtitle')}
       accentClassName="bg-gradient-to-br from-ia/10 via-white to-white"
     >
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -179,15 +182,15 @@ export default function ReportsPage() {
                 <report.icon className="h-5 w-5" />
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-bold text-slate-950">{report.title}</h3>
-                <p className="mt-0.5 text-xs text-slate-500">{report.description}</p>
+                <h3 className="text-sm font-bold text-slate-950">{i18nT(locale, report.title)}</h3>
+                <p className="mt-0.5 text-xs text-slate-500">{i18nT(locale, report.description)}</p>
               </div>
             </div>
 
             <div className="mb-4 flex-1 space-y-2">
               {report.params.map(p => (
                 <div key={p.key}>
-                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-400">{p.label}</label>
+                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-400">{i18nT(locale, p.label)}</label>
                   <input
                     type={p.type}
                     value={params[report.id]?.[p.key] || ''}
@@ -206,19 +209,19 @@ export default function ReportsPage() {
               {generating === report.id ? (
                 <>
                   <BarChart3 className="h-4 w-4 animate-spin" />
-                  Generation...
+                  {i18nT(locale, 'reports.generating')}
                 </>
               ) : (
                 <>
                   <Download className="h-4 w-4" />
-                  Generer
+                  {i18nT(locale, 'reports.generate')}
                 </>
               )}
             </button>
 
             {results[report.id] && (
-              <p className={`mt-2 text-xs font-medium ${results[report.id].includes('Erreur') ? 'text-red-500' : 'text-emerald-600'}`}>
-                {results[report.id]}
+              <p className={`mt-2 text-xs font-medium ${results[report.id].ok ? 'text-emerald-600' : 'text-red-500'}`}>
+                {results[report.id].text}
               </p>
             )}
           </motion.div>
