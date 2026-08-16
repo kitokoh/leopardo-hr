@@ -26,8 +26,8 @@ final class CountryDefaults
         'GQ' => ['label' => 'Guinee Equatoriale', 'language' => 'fr', 'currency' => 'XAF', 'timezone' => 'Africa/Malabo'],
         'FR' => ['label' => 'France', 'language' => 'fr', 'currency' => 'EUR', 'timezone' => 'Europe/Paris'],
         'TR' => ['label' => 'Turquie', 'language' => 'tr', 'currency' => 'TRY', 'timezone' => 'Europe/Istanbul'],
-        'GB' => ['label' => 'Royaume-Uni', 'language' => 'en', 'currency' => 'GBP', 'timezone' => 'Europe/London'],
-        'US' => ['label' => 'Etats-Unis', 'language' => 'en', 'currency' => 'USD', 'timezone' => 'America/New_York'],
+        'GB' => ['label' => 'United Kingdom', 'language' => 'en', 'currency' => 'GBP', 'timezone' => 'Europe/London'],
+        'US' => ['label' => 'United States', 'language' => 'en', 'currency' => 'USD', 'timezone' => 'America/New_York'],
         // PA2-COUNTRY-001: Canada was listed in the acceptance criteria
         // ("DZ, MA, TN, FR, TR, CEMAC, CEDEAO, CA exposes via CountryDefaults")
         // but was missing from this catalogue. Default timezone/language
