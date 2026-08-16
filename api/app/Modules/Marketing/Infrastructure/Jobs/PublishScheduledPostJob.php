@@ -55,6 +55,27 @@ class PublishScheduledPostJob implements ShouldQueue, TenantScopedJob
 
     public function __construct(public readonly int $socialPostId) {}
 
+    public function failed(\Throwable $e): void
+    {
+        Log::error('[PublishScheduledPostJob] failed definitively', [
+            'error' => $e->getMessage(),
+            'social_post_id' => $this->socialPostId,
+        ]);
+
+        // Un post planifié qui échoue définitivement ne doit jamais rester
+        // « scheduled » (il ne sera plus jamais publié) — statut terminal.
+        try {
+            SocialPost::query()->withoutGlobalScopes()
+                ->where('id', $this->socialPostId)
+                ->update(['status' => SocialPost::STATUS_FAILED]);
+        } catch (\Throwable $updateError) {
+            Log::error('[PublishScheduledPostJob] failed to mark post failed', [
+                'social_post_id' => $this->socialPostId,
+                'error' => $updateError->getMessage(),
+            ]);
+        }
+    }
+
     public function tenantCompanyId(): ?string
     {
         if ($this->resolvedCompanyId !== null) {
@@ -72,6 +93,18 @@ class PublishScheduledPostJob implements ShouldQueue, TenantScopedJob
     public function middleware(): array
     {
         return [new EnsureTenantContext];
+    }
+
+    /**
+     * Échec terminal après épuisement des retries (#4296) — log d'alerte,
+     * jamais de re-lancement silencieux (pattern #4205).
+     */
+    public function failed(\Throwable $e): void
+    {
+        Log::error('PublishScheduledPostJob.failed', [
+            'social_post_id' => $this->socialPostId,
+            'exception' => $e->getMessage(),
+        ]);
     }
 
     public function handle(SocialPublishingService $publishingService): void

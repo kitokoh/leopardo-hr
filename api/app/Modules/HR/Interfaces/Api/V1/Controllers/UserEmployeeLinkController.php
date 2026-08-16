@@ -26,7 +26,7 @@ class UserEmployeeLinkController extends Controller
         if (! $manager->isManager()) {
             return new JsonResponse([
                 'error' => 'FORBIDDEN',
-                'message' => 'Seul un manager peut lier un utilisateur.',
+                'message' => __('errors.MANAGER_ONLY_LINK'),
             ], 403);
         }
 
@@ -36,7 +36,7 @@ class UserEmployeeLinkController extends Controller
         if (! $user) {
             return new JsonResponse([
                 'error' => 'USER_NOT_FOUND',
-                'message' => 'Aucun compte ordinaire trouve avec cet email.',
+                'message' => __('errors.ORDINARY_ACCOUNT_NOT_FOUND'),
             ], 404);
         }
 
@@ -52,7 +52,7 @@ class UserEmployeeLinkController extends Controller
         if (! $employee) {
             return new JsonResponse([
                 'error' => 'EMPLOYEE_NOT_FOUND',
-                'message' => 'Employe introuvable dans votre entreprise.',
+                'message' => __('errors.EMPLOYEE_NOT_FOUND_IN_COMPANY'),
             ], 404);
         }
 
@@ -63,7 +63,7 @@ class UserEmployeeLinkController extends Controller
         if ($existing) {
             return new JsonResponse([
                 'error' => 'ALREADY_LINKED',
-                'message' => 'Cet utilisateur est deja lie a votre entreprise.',
+                'message' => __('errors.USER_ALREADY_LINKED'),
             ], 409);
         }
 

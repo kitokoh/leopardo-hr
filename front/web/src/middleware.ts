@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
 
 /**
  * Middleware de protection serveur de la zone dashboard (QA wave 2026-08-14,
@@ -7,16 +8,18 @@ import { NextResponse, type NextRequest } from 'next/server';
  * 1. Zone dashboard : toute requête sans cookie de session `leopardo_token`
  *    est redirigée vers `/auth/login` avant même le rendu (gate cosmétique,
  *    la vraie auth reste serveur — issue #3522).
- * 2. Vitrine `(landing)` : `?lang=` (fr/en/tr/ar) est copié dans l'en-tête
+ * 2. Vitrine `(landing)` : la locale SSR est propagée dans l'en-tête
  *    `x-vitrine-lang` pour les layouts. Next 15 ne passe PAS `searchParams`
- *    aux `generateMetadata` des LAYOUTS (pages seulement) → les 27 layouts
- *    landing lisent `headers()` (pattern pricing #3487, blog #3923).
+ *    aux `generateMetadata` des LAYOUTS (pages seulement) → les layouts
+ *    landing lisent `headers()`. `?lang=` (liens hreflang, #4173) prime ;
+ *    sinon Accept-Language est normalisé (#4393) — sans cela les metadata
+ *    (title/description) restaient FR en dur pour les visiteurs en/tr/ar
+ *    alors que le contenu et `<html lang>` étaient déjà localisés.
  */
 
 const SESSION_COOKIE_NAME = 'leopardo_token';
 
-const DASHBOARD_PREFIXES = [
-  '/dashboard',
+const DASHBOARD_PREFIXES = [  '/dashboard',
   '/absences',
   '/attendance',
   '/billing',
@@ -31,8 +34,6 @@ const DASHBOARD_PREFIXES = [
   '/social',
   '/social-marketing',
 ];
-
-const SUPPORTED_LOCALES = ['fr', 'en', 'tr', 'ar'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -55,12 +56,15 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Vitrine : propager ?lang= aux layouts via un en-tête (issue #4004).
-  const lang = request.nextUrl.searchParams.get('lang');
+  // Vitrine : propager la locale SSR aux layouts via un en-tête (issues #4004,
+  // #4393). `?lang=` prime sur Accept-Language (comportement #4173) ; le
+  // header est TOUJOURS posé (défaut fr) pour un comportement déterministe.
+  const urlLang = request.nextUrl.searchParams.get('lang');
+  const lang = urlLang && isSupportedLocale(urlLang)
+    ? urlLang
+    : resolveSsrVitrineLang(null, request.headers.get('accept-language'));
   const response = NextResponse.next();
-  if (lang && SUPPORTED_LOCALES.includes(lang)) {
-    response.headers.set('x-vitrine-lang', lang);
-  }
+  response.headers.set('x-vitrine-lang', lang);
 
   return response;
 }

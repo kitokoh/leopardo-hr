@@ -29,8 +29,8 @@ class PlatformCompanySubscriptionApiTest extends TestCase
     public function test_super_admin_can_view_and_update_company_subscription(): void
     {
         DB::table('plans')->insert([
-            ['id' => 1, 'name' => 'Starter', 'price_monthly' => 29, 'price_yearly' => 290, 'max_employees' => 10, 'trial_days' => 14, 'is_active' => true],
-            ['id' => 2, 'name' => 'Business', 'price_monthly' => 149, 'price_yearly' => 1490, 'max_employees' => 100, 'trial_days' => 14, 'is_active' => true],
+            ['id' => 1, 'name' => 'Pilot', 'price_monthly' => 29, 'price_yearly' => 290, 'max_employees' => 30, 'trial_days' => 14, 'is_active' => true],
+            ['id' => 2, 'name' => 'Operations', 'price_monthly' => 99, 'price_yearly' => 948, 'max_employees' => 250, 'trial_days' => 14, 'is_active' => true],
         ]);
 
         $company = Company::factory()->create([
@@ -46,38 +46,39 @@ class PlatformCompanySubscriptionApiTest extends TestCase
         $this->getJson("/api/v1/platform/companies/{$company->id}/subscription")
             ->assertOk()
             ->assertJsonPath('data.status', 'trial')
-            ->assertJsonPath('data.plan.name', 'Starter')
-            ->assertJsonPath('data.plan.max_employees', 10);
+            ->assertJsonPath('data.plan.name', 'Pilot')
+            ->assertJsonPath('data.plan.max_employees', 30);
 
         $response = $this->patchJson("/api/v1/platform/companies/{$company->id}/subscription", [
             'plan_id' => 2,
             'status' => 'active',
             'subscription_start' => '2026-05-08',
             'subscription_end' => '2027-05-08',
-            'notes' => 'Upgrade Business apres adoption pointage.',
+            'notes' => 'Upgrade Operations apres adoption pointage.',
         ]);
 
         $response
             ->assertOk()
             ->assertJsonPath('data.status', 'active')
-            ->assertJsonPath('data.plan.name', 'Business')
-            ->assertJsonPath('data.plan.price_monthly', 149)
+            ->assertJsonPath('data.plan.name', 'Operations')
+            ->assertJsonPath('data.plan.price_monthly', 99)
             ->assertJsonPath('data.subscription_end', '2027-05-08')
-            ->assertJsonPath('data.notes', 'Upgrade Business apres adoption pointage.');
+            ->assertJsonPath('data.notes', 'Upgrade Operations apres adoption pointage.');
 
         $company->refresh();
         $this->assertSame(2, $company->plan_id);
         $this->assertSame('active', $company->status);
-        $this->assertSame('Upgrade Business apres adoption pointage.', $company->notes);
+        $this->assertSame('Upgrade Operations apres adoption pointage.', $company->notes);
     }
 
     public function test_subscription_update_rejects_invalid_status_and_dates(): void
     {
         DB::table('plans')->insert([
             'id' => 1,
-            'name' => 'Starter',
+            'name' => 'Pilot',
             'price_monthly' => 29,
             'price_yearly' => 290,
+            'max_employees' => 30,
             'trial_days' => 14,
             'is_active' => true,
         ]);

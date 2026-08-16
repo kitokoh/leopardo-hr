@@ -56,9 +56,13 @@ class SupportedCountryController extends Controller
                     'verified_at' => $rules->verificationDate(),
                 ];
             } else {
+                // #4446 : le champ brut `warning` suit la langue des règles
+                // (EN pour pilot/placeholder, source docs) — le littéral FR
+                // cassait la cohérence du registre public. `warning_localized`
+                // reste localisé selon la requête.
                 $compliance = [
                     'level' => 'unknown',
-                    'warning' => __('payroll.compliance_warning_unknown'),
+                    'warning' => __('payroll.compliance_warning_unknown', [], 'en'),
                     'warning_localized' => __('payroll.compliance_warning_unknown'),
                     'source' => null,
                     'verified_at' => null,
