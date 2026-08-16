@@ -74,7 +74,10 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Demande de paiement refusee.',
     'PAYOUT_REQUEST_FAILED' => 'Une erreur est survenue lors de la demande de paiement.',
     'COMPANY_MODE_FORCED' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
