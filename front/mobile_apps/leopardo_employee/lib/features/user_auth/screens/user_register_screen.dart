@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/features/user_auth/providers/user_auth_provider.dart';
 
 class UserRegisterScreen extends ConsumerStatefulWidget {
@@ -70,9 +71,10 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = context.l10n;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Erreur Google: $e')));
+        ).showSnackBar(SnackBar(content: Text(l10n.userAuthGoogleError(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _googleLoading = false);
@@ -81,6 +83,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final state = ref.watch(userAuthProvider);
     final bg = AppColors.backgroundFor(context);
     final text = AppColors.textPrimaryFor(context);
@@ -116,7 +119,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    tooltip: 'Retour',
+                    tooltip: l10n.authBackTooltip,
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       if (context.canPop()) {
@@ -128,13 +131,13 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildHero(text, muted),
+                _buildHero(l10n, text, muted),
                 const SizedBox(height: 18),
-                _buildGoogleButton(muted),
+                _buildGoogleButton(l10n, muted),
                 const SizedBox(height: 16),
-                _buildDivider(muted),
+                _buildDivider(l10n, muted),
                 const SizedBox(height: 16),
-                _buildForm(state, text, muted),
+                _buildForm(l10n, state, text, muted),
               ],
             ),
           ),
@@ -143,7 +146,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     );
   }
 
-  Widget _buildHero(Color text, Color muted) {
+  Widget _buildHero(AppLocalizations l10n, Color text, Color muted) {
     return Column(
       children: [
         Container(
@@ -166,12 +169,12 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),
         const SizedBox(height: 12),
         Text(
-          'Creer un compte',
+          l10n.userAuthRegisterTitle,
           style: AppTypography.title.copyWith(color: text),
         ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
         const SizedBox(height: 4),
         Text(
-          'Accedez a votre espace personnel et organisez vos documents.',
+          l10n.userAuthRegisterSubtitleAlt,
           textAlign: TextAlign.center,
           style: AppTypography.bodySmall.copyWith(color: muted),
         ).animate().fadeIn(delay: 200.ms, duration: 300.ms),
@@ -179,7 +182,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     );
   }
 
-  Widget _buildGoogleButton(Color muted) {
+  Widget _buildGoogleButton(AppLocalizations l10n, Color muted) {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
@@ -191,19 +194,19 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.g_mobiledata, size: 24),
-        label: const Text('Continuer avec Google'),
+        label: Text(l10n.authContinueWithGoogle),
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 300.ms).slideY(begin: 0.1);
   }
 
-  Widget _buildDivider(Color muted) {
+  Widget _buildDivider(AppLocalizations l10n, Color muted) {
     return Row(
       children: [
         Expanded(child: Divider(color: muted.withValues(alpha: 0.3))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'ou',
+            l10n.commonOr,
             style: AppTypography.caption.copyWith(color: muted),
           ),
         ),
@@ -212,7 +215,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
     );
   }
 
-  Widget _buildForm(UserAuthState state, Color text, Color muted) {
+  Widget _buildForm(AppLocalizations l10n, UserAuthState state, Color text, Color muted) {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -232,12 +235,12 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                   child: TextFormField(
                     controller: _firstNameCtrl,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Prenom',
-                      prefixIcon: Icon(Icons.person_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.userAuthFirstName,
+                      prefixIcon: const Icon(Icons.person_outlined),
                     ),
                     validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? 'Requis' : null,
+                        (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -245,12 +248,12 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                   child: TextFormField(
                     controller: _lastNameCtrl,
                     textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      labelText: 'Nom',
-                      prefixIcon: Icon(Icons.person_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.userAuthLastName,
+                      prefixIcon: const Icon(Icons.person_outlined),
                     ),
                     validator: (v) =>
-                        (v?.trim().isEmpty ?? true) ? 'Requis' : null,
+                        (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
                   ),
                 ),
               ],
@@ -260,15 +263,15 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.authEmailLabel,
+                prefixIcon: const Icon(Icons.email_outlined),
               ),
               validator: (v) {
                 final email = v?.trim() ?? '';
-                if (email.isEmpty) return 'Email requis';
+                if (email.isEmpty) return l10n.authEmailRequired;
                 if (!email.contains('@') || !email.contains('.')) {
-                  return 'Email invalide';
+                  return l10n.authEmailInvalid;
                 }
                 return null;
               },
@@ -278,9 +281,9 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
               controller: _phoneCtrl,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Telephone (optionnel)',
-                prefixIcon: Icon(Icons.phone_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.userAuthPhoneOptional,
+                prefixIcon: const Icon(Icons.phone_outlined),
               ),
             ),
             const SizedBox(height: 14),
@@ -289,10 +292,10 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
               obscureText: _obscure,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
-                labelText: 'Mot de passe',
+                labelText: l10n.authPasswordLabel,
                 prefixIcon: const Icon(Icons.lock_outlined),
                 suffixIcon: IconButton(
-                  tooltip: 'Afficher ou masquer le mot de passe',
+                  tooltip: l10n.authTogglePasswordVisibility,
                   icon: Icon(
                     _obscure ? Icons.visibility_off : Icons.visibility,
                   ),
@@ -301,7 +304,7 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
               ),
               validator: (v) {
                 if ((v ?? '').length < 8) {
-                  return '8 caracteres minimum';
+                  return l10n.authPasswordTooShort;
                 }
                 return null;
               },
@@ -319,14 +322,14 @@ class _UserRegisterScreenState extends ConsumerState<UserRegisterScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Creer mon compte'),
+                  : Text(l10n.userAuthRegisterButton),
             ),
             const SizedBox(height: 14),
             Center(
               child: TextButton(
                 onPressed: () => context.go('/user-login'),
                 child: Text(
-                  'Deja un compte ? Se connecter',
+                  l10n.userAuthAlreadyAccount,
                   style: TextStyle(color: AppColors.rh),
                 ),
               ),

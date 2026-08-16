@@ -15,6 +15,7 @@ return [
         'web_login_per_minute' => (int) env('RATE_LIMIT_WEB_LOGIN_PER_MINUTE', 10),
         'web_activate_per_minute' => (int) env('RATE_LIMIT_WEB_ACTIVATE_PER_MINUTE', 10),
         'kiosk_punch_per_minute' => (int) env('RATE_LIMIT_KIOSK_PUNCH_PER_MINUTE', 30),
+        'kiosk_show_per_minute' => (int) env('RATE_LIMIT_KIOSK_SHOW_PER_MINUTE', 120),
         // Public careers portal (job listing, job detail, XML feed, and
         // candidate application submission) is unauthenticated by design,
         // so it gets its own dedicated throttle bucket keyed by IP.

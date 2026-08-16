@@ -39,6 +39,7 @@ const watchedPathPrefixes = [
   'front/mobile_apps/leopardo_employee/lib/',
   'front/mobile_apps/leopardo_manager/lib/',
   'front/mobile_apps/leopardo_platform_admin/lib/',
+    'front/mobile_apps/leopardo_hr/lib/',
   'front/zkteco-kiosk/',
   'front/admin-dashboard/src/',
   'front/web/src/app/',

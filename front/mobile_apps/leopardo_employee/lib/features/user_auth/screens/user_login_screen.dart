@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/demo_user_bottom_sheet.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_employee/features/user_auth/providers/user_auth_provider.dart';
 
 class UserLoginScreen extends ConsumerStatefulWidget {
@@ -61,9 +62,10 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = context.l10n;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Erreur Google: $e')));
+        ).showSnackBar(SnackBar(content: Text(l10n.userAuthGoogleError(e.toString()))));
       }
     } finally {
       if (mounted) setState(() => _googleLoading = false);
@@ -72,6 +74,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final state = ref.watch(userAuthProvider);
     final bg = AppColors.backgroundFor(context);
     final text = AppColors.textPrimaryFor(context);
@@ -107,7 +110,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    tooltip: 'Retour',
+                    tooltip: l10n.authBackTooltip,
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       if (context.canPop()) {
@@ -119,13 +122,13 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildHero(text, muted),
+                _buildHero(l10n, text, muted),
                 const SizedBox(height: 24),
-                _buildGoogleButton(),
+                _buildGoogleButton(l10n),
                 const SizedBox(height: 16),
-                _buildDivider(muted),
+                _buildDivider(l10n, muted),
                 const SizedBox(height: 16),
-                _buildForm(state, text, muted),
+                _buildForm(l10n, state, text, muted),
               ],
             ),
           ),
@@ -134,7 +137,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     );
   }
 
-  Widget _buildHero(Color text, Color muted) {
+  Widget _buildHero(AppLocalizations l10n, Color text, Color muted) {
     return Column(
       children: [
         Container(
@@ -153,12 +156,12 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
             .scale(begin: const Offset(0.8, 0.8), duration: 400.ms),
         const SizedBox(height: 12),
         Text(
-          'Connexion personnelle',
+          l10n.userAuthPersonalLogin,
           style: AppTypography.title.copyWith(color: text),
         ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
         const SizedBox(height: 4),
         Text(
-          'Retrouvez votre espace, vos documents et vos demandes.',
+          l10n.userAuthLoginSubtitle,
           textAlign: TextAlign.center,
           style: AppTypography.bodySmall.copyWith(color: muted),
         ).animate().fadeIn(delay: 200.ms, duration: 300.ms),
@@ -166,7 +169,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     );
   }
 
-  Widget _buildGoogleButton() {
+  Widget _buildGoogleButton(AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton.icon(
@@ -178,19 +181,19 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.g_mobiledata, size: 24),
-        label: const Text('Continuer avec Google'),
+        label: Text(l10n.authContinueWithGoogle),
       ),
     ).animate().fadeIn(delay: 300.ms, duration: 300.ms).slideY(begin: 0.1);
   }
 
-  Widget _buildDivider(Color muted) {
+  Widget _buildDivider(AppLocalizations l10n, Color muted) {
     return Row(
       children: [
         Expanded(child: Divider(color: muted.withValues(alpha: 0.3))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'ou',
+            l10n.commonOr,
             style: AppTypography.caption.copyWith(color: muted),
           ),
         ),
@@ -199,7 +202,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
     );
   }
 
-  Widget _buildForm(UserAuthState state, Color text, Color muted) {
+  Widget _buildForm(AppLocalizations l10n, UserAuthState state, Color text, Color muted) {
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -217,14 +220,14 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
               controller: _emailCtrl,
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.email_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.authEmailLabel,
+                prefixIcon: const Icon(Icons.email_outlined),
               ),
               validator: (v) {
                 final email = v?.trim() ?? '';
-                if (email.isEmpty) return 'Email requis';
-                if (!email.contains('@')) return 'Email invalide';
+                if (email.isEmpty) return l10n.authEmailRequired;
+                if (!email.contains('@')) return l10n.authEmailInvalid;
                 return null;
               },
             ),
@@ -234,10 +237,10 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
               obscureText: _obscure,
               textInputAction: TextInputAction.done,
               decoration: InputDecoration(
-                labelText: 'Mot de passe',
+                labelText: l10n.authPasswordLabel,
                 prefixIcon: const Icon(Icons.lock_outlined),
                 suffixIcon: IconButton(
-                  tooltip: 'Afficher ou masquer le mot de passe',
+                  tooltip: l10n.authTogglePasswordVisibility,
                   icon: Icon(
                     _obscure ? Icons.visibility_off : Icons.visibility,
                   ),
@@ -245,7 +248,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                 ),
               ),
               validator: (v) =>
-                  (v ?? '').isEmpty ? 'Mot de passe requis' : null,
+                  (v ?? '').isEmpty ? l10n.authPasswordRequired : null,
               onFieldSubmitted: (_) => _login(),
             ),
             const SizedBox(height: 22),
@@ -260,14 +263,14 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Se connecter'),
+                  : Text(l10n.login),
             ),
             const SizedBox(height: 14),
             Center(
               child: TextButton(
                 onPressed: () => context.go('/user-register'),
                 child: Text(
-                  'Pas encore de compte ? S\'inscrire',
+                  l10n.userAuthNoAccount,
                   style: TextStyle(color: AppColors.ia),
                 ),
               ),
@@ -287,7 +290,7 @@ class _UserLoginScreenState extends ConsumerState<UserLoginScreen> {
                 }
               },
               icon: const Icon(Icons.group_outlined),
-              label: const Text('Acces Demo'),
+              label: Text(l10n.authDemoAccess),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.rhDark,
                 foregroundColor: Colors.white,
