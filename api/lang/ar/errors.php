@@ -59,3 +59,4 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'تخصيص وضع التسجيل معطّل.',
     'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
     'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',
+];

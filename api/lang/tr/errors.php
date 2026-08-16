@@ -59,3 +59,4 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Yoklama modu kişiselleştirmesi devre dışı.',
     'PREFERENCE_UPDATED' => 'Tercih güncellendi.',
     'CONFIG_UPDATED' => 'Yapılandırma güncellendi.',
+];
