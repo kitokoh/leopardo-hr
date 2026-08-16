@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci): gardes CI — branches mortes retirées, analyze mobile strict, gate pint réel, PROD_API_URL unifié sur PROD_API_BASE_URL (Closes #4719, #4724, #4722, #4721).**
 
 - **fix(mobile/ios): leopardo_employee — UIBackgroundModes + location (Closes #4717).** La géofence iOS (Smart Attendance) promettait la position en arrière-plan (NSLocationAlwaysUsageDescription) et le code existe (geofence_service), mais UIBackgroundModes ne listait pas `location` → iOS ne délivrait pas les événements en arrière-plan. Ajout de `<string>location</string>` (flux Always).
 - **fix(web): a11y + i18n détail case-studies (Closes #4705, #4706, #4703).** Nom accessible rétabli sur la recherche /docs (régression #4566) ; aria-label localisé sur l'input newsletter du blog ; phrases FR de la page détail /case-studies/[slug] localisées ×4 (moduleIllustrates/moduleExplore/discoverModule, clé morte useCasePrefix supprimée).
