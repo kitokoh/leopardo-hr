@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 
 import 'features/auth/providers/auth_provider.dart';
@@ -38,7 +39,20 @@ void main() {
 /// Init critique exécutée par le StartupGate APRÈS le premier rendu :
 /// les formats de date FR sont requis par le calendrier marketing.
 Future<void> _criticalBootstrap() async {
-  await initializeDateFormatting('fr_FR', null);
+  // #4336 : initialiser les 4 locales (fr/ar/tr/en) comme les autres apps —
+  // fr_FR seul déclenchait une LocaleDataException dès qu'un DateFormat
+  // non-français était utilisé (ex. calendrier marketing en arabe).
+  await initializeDateFormatting(deviceIntlDateLocale, null);
+  await initializeDateFormatting('fr_CA', null);
+  await initializeDateFormatting('fr_BE', null);
+  await initializeDateFormatting('ar', null);
+  await initializeDateFormatting('ar_SA', null);
+  await initializeDateFormatting('ar_MA', null);
+  await initializeDateFormatting('tr', null);
+  await initializeDateFormatting('tr_TR', null);
+  await initializeDateFormatting('en', null);
+  await initializeDateFormatting('en_US', null);
+  await initializeDateFormatting('en_GB', null);
 }
 
 Future<void> _bootstrap() async {

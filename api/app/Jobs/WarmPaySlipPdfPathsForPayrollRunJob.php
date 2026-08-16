@@ -30,6 +30,16 @@ class WarmPaySlipPdfPathsForPayrollRunJob implements ShouldQueue, TenantScopedJo
 
     public function __construct(public readonly int $payrollRunId) {}
 
+    public int $tries = 3;
+
+    public int $timeout = 300;
+
+    /** @return array<int, int> */
+    public function backoff(): array
+    {
+        return [30, 120];
+    }
+
     public function tenantCompanyId(): ?string
     {
         if ($this->resolvedCompanyId !== null) {

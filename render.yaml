@@ -158,7 +158,7 @@ services:
     # Override default CMD to run queue:work instead of web server
     dockerCommand: >-
       php artisan queue:work redis
-      --queue=notifications,emails,pdf,payroll,documents,default
+      --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default
       --tries=3
       --timeout=300
       --sleep=3
