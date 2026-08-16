@@ -55,7 +55,50 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
-        $employee = Employee::query()->create($payload);
+        // #4428 / #3677 : company_id, role, manager_role, status et salary_base
+        // ne sont plus mass-assignables depuis le durcissement fillable #3677 —
+        // les passer à create() les ferait abandonner SILENCIEUSEMENT (employé
+        // orphelin : company_id NULL, rôle NULL, invisible du manager).
+        // Pattern #4151/#4079 : create([...fillable...]) puis assignation
+        // explicite des clés sensibles + save().
+        $sensitive = Arr::only($payload, [
+            'company_id',
+            'role',
+            'manager_role',
+            'status',
+            'salary_base',
+        ]);
+
+        /** @var array<string, mixed> $fillablePayload */
+        $fillablePayload = Arr::except($payload, [
+            'company_id',
+            'role',
+            'manager_role',
+            'status',
+            'salary_base',
+        ]);
+
+        /** @var Employee $employee */
+        $employee = Employee::query()->create($fillablePayload);
+
+        // Assignation explicite des clés sensibles (pattern #4151) — jamais
+        // dans create()/fill(), sinon abandon silencieux (#4428).
+        if (array_key_exists('company_id', $sensitive) && $sensitive['company_id'] !== null) {
+            $employee->company_id = $sensitive['company_id'];
+        }
+        if (array_key_exists('role', $sensitive) && $sensitive['role'] !== null) {
+            $employee->role = $sensitive['role'];
+        }
+        if (array_key_exists('manager_role', $sensitive) && $sensitive['manager_role'] !== null) {
+            $employee->manager_role = $sensitive['manager_role'];
+        }
+        if (array_key_exists('status', $sensitive) && $sensitive['status'] !== null) {
+            $employee->status = $sensitive['status'];
+        }
+        if (array_key_exists('salary_base', $sensitive) && $sensitive['salary_base'] !== null) {
+            $employee->salary_base = $sensitive['salary_base'];
+        }
+        $employee->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
@@ -130,7 +173,39 @@ class EmployeeService
         $previousManagerRole = $employee->manager_role;
         $roleChangeRequested = array_key_exists('manager_role', $payload) || array_key_exists('role', $payload);
 
-        $employee->fill($payload);
+        // #4428 / #3677 : role, manager_role, status et salary_base ne sont
+        // plus mass-assignables — fill() les abandonnerait silencieusement
+        // (ex. PATCH salary_base depuis le mobile manager = 0 jamais persisté).
+        // Pattern #4151 : fill([...fillable...]) puis assignation explicite.
+        $sensitiveUpdate = Arr::only($payload, [
+            'role',
+            'manager_role',
+            'status',
+            'salary_base',
+        ]);
+
+        /** @var array<string, mixed> $fillableUpdate */
+        $fillableUpdate = Arr::except($payload, [
+            'role',
+            'manager_role',
+            'status',
+            'salary_base',
+        ]);
+
+        $employee->fill($fillableUpdate);
+
+        if (array_key_exists('role', $sensitiveUpdate)) {
+            $employee->role = $sensitiveUpdate['role'];
+        }
+        if (array_key_exists('manager_role', $sensitiveUpdate)) {
+            $employee->manager_role = $sensitiveUpdate['manager_role'];
+        }
+        if (array_key_exists('status', $sensitiveUpdate)) {
+            $employee->status = $sensitiveUpdate['status'];
+        }
+        if (array_key_exists('salary_base', $sensitiveUpdate) && $sensitiveUpdate['salary_base'] !== null) {
+            $employee->salary_base = $sensitiveUpdate['salary_base'];
+        }
         $employee->save();
 
         if ($employee->company_id !== null) {
