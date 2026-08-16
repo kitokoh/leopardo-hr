@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): messages d'authentification localisés — fin du FR codé en dur (Closes #4191, volet auth).** `PasswordResetController` (hint anti-énumération, jeton invalide, confirmation), `PlatformAuthController` (compte suspendu, email déjà utilisé, 2FA déjà activé, setup2fa requis, code 2FA requis) et `UserEmployeeLinkController` (compte introuvable, employé introuvable, déjà lié) passent par `trans()` + catalogues `lang/{fr,en,tr,ar}` (clés `auth.*`, `employees.link_*`). Test `ApiLocalizationAuthTest` : 4 scénarios (ar/en/tr) vérifient la résolution locale via `Accept-Language`.
 - **fix(api): SmartAttendance — événement `outside_zone` persisté malgré le 422 (Closes #4255).** `GeoSessionManager::openSession` loguait l'événement suspect DANS la transaction de création de session puis levait `OutsideGeofenceException` → rollback total → l'écriture d'audit (spec #3887) était perdue (`SmartAttendanceFlowTest` : « table is empty »). La vérification géofence + `logEvent(TYPE_OUTSIDE_ZONE)` sont déplacées HORS transaction : l'événement est committé indépendamment, le 422 reste le comportement API.
 
 - **fix(web): /integrations — lien Documentation vers /api-explorer (Closes #4178).** Le lien « /docs » dérivait l'URL backend sans référence au contrat OpenAPI → 404 (la surface documentée est `/api-explorer`, cf. `openapi.yaml` url + route `web.php`). Lien corrigé et commenté.

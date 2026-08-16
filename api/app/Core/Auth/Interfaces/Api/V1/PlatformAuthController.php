@@ -42,7 +42,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->status !== 'active') {
             return new JsonResponse([
                 'error' => 'ACCOUNT_SUSPENDED',
-                'message' => 'Votre compte a été suspendu. Contactez votre administrateur.',
+                'message' => trans('auth.account_suspended_contact_admin'),
                 'localized_message' => __('errors.ACCOUNT_SUSPENDED'),
             ], 403);
         }
@@ -52,7 +52,7 @@ class PlatformAuthController extends Controller
             if (! isset($validated['two_fa_code'])) {
                 return new JsonResponse([
                     'error' => 'TWO_FA_REQUIRED',
-                    'message' => 'Un code 2FA est requis pour ce compte.',
+                    'message' => trans('auth.two_fa_code_required'),
                 ], 202); // 202 Accepted but further action needed
             }
 
@@ -121,7 +121,7 @@ class PlatformAuthController extends Controller
             if ($emailTaken) {
                 return new JsonResponse([
                     'error' => 'EMAIL_ALREADY_TAKEN',
-                    'message' => 'Cette adresse email est déjà utilisée.',
+                    'message' => trans('auth.email_already_used'),
                 ], 422);
             }
 
@@ -182,7 +182,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->two_fa_secret) {
             return new JsonResponse([
                 'error' => 'ALREADY_ENABLED',
-                'message' => 'Le 2FA est déjà activé pour ce compte.',
+                'message' => trans('auth.two_fa_already_enabled'),
             ], 400);
         }
 
@@ -211,7 +211,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->two_fa_secret) {
             return new JsonResponse([
                 'error' => 'ALREADY_ENABLED',
-                'message' => 'Le 2FA est déjà activé pour ce compte.',
+                'message' => trans('auth.two_fa_already_enabled'),
             ], 400);
         }
 
@@ -221,7 +221,7 @@ class PlatformAuthController extends Controller
         if (! $secret) {
             return new JsonResponse([
                 'error' => 'SETUP_REQUIRED',
-                'message' => 'Veuillez d\'abord appeler setup2fa pour générer un secret.',
+                'message' => trans('auth.two_fa_setup_required'),
             ], 400);
         }
 

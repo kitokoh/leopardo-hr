@@ -1,7 +1,7 @@
 <?php
 
 return [
-'work_state_offline' => 'Çevrimdışı',
+    'work_state_offline' => 'Çevrimdışı',
     'work_state_leave' => 'İzinli',
     'work_state_absent' => 'Devamsız',
     'work_state_break' => 'Molada',
@@ -47,4 +47,7 @@ return [
     'gender' => 'Cinsiyet',
     'hire_date' => 'İşe başlama tarihi',
     'emergency_contact' => 'Acil durum irtibatı',
+    'link_no_ordinary_account' => 'Bu e-postayla eşleşen sıradan bir hesap bulunamadı.',
+    'link_employee_not_found' => 'Şirketinizde çalışan bulunamadı.',
+    'link_already_linked' => 'Bu kullanıcı zaten şirketinize bağlı.',
 ];

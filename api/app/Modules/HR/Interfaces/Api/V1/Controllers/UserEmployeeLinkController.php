@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
+use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\UserEmployeeLink;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class UserEmployeeLinkController extends Controller
         if (! $user) {
             return new JsonResponse([
                 'error' => 'USER_NOT_FOUND',
-                'message' => 'Aucun compte ordinaire trouve avec cet email.',
+                'message' => trans('employees.link_no_ordinary_account'),
             ], 404);
         }
 
@@ -52,7 +52,7 @@ class UserEmployeeLinkController extends Controller
         if (! $employee) {
             return new JsonResponse([
                 'error' => 'EMPLOYEE_NOT_FOUND',
-                'message' => 'Employe introuvable dans votre entreprise.',
+                'message' => trans('employees.link_employee_not_found'),
             ], 404);
         }
 
@@ -63,7 +63,7 @@ class UserEmployeeLinkController extends Controller
         if ($existing) {
             return new JsonResponse([
                 'error' => 'ALREADY_LINKED',
-                'message' => 'Cet utilisateur est deja lie a votre entreprise.',
+                'message' => trans('employees.link_already_linked'),
             ], 409);
         }
 
@@ -106,4 +106,3 @@ class UserEmployeeLinkController extends Controller
         return new JsonResponse(['data' => $links]);
     }
 }
-

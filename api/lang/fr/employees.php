@@ -1,7 +1,7 @@
 <?php
 
 return [
-'work_state_offline' => 'Hors ligne',
+    'work_state_offline' => 'Hors ligne',
     'work_state_leave' => 'En congé',
     'work_state_absent' => 'Absent',
     'work_state_break' => 'En pause',
@@ -47,4 +47,7 @@ return [
     'gender' => 'Genre',
     'hire_date' => 'Date d\'embauche',
     'emergency_contact' => 'Contact d\'urgence',
+    'link_no_ordinary_account' => 'Aucun compte ordinaire trouvé avec cet email.',
+    'link_employee_not_found' => 'Employé introuvable dans votre entreprise.',
+    'link_already_linked' => 'Cet utilisateur est déjà lié à votre entreprise.',
 ];

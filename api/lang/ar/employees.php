@@ -1,7 +1,7 @@
 <?php
 
 return [
-'work_state_offline' => 'غير متصل',
+    'work_state_offline' => 'غير متصل',
     'work_state_leave' => 'في إجازة',
     'work_state_absent' => 'غائب',
     'work_state_break' => 'في استراحة',
@@ -47,4 +47,7 @@ return [
     'gender' => 'الجنس',
     'hire_date' => 'تاريخ التوظيف',
     'emergency_contact' => 'جهة اتصال الطوارئ',
+    'link_no_ordinary_account' => 'لا يوجد حساب عادي مرتبط بهذا البريد الإلكتروني.',
+    'link_employee_not_found' => 'الموظف غير موجود في شركتك.',
+    'link_already_linked' => 'هذا المستخدم مرتبط بالفعل بشركتك.',
 ];
