@@ -224,6 +224,56 @@ paths:
                     type: string
                     example: ok
 
+  /edge/readiness:
+    get:
+      tags: ["Health"]
+      summary: "Readiness probe du nœud edge (schéma SQLite)"
+      description: |
+        Vérifie que le schéma SQLite local est provisionné (SELECT 1 sur
+        sync_queue). Distinct de /edge/health (liveness sans DB) : ce endpoint
+        garantit qu'un nœud frais est prêt à synchroniser avant de le déclarer
+        opérationnel. (#4411)
+      security: []
+      responses:
+        "200":
+          description: "Nœud prêt — schéma SQLite provisionné"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edge:
+                    type: boolean
+                    example: true
+                  status:
+                    type: string
+                    example: ok
+                  schema:
+                    type: string
+                    example: provisioned
+                  time:
+                    type: string
+                    format: date-time
+        "503":
+          description: "Schéma SQLite manquant — nœud non prêt"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  edge:
+                    type: boolean
+                    example: true
+                  status:
+                    type: string
+                    example: not_ready
+                  reason:
+                    type: string
+                    example: edge_schema_missing
+                  time:
+                    type: string
+                    format: date-time
+
   /edge/install.sh:
     get:
       tags: ["Health"]
