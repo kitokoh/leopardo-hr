@@ -16,6 +16,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class WarmPaySlipPdfPathsForPayrollRunJob implements ShouldQueue, TenantScopedJob
@@ -74,4 +75,14 @@ class WarmPaySlipPdfPathsForPayrollRunJob implements ShouldQueue, TenantScopedJo
         }
     }
 
+    /**
+     * #4205 : épuisement des retries — log d'alerte (warmup pdf paths).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('WarmPaySlipPdfPathsForPayrollRunJob.failed', [
+            'payroll_run_id' => $this->payrollRunId,
+            'exception' => $e->getMessage(),
+        ]);
+    }
 }
