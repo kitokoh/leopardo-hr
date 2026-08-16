@@ -127,7 +127,7 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Payroll run cannot be cancelled in its current status.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Your account has been suspended. Contact your administrator.',
     'VERIFICATION_CODE_INVALID' => 'Invalid or expired verification code.',
-    'TRIAL_SPACE_CREATION_FAILED' => 'Error while creating your workspace. Please try again.', origin/main
+    'TRIAL_SPACE_CREATION_FAILED' => 'Error while creating your workspace. Please try again.'
     'CANNOT_DISABLE_SELF' => 'You cannot disable your own account.',
     'CANNOT_SUSPEND_SELF' => 'You cannot suspend your own account.',
     'MANAGER_ONLY_LINK' => 'Only a manager can link a user.',

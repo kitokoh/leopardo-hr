@@ -127,7 +127,7 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Le run de paie ne peut pas être annulé dans son état actuel.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Votre compte a été suspendu. Contactez votre administrateur.',
     'VERIFICATION_CODE_INVALID' => 'Code de vérification invalide ou expiré.',
-    'TRIAL_SPACE_CREATION_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.', origin/main
+    'TRIAL_SPACE_CREATION_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.'
     'CANNOT_DISABLE_SELF' => 'Impossible de désactiver votre propre compte.',
     'CANNOT_SUSPEND_SELF' => 'Impossible de suspendre votre propre compte.',
     'MANAGER_ONLY_LINK' => 'Seul un manager peut lier un utilisateur.',
