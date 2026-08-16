@@ -815,7 +815,10 @@
     "placeholder": "Type your message...",
     "thinking": "Thinking...",
     "error": "Sorry, an error occurred. Please try again.",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "historyError": "Failed to load conversations.",
+    "messagesError": "Failed to load messages.",
+    "retry": "Retry"
   },
   "seo": {
     "pricing": {
@@ -862,7 +865,10 @@
     "confirm_delete": "Delete this webhook?"
   },
   "a11y": {
-    "skip_to_content": "Skip to main content"
+    "skip_to_content": "Skip to main content",
+    "close": "Close",
+    "previous_month": "Previous month",
+    "next_month": "Next month"
   },
   "shell": {
     "connected": "Connected",
