@@ -781,6 +781,328 @@ paths:
           description: "Profil utilisateur"
         "401":
           description: "Non authentifié"
+  /user/profile:
+    patch:
+      tags: ["User"]
+      summary: "Met à jour le profil de l'utilisateur connecté"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone:
+                  type: string
+                personal_email:
+                  type: string
+                recovery_email:
+                  type: string
+                personal_phone:
+                  type: string
+                preferred_language:
+                  type: string
+      responses:
+        "200":
+          description: "Profil mis à jour"
+        "401":
+          description: "Non authentifié"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /user/change-password:
+    post:
+      tags: ["User"]
+      summary: "Change le mot de passe de l'utilisateur connecté"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, new_password]
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        "200":
+          description: "Mot de passe changé"
+        "401":
+          description: "Non authentifié"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /user/logout:
+    post:
+      tags: ["User"]
+      summary: "Déconnecte l'utilisateur (révoque le token)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Déconnecté"
+        "401":
+          description: "Non authentifié"
+
+  /user/google-signin:
+    post:
+      tags: ["User"]
+      summary: "Connexion ou création de compte via Google (compte ordinaire)"
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_token]
+              properties:
+                id_token:
+                  type: string
+      responses:
+        "200":
+          description: "Token de session"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /user/company-requests:
+    get:
+      tags: ["User"]
+      summary: "Liste les demandes de création d'entreprise de l'utilisateur"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Demandes paginées"
+        "401":
+          description: "Non authentifié"
+    post:
+      tags: ["User"]
+      summary: "Crée une demande de création d'entreprise"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_name, email]
+              properties:
+                company_name:
+                  type: string
+                email:
+                  type: string
+                country:
+                  type: string
+                city:
+                  type: string
+      responses:
+        "201":
+          description: "Demande créée"
+        "401":
+          description: "Non authentifié"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /user/company-requests/{id}:
+    get:
+      tags: ["User"]
+      summary: "Détail d'une demande de création d'entreprise"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Demande"
+        "401":
+          description: "Non authentifié"
+        "404":
+          description: "Demande introuvable"
+
+  /user/employee-links:
+    get:
+      tags: ["User"]
+      summary: "Liste les liens employé de l'utilisateur ordinaire"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liens employé"
+        "401":
+          description: "Non authentifié"
+
+  /hr/me:
+    get:
+      tags: ["HR App"]
+      summary: "Profil de l'utilisateur RH connecté (manager_role rh/principal)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Profil RH"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+
+  /hr/dashboard:
+    get:
+      tags: ["HR App"]
+      summary: "Dashboard RH — indicateurs et actions en attente"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Dashboard RH"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+
+  /hr/team-overview:
+    get:
+      tags: ["HR App"]
+      summary: "Vue d'ensemble de l'équipe (effectifs, répartition)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Vue d'ensemble"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+
+  /hr/employees:
+    get:
+      tags: ["HR App"]
+      summary: "Liste des employés (scope RH)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Employés paginés"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+    post:
+      tags: ["HR App"]
+      summary: "Ajoute un employé (scope RH — sans changement de rôle manager)"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreEmployeeRequest"
+      responses:
+        "201":
+          description: "Employé créé"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /hr/employees/{employee}:
+    get:
+      tags: ["HR App"]
+      summary: "Détail d'un employé (scope RH)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Employé"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+        "404":
+          description: "Employé introuvable"
+    patch:
+      tags: ["HR App"]
+      summary: "Modifie un employé (scope RH — sans changement de rôle manager)"
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreEmployeeRequest"
+      responses:
+        "200":
+          description: "Employé mis à jour"
+        "401":
+          description: "Non authentifié"
+        "403":
+          description: "Manager rh/principal requis"
+        "404":
+          description: "Employé introuvable"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
+  /employees/link-user:
+    post:
+      tags: ["User"]
+      summary: "Manager — lie un utilisateur ordinaire à un employé du tenant"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, employee_id]
+              properties:
+                email:
+                  type: string
+                employee_id:
+                  type: integer
+      responses:
+        "200":
+          description: "Utilisateur lié"
+        "403":
+          description: "Manager requis"
+        "404":
+          description: "Utilisateur ou employé introuvable"
+        "409":
+          description: "Déjà lié"
+        "422":
+          $ref: "#/components/responses/Validation422"
+
 
   /payrolls:
     get:

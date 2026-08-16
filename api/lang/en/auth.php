@@ -12,4 +12,15 @@ return [
     'password_reset_sent' => 'A password reset email has been sent.',
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+
+    'invalid_reset_token' => 'Invalid, expired or already used reset token.',
+    'password_reset_done' => 'Password reset. Log in with your new password.',
+    'twofa_code_required' => 'A 2FA code is required for this account.',
+    'twofa_code_invalid' => 'The 2FA code is invalid or has expired.',
+    'email_already_used' => 'This email address is already in use.',
+    'current_password_incorrect' => 'The current password is incorrect.',
+    'twofa_already_enabled' => '2FA is already enabled for this account.',
+    'twofa_not_setup' => 'Please call setup2fa first to generate a secret.',
+    'twofa_code_invalid_value' => 'The provided 2FA code is invalid.',
+    'password_incorrect' => 'Incorrect password.',
 ];

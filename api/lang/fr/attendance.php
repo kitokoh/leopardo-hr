@@ -49,4 +49,6 @@ return [
     'correction_filter_applied' => 'Appliquees',
     'correction_filter_rejected' => 'Refusees',
     'correction_filter_all' => 'Toutes',
+
+    'correction_transmitted' => 'Demande de modification transmise au RH.',
 ];

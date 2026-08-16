@@ -12,4 +12,15 @@ return [
     'password_reset_sent' => 'Un email de réinitialisation vous a été envoyé.',
     'failed' => 'Ces identifiants ne correspondent pas à nos enregistrements.',
     'throttle' => 'Tentatives de connexion trop nombreuses. Veuillez essayer de nouveau dans :seconds secondes.',
+
+    'invalid_reset_token' => 'Jeton de réinitialisation invalide, expiré ou déjà utilisé.',
+    'password_reset_done' => 'Mot de passe réinitialisé. Connectez-vous avec votre nouveau mot de passe.',
+    'twofa_code_required' => 'Un code 2FA est requis pour ce compte.',
+    'twofa_code_invalid' => 'Le code 2FA est invalide ou a expiré.',
+    'email_already_used' => 'Cette adresse email est déjà utilisée.',
+    'current_password_incorrect' => 'Le mot de passe actuel est incorrect.',
+    'twofa_already_enabled' => 'Le 2FA est déjà activé pour ce compte.',
+    'twofa_not_setup' => 'Veuillez d\'abord appeler setup2fa pour générer un secret.',
+    'twofa_code_invalid_value' => 'Le code 2FA fourni est invalide.',
+    'password_incorrect' => 'Mot de passe incorrect.',
 ];

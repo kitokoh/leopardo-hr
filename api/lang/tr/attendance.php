@@ -49,4 +49,6 @@ return [
     'correction_filter_applied' => 'Uygulandi',
     'correction_filter_rejected' => 'Reddedildi',
     'correction_filter_all' => 'Tumu',
+
+    'correction_transmitted' => 'Degisiklik talebi IK\'ya iletildi.',
 ];

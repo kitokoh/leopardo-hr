@@ -1240,6 +1240,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/employees/import-template", options);
     },
 
+    /** Manager — lie un utilisateur ordinaire à un employé du tenant */
+    postEmployeesLinkUser(options = {}) {
+      return request("POST", "/employees/link-user", options);
+    },
+
     /** Lister les evaluations */
     getEvaluations(options = {}) {
       return request("GET", "/evaluations", options);
@@ -1463,6 +1468,41 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Readiness probe — base de données disponible */
     getHealthReady(options = {}) {
       return request("GET", "/health/ready", options);
+    },
+
+    /** Dashboard RH — indicateurs et actions en attente */
+    getHrDashboard(options = {}) {
+      return request("GET", "/hr/dashboard", options);
+    },
+
+    /** Liste des employés (scope RH) */
+    getHrEmployees(options = {}) {
+      return request("GET", "/hr/employees", options);
+    },
+
+    /** Ajoute un employé (scope RH — sans changement de rôle manager) */
+    postHrEmployees(options = {}) {
+      return request("POST", "/hr/employees", options);
+    },
+
+    /** Détail d'un employé (scope RH) */
+    getHrEmployeesByEmployee(options = {}) {
+      return request("GET", "/hr/employees/{employee}", options);
+    },
+
+    /** Modifie un employé (scope RH — sans changement de rôle manager) */
+    patchHrEmployeesByEmployee(options = {}) {
+      return request("PATCH", "/hr/employees/{employee}", options);
+    },
+
+    /** Profil de l'utilisateur RH connecté (manager_role rh/principal) */
+    getHrMe(options = {}) {
+      return request("GET", "/hr/me", options);
+    },
+
+    /** Vue d'ensemble de l'équipe (effectifs, répartition) */
+    getHrTeamOverview(options = {}) {
+      return request("GET", "/hr/team-overview", options);
     },
 
     /** Catalogue de traductions complet */
@@ -3010,14 +3050,54 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/trial/verify", options);
     },
 
+    /** Change le mot de passe de l'utilisateur connecté */
+    postUserChangePassword(options = {}) {
+      return request("POST", "/user/change-password", options);
+    },
+
+    /** Liste les demandes de création d'entreprise de l'utilisateur */
+    getUserCompanyRequests(options = {}) {
+      return request("GET", "/user/company-requests", options);
+    },
+
+    /** Crée une demande de création d'entreprise */
+    postUserCompanyRequests(options = {}) {
+      return request("POST", "/user/company-requests", options);
+    },
+
+    /** Détail d'une demande de création d'entreprise */
+    getUserCompanyRequestsById(options = {}) {
+      return request("GET", "/user/company-requests/{id}", options);
+    },
+
+    /** Liste les liens employé de l'utilisateur ordinaire */
+    getUserEmployeeLinks(options = {}) {
+      return request("GET", "/user/employee-links", options);
+    },
+
+    /** Connexion ou création de compte via Google (compte ordinaire) */
+    postUserGoogleSignin(options = {}) {
+      return request("POST", "/user/google-signin", options);
+    },
+
     /** Connexion utilisateur sans entreprise (parcours legacy mobile) */
     postUserLogin(options = {}) {
       return request("POST", "/user/login", options);
     },
 
+    /** Déconnecte l'utilisateur (révoque le token) */
+    postUserLogout(options = {}) {
+      return request("POST", "/user/logout", options);
+    },
+
     /** Profil de l'utilisateur connecté */
     getUserMe(options = {}) {
       return request("GET", "/user/me", options);
+    },
+
+    /** Met à jour le profil de l'utilisateur connecté */
+    patchUserProfile(options = {}) {
+      return request("PATCH", "/user/profile", options);
     },
 
     /** Crée un compte utilisateur sans entreprise (parcours legacy mobile) */

@@ -70,7 +70,7 @@ class GeoAttendanceController extends Controller
 
         } catch (SessionAlreadyOpenException $e) {
             return response()->json([
-                'message' => 'Une session est déjà ouverte pour cet employé.',
+                'message' => __('errors.SESSION_ALREADY_OPEN'),
                 'code' => 'SESSION_ALREADY_OPEN',
             ], 409);
 
@@ -80,7 +80,7 @@ class GeoAttendanceController extends Controller
             Log::warning('geo_attendance.outside_geofence', ['employee_id' => $request->user()?->id, 'error' => $e->getMessage()]);
 
             return response()->json([
-                'message' => 'Position hors zone de présence.',
+                'message' => __('errors.OUTSIDE_GEOFENCE'),
                 'code' => 'OUTSIDE_GEOFENCE',
             ], 422);
         }
