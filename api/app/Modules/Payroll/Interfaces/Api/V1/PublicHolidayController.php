@@ -207,7 +207,7 @@ class PublicHolidayController extends Controller
             // Recoupement date ↔ year : une date de 2026 ne peut pas porter
             // year=2025 (ligne invisible dans la lecture par année sinon).
             if ($date !== null && $date->year !== $year) {
-                $v->errors()->add('year', 'The year must match the year of the date.');
+                $v->errors()->add('year', __('errors.PUBLIC_HOLIDAY_YEAR_MISMATCH'));
             }
 
             // month_day (si fourni avec is_recurring) doit correspondre à la
@@ -217,7 +217,7 @@ class PublicHolidayController extends Controller
             $isRecurring = filter_var($data['is_recurring'] ?? false, FILTER_VALIDATE_BOOLEAN);
             if ($date !== null && $isRecurring && isset($data['month_day']) && $data['month_day'] !== '') {
                 if ((string) $data['month_day'] !== $date->format('m-d')) {
-                    $v->errors()->add('month_day', 'The month_day must match the month and day of the date.');
+                    $v->errors()->add('month_day', __('errors.PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH'));
                 }
             }
         });

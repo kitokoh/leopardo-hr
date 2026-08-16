@@ -152,7 +152,10 @@ class PayrollCycleController extends Controller
             'label' => $cycle['label'],
         ];
 
-        return response()->json(['data' => $payload] + $payload);
+        // Issue #4500 : forme de réponse alignée sur myBalance et les autres
+        // endpoints payroll — {data: {...}} uniquement (le `+ $payload`
+        // aplatissait toutes les clés au niveau racine, contrat incohérent).
+        return response()->json(['data' => $payload]);
     }
 
     public function myBalance(Request $request): JsonResponse
@@ -189,7 +192,10 @@ class PayrollCycleController extends Controller
 
         $payload = $this->cycleService->getEmployeeBalance($targetEmployee);
 
-        return response()->json(['data' => $payload] + $payload);
+        // Issue #4500 : forme de réponse alignée sur myBalance et les autres
+        // endpoints payroll — {data: {...}} uniquement (le `+ $payload`
+        // aplatissait toutes les clés au niveau racine, contrat incohérent).
+        return response()->json(['data' => $payload]);
     }
 
     public function mobileSummary(Request $request): JsonResponse
