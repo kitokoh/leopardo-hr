@@ -217,7 +217,7 @@ paths:
 
   # ─── EdgeSync — installation et telechargements (public) ─────────────
 
-  /api/v1/edge/health:
+  /edge/health:
     get:
       tags: ["Health"]
       summary: "Healthcheck edge (public, machine-to-cloud)"
@@ -235,7 +235,7 @@ paths:
                     type: string
                     example: ok
 
-  /api/v1/edge/install.sh:
+  /edge/install.sh:
     get:
       tags: ["Health"]
       summary: "Script d'installation du nœud edge (public)"
@@ -254,7 +254,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/docker-compose.yml:
+  /edge/download/docker-compose.yml:
     get:
       tags: ["Health"]
       summary: "docker-compose.yml de reference pour le nœud edge (public)"
@@ -273,7 +273,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/Caddyfile.edge:
+  /edge/download/Caddyfile.edge:
     get:
       tags: ["Health"]
       summary: "Caddyfile.edge de reference pour le nœud edge (public)"
@@ -293,7 +293,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/sha256.txt:
+  /edge/download/sha256.txt:
     get:
       tags: ["Health"]
       summary: "Sommes SHA-256 des artefacts edge (public)"
@@ -313,7 +313,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/docker-compose.yml.sha256:
+  /edge/download/docker-compose.yml.sha256:
     get:
       tags: ["Health"]
       summary: "Somme SHA-256 de docker-compose.yml edge (public)"
@@ -332,7 +332,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/Caddyfile.edge.sha256:
+  /edge/download/Caddyfile.edge.sha256:
     get:
       tags: ["Health"]
       summary: "Somme SHA-256 de Caddyfile.edge (public)"
@@ -351,7 +351,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/env-example:
+  /edge/download/env-example:
     get:
       tags: ["Health"]
       summary: "Exemple de fichier d'environnement pour le nœud edge (public)"
@@ -364,7 +364,7 @@ paths:
               schema:
                 type: string
 
-  /api/v1/edge/license-public-key:
+  /edge/license-public-key:
     get:
       tags: ["Health"]
       summary: "Cle publique de verification des licences edge (public)"
@@ -377,7 +377,7 @@ paths:
               schema:
                 type: string
 
-  /api/v1/edge/heartbeat:
+  /edge/heartbeat:
     post:
       tags: ["Health"]
       summary: "Heartbeat machine-to-cloud d'un nœud edge (public)"
@@ -396,7 +396,7 @@ paths:
 
   # ─── EdgeSync — gestion des nœuds (tenant authentifie) ───────────────
 
-  /api/v1/edge:
+  /edge:
     get:
       tags: ["Edge"]
       summary: "Lister les nœuds edge du tenant"
@@ -434,7 +434,7 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /api/v1/edge/{nodeId}:
+  /edge/{nodeId}:
     get:
       tags: ["Edge"]
       summary: "Detail d'un nœud edge du tenant"
@@ -461,7 +461,7 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
-  /api/v1/edge/{nodeId}/sync:
+  /edge/{nodeId}/sync:
     post:
       tags: ["Edge"]
       summary: "Declencher la synchronisation d'un nœud edge"
@@ -488,7 +488,7 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
-  /api/v1/edge/{nodeId}/license:
+  /edge/{nodeId}/license:
     post:
       tags: ["Edge"]
       summary: "Emettre une licence pour un nœud edge"
@@ -517,7 +517,7 @@ paths:
 
   # ─── EdgeSync — routes machine du nœud (X-Kiosk-Token / throttle) ────
 
-  /api/v1/edge-node/{nodeId}/push:
+  /edge-node/{nodeId}/push:
     post:
       tags: ["Edge"]
       summary: "Pousser les donnees du nœud edge vers le cloud"
@@ -538,7 +538,7 @@ paths:
         "422":
           $ref: "#/components/responses/Validation422"
 
-  /api/v1/edge-node/{nodeId}/pull:
+  /edge-node/{nodeId}/pull:
     get:
       tags: ["Edge"]
       summary: "Recuperer le delta de synchronisation pour le nœud edge"
@@ -560,7 +560,7 @@ paths:
                   data:
                     type: object
 
-  /api/v1/edge-node/{nodeId}/heartbeat:
+  /edge-node/{nodeId}/heartbeat:
     post:
       tags: ["Edge"]
       summary: "Heartbeat d'un nœud edge (machine-to-cloud)"
@@ -583,7 +583,7 @@ paths:
                     type: string
                     example: ok
 
-  /api/v1/edge-node/validate-license:
+  /edge-node/validate-license:
     post:
       tags: ["Edge"]
       summary: "Valider une licence edge (machine-to-cloud)"

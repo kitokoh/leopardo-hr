@@ -40,3 +40,21 @@ describe('currency (PA2-MKT-003)', () => {
     expect(convertEurPrice('29', fr)).toBe('29');
   });
 });
+
+import { showsCurrency } from '../pricing'
+
+describe('showsCurrency (#4404)', () => {
+  it.each([
+    ['0', true],
+    ['29', true],
+    ['99', true],
+    ['Sur devis', false],
+    ['Custom', false],
+    ['Teklif', false],
+    ['Teklif alın', false],
+    ['حسب الطلب', false], // AR « sur demande » — libellé réel des données
+    ['حسب العرض', true], // mot distinct, jamais utilisé dans les données
+  ])('treats %s as machine price = %s', (price, expected) => {
+    expect(showsCurrency(price)).toBe(expected)
+  })
+})
