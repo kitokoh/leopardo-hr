@@ -87,6 +87,21 @@ reste ouverte même une fois le correctif livré. Règles :
   preuve code : commentaire + état closed).
 - Fallback : fermeture manuelle avec vérification du code sur main.
 
+## Lecon 2026-08-16 — Famine du pipeline de deploiement (issue #3545)
+
+- **`cancel-in-progress: false` ne protege PAS les runs `pending`** : GitHub ne
+  conserve qu'UN run pending par groupe de concurrence. Sous rafale de merges
+  (~1/2 min), les runs Tests de main etaient annules en pending (48/50
+  cancelled) et `deploy-main.yml` (dependance `workflow_run.conclusion ==
+  success`) skipait le deploy a 100 % — prod figee sans signal rouge.
+- **Garde : tout workflow de deploiement déclenché sur main doit écouter
+  `push: main` et poller les runs/checks du SHA (timeout borne, ~30 min) au
+  lieu de lire la conclusion d'un parent `workflow_run` potentiellement
+  annulé.** Toujours re-verifier que le SHA est encore la tete de main avant
+  de deployer (garde anti-stale, audit #1705).
+- Tout skip de deploiement doit emettre `::warning::` + `$GITHUB_STEP_SUMMARY`
+  (raison, SHA, conclusions) — un skip silencieux ressemble a un success.
+
 ## Regles obligatoires
 
 - **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
