@@ -472,6 +472,20 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
+
+  // #4505 : metadata propre à /checkout/success (ne pas réutiliser « checkout »)
+  checkoutSuccess: {
+    title: "Votre espace Leopardo est pret | Confirmation d'abonnement",
+    description:
+      "Confirmation de votre essai Leopardo RH : votre espace est pret, 14 jours offerts, aucune carte debitee aujourd'hui.",
+    keywords: [
+      "confirmation abonnement RH",
+      "essai gratuit Leopardo RH",
+      "activation espace RH",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+    robots: "noindex, follow",
+  },
 };
 
 /**
@@ -613,6 +627,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     mobile: { title: "Mobile Apps | Leopardo HR on Android and iOS", description: "Leopardo HR mobile apps for employees, managers and admins: attendance, leave, payslips and notifications." },
     signup: { title: "Free Guided Trial | Discover Leopardo HR", description: "Request your free guided Leopardo HR trial: no password required, a specialist contacts you within 24h." },
     checkout: { title: "Choose Your Plan | Leopardo HR Subscription", description: "Select and subscribe to the Leopardo HR plan that fits your company: Pilot, Operations or Enterprise." },
+    checkoutSuccess: { title: "Your Leopardo Space Is Ready | Subscription Confirmation", description: "Your Leopardo HR trial is confirmed: your space is ready, 14 days free, no card charged today." },
   },
   tr: {
     landing: { title: "Çalışan Yönetimi, Maaş & Belgeler | Hepsi Bir Arada Platform", description: "Çalışanlarınızı, maaş işlemlerinizi ve belgelerinizi tek yerden yönetin. 14 gün ücretsiz deneme, kredi kartı gerekmez." },
@@ -642,6 +657,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     mobile: { title: "Mobil Uygulamalar | Android ve iOS'ta Leopardo İK", description: "Çalışan, yönetici ve admin uygulamaları: giriş-çıkış, izinler, maaş bordroları ve bildirimler." },
     signup: { title: "Ücretsiz Rehberli Deneme | Leopardo İK'yı Keşfedin", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
     checkout: { title: "Planınızı Seçin | Leopardo İK Aboneliği", description: "Şirketinize uygun Leopardo İK planını seçin ve abone olun: Pilot, Operations veya Enterprise." },
+    checkoutSuccess: { title: "Leopardo Alanınız Hazır | Abonelik Onayı", description: "Leopardo İK denemeniz onaylandı: alanınız hazır, 14 gün ücretsiz, bugün kartınızdan ücret alınmaz." },
   },
   ar: {
     landing: { title: "إدارة الموظفين والرواتب والمستندات | منصة متكاملة", description: "أدر موظفيك ورواتبهم ومستنداتهم في مكان واحد. نسخة تجريبية مجانية لمدة 14 يومًا دون بطاقة ائتمان." },
@@ -671,6 +687,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     mobile: { title: "تطبيقات الجوال | ليوباردو على Android وiOS", description: "تطبيقات ليوباردو للموظفين والمديرين والمشرفين: الحضور والإجازات وكشوف الرواتب والإشعارات." },
     signup: { title: "تجربة موجهة مجانية | اكتشف ليوباردو", description: "اطلب تجربتك الموجهة المجانية: لا كلمة مرور مطلوبة، ويتواصل معك مختص خلال 24 ساعة." },
     checkout: { title: "اختر خطتك | اشتراك ليوباردو", description: "اختر خطة ليوباردو المناسبة لشركتك واشترك: Pilot أو Operations أو Enterprise." },
+    checkoutSuccess: { title: "مساحة ليوباردو جاهزة | تأكيد الاشتراك", description: "تم تأكيد تجربتك المجانية: مساحتك جاهزة، 14 يوماً مجاناً، ولن يتم خصم أي مبلغ اليوم." },
   },
 };
 
