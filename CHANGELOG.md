@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): /p/{code} — throttle 60/min/IP + user_agent/referrer_url tronqués à 255 (500 évité sur Referer long) (Closes #4606).**
 - **fix(api): GET /kiosk/{deviceCode} throttlé (bucket kiosk-punch) — fin de l'énumération du device_code (Closes #4607).**
 - **fix(ci): tests.yml — références mobiles mortes supprimées (DEFAULT_MOBILE_COVERAGE_MIN + 2 lignes d'artefacts fantômes) (Closes #4626).**
 - **fix(ci/i18n): garde i18n alignée sur la surface leopardo_hr — paths i18n-enterprise.yml + watchedPathPrefixes de check-i18n-diff.js (Closes #4623).** Complète #4397 (scanner) : les PRs ne touchant que leopardo_hr/lib ne déclenchaient ni validate-and-sync ni check-new-hardcoded-strings.

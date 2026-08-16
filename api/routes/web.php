@@ -20,9 +20,12 @@ Route::get('/', function () {
 });
 
 // Capture de lien partenaire (Middleware gère la redirection et le cookie)
+// #4606 : route publique écrite en DB à chaque hit (PartnerClick via le
+// middleware global) — throttle 60/min/IP + entrées bornées (voir
+// PartnerLinkMiddleware) pour éviter 500 (Referer > 255) et l'amplification.
 Route::get('/p/{code}', function () {
     return redirect('/signup');
-})->name('partner.link');
+})->middleware('throttle:60,1')->name('partner.link');
 
 // Issue #2253 — magic link d'accès au sandbox de démo (jeton à usage unique).
 Route::middleware('throttle:auth-sensitive')->get('/demo-login/{token}', DemoLoginController::class);
