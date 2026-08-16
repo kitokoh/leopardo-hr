@@ -93,11 +93,13 @@ class TenantIsolationTest extends TestCase
             'password_hash' => bcrypt('secret'),
         ]);
 
-        Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
+        $sensitiveEmployee0 = Employee::withoutGlobalScopes()->create([
             'email' => 'b.employee@test.local',
             'password_hash' => bcrypt('secret'),
         ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $companyB->id,
+        ])->save();
 
         $visibleEmails = Employee::query()->pluck('email')->all();
 
