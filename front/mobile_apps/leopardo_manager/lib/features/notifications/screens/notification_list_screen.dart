@@ -29,8 +29,20 @@ class NotificationListScreen extends ConsumerWidget {
             tooltip: 'Tout marquer comme lu',
             icon: const Icon(Icons.done_all, color: MobileSurface.secondary),
             onPressed: () async {
-              await ref.read(notificationRepositoryProvider).markAllAsRead();
-              ref.invalidate(notificationsProvider);
+              try {
+                await ref
+                    .read(notificationRepositoryProvider)
+                    .markAllAsRead();
+                ref.invalidate(notificationsProvider);
+              } catch (_) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                        'Impossible de marquer les notifications comme lues.'),
+                  ),
+                );
+              }
             },
           ),
         ],
@@ -69,23 +81,43 @@ class NotificationListScreen extends ConsumerWidget {
                       isRead: notification.isRead,
                       onTap: () async {
                         if (!notification.isRead) {
-                          await ref
-                              .read(notificationRepositoryProvider)
-                              .markAsRead(notification.id);
-                          ref.invalidate(notificationsProvider);
+                          try {
+                            await ref
+                                .read(notificationRepositoryProvider)
+                                .markAsRead(notification.id);
+                            ref.invalidate(notificationsProvider);
+                          } catch (_) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Impossible de marquer la notification comme lue.'),
+                              ),
+                            );
+                          }
                         }
                       },
                       onDelete: () async {
-                        await ref
-                            .read(notificationRepositoryProvider)
-                            .deleteNotification(notification.id);
-                        ref.invalidate(notificationsProvider);
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Notification supprimee.'),
-                          ),
-                        );
+                        try {
+                          await ref
+                              .read(notificationRepositoryProvider)
+                              .deleteNotification(notification.id);
+                          ref.invalidate(notificationsProvider);
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Notification supprimee.'),
+                            ),
+                          );
+                        } catch (_) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Impossible de supprimer la notification.'),
+                            ),
+                          );
+                        }
                       },
                     );
                   },
