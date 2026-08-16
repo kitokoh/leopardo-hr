@@ -46,12 +46,10 @@ class GoldenDzProrataOvertimeTest extends TestCase
 
     public static function overtimeProvider(): array
     {
-        // #2685 : le taux horaire n'est plus arrondi à 2 décimales avant les
-        // multiplicateurs 1.25/1.50 — la précision complète est conservée
-        // jusqu'à l'arrondi final (round 2). Valeurs golden recalculées avec
-        // la précision pleine (loi 90-11 art. 18-19, 25 %/50 %).
         return [
             'zéro heure' => [60000.0, 0.0, 0.0],
+            // Issue #2685 : précision complète jusqu'à l'arrondi final —
+            // 60000/173,33 = 346,160503… (non arrondi avant les majorations).
             '10 h à 25 % (seuil)' => [60000.0, 10.0, 4327.01],
             '10 h 25 % + 5 h 50 %' => [60000.0, 15.0, 6923.21],
             '11 h (1 h à 50 %)' => [60000.0, 11.0, 4846.25],
