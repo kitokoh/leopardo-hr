@@ -74,3 +74,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Attendance mode personalization is disabled.',
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
+    'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Only a locked run can be regularized.',
+];

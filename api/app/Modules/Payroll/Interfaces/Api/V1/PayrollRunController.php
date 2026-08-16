@@ -225,11 +225,16 @@ class PayrollRunController extends Controller
             // (mise à jour conditionnelle atomique + audit trail `payroll_run_validated`).
             $this->closing->validateRh($payrollRun, $actor);
         } catch (PayrollAlreadyValidatedException|PayrollRunLockedException $e) {
-            // #3810 : codes stables + message localisé, jamais de message brut.
+            // #3810 + #4294 : codes stables + message localisé (catalogue, 4
+            // locales) — jamais de message d'exception brut/FR en dur.
+            $localized = $e instanceof PayrollAlreadyValidatedException
+                ? __('api_errors.PAYROLL_ALREADY_VALIDATED')
+                : __('errors.PAYROLL_RUN_LOCKED');
+
             return response()->json([
                 'error' => $e->errorCode(),
                 'message' => $e->errorCode(),
-                'localized_message' => $e->getMessage(),
+                'localized_message' => $localized,
             ], $e->statusCode());
         } catch (\RuntimeException $e) {
             Log::error('payroll.run.validation_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);
@@ -293,11 +298,16 @@ class PayrollRunController extends Controller
         try {
             $this->closing->lock($payrollRun, $actor);
         } catch (PayrollAlreadyValidatedException|PayrollRunLockedException $e) {
-            // #3810 : codes stables + message localisé, jamais de message brut.
+            // #3810 + #4294 : codes stables + message localisé (catalogue, 4
+            // locales) — jamais de message d'exception brut/FR en dur.
+            $localized = $e instanceof PayrollAlreadyValidatedException
+                ? __('api_errors.PAYROLL_ALREADY_VALIDATED')
+                : __('errors.PAYROLL_RUN_LOCKED');
+
             return response()->json([
                 'error' => $e->errorCode(),
                 'message' => $e->errorCode(),
-                'localized_message' => $e->getMessage(),
+                'localized_message' => $localized,
             ], $e->statusCode());
             // assertHasPaySlips() (lock) jette RuntimeException au runtime — le flow
             // analysis PHPStan ne le voit pas à travers DB::transaction().
@@ -337,11 +347,11 @@ class PayrollRunController extends Controller
         try {
             $this->closing->unlock($payrollRun, $actor, $validated['reason']);
         } catch (PayrollRunLockedException $e) {
-            // #3810 : codes stables + message localisé, jamais de message brut.
+            // #3810 + #4294 : message localisé via catalogue (4 locales).
             return response()->json([
                 'error' => $e->errorCode(),
                 'message' => $e->errorCode(),
-                'localized_message' => $e->getMessage(),
+                'localized_message' => __('errors.PAYROLL_RUN_LOCKED'),
             ], $e->statusCode());
             // unlock() jette des RuntimeException métier (run non verrouillé,
             // raison manquante) — le flow analysis PHPStan ne les voit pas.
@@ -386,11 +396,11 @@ class PayrollRunController extends Controller
                 (string) $validated['reason'],
             );
         } catch (PayrollRunNotLockedException $e) {
-            // #3810 : codes stables + message localisé, jamais de message brut.
+            // #3810 + #4294 : message localisé via catalogue (4 locales).
             return response()->json([
                 'error' => $e->errorCode(),
                 'message' => $e->errorCode(),
-                'localized_message' => $e->getMessage(),
+                'localized_message' => __('errors.PAYROLL_RUN_NOT_LOCKED'),
             ], $e->statusCode());
         } catch (\RuntimeException $e) {
             Log::error('payroll.run.regularization_failed', ['run_id' => $payrollRun->id, 'error' => $e->getMessage()]);

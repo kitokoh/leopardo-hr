@@ -74,3 +74,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
+    'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run verrouillé peut être régularisé.',
+];

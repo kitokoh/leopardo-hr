@@ -389,6 +389,38 @@ class PayrollRunControllerTest extends TestCase
         Storage::disk('local')->assertExists((string) $slip->pdf_path);
     }
 
+    public function test_double_validate_returns_localized_message_following_accept_language(): void
+    {
+        // #4294 — le catch PayrollAlreadyValidatedException renvoyait
+        // $e->getMessage() (FR codé en dur) ; il doit servir le catalogue
+        // api_errors.PAYROLL_ALREADY_VALIDATED selon Accept-Language.
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::factory()->create();
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => now()->startOfMonth(),
+            'period_end' => now()->endOfMonth(),
+            'status' => 'validated',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->withHeader('Accept-Language', 'en')
+            ->postJson("/api/v1/payroll-runs/{$run->id}/validate")
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'PAYROLL_ALREADY_VALIDATED')
+            ->assertJsonPath('localized_message', 'This payroll run has already been validated.');
+
+        $this->withHeader('Accept-Language', 'tr')
+            ->postJson("/api/v1/payroll-runs/{$run->id}/validate")
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'PAYROLL_ALREADY_VALIDATED')
+            ->assertJsonPath('localized_message', 'Bu bordro donemi zaten dogrulandi.');
+    }
+
     public function test_validate_dispatches_pay_slip_pdf_warmup_job(): void
     {
         Queue::fake();

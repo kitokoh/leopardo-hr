@@ -59,3 +59,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'تخصيص وضع التسجيل معطّل.',
     'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
     'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',
+    'PAYROLL_RUN_LOCKED' => 'تشغيل الرواتب هذا مقفل (إقفال محاسبي) ولا يمكن تعديله بعد الآن.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية التشغيل المقفل فقط.',
+];

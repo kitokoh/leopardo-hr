@@ -59,3 +59,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Yoklama modu kişiselleştirmesi devre dışı.',
     'PREFERENCE_UPDATED' => 'Tercih güncellendi.',
     'CONFIG_UPDATED' => 'Yapılandırma güncellendi.',
+    'PAYROLL_RUN_LOCKED' => 'Bu maaş çalışması kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir çalışma düzenlenebilir.',
+];
