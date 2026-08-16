@@ -1,5 +1,6 @@
 import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Briefcase, MapPin, Clock, ArrowRight, Rss } from 'lucide-react';
@@ -7,12 +8,25 @@ import { CareersNavbar } from './CareersNavbar';
 import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
+import { normalizeLocale, type AppLocale } from '@/lib/i18n';
+import {
+  getTenantCareersCopy,
+  tenantCareersMetaTitle,
+  tenantCareersMetaDescription,
+} from '@/modules/vitrine/data/tenant-careers';
 import {
   getPublicCareersCompany,
   getPublicJobPostings,
   CONTRACT_TYPE_LABELS,
   REMOTE_POLICY_LABELS,
 } from '@/lib/careers-api';
+
+// #4448 : locale SSR depuis le header normalisé par le middleware (`?lang=`
+// → `x-vitrine-lang`, #4004/#4173), même mécanisme que le RootLayout.
+async function resolveCareersLocale(): Promise<AppLocale> {
+  const h = await headers();
+  return normalizeLocale(h.get('x-vitrine-lang') ?? 'fr');
+}
 
 interface CareersPortalPageProps {
   params: Promise<{ companySlug: string }>;
@@ -24,16 +38,17 @@ export async function generateMetadata({ params }: CareersPortalPageProps): Prom
     getPublicJobPostings(companySlug),
     getPublicCareersCompany(companySlug),
   ]);
+  const locale = await resolveCareersLocale();
 
   if (jobs === null) {
-    return { title: 'Portail carrieres introuvable' };
+    return { title: getTenantCareersCopy(locale).portalNotFoundTitle };
   }
 
   const displayName = company?.display_name ?? '';
 
   return generateSEOMetadata({
-    title: `Carrieres${displayName ? ` - ${displayName}` : ''} - ${jobs.length} offre${jobs.length > 1 ? 's' : ''} d'emploi`,
-    description: `Decouvrez les offres d'emploi ouvertes chez ${displayName || 'cette entreprise'} et postulez en ligne en quelques minutes.`,
+    title: tenantCareersMetaTitle(locale, displayName, jobs.length),
+    description: tenantCareersMetaDescription(locale, displayName),
     canonical: `${SITE_URL}/${companySlug}/careers`,
     ogType: 'website',
     ogImage: company?.logo_url ?? undefined,
@@ -46,13 +61,15 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
     getPublicJobPostings(companySlug),
     getPublicCareersCompany(companySlug),
   ]);
+  const locale = await resolveCareersLocale();
+  const copy = getTenantCareersCopy(locale);
 
   if (jobs === null) {
     notFound();
   }
 
   const brandColor = company?.primary_color ?? '#10B981';
-  const displayName = company?.display_name ?? 'notre equipe';
+  const displayName = company?.display_name ?? (locale === 'fr' ? 'notre équipe' : locale === 'ar' ? 'فريقنا' : 'our team');
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
@@ -91,15 +108,13 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
             style={{ backgroundColor: `${brandColor}1A`, color: brandColor }}
           >
             <Briefcase className="w-3.5 h-3.5" />
-            Carrieres
+            {copy.badge}
           </span>
           <h1 className="mt-4 text-3xl sm:text-4xl font-black text-slate-900 dark:text-white">
-            Rejoignez {displayName}
+            {copy.joinCompany(displayName)}
           </h1>
           <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
-            {jobs.length > 0
-              ? `${jobs.length} poste${jobs.length > 1 ? 's' : ''} actuellement ouvert${jobs.length > 1 ? 's' : ''}`
-              : 'Aucun poste ouvert pour le moment. Revenez bientot !'}
+            {jobs.length > 0 ? copy.openingsCount(jobs.length) : copy.noOpenings}
           </p>
         </div>
       </section>
@@ -108,7 +123,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {jobs.length === 0 ? (
             <div className="text-center py-16 text-slate-500 dark:text-slate-400">
-              Il n&apos;y a pas d&apos;offre d&apos;emploi publiee pour le moment.
+              {copy.noJobsYet}
             </div>
           ) : (
             <div className="space-y-4">
@@ -161,7 +176,7 @@ export default async function CareersPortalPage({ params }: CareersPortalPagePro
               rel="nofollow"
             >
               <Rss className="w-3.5 h-3.5" />
-              Flux XML (Google Jobs / Indeed)
+              {copy.feedLabel}
             </a>
           </div>
         </div>
