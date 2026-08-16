@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): Navbar — bouton sous-menu desktop avec aria-haspopup (a11y, résiduel #4510) (Closes #4614).** Le toggle mobile avait aria-expanded+haspopup depuis #4510 ; le bouton desktop (click+hover) n'avait que aria-expanded.
 - **fix(web): formulaire /demo — 7 champs avec id/htmlFor (WCAG 1.3.1) (Closes #4613).** Les labels n'étaient associés à aucun champ (placeholder seul) → les lecteurs d'écran ne pouvaient pas associer libellés et champs.
 - **fix(admin): UsersView — sous-titre : placeholders :active/:newToday interpolés (plus de tokens bruts) (Closes #4618).** Le header affichait littéralement « 12 utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui » dans les 4 locales.
 - **fix(admin): dialog islamique — l'année est affichée au lieu de « undefined » (Closes #4617).** `HolidaysView.vue` utilisait `islamicYear.value` dans une expression template Vue 3 (ref auto-unwrapped → undefined) → « Confirmer toutes les dates islamiques de undefined ? » dans les 4 locales. Fix : `{ year: islamicYear }`.
