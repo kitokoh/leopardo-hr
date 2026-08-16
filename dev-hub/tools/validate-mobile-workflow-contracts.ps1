@@ -80,7 +80,12 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
 
         $appDart = Get-Content -LiteralPath $appDartPath -Raw
         $routes = Get-AppRoutes $appDart
-        $libContent = Get-DartContent $root
+        # Issue #4212 : garder le contenu PROPRE de l'app pour les checks de
+        # navigation (forbiddenRoutes) — le package partagé leopardo_core
+        # contient des mocks API (ex. mock_interceptor '/attendance') qui ne
+        # sont pas des routes de navigation et créent des faux positifs.
+        $appLibContent = Get-DartContent $root
+        $libContent = $appLibContent
         # Issue #4102 : les endpoints partagés (/device-tokens, push FCM)
         # vivent dans le package partagé leopardo_core (PushNotificationService)
         # consommé par toutes les apps — l'inclure dans la recherche pour que
@@ -109,7 +114,7 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
                 if ([string]::IsNullOrWhiteSpace($route)) {
                     continue
                 }
-                if ($routes.Contains($route) -or $libContent.Contains("('$route'") -or $libContent.Contains('"' + $route + '"')) {
+                if ($routes.Contains($route) -or $appLibContent.Contains("('$route'") -or $appLibContent.Contains('"' + $route + '"')) {
                     Add-Failure "$($app.name) app must not expose forbidden route $route"
                 }
             }
