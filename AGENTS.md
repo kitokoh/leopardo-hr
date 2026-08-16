@@ -841,3 +841,6 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
 
 ### 2026-08-16 - Migrations PostgreSQL concurrentes
 - `Schema::hasColumn()` suivi de `Schema::table()` n'est pas atomique sous Render/Neon : plusieurs processus peuvent franchir le test puis provoquer `SQLSTATE[42701] Duplicate column`. Pour les réconciliations additives publiques, utiliser `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` avec un schéma explicitement résolu et ne pas avaler les autres erreurs (issue #4123).
+
+### 2026-08-16 - Contraintes PostgreSQL tenant concurrentes
+- PostgreSQL ne propose pas `ADD CONSTRAINT IF NOT EXISTS`. Pour les migrations Render exécutées en concurrence, utiliser un advisory lock transactionnel, inspecter `pg_constraint`, traiter une définition équivalente comme no-op et refuser une définition incompatible; ne pas faire `DROP` puis `ADD` sans vérification (issue #4156).
