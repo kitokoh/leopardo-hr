@@ -83,7 +83,32 @@ class ExceptionLeakRegressionTest extends TestCase
         $response->assertStatus(422);
         // Code de domaine stable (errorCode de PayrollAlreadyValidatedException).
         $this->assertSame('PAYROLL_ALREADY_VALIDATED', $response->json('error'));
-        $this->assertNotNull($response->json('localized_message'));
+        // #4355/#4388 : le message doit venir du catalogue errors.* localisé —
+        // jamais du message brut FR porté par l'exception (#3810).
+        $this->assertSame(__('errors.PAYROLL_ALREADY_VALIDATED'), $response->json('localized_message'));
+        $this->assertStringNotContainsString('déjà validée', $response->getContent());
+    }
+
+    public function test_payroll_run_locked_returns_catalog_localized_message(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'DZ',
+            'status' => PayrollRun::STATUS_LOCKED,
+        ]);
+
+        Sanctum::actingAs($manager);
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/validate");
+
+        $response->assertStatus(423);
+        $this->assertSame('PAYROLL_RUN_LOCKED', $response->json('error'));
+        $this->assertSame(__('errors.PAYROLL_RUN_LOCKED'), $response->json('localized_message'));
+        // Le message brut FR de PayrollRunLockedException ne doit pas fuiter.
+        $this->assertStringNotContainsString('verrouillé', $response->getContent());
     }
 
     public function test_announcement_publish_runtime_failure_returns_localized_error(): void

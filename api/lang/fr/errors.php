@@ -94,4 +94,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Seuls les contrats au statut brouillon peuvent être activés.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Seuls les contrats actifs peuvent être suspendus.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Le contrat doit être actif ou suspendu pour être rompu.',
+    'PAYROLL_ALREADY_VALIDATED' => 'Ce run de paie est déjà validé et ne peut plus être modifié.',
+    'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Ce run de paie n'est pas verrouillé — l'opération demandée est impossible.',
 ];
