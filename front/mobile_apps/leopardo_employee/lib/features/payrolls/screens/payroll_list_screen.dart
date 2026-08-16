@@ -184,7 +184,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${NumberFormat.decimalPattern(deviceIntlDateLocale).format(payroll.netSalary)}${currencySuffix(payroll.currency)} net',
+                            '${NumberFormat.decimalPattern(deviceIntlNumberLocale).format(payroll.netSalary)}${currencySuffix(payroll.currency)} net',
                             style: AppTypography.caption.copyWith(
                               color: MobileSurface.secondary,
                             ),
@@ -561,7 +561,7 @@ class _MoneyLine extends StatelessWidget {
           ),
         ),
         Text(
-          '${NumberFormat.decimalPattern(deviceIntlDateLocale).format(value)}${currencySuffix(currency)}',
+          '${NumberFormat.decimalPattern(deviceIntlNumberLocale).format(value)}${currencySuffix(currency)}',
           style: AppTypography.bodySmall.copyWith(
             color: color,
             fontWeight: FontWeight.w800,
