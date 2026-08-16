@@ -641,15 +641,14 @@ export default function PricingPage() {
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
-    // Legacy free-plan fallback (aucun plan à 0 € dans pricing.ts — garde défensive)
-    if (plan.price === '0') return '/checkout?plan=free';
-    // Enterprise → contact
+    // ADR-0014 : Free est public et gratuit → inscription directe, pas de checkout
+    if (plan.planCode === 'free') return '/signup?plan=free&source=pricing_free';
+    // Enterprise → contact commercial
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
-    // Paid plans → checkout with payment
-    if (plan.popular) return '/checkout?plan=operations';
-    // Autres plans payants (Pilot) → essai guidé 14 jours (aucun paiement à
-    // l'inscription) : le checkout ne doit pas être présenté comme « gratuit » (#2649).
-    return '/signup?source=pricing_pilot';
+    // Plans payants : checkout avec paiement
+    if (plan.planCode === 'operations') return '/checkout?plan=operations';
+    // Pilot → essai guidé 14 jours (pas de CB à l'inscription — #2649)
+    return `/signup?plan=${plan.planCode}&source=pricing_pilot`;
   }
 
   const filteredFaq = faqCategory

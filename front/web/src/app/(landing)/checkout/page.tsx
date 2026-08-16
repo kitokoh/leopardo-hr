@@ -54,19 +54,20 @@ const PLAN_CONFIG = {
       'Support email 48h',
     ],
     trialDays: 14,
-    employeeLimit: "Jusqu'à 20 employés",
+    employeeLimit: "Jusqu'à 30 employés",
   },
   operations: {
     label: 'Operations',
     icon: Zap,
     color: 'emerald',
     gradient: 'from-emerald-500 to-cyan-600',
-    priceMonthly: 99,
-    priceAnnual: 79,
-    savings: 240,
+    // ADR-0014 : 79 €/mois, 66 €/mois annuel (790 €/an)
+    priceMonthly: 79,
+    priceAnnual: 66,
+    savings: 156,
     features: [
-      'Tout Starter inclus',
-      'Paie automatisée',
+      'Tout Pilot inclus',
+      'Paie automatisée multi-pays',
       'Biométrie ZKTeco',
       'API & Webhooks',
       'Exports comptables',
@@ -84,7 +85,7 @@ const PLAN_CONFIG = {
     priceAnnual: null,
     savings: 0,
     features: [
-      'Tout Business inclus',
+      'Tout Operations inclus',
       'Multi-pays & multi-devises',
       'SSO SAML/OIDC (bientot disponible)',
       'Audit trail immuable',
@@ -106,6 +107,8 @@ const PLAN_ALIASES: Record<string, PlanKey> = {
   starter: 'pilot',
   business: 'operations',
   scale: 'enterprise',
+  // ADR-0014 : Free est public mais gratuit → pas de checkout, redirection vers signup
+  // (la page /checkout?plan=free redirige vers /signup?plan=free via getPlanHref)
   free: 'pilot',
 };
 
