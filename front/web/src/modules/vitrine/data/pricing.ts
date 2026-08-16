@@ -39,7 +39,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       annualPeriod: '/mois, facturé annuellement',
       description: 'Pour tester Leopardo sur un site, une equipe ou une agence',
       priceNote: '14 jours offerts. 30 employés inclus.',
-      employeeLimit: "Jusqu'à 20 employés",
+      employeeLimit: "Jusqu'à 30 employés",
       features: [
         'Pointage web et mobile',
         'Absences, conges et soldes',
@@ -61,7 +61,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       annualPeriod: '/mois, facturé annuellement',
       description: 'Pour les PME multi-equipes qui veulent piloter terrain, RH et paie simple',
       priceNote: '14 jours offerts. 250 employés inclus.',
-      employeeLimit: "Jusqu'à 200 employés",
+      employeeLimit: "Jusqu'à 250 employés",
       features: [
         'Tout Pilot, plus :',
         'Paie multi-pays et validations RH',
