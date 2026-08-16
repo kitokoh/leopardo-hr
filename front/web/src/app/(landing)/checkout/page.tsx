@@ -54,7 +54,7 @@ const PLAN_CONFIG = {
       'Support email 48h',
     ],
     trialDays: 14,
-    employeeLimit: "Jusqu'à 20 employés",
+    employeeLimit: "Jusqu'à 30 employés",
   },
   operations: {
     label: 'Operations',
@@ -73,7 +73,7 @@ const PLAN_CONFIG = {
       'Support prioritaire 24h',
     ],
     trialDays: 14,
-    employeeLimit: "Jusqu'à 200 employés",
+    employeeLimit: "Jusqu'à 250 employés",
   },
   enterprise: {
     label: 'Enterprise',
