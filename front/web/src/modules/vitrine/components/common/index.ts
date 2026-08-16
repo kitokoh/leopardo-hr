@@ -4,7 +4,6 @@ export { Badge, type BadgeVariant, type BadgeSize } from './Badge';
 
 // Form Components
 export { Input } from './Input';
-export { Select } from './Select';
 export { Textarea } from './Textarea';
 
 // Utility Components
