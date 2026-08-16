@@ -35,7 +35,6 @@ export interface CheckoutCopy {
   billedAnnually: string // « Facturé annuellement — économisez EUR {savings}/an »
   monthly: string
   annual: string
-  annualDiscount: string // badge « -17% »
   trust: {
     secure: string
     rgpd: string
@@ -165,7 +164,6 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     billedAnnually: 'Facturé annuellement — économisez EUR {savings}/an',
     monthly: 'Mensuel',
     annual: 'Annuel',
-    annualDiscount: '-17%',
     trust: {
       secure: 'Paiement sécurisé TLS 1.3 + AES-256',
       rgpd: 'Données hébergées en Europe — conforme RGPD',
@@ -362,7 +360,6 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     billedAnnually: 'Billed annually — save EUR {savings}/year',
     monthly: 'Monthly',
     annual: 'Annual',
-    annualDiscount: '-17%',
     trust: {
       secure: 'Secure payment — TLS 1.3 + AES-256',
       rgpd: 'Data hosted in Europe — GDPR compliant',
@@ -558,7 +555,6 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     billedAnnually: 'Yıllık faturalandırılır — yılda EUR {savings} tasarruf',
     monthly: 'Aylık',
     annual: 'Yıllık',
-    annualDiscount: '-17%',
     trust: {
       secure: 'Güvenli ödeme — TLS 1.3 + AES-256',
       rgpd: "Veriler Avrupa'da — KVKK/GDPR uyumlu",
@@ -752,7 +748,6 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     billedAnnually: 'فوترة سنوية — وفّر EUR {savings} سنوياً',
     monthly: 'شهري',
     annual: 'سنوي',
-    annualDiscount: '-17%',
     trust: {
       secure: 'دفع آمن — TLS 1.3 + AES-256',
       rgpd: 'بياناتك مستضافة في أوروبا — متوافق مع GDPR',
