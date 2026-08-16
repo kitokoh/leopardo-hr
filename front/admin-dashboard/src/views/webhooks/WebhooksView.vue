@@ -46,7 +46,7 @@
         </span>
       </template>
       <template #cell-last_triggered_at="{ value }">
-        <span v-if="value" class="text-xs text-gray-500">{{ new Date(value).toLocaleString() }}</span>
+        <span v-if="value" class="text-xs text-gray-500">{{ formatDate(value) }}</span>
         <span v-else class="text-xs text-gray-400">Jamais</span>
       </template>
       <template #row-actions="{ row }">
@@ -133,6 +133,16 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
+// #4517 : dates au format de la locale active (pas la locale du navigateur).
+const formatDate = (value) =>
+  new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value))
 
 const loading = ref(false)
 const saving = ref(false)
