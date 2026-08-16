@@ -126,7 +126,7 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'لا يمكن إلغاء تشغيل الرواتب في حالته الحالية.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'VERIFICATION_CODE_INVALID' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
-    'TRIAL_SPACE_CREATION_FAILED' => 'حدث خطأ أثناء إنشاء مساحتك. حاول مرة أخرى.'
+    'TRIAL_SPACE_CREATION_FAILED' => 'حدث خطأ أثناء إنشاء مساحتك. حاول مرة أخرى.',
     'CANNOT_DISABLE_SELF' => 'لا يمكنك تعطيل حسابك الخاص.',
     'CANNOT_SUSPEND_SELF' => 'لا يمكنك تعليق حسابك الخاص.',
     'MANAGER_ONLY_LINK' => 'يمكن للمدير فقط ربط مستخدم.',
