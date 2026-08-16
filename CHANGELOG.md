@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): checkout sandbox — encart carte de test sur les clés canoniques cardLabel/expiryLabel/cvcLabel ×4 (Closes #4615).** Corrige la régression tsc TS2339 (clés inexistantes référencées par la page).
 - **fix(web): checkout sandbox — libellés branchés sur les clés canoniques cardLabel/expiryLabel/cvcLabel ×4 (Closes #4615).** Clés dupliquées retirées du catalogue (régression tsc TS2339 corrigée).
 - **fix(web): checkout sandbox — page branchée sur les libellés localisés (complément #4615).** L'encart carte de test utilise désormais `copy.payment.sandboxCardNumberLabel` / `sandboxExpiryCvcLabel`.
 - **fix(web): checkout sandbox — libellés carte de test localisés ×4 (Closes #4615).** « Carte : »/« Expiry : »/« CVC : » FR/EN en dur dans l'encart de test (staging).
