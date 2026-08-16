@@ -126,7 +126,7 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Maaş çalışması mevcut durumunda iptal edilemez.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'VERIFICATION_CODE_INVALID' => 'Doğrulama kodu geçersiz veya süresi dolmuş.',
-    'TRIAL_SPACE_CREATION_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.', origin/main
+    'TRIAL_SPACE_CREATION_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
     'CANNOT_DISABLE_SELF' => 'Kendi hesabınızı devre dışı bırakamazsınız.',
     'CANNOT_SUSPEND_SELF' => 'Kendi hesabınızı askıya alamazsınız.',
     'MANAGER_ONLY_LINK' => 'Bir kullanıcıyı yalnızca yönetici bağlayabilir.',
@@ -150,5 +150,13 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
     'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).'
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
+    'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'Şifre veya e-posta davetiyesi gereklidir.',
+    'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'Yönetici türü gereklidir.',
+    'EMPLOYEE_PRINCIPAL_MANAGER_CREATION_FORBIDDEN' => 'Yalnızca süper yönetici bir baş yönetici oluşturabilir.',
+    'EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY' => 'Yalnızca baş yönetici İK rollerini değiştirebilir.',
+    'EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN' => 'Yalnızca süper yönetici bir yöneticiyi baş yöneticiliğe terfi ettirebilir.',
+    'PAYROLL_RUN_COUNTRY_MISMATCH' => 'Çalıştırma ülkesi, kiracının yasal ülkesiyle eşleşmelidir (:country).',
+    'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'Yıl, tarihin yılıyla eşleşmelidir.',
+    'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Ay_gün, tarihin ayı ve günüyle eşleşmelidir.',
 ];

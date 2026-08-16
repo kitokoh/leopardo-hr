@@ -56,11 +56,16 @@ export function localizedCanonical(url: string, locale?: string): string {
  */
 export function generateMetadata(seo: SEOMetadata): Metadata {
   // #4201 : canonical/og:url localisés (voir localizedCanonical).
+  // #4400 : les alternates hreflang partent de la BASE FR (sans ?lang) —
+  // sinon sur une page ?lang=en l'entrée fr pointait vers l'URL anglaise
+  // elle-même (auto-référence), et sans canonical tout s'effondrait sur la
+  // homepage.
+  const baseUrl = localizedCanonical(seo.canonical || siteUrl, undefined);
   const url = localizedCanonical(seo.canonical || siteUrl, seo.locale);
   const image = seo.ogImage || `${siteUrl}/og-image.png`;
   const path = (() => {
     try {
-      const parsed = new URL(url, siteUrl);
+      const parsed = new URL(baseUrl, siteUrl);
       return parsed.pathname === "/" ? "/" : parsed.pathname;
     } catch {
       return "/";
@@ -69,7 +74,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
   const localizedAlternates = Object.fromEntries(
     supportedLocales.map((locale) => [
       locale,
-      locale === "fr" ? url : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
+      locale === "fr" ? baseUrl : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
     ])
   );
 
@@ -493,50 +498,6 @@ export const pageMetadata = {
  * Structured Data (JSON-LD)
  */
 
-export function generateOrganizationSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: siteName,
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description: "Plateforme complète de gestion RH pour PME et startups",
-    sameAs: [
-      "https://x.com/leopardo_hr",
-      "https://linkedin.com/company/leopardo",
-      "https://www.facebook.com/leopardo_hr",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "Customer Support",
-      email: "support@leopardo-rh.com",
-      availableLanguage: ["fr", "en"],
-    },
-  };
-}
-
-export function generateProductSchema(productName: string, description: string) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: productName,
-    description: description,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    offers: {
-      "@type": "Offer",
-      price: "29",
-      priceCurrency: "EUR",
-      availability: "https://schema.org/InStock",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "500",
-    },
-  };
-}
-
 export function generateFAQSchema(
   faqs: Array<{ question: string; answer: string }>
 ) {
@@ -550,42 +511,6 @@ export function generateFAQSchema(
         "@type": "Answer",
         text: faq.answer,
       },
-    })),
-  };
-}
-
-export function generateReviewSchema(
-  author: string,
-  rating: number,
-  reviewText: string
-) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Review",
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: rating.toString(),
-      bestRating: "5",
-    },
-    author: {
-      "@type": "Person",
-      name: author,
-    },
-    reviewBody: reviewText,
-  };
-}
-
-export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>
-) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: item.url,
     })),
   };
 }

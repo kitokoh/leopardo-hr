@@ -113,7 +113,7 @@ class OrgChartControllerTest extends TestCase
         $company = Company::factory()->create();
         $actor = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => 'employee',
+            'role' => 'manager',
             'status' => 'active',
         ]);
         Sanctum::actingAs($actor);
@@ -121,6 +121,118 @@ class OrgChartControllerTest extends TestCase
         $response = $this->getJson('/api/v1/org-chart/999999/manager-chain');
 
         $response->assertNotFound();
+    }
+
+    public function test_non_manager_cannot_query_another_employee_subordinates(): void
+    {
+        $company = Company::factory()->create();
+        $actor = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        $other = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($actor);
+
+        $this->getJson("/api/v1/org-chart/{$other->id}/subordinates")->assertForbidden();
+    }
+
+    public function test_non_manager_cannot_query_another_employee_manager_chain(): void
+    {
+        $company = Company::factory()->create();
+        $actor = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        $other = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($actor);
+
+        $this->getJson("/api/v1/org-chart/{$other->id}/manager-chain")->assertForbidden();
+    }
+
+    public function test_non_manager_can_query_own_subordinates_and_chain(): void
+    {
+        $company = Company::factory()->create();
+        $actor = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+            'manager_id' => null,
+        ]);
+
+        Sanctum::actingAs($actor);
+
+        // Comportement conservé : soi-même toujours autorisé (liste vide
+        // pour un non-manager sans rapport).
+        $this->getJson("/api/v1/org-chart/{$actor->id}/subordinates")->assertOk();
+        $this->getJson("/api/v1/org-chart/{$actor->id}/manager-chain")->assertOk();
+    }
+
+    public function test_manager_can_query_any_employee_in_company(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ]);
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+            'manager_id' => $manager->id,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->getJson("/api/v1/org-chart/{$employee->id}/subordinates")->assertOk();
+        $this->getJson("/api/v1/org-chart/{$employee->id}/manager-chain")->assertOk();
+    }
+
+    public function test_dept_manager_cannot_query_employee_outside_department(): void
+    {
+        $company = Company::factory()->create();
+
+        /** @var \App\Modules\HR\Domain\Models\Department $deptA */
+        $deptA = \App\Modules\HR\Domain\Models\Department::query()->create(['name' => 'R&D A']);
+        $deptA->company_id = $company->id;
+        $deptA->save();
+
+        /** @var \App\Modules\HR\Domain\Models\Department $deptB */
+        $deptB = \App\Modules\HR\Domain\Models\Department::query()->create(['name' => 'R&D B']);
+        $deptB->company_id = $company->id;
+        $deptB->save();
+
+        $deptManager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'dept',
+            'department_id' => $deptA->id,
+            'status' => 'active',
+        ]);
+        $outsideEmployee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'department_id' => $deptB->id,
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($deptManager);
+
+        $this->getJson("/api/v1/org-chart/{$outsideEmployee->id}/manager-chain")->assertForbidden();
+        $this->getJson("/api/v1/org-chart/{$outsideEmployee->id}/subordinates")->assertForbidden();
     }
 
     public function test_tenant_isolation_org_chart(): void
