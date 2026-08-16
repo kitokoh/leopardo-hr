@@ -229,7 +229,7 @@ class PaySlipController extends Controller
         }
 
         if (! in_array($payrollRun->status, ['validated', 'paid'])) {
-            return response()->json(['message' => 'Le run de paie doit être validé avant envoi.'], 422);
+            return response()->json(['message' => __('errors.PAYROLL_RUN_VALIDATE_BEFORE_SEND')], 422);
         }
 
         $slips = $payrollRun->paySlips()

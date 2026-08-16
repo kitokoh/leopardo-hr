@@ -65,7 +65,7 @@ class PasswordResetController
         return new JsonResponse([
             'success' => true,
             'message' => 'PASSWORD_RESET_SENT',
-            'localized_message' => 'Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.',
+            'localized_message' => __('errors.RESET_LINK_SENT'),
         ]);
     }
 
@@ -88,7 +88,7 @@ class PasswordResetController
         // Token absent, expiré ou déjà consommé → refus générique (422).
         if ($row === null || $row->used_at !== null || now()->greaterThan($row->expires_at)) {
             return new JsonResponse([
-                'message' => 'Jeton de réinitialisation invalide, expiré ou déjà utilisé.',
+                'message' => __('errors.INVALID_RESET_TOKEN'),
                 'error' => 'INVALID_RESET_TOKEN',
             ], 422);
         }
@@ -97,7 +97,7 @@ class PasswordResetController
 
         if ($employee === null) {
             return new JsonResponse([
-                'message' => 'Jeton de réinitialisation invalide, expiré ou déjà utilisé.',
+                'message' => __('errors.INVALID_RESET_TOKEN'),
                 'error' => 'INVALID_RESET_TOKEN',
             ], 422);
         }
@@ -117,7 +117,7 @@ class PasswordResetController
             // Perdu la course (déjà consommé par une requête concurrente)
             // ou expiré entre le check et l'update → refus générique.
             return new JsonResponse([
-                'message' => 'Jeton de réinitialisation invalide, expiré ou déjà utilisé.',
+                'message' => __('errors.INVALID_RESET_TOKEN'),
                 'error' => 'INVALID_RESET_TOKEN',
             ], 422);
         }
@@ -146,7 +146,7 @@ class PasswordResetController
         return new JsonResponse([
             'success' => true,
             'message' => 'PASSWORD_RESET_DONE',
-            'localized_message' => 'Mot de passe réinitialisé. Connectez-vous avec votre nouveau mot de passe.',
+            'localized_message' => __('errors.PASSWORD_RESET_SUCCESS'),
         ]);
     }
 

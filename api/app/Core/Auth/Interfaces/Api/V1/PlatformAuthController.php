@@ -42,7 +42,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->status !== 'active') {
             return new JsonResponse([
                 'error' => 'ACCOUNT_SUSPENDED',
-                'message' => 'Votre compte a été suspendu. Contactez votre administrateur.',
+                'message' => __('errors.ACCOUNT_SUSPENDED_CONTACT_ADMIN'),
                 'localized_message' => __('errors.ACCOUNT_SUSPENDED'),
             ], 403);
         }
@@ -121,7 +121,7 @@ class PlatformAuthController extends Controller
             if ($emailTaken) {
                 return new JsonResponse([
                     'error' => 'EMAIL_ALREADY_TAKEN',
-                    'message' => 'Cette adresse email est déjà utilisée.',
+                    'message' => __('errors.EMAIL_ALREADY_USED'),
                 ], 422);
             }
 
@@ -182,7 +182,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->two_fa_secret) {
             return new JsonResponse([
                 'error' => 'ALREADY_ENABLED',
-                'message' => 'Le 2FA est déjà activé pour ce compte.',
+                'message' => __('errors.TWO_FA_ALREADY_ENABLED'),
             ], 400);
         }
 
@@ -211,7 +211,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->two_fa_secret) {
             return new JsonResponse([
                 'error' => 'ALREADY_ENABLED',
-                'message' => 'Le 2FA est déjà activé pour ce compte.',
+                'message' => __('errors.TWO_FA_ALREADY_ENABLED'),
             ], 400);
         }
 
