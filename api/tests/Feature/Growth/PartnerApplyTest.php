@@ -35,7 +35,9 @@ class PartnerApplyTest extends TestCase
 
     public function test_apply_persists_contact_fields(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);
@@ -69,7 +71,9 @@ class PartnerApplyTest extends TestCase
 
     public function test_apply_without_contacts_still_works(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
         Sanctum::actingAs($manager);

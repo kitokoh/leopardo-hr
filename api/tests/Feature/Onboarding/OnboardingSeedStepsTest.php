@@ -20,6 +20,7 @@ class OnboardingSeedStepsTest extends TestCase
 
     public function test_seed_default_steps_persists_step_key_and_title(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
 
         (new SeedDefaultSteps())->execute((string) $company->id);
@@ -28,8 +29,8 @@ class OnboardingSeedStepsTest extends TestCase
 
         $this->assertCount(6, $steps);
         foreach ($steps as $step) {
-            $this->assertNotNull($step->step_key, 'step_key ne doit pas être NULL');
-            $this->assertNotNull($step->title, 'title ne doit pas être NULL');
+            $this->assertNotSame('', $step->step_key, 'step_key ne doit pas être NULL');
+            $this->assertNotSame('', $step->title, 'title ne doit pas être NULL');
             $this->assertSame('pending', $step->status);
         }
 
@@ -41,6 +42,7 @@ class OnboardingSeedStepsTest extends TestCase
 
     public function test_seed_default_steps_is_idempotent(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
         $action = new SeedDefaultSteps();
 
