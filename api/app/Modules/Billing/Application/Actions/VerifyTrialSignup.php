@@ -77,7 +77,7 @@ class VerifyTrialSignup
                 return [
                     'success' => false,
                     'error' => 'ALREADY_PROCESSED',
-                    'message' => 'Cette demande d\'essai a déjà été traitée.',
+                    'message' => __('errors.ALREADY_PROCESSED'),
                     'status' => 409,
                 ];
             }
@@ -85,7 +85,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'INVALID_OR_EXPIRED_CODE',
-                'message' => 'Code de vérification invalide ou expiré.',
+                'message' => __('errors.INVALID_OR_EXPIRED_CODE'),
                 'status' => 400,
             ];
         }
@@ -107,7 +107,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'EMAIL_ALREADY_REGISTERED',
-                'message' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+                'message' => __('errors.EMAIL_ALREADY_REGISTERED'),
                 'status' => 409,
             ];
         }
@@ -121,7 +121,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'INVALID_COUNTRY',
-                'message' => 'Le pays du signup est invalide ou non supporté. Veuillez recommencer l\'inscription.',
+                'message' => __('errors.INVALID_COUNTRY'),
                 'status' => 422,
             ];
         }
@@ -133,7 +133,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'NO_PLAN_AVAILABLE',
-                'message' => 'Le service d\'essai est temporairement indisponible.',
+                'message' => __('errors.NO_PLAN_AVAILABLE'),
                 'status' => 503,
             ];
         }
@@ -184,7 +184,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'PROVISIONING_FAILED',
-                'message' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
+                'message' => __('errors.PROVISIONING_FAILED'),
                 'status' => 500,
             ];
         }

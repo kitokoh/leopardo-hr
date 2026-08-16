@@ -79,4 +79,12 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Yalnızca taslak sözleşmeler etkinleştirilebilir.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Yalnızca aktif sözleşmeler askıya alınabilir.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Sözleşmenin feshedilmesi için aktif veya askıda olması gerekir.',
+
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => 'Bu deneme talebi zaten işlendi.',
+    'INVALID_OR_EXPIRED_CODE' => 'Geçersiz veya süresi dolmuş doğrulama kodu.',
+    'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
+    'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
+    'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
+    'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
 ];

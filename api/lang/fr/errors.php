@@ -94,4 +94,12 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Seuls les contrats au statut brouillon peuvent être activés.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Seuls les contrats actifs peuvent être suspendus.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Le contrat doit être actif ou suspendu pour être rompu.',
+
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
+    'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
+    'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+    'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
+    'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
+    'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
 ];

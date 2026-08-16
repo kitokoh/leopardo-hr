@@ -79,4 +79,12 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'يمكن تفعيل العقود المسودة فقط.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'يمكن تعليق العقود النشطة فقط.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'يجب أن يكون العقد نشطاً أو معلقاً لإنهائه.',
+
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => 'تمت معالجة طلب التجربة هذا بالفعل.',
+    'INVALID_OR_EXPIRED_CODE' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
+    'EMAIL_ALREADY_REGISTERED' => 'يوجد حساب بهذا البريد الإلكتروني بالفعل. سجّل الدخول مباشرة.',
+    'INVALID_COUNTRY' => 'بلد التسجيل غير صالح أو غير مدعوم. يرجى إعادة بدء التسجيل.',
+    'NO_PLAN_AVAILABLE' => 'خدمة التجربة غير متاحة مؤقتًا.',
+    'PROVISIONING_FAILED' => 'حدث خطأ أثناء إنشاء مساحة العمل الخاصة بك. يرجى المحاولة مرة أخرى.',
 ];

@@ -94,4 +94,12 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Only draft contracts can be activated.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Only active contracts can be suspended.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Contract must be active or suspended to terminate.',
+
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => 'This trial request has already been processed.',
+    'INVALID_OR_EXPIRED_CODE' => 'Invalid or expired verification code.',
+    'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Sign in directly.',
+    'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
+    'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',
+    'PROVISIONING_FAILED' => 'Error creating your workspace. Please try again.',
 ];
