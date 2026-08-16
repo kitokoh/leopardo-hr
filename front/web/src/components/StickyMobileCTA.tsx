@@ -6,30 +6,34 @@ import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { AppLocale } from '@/lib/i18n';
 
-const copy: Record<AppLocale, { text: string; cta: string; sub: string; closeLabel: string }> = {
+const copy: Record<AppLocale, { text: string; cta: string; sub: string; closeLabel: string; regionLabel: string }> = {
   fr: {
     text: 'Essai gratuit',
     cta: 'Démarrer maintenant',
     sub: 'Aucune CB requise · Opérationnel en 5 min',
     closeLabel: 'Fermer',
+    regionLabel: "Appel à l'action",
   },
   en: {
     text: 'Free trial',
     cta: 'Get started now',
     sub: 'No credit card · Live in 5 minutes',
     closeLabel: 'Close',
+    regionLabel: 'Call to action',
   },
   tr: {
     text: 'Ücretsiz deneme',
     cta: 'Hemen başla',
     sub: 'Kredi kartı gerekmez · 5 dakikada hazır',
     closeLabel: 'Kapat',
+    regionLabel: 'Eylem çağrısı',
   },
   ar: {
     text: 'تجربة مجانية',
     cta: 'ابدأ الآن',
     sub: 'بدون بطاقة ائتمان · جاهز في 5 دقائق',
     closeLabel: 'إغلاق',
+    regionLabel: 'دعوة لاتخاذ إجراء',
   },
 };
 
@@ -87,7 +91,7 @@ export function StickyMobileCTA({ locale = 'fr' }: StickyMobileCTAProps) {
             px-4 pb-safe-area-inset-bottom pb-4
           "
           role="complementary"
-          aria-label="Sticky call to action"
+          aria-label={t.regionLabel}
         >
           <div className="relative bg-slate-900 dark:bg-slate-950 rounded-2xl shadow-2xl shadow-slate-900/50 border border-slate-800 overflow-hidden">
             {/* Gradient accent top border */}
