@@ -419,7 +419,8 @@ jobs:
   backend-coverage:
     name: Backend Coverage (PHPUnit)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Issue #4251 : 45 min < duree reelle (~62 min) -> timeout porte a 75 min.
+    timeout-minutes: 75
     needs: detect-changes
     if: needs.detect-changes.outputs.api_changed == 'true'
 
