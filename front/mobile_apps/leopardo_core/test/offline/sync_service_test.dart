@@ -40,6 +40,14 @@ void main() {
     await db.close();
   });
 
+  // #4406 : un Dio nu injecté doit recevoir des timeouts bornés — sinon une
+  // connexion qui pend (TCP accepté, aucune réponse) bloque syncNow() pour
+  // toujours et tue le canal offline en silence (_isSyncing jamais relâché).
+  test('constructor enforces connect/receive timeouts on injected Dio', () {
+    expect(dio.options.connectTimeout, const Duration(seconds: 10));
+    expect(dio.options.receiveTimeout, const Duration(seconds: 30));
+  });
+
   test('syncNow() short-circuits while offline and never calls the API', () async {
     final result = await service.syncNow();
 

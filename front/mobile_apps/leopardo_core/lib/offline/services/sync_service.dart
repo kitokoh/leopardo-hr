@@ -59,7 +59,18 @@ class SyncService {
         _edgeBaseUrl = edgeBaseUrl,
         _cloudBaseUrl = cloudBaseUrl,
         _edgeNodeId = edgeNodeId,
-        _edgeToken = edgeToken;
+        _edgeToken = edgeToken {
+    // #4406 : un Dio nu (sans timeout) pend indéfiniment sur une connexion
+    // qui accepte le TCP mais ne répond pas → syncNow() ne rend jamais la
+    // main, _isSyncing reste true et tous les ticks suivants sont `skipped()`
+    // — le canal offline meurt en silence sans reprise. Timeouts bornés
+    // systématiquement (connect 10 s, receive 30 s) quel que soit le Dio
+    // injecté par l'appelant.
+    _dio.options = _dio.options.copyWith(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 30),
+    );
+  }
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {
