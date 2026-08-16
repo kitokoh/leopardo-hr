@@ -215,19 +215,45 @@ final class OidcIdTokenValidator
     /**
      * Construit la structure DER SubjectPublicKeyInfo (SPKI) pour une clé
      * RSA (n, e) — même encodage que openssl_pkey_get_public() attend.
+     *
+     * Issue #4096 : l'ancienne implémentation produisait un DER invalide sur
+     * OpenSSL 3 (« Supplied key param cannot be coerced into a public key ») :
+     *  - les INTEGER n'étaient pas signés (pas de préfixe 0x00 quand le bit de
+     *    poids fort est à 1) — pour une clé RSA 2048 bits, le MSB de n est
+     *    TOUJOURS à 1 (2^2047 ≤ n < 2^2048) → préfixe systématiquement requis ;
+     *  - les longueurs SEQUENCE étaient calculées avec des constantes magiques
+     *    (+12/+4) au lieu de la somme réelle des encodages (tag + champ de
+     *    longueur + contenu), tronquant la SEQUENCE dès que le champ de
+     *    longueur de n passe à 3 octets.
      */
     private function rsaPublicKeyDer(string $n, string $e): string
     {
         // Séquence SPKI : SEQUENCE { SEQUENCE { OID rsaEncryption, NULL }, BIT STRING { RSAPublicKey } }
         $rsaOid = "\x30\x0d\x06\x09\x2a\x86\x48\x86\xf7\x0d\x01\x01\x01\x05\x00";
 
-        $rsaPublicKey = "\x30".$this->derLength(strlen($n) + strlen($e) + 12)
-            ."\x02".$this->derLength(strlen($n)).$n
-            ."\x02".$this->derLength(strlen($e)).$e;
+        // RSAPublicKey ::= SEQUENCE { modulus INTEGER, publicExponent INTEGER }
+        // (RFC 8017 A.1.1) — chaque INTEGER est encodé tag + longueur + contenu.
+        $nEncoded = "\x02".$this->derLength(strlen($this->positiveInteger($n))).$this->positiveInteger($n);
+        $eEncoded = "\x02".$this->derLength(strlen($this->positiveInteger($e))).$this->positiveInteger($e);
+
+        $rsaPublicKey = "\x30".$this->derLength(strlen($nEncoded) + strlen($eEncoded)).$nEncoded.$eEncoded;
 
         $bitString = "\x03".$this->derLength(strlen($rsaPublicKey) + 1)."\x00".$rsaPublicKey;
 
         return "\x30".$this->derLength(strlen($rsaOid) + strlen($bitString)).$rsaOid.$bitString;
+    }
+
+    /**
+     * Encode un entier positif en INTEGER non signé (X.690 8.3.2) : préfixe
+     * 0x00 quand le bit de poids fort est à 1, sinon le contenu tel quel.
+     */
+    private function positiveInteger(string $bytes): string
+    {
+        if ($bytes === '') {
+            return $bytes;
+        }
+
+        return (ord($bytes[0]) & 0x80) !== 0 ? "\x00".$bytes : $bytes;
     }
 
     private function derLength(int $length): string
