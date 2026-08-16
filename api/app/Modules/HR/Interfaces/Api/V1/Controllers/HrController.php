@@ -150,8 +150,10 @@ class HrController extends Controller
         $employee = Employee::create([
             ...$validatedForCreate,
             'preferred_language' => 'fr',
-            'password_hash'     => Hash::make(Str::random(32)), // Temporary — will be set via invitation
         ]);
+        // Issue #4496 : password_hash non mass-assignable — posé explicitement
+        // (temporaire — sera remplacé à l'acceptation d'invitation).
+        $employee->password_hash = Hash::make(Str::random(32));
         $employee->company_id = $actor->company_id;
         $employee->role = 'employee'; // HR can only create regular employees
         $employee->manager_role = null; // Only principal can assign manager roles

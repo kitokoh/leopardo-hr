@@ -91,4 +91,24 @@ class SupportedCountryControllerTest extends TestCase
         $this->assertSame('en', $byCode['US']['language'] ?? null);
         $this->assertSame('en', $byCode['GB']['language'] ?? null);
     }
+
+    public function test_registry_is_cacheable_with_etag(): void
+    {
+        // Issue #4502 : registre quasi-statique — Cache-Control public + ETag
+        // pour que les apps mobiles pré-login ne rebrûlent pas le bucket
+        // public-registry 60/min à chaque lancement.
+        $response = $this->getJson('/api/v1/supported-countries');
+
+        $response->assertOk()
+            ->assertHeader('Cache-Control', 'public, max-age=3600')
+            ->assertHeader('Vary', 'Accept-Language')
+            ->assertHeader('ETag');
+
+        $etag = (string) $response->headers->get('ETag');
+        $this->assertStringStartsWith('W/"', $etag);
+
+        // Requête conditionnelle → 304 Not Modified (bucket préservé).
+        $this->getJson('/api/v1/supported-countries', ['If-None-Match' => $etag])
+            ->assertStatus(304);
+    }
 }

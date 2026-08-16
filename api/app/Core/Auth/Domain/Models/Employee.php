@@ -160,7 +160,6 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'phone',
         'address_line',
         'postal_code',
-        'password_hash',
         'date_of_birth',
         'place_of_birth',
         'gender',
@@ -175,8 +174,6 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'photo_path',
         'biometric_face_enabled',
         'biometric_fingerprint_enabled',
-        'biometric_face_reference_path',
-        'biometric_fingerprint_reference_path',
         'biometric_consent_at',
         'invitation_accepted_at',
         'emergency_contact_name',
@@ -187,7 +184,6 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'iban',
         'bank_account',
         'national_id',
-        'email_bounced_at',
         'email_bounce_reason',
     ];
 

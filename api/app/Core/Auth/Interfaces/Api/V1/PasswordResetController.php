@@ -132,7 +132,9 @@ class PasswordResetController
                 $this->setTenantSearchPath($employeeSchema);
             }
 
-            $employee->update(['password_hash' => Hash::make($validated['password'])]);
+            // Issue #4496 : password_hash n'est plus mass-assignable — forceFill
+            // explicite (chemin légitime : jeton consommé, utilisateur vérifié).
+            $employee->forceFill(['password_hash' => Hash::make($validated['password'])])->save();
 
             // Révocation des tokens Sanctum existants (sécurité — même contrat
             // qu'un changement de mot de passe volontaire).
@@ -191,10 +193,14 @@ class PasswordResetController
             }
 
             if (! $employee) {
-                [$employee, $employeeSchema] = $this->findEmployeeInTenantSchemas($email);
-            }
-
-            if (! $employee) {
+                // Issue #4495 : PAS de balayage multi-schéma ici — le chemin est
+                // public et non authentifié. Un sweep itératif (1 SET
+                // search_path + SELECT par tenant) transformerait la réponse
+                // générique anti-énumération en oracle de timing (email
+                // existant = 1 lookup, inconnu = N allers-retours). Le lookup
+                // indexé `public.user_lookups` fait foi : absent = aucun compte.
+                // (Un éventuel balayage administratif appartiendrait à un
+                // chemin authentifié dédié.)
                 /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()
                     ->where('email', $email)
@@ -215,58 +221,6 @@ class PasswordResetController
         }
 
         return [$employee, $employeeSchema];
-    }
-
-    /**
-     * Cherche l'employé dans tous les schémas tenants connus (fallback quand
-     * le lookup est absent ou périmé).
-     */
-    /**
-     * @return array{0: Employee|null, 1: string|null}
-     */
-    private function findEmployeeInTenantSchemas(string $email): array
-    {
-        if (DB::getDriverName() !== 'pgsql') {
-            return [null, null];
-        }
-
-        $schemas = DB::table('public.companies')
-            ->whereNotNull('schema_name')
-            ->pluck('schema_name')
-            ->filter(fn (mixed $schema): bool => is_string($schema) && $this->isSafeSchemaName($schema))
-            ->unique()
-            ->values();
-
-        if ($schemas->isEmpty()) {
-            return [null, null];
-        }
-
-        $previous = $this->currentSearchPath();
-
-        try {
-            foreach ($schemas as $schema) {
-                if (! $this->tenantEmployeesTableExists((string) $schema)) {
-                    continue;
-                }
-
-                $this->setTenantSearchPath((string) $schema);
-
-                /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->where('email', $email)
-                    ->first();
-
-                if ($employee instanceof Employee) {
-                    return [$employee, (string) $schema];
-                }
-            }
-        } finally {
-            if ($previous !== null && $previous !== '') {
-                DB::statement('SET search_path TO '.$previous);
-            }
-        }
-
-        return [null, null];
     }
 
     private function lookupTable(): string
