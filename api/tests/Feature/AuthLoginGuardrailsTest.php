@@ -39,12 +39,14 @@ class AuthLoginGuardrailsTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'archived@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'archived',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'archived';
+        $employee->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'archived@company.test',
@@ -71,12 +73,14 @@ class AuthLoginGuardrailsTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'employee@company.test',

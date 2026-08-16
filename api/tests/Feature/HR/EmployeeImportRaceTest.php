@@ -46,13 +46,15 @@ class EmployeeImportRaceTest extends TestCase
     private function makeManager(Company $company): Employee
     {
         return Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager-'.uniqid().'@test.local',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
             'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
     }
 
     public function test_duplicate_email_within_same_file_is_skipped_per_line(): void
@@ -137,12 +139,14 @@ class EmployeeImportRaceTest extends TestCase
 
         $conflictEmail = 'existing-'.uniqid().'@example.com';
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => $conflictEmail,
             'password_hash' => Hash::make('x'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
+
 
         $csv = "first_name,last_name,email\n"
             ."Old,Dup,{$conflictEmail}\n"

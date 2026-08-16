@@ -46,13 +46,15 @@ class WebAuthPagesTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
             'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
 
         $this->get('/login');
         $token = session()->token();
@@ -82,12 +84,14 @@ class WebAuthPagesTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
+
 
         $this->get('/login');
         $token = session()->token();
@@ -117,12 +121,14 @@ class WebAuthPagesTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee3->company_id = $company->id;
+        $employee3->role = 'manager';
+        $employee3->status = 'active';
+        $employee3->save();
+
 
         $this->get('/login');
         $token = session()->token();

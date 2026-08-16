@@ -55,8 +55,10 @@ class UserAuthServiceTest extends TestCase
             'email' => 'jean.dupont@example.com',
             'password_hash' => Hash::make('secret123'),
             'provider' => 'email',
-            'status' => 'suspended',
         ]);
+        $user->status = 'suspended';
+        $user->save();
+
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'secret123', 'test');
@@ -70,8 +72,10 @@ class UserAuthServiceTest extends TestCase
             'email' => 'jean.dupont@example.com',
             'password_hash' => Hash::make('secret123'),
             'provider' => 'email',
-            'status' => 'deactivated',
         ]);
+        $user2->status = 'deactivated';
+        $user2->save();
+
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'secret123', 'test');
@@ -87,8 +91,10 @@ class UserAuthServiceTest extends TestCase
             'email' => 'jean.dupont@example.com',
             'password_hash' => Hash::make('secret123'),
             'provider' => 'email',
-            'status' => 'suspended',
         ]);
+        $user3->status = 'suspended';
+        $user3->save();
+
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'wrong-password', 'test');
@@ -105,8 +111,10 @@ class UserAuthServiceTest extends TestCase
             'email' => 'jean.dupont@example.com',
             'google_id' => 'google-sub-123',
             'provider' => 'google',
-            'status' => 'suspended',
         ]);
+        $user4->status = 'suspended';
+        $user4->save();
+
 
         $idToken = $this->googleIdToken($privateKey, ['email' => 'jean.dupont@example.com']);
 

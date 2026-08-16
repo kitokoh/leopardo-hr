@@ -177,16 +177,20 @@ class DemoDzSeeder extends Seeder
                     'first_name' => $account['first_name'],
                     'last_name' => $account['last_name'],
                     'password_hash' => $passwordHash,
-                    'role' => $account['role'],
                     'manager_role' => $account['manager_role'],
-                    'status' => 'active',
                     'contract_type' => 'CDI',
                     'contract_start' => '2025-01-01',
-                    'salary_base' => 60000.0,
                     'salary_type' => 'fixed',
                     'payment_method' => 'bank_transfer',
                 ]
             );
+
+            // Issue #3597/#4151 : role/status/salary_base non mass-assignables —
+            // assignation explicite (démo KO sinon : rôles abandonnés silencieusement).
+            $employee->role = $account['role'];
+            $employee->status = 'active';
+            $employee->salary_base = 60000.0;
+            $employee->save();
 
             if ($account['manager_role'] === 'rh') {
                 $manager = $employee;

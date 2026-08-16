@@ -112,9 +112,11 @@ class MultiTenantSharedIsolationTest extends TestCase
             Employee::query()->create([
                 'email' => "rh@{$company->slug}.test",
                 'password_hash' => Hash::make('secret'),
-                'role' => 'manager',
                 'manager_role' => 'rh',
             ]);
+            $employee->role = 'manager';
+            $employee->save();
+
             Employee::query()->create([
                 'email' => "emp@{$company->slug}.test",
                 'password_hash' => Hash::make('secret'),

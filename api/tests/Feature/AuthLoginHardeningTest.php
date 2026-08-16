@@ -58,12 +58,14 @@ class AuthLoginHardeningTest extends TestCase
         // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
         // (TypeError → 500) mais renvoyer 401.
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'broken-hash@company.test',
             'password_hash' => 'legacy-broken-hash',
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'broken-hash@company.test',
@@ -80,12 +82,14 @@ class AuthLoginHardeningTest extends TestCase
         $company = $this->makeCompany();
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'empty-hash@company.test',
             'password_hash' => '',
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'empty-hash@company.test',
@@ -101,12 +105,14 @@ class AuthLoginHardeningTest extends TestCase
         $company = $this->makeCompany();
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'good-hash@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee3->company_id = $company->id;
+        $employee3->role = 'employee';
+        $employee3->status = 'active';
+        $employee3->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'good-hash@company.test',

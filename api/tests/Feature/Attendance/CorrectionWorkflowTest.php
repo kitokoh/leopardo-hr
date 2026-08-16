@@ -125,27 +125,31 @@ class CorrectionWorkflowTest extends TestCase
         ]);
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Nadia',
             'last_name' => 'Manager',
             'email' => 'manager@'.$domain,
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
             'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->status = 'active';
+        $manager->save();
+
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Amina',
             'last_name' => 'Test',
             'email' => 'employee@'.$domain,
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
+
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,

@@ -56,12 +56,14 @@ class AuthLoginStaleLookupRegressionTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@ghost.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
 
         return $company;
     }

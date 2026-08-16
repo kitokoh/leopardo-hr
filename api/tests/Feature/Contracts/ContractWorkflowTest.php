@@ -90,28 +90,32 @@ class ContractWorkflowTest extends TestCase
 
         /** @var Employee $manager */
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'MGR-C01',
             'first_name' => 'Boss',
             'last_name' => 'RH',
             'email' => 'boss@contract-co.test',
             'password_hash' => Hash::make('password'),
-            'role' => 'manager',
             'manager_role' => 'rh',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->status = 'active';
+        $manager->save();
+
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'EMP-C01',
             'first_name' => 'Yacine',
             'last_name' => 'B',
             'email' => 'yacine@contract-co.test',
             'password_hash' => Hash::make('password'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
+
 
         return [$company, $manager, $employee];
     }
@@ -133,28 +137,32 @@ class ContractWorkflowTest extends TestCase
 
         /** @var Employee $manager */
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => "MGR-C{$suffix}",
             'first_name' => 'Other',
             'last_name' => 'Manager',
             'email' => "boss-{$suffix}@contract-co.test",
             'password_hash' => Hash::make('password'),
-            'role' => 'manager',
             'manager_role' => 'rh',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->status = 'active';
+        $manager->save();
+
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => "EMP-C{$suffix}",
             'first_name' => 'Other',
             'last_name' => 'Employee',
             'email' => "employee-{$suffix}@contract-co.test",
             'password_hash' => Hash::make('password'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
+
 
         return [$company, $manager, $employee];
     }
@@ -429,15 +437,17 @@ class ContractWorkflowTest extends TestCase
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
         /** @var Employee $coworker */
         $coworker = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'EMP-C04',
             'first_name' => 'Coworker',
             'last_name' => 'Two',
             'email' => 'coworker2@contract-co.test',
             'password_hash' => Hash::make('password'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $coworker->company_id = $company->id;
+        $coworker->role = 'employee';
+        $coworker->status = 'active';
+        $coworker->save();
+
         Contract::query()->create([
             'company_id' => $company->id,
             'employee_id' => $coworker->id,
@@ -492,15 +502,17 @@ class ContractWorkflowTest extends TestCase
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
         /** @var Employee $coworker */
         $coworker = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'EMP-C03',
             'first_name' => 'Coworker',
             'last_name' => 'RH',
             'email' => 'coworker@contract-co.test',
             'password_hash' => Hash::make('password'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $coworker->company_id = $company->id;
+        $coworker->role = 'employee';
+        $coworker->status = 'active';
+        $coworker->save();
+
         $contract = Contract::query()->create([
             'company_id' => $company->id,
             'employee_id' => $coworker->id,

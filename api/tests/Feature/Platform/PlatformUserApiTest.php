@@ -59,8 +59,10 @@ class PlatformUserApiTest extends TestCase
             'name' => 'Other Admin',
             'email' => $email,
             'password_hash' => bcrypt('secret123'),
-            'status' => $status,
         ]);
+        $user->status = $status;
+        $user->save();
+
 
         return $user;
     }

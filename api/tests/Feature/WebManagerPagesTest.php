@@ -172,28 +172,32 @@ class WebManagerPagesTest extends TestCase
         ]);
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'One',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
             'salary_type' => 'daily',
-            'salary_base' => 800,
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->status = 'active';
+        $manager->salary_base = 800;
+        $manager->save();
+
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'daily',
-            'salary_base' => 800,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->salary_base = 800;
+        $employee->save();
+
 
         return [$company, $manager, $employee];
     }

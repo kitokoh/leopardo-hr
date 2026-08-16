@@ -160,7 +160,10 @@ class PayrollRegularizationDeltaTest extends TestCase
         // bulletin original, la régularisation doit l'ajuster quand même.
         /** @var Employee $leaver */
         $leaver = Employee::query()->where('company_id', $company->id)->where('role', 'employee')->firstOrFail();
-        $leaver->update(['status' => 'archived']);
+        $leaver->update([]);
+        $leaver->status = 'archived';
+        $leaver->save();
+
 
         /** @var SalaryStructure $structure */
         $structure = SalaryStructure::query()->where('company_id', $company->id)->firstOrFail();

@@ -28,14 +28,18 @@ class PartnerDashboardController extends Controller
         }
 
         if ($authUser instanceof \App\Core\Auth\Domain\Models\Employee) {
-            return \App\Core\Auth\Domain\Models\User::firstOrCreate(
+            $user = \App\Core\Auth\Domain\Models\User::firstOrCreate(
                 ['email' => $authUser->email],
                 [
                     'first_name' => $authUser->first_name,
                     'last_name'  => $authUser->last_name,
-                    'status'     => 'active',
                 ]
             );
+            // Issue #3597/#4151 : status non mass-assignable — assignation explicite.
+            $user->status = 'active';
+            $user->save();
+
+            return $user;
         }
 
         abort(401, 'Unauthorized user type.');

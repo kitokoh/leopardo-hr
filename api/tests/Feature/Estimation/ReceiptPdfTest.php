@@ -44,26 +44,30 @@ class ReceiptPdfTest extends TestCase
         ]);
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
             'salary_type' => 'fixed',
-            'salary_base' => 0,
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->status = 'active';
+        $manager->salary_base = 0;
+        $manager->save();
+
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
-            'hourly_rate' => 100,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->hourly_rate = 100;
+        $employee->save();
+
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,
@@ -106,14 +110,16 @@ class ReceiptPdfTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
-            'hourly_rate' => 50,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->hourly_rate = 50;
+        $employee->save();
+
 
         Sanctum::actingAs($employee);
 

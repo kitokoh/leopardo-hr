@@ -39,12 +39,14 @@ class AuthLoginTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',
@@ -81,14 +83,16 @@ class AuthLoginTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'rh@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
             'manager_role' => 'rh',
-            'status' => 'active',
             'preferred_language' => 'fr',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'manager';
+        $employee2->status = 'active';
+        $employee2->save();
+
 
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'rh@company.test',
@@ -151,12 +155,14 @@ class AuthLoginTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee3->company_id = $company->id;
+        $employee3->role = 'manager';
+        $employee3->status = 'active';
+        $employee3->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',

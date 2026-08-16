@@ -127,7 +127,10 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'deactivated']);
+        // Issue #3597/#4151 : status non mass-assignable (SuperAdmin) — assignation explicite.
+        $user->status = 'deactivated';
+        $user->save();
+
         // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
         $user->tokens()->delete();
 
@@ -138,7 +141,10 @@ class PlatformUserController extends Controller
 
     public function activate(Request $request, SuperAdmin $user): JsonResponse
     {
-        $user->update(['status' => 'active']);
+        // Issue #3597/#4151 : status non mass-assignable (SuperAdmin) — assignation explicite.
+        $user->status = 'active';
+        $user->save();
+
         $this->audit($request, $user, 'platform_user_activated');
 
         return new JsonResponse(['data' => $this->serialize($user->fresh() ?? $user)]);
@@ -150,7 +156,10 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'deactivated']);
+        // Issue #3597/#4151 : status non mass-assignable (SuperAdmin) — assignation explicite.
+        $user->status = 'deactivated';
+        $user->save();
+
         // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
         $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_deactivated');
@@ -164,7 +173,10 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de suspendre votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'suspended']);
+        // Issue #3597/#4151 : status non mass-assignable (SuperAdmin) — assignation explicite.
+        $user->status = 'suspended';
+        $user->save();
+
         // Sécurité #2630 : suspendre un compte révoque ses tokens actifs.
         $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_suspended');

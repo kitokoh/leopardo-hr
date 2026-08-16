@@ -46,12 +46,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
 
         $result = app(AuthService::class)->login('manager@a.test', 'password123', 'unit-tests');
 
@@ -86,12 +88,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'shadow-manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
 
         DB::statement('CREATE TABLE IF NOT EXISTS shared_tenants.companies (LIKE public.companies INCLUDING ALL)');
         DB::statement('SET search_path TO public');
@@ -118,12 +122,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
+
 
         $this->expectException(InvalidCredentialsException::class);
 
@@ -165,12 +171,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee3->company_id = $company->id;
+        $employee3->role = 'employee';
+        $employee3->status = 'active';
+        $employee3->save();
+
 
         $this->expectException(AccountSuspendedException::class);
 
@@ -192,12 +200,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'archived',
         ]);
+        $employee4->company_id = $company->id;
+        $employee4->role = 'employee';
+        $employee4->status = 'archived';
+        $employee4->save();
+
 
         $this->expectException(EmployeeNotActiveException::class);
 

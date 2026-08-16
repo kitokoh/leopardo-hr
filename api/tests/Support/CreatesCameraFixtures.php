@@ -37,24 +37,28 @@ trait CreatesCameraFixtures
         string $email = 'manager@company.test'
     ): Employee {
         return Employee::query()->create([
-            'company_id' => $company->id,
             'email' => $email,
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
             'manager_role' => $managerRole,
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
+
     }
 
     protected function createEmployee(Company $company, string $email = 'employee@company.test'): Employee
     {
         return Employee::query()->create([
-            'company_id' => $company->id,
             'email' => $email,
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
+
     }
 
     /** @return array<string, string> */

@@ -184,8 +184,10 @@ class UserAuthGoogleSignInSecurityTest extends TestCase
             'email' => 'suspended.user@example.com',
             'google_id' => 'google-sub-susp',
             'provider' => 'google',
-            'status' => 'suspended',
         ]);
+        $user->status = 'suspended';
+        $user->save();
+
 
         $idToken = $this->googleIdToken($privateKey, [
             'email' => 'suspended.user@example.com',

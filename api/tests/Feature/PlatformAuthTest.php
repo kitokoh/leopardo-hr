@@ -263,8 +263,10 @@ class PlatformAuthTest extends TestCase
             'name' => 'Suspended Admin',
             'email' => 'suspended@leopardo.test',
             'password_hash' => Hash::make('password123'),
-            'status' => 'suspended',
         ]);
+        $suspended->status = 'suspended';
+        $suspended->save();
+
 
         $this->assertSame('suspended', $suspended->status);
 
@@ -281,8 +283,10 @@ class PlatformAuthTest extends TestCase
             'name' => 'Deactivated Admin',
             'email' => 'deactivated@leopardo.test',
             'password_hash' => Hash::make('password123'),
-            'status' => 'deactivated',
         ]);
+        $superAdmin->status = 'deactivated';
+        $superAdmin->save();
+
 
         $this->postJson('/api/v1/platform/auth/login', [
             'email' => 'deactivated@leopardo.test',
@@ -310,7 +314,10 @@ class PlatformAuthTest extends TestCase
 
         // Désactivation via l'endpoint admin (simule l'action plateforme)
         $admin = SuperAdmin::query()->where('email', 'admin@leopardo.test')->firstOrFail();
-        $admin->update(['status' => 'deactivated']);
+        $admin->update([]);
+        $admin->status = 'deactivated';
+        $admin->save();
+
         $admin->tokens()->delete();
 
         $this->assertSame(0, $admin->tokens()->count(), 'Les tokens doivent être révoqués à la désactivation');
