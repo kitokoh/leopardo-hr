@@ -314,7 +314,9 @@ class PlatformAuthTest extends TestCase
 
         // Désactivation via l'endpoint admin (simule l'action plateforme)
         $admin = SuperAdmin::query()->where('email', 'admin@leopardo.test')->firstOrFail();
-        $admin->update(['status' => 'deactivated']);
+        // Issue #3677 : status non mass-assignable — assignation explicite.
+        $admin->status = 'deactivated';
+        $admin->save();
         $admin->tokens()->delete();
 
         $this->assertSame(0, $admin->tokens()->count(), 'Les tokens doivent être révoqués à la désactivation');
