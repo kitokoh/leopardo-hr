@@ -244,8 +244,11 @@ api.interceptors.response.use(
   },
 )
 
-export async function downloadApiFile(path, filename = null) {
-  const response = await api.get(path, { responseType: 'blob' })
+export async function downloadApiFile(path, filename = null, options = {}) {
+  // #4170 : options._skipAuthRedirect permet d'appeler des routes tenant
+  // (401 attendu pour le super-admin) sans que l'intercepteur détruise la
+  // session admin.
+  const response = await api.get(path, { responseType: 'blob', ...options })
   const contentType = response.headers['content-type'] || 'application/octet-stream'
   let blob = new Blob([response.data], { type: contentType })
   let downloadName = filename
