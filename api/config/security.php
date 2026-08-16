@@ -6,6 +6,7 @@ return [
         'privacy_per_minute' => (int) env('RATE_LIMIT_PRIVACY_PER_MINUTE', 20),
         'payroll_per_minute' => (int) env('RATE_LIMIT_PAYROLL_PER_MINUTE', 60),
         'platform_per_minute' => (int) env('RATE_LIMIT_PLATFORM_PER_MINUTE', 60),
+        'metrics_per_minute' => (int) env('RATE_LIMIT_METRICS_PER_MINUTE', 30), // #4694 GET /metrics (anti-fingerprinting)
         'ai_per_minute' => (int) env('RATE_LIMIT_AI_PER_MINUTE', 20),
         'client_analytics_per_minute' => (int) env('RATE_LIMIT_CLIENT_ANALYTICS_PER_MINUTE', 120),
         'webhooks_inbound_per_minute' => (int) env('RATE_LIMIT_WEBHOOKS_INBOUND_PER_MINUTE', 60),

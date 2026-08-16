@@ -140,6 +140,20 @@ class AppServiceProvider extends ServiceProvider
                 ->by('payroll:'.$key);
         });
 
+        RateLimiter::for('metrics', function (Request $request) {
+            // #4694 : les métriques plateforme sont du matériel de
+            // fingerprinting (versions PHP/Laravel, drivers, compteurs
+            // tenants/employés) — même authentifié, on borne la fréquence
+            // d'interrogation (anti-scraping, anti-recon).
+            $user = $request->user('super_admin_api');
+            $key = $user instanceof AuthenticatableContract
+                ? $user->getAuthIdentifier()
+                : $request->ip();
+
+            return Limit::perMinute((int) config('security.rate_limits.metrics_per_minute', 30))
+                ->by('metrics:'.$key);
+        });
+
         RateLimiter::for('platform-sensitive', function (Request $request) {
             $user = $request->user('super_admin_api');
             $userId = $user instanceof AuthenticatableContract ? $user->getAuthIdentifier() : null;
