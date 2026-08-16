@@ -80,10 +80,12 @@ class _AuthFlowInterceptor extends Interceptor {
 }
 
 void main() {
-  test('uses Render API as default mobile base url when none is provided', () {
+  test('uses local base url in debug when none is provided (#4530)', () {
+    // #4524/#4530 : plus de fallback silencieux vers le backend legacy — en
+    // debug sans define, le client pointe le serveur local (loopback hôte).
     expect(
       ApiClient.resolveBaseUrl(),
-      'https://gestionemployerbackend.onrender.com/api/v1',
+      'http://127.0.0.1:8000/api/v1',
     );
   });
 

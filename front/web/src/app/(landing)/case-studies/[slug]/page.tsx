@@ -9,6 +9,8 @@ import { CTASection } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Building2, CheckCircle, TrendingUp } from 'lucide-react';
 import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { caseStudyUiCopy } from '@/modules/vitrine/data/case-studies';
 
 interface CaseStudyPageProps {
   params: Promise<{
@@ -43,6 +45,8 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
   useScrollReveal();
   const { slug } = use(params);
 
+  const { locale } = useVitrineLocale();
+  const ui = caseStudyUiCopy[locale] ?? caseStudyUiCopy.fr;
   const study = getCaseStudy(slug);
 
   if (!study) {
@@ -72,7 +76,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
               className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors mb-6"
             >
               <ArrowLeft className="w-4 h-4" />
-              Toutes les études de cas
+              {ui.backLink}
             </Link>
 
             <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -100,7 +104,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
       <section className="py-16 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-black text-slate-900 dark:text-white text-center mb-10">
-            Résultats clés
+            {ui.resultsTitle}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {study.metrics.map((metric, i) => (
@@ -145,7 +149,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
                 href="/case-studies"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200/80 dark:border-slate-800/80 text-slate-700 dark:text-slate-200 text-sm font-bold hover:border-emerald-300 hover:text-emerald-700 dark:hover:text-emerald-400 transition-all"
               >
-                Voir toutes les études de cas
+                {ui.seeAll}
               </Link>
             </div>
           </div>
@@ -153,10 +157,10 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
       </section>
 
       <CTASection
-        title="Votre entreprise pourrait être la prochaine"
+        title={ui.ctaTitle}
         description="Rejoignez les entreprises qui ont choisi Leopardo RH"
         primaryCta={{ text: 'Essai gratuit', href: '/signup' }}
-        secondaryCta={{ text: 'Demander une démo', href: '/demo' }}
+        secondaryCta={{ text: ui.demoCta, href: '/demo' }}
       />
 
       <Footer />

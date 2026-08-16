@@ -37,6 +37,7 @@ concurrency:
 
 jobs:
   smoke:
+    timeout-minutes: 30
     name: Probe launch surfaces
     runs-on: ubuntu-latest
 
