@@ -95,7 +95,8 @@
       "TN": "Tunisia",
       "TR": "Türkiye",
       "US": "United States"
-    }
+    },
+    "close": "Close"
   },
   "modules": {
     "attendance": "Attendance",
