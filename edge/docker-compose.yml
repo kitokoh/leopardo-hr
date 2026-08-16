@@ -41,7 +41,7 @@ services:
     healthcheck:
       # #3908 : /api/edge/health n'existe pas — le health endpoint réel de
       # l'Edge API est versionné : GET /api/v1/edge/health (EdgeController).
-      test: ["CMD", "curl", "-f", "http://localhost/api/v1/edge/health"]
+      test: ["CMD", "curl", "-f", "http://localhost/api/v1/edge/readiness"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -67,7 +67,9 @@ services:
     image: leopardo/edge-api:${EDGE_VERSION:-1.0.0}
     container_name: leopardo-edge-sync
     restart: unless-stopped
-    command: ["php", "artisan", "edge:sync-daemon"]
+    # #4411 : migration SQLite idempotente avant le daemon (l'API migre au
+    # démarrage via supervisord, mais ce service est un conteneur séparé).
+    command: ["sh", "-c", "php artisan migrate --path=database/migrations/edge --database=sqlite --force --no-interaction && php artisan edge:sync-daemon"]
     environment:
       APP_ENV: edge
       APP_KEY: "${EDGE_APP_KEY}"
