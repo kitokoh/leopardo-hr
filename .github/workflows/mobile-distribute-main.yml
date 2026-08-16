@@ -43,6 +43,7 @@ env:
 
 jobs:
   distribute-mobile:
+    timeout-minutes: 120
     name: Distribute ${{ matrix.app.name }} to Firebase
     runs-on: ubuntu-latest
     permissions:
