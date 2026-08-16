@@ -61,7 +61,7 @@ test('login transparently retries a transient 503 (Render cold-start) and succee
 
   await page.goto('/login')
   await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
-  await page.locator('#password').fill('password123')
+  await page.locator('#password').fill('e2e-fixture-password')
   await page.getByRole('button', { name: /Se connecter/i }).click()
 
   await expect(page).not.toHaveURL(/\/login$/, { timeout: 15_000 })
