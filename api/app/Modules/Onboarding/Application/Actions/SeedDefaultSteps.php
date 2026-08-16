@@ -23,21 +23,25 @@ final class SeedDefaultSteps
 
     public function execute(string $companyId): void
     {
-        $existing = OnboardingStep::where('company_id', $companyId)->pluck('key')->toArray();
+        // #4188 : la dédup lit la colonne réelle `step_key` (l'attribut
+        // `key` n'existe pas sur le modèle → pluck('key') renvoyait [null]).
+        $existing = OnboardingStep::where('company_id', $companyId)->pluck('step_key')->toArray();
 
         DB::transaction(function () use ($companyId, $existing): void {
             foreach (self::DEFAULT_STEPS as $step) {
                 if (! in_array($step['key'], $existing, true)) {
+                    // #4188 : `key`/`label` ne sont pas fillable et `label`
+                    // n'est pas une colonne — mapper sur step_key/title, sinon
+                    // chaque étape est insérée avec step_key/title NULL.
                     OnboardingStep::create([
                         'company_id' => $companyId,
-                        'key'        => $step['key'],
-                        'label'      => $step['label'],
-                        'order'      => $step['order'],
-                        'status'     => 'pending',
+                        'step_key' => $step['key'],
+                        'title' => $step['label'],
+                        'order' => $step['order'],
+                        'status' => 'pending',
                     ]);
                 }
             }
         });
     }
 }
-
