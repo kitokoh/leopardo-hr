@@ -768,7 +768,32 @@
       "tickets_failed": "تعذّر تحميل تذاكر الدعم.",
       "subscription_failed": "تعذّر تحديث الاشتراك.",
       "features_failed": "تعذّر حفظ إعدادات الوحدات."
-    }
+    },
+    "portfolio": "محفظة العملاء",
+    "directory": "دليل الشركات",
+    "directorySub": "مرتبة حسب درجة الصحة والأولوية التجارية.",
+    "syncing": "جاري مزامنة المحفظة...",
+    "retry": "إعادة المحاولة",
+    "company": "الشركة",
+    "planMrr": "الخطة والإيراد الشهري",
+    "healthOp": "الصحة التشغيلية",
+    "checkins30d": "تسجيل الحضور (30 يوم)",
+    "recommendedAction": "الإجراء الموصى به",
+    "management": "الإدارة",
+    "system": "النظام",
+    "companyName": "اسم الشركة *",
+    "contactEmail": "بريد الاتصال *",
+    "country": "البلد *",
+    "city": "مدينة النشر *",
+    "currency": "العملة",
+    "timezone": "المنطقة الزمنية",
+    "defaultLang": "اللغة الافتراضية",
+    "managerFirst": "الاسم الأول للمدير *",
+    "managerLast": "اسم عائلة المدير *",
+    "managerEmail": "بريد المدير الأساسي *",
+    "activateNow": "تفعيل فوراً",
+    "activateClientNow": "تفعيل العميل فوراً",
+    "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي."
   },
   "seo": {
     "pricing": {

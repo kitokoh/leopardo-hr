@@ -768,7 +768,32 @@
       "tickets_failed": "Impossible de charger les tickets support.",
       "subscription_failed": "Échec de la mise à jour de l'abonnement.",
       "features_failed": "Échec de la configuration des modules."
-    }
+    },
+    "portfolio": "Portefeuille Clients",
+    "directory": "Repertoire des Entreprises",
+    "directorySub": "Liste classee par score de sante et priorite commerciale.",
+    "syncing": "Synchronisation du portefeuille...",
+    "retry": "Reessayer",
+    "company": "Entreprise",
+    "planMrr": "Plan & MRR",
+    "healthOp": "Sante Oper.",
+    "checkins30d": "Pointage (30j)",
+    "recommendedAction": "Action Recommandee",
+    "management": "Gestion",
+    "system": "Systeme",
+    "companyName": "Nom entreprise *",
+    "contactEmail": "Email contact *",
+    "country": "Pays *",
+    "city": "Ville de deploiement *",
+    "currency": "Devise",
+    "timezone": "Fuseau Horaire",
+    "defaultLang": "Langue Defaut",
+    "managerFirst": "Prenom Manager *",
+    "managerLast": "Nom Manager *",
+    "managerEmail": "Email Manager Principal *",
+    "activateNow": "Activer immediatement",
+    "activateClientNow": "Activer le client immediatement",
+    "activateClientHint": "Sinon le client reste en essai (trial)."
   },
   "seo": {
     "pricing": {

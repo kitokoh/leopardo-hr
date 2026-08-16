@@ -17,3 +17,20 @@ String get deviceIntlDateLocale {
     _ => 'fr',
   };
 }
+
+/// Locale intl pour le formatage des NOMBRES côté appareil (montants,
+/// salaires) — miroir de [deviceIntlDateLocale] (#4197). Avant, les écrans
+/// paie utilisaient le getter de DATE pour NumberFormat (fonctionnait par
+/// accident : mêmes valeurs), mais un changement d'un des deux aurait dérivé
+/// l'autre. Dérive de la locale appareil, repli français.
+String get deviceIntlNumberLocale {
+  final locale = PlatformDispatcher.instance.locale;
+  final language = locale.languageCode.toLowerCase();
+
+  return switch (language) {
+    'ar' => 'ar',
+    'tr' => 'tr',
+    'en' => 'en',
+    _ => 'fr',
+  };
+}

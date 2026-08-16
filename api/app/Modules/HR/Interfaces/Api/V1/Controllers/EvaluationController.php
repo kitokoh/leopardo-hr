@@ -111,7 +111,7 @@ class EvaluationController extends Controller
         }
 
         if (Evaluation::where('employee_id', $data['employee_id'])->where('evaluator_id', $actor->id)->where('period', $data['period'])->exists()) {
-            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => __('errors.EVALUATION_ALREADY_EXISTS')]], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => __('employees.evaluation_exists')]], 422);
         }
 
         try {
@@ -133,7 +133,7 @@ class EvaluationController extends Controller
             // la course entre exists() et create() : on renvoie la même 422.
             // 23505 = SQLSTATE unique_violation (pattern PartnerService).
             if ($e->getCode() === '23505') {
-                return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => __('errors.EVALUATION_ALREADY_EXISTS')]], 422);
+                return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_EXISTS', 'message' => __('employees.evaluation_exists')]], 422);
             }
             throw $e;
         }
@@ -155,7 +155,7 @@ class EvaluationController extends Controller
         $this->authorize('update', $evaluation);
 
         if ($evaluation->status === 'acknowledged') {
-            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_ACKNOWLEDGED', 'message' => __('errors.EVALUATION_ACKNOWLEDGED_IMMUTABLE')]], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_ALREADY_ACKNOWLEDGED', 'message' => __('employees.evaluation_acknowledged_locked')]], 422);
         }
 
         $data = $request->validated();
@@ -173,7 +173,7 @@ class EvaluationController extends Controller
         $this->authorize('submit', $evaluation);
 
         if ($evaluation->status !== 'draft') {
-            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => __('errors.EVALUATION_DRAFT_ONLY_SUBMIT')]], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => __('employees.evaluation_not_draft_submit')]], 422);
         }
 
         $evaluation->update(['status' => 'submitted']);
@@ -189,7 +189,7 @@ class EvaluationController extends Controller
         $this->authorize('acknowledge', $evaluation);
 
         if ($evaluation->status !== 'submitted') {
-            return response()->json(['error' => ['code' => 'EVALUATION_NOT_SUBMITTED', 'message' => __('errors.EVALUATION_SUBMITTED_ONLY_ACK')]], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_NOT_SUBMITTED', 'message' => __('employees.evaluation_not_submitted')]], 422);
         }
 
         $evaluation->update(['status' => 'acknowledged', 'acknowledged_at' => Carbon::now()]);
@@ -205,7 +205,7 @@ class EvaluationController extends Controller
         $this->authorize('delete', $evaluation);
 
         if ($evaluation->status !== 'draft') {
-            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => __('errors.EVALUATION_DRAFT_ONLY_DELETE')]], 422);
+            return response()->json(['error' => ['code' => 'EVALUATION_NOT_DRAFT', 'message' => __('employees.evaluation_not_draft_delete')]], 422);
         }
 
         $evaluation->delete();

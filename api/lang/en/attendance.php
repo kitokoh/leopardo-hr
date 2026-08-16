@@ -49,4 +49,6 @@ return [
     'correction_filter_applied' => 'Applied',
     'correction_filter_rejected' => 'Rejected',
     'correction_filter_all' => 'All',
+
+    'correction_transmitted' => 'Modification request forwarded to HR.',
 ];

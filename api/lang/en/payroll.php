@@ -45,4 +45,7 @@ return [
         'placeholder' => ['message' => "Placeholder without values for :country: tax and social contribution amounts are not documented yet and must not be used for real payroll cycles until they are replaced."],
         'unknown' => ['message' => "No payroll rules are available for :country: payroll calculation is not available for this country."],
     ],
+
+    'run_must_be_validated' => 'The payroll run must be validated before sending.',
+    'bulletins_sent' => '{sent} payslip(s) sent, {notified} push notification(s) triggered.',
 ];
