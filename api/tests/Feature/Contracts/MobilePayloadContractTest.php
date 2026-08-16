@@ -40,15 +40,17 @@ class MobilePayloadContractTest extends TestCase
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'EMP-NORA',
             'first_name' => 'Nora',
             'last_name' => 'Ait',
             'email' => 'nora@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         Sanctum::actingAs($employee);
 
@@ -139,17 +141,19 @@ class MobilePayloadContractTest extends TestCase
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'EMP-ME',
             'first_name' => 'Ahmed',
             'last_name' => 'B.',
             'email' => 'ahmed@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,
@@ -211,25 +215,29 @@ class MobilePayloadContractTest extends TestCase
 
         /** @var Employee $manager */
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Leila',
             'last_name' => 'Manager',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Sami',
             'last_name' => 'Employee',
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,
@@ -301,24 +309,28 @@ class MobilePayloadContractTest extends TestCase
 
         /** @var Employee $manager */
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Leila',
             'last_name' => 'Manager',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee0 = Employee::query()->create([
             'first_name' => 'Sami',
             'last_name' => 'Employee',
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         Sanctum::actingAs($manager);
 
@@ -384,15 +396,17 @@ class MobilePayloadContractTest extends TestCase
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'matricule' => 'EMP-H',
             'first_name' => 'Hassen',
             'last_name' => 'B.',
             'email' => 'hassen@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,

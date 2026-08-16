@@ -66,27 +66,31 @@ class GeoSessionDashboardTest extends TestCase
         ]);
 
         $this->employee = Employee::query()->create([
-            'company_id'    => $this->company->id,
             'schedule_id'   => $schedule->id,
             'email'         => 'emp@dashboard.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'employee',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->employee->forceFill([
+            'company_id'    => $this->company->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         $this->manager = Employee::query()->create([
-            'company_id'    => $this->company->id,
             'schedule_id'   => $schedule->id,
             'email'         => 'manager@dashboard.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->manager->forceFill([
+            'company_id'    => $this->company->id,
+            'role'          => 'manager',
+            'manager_role'  => 'rh',
+            'status'        => 'active',
+        ])->save();
     }
 
 

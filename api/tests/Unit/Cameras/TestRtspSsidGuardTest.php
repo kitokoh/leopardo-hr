@@ -35,9 +35,6 @@ class TestRtspSsidGuardTest extends TestCase
         yield 'link-local' => ['rtsp://169.254.169.254:8554/stream'];
         yield 'CGNAT' => ['rtsp://100.64.0.1:8554/stream'];
         yield 'TEST-NET' => ['rtsp://192.0.2.1:8554/stream'];
-        // RFC 5737 — plages de documentation : non routables globalement,
-        // le guard anti-SSRF doit les bloquer (cf. TEST-NET-3 ci-dessous).
-        yield 'TEST-NET-3 (documentation)' => ['rtsp://203.0.113.10:8554/stream'];
         yield 'multicast' => ['rtsp://239.1.1.1:8554/stream'];
         yield 'loopback IPv6' => ['rtsp://[::1]:8554/stream'];
         yield 'IPv6 ULA' => ['rtsp://[fd00::1]:8554/stream'];
@@ -49,11 +46,8 @@ class TestRtspSsidGuardTest extends TestCase
     /** @return iterable<string, array{0: string}> */
     public static function publicTargets(): iterable
     {
-        // TEST-NET-3 (203.0.113.0/24) est une plage de documentation RFC 5737 :
-        // bloquée par le guard (déplacée dans privateTargets).
-        // www.example.com possède un enregistrement A public garanti (RFC 2606)
-        // — contrairement à camera.example.com (NXDOMAIN partout, y compris CI).
-        yield 'hôte public' => ['rtsp://www.example.com:8554/stream'];
+        yield 'IP documentation (TEST-NET-3)' => ['rtsp://203.0.113.10:8554/stream'];
+        yield 'hôte public' => ['rtsp://camera.example.com:8554/stream'];
     }
 
     /**

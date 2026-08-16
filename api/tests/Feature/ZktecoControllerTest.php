@@ -258,4 +258,45 @@ class ZktecoControllerTest extends TestCase
             ->postJson('/api/v1/zkteco/devices/'.$device->id.'/regenerate-token')
             ->assertForbidden();
     }
+
+    public function test_push_users_requires_manager_role(): void
+    {
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-PUSH-001',
+            'name' => 'Porte I',
+        ]);
+
+        $this->actingAs($this->employee)
+            ->postJson('/api/v1/zkteco/devices/SN-PUSH-001/push-users')
+            ->assertForbidden();
+    }
+
+    public function test_push_users_is_scoped_to_current_company(): void
+    {
+        // #4187 : un manager du tenant A ne doit pas pouvoir pousser des
+        // utilisateurs vers un appareil du tenant B connu par serial_number
+        // (lookup autrefois par serial seul → action cross-tenant).
+        $otherCompany = Company::factory()->create();
+        $otherDevice = ZktecoDevice::query()->create([
+            'company_id' => $otherCompany->id,
+            'serial_number' => 'SN-PUSH-OTHER-001',
+            'name' => 'Porte tenant B',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices/'.$otherDevice->serial_number.'/push-users')
+            ->assertStatus(404);
+
+        // L'appareil du tenant courant reste joignable (pas de sur-scope).
+        $ownDevice = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-PUSH-OWN-001',
+            'name' => 'Porte tenant A',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices/'.$ownDevice->serial_number.'/push-users')
+            ->assertOk();
+    }
 }
