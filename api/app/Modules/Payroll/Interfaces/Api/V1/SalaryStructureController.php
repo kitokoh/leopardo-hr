@@ -150,7 +150,7 @@ class SalaryStructureController extends Controller
             : null;
 
         if ($tenantCountry !== null && strtoupper($countryCode) !== $tenantCountry) {
-            abort(422, "Le pays de la structure doit correspondre au pays légal du tenant ({$tenantCountry}).");
+            abort(422, __('errors.PAYROLL_COUNTRY_MISMATCH', ['country' => $tenantCountry]));
         }
     }
 }

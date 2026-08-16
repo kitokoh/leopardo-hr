@@ -67,8 +67,8 @@ class PartnerDashboardController extends Controller
         } catch (\App\Exceptions\DomainException $e) {
             return new JsonResponse([
                 'error' => $e->errorCode(),
-                'message' => 'Candidature deja soumise.',
-                'localized_message' => 'Candidature deja soumise.',
+                'message' => __('errors.PARTNER_APPLICATION_ALREADY_SUBMITTED'),
+                'localized_message' => __('errors.PARTNER_APPLICATION_ALREADY_SUBMITTED'),
             ], 400);
         }
 
@@ -140,7 +140,7 @@ class PartnerDashboardController extends Controller
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (!$partner) {
-            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
+            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => __('errors.NOT_A_PARTNER')], 403);
         }
 
         // Optimized with SQL aggregations instead of memory loading
