@@ -320,7 +320,7 @@ class PaySlipController extends Controller
 
         $disk = Storage::disk($document->disk);
         if (! $disk->exists($document->path)) {
-            abort(404, 'Document archivé introuvable.');
+            abort(404, __('errors.ARCHIVED_DOCUMENT_NOT_FOUND'));
         }
 
         return $disk->download($document->path, $document->original_name, [
