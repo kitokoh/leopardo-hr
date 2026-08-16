@@ -129,8 +129,11 @@ class PayrollRunClosingApiTest extends TestCase
         ]);
 
         // Un run verrouillé ne peut plus être annulé, re-validé ni recalculé.
+        // #4310 : validate sur run verrouillé → PayrollRunLockedException (423).
         $this->postJson("/api/v1/payroll-runs/{$run->id}/cancel")->assertStatus(422);
-        $this->postJson("/api/v1/payroll-runs/{$run->id}/validate")->assertStatus(422);
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/validate")
+            ->assertStatus(423)
+            ->assertJsonPath('error', 'PAYROLL_RUN_LOCKED');
         $this->postJson("/api/v1/payroll-runs/{$run->id}/calculate")->assertStatus(422);
 
         // Déverrouillage sans raison → 422.
@@ -212,9 +215,11 @@ class PayrollRunClosingApiTest extends TestCase
 
         $run = $this->makeRun(PayrollRun::STATUS_CALCULATED);
 
-        // Lock sans validation préalable → 422 (message explicite).
+        // Lock sans validation préalable → 422 + code stable localisé (#4310).
         $this->postJson("/api/v1/payroll-runs/{$run->id}/lock")
             ->assertStatus(422)
-            ->assertJsonPath('message', 'Un run doit être validé (étape RH) avant verrouillage comptable.');
+            ->assertJsonPath('error', 'PAYROLL_RUN_NOT_VALIDATED')
+            ->assertJsonPath('message', 'PAYROLL_RUN_NOT_VALIDATED')
+            ->assertJsonPath('localized_message', 'Un run doit être validé (étape RH) avant verrouillage comptable.');
     }
 }
