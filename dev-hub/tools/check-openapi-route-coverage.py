@@ -282,10 +282,9 @@ def parse_routes_accurate() -> set[tuple[str, str]]:
         out: set[tuple[str, str]] = set()
         for verb, path in extract_routes():
             p = norm_path(path).replace("{p}", "{param}")
-            for prefix in ("/api/v1", "/api", "/v1"):
-                if p.startswith(prefix):
-                    p = p[len(prefix):]
-                    break
+            spec = spec_form(p)
+            if spec is not None:
+                p = spec
             out.add((verb, p))
         return out
     except Exception:  # pragma: no cover - repli conservateur
@@ -350,6 +349,25 @@ def canonical_spec_path(path: str) -> str | None:
     return stripped
 
 
+
+def spec_form(path: str) -> str | None:
+    """Forme spec (hors préfixes version/api) d'un chemin de route réel.
+
+    Les routes de modules DDD enregistrées par provider (EdgeSync,
+    SmartAttendance) portent un préfixe absolu `api/v1/...` ; le parseur
+    précis les voit sous `v1/api/v1/...` (préfixe `v1` hérité + préfixe
+    absolu du fichier). La spec omet TOUS ces préfixes : les `servers`
+    portent `/api/v1` et les chemins documentés commencent à la ressource
+    (`/edge/health`, pas `/api/v1/edge/health` ni `/v1/api/v1/edge/health`).
+    Renvoie None si aucun préfixe connu ne s'applique (comparaison brute).
+    """
+    for prefix in ("/v1/api/v1", "/api/v1", "/api", "/v1"):
+        if path.startswith(prefix):
+            stripped = path[len(prefix):]
+            return stripped if stripped.startswith("/") else "/" + stripped
+    return None
+
+
 def load_reverse_allowlist() -> set[str]:
     if not REVERSE_ALLOWLIST_FILE.exists():
         return set()
@@ -401,6 +419,9 @@ def main() -> int:
         canonical = canonical_spec_path(r["path"])
         if canonical is not None:
             route_ops.add((r["method"], canonical))
+        spec = spec_form(r["path"])
+        if spec is not None:
+            route_ops.add((r["method"], spec))
     # Passe inverse : parseur précis (préfixes composés avec '/') qui couvre
     # aussi les fichiers de routes DDD (EdgeSync, SmartAttendance).
     route_ops |= parse_routes_accurate()
@@ -424,6 +445,12 @@ def main() -> int:
         # `/admin/rate-validation/pending` (voir canonical_spec_path).
         canonical = canonical_spec_path(r["path"])
         if canonical is not None and (r["method"], canonical) in openapi_ops:
+            covered += 1
+            continue
+        # Modules DDD à préfixe absolu (EdgeSync, SmartAttendance) : la spec
+        # omet api/v1 (porté par servers) — comparer sous forme spec.
+        spec = spec_form(r["path"])
+        if spec is not None and (r["method"], spec) in openapi_ops:
             covered += 1
             continue
         r["key"] = key

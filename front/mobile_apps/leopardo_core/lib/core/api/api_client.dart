@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
+import 'package:leopardo_core/core/i18n/error_messages.dart';
 import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:leopardo_core/core/api/api_exceptions.dart';
 import 'package:leopardo_core/core/api/mock_interceptor.dart';
@@ -11,8 +12,8 @@ import 'package:leopardo_core/core/api/mock_interceptor.dart';
 typedef RetryCallback = void Function(int attempt, Object error);
 
 class ApiClient {
-  static const String _defaultRemoteBaseUrl =
-      'https://gestionemployerbackend.onrender.com/api/v1';
+  // #4524 : plus d'URL distante en dur — le backend cible est fourni par le
+  // define API_BASE_URL (workflows). En debug, défaut = serveur local (#4530).
   static const String _defaultLocalAndroidBaseUrl =
       'http://10.0.2.2:8000/api/v1';
   static const String _defaultLocalLoopbackBaseUrl =
@@ -100,19 +101,19 @@ class ApiClient {
       return configured;
     }
 
+    // #4524 : un build release/profile sans API_BASE_URL échouait en silence
+    // vers le backend legacy (gestionemployerbackend.onrender.com). Désormais
+    // l'erreur est explicite : le CI passe toujours le define, un build local
+    // release doit le fournir.
     if (kReleaseMode || (!kIsWeb && !kDebugMode)) {
-      return _defaultRemoteBaseUrl;
+      throw StateError(
+        'API_BASE_URL must be provided in release/profile builds '
+        '(silent fallback removed, issue #4524).',
+      );
     }
 
-    const useLocalApi = bool.fromEnvironment(
-      'USE_LOCAL_API',
-      defaultValue: false,
-    );
-
-    if (!useLocalApi && !kIsWeb) {
-      return _defaultRemoteBaseUrl;
-    }
-
+    // #4530 : en debug, défaut = serveur local (10.0.2.2 émulateur Android,
+    // loopback ailleurs). Pointer un backend distant exige API_BASE_URL.
     if (kIsWeb) {
       return _defaultLocalLoopbackBaseUrl;
     }
@@ -304,7 +305,7 @@ class ApiClient {
     }
 
     await _deleteDownload(savePath);
-    throw lastError ?? ApiException('Download failed after retries');
+    throw lastError ?? ApiException(localizedErrorCode('DOWNLOAD_FAILED'));
   }
 
   Future<void> _deleteDownload(String savePath) async {
@@ -326,36 +327,41 @@ class ApiClient {
   );
 
   DioException _handleError(DioException e) {
-    String message = "Impossible de se connecter au serveur";
+    // #4408 : messages de repli localisés par la locale appareil (catalogue
+    // core) — avant : FR codé en dur affiché dans les 4 locales.
+    String message = localizedErrorCode('CONNECTION');
     String? code;
 
     if (e.response?.statusCode == 404 || e.response?.statusCode == 501) {
-      message = "Fonction bientôt disponible";
-      code = "NOT_IMPLEMENTED";
+      message = localizedErrorCode('NOT_IMPLEMENTED');
+      code = 'NOT_IMPLEMENTED';
     } else if (e.response?.statusCode == 403) {
       // Issue #2743 — un 403 n'est pas toujours une suspension : on distingue
       // la suspension explicite (payload) du simple défaut de permission.
       final data = e.response?.data;
       final isSuspended = data is Map &&
           (data['suspended'] == true || data['error'] == 'ACCOUNT_SUSPENDED');
-      message = isSuspended
-          ? "Compte suspendu - contactez votre employeur"
-          : "Action non autorisée pour votre profil";
-      code = isSuspended ? "ACCOUNT_SUSPENDED" : "FORBIDDEN";
+      message = localizedErrorCode(
+        isSuspended ? 'ACCOUNT_SUSPENDED' : 'FORBIDDEN',
+      );
+      code = isSuspended ? 'ACCOUNT_SUSPENDED' : 'FORBIDDEN';
     } else if (e.response != null && e.response?.data != null) {
       if (e.response?.data is Map) {
         final data = (e.response?.data as Map).cast<dynamic, dynamic>();
-        message =
-            (data['localized_message'] ?? data['message'] ?? message)
-                .toString();
+        // Le backend fournit déjà un message localisé (Accept-Language) :
+        // on le préfère au catalogue de repli.
+        final serverMessage = data['localized_message'] ?? data['message'];
+        if (serverMessage != null) {
+          message = serverMessage.toString();
+        }
         code = data['error']?.toString();
       }
     } else if (e.type == DioExceptionType.connectionTimeout) {
-      message = "Delai de connexion depasse";
+      message = localizedErrorCode('CONNECTION_TIMEOUT');
     } else if (e.type == DioExceptionType.receiveTimeout) {
-      message = "Le serveur met trop de temps a repondre";
+      message = localizedErrorCode('RECEIVE_TIMEOUT');
     } else if (e.type == DioExceptionType.connectionError) {
-      message = "Connexion indisponible - verifiez internet ou l'URL API";
+      message = localizedErrorCode('CONNECTION_ERROR');
     }
 
     throw ApiException(message, statusCode: e.response?.statusCode, code: code);

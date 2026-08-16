@@ -2,23 +2,23 @@
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Abonnements</h1>
+        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ t('subscriptions.title') }}</h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg text-pretty max-w-2xl">
-          Packaging, MRR et contrats clients disponibles pour le cockpit super-admin.
+          {{ t('subscriptions.subtitle') }}
         </p>
       </div>
       <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="loadSubscriptions">
         <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
-        Actualiser
+        {{ t('subscriptions.refresh') }}
       </button>
     </div>
 
     <!-- Revenue & Subscription KPIs -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-      <StatsCard title="MRR Portefeuille" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
-      <StatsCard title="Abonnements Actifs" :value="subscriptionMetrics.active" icon="CheckBadgeIcon" color="green" />
-      <StatsCard title="Retards Paiement" :value="subscriptionMetrics.past_due" icon="ClockIcon" color="yellow" />
-      <StatsCard title="Impayés Totaux" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="ExclamationCircleIcon" color="red" />
+      <StatsCard :title="t('subscriptions.kpi.portfolioMrr')" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
+      <StatsCard :title="t('subscriptions.kpi.activeSubscriptions')" :value="subscriptionMetrics.active" icon="CheckBadgeIcon" color="green" />
+      <StatsCard :title="t('subscriptions.kpi.pastDue')" :value="subscriptionMetrics.past_due" icon="ClockIcon" color="yellow" />
+      <StatsCard :title="t('subscriptions.kpi.totalOverdue')" :value="formatCurrency(revenue.overdue_total, revenue.currency)" icon="ExclamationCircleIcon" color="red" />
     </div>
 
     <div class="grid grid-cols-1 gap-8 xl:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
@@ -27,14 +27,14 @@
         <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
           <h2 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Squares2X2Icon class="h-5 w-5 text-brand-500" />
-            Catalogue des Offres
+            {{ t('subscriptions.catalogTitle') }}
           </h2>
-          <p class="mt-1 text-sm font-medium text-slate-500">Source de vérité API pour les quotas et fonctionnalités.</p>
+          <p class="mt-1 text-sm font-medium text-slate-500">{{ t('subscriptions.catalogSub') }}</p>
         </div>
 
         <div v-if="errorMessage" class="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400">
           {{ errorMessage }}
-          <button class="ml-3 underline" @click="loadSubscriptions">Réessayer</button>
+          <button class="ml-3 underline" @click="loadSubscriptions">{{ t('subscriptions.retry') }}</button>
         </div>
         <div v-if="isLoading && plans.length === 0" class="flex h-64 items-center justify-center">
           <div class="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
@@ -50,19 +50,19 @@
               <div>
                 <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">{{ plan.name }}</h3>
                 <p class="mt-1 text-sm font-bold text-slate-500">
-                  {{ plan.max_employees || 'Illimité' }} employés · {{ plan.trial_days }}j essai
+                  {{ planMeta(plan) }}
                 </p>
               </div>
               <span :class="['rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest border', plan.is_active ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200']">
-                {{ plan.is_active ? 'Public' : 'Archive' }}
+                {{ plan.is_active ? t('subscriptions.public') : t('subscriptions.archived') }}
               </span>
             </div>
 
             <div class="mt-6 flex items-baseline gap-2 relative z-10">
               <span class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ formatCurrency(plan.price_monthly) }}</span>
-              <span class="text-sm font-bold text-slate-500">/ mois</span>
+              <span class="text-sm font-bold text-slate-500">{{ t('subscriptions.perMonth') }}</span>
             </div>
-            <p class="mt-1 text-xs font-bold text-brand-600/70 uppercase tracking-widest">{{ formatCurrency(plan.price_yearly) }} facturé annuellement</p>
+            <p class="mt-1 text-xs font-bold text-brand-600/70 uppercase tracking-widest">{{ formatCurrency(plan.price_yearly) }} {{ t('subscriptions.billedAnnually') }}</p>
 
             <div class="mt-6 flex flex-wrap gap-2 relative z-10">
               <span
@@ -84,24 +84,24 @@
       <section class="space-y-6">
         <div class="card">
           <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-800/50 dark:bg-slate-800/30">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Santé Commerciale</h2>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ t('subscriptions.healthTitle') }}</h2>
           </div>
           <div class="p-6">
             <dl class="space-y-4">
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">ARR Estimé</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('subscriptions.kpi.arr') }}</dt>
                 <dd class="text-sm font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.arr, revenue.currency) }}</dd>
               </div>
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Encaisse 30j</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('subscriptions.kpi.collected30d') }}</dt>
                 <dd class="text-sm font-black text-emerald-600">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
               </div>
               <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Total Abonnés</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('subscriptions.kpi.totalSubscribers') }}</dt>
                 <dd class="text-sm font-black text-slate-900 dark:text-white">{{ subscriptionMetrics.total }}</dd>
               </div>
               <div class="flex items-center justify-between">
-                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">Périodes d'essai</dt>
+                <dt class="text-xs font-black uppercase tracking-widest text-slate-500">{{ t('subscriptions.kpi.trials') }}</dt>
                 <dd class="text-sm font-black text-blue-600">{{ subscriptionMetrics.trial }}</dd>
               </div>
             </dl>
@@ -110,7 +110,7 @@
 
         <div class="card">
           <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-4 dark:border-slate-800/50 dark:bg-slate-800/30">
-            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Priorités Rétention</h2>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">{{ t('subscriptions.retentionTitle') }}</h2>
           </div>
           <div class="divide-y divide-slate-100 dark:divide-slate-800">
             <article v-for="item in priorityClients" :key="item.company.id" class="p-4 transition-colors hover:bg-slate-50/50 dark:hover:bg-slate-900/50">
@@ -118,11 +118,11 @@
                 <div class="min-w-0 flex-1">
                   <p class="text-sm font-black text-slate-900 dark:text-white truncate uppercase">{{ item.company.name }}</p>
                   <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    {{ item.plan.name || 'Sans plan' }} · <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ item.risk_level }} risk</span>
+                    {{ item.plan.name || t('subscriptions.noPlan') }} · <span :class="item.risk_level === 'high' ? 'text-red-500' : 'text-amber-500'">{{ riskLabel(item.risk_level) }}</span>
                   </p>
                 </div>
                 <router-link class="shrink-0 rounded-lg bg-brand-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:text-brand-400 transition-colors" :to="`/companies/${item.company.id}`">
-                  Gérer
+                  {{ t('subscriptions.manage') }}
                 </router-link>
               </div>
               <p v-if="item.next_action" class="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
@@ -130,7 +130,7 @@
               </p>
             </article>
             <div v-if="priorityClients.length === 0 && !isLoading" class="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
-              Aucun risque immédiat détecté
+              {{ t('subscriptions.noRisk') }}
             </div>
           </div>
         </div>
@@ -147,6 +147,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
+import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
@@ -177,6 +178,11 @@ const platformMetrics = ref({
   },
 })
 
+// #4329 : traduction via le catalogue admin (pattern #4206).
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
+
 const revenue = computed(() => platformMetrics.value.revenue || {})
 const subscriptionMetrics = computed(() => platformMetrics.value.subscriptions || {})
 const formattedMrr = computed(() => formatCurrency(revenue.value.mrr || summary.value.mrr, revenue.value.currency))
@@ -203,10 +209,21 @@ async function loadSubscriptions() {
     platformMetrics.value = metricsResponse.data?.data || platformMetrics.value
   } catch (error) {
     console.error('Failed to load subscriptions cockpit:', error)
-    errorMessage.value = 'Erreur lors du chargement des abonnements.'
+    errorMessage.value = t('subscriptions.loadError')
   } finally {
     isLoading.value = false
   }
+}
+
+function planMeta(plan) {
+  const limit = plan.max_employees
+    ? `${plan.max_employees} ${t('subscriptions.employees')}`
+    : t('subscriptions.unlimited')
+  return `${limit} · ${plan.trial_days}${t('subscriptions.trialUnit')} ${t('subscriptions.trialDays')}`
+}
+
+function riskLabel(riskLevel) {
+  return t(`subscriptions.risk.${riskLevel}`, riskLevel)
 }
 
 function enabledFeatures(plan) {
@@ -216,28 +233,8 @@ function enabledFeatures(plan) {
 }
 
 function formatFeatureLabel(feature) {
-  const labels = {
-    rh: 'RH',
-    finance: 'Finance',
-    ai: 'Leo IA',
-    cameras: 'Vidéo',
-    tracking: 'Suivi',
-    planning: 'Planning',
-    training: 'Formations',
-    cabinet: 'Documents',
-    biometric: 'Biométrie',
-    tasks: 'Tâches',
-    advanced_reports: 'Rapports avancés',
-    excel_export: 'Export Excel',
-    bank_export: 'Export bancaire',
-    billing_auto: 'Facturation auto',
-    multi_managers: 'Multi-gérants',
-    photo_attendance: 'Pointage photo',
-    api_public: 'API publique',
-    evaluations: 'Évaluations',
-    schema_isolation: 'Isolation schéma',
-  }
-  return labels[feature] || feature.toUpperCase()
+  const label = t(`subscriptions.features.${feature}`)
+  return label || feature.toUpperCase()
 }
 
 function formatCurrency(value, currency = 'EUR') {
@@ -261,4 +258,3 @@ function formatCurrency(value, currency = 'EUR') {
 
 onMounted(loadSubscriptions)
 </script>
-

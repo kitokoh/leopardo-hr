@@ -143,7 +143,9 @@ class GdprAnonymizeEmployeeCommand extends Command
         }
 
         DB::transaction(function () use ($employee, $changes, $oldStatus, $photoPath): void {
-            $employee->update($changes);
+            // Issue #4496 : password_hash + chemins biométriques ne sont plus
+            // mass-assignables — forceFill explicite (opération d'anonymisation).
+            $employee->forceFill($changes)->save();
 
             // Purge des demandes d'enrôlement biométrique (chemins de référence + notes).
             BiometricEnrollmentRequest::query()

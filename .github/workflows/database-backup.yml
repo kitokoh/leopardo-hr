@@ -29,6 +29,7 @@ concurrency:
 
 jobs:
   daily-backup:
+    timeout-minutes: 60
     name: Daily PostgreSQL backup
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'backup' || github.event_name == 'schedule' && github.event.schedule == '15 2 * * *'
@@ -106,6 +107,7 @@ jobs:
           echo "Backup uploaded to s3://${BACKUP_S3_BUCKET}/${object_key}"
 
   monthly-restore-drill:
+    timeout-minutes: 60
     name: Monthly restore drill
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'drill' || github.event_name == 'schedule' && github.event.schedule == '15 3 1 * *'
