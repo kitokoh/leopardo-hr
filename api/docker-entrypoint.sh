@@ -301,6 +301,18 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     echo "Running tenant schema migrations..."
     run_migrate_with_retry "database/migrations/tenant" "shared_tenants"
 
+    # Warn operators when SUPER_ADMIN_PASSWORD is not set in production:
+    # the seeder will generate a random password that is never displayed in
+    # production logs → the admin dashboard will be inaccessible.
+    # See docs/deployment/RUNBOOK_SUPER_ADMIN.md for fix instructions.
+    if [ "${APP_ENV:-}" = "production" ] && [ -z "${SUPER_ADMIN_PASSWORD:-}" ]; then
+        echo "⚠️  WARNING: SUPER_ADMIN_PASSWORD is not set."
+        echo "   SuperAdminSeeder will generate a random password that cannot be"
+        echo "   recovered from production logs → admin@leopardo-rh.com login will fail."
+        echo "   Fix: set SUPER_ADMIN_PASSWORD in the Render dashboard and redeploy."
+        echo "   See: docs/deployment/RUNBOOK_SUPER_ADMIN.md"
+    fi
+
     echo "Running base seeders (idempotent)..."
     php artisan db:seed --class=DatabaseSeeder --force
 

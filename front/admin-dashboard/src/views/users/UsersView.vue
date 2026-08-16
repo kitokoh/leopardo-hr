@@ -269,8 +269,18 @@ function exportSelectedUsers() {
   exportUsers(selected)
 }
 const usersSummary = computed(() => {
-  return t('users.page.summary', ':count utilisateur(s) plateforme')
-    .replace(':count', String(totalItems.value))
+  const total = users.value.length
+  const active = users.value.filter((u) => u.status === 'active' || u.status === 'activated').length
+  const newToday = users.value.filter((u) => {
+    if (!u.created_at) return false
+    const d = new Date(u.created_at)
+    const now = new Date()
+    return d.toDateString() === now.toDateString()
+  }).length
+  return t('users.page.summary', '')
+    .replace(':count', String(total))
+    .replace(':active', String(active))
+    .replace(':newToday', String(newToday))
 })
 
 onMounted(async () => {

@@ -20,9 +20,12 @@ Route::get('/', function () {
 });
 
 // Capture de lien partenaire (Middleware gère la redirection et le cookie)
+// #4606 : route publique écrite en DB à chaque hit (PartnerClick via le
+// middleware global) — throttle 60/min/IP + entrées bornées (voir
+// PartnerLinkMiddleware) pour éviter 500 (Referer > 255) et l'amplification.
 Route::get('/p/{code}', function () {
     return redirect('/signup');
-})->name('partner.link');
+})->middleware('throttle:60,1')->name('partner.link');
 
 // Issue #2253 — magic link d'accès au sandbox de démo (jeton à usage unique).
 Route::middleware('throttle:auth-sensitive')->get('/demo-login/{token}', DemoLoginController::class);
@@ -88,7 +91,14 @@ Route::get('/activate/{token}', [InvitationController::class, 'showActivationFor
 Route::post('/activate/{token}', [InvitationController::class, 'activate'])
     ->middleware('throttle:web-activate')
     ->name('invitation.activate.store');
-Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])->name('kiosk.show');
+// #4607 : le GET de la page kiosk (device_code = seule credential de la
+// borne) est throttlé sur un bucket DÉDIÉ (kiosk-show, 120/min, device+IP)
+// — ne pas partager kiosk-punch (30/min) pour ne pas pénaliser une borne
+// active qui recharge la page à chaque pointage. Sans throttle, le
+// device_code était énumérable en force brute (lookup DB + session par hit).
+Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])
+    ->middleware('throttle:kiosk-show')
+    ->name('kiosk.show');
 // PA2-API-005: public, device-code based, unauthenticated-by-Sanctum kiosk
 // punch endpoint gets its own 'kiosk-punch' throttle bucket (keyed by device
 // code + IP) to guard against brute force / abuse.
