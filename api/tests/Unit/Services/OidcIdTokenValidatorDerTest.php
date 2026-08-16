@@ -42,7 +42,8 @@ final class OidcIdTokenValidatorDerTest extends TestCase
 
         // Le MSB du modulus d'une clé 2048 bits est TOUJOURS à 1 — c'est le
         // cas qui exigeait le préfixe 0x00 (X.690 8.3.2).
-        $this->assertSame(1, ord($details['rsa']['n'][0]) & 0x80);
+        // MSB set = 0x80 = 128 (jamais 1) — issue #4159.
+        $this->assertSame(128, ord($details['rsa']['n'][0]) & 0x80);
 
         $pem = $this->buildPublicKeyPem($details['rsa']['n'], $details['rsa']['e']);
 
@@ -71,7 +72,9 @@ final class OidcIdTokenValidatorDerTest extends TestCase
         $this->assertNotFalse($public);
 
         $data = 'oidc-challenge-'.bin2hex(random_bytes(8));
-        $this->assertSame(1, openssl_sign($data, $signature, $key, OPENSSL_ALGO_SHA256));
+        // PHP 8.4 : openssl_sign() retourne bool (true) au lieu de int (1)
+        // (issue #4159) — openssl_verify() retourne encore int (1) sur 8.4.
+        $this->assertTrue((bool) openssl_sign($data, $signature, $key, OPENSSL_ALGO_SHA256));
         $this->assertSame(1, openssl_verify($data, $signature, $public, OPENSSL_ALGO_SHA256));
     }
 
