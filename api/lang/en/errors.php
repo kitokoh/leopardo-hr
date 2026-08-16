@@ -74,8 +74,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Attendance mode personalization is disabled.',
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
-=======
->>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Payout request refused.',
     'PAYOUT_REQUEST_FAILED' => 'An error occurred while requesting the payout.',
     'COMPANY_MODE_FORCED' => 'Your company enforces a clocking mode. You cannot change it.',
@@ -94,7 +92,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Only draft contracts can be activated.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Only active contracts can be suspended.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Contract must be active or suspended to terminate.',
-<<<<<<< HEAD
+
     // Trial signup (audit #4395)
     'ALREADY_PROCESSED' => 'This trial request has already been processed.',
     'INVALID_OR_EXPIRED_CODE' => 'Invalid or expired verification code.',

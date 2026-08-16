@@ -74,8 +74,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
-=======
->>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Demande de paiement refusee.',
     'PAYOUT_REQUEST_FAILED' => 'Une erreur est survenue lors de la demande de paiement.',
     'COMPANY_MODE_FORCED' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
@@ -94,7 +92,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Seuls les contrats au statut brouillon peuvent être activés.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Seuls les contrats actifs peuvent être suspendus.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Le contrat doit être actif ou suspendu pour être rompu.',
-<<<<<<< HEAD
+
     // Trial signup (audit #4395)
     'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
     'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
