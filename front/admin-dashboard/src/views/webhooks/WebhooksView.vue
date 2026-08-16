@@ -46,7 +46,7 @@
         </span>
       </template>
       <template #cell-last_triggered_at="{ value }">
-        <span v-if="value" class="text-xs text-gray-500">{{ new Date(value).toLocaleString() }}</span>
+        <span v-if="value" class="text-xs text-gray-500">{{ formatDate(value) }}</span>
         <span v-else class="text-xs text-gray-400">Jamais</span>
       </template>
       <template #row-actions="{ row }">
@@ -133,6 +133,16 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import { useToast } from 'vue-toastification'
 import DataTable from '@/components/common/DataTable.vue'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
+// #4517 : dates au format de la locale active (pas la locale du navigateur).
+const formatDate = (value) =>
+  new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value))
 
 const loading = ref(false)
 const saving = ref(false)
@@ -153,14 +163,30 @@ const columns = [
   { key: 'last_triggered_at', label: 'Dernier declenchement', sortable: true },
 ]
 
-const availableEvents = [
-  'employee.created', 'employee.updated',
-  'absence.created', 'absence.approved',
-  'payroll.validated', 'contract.created',
-  'applicant.hired', 'training.completed',
-]
+// #4512 : la liste des events vient du backend (GET /admin/webhooks/events) —
+// la whitelist en dur dérivait (5/8 events invalides → 422 systématique au save).
+const availableEvents = ref([])
+
+async function fetchEvents() {
+  try {
+    const res = await api.get('/admin/webhooks/events')
+    const data = res.data?.data ?? res.data ?? []
+    availableEvents.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    // Fallback : liste canonique connue du backend (PlatformAdminWebhookController).
+    availableEvents.value = [
+      'employee.created', 'employee.updated',
+      'leave.approved', 'leave.rejected',
+      'attendance.synced', 'payroll.processed', 'payroll.validated',
+      'loan.disbursed', 'expense.submitted', 'expense.approved',
+      'webhook.test',
+    ]
+    console.warn('Failed to load webhook events from backend, using fallback', err)
+  }
+}
 
 async function fetchData() {
+  fetchEvents()
   loading.value = true
   error.value = ''
   try {

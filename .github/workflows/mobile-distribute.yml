@@ -81,6 +81,15 @@ jobs:
             android_package: com.leopardo.rh
 
     steps:
+      - name: Guard PROD_API_BASE_URL (#4524)
+        shell: bash
+        run: |
+          if [[ -z "${{ vars.PROD_API_BASE_URL }}" ]]; then
+            echo "::error::PROD_API_BASE_URL must be set (fail-open fallback removed, issue #4524)."
+            exit 1
+          fi
+          echo "PROD_API_BASE_URL=${{ vars.PROD_API_BASE_URL }}"
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -121,9 +130,9 @@ jobs:
           elif [[ "$INPUT_ENV" == "prod" ]]; then
             TARGET="prod"
             BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
-          elif [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "main" ]]; then
-            TARGET="staging"
-            BUILD_NAME="${APP_VERSION_PREFIX}-main-${GITHUB_RUN_NUMBER}"
+          # #4526 : la branche push→main était morte (on: ne déclenche que des
+          # tags v*-staging/v*-prod + workflow_dispatch depuis la scission vers
+          # mobile-distribute-main.yml) — le fallback else couvre déjà ce cas.
           else
             TARGET="staging"
             BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
@@ -239,14 +248,14 @@ jobs:
             # les builds prod pointaient vers un backend mort. URL canonique
             # partagée (api_client.dart, deploy-main.yml, docs/DEMO_ACCOUNTS.md).
             # À basculer vers le domaine acheté une fois résolu (épic #3766).
-            echo "API_BASE_URL=${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}" > .env.build
+            echo "API_BASE_URL=${{ vars.PROD_API_BASE_URL }}" > .env.build
             flutter build appbundle --release \
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
               --build-number="${BUILD_NUMBER}"
             echo "BUILD_FILE=${{ matrix.app.project_path }}/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
           else
-            echo "API_BASE_URL=${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}" > .env.build
+            echo "API_BASE_URL=${{ vars.PROD_API_BASE_URL }}" > .env.build
             flutter build apk --release \
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \

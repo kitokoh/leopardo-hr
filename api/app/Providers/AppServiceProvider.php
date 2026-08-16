@@ -209,6 +209,17 @@ class AppServiceProvider extends ServiceProvider
                 ->by('web-login:'.$email.'|'.$request->ip());
         });
 
+        // #4498 — invitation activation (public, token-based, sets the employee
+        // password) : same brute-force exposure as the API twin
+        // /onboarding/invitation/{token} (throttled 10/min). Dedicated bucket
+        // keyed by token + IP.
+        RateLimiter::for('web-activate', function (Request $request) {
+            $token = (string) $request->route('token', 'unknown');
+
+            return Limit::perMinute((int) config('security.rate_limits.web_activate_per_minute', 10))
+                ->by('web-activate:'.$token.'|'.$request->ip());
+        });
+
         // PA2-API-005 — The kiosk web punch endpoint (public, device-code based,
         // no Sanctum auth) needs its own throttle bucket keyed by device code so a
         // single compromised/misbehaving kiosk cannot exhaust another kiosk's

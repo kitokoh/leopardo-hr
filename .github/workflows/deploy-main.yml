@@ -18,8 +18,8 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
-  DEFAULT_API_HEALTHCHECK_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}/health
+  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL }}
+  DEFAULT_API_HEALTHCHECK_URL: ${{ vars.PROD_API_BASE_URL }}/health
 
 # #1835 / #3904 / #4359 : un seul run de déploiement par SHA; le push main
 # est désormais l’unique déclencheur automatique. Le groupe par SHA protège
@@ -43,6 +43,15 @@ jobs:
       web_changed: ${{ steps.final.outputs.web_changed }}
       app_version: ${{ steps.final.outputs.app_version }}
     steps:
+      - name: Guard PROD_API_BASE_URL (#4524)
+        shell: bash
+        run: |
+          if [[ -z "${{ vars.PROD_API_BASE_URL }}" ]]; then
+            echo "::error::PROD_API_BASE_URL must be set (fail-open fallback removed, issue #4524)."
+            exit 1
+          fi
+          echo "PROD_API_BASE_URL=${{ vars.PROD_API_BASE_URL }}"
+
       - name: Resolve deployment source
         id: context
         shell: bash
