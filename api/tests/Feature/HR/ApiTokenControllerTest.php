@@ -24,11 +24,14 @@ class ApiTokenControllerTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
-        $this->company = Company::factory()->create();
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        $this->company = $company;
     }
 
     public function test_manager_can_create_list_and_delete_api_token(): void
     {
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         Sanctum::actingAs($manager);
 
@@ -54,6 +57,7 @@ class ApiTokenControllerTest extends TestCase
 
     public function test_plain_employee_cannot_manage_api_tokens(): void
     {
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $this->company->id]);
         Sanctum::actingAs($employee);
 
@@ -64,6 +68,7 @@ class ApiTokenControllerTest extends TestCase
 
     public function test_create_token_requires_name(): void
     {
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
         Sanctum::actingAs($manager);
 
