@@ -213,13 +213,15 @@ class AttendanceTimezoneRegressionTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'email' => "employee-tz-{$suffix}@company.test",
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         return [$company, $employee];
     }

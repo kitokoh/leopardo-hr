@@ -36,25 +36,31 @@ trait CreatesCameraFixtures
         string $managerRole = 'principal',
         string $email = 'manager@company.test'
     ): Employee {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => $email,
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => $managerRole,
             'status' => 'active',
-        ]);
+        ])->save();
+        return $sensitiveEmployee1;
     }
 
     protected function createEmployee(Company $company, string $email = 'employee@company.test'): Employee
     {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => $email,
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
+        return $sensitiveEmployee0;
     }
 
     /** @return array<string, string> */

@@ -32,13 +32,6 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   return `/checkout?plan=${planKey}&billing=${billing}`
 }
 
-const savingsLabel: Record<string, string> = {
-  fr: 'Economisez 20%',
-  en: 'Save 20%',
-  tr: '%20 tasarruf',
-  ar: 'وفّر 20%',
-}
-
 const billingToggle: Record<string, { monthly: string; annual: string }> = {
   fr: { monthly: 'Mensuel', annual: 'Annuel' },
   en: { monthly: 'Monthly', annual: 'Annual' },
@@ -97,7 +90,7 @@ export function PricingSection() {
               animate={{ opacity: 1, scale: 1 }}
               className="ml-1 px-2.5 py-0.5 text-xs font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full"
             >
-              {savingsLabel[locale] ?? savingsLabel.en}
+              {copy.pricing.annualSavings}
             </motion.span>
           )}
         </div>

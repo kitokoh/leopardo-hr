@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\ExportHistory;
+use App\Support\CsvCellSanitizer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -404,7 +405,10 @@ class ExportController extends Controller
                 if ($v === null) {
                     return '';
                 }
-                $str = (string) $v;
+                // #4169 : neutralisation OWASP des préfixes de formule CSV —
+                // les valeurs numériques (montants négatifs compris) restent
+                // intactes (le sanitizer ne préfixe que les chaînes).
+                $str = CsvCellSanitizer::neutralize($v);
 
                 $escaped = str_replace('"', '""', $str);
 
