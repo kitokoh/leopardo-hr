@@ -15,6 +15,7 @@
    - `VerifyTrialSignup::verify()` (ligne 283) : le manager de trial créé avec `company_id`/`role`/`manager_role`/`status`/`salary_base` dans `create()` → **tous abandonnés** → le manager de trial n'appartient à aucune compagnie et n'a aucun rôle (régression #3677 jamais corrigée sur ce chemin — cause racine probable des 500 trial #3879/#3259).
    - `PartnerDashboardController::userFromAuth()` : `User::firstOrCreate(…, ['status' => 'active'])` → status abandonné à la création.
    - `DemoDzSeeder::seedAccounts()` : `Employee::firstOrCreate(…, values role/manager_role/status/salary_base)` → comptes démo créés `role=employee`.
+   - `PlatformUserController` (update/destroy/activate/deactivate/suspend) : `$user->update(['status' => …])` → status **jamais persisté** (SuperAdmin `status` non fillable) → un compte « désactivé » reste actif (sécurité #2630 : tokens révoqués mais compte toujours utilisable).
 
 ## Décision
 
