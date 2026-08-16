@@ -6,7 +6,7 @@
       @click.self="visible = false"
       @keydown.escape="visible = false"
     >
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-fade-in">
+      <div class="glass-card max-w-md w-full mx-4 overflow-hidden animate-fade-in">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <h2 class="text-lg font-bold text-gray-900 dark:text-white">Raccourcis Clavier</h2>
           <button
