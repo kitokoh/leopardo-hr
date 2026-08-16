@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(admin): api.js — retry cold-start limité aux méthodes idempotentes (GET/HEAD/OPTIONS) (Closes #4620).** Les 502/503/504 étaient rejoués sur TOUTES les méthodes : un POST/PUT traité mais à réponse perdue (cold-start Render) était exécuté 2× (webhook dupliqué, impersonation en double, désactivation rejouée).
 - **fix(web): checkout sandbox — encart carte de test sur les clés canoniques cardLabel/expiryLabel/cvcLabel ×4 (Closes #4615).** Corrige la régression tsc TS2339 (clés inexistantes référencées par la page).
 - **fix(web): checkout sandbox — libellés branchés sur les clés canoniques cardLabel/expiryLabel/cvcLabel ×4 (Closes #4615).** Clés dupliquées retirées du catalogue (régression tsc TS2339 corrigée).
 - **fix(web): checkout sandbox — page branchée sur les libellés localisés (complément #4615).** L'encart carte de test utilise désormais `copy.payment.sandboxCardNumberLabel` / `sandboxExpiryCvcLabel`.
