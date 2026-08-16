@@ -39,7 +39,9 @@ class GrowthAdminControllerTest extends TestCase
     public function test_super_admin_can_list_partners(): void
     {
         $superAdmin = $this->makeSuperAdmin();
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         Partner::create([
             'user_id' => $employee->id,
@@ -61,7 +63,9 @@ class GrowthAdminControllerTest extends TestCase
     public function test_super_admin_can_update_partner_rate_with_reason(): void
     {
         $superAdmin = $this->makeSuperAdmin();
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $partner = Partner::create([
             'user_id' => $employee->id,
@@ -89,7 +93,9 @@ class GrowthAdminControllerTest extends TestCase
     public function test_update_rate_validates_reason_and_range(): void
     {
         $superAdmin = $this->makeSuperAdmin();
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $partner = Partner::create([
             'user_id' => $employee->id,
@@ -115,7 +121,9 @@ class GrowthAdminControllerTest extends TestCase
 
     public function test_tenant_manager_cannot_access_growth_admin(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
