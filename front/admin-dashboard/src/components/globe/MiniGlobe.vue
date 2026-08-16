@@ -27,7 +27,7 @@
       </p>
     </div>
 
-    <div class="absolute bottom-4 left-4 rounded-lg bg-white/90 p-3 shadow-sm">
+    <div class="absolute bottom-4 left-4 glass-card rounded-xl p-3 shadow-sm">
       <div class="mb-1 text-xs text-gray-500">Activité en temps réel</div>
       <div class="flex items-center space-x-4 text-sm">
         <div class="flex items-center">
