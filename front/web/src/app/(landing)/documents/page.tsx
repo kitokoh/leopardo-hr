@@ -15,14 +15,16 @@ import {
   Footer,
   useScrollReveal,
 } from '@/modules/vitrine';
-import { modulePageContent } from '@/modules/vitrine/lib/content';
+import { getModulePageContent } from '@/modules/vitrine/lib/content';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { Lock, Share2, Archive, Shield } from 'lucide-react';
 
 export default function DocumentsPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
+  const { locale } = useVitrineLocale();
   useScrollReveal();
 
-  const content = modulePageContent.documents;
+  const content = getModulePageContent(locale).documents;
 
   // Transform problem items to include icons
   const problemItems = content.problem.items.map((item, index) => ({
