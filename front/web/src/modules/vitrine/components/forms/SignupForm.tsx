@@ -520,7 +520,6 @@ export function SignupForm({
                   ref={(el) => { otpRefs.current[i] = el; }}
                   type="text"
                   inputMode="numeric"
-                  aria-label={`Code de vérification, chiffre ${i + 1}`}
                   maxLength={1}
                   value={val}
                   onChange={(e) => handleOtpChange(i, e.target.value)}

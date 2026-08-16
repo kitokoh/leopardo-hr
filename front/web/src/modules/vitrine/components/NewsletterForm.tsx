@@ -49,7 +49,6 @@ export function NewsletterForm() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            aria-label={t.placeholder}
             placeholder={t.placeholder}
             aria-label={t.title}
             required
