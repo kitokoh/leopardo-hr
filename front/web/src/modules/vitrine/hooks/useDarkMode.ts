@@ -3,26 +3,26 @@
 import { useState, useEffect } from 'react';
 
 export function useDarkMode() {
-  const [isDark, setIsDark] = useState(false);
+  // #4301 : état initial résolu de façon SYNCHRONE côté client (SSR → false)
+  // pour que le premier paint corresponde au thème stocké/préféré — le
+  // composant peut ainsi se rendre immédiatement (plus de layout nul en SSR).
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    const stored = localStorage.getItem('theme');
+    if (stored) {
+      return stored === 'dark';
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-
-    // Check localStorage first
-    const stored = localStorage.getItem('theme');
-    if (stored) {
-      const dark = stored === 'dark';
-      setIsDark(dark);
-      applyTheme(dark);
-      return;
-    }
-
-    // Check system preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setIsDark(prefersDark);
-    applyTheme(prefersDark);
-  }, []);
+    applyTheme(isDark);
+  }, [isDark]);
 
   const toggleDarkMode = () => {
     setIsDark((prev) => {

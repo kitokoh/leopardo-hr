@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Events\PayrollValidated;
-use App\Exceptions\PayrollAlreadyValidatedException;
-use App\Exceptions\PayrollPeriodConflictException;
+use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
+use App\Modules\Payroll\Domain\Exceptions\PayrollPeriodConflictException;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;

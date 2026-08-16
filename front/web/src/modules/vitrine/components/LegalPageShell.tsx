@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import Link from 'next/link'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Globe2, ShieldCheck } from 'lucide-react'
 import type { AppLocale } from '@/lib/i18n'
 import { getLegalPageCopy, type LegalPageKind } from '../lib/legal-content'
@@ -13,6 +14,11 @@ type LegalPageShellProps = {
 export function LegalPageShell({ page }: LegalPageShellProps) {
   const { locale, direction, options, setLocale } = useVitrineLocale()
   const copy = getLegalPageCopy(locale, page)
+  // #4506 : le sélecteur de langue doit persister ?lang dans l'URL (comme le
+  // Navbar, #3806) — sinon un refresh perd la locale et le SSR re-sert du FR.
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   return (
     <main dir={direction} className="min-h-screen bg-white text-slate-950 dark:bg-slate-950 dark:text-white">
@@ -32,7 +38,14 @@ export function LegalPageShell({ page }: LegalPageShellProps) {
             <select
               aria-label={copy.languageLabel}
               value={locale}
-              onChange={(event) => setLocale(event.target.value as AppLocale)}
+              onChange={(event) => {
+                const nextLocale = event.target.value as AppLocale
+                setLocale(nextLocale)
+                const params = new URLSearchParams(searchParams.toString())
+                params.set('lang', nextLocale)
+                const query = params.toString()
+                router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+              }}
               className="w-full bg-transparent font-semibold text-slate-900 outline-none dark:text-white"
             >
               {options.map((option) => (

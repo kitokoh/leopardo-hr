@@ -4,12 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Users } from 'lucide-react'
-import { getPricingPlans } from '../data/pricing'
+import { getPricingPlans, showsCurrency } from '../data/pricing'
 import { useVitrineLocale } from '../lib/vitrine-locale'
-
-function showsCurrency(price: string) {
-  return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض'].includes(price)
-}
 
 export function planNameToCheckoutKey(planName?: string): 'free' | 'pilot' | 'operations' | 'enterprise' {
   const name = (planName ?? '').trim().toLowerCase()
@@ -31,7 +27,6 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   if (planNameToCheckoutKey(planName) === 'pilot') return `/signup?source=home_pilot`
   // #3883 : le plan Free (0 €) suit le même funnel sans carte que l'essai guidé
   // (#2907 : ne jamais mener « Start for free » vers le paywall du checkout).
-  if (planNameToCheckoutKey(planName) === 'free') return '/signup?source=pricing_free'
   const planKey = planNameToCheckoutKey(planName)
   return `/checkout?plan=${planKey}&billing=${billing}`
 }

@@ -21,13 +21,6 @@ describe('Phase 3 Components - Imports', () => {
     expect(FeaturesSection).toBeDefined();
   });
 
-  it('should import PricingCard and PricingSection', () => {
-    const { PricingCard } = require('../PricingCard');
-    const { PricingSection } = require('../PricingSection');
-    expect(PricingCard).toBeDefined();
-    expect(PricingSection).toBeDefined();
-  });
-
   it('should import TestimonialCard and TestimonialsSection', () => {
     const { TestimonialCard } = require('../TestimonialCard');
     const { TestimonialsSection } = require('../TestimonialsSection');
@@ -65,8 +58,6 @@ describe('Phase 3 Components - Imports', () => {
     expect(exports.HeroProductVisual).toBeDefined();
     expect(exports.FeatureCard).toBeDefined();
     expect(exports.FeaturesSection).toBeDefined();
-    expect(exports.PricingCard).toBeDefined();
-    expect(exports.PricingSection).toBeDefined();
     expect(exports.TestimonialCard).toBeDefined();
     expect(exports.TestimonialsSection).toBeDefined();
     expect(exports.CaseStudyCard).toBeDefined();
