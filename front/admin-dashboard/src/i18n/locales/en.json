@@ -900,5 +900,31 @@
     "statusFailed": "Failed",
     "download": "Download",
     "downloading": "Downloading..."
+  },
+  "companyDetail": {
+    "analyzing": "Analyzing client data...",
+    "retry": "Retry",
+    "fieldAdoption": "Field Adoption",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30d",
+    "payrollReady": "Payroll Ready",
+    "activeEmployees30d": "Active Employees (30d)",
+    "noPriorityBlockers": "No priority blockers detected.",
+    "modulesConfig": "Modules Configuration",
+    "servicePlan": "Service plan",
+    "commercialStatus": "Commercial status",
+    "statusTrial": "Trial",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "statusExpired": "Expired",
+    "startDate": "Start",
+    "internalNotes": "Internal notes",
+    "noSupportTickets": "No support tickets for this client.",
+    "technicalIdentity": "Technical identity",
+    "platformId": "Platform ID",
+    "slug": "Slug",
+    "countryCurrency": "Country / Currency",
+    "registeredOn": "Registered on",
+    "lastActivity": "Last activity"
   }
 }

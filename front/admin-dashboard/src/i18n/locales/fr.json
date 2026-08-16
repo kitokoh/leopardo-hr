@@ -900,5 +900,31 @@
     "statusFailed": "Echec",
     "download": "Telecharger",
     "downloading": "Telechargement..."
+  },
+  "companyDetail": {
+    "analyzing": "Analyse des donnees client...",
+    "retry": "Reessayer",
+    "fieldAdoption": "Adoption Terrain",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30j",
+    "payrollReady": "Paie Prete",
+    "activeEmployees30d": "Employes Actifs (30j)",
+    "noPriorityBlockers": "Aucun blocage prioritaire detecte.",
+    "modulesConfig": "Configuration des Modules",
+    "servicePlan": "Plan de services",
+    "commercialStatus": "Statut Commercial",
+    "statusTrial": "Essai (Trial)",
+    "statusActive": "Actif",
+    "statusSuspended": "Suspendu",
+    "statusExpired": "Expire",
+    "startDate": "Debut",
+    "internalNotes": "Notes Internes",
+    "noSupportTickets": "Aucun ticket de support pour ce client.",
+    "technicalIdentity": "Identite Technique",
+    "platformId": "ID Plateforme",
+    "slug": "Slug",
+    "countryCurrency": "Pays / Devise",
+    "registeredOn": "Inscrit le",
+    "lastActivity": "Derniere Activite"
   }
 }
