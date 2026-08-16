@@ -176,3 +176,14 @@ export const publicChangelogReleases: PublicChangelogRelease[] = [
       'PHPStan modules relevé de niveau 3 → 5 avec suppressions ciblées pour les modules en migration.'
     ],
   },]
+
+/**
+ * #4610 — sélecteur de releases consommé par la page /changelog.
+ * Résiduel : les bulletins sont FR uniques (localisation du contenu des
+ * releases en cours — PR #4675) ; la fonction garde la signature locale
+ * pour que la page puisse basculer vers des données localisées sans
+ * changement d'appel.
+ */
+export function getChangelogReleases(_locale: string): PublicChangelogRelease[] {
+  return publicChangelogReleases;
+}

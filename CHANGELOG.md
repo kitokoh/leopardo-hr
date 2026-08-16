@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): /changelog réparé — `getChangelogReleases(locale)` ajouté au module de données + dédoublonnage des `id` du formulaire /demo (régression merge #4633×#4666).** Le merge #4673 (fix #4610) appelait `getChangelogReleases(locale)` jamais défini → tsc rouge sur main (TS2305). La fonction retourne les releases publiques (résiduel : localisation du contenu des releases — #4675). Par ailleurs, les implémentations parallèles #4633/#4666 du fix a11y #4613 ont fusionné en `id` dupliqués sur le formulaire /demo → dé-dupliqués (un seul id par champ, labels `htmlFor` cohérents).
 - **docs(qa): session expert SWE/QA 2026-08-16 — merge drain (~55 PRs), 11 implémentations (i18n/SEO/admin/mobile/CI), audit runtime prod, leçons.** Rapport complet : `docs/qa/QA_SESSION_2026-08-16-swe-qa-merge-drain.md`.
 - **docs(ci): CI_CD_SECRETS.md — table des secrets re-synchronisée (Closes #4627).** `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`/`VITE_WEBSOCKET_URL` étaient attribués à `deploy-web-vitrine.yml`, workflow inexistant (déploiement vitrine via intégration Cloudflare Pages ; CI = web-marketing-ci.yml). Usage réel corrigé (deploy-admin-dashboard.yml seul) + note sur le mode de déploiement vitrine.
 - **fix(ci): tests.yml — vestiges mobile morts retirés (Closes #4626).** `DEFAULT_MOBILE_COVERAGE_MIN` défini mais référencé nulle part (la couverture mobile vit dans mobile-apps-ci.yml) et le rapport CI du job notify annonçait des artefacts mobiles jamais produits. Supprimés.
