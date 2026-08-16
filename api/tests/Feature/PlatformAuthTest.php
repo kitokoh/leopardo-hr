@@ -263,8 +263,10 @@ class PlatformAuthTest extends TestCase
             'name' => 'Suspended Admin',
             'email' => 'suspended@leopardo.test',
             'password_hash' => Hash::make('password123'),
-            'status' => 'suspended',
         ]);
+        $suspended->forceFill([
+            'status' => 'suspended',
+        ])->save();
 
         $this->assertSame('suspended', $suspended->status);
 
@@ -277,12 +279,14 @@ class PlatformAuthTest extends TestCase
 
     public function test_deactivated_super_admin_cannot_login(): void
     {
-        SuperAdmin::query()->create([
+        $sensitiveSuperAdmin0 = SuperAdmin::query()->create([
             'name' => 'Deactivated Admin',
             'email' => 'deactivated@leopardo.test',
             'password_hash' => Hash::make('password123'),
-            'status' => 'deactivated',
         ]);
+        $sensitiveSuperAdmin0->forceFill([
+            'status' => 'deactivated',
+        ])->save();
 
         $this->postJson('/api/v1/platform/auth/login', [
             'email' => 'deactivated@leopardo.test',

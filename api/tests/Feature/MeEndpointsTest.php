@@ -164,17 +164,19 @@ class MeEndpointsTest extends TestCase
         ]);
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Rita',
             'last_name' => 'M.',
             'email' => 'rita@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 120,
         ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,
@@ -240,16 +242,18 @@ class MeEndpointsTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         return [$company, $employee];
     }
