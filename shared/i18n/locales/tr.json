@@ -768,7 +768,32 @@
       "tickets_failed": "Destek talepleri yüklenemedi.",
       "subscription_failed": "Abonelik güncellenemedi.",
       "features_failed": "Modül ayarları kaydedilemedi."
-    }
+    },
+    "portfolio": "Musteri Portfoyu",
+    "directory": "Sirket Rehberi",
+    "directorySub": "Saglik puanina ve ticari oncelige gore listelenir.",
+    "syncing": "Portfoy senkronize ediliyor...",
+    "retry": "Tekrar dene",
+    "company": "Sirket",
+    "planMrr": "Plan ve MRR",
+    "healthOp": "Oper. Saglik",
+    "checkins30d": "Yoklama (30 gun)",
+    "recommendedAction": "Onerilen Eylem",
+    "management": "Yonetim",
+    "system": "Sistem",
+    "companyName": "Sirket adi *",
+    "contactEmail": "Iletisim e-postasi *",
+    "country": "Ulke *",
+    "city": "Kurulum sehri *",
+    "currency": "Para birimi",
+    "timezone": "Saat dilimi",
+    "defaultLang": "Varsayilan dil",
+    "managerFirst": "Yonetici adi *",
+    "managerLast": "Yonetici soyadi *",
+    "managerEmail": "Ana yonetici e-postasi *",
+    "activateNow": "Hemen etkinlestir",
+    "activateClientNow": "Musteriyi hemen etkinlestir",
+    "activateClientHint": "Aksi halde musteri deneme modunda kalir."
   },
   "seo": {
     "pricing": {
