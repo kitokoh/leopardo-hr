@@ -79,4 +79,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Yalnızca taslak sözleşmeler etkinleştirilebilir.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Yalnızca aktif sözleşmeler askıya alınabilir.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Sözleşmenin feshedilmesi için aktif veya askıda olması gerekir.',
+    'PAYROLL_ALREADY_VALIDATED' => 'Bu bordro dönemi zaten doğrulandı ve artık değiştirilemez.',
+    'PAYROLL_RUN_LOCKED' => 'Bu bordro dönemi kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Bu bordro dönemi kilitli değil — istenen işlem mümkün değil.',
 ];

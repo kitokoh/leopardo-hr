@@ -79,4 +79,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'يمكن تفعيل العقود المسودة فقط.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'يمكن تعليق العقود النشطة فقط.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'يجب أن يكون العقد نشطاً أو معلقاً لإنهائه.',
+    'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من دورة الرواتب مسبقاً ولا يمكن تعديلها بعد الآن.',
+    'PAYROLL_RUN_LOCKED' => 'دورة الرواتب هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها بعد الآن.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'دورة الرواتب هذه غير مقفلة — العملية المطلوبة غير ممكنة.',
 ];

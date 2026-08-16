@@ -94,4 +94,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Only draft contracts can be activated.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Only active contracts can be suspended.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Contract must be active or suspended to terminate.',
+    'PAYROLL_ALREADY_VALIDATED' => 'This payroll run has already been validated and can no longer be modified.',
+    'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting closure) and can no longer be modified.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'This payroll run is not locked — the requested operation is not possible.',
 ];
