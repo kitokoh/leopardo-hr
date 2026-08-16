@@ -46,14 +46,18 @@
                     ) !!}
                 </p>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    @if (! empty($appLinks['android']))
                     <a href="{{ $appLinks['android'] }}"
                        style="display: inline-block; background: #1e293b; color: white; text-decoration: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px;">
                         🤖 {{ __('emails.role_assignment_android') }}
                     </a>
+                    @endif
+                    @if (! empty($appLinks['ios']))
                     <a href="{{ $appLinks['ios'] }}"
                        style="display: inline-block; background: #1e293b; color: white; text-decoration: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px;">
                         🍎 {{ __('emails.role_assignment_ios') }}
                     </a>
+                    @endif
                 </div>
             </div>
 
