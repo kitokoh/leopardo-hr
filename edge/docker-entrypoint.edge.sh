@@ -82,8 +82,14 @@ run_soft() {
 # ---------------------------------------------------------------------------
 if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     echo "[edge-entrypoint] Running Edge migrations..."
+    # #4411 : database/migrations/edge n'existe PAS (le glob vide = aucune
+    # migration → schéma jamais créé, sync morte en silence). Les 4 tables
+    # edge (edge_nodes, sync_logs, sync_queue, edge_licenses) sont créées par
+    # la migration tenant 2026_06_29_000001, autonome et SQLite-compatible
+    # (aucun resolveTableSchema/search_path). Les autres migrations tenant
+    # sont PostgreSQL (ledger…) et ne doivent PAS tourner sur SQLite.
     run_critical php artisan migrate \
-        --path=database/migrations/edge \
+        --path=database/migrations/tenant/2026_06_29_000001_create_edge_sync_tables.php \
         --database=sqlite \
         --force \
         --no-interaction
