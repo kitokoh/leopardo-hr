@@ -83,6 +83,14 @@ class MobileExperienceService
             return 'new';
         }
 
+        // #4091 : un employé ordinaire sans compagnie n'a pas de données
+        // tenant — ne pas interroger les modèles scopés (le marqueur
+        // fail-closed #3727 les refuse en 403 TENANT_CONTEXT_MISSING) :
+        // stage par défaut, pas de crash sur /auth/me.
+        if ($employee->company_id === null) {
+            return 'new';
+        }
+
         $hasActivity = AttendanceLog::where('company_id', $employee->company_id)
             ->where('employee_id', $employee->id)
             ->exists()

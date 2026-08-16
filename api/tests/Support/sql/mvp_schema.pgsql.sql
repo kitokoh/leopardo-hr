@@ -197,7 +197,7 @@ CREATE INDEX schedules_company_id_index ON shared_tenants.schedules (company_id)
 
 CREATE TABLE shared_tenants.employees (
     id serial PRIMARY KEY,
-    company_id uuid NOT NULL,
+    company_id uuid NULL,
     schedule_id integer NULL,
     department_id integer NULL,
     position_id integer NULL,
