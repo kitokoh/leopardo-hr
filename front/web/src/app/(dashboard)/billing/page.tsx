@@ -30,9 +30,13 @@ type Invoice = {
   paid_at?: string | null;
 };
 
+// Codes canoniques PlanCode (free|pilot|operations|enterprise, #2977/#3919).
+// Les codes legacy starter/business (pré-rename) sont mappés vers pilot/operations
+// comme sur la vitrine (#4209) — le backend les rejette en 422 (Rule::in).
 const PLAN_LABELS: Record<string, string> = {
-  starter: 'Starter',
-  business: 'Business',
+  free: 'Free',
+  pilot: 'Pilot',
+  operations: 'Operations',
   enterprise: 'Enterprise',
 };
 
@@ -115,7 +119,7 @@ export default function BillingPage() {
     }
   };
 
-  const handleCheckout = async (plan: 'starter' | 'business' | 'enterprise') => {
+  const handleCheckout = async (plan: 'pilot' | 'operations' | 'enterprise') => {
     setActionLoading(`checkout-${plan}`);
     setError(null);
     try {
@@ -237,7 +241,7 @@ export default function BillingPage() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-3 border-t border-app-border pt-4">
-              {(['starter', 'business', 'enterprise'] as const).map((plan) => (
+              {(['pilot', 'operations', 'enterprise'] as const).map((plan) => (
                 <button
                   key={`checkout-${plan}`}
                   onClick={() => handleCheckout(plan)}
