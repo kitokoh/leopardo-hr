@@ -105,6 +105,22 @@ php artisan queue:health-check
 
 Elle doit retourner Redis `ok`, les profondeurs `documents`, `pdf`, `payroll`, `notifications`, `webhooks`, `default`, et un compteur `failed_jobs`.
 
+### Jobs et retries epuises (#4205)
+
+Depuis la vague QA 2026-08-16, **tous les jobs critiques definissent `failed(Throwable $e)`** :
+l'epuisement des retries n'est plus silencieux — chaque job logge une alerte
+(`Log::error('<Job>.failed'`, contexte job + exception) et l'etat reste visible
+dans `failed_jobs` / l'UI d'observabilite.
+
+Cas particuliers :
+- `ProcessBulkPaymentJob` : libere le claim Redis `bulk_pay:run:{id}` a l'echec terminal
+  pour permettre un redispatch propre par le manager.
+- `GenerateBankExportJob` / `GeneratePaymentDocumentJob` : marquent leur entite
+  (`bank_exports`, `payment_documents`) a l'etat `failed` avec `error_message`.
+
+Surveillance recommandee : alerter sur `failed_jobs` non vide (> 0) plutot que
+sur les seuls logs — c'est le signal terminal de chaque job.
+
 ## 5. Scheduler
 
 Option simple Render Cron Job, toutes les minutes :

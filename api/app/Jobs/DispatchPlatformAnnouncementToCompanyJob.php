@@ -15,6 +15,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * PA2-COMM-005 — Fans a platform-wide announcement out into per-employee
@@ -106,4 +107,17 @@ class DispatchPlatformAnnouncementToCompanyJob implements ShouldQueue, TenantSco
             "company:{$this->companyId}",
         ];
     }
+
+    /**
+     * #4205 : épuisement des retries — log d'alerte (annonce plateforme).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('DispatchPlatformAnnouncementToCompanyJob.failed', [
+            'platform_announcement_id' => $this->platformAnnouncementId,
+            'company_id' => $this->companyId,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
 }
