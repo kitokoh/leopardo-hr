@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **docs(ci): CI_CD_SECRETS.md — table des secrets re-synchronisée (Closes #4627).** `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`/`VITE_WEBSOCKET_URL` étaient attribués à `deploy-web-vitrine.yml`, workflow inexistant (déploiement vitrine via intégration Cloudflare Pages ; CI = web-marketing-ci.yml). Usage réel corrigé (deploy-admin-dashboard.yml seul) + note sur le mode de déploiement vitrine.
 - **fix(admin): UsersView — sous-titre : placeholders :active/:newToday interpolés (plus de tokens bruts) (Closes #4618).** Le header affichait littéralement « 12 utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui » dans les 4 locales.
 - **fix(admin): dialog islamique — l'année est affichée au lieu de « undefined » (Closes #4617).** `HolidaysView.vue` utilisait `islamicYear.value` dans une expression template Vue 3 (ref auto-unwrapped → undefined) → « Confirmer toutes les dates islamiques de undefined ? » dans les 4 locales. Fix : `{ year: islamicYear }`.
 - **refactor(admin): UsersView — dernier pattern de carte legacy remplacé par le token glass-bg (Closes #4575).** Le bloc `<code>` d'affichage du jeton d'impersonation utilisait `bg-white dark:bg-slate-900` (cartes legacy) alors que le design system v4.16.250+ impose les tokens `glass-*`. Migration vers `glass-bg` (bg-white/50 + dark:bg-slate-800/50 + backdrop-blur-sm) — dernier fichier de l'admin avec le pattern `rounded-lg bg-white`.
