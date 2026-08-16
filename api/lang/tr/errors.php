@@ -159,4 +159,5 @@ return [
     'PAYROLL_RUN_COUNTRY_MISMATCH' => 'Çalıştırma ülkesi, kiracının yasal ülkesiyle eşleşmelidir (:country).',
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'Yıl, tarihin yılıyla eşleşmelidir.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Ay_gün, tarihin ayı ve günüyle eşleşmelidir.',
+    'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
 ];

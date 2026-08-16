@@ -160,4 +160,5 @@ return [
     'PAYROLL_RUN_COUNTRY_MISMATCH' => 'Le pays du run doit correspondre au pays légal du tenant (:country).',
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'L\'année doit correspondre à l\'année de la date.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Le mois et le jour doivent correspondre au mois et au jour de la date.',
+    'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
 ];

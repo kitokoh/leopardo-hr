@@ -159,4 +159,5 @@ return [
     'PAYROLL_RUN_COUNTRY_MISMATCH' => 'يجب أن تتطابق دولة التشغيل مع الدولة القانونية للمستأجر (:country).',
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'يجب أن تتطابق السنة مع سنة التاريخ.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'يجب أن يتطابق اليوم والشهر مع يوم وشهر التاريخ.',
+    'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
 ];
