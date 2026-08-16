@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // (Next 15 ne passe pas searchParams aux generateMetadata des layouts).
   const headerList = await headers();
   const lang = headerList.get('x-vitrine-lang') ?? undefined;
-  const seo = getPageMetadata('checkout', lang);
+  const seo = getPageMetadata('checkoutSuccess', lang);
   return generateSEOMetadata({
 
 

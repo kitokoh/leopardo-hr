@@ -32,7 +32,7 @@ import { getApiBaseUrl } from '@/lib/backend-url';
    Montants alignés sur PlanSeeder (api/database/seeders/PlanSeeder.php,
    schéma canonique #2977/#3919) :
    Free 0€/5 emp · Pilot 29€/mois (24€/an, 30 employés) ·
-   Operations 99€/mois (79€/an, 250 employés) · Enterprise sur devis.
+   Operations 79€/mois (66€/mois en annuel, 200 employés) · Enterprise sur devis. (ADR-0014)
    Tarif annuel affiché au mois (24/79 €) — équivalent 290/949 €/an.
    Essai : 14 jours (décision D-E4-01).
 ───────────────────────────────────────────── */
@@ -45,14 +45,24 @@ const PLAN_CONFIG = {
     priceAnnual: 24,
     savings: 60,
     trialDays: 14,
+    employeeLimit: "Jusqu'à 30 employés",
   },
   operations: {
     icon: Zap,
     color: 'emerald',
     gradient: 'from-emerald-500 to-cyan-600',
-    priceMonthly: 99,
-    priceAnnual: 79,
-    savings: 240,
+    // ADR-0014 : 79 €/mois, 66 €/mois annuel (790 €/an)
+    priceMonthly: 79,
+    priceAnnual: 66,
+    savings: 156,
+    features: [
+      'Tout Pilot inclus',
+      'Paie automatisée multi-pays',
+      'Biométrie ZKTeco',
+      'API & Webhooks',
+      'Exports comptables',
+      'Support prioritaire 24h',
+    ],
     trialDays: 14,
   },
   enterprise: {
@@ -62,6 +72,14 @@ const PLAN_CONFIG = {
     priceMonthly: null,
     priceAnnual: null,
     savings: 0,
+    features: [
+      'Tout Operations inclus',
+      'Multi-pays & multi-devises',
+      'SSO SAML/OIDC (bientot disponible)',
+      'Audit trail immuable',
+      'Schema PostgreSQL isolé',
+      'Account manager dédié',
+    ],
     trialDays: 14,
   },
 } as const;
@@ -79,7 +97,9 @@ const PLAN_ALIASES: Record<string, PlanKey> = {
   starter: 'pilot',
   business: 'operations',
   scale: 'enterprise',
-  free: 'pilot', // URL profonde gérée avant résolution : voir rawPlan === 'free'
+  // ADR-0014 : Free est public mais gratuit → pas de checkout, redirection vers signup
+  // (la page /checkout?plan=free redirige vers /signup?plan=free via getPlanHref)
+  free: 'pilot',
 };
 
 /* ─────────────────────────────────────────────
@@ -646,8 +666,8 @@ function StepPayment({
 
     try {
       const origin = window.location.origin;
-      const successUrl = `${origin}/checkout/success`;
-      const cancelUrl = `${origin}/checkout?plan=${plan}&billing=${billing}`;
+      const successUrl = `${origin}/checkout/success?lang=${locale}`;
+      const cancelUrl = `${origin}/checkout?plan=${plan}&billing=${billing}&lang=${locale}`;
 
       const res = await fetch('/api/billing/checkout', {
         method: 'POST',
@@ -821,7 +841,7 @@ function StepPayment({
         <div className="p-4 rounded-2xl bg-transparent dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-600 dark:text-slate-400">{copy.payment.planRow.replace('{label}', copy.plans[plan].label)}</span>
-            <span className="font-bold text-slate-900 dark:text-white">EUR {price}/mois</span>
+            <span className="font-bold text-slate-900 dark:text-white">EUR {price}{copy.perMonth}</span>
           </div>
           <div className="flex items-center justify-between text-sm mt-1">
             <span className="text-slate-600 dark:text-slate-400">{copy.payment.freeTrialRow}</span>
@@ -829,7 +849,7 @@ function StepPayment({
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-3 pt-3 flex items-center justify-between">
             <span className="font-bold text-slate-900 dark:text-white">{copy.payment.dueToday}</span>
-            <span className="font-black text-lg text-emerald-600">EUR 0,00</span>
+            <span className="font-black text-lg text-emerald-600">{copy.success.zeroAmount}</span>
           </div>
         </div>
 

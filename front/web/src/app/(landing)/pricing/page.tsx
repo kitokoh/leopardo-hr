@@ -1,5 +1,5 @@
 ﻿'use client';
-import { getPricingFaq, type PricingFaqItem } from '@/modules/vitrine/data/pricing-faq';
+import { getPricingFaq } from '@/modules/vitrine/data/pricing-faq';
 
 import { Fragment, useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
@@ -36,8 +36,8 @@ import {
 type ComparisonFeature = {
   name: string;
   free: boolean | string;
-  pilot: boolean | string;
-  operations: boolean | string;
+  starter: boolean | string;
+  business: boolean | string;
   enterprise: boolean | string;
 };
 
@@ -46,13 +46,20 @@ type ComparisonCategory = {
   features: ComparisonFeature[];
 };
 
+type FaqItem = {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+};
+
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
   plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
-  faq: { title: string; subtitle: string; badge: string; all: string; categories: string[] };
+  faq: { title: string; subtitle: string; badge: string; all: string; categories: string[]; items: FaqItem[] };
   cta: { badge: string; headline: string; subheadline: string; primary: string; secondary: string };
 };
 
@@ -100,45 +107,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'Gestion RH',
           features: [
-            { name: 'Pointage web & mobile', free: 'Web seulement', pilot: true, operations: true, enterprise: true },
-            { name: 'Absences & congés', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'Calendrier partagé', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Onboarding guidé', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Évaluations & performance', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Organigramme dynamique', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'Pointage web & mobile', free: 'Web seulement', starter: true, business: true, enterprise: true },
+            { name: 'Absences & congés', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Calendrier partagé', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Onboarding guidé', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Évaluations & performance', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Organigramme dynamique', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Paie & finance',
           features: [
-            { name: 'Calcul automatisé de la paie', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Bulletins de paie PDF', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Exports comptables', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Avances sur salaire', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Multi-pays & multi-devises', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Conformité légale avancée', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Conformité légale avancée', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Terrain & mobile',
           features: [
-            { name: 'App mobile Employee', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'App mobile Manager', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Mode hors-ligne', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Intégration ZKTeco biométrie', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Kiosque RH dédié', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'GPS & géofencing', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'App mobile Employee', free: true, starter: true, business: true, enterprise: true },
+            { name: 'App mobile Manager', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Mode hors-ligne', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Intégration ZKTeco biométrie', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Kiosque RH dédié', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & géofencing', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Sécurité & intégrations',
           features: [
-            { name: 'Coffre-fort documentaire', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'API REST & Webhooks', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Audit trail immuable', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Schéma PostgreSQL isolé', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'SLA dédié & support prioritaire', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'Coffre-fort documentaire', free: false, starter: false, business: true, enterprise: true },
+            { name: 'API REST & Webhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Audit trail immuable', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Schéma PostgreSQL isolé', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SLA dédié & support prioritaire', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -149,6 +156,17 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Les points à vérifier avant de démarrer',
       all: 'Tous',
       categories: ['Facturation', 'Essai', 'Support', 'Sécurité', 'Technique'],
+      items: [
+        { id: 'starter-plan', question: 'Que comprend le plan Pilot ?', answer: "Le plan Pilot à 29 €/mois inclut jusqu'à 30 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.", category: 'Essai' },
+        { id: 'change-plan', question: 'Puis-je changer de plan ?', answer: 'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.', category: 'Facturation' },
+        { id: 'per-employee', question: 'Comment fonctionne la facturation ?', answer: "Chaque plan inclut un prix fixe par mois avec un plafond d'employés inclus (30 pour Pilot, 200 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.", category: 'Facturation' },
+        { id: 'free-trial', question: 'L\'essai est-il vraiment gratuit ?', answer: 'Oui. 14 jours complets avec toutes les fonctionnalités payantes. Aucune carte bancaire requise pour s\'inscrire.', category: 'Essai' },
+        { id: 'trial-to-paid', question: 'Que se passe-t-il à la fin de l\'essai ?', answer: 'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.', category: 'Essai' },
+        { id: 'support', question: 'Quel support est disponible ?', answer: "Pilot : support email sous 48h. Operations : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.", category: 'Support' },
+        { id: 'data-location', question: 'Où sont hébergées mes données ?', answer: 'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.', category: 'Sécurité' },
+        { id: 'gdpr', question: 'Êtes-vous conformes RGPD ?', answer: 'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.', category: 'Sécurité' },
+        { id: 'api', question: 'L\'API est-elle disponible ?', answer: "L'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Pilot, vous pouvez exporter vos données en CSV/Excel.", category: 'Technique' },
+      ]
     },
     cta: {
       badge: 'Prêt à démarrer',
@@ -198,45 +216,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'HR management',
           features: [
-            { name: 'Web & mobile attendance', free: 'Web only', pilot: true, operations: true, enterprise: true },
-            { name: 'Absences & leave', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'Shared calendar', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Guided onboarding', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Reviews & performance', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Dynamic org chart', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'Web & mobile attendance', free: 'Web only', starter: true, business: true, enterprise: true },
+            { name: 'Absences & leave', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Shared calendar', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Guided onboarding', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Reviews & performance', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dynamic org chart', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Payroll & finance',
           features: [
-            { name: 'Automated payroll', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'PDF pay slips', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Accounting exports', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Salary advances', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Multi-country & currency', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Advanced legal compliance', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
+            { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Advanced legal compliance', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Field & mobile',
           features: [
-            { name: 'Employee mobile app', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'Manager mobile app', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Offline mode', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'ZKTeco biometrics', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Dedicated HR kiosk', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'GPS & geofencing', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'Employee mobile app', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Manager mobile app', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Offline mode', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ZKTeco biometrics', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dedicated HR kiosk', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & geofencing', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Security & integrations',
           features: [
-            { name: 'Document vault', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'REST API & Webhooks', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Immutable audit trail', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Isolated PostgreSQL schema', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Dedicated SLA & support', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'Document vault', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API & Webhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Immutable audit trail', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Isolated PostgreSQL schema', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Dedicated SLA & support', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -247,6 +265,17 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'What to check before you start',
       all: 'All',
       categories: ['Billing', 'Trial', 'Support', 'Security', 'Technical'],
+      items: [
+        { id: 'starter-plan', question: 'What does the Pilot plan include?', answer: "The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.", category: 'Trial' },
+        { id: 'change-plan', question: 'Can I change plan later?', answer: 'Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.', category: 'Billing' },
+        { id: 'per-employee', question: 'How does billing work?', answer: "Each plan includes a fixed monthly price with an included employee cap (30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.", category: 'Billing' },
+        { id: 'free-trial', question: 'Is the trial really free?', answer: 'Yes. 14 full days with all paid features included. No credit card needed to sign up.', category: 'Trial' },
+        { id: 'trial-to-paid', question: 'What happens when the trial ends?', answer: 'You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.', category: 'Trial' },
+        { id: 'support', question: 'What support is available?', answer: "Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.", category: 'Support' },
+        { id: 'data-location', question: 'Where is my data hosted?', answer: 'In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.', category: 'Security' },
+        { id: 'gdpr', question: 'Are you GDPR compliant?', answer: 'Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.', category: 'Security' },
+        { id: 'api', question: 'Is the API available?', answer: "REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.", category: 'Technical' },
+      ]
     },
     cta: {
       badge: 'Ready to start',
@@ -296,45 +325,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'İK Yönetimi',
           features: [
-            { name: 'Web & mobil devam takibi', free: 'Yalnızca web', pilot: true, operations: true, enterprise: true },
-            { name: 'Devamsızlık & izin', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'Paylaşılan takvim', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Rehberli işe alım', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Değerlendirme & performans', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Dinamik organizasyon şeması', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'Web & mobil devam takibi', free: 'Yalnızca web', starter: true, business: true, enterprise: true },
+            { name: 'Devamsızlık & izin', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Paylaşılan takvim', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Rehberli işe alım', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Değerlendirme & performans', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Dinamik organizasyon şeması', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Bordro & Finans',
           features: [
-            { name: 'Otomatik bordro hesabı', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'PDF bordro dökümü', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Muhasebe dışa aktarımı', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Maaş avansı', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Çok ülke & çok para birimi', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Gelişmiş yasal uyumluluk', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
+            { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Gelişmiş yasal uyumluluk', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'Saha & Mobil',
           features: [
-            { name: 'Çalışan mobil uygulaması', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'Yönetici mobil uygulaması', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'Çevrimdışı mod', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'ZKTeco biyometri entegrasyonu', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'Özel HR kiosk', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'GPS & coğrafi sınır', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'Çalışan mobil uygulaması', free: true, starter: true, business: true, enterprise: true },
+            { name: 'Yönetici mobil uygulaması', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Çevrimdışı mod', free: false, starter: true, business: true, enterprise: true },
+            { name: 'ZKTeco biyometri entegrasyonu', free: false, starter: false, business: true, enterprise: true },
+            { name: 'Özel HR kiosk', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS & coğrafi sınır', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'Güvenlik & Entegrasyonlar',
           features: [
-            { name: 'Belge kasası', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'REST API & Webhook', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Değiştirilemez denetim kaydı', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'İzole PostgreSQL şeması', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'Özel SLA & destek', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'Belge kasası', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API & Webhook', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Değiştirilemez denetim kaydı', free: false, starter: false, business: false, enterprise: true },
+            { name: 'İzole PostgreSQL şeması', free: false, starter: false, business: false, enterprise: true },
+            { name: 'Özel SLA & destek', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -345,6 +374,17 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Başlamadan önce kontrol edilecek noktalar',
       all: 'Tümü',
       categories: ['Faturalama', 'Deneme', 'Destek', 'Güvenlik', 'Teknik'],
+      items: [
+        { id: 'starter-plan', question: 'Pilot planı neler içerir?', answer: "Ayda 29 €'dan başlayan Pilot planı 30 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.", category: 'Deneme' },
+        { id: 'change-plan', question: 'Planı değiştirebilir miyim?', answer: 'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.', category: 'Faturalama' },
+        { id: 'per-employee', question: 'Faturalama nasıl çalışır?', answer: "Her plan, dahil edilen çalışan sınırıyla (Pilot için 30, Operations için 200, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.", category: 'Faturalama' },
+        { id: 'free-trial', question: 'Deneme gerçekten ücretsiz mi?', answer: 'Evet. Tüm ücretli özelliklerle 14 tam gün. Kaydolmak için kredi kartı gerekmez.', category: 'Deneme' },
+        { id: 'trial-to-paid', question: 'Deneme bitince ne olur?', answer: 'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.', category: 'Deneme' },
+        { id: 'support', question: 'Hangi destek sağlanır?', answer: "Pilot: 48 saat içinde e-posta desteği. Operations: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.", category: 'Destek' },
+        { id: 'data-location', question: 'Verilerim nerede barındırılır?', answer: 'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.', category: 'Güvenlik' },
+        { id: 'gdpr', question: 'KVKK uyumlu musunuz?', answer: 'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.', category: 'Güvenlik' },
+        { id: 'api', question: 'API kullanılabilir mi?', answer: "REST API ve webhook'lar Operations planından itibaren kullanılabilir. Pilot'ta verilerinizi CSV/Excel olarak dışa aktarabilirsiniz.", category: 'Teknik' },
+      ]
     },
     cta: {
       badge: 'Başlamaya hazır',
@@ -394,45 +434,45 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
         {
           category: 'إدارة الموارد البشرية',
           features: [
-            { name: 'تتبع الحضور ويب وموبايل', free: 'ويب فقط', pilot: true, operations: true, enterprise: true },
-            { name: 'الغياب والإجازات', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'تقويم مشترك', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'إعداد موجّه', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'التقييمات والأداء', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'هيكل تنظيمي ديناميكي', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'تتبع الحضور ويب وموبايل', free: 'ويب فقط', starter: true, business: true, enterprise: true },
+            { name: 'الغياب والإجازات', free: true, starter: true, business: true, enterprise: true },
+            { name: 'تقويم مشترك', free: false, starter: true, business: true, enterprise: true },
+            { name: 'إعداد موجّه', free: false, starter: true, business: true, enterprise: true },
+            { name: 'التقييمات والأداء', free: false, starter: false, business: true, enterprise: true },
+            { name: 'هيكل تنظيمي ديناميكي', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'الرواتب والمالية',
           features: [
-            { name: 'حساب رواتب آلي', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'قسائم رواتب PDF', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'تصدير محاسبي', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'سلف الرواتب', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'متعدد الدول والعملات', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'امتثال قانوني متقدم', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
+            { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
+            { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
+            { name: 'متعدد الدول والعملات', free: false, starter: false, business: false, enterprise: true },
+            { name: 'امتثال قانوني متقدم', free: false, starter: false, business: false, enterprise: true },
           ],
         },
         {
           category: 'الميدان والموبايل',
           features: [
-            { name: 'تطبيق موبايل للموظفين', free: true, pilot: true, operations: true, enterprise: true },
-            { name: 'تطبيق موبايل للمديرين', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'وضع عدم الاتصال', free: false, pilot: true, operations: true, enterprise: true },
-            { name: 'تكامل بصمة ZKTeco', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'كشك HR مخصص', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'GPS وتحديد المناطق', free: false, pilot: false, operations: true, enterprise: true },
+            { name: 'تطبيق موبايل للموظفين', free: true, starter: true, business: true, enterprise: true },
+            { name: 'تطبيق موبايل للمديرين', free: false, starter: true, business: true, enterprise: true },
+            { name: 'وضع عدم الاتصال', free: false, starter: true, business: true, enterprise: true },
+            { name: 'تكامل بصمة ZKTeco', free: false, starter: false, business: true, enterprise: true },
+            { name: 'كشك HR مخصص', free: false, starter: false, business: true, enterprise: true },
+            { name: 'GPS وتحديد المناطق', free: false, starter: false, business: true, enterprise: true },
           ],
         },
         {
           category: 'الأمان والتكاملات',
           features: [
-            { name: 'خزنة المستندات', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'REST API وWebhooks', free: false, pilot: false, operations: true, enterprise: true },
-            { name: 'SSO SAML / OIDC', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'سجل تدقيق غير قابل للتغيير', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'مخطط PostgreSQL معزول', free: false, pilot: false, operations: false, enterprise: true },
-            { name: 'SLA مخصص ودعم أولوي', free: false, pilot: false, operations: false, enterprise: true },
+            { name: 'خزنة المستندات', free: false, starter: false, business: true, enterprise: true },
+            { name: 'REST API وWebhooks', free: false, starter: false, business: true, enterprise: true },
+            { name: 'SSO SAML / OIDC', free: false, starter: false, business: false, enterprise: true },
+            { name: 'سجل تدقيق غير قابل للتغيير', free: false, starter: false, business: false, enterprise: true },
+            { name: 'مخطط PostgreSQL معزول', free: false, starter: false, business: false, enterprise: true },
+            { name: 'SLA مخصص ودعم أولوي', free: false, starter: false, business: false, enterprise: true },
           ],
         },
       ],
@@ -443,6 +483,17 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'ما يجب التحقق منه قبل البدء',
       all: 'الكل',
       categories: ['الفوترة', 'التجربة', 'الدعم', 'الأمان', 'التقني'],
+      items: [
+        { id: 'starter-plan', question: 'ماذا تشمل خطة Pilot؟', answer: "خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.", category: 'التجربة' },
+        { id: 'change-plan', question: 'هل يمكنني تغيير الخطة لاحقًا؟', answer: 'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.', category: 'الفوترة' },
+        { id: 'per-employee', question: 'كيف تعمل الفوترة؟', answer: "تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.", category: 'الفوترة' },
+        { id: 'free-trial', question: 'هل التجربة مجانية حقًا؟', answer: 'نعم. 14 يومًا كاملة بجميع المزايا المدفوعة. لا بطاقة ائتمان للتسجيل.', category: 'التجربة' },
+        { id: 'trial-to-paid', question: 'ماذا يحدث عند انتهاء التجربة؟', answer: 'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.', category: 'التجربة' },
+        { id: 'support', question: 'ما نوع الدعم المتاح؟', answer: "Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.", category: 'الدعم' },
+        { id: 'data-location', question: 'أين تُستضاف بياناتي؟', answer: 'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.', category: 'الأمان' },
+        { id: 'gdpr', question: 'هل أنتم متوافقون مع GDPR؟', answer: 'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.', category: 'الأمان' },
+        { id: 'api', question: 'هل API متاح؟', answer: "REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.", category: 'التقني' },
+      ]
     },
     cta: {
       badge: 'جاهز للبدء',
@@ -510,7 +561,7 @@ function AvailabilityMark({
    FAQ ITEM
 ───────────────────────────────────────────── */
 function FaqAccordionItem({ item, isOpen, onToggle }: {
-  item: PricingFaqItem;
+  item: FaqItem;
   isOpen: boolean;
   onToggle: () => void;
 }) {
@@ -556,8 +607,8 @@ function FaqAccordionItem({ item, isOpen, onToggle }: {
 function getFeatureValue(feature: ComparisonFeature, planName: string): boolean | string {
   const lower = planName.toLowerCase();
   if (lower === 'free') return feature.free;
-  if (lower === 'pilot' || lower === 'starter') return feature.pilot;
-  if (lower === 'operations' || lower === 'business') return feature.operations;
+  if (lower === 'pilot' || lower === 'starter') return feature.starter;
+  if (lower === 'operations' || lower === 'business') return feature.business;
   if (lower === 'enterprise' || lower === 'scale') return feature.enterprise;
   return false;
 }
@@ -568,7 +619,7 @@ function getFeatureValue(feature: ComparisonFeature, planName: string): boolean 
 export default function PricingPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const [isAnnual, setIsAnnual] = useState(true);
-  const [openFaqId, setOpenFaqId] = useState<string | null>('pilot-plan');
+  const [openFaqId, setOpenFaqId] = useState<string | null>('starter-plan');
   const [faqCategory, setFaqCategory] = useState<string | null>(null);
   // PA2-MKT-003: let PME prospects in DZ/MA/TN/TR/CA/US see an approximate
   // price in their own currency instead of only EUR. The contractual price
@@ -590,24 +641,19 @@ export default function PricingPage() {
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
   function getPlanHref(plan: ReturnType<typeof getPricingPlans>[number]) {
-    // Plan Free canonique (0 € / 5 employés, #2977) : inscription guidée sans
-    // carte bancaire — le checkout n'a pas de config « free » (alias legacy).
-    if (plan.price === '0') return '/signup?source=pricing_free';
-    // Enterprise → contact
+    // ADR-0014 : Free est public et gratuit → inscription directe, pas de checkout
+    if (plan.planCode === 'free') return '/signup?plan=free&source=pricing_free';
+    // Enterprise → contact commercial
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
-    // Paid plans → checkout with payment
-    if (plan.popular) return '/checkout?plan=operations';
-    // Autres plans payants (Pilot) → essai guidé 14 jours (aucun paiement à
-    // l'inscription) : le checkout ne doit pas être présenté comme « gratuit » (#2649).
-    return '/signup?source=pricing_pilot';
+    // Plans payants : checkout avec paiement
+    if (plan.planCode === 'operations') return '/checkout?plan=operations';
+    // Pilot → essai guidé 14 jours (pas de CB à l'inscription — #2649)
+    return `/signup?plan=${plan.planCode}&source=pricing_pilot`;
   }
 
-  // #4192 : source unique de la FAQ tarifs — pricing-faq.ts (même source
-  // que le JSON-LD FAQPage, layout #3921). Plus de copie inline désynchronisable.
-  const faqItems = getPricingFaq(locale);
   const filteredFaq = faqCategory
-    ? faqItems.filter((i) => i.category === faqCategory)
-    : faqItems;
+    ? copy.faq.items.filter((i) => i.category === faqCategory)
+    : copy.faq.items;
 
   return (
     <div
@@ -660,10 +706,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              // #4183 : « Commencer gratuitement » → essai guidé sans carte,
-              // jamais le paywall du checkout (leçon #2907 ; le plan Free n'a
-              // pas de config de paiement — PLAN_ALIASES.free → pilot).
-              href="/signup?source=pricing_free"
+              href="/checkout?plan=free"
               className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -1196,8 +1239,7 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              // #4183 : même garde pour le CTA de bas de page — essai guidé.
-              href="/signup?source=pricing_free"
+              href="/checkout?plan=free"
               className="group relative px-10 py-4 bg-white text-emerald-600 font-black rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] text-base"
             >
               <span className="relative z-10 flex items-center gap-2.5">
