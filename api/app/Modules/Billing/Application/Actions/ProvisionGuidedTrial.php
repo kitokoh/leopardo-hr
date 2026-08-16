@@ -107,7 +107,6 @@ class ProvisionGuidedTrial
                     'first_name' => 'Manager',
                     'last_name' => 'Sandbox',
                     'email' => $email,
-                    'password_hash' => Hash::make(Str::random(16)),
                     'contract_type' => 'CDI',
                     'contract_start' => now()->toDateString(),
                     'salary_type' => 'fixed',
@@ -124,6 +123,8 @@ class ProvisionGuidedTrial
                 $manager->manager_role = 'principal';
                 $manager->status = 'active';
                 $manager->salary_base = 0;
+                // Issue #4496 : password_hash non mass-assignable.
+                $manager->password_hash = Hash::make(Str::random(16));
                 $manager->save();
 
                 // Basic Seeding to make it look active
