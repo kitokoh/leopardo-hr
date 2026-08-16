@@ -12,41 +12,52 @@ class RoleInvitationService
     /**
      * Returns the deep link URL for downloading the app based on manager_role.
      * Links use universal links / app store links with a fallback.
+     *
+     * Issue #4180 : les liens iOS ne sont inclus que si une URL réelle est
+     * configurée (config/mobile.php + LEOPARDO_IOS_*_URL) — les placeholders
+     * `id000000000X` ne doivent jamais atteindre les destinataires.
      */
     public static function getAppDownloadLink(string $role, string $managerRole, string $platform = 'both'): array
     {
-        return match($managerRole) {
+        $links = match($managerRole) {
             'rh'        => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.rh',
-                'ios'     => 'https://apps.apple.com/app/leopardo-rh/id0000000002',
                 'name'    => 'Leopardo RH',
                 'deep_link_scheme' => 'leopardo-rh',
             ],
             'comptable' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.comptable',
-                'ios'     => 'https://apps.apple.com/app/leopardo-comptable/id0000000003',
                 'name'    => 'Leopardo Comptable',
                 'deep_link_scheme' => 'leopardo-comptable',
             ],
             'marketing' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.marketing',
-                'ios'     => 'https://apps.apple.com/app/leopardo-marketing/id0000000004',
                 'name'    => 'Leopardo Marketing',
                 'deep_link_scheme' => 'leopardo-marketing',
             ],
             'principal' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.admin',
-                'ios'     => 'https://apps.apple.com/app/leopardo-admin/id0000000001',
                 'name'    => 'Leopardo Admin',
                 'deep_link_scheme' => 'leopardo-admin',
             ],
             default => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.employee',
-                'ios'     => 'https://apps.apple.com/app/leopardo-employee/id0000000000',
                 'name'    => 'Leopardo Employee',
                 'deep_link_scheme' => 'leopardo-employee',
             ],
         };
+
+        // Lien App Store réel (config/env) — absent tant que l'app n'est pas
+        // publiée : le bouton iOS est alors omis (template + API), jamais un
+        // lien placeholder.
+        $iosUrl = config('mobile.app_store_urls.'.$managerRole)
+            ?? config('mobile.app_store_urls.employee');
+
+        if (is_string($iosUrl) && $iosUrl !== '') {
+            $links['ios'] = $iosUrl;
+        }
+
+        return $links;
     }
 
     /**
