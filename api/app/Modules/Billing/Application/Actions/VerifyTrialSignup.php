@@ -77,7 +77,7 @@ class VerifyTrialSignup
                 return [
                     'success' => false,
                     'error' => 'ALREADY_PROCESSED',
-                    'message' => 'Cette demande d\'essai a déjà été traitée.',
+                    'message' => __('errors.ALREADY_PROCESSED'),
                     'status' => 409,
                 ];
             }
@@ -85,7 +85,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'INVALID_OR_EXPIRED_CODE',
-                'message' => __('errors.VERIFICATION_CODE_INVALID'),
+                'message' => __('errors.INVALID_OR_EXPIRED_CODE'),
                 'status' => 400,
             ];
         }
@@ -121,7 +121,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'INVALID_COUNTRY',
-                'message' => __('errors.COUNTRY_NOT_SUPPORTED', ['countries' => implode(', ', array_column(CountryDefaults::all(), 'country'))]),
+                'message' => __('errors.INVALID_COUNTRY'),
                 'status' => 422,
             ];
         }
@@ -133,7 +133,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'NO_PLAN_AVAILABLE',
-                'message' => 'Le service d\'essai est temporairement indisponible.',
+                'message' => __('errors.NO_PLAN_AVAILABLE'),
                 'status' => 503,
             ];
         }
@@ -184,7 +184,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'PROVISIONING_FAILED',
-                'message' => __('errors.TRIAL_SPACE_CREATION_FAILED'),
+                'message' => __('errors.PROVISIONING_FAILED'),
                 'status' => 500,
             ];
         }

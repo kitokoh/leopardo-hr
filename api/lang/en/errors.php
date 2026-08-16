@@ -74,10 +74,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Attendance mode personalization is disabled.',
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Payout request refused.',
     'PAYOUT_REQUEST_FAILED' => 'An error occurred while requesting the payout.',
     'COMPANY_MODE_FORCED' => 'Your company enforces a clocking mode. You cannot change it.',
@@ -97,6 +93,13 @@ return [
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Only active contracts can be suspended.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Contract must be active or suspended to terminate.',
 
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => 'This trial request has already been processed.',
+    'INVALID_OR_EXPIRED_CODE' => 'Invalid or expired verification code.',
+    'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Sign in directly.',
+    'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
+    'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',
+    'PROVISIONING_FAILED' => 'Error creating your workspace. Please try again.',
     'PARTNER_APPLICATION_ALREADY_SUBMITTED' => 'This application has already been submitted.',
     'PAYOUT_REQUEST_REJECTED' => 'Payout request rejected.',
     'NOT_A_PARTNER' => 'You are not registered as a partner.',
@@ -123,10 +126,9 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Payroll run cannot be cancelled in its current status.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Your account has been suspended. Contact your administrator.',
     'VERIFICATION_CODE_INVALID' => 'Invalid or expired verification code.',
-    'EMAIL_ALREADY_REGISTERED' => 'An account with this email already exists. Log in directly.',
     'TRIAL_SPACE_CREATION_FAILED' => 'Error while creating your workspace. Please try again.', origin/main
     'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
     'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Only a locked payroll run can be regularized.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.'
 ];
