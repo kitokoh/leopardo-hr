@@ -149,6 +149,14 @@ Le dossier `dev-hub/prompts/` contient des prompts numerotes prets a l'emploi po
 - **Anti-regression** : `dev-hub/prompts/13_REGRESSION_GUARD.md` — traquer les patterns interdits
 - Voir `dev-hub/prompts/README.md` pour l'index complet
 
+## Prérequis Git LFS (#4124)
+
+`assets/**` (design, screenshots) et les icônes mobiles sont trackés en **vrai
+Git LFS** (pointeurs) — les médias vitrine (`front/web/public/**`) sont des
+binaires réels hors LFS. Un agent clonant sans git-lfs verra des fichiers
+pointeurs (~130 o) pour les assets LFS : installer git-lfs (`git lfs install`)
+pour les résoudre au checkout.
+
 ## Strategie CI rapide
 
 Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Actions comme source de verite au lieu d'insister sur les checks locaux Windows.
