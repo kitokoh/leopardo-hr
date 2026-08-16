@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
@@ -50,6 +52,17 @@ class BackgroundLocationService {
 
   /// Indique si le service est en cours d'exécution
   bool _isRunning = false;
+
+  /// File d'attente des événements géo non envoyés (issue #3862) : un
+  /// `zone_enter` pendant une coupure réseau/permission n'est plus jeté
+  /// silencieusement — il est conservé (borné) et rejoué au tick suivant.
+  /// Persistance : mémoire (durée de vie du service background) ; la
+  /// persistance Hive durable est gérée par les couches storage, hors de ce
+  /// service de polling.
+  final List<_PendingGeoEvent> _pendingGeoEvents = [];
+
+  /// Taille maximale de la file (anti-croissance illimitée sur coupure longue)
+  static const int _maxPendingGeoEvents = 20;
 
   BackgroundLocationService({
     required SmartAttendanceRepository repository,
@@ -116,6 +129,10 @@ class BackgroundLocationService {
   /// - Ignore si la dernière vérification remonte à moins de [_minTimeBetweenChecks]
   ///   ET si on n'a pas bougé de plus de [_movementThresholdMeters].
   Future<void> _performCheck() async {
+    // Issue #3862 : rejouer d'abord les événements en attente (retour réseau
+    // rattrapé au prochain tick) — best-effort, ne bloque jamais le tick.
+    await _flushPendingGeoEvents();
+
     final config = _activeConfig;
     if (config == null || !config.gpsEnabled || !config.hasValidZone) return;
 
@@ -191,20 +208,88 @@ class BackgroundLocationService {
   }
 
   /// Envoie l'événement géographique à l'API.
+  ///
+  /// Issue #3862 : en cas d'échec (coupure réseau, permission, timeout),
+  /// l'événement est loggé puis mis en file pour réenvoi au prochain tick —
+  /// plus de `catch (_)` muet qui perdait le pointage géo en silence.
   Future<void> _sendGeoEvent({
     required ZoneEvent event,
     required Position position,
   }) async {
+    final eventType = event == ZoneEvent.enter ? 'zone_enter' : 'zone_exit';
     try {
       await _repository.sendGeoEvent(
-        eventType: event == ZoneEvent.enter ? 'zone_enter' : 'zone_exit',
+        eventType: eventType,
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy.round(),
       );
-    } catch (_) {
-      // Échec silencieux en background : sera retransmis au prochain cycle
-      // si le service reste actif
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[BackgroundLocationService] sendGeoEvent($eventType) failed — '
+        'événement mis en file pour réenvoi : $error',
+      );
+      _enqueueGeoEvent(
+        eventType: eventType,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        accuracy: position.accuracy.round(),
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  /// Met en file un événement géo non envoyé (issue #3862).
+  void _enqueueGeoEvent({
+    required String eventType,
+    required double latitude,
+    required double longitude,
+    required int accuracy,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    if (_pendingGeoEvents.length >= _maxPendingGeoEvents) {
+      // Coupure très longue : on garde les plus récents (anti-explosion),
+      // on ne bloque jamais le tick courant.
+      _pendingGeoEvents.removeAt(0);
+    }
+    _pendingGeoEvents.add(_PendingGeoEvent(
+      eventType: eventType,
+      latitude: latitude,
+      longitude: longitude,
+      accuracy: accuracy,
+      createdAt: DateTime.now(),
+      error: error,
+      stackTrace: stackTrace,
+    ));
+  }
+
+  /// Rejoue les événements géo en attente (best-effort, ne bloque jamais le
+  /// tick courant). Appelé à chaque check de zone : le retour réseau est donc
+  /// rattrapé au prochain cycle de polling (5 min) ou immédiat si le service
+  /// reçoit un nouveau check.
+  Future<void> _flushPendingGeoEvents() async {
+    if (_pendingGeoEvents.isEmpty) return;
+
+    final events = List<_PendingGeoEvent>.from(_pendingGeoEvents);
+    for (final pending in events) {
+      try {
+        await _repository.sendGeoEvent(
+          eventType: pending.eventType,
+          latitude: pending.latitude,
+          longitude: pending.longitude,
+          accuracy: pending.accuracy,
+        );
+        _pendingGeoEvents.remove(pending);
+      } catch (error, stackTrace) {
+        debugPrint(
+          '[BackgroundLocationService] replay ${pending.eventType} '
+          '(créé ${pending.createdAt.toIso8601String()}) failed : $error',
+        );
+        // On garde l'événement pour un prochain tick.
+        break;
+      }
     }
   }
 
@@ -230,4 +315,25 @@ class BackgroundLocationService {
     return permission == LocationPermission.whileInUse ||
         permission == LocationPermission.always;
   }
+}
+
+/// Événement géo en attente de réenvoi (issue #3862).
+class _PendingGeoEvent {
+  const _PendingGeoEvent({
+    required this.eventType,
+    required this.latitude,
+    required this.longitude,
+    required this.accuracy,
+    required this.createdAt,
+    this.error,
+    this.stackTrace,
+  });
+
+  final String eventType;
+  final double latitude;
+  final double longitude;
+  final int accuracy;
+  final DateTime createdAt;
+  final Object? error;
+  final StackTrace? stackTrace;
 }
