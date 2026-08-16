@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(api): CorsAndTrustedProxyTest vert — assertion du pattern CORS Pages alignée sur la regex canonique (Closes #4667).** Le test assertait encore le glob `https://*.pages.dev` remplacé par la regex `#^https://([a-z0-9-]+\.)*pages\.dev$#i` le 2026-08-15 (44e88ccc8, #2333 — le glob crashait en 500 sur les previews). Nouvelle assertion structurelle : chaque pattern doit être une regex preg_match valide matchant `https://preview-123.pages.dev`, jamais `*`.
 - **fix(admin): api.js — messages d'erreur de l'intercepteur localisés ×4 (namespace api.* ajouté aux catalogues) (Closes #4621).** Les toasts 404/429/5xx/réseau restaient FR pour les admins EN/TR/AR.
 - **fix(api): PHPStan Modules vert sur main — 2 erreurs post-merge #4558/#4580 (Closes #4660).** `EmployeeImportController` (unset défensif de `password_hash` sur un tableau non typé — annotation `array<string, mixed>`) et `SupportedCountryController::index()` (type de retour `JsonResponse` incompatible avec la branche 304 ETag de #4502 — les deux classes sont sœurs sous Symfony, retour typé `Symfony\Component\HttpFoundation\Response`).
 - **fix(admin): ExportsView — dates par défaut en composantes locales (plus de décalage UTC+1..+3 : 31 déc. N-1 / hier) (Closes #4619).**
