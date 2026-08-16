@@ -48,31 +48,65 @@ if [ -z "${APP_KEY}" ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Migrations Edge (SQLite)
+# Échecs visibles (issue #3966) — un device sans surveillance doit montrer
+# ses erreurs : exit non nul pour les étapes critiques, fichier d'état
+# d'erreur pour les étapes non bloquantes, logs scheduler sur volume.
+# ---------------------------------------------------------------------------
+ERROR_STATE_FILE="${DATA_DIR}/edge-entrypoint-error"
+
+log_error_and_state() {
+    echo "[edge-entrypoint] ERROR: $*" >&2
+    echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" >> "${ERROR_STATE_FILE}"
+}
+
+run_critical() {
+    # Étape critique : l'échec stoppe le boot (le conteneur boucle en
+    # restart, visible dans `docker compose ps` / healthcheck).
+    if ! "$@"; then
+        log_error_and_state "critical step failed: $*"
+        exit 1
+    fi
+}
+
+run_soft() {
+    # Étape non bloquante : l'échec est loggé + persisté (le device boote
+    # quand même, l'opérateur trouve la trace dans /data).
+    if ! "$@"; then
+        log_error_and_state "non-critical step failed: $*"
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Migrations Edge (SQLite) — critique : un schéma cassé rend le pointage
+# hors-ligne inutilisable en silence (avant : `|| true` avalait tout).
 # ---------------------------------------------------------------------------
 if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     echo "[edge-entrypoint] Running Edge migrations..."
-    php artisan migrate \
+    run_critical php artisan migrate \
         --path=database/migrations/edge \
         --database=sqlite \
         --force \
-        --no-interaction || true
+        --no-interaction
 fi
 
 # ---------------------------------------------------------------------------
-# Cache Laravel
+# Cache Laravel — non bloquant (Caddy sert les routes sans route:cache)
 # ---------------------------------------------------------------------------
-php artisan config:cache  --no-interaction
-php artisan route:cache   --no-interaction || true
-php artisan event:cache   --no-interaction || true
+run_soft php artisan config:cache --no-interaction
+run_soft php artisan route:cache --no-interaction
+run_soft php artisan event:cache --no-interaction
 
 # ---------------------------------------------------------------------------
-# Scheduler interne (tourne en arrière-plan)
+# Scheduler interne (tourne en arrière-plan) — logs persistés sur le volume
+# (avant : `>> /dev/null 2>&1` perdait toutes les erreurs de tâches).
 # ---------------------------------------------------------------------------
 echo "[edge-entrypoint] Starting Laravel scheduler (background)..."
+mkdir -p "${DATA_DIR}/logs"
 (
     while true; do
-        php "${APP_DIR}/artisan" schedule:run --no-interaction >> /dev/null 2>&1
+        if ! php "${APP_DIR}/artisan" schedule:run --no-interaction >> "${DATA_DIR}/logs/edge-scheduler.log" 2>&1; then
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] schedule:run failed (see edge-scheduler.log)" >> "${ERROR_STATE_FILE}"
+        fi
         sleep 60
     done
 ) &
