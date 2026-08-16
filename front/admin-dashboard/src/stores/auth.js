@@ -123,9 +123,19 @@ export const useAuthStore = defineStore('auth', () => {
 
       return !!user.value
     } catch (error) {
-      console.error('Token invalide:', error)
-      await logout()
-      return false
+      // #4515 : ne détruire la session que sur une vraie invalidation (401/403)
+      // — un blip réseau ou un 5xx transitoire au démarrage (App.vue, garde du
+      // router) déconnectait l'admin et supprimait son token pour rien.
+      const status = error?.response?.status
+      if (status === 401 || status === 403 || status === 410) {
+        console.error('Token invalide:', error)
+        await logout()
+        return false
+      }
+      // Erreur transitoire : conserver la session courante (l'utilisateur
+      // pourra retenter via le rafraîchissement / les appels suivants).
+      console.warn('checkAuth: erreur transitoire, session conservée', error?.response?.status ?? error?.message)
+      return !!user.value
     }
   }
 
