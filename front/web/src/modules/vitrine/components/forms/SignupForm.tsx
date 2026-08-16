@@ -30,6 +30,7 @@ import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
+import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
 import { t } from '@/lib/i18n/locale-catalog';
 
 interface SignupFormProps {
