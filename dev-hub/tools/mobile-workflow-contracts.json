@@ -384,7 +384,7 @@
           ],
           "endpoints": [
             "/notifications",
-            "/notifications/mark-all-read",
+            "/notifications/read-all",
             "/device-tokens"
           ],
           "screenFiles": [
