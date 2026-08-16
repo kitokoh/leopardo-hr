@@ -16,9 +16,18 @@ function Get-Relative([string]$path) {
     return Resolve-Path -LiteralPath $path -Relative
 }
 
-function Get-DartContent([string]$root) {
+function Get-DartContent([string]$root, [string[]]$ExcludePatterns = @()) {
+    # Issue #4164 : les mocks API (mock_interceptor.dart, leopardo_core) portent
+    # des chemins d'endpoints ('/attendance', '/attendance/check-in', ...) qui ne
+    # sont PAS des routes de navigation. Le garde forbidden-route ne doit matcher
+    # que les routes UI (app.dart / context.push) : on exclut les fichiers de mock
+    # de ce scan pour eviter les faux positifs permanents (Mobile Apps CI rouge
+    # sur main depuis #4102).
     $libRoot = Join-Path $root "lib"
-    return (Get-ChildItem -LiteralPath $libRoot -Recurse -File -Filter *.dart | ForEach-Object {
+    return (Get-ChildItem -LiteralPath $libRoot -Recurse -File -Filter *.dart | Where-Object {
+        $file = $_
+        -not ($ExcludePatterns | Where-Object { $file.Name -like $_ })
+    } | ForEach-Object {
         Get-Content -LiteralPath $_.FullName -Raw
     }) -join "`n"
 }
@@ -80,14 +89,15 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
 
         $appDart = Get-Content -LiteralPath $appDartPath -Raw
         $routes = Get-AppRoutes $appDart
-        $libContent = Get-DartContent $root
+        # Issue #4164 : exclure les mocks API du scan (routes UI uniquement).
+        $libContent = Get-DartContent $root @('*mock*.dart')
         # Issue #4102 : les endpoints partagés (/device-tokens, push FCM)
         # vivent dans le package partagé leopardo_core (PushNotificationService)
         # consommé par toutes les apps — l'inclure dans la recherche pour que
         # la garde reflète l'implémentation réelle (sinon faux positifs).
         $coreRoot = Join-Path $repoRoot "front/mobile_apps/leopardo_core"
         if (Test-Path -LiteralPath (Join-Path $coreRoot "lib")) {
-            $libContent += "`n" + (Get-DartContent $coreRoot)
+            $libContent += "`n" + (Get-DartContent $coreRoot @('*mock*.dart'))
         }
 
         if ($null -ne $app.requiredBackendExperienceRoutes) {
