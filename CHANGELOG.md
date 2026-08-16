@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **refactor(mobile): déballage d'enveloppe API unifié via extractDataList/extractDataMap (Closes #4199).** Les repositories notifications/attendance/smart_attendance ré-implémentaient le déballage à la main (helpers privés `_dataMap`/`_extractData` divergents). Remplacement par les helpers canoniques `api_payload.dart` ; cas structurés conservés et documentés (decodeTodayResponse null-distinction, user_auth multi-formes, auth token racine). Spec : `docs/specifications/ISSUE_4199_ENVELOPE_UNPACKING.md`.
 - **fix(api): SmartAttendance — événement `outside_zone` persisté malgré le 422 (Closes #4255).** `GeoSessionManager::openSession` loguait l'événement suspect DANS la transaction de création de session puis levait `OutsideGeofenceException` → rollback total → l'écriture d'audit (spec #3887) était perdue (`SmartAttendanceFlowTest` : « table is empty »). La vérification géofence + `logEvent(TYPE_OUTSIDE_ZONE)` sont déplacées HORS transaction : l'événement est committé indépendamment, le 422 reste le comportement API.
 
 - **fix(web): /integrations — lien Documentation vers /api-explorer (Closes #4178).** Le lien « /docs » dérivait l'URL backend sans référence au contrat OpenAPI → 404 (la surface documentée est `/api-explorer`, cf. `openapi.yaml` url + route `web.php`). Lien corrigé et commenté.
