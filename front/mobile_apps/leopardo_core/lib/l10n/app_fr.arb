@@ -555,7 +555,7 @@
   "companiesToastTicketsFailed": "Impossible de charger les tickets support.",
   "companiesToastSubscriptionFailed": "Échec de la mise à jour de l'abonnement.",
   "companiesToastFeaturesFailed": "Échec de la configuration des modules.",
-  "seoPricingDescription": "Tarification transparente : plans Starter 29 €/mois, Business 79 €/mois, Enterprise 199 €/mois. Essai gratuit 14 jours.",
+  "seoPricingDescription": "Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours.",
   "adminchatConversation": "Conversation",
   "adminchatError": "Désolé, une erreur est survenue. Veuillez réessayer.",
   "adminchatHistoryempty": "Aucune conversation.",
