@@ -1,5 +1,12 @@
 # AGENTS.md - Guide de travail Leopardo RH
 
+## ⚠️ Git LFS — prérequis et exceptions (issue #4124)
+
+- `*.png/.jpg/.jpeg/.webp/.webm/.mp4/.gif/.apk/.aab` sont trackés en Git LFS (`filter=lfs`).
+- **Prérequis** : `git lfs install` + `actions/checkout` avec `lfs: true` (déjà configuré sur tous les workflows).
+- **Exceptions volontaires (binaires réels commités, PAS des pointeurs)** : `front/web/public/{og/*,og-image,logo,icon-*,apple-touch-icon}.png`, `front/web/public/screenshots/*`, `front/web/public/videos/*`, `front/web-offline/public/icon-*.png` — ces assets sont servis par Vercel/Render qui ne résout PAS LFS (#2829) ; les exclure du filtre (`!filter`) évite que git-lfs ≥ 3.7 les réécrive au checkout (validate-and-sync rouge, #4124).
+- Ne PAS convertir ces fichiers en pointeurs LFS (build prod cassé). Ne pas ajouter de nouveau binaire plein sous `front/` sans exemption `.gitattributes` correspondante.
+
 Derniere mise a jour : 2026-08-14
 
 Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi etre mis a jour a chaque push ou merge vers `main`, comme le `CHANGELOG.md`, des qu'une lecon operationnelle peut eviter de perdre du temps plus tard.

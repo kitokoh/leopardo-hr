@@ -51,3 +51,12 @@ front/web/public/icon-192.png !filter !diff !merge -text
 front/web/public/icon-512.png !filter !diff !merge -text
 front/web/public/logo.png !filter !diff !merge -text
 front/web/public/og/default.png !filter !diff !merge -text
+
+# QA #4124 : assets vitrine + PWA Edge servis par Vercel/Render — des
+# pointeurs LFS casseraient le build (Vercel ne résout pas LFS, cf. #2829) :
+# binaires réels commités, exclus du filtre LFS pour que git-lfs >= 3.7 ne
+# les réécrive pas au checkout (validate-and-sync rouge sur main et toutes
+# les PRs, résiduel #3846).
+front/web-offline/public/icon-*.png !filter !diff !merge -text
+front/web/public/og-image.png !filter !diff !merge -text
+front/web/public/og/*.png !filter !diff !merge -text
