@@ -371,12 +371,16 @@ class SalaryAdvanceController extends Controller
             return response()->json(['message' => 'Only pending advances can be manager-approved.'], 422);
         }
 
-        $salaryAdvance->update([
+        // Issue #4677 / #3597 : `status` n'est pas mass-assignable — un
+        // `update()` (fill) l'écarterait silencieusement et le workflow
+        // double validation ne passerait jamais à `approved`. Assignation
+        // explicite (pattern SalaryAdvanceService::create).
+        $salaryAdvance->forceFill([
             'manager_approved_at' => now(),
             'manager_approved_by' => $actor->id,
             'validation_status' => 'manager_approved',
             'status' => 'approved',
-        ]);
+        ])->save();
         $salaryAdvance = $salaryAdvance->fresh();
 
         $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_manager_approved');
