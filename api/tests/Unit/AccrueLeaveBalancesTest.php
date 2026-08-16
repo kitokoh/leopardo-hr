@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class AccrueLeaveBalancesTest extends TestCase
 {
+    use RefreshTenantDatabase;
+
     public function test_command_skips_when_not_first_of_month(): void
     {
         $this->travelTo(now()->day(15));
