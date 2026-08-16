@@ -114,7 +114,7 @@ class SSOController extends Controller
         $samlResponse = $request->input('SAMLResponse', '');
 
         if (empty($samlResponse)) {
-            return response()->json(['error' => 'SAMLResponse manquant.'], 400);
+            return response()->json(['error' => 'SAML_RESPONSE_MISSING', 'message' => __('errors.SAML_RESPONSE_MISSING')], 400);
         }
 
         try {
@@ -122,7 +122,7 @@ class SSOController extends Controller
 
             return response()->json([
                 'data' => $result,
-                'message' => 'SAML assertion recue.',
+                'message' => __('errors.SAML_ASSERTION_RECEIVED'),
             ]);
         } catch (SSOValidationNotImplementedException $e) {
             return response()->json(['error' => 'SAML_AUTH_NOT_IMPLEMENTED'], 501);
@@ -155,7 +155,7 @@ class SSOController extends Controller
         $tokenData = $request->only(['code', 'state', 'id_token']);
 
         if (empty($tokenData['code']) && empty($tokenData['id_token'])) {
-            return response()->json(['error' => 'Code ou id_token manquant.'], 400);
+            return response()->json(['error' => 'OIDC_CODE_MISSING', 'message' => __('errors.OIDC_CODE_MISSING')], 400);
         }
 
         try {
@@ -163,7 +163,7 @@ class SSOController extends Controller
 
             return response()->json([
                 'data' => $result,
-                'message' => 'Connexion OIDC réussie.',
+                'message' => __('errors.OIDC_LOGIN_SUCCESS'),
             ]);
         } catch (\RuntimeException $e) {
             Log::error('sso.oidc_callback_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);
