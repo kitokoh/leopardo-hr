@@ -32,6 +32,7 @@ env:
 
 jobs:
   web-lint:
+    timeout-minutes: 30
     name: Web Lint
     runs-on: ubuntu-latest
 
@@ -59,6 +60,7 @@ jobs:
         run: npm run lint
 
   web-build:
+    timeout-minutes: 30
     name: Web Build
     runs-on: ubuntu-latest
 
@@ -92,6 +94,7 @@ jobs:
           retention-days: 7
 
   web-e2e-playwright:
+    timeout-minutes: 45
     name: Web E2E Playwright
     runs-on: ubuntu-latest
 

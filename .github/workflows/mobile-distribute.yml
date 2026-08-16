@@ -46,6 +46,7 @@ concurrency:
 
 jobs:
   build-and-distribute:
+    timeout-minutes: 120
     name: Mobile Android Build + Distribution (${{ matrix.app.name }})
     runs-on: ubuntu-latest
     strategy:

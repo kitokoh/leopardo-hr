@@ -42,6 +42,7 @@ env:
 
 jobs:
   deploy:
+    timeout-minutes: 45
     name: Build & deploy admin-dashboard to Cloudflare Pages
     runs-on: ubuntu-latest
     env:

@@ -54,6 +54,7 @@ concurrency:
 
 jobs:
   mobile-apps-guard:
+    timeout-minutes: 90
     name: Mobile apps split guard
     runs-on: ubuntu-latest
 
@@ -117,6 +118,7 @@ jobs:
         run: 'bash ./dev-hub/tools/check-mobile-number-locale.sh'
 
   flutter-analyze:
+    timeout-minutes: 90
     name: Analyze ${{ matrix.project.name }}
     runs-on: ubuntu-latest
     needs: mobile-apps-guard
@@ -174,6 +176,7 @@ jobs:
           fi
 
   flutter-build-debug:
+    timeout-minutes: 90
     name: Build Debug ${{ matrix.project.name }}
     runs-on: ubuntu-latest
     needs: flutter-analyze

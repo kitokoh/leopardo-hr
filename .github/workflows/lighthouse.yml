@@ -37,6 +37,7 @@ env:
 
 jobs:
   lighthouse:
+    timeout-minutes: 30
     runs-on: ubuntu-latest
 
     steps:
