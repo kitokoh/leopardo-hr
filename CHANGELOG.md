@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(mobile): Smart Attendance — sélecteur de mode via GoRouter (/smart-attendance/mode) (Closes #3958).** `AttendanceModePickerScreen` était poussé par `Navigator.push(MaterialPageRoute)` hors table de routes → invisible aux deep links et à l'état de navigation. Route déclarée dans `app.dart` (extra = mode courant), `context.push<bool>` avec résultat conservé.
 - **fix(edge): Dockerfile standalone — PWA web-offline buildée dans l'image (Closes #3965).** `COPY front/web-offline/` copiait l'arbre source Next.js non buildé → routes 404 et .tsx servis en texte (out/ gitignoré, pas d'index.html). Stage `pwa-build` (node:20-alpine, `npm ci && next build`, `output: export`) → `COPY --from=pwa-build /pwa/out/ /app/public/edge-web/` (index.html + manifest + icônes + _next).
 - **fix(mobile): zone_enter plus jamais perdu en silence — file d'attente + réenvoi au tick (Closes #3862).** `_sendGeoEvent` avait un `catch (_)` muet qui jetait l'événement (pointage géo perdu en coupure). Désormais : log `debugPrint` avec raison, file bornée (20) `_PendingGeoEvent` (eventType, position, accuracy, createdAt), flush best-effort au début de chaque `_performCheck` (retour réseau rattrapé au tick suivant).
 - **docs(qa): session expert14b 2026-08-15 — bilan merges swarm (~60 PRs), hotfixes P0 #3973/#4082, doublons fermés, implémentations #3956/#3953/#3964, constat #4087.**

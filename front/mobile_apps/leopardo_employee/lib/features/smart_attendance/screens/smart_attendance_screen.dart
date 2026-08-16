@@ -180,11 +180,14 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
   }
 
   /// Ouvre l'écran de sélection du mode de pointage.
+  ///
+  /// #3958 : navigation par route GoRouter (/smart-attendance/mode) — plus de
+  /// push MaterialPageRoute hors table de routes (deep-links, état de
+  /// navigation, retour arrière système cohérents).
   Future<void> _openModePicker(String currentMode) async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (_) => AttendanceModePickerScreen(currentMode: currentMode),
-      ),
+    final result = await context.push<bool>(
+      '/smart-attendance/mode',
+      extra: currentMode,
     );
 
     // Si l'utilisateur a sauvegardé un nouveau mode, rafraîchir
