@@ -49,7 +49,15 @@ class AuthLoginHardeningTest extends TestCase
 
     public function test_login_with_broken_password_hash_returns_401_not_500(): void
     {
-        $company = $this->makeCompany();        $sensitiveEmployee2 = Employee::query()->create([
+        $company = $this->makeCompany();
+
+        // #2973 : la colonne employees.password_hash est NOT NULL (migration
+        // 2026_04_01_000101) — un hash null est impossible à insérer, le test
+        // initial (#2838) échouait au setup (Not null violation). On simule
+        // l'état legacy équivalent : un hash corrompu/absent sémantiquement
+        // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
+        // (TypeError → 500) mais renvoyer 401.
+                $sensitiveEmployee2 = Employee::query()->create([
             'email' => 'broken-hash@company.test',
             'password_hash' => 'legacy-broken-hash',
         ]);
@@ -58,15 +66,6 @@ class AuthLoginHardeningTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
         ])->save();
-
-
-        // #2973 : la colonne employees.password_hash est NOT NULL (migration
-        // 2026_04_01_000101) — un hash null est impossible à insérer, le test
-        // initial (#2838) échouait au setup (Not null violation). On simule
-        // l'état legacy équivalent : un hash corrompu/absent sémantiquement
-        // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
-        // (TypeError → 500) mais renvoyer 401.
-        $sensitiveEmployee2;
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'broken-hash@company.test',

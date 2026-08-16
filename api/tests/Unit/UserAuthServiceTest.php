@@ -82,7 +82,10 @@ class UserAuthServiceTest extends TestCase
     }
 
     public function test_suspended_account_is_rejected_even_with_wrong_password(): void
-    {        $sensitiveUser1 = User::query()->create([
+    {
+        // Fail-closed (#2618, main) : le statut est vérifié AVANT le mot de
+        // passe — un compte suspendu ne révèle jamais la validité du mot de passe.
+                $sensitiveUser1 = User::query()->create([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -92,10 +95,6 @@ class UserAuthServiceTest extends TestCase
         $sensitiveUser1->forceFill([
             'status' => 'suspended',
         ])->save();
-
-        // Fail-closed (#2618, main) : le statut est vérifié AVANT le mot de
-        // passe — un compte suspendu ne révèle jamais la validité du mot de passe.
-        $sensitiveUser1;
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'wrong-password', 'test');
