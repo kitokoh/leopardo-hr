@@ -146,15 +146,17 @@ class KioskCrossTenantIsolationTest extends TestCase
         DB::statement('SET search_path TO shared_tenants,public');
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => $managerEmail,
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
@@ -166,18 +168,20 @@ class KioskCrossTenantIsolationTest extends TestCase
         DB::statement('SET search_path TO shared_tenants,public');
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => $email,
             'matricule' => $matricule,
             'zkteco_id' => $matricule,
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => $matricule,
         ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
