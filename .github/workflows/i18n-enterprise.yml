@@ -8,7 +8,7 @@ on:
       - 'front/mobile_apps/leopardo_employee/lib/**'
       - 'front/mobile_apps/leopardo_manager/lib/**'
       - 'front/mobile_apps/leopardo_platform_admin/lib/**'
-      - 'front/admin-dashboard/src/**'           # inclut src/i18n
+      - 'front/admin-dashboard/src/**'
       - 'front/web/src/lib/i18n/**'             # client Next.js
       - 'front/web/src/app/**'
       - 'front/web/src/modules/**'
@@ -26,7 +26,7 @@ on:
       - 'front/mobile_apps/leopardo_employee/lib/**'
       - 'front/mobile_apps/leopardo_manager/lib/**'
       - 'front/mobile_apps/leopardo_platform_admin/lib/**'
-      - 'front/admin-dashboard/src/**'           # inclut src/i18n
+      - 'front/admin-dashboard/src/**'
       - 'front/web/src/lib/i18n/**'
       - 'front/web/src/app/**'
       - 'front/web/src/modules/**'

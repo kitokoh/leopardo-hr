@@ -28,14 +28,25 @@ Vérifications runtime (pages, sélecteur de langue, formulaires, sitemap, redir
 
 Leçons : la CI GitHub Actions reste saturée (famine #3545) — les PRs mergeables restent en queue ; le rate limit REST partagé est consommé par les agents concurrents (GraphQL reste utilisable).
 
-## Phase 3 — PRs ouvertes par cet agent
+## Phase 3 — PRs mergées par cet agent (13)
 
 | PR | Issue | Sujet | Validation locale |
 |----|-------|-------|-------------------|
+| #4288 | 4151 | fin #4151 — derniers sites create() non-fillable scindés (66 conflits résolus) | php -l |
 | #4472 | 4467 | sitemap `/blog` gated par `NEXT_PUBLIC_ENABLE_BLOG` | jest 5/5, tsc, eslint |
-| #4475 | 4468 | `/mobile` — locale persistée dans l'URL (`?lang=`) | tsc, eslint, runtime vérifié |
+| #4475 | 4468 | `/mobile` — locale persistée dans l'URL (`?lang=`) | tsc, eslint, runtime |
 | #4477 | 4327 | `/contact` — adresse/horaires/sujets localisés ×4 | tsc, eslint, runtime EN/AR+RTL + prefill `?topic=` |
 | #4480 | 4323 | a11y — noms accessibles newsletter/docs-search/OTP | tsc, eslint, jest 19/19 |
+| #4484 | 4324 | aria-labels localisés page social (a11y.* ×4 locales + ARB) | tsc, eslint, garde i18n + validate.js |
+| #4485 | 4326 | Select.tsx mort supprimé + Textarea useId() | tsc, eslint |
+| #4487 | 4302 | CaseStudyClient.tsx mort + dark mode résiduel (blog, success) | tsc, eslint, rg 0 |
+| #4488 | 4316 | GET /sso/providers — throttle:api | php -l |
+| #4489 | 4332 | MetricCard.vue commun mort supprimé | rg 0 |
+| #4387* | 4380 | badge rabais annuel calculé par plan (Pilot -17%, Operations -20%) | tsc, eslint, jest 11/11, runtime |
+| #4491 | 4346 | i18n-enterprise.yml — chemin redondant retiré | pyyaml |
+| #4482 | — | docs session (bilan) | — |
+
+*#4387 : collision de branche avec un autre agent (même branche fix/4380-*) — la branche porte l'implémentation la plus complète (badge calculé, pas statique).
 
 ## Recommandations
 
