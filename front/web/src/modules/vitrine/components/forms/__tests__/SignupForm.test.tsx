@@ -147,6 +147,21 @@ describe('SignupForm Component', () => {
       });
     });
 
+    it('should show error for missing country (#4476)', async () => {
+      render(<SignupForm />);
+      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
+      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      const selects = screen.getAllByRole('combobox');
+      await userEvent.selectOptions(selects[1], '1-10');
+      await userEvent.selectOptions(selects[0], 'founder');
+      await userEvent.click(screen.getByRole('checkbox'));
+      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/pays est requis/i)).toBeInTheDocument();
+      });
+    });
+
     it('should show error for invalid phone', async () => {
       render(<SignupForm />);
       const emailInput = screen.getByRole('textbox', { name: /email/i });
@@ -215,6 +230,12 @@ describe('SignupForm Component', () => {
       // métier : on remplit employees en premier pour un test déterministe.
       await userEvent.selectOptions(selects[1], '1-10');
       await userEvent.selectOptions(selects[0], 'founder');
+      // #4476 : le pays est obligatoire (trial/signup MULTI-PAYS #1867) — le
+      // sélecteur se remplit via fetchSupportedCountries (fallback statique en
+      // jsdom). Attendre l'option avant de sélectionner.
+      await screen.findByRole('option', { name: /algérie/i });
+      const countrySelect = screen.getByRole('combobox', { name: /pays/i });
+      await userEvent.selectOptions(countrySelect, 'DZ');
       await userEvent.click(screen.getByRole('checkbox'));
     }
 
@@ -273,6 +294,12 @@ describe('SignupForm Component', () => {
       // métier : on remplit employees en premier pour un test déterministe.
       await userEvent.selectOptions(selects[1], '1-10');
       await userEvent.selectOptions(selects[0], 'founder');
+      // #4476 : le pays est obligatoire (trial/signup MULTI-PAYS #1867) — le
+      // sélecteur se remplit via fetchSupportedCountries (fallback statique en
+      // jsdom). Attendre l'option avant de sélectionner.
+      await screen.findByRole('option', { name: /algérie/i });
+      const countrySelect = screen.getByRole('combobox', { name: /pays/i });
+      await userEvent.selectOptions(countrySelect, 'DZ');
       await userEvent.click(screen.getByRole('checkbox'));
     }
 
