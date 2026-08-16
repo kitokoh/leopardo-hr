@@ -48,4 +48,14 @@ return [
     'SERVICE_UNAVAILABLE' => 'الخدمة غير متوفرة مؤقتاً.',
     'HTTP_ERROR' => 'حدث خطأ. يرجى المحاولة مجدداً.',
     'UNSUPPORTED_API_VERSION' => 'إصدار API غير مدعوم.',
-];
+
+    'PAYMENT_SESSION_FAILED' => 'تعذّر إنشاء جلسة الدفع.',
+    'NO_PAYMENT_ACCOUNT' => 'لا يوجد حساب دفع مرتبط. اشترك في باقة أولاً.',
+    'VERIFICATION_CODE_SENT' => 'تم إرسال رمز التحقق.',
+    'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'التحقق من طلبك غير متاح مؤقتاً. حاول مرة أخرى بعد قليل.',
+    'TRIAL_SPACE_READY' => 'مساحة Leopardo الخاصة بك جاهزة!',
+    'SESSION_ALREADY_OPEN' => 'توجد جلسة مفتوحة بالفعل لهذا الموظف.',
+    'OUTSIDE_GEOFENCE' => 'الموقع خارج منطقة الحضور.',
+    'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'تخصيص وضع التسجيل معطّل.',
+    'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
+    'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',

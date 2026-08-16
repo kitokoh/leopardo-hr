@@ -79,7 +79,7 @@ class AttendanceModeController extends Controller
 
         if ($settings && ! $settings->allow_employee_override) {
             return response()->json([
-                'message' => 'La personnalisation du mode de pointage est désactivée.',
+                'message' => __('errors.ATTENDANCE_MODE_PERSONALIZATION_DISABLED'),
                 'code'    => 'OVERRIDE_NOT_ALLOWED',
             ], 403);
         }
@@ -88,7 +88,7 @@ class AttendanceModeController extends Controller
             $pref = $this->setEmployeeMode->handle($employee, $request->validated());
 
             return response()->json([
-                'message' => 'Préférence mise à jour.',
+                'message' => __('errors.PREFERENCE_UPDATED'),
                 'data'    => [
                     'preferred_mode'    => $pref->preferred_mode,
                     'gps_consent_given' => $pref->gps_consent_given,
@@ -142,7 +142,7 @@ class AttendanceModeController extends Controller
         );
 
         return response()->json([
-            'message' => 'Configuration mise à jour.',
+            'message' => __('errors.CONFIG_UPDATED'),
             'data'    => [
                 'forced_mode'             => $settings->forced_mode,
                 'punch_photo_mode'        => $settings->punch_photo_mode,

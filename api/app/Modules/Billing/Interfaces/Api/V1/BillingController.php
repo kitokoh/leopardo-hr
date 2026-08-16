@@ -220,7 +220,7 @@ class BillingController extends Controller
 
             return new JsonResponse([
                 'error' => 'CHECKOUT_FAILED',
-                'message' => 'Impossible de créer la session de paiement.',
+                'message' => __('errors.PAYMENT_SESSION_FAILED'),
             ], 500);
         }
     }
@@ -242,7 +242,7 @@ class BillingController extends Controller
         if (! $stripeCustomerId) {
             return new JsonResponse([
                 'error' => 'NO_STRIPE_CUSTOMER',
-                'message' => 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
+                'message' => __('errors.NO_PAYMENT_ACCOUNT'),
             ], 404);
         }
 

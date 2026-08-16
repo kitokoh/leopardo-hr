@@ -63,4 +63,14 @@ return [
     'RATE_REJECTION_FAILED' => 'Rate rejection failed. Check the row state and retry.',
     'SOCIAL_CONTRIBUTION_SUBMIT_FAILED' => 'Contribution submission failed. Check the row state and retry.',
     'TAX_SLAB_SUBMIT_FAILED' => 'Tax slab submission failed. Check the row state and retry.',
-];
+
+    'PAYMENT_SESSION_FAILED' => 'Unable to create the payment session.',
+    'NO_PAYMENT_ACCOUNT' => 'No associated payment account. Subscribe to a plan first.',
+    'VERIFICATION_CODE_SENT' => 'Verification code sent.',
+    'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'Verification of your request is temporarily unavailable. Please try again shortly.',
+    'TRIAL_SPACE_READY' => 'Your Leopardo workspace is ready!',
+    'SESSION_ALREADY_OPEN' => 'A session is already open for this employee.',
+    'OUTSIDE_GEOFENCE' => 'Position outside the attendance zone.',
+    'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Attendance mode personalization is disabled.',
+    'PREFERENCE_UPDATED' => 'Preference updated.',
+    'CONFIG_UPDATED' => 'Configuration updated.',
