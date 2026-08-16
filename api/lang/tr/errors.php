@@ -60,7 +60,6 @@ return [
     'PREFERENCE_UPDATED' => 'Tercih güncellendi.',
     'CONFIG_UPDATED' => 'Yapılandırma güncellendi.',
 
-    // #4312/#4313/#4314 — FR résiduels localisés (vague expert20)
     'PAYOUT_REQUEST_REFUSED' => 'Ödeme talebi reddedildi.',
     'PAYOUT_REQUEST_FAILED' => 'Ödeme talebi sırasında bir hata oluştu.',
     'COMPANY_MODE_FORCED' => 'Şirketiniz bir mesai modu dayatıyor. Değiştiremezsiniz.',
@@ -79,4 +78,8 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Yalnızca taslak sözleşmeler etkinleştirilebilir.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Yalnızca aktif sözleşmeler askıya alınabilir.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Sözleşmenin feshedilmesi için aktif veya askıda olması gerekir.',
+    'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
+    'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
 ];
