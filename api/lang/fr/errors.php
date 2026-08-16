@@ -75,4 +75,11 @@ return [
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
 
+    // Payroll — codes stables (#4310)
+    'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
+    'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
+
+    // Payroll — code dédié lock avant validation (#4310)
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.',
 ];

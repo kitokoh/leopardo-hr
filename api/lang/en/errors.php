@@ -75,4 +75,11 @@ return [
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
 
+    // Payroll — codes stables (#4310)
+    'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
+    'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Only a locked payroll run can be regularized.',
+
+    // Payroll — code dédié lock avant validation (#4310)
+    'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.',
 ];

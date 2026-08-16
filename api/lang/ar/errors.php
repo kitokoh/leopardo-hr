@@ -60,4 +60,11 @@ return [
     'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
     'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',
 
+    // Payroll — codes stables (#4310)
+    'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
+    'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
+
+    // Payroll — code dédié lock avant validation (#4310)
+    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.',
 ];

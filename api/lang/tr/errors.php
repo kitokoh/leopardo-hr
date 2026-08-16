@@ -60,4 +60,11 @@ return [
     'PREFERENCE_UPDATED' => 'Tercih güncellendi.',
     'CONFIG_UPDATED' => 'Yapılandırma güncellendi.',
 
+    // Payroll — codes stables (#4310)
+    'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
+    'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
+
+    // Payroll — code dédié lock avant validation (#4310)
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
 ];

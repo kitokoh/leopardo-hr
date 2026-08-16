@@ -8,13 +8,19 @@ use App\Exceptions\DomainException;
 
 class PayrollAlreadyValidatedException extends DomainException
 {
-    public function __construct(?string $message = null)
-    {
-        parent::__construct($message ?? 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.', 422);
+    public function __construct(
+        ?string $message = null,
+        private readonly string $errorCode = 'PAYROLL_ALREADY_VALIDATED'
+    ) {
+        parent::__construct(
+            $message ?? 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
+            422,
+            $errorCode
+        );
     }
 
     public function errorCode(): string
     {
-        return 'PAYROLL_ALREADY_VALIDATED';
+        return $this->errorCode;
     }
 }
