@@ -44,13 +44,16 @@ class AuthRefreshTokenTest extends TestCase
         $response = $this->withHeader('Authorization', 'Bearer '.$token->plainTextToken)
             ->postJson('/api/v1/auth/refresh-token');
 
+        // #4698 : enveloppe {data: {...}} alignée sur login/me.
         $response->assertOk()
             ->assertJsonStructure([
-                'token',
-                'token_type',
-                'token_expires_at',
+                'data' => [
+                    'token',
+                    'token_type',
+                    'token_expires_at',
+                ],
             ])
-            ->assertJson(['token_type' => 'Bearer']);
+            ->assertJsonPath('data.token_type', 'Bearer');
     }
 
     public function test_refresh_token_returns_different_token(): void
@@ -62,7 +65,7 @@ class AuthRefreshTokenTest extends TestCase
             ->postJson('/api/v1/auth/refresh-token')
             ->assertOk();
 
-        $newToken = $response->json('token');
+        $newToken = $response->json('data.token');
         $this->assertNotSame($plainText, $newToken);
         $this->assertNotEmpty($newToken);
     }
@@ -81,7 +84,7 @@ class AuthRefreshTokenTest extends TestCase
             ->postJson('/api/v1/auth/refresh-token');
 
         $response->assertOk();
-        $this->assertNotEmpty($response->json('token'));
+        $this->assertNotEmpty($response->json('data.token'));
     }
 }
 

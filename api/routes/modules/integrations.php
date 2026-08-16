@@ -22,15 +22,21 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::post('/calendar/sync', [CalendarSyncController::class, 'sync']);
     Route::get('/calendar/events', [CalendarSyncController::class, 'events']);
 
-    Route::get('/zkteco/devices', [ZktecoController::class, 'index']);
-    Route::post('/zkteco/devices', [ZktecoController::class, 'store']);
-    Route::get('/zkteco/devices/{id}', [ZktecoController::class, 'show'])->whereNumber('id');
-    Route::put('/zkteco/devices/{id}', [ZktecoController::class, 'update'])->whereNumber('id');
-    Route::delete('/zkteco/devices/{id}', [ZktecoController::class, 'destroy'])->whereNumber('id');
-    Route::get('/zkteco/devices/{id}/sync-logs', [ZktecoController::class, 'syncLogs'])->whereNumber('id');
-    Route::post('/zkteco/devices/{serialNumber}/push-users', [ZktecoController::class, 'pushUsers']);
-    // Sécurité #2216 : rotation du token de device (manager uniquement)
-    Route::post('/zkteco/devices/{id}/regenerate-token', [ZktecoController::class, 'regenerateToken'])->whereNumber('id')->middleware('api.manager');
+    // #4692 (audit 360° 2026-08-16) : la gestion des appareils ZKTeco est
+    // une surface sensible (tokens de device) — garde middleware api.manager
+    // sur TOUTES les routes du CRUD, pas seulement regenerate-token. Le
+    // contrôleur garde son abort_unless(isManager) en défense en profondeur.
+    Route::middleware('api.manager')->group(function (): void {
+        Route::get('/zkteco/devices', [ZktecoController::class, 'index']);
+        Route::post('/zkteco/devices', [ZktecoController::class, 'store']);
+        Route::get('/zkteco/devices/{id}', [ZktecoController::class, 'show'])->whereNumber('id');
+        Route::put('/zkteco/devices/{id}', [ZktecoController::class, 'update'])->whereNumber('id');
+        Route::delete('/zkteco/devices/{id}', [ZktecoController::class, 'destroy'])->whereNumber('id');
+        Route::get('/zkteco/devices/{id}/sync-logs', [ZktecoController::class, 'syncLogs'])->whereNumber('id');
+        Route::post('/zkteco/devices/{serialNumber}/push-users', [ZktecoController::class, 'pushUsers']);
+        // Sécurité #2216 : rotation du token de device (manager uniquement)
+        Route::post('/zkteco/devices/{id}/regenerate-token', [ZktecoController::class, 'regenerateToken'])->whereNumber('id');
+    });
 });
 
 // Device kiosks authenticate with X-Kiosk-Token, not a Sanctum user token.

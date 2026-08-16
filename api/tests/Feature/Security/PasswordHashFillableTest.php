@@ -29,10 +29,12 @@ class PasswordHashFillableTest extends TestCase
 
     public function test_super_admin_password_hash_is_not_mass_assignable(): void
     {
-        $admin = SuperAdmin::query()->create([
+        $admin = new SuperAdmin([
             'name' => 'Admin',
             'email' => 'mass-admin-'.uniqid().'@example.com',
         ]);
+        // password_hash n'est pas fillable : assignation directe (hors
+        // mass-assignment) pour initialiser la ligne.
         $admin->password_hash = Hash::make('original-password');
         $admin->save();
 
