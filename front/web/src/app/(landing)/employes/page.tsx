@@ -15,14 +15,18 @@ import {
   Footer,
   useScrollReveal,
 } from '@/modules/vitrine';
-import { modulePageContent } from '@/modules/vitrine/lib/content';
+import { getModulePageContent } from '@/modules/vitrine/lib/content';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { Zap, Users, Calendar, TrendingUp } from 'lucide-react';
 
 export default function EmployesPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
+  const { locale } = useVitrineLocale();
   useScrollReveal();
 
-  const content = modulePageContent.employes;
+  // #4196 : contenu localisé (lot 1) — fallback FR tant que la locale
+  // n'est pas traduite pour ce module.
+  const content = getModulePageContent(locale).employes;
 
   // Transform problem items to include icons
   const problemItems = content.problem.items.map((item, index) => ({
