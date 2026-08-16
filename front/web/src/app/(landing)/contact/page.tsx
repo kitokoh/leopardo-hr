@@ -6,39 +6,124 @@ import { useSearchParams } from 'next/navigation';
 import { Navbar, HeroSection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import type { AppLocale } from '@/lib/i18n';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
-const subjects = [
-  'Information générale',
-  'Demande de démo',
-  'Support technique',
-  'Partenariat',
-  'Presse & Médias',
-  'Mot de passe oublié',
-  'Mise à niveau (upgrade)',
-  'Téléchargement - Kiosque',
-  'Téléchargement - Windows',
-  'Téléchargement - macOS',
-  'Enterprise',
-  'Communauté',
-  'Autre',
-];
+// #4300 : sujets du formulaire par locale (le select doit suivre la langue
+// active, pas seulement le copy des libellés).
+const subjectsByLocale: Record<AppLocale, string[]> = {
+  fr: [
+    'Information générale',
+    'Demande de démo',
+    'Support technique',
+    'Partenariat',
+    'Presse & Médias',
+    'Mot de passe oublié',
+    'Mise à niveau (upgrade)',
+    'Téléchargement - Kiosque',
+    'Téléchargement - Windows',
+    'Téléchargement - macOS',
+    'Enterprise',
+    'Communauté',
+    'Autre',
+  ],
+  en: [
+    'General information',
+    'Demo request',
+    'Technical support',
+    'Partnership',
+    'Press & Media',
+    'Forgot password',
+    'Upgrade',
+    'Download - Kiosk',
+    'Download - Windows',
+    'Download - macOS',
+    'Enterprise',
+    'Community',
+    'Other',
+  ],
+  tr: [
+    'Genel bilgi',
+    'Demo talebi',
+    'Teknik destek',
+    'Ortaklık',
+    'Basın & Medya',
+    'Şifremi unuttum',
+    'Yükseltme (upgrade)',
+    'İndirme - Kiosk',
+    'İndirme - Windows',
+    'İndirme - macOS',
+    'Enterprise',
+    'Topluluk',
+    'Diğer',
+  ],
+  ar: [
+    'معلومات عامة',
+    'طلب عرض توضيحي',
+    'دعم فني',
+    'شراكة',
+    'الصحافة والإعلام',
+    'نسيت كلمة المرور',
+    'ترقية (upgrade)',
+    'تنزيل - Kiosk',
+    'تنزيل - Windows',
+    'تنزيل - macOS',
+    'Enterprise',
+    'المجتمع',
+    'أخرى',
+  ],
+};
 
 // Maps the `?topic=` query param (used by links across login, dashboard,
 // navbar/footer and the download page) to a matching entry in `subjects`.
 // See issue #1304: without this mapping the "Sujet" select always fell
 // back to its default value regardless of which link was clicked.
-const TOPIC_TO_SUBJECT: Record<string, string> = {
-  password: 'Mot de passe oublié',
-  upgrade: 'Mise à niveau (upgrade)',
-  support: 'Support technique',
-  community: 'Communauté',
-  'download-kiosk': 'Téléchargement - Kiosque',
-  'download-windows': 'Téléchargement - Windows',
-  'download-macos': 'Téléchargement - macOS',
-  download: 'Information générale',
-  // #3254 : le CTA Enterprise (pricing/home/checkout) doit préremplir un sujet réel
-  enterprise: 'Enterprise',
+const TOPIC_TO_SUBJECT: Record<AppLocale, Record<string, string>> = {
+  fr: {
+    password: 'Mot de passe oublié',
+    upgrade: 'Mise à niveau (upgrade)',
+    support: 'Support technique',
+    community: 'Communauté',
+    'download-kiosk': 'Téléchargement - Kiosque',
+    'download-windows': 'Téléchargement - Windows',
+    'download-macos': 'Téléchargement - macOS',
+    download: 'Information générale',
+    // #3254 : le CTA Enterprise (pricing/home/checkout) doit préremplir un sujet réel
+    enterprise: 'Enterprise',
+  },
+  en: {
+    password: 'Forgot password',
+    upgrade: 'Upgrade',
+    support: 'Technical support',
+    community: 'Community',
+    'download-kiosk': 'Download - Kiosk',
+    'download-windows': 'Download - Windows',
+    'download-macos': 'Download - macOS',
+    download: 'General information',
+    enterprise: 'Enterprise',
+  },
+  tr: {
+    password: 'Şifremi unuttum',
+    upgrade: 'Yükseltme (upgrade)',
+    support: 'Teknik destek',
+    community: 'Topluluk',
+    'download-kiosk': 'İndirme - Kiosk',
+    'download-windows': 'İndirme - Windows',
+    'download-macos': 'İndirme - macOS',
+    download: 'Genel bilgi',
+    enterprise: 'Enterprise',
+  },
+  ar: {
+    password: 'نسيت كلمة المرور',
+    upgrade: 'ترقية (upgrade)',
+    support: 'دعم فني',
+    community: 'المجتمع',
+    'download-kiosk': 'تنزيل - Kiosk',
+    'download-windows': 'تنزيل - Windows',
+    'download-macos': 'تنزيل - macOS',
+    download: 'معلومات عامة',
+    enterprise: 'Enterprise',
+  },
 };
 
 const contactCopy: Record<string, {
@@ -93,11 +178,11 @@ function ContactPageInner() {
   useEffect(() => {
     const topic = searchParams.get('topic');
     if (!topic) return;
-    const mapped = TOPIC_TO_SUBJECT[topic];
+    const mapped = (TOPIC_TO_SUBJECT[locale] ?? TOPIC_TO_SUBJECT.fr)[topic];
     if (mapped) {
       setForm(prev => ({ ...prev, subject: mapped }));
     }
-  }, [searchParams]);
+  }, [searchParams, locale]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -223,7 +308,7 @@ function ContactPageInner() {
                           className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                         >
                           <option value="">{copy.form.subjectPlaceholder}</option>
-                          {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                          {(subjectsByLocale[locale] ?? subjectsByLocale.fr).map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                     </div>

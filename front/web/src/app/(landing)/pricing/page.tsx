@@ -54,6 +54,7 @@ type PricingPageCopy = {
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
   faq: { title: string; subtitle: string; badge: string; all: string; categories: string[] };
   cta: { badge: string; headline: string; subheadline: string; primary: string; secondary: string };
+  badges: { popular: string; free: string; freePrice: string; freeNote: string; freeTag: string };
 };
 
 /* ─────────────────────────────────────────────
@@ -157,6 +158,13 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       primary: 'Démarrer gratuitement',
       secondary: 'Contacter les ventes',
     },
+    badges: {
+      popular: 'Le plus populaire',
+      free: '100% Gratuit',
+      freePrice: 'Gratuit',
+      freeNote: 'Sans carte bancaire · Pour toujours',
+      freeTag: 'gratuit',
+    },
   },
   en: {
     hero: {
@@ -254,6 +262,13 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subheadline: 'Join teams that reduced payroll time from 2 hours to 8 minutes.',
       primary: 'Start for free',
       secondary: 'Contact sales',
+    },
+    badges: {
+      popular: 'Most popular',
+      free: '100% Free',
+      freePrice: 'Free',
+      freeNote: 'No credit card · Forever',
+      freeTag: 'free',
     },
   },
   tr: {
@@ -353,6 +368,13 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       primary: 'Ücretsiz başla',
       secondary: 'Satış ekibine ulaş',
     },
+    badges: {
+      popular: 'En popüler',
+      free: '%100 Ücretsiz',
+      freePrice: 'Ücretsiz',
+      freeNote: 'Kredi kartı gerekmez · Sonsuza kadar',
+      freeTag: 'ücretsiz',
+    },
   },
   ar: {
     hero: {
@@ -450,6 +472,13 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subheadline: 'انضم إلى الفرق التي خفّضت وقت إعداد الرواتب من ساعتين إلى 8 دقائق.',
       primary: 'ابدأ مجانًا',
       secondary: 'تواصل مع المبيعات',
+    },
+    badges: {
+      popular: 'الأكثر شيوعاً',
+      free: 'مجاني 100%',
+      freePrice: 'مجاني',
+      freeNote: 'بدون بطاقة بنكية · للأبد',
+      freeTag: 'مجاني',
     },
   },
 };
@@ -816,7 +845,7 @@ export default function PricingPage() {
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-500/30">
                           <Star className="w-3 h-3 fill-white" />
-                          Le plus populaire
+                          {copy.badges.popular}
                         </div>
                       </div>
                     )}
@@ -824,7 +853,7 @@ export default function PricingPage() {
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
                         <div className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg">
                           <Gift className="w-3 h-3" />
-                          100% Gratuit
+                          {copy.badges.free}
                         </div>
                       </div>
                     )}
@@ -843,7 +872,7 @@ export default function PricingPage() {
                       <div className="flex items-baseline gap-1.5">
                         {isFree ? (
                           <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                            Gratuit
+                            {copy.badges.freePrice}
                           </span>
                         ) : hasNumericPrice ? (
                           <>
@@ -862,7 +891,7 @@ export default function PricingPage() {
                       </div>
                       {isFree ? (
                         <p className="mt-1 text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-                          Sans carte bancaire · Pour toujours
+                          {copy.badges.freeNote}
                         </p>
                       ) : hasNumericPrice ? (
                         <div className="mt-1 space-y-0.5">
@@ -987,7 +1016,7 @@ export default function PricingPage() {
                           )}
                           {isFree && (
                             <span className="text-[9px] px-2 py-0.5 bg-slate-600 text-white rounded-full font-black uppercase tracking-wider">
-                              gratuit
+                              {copy.badges.freeTag}
                             </span>
                           )}
                         </div>
