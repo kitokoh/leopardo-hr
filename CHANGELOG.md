@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(edge): docker-compose — images taggées par version, Caddy pinné par digest (Closes #3972).** `leopardo/edge-api|edge-ui:${EDGE_VERSION:-1.0.0}` (aligné publish.sh) au lieu de `:latest` flottant ; `caddy@sha256:5f5c86…` (digest multi-arch vérifié). Une install identique livre le même logiciel.
 - **fix(mobile): Smart Attendance — sélecteur de mode via GoRouter (/smart-attendance/mode) (Closes #3958).** `AttendanceModePickerScreen` était poussé par `Navigator.push(MaterialPageRoute)` hors table de routes → invisible aux deep links et à l'état de navigation. Route déclarée dans `app.dart` (extra = mode courant), `context.push<bool>` avec résultat conservé.
 - **fix(edge): Dockerfile standalone — PWA web-offline buildée dans l'image (Closes #3965).** `COPY front/web-offline/` copiait l'arbre source Next.js non buildé → routes 404 et .tsx servis en texte (out/ gitignoré, pas d'index.html). Stage `pwa-build` (node:20-alpine, `npm ci && next build`, `output: export`) → `COPY --from=pwa-build /pwa/out/ /app/public/edge-web/` (index.html + manifest + icônes + _next).
 - **fix(edge): docker-entrypoint — échecs visibles au lieu de `|| true` (Closes #3966).** Migrations critiques : exit 1 + fichier d'état `/data/edge-entrypoint-error` (le conteneur boucle en restart visible). config/route/event:cache : échecs loggés + persistés (boot non bloqué). Scheduler : logs sur `/data/logs/edge-scheduler.log` au lieu de `/dev/null`.
