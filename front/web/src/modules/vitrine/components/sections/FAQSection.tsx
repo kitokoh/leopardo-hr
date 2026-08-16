@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "lucide-react";
 
 export interface FAQItem {
   id?: string;
@@ -31,7 +31,7 @@ export function FAQSection({
   items,
   faqs,
   categories,
-  allLabel = 'Tous',
+  allLabel = "Tous",
 }: FAQSectionProps) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -56,7 +56,9 @@ export function FAQSection({
         >
           {badge && (
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
-              {badge.icon && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+              {badge.icon && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              )}
               {badge.text}
             </div>
           )}
@@ -83,8 +85,8 @@ export function FAQSection({
               onClick={() => setSelectedCategory(null)}
               className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                 selectedCategory === null
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
+                  ? "bg-emerald-500 text-white"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
               {allLabel}
@@ -95,8 +97,8 @@ export function FAQSection({
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                   selectedCategory === category
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700'
+                    ? "bg-emerald-500 text-white"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
               >
                 {category}
@@ -107,52 +109,69 @@ export function FAQSection({
 
         {/* FAQ Items */}
         <div className="space-y-4">
-          {filteredItems.map((item, index) => (
-            <motion.div
-              key={item.id ?? `${item.question}-${index}`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.6, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <button
-                onClick={() => setOpenId(openId === (item.id ?? `${index}`) ? null : (item.id ?? `${index}`))}
-                className="w-full text-left"
-              >
-                <div className="group relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 transition-all duration-300 hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:shadow-lg cursor-pointer">
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white text-left group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      {item.question}
-                    </h3>
-                    <motion.div
-                      animate={{ rotate: openId === item.id ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex-shrink-0"
-                    >
-                      <ChevronDown className="w-5 h-5 text-emerald-500" />
-                    </motion.div>
-                  </div>
+          {filteredItems.map((item, index) => {
+            // Issue #4321 : les items sans `id` (contenu des pages modules) doivent
+            // utiliser le même identifiant partout (toggle / rotation / visibilité).
+            const itemKey = item.id ?? `${index}`;
+            const isOpen = openId === itemKey;
+            const answerId = `faq-answer-${itemKey}`;
 
-                  {/* Answer */}
-                  <AnimatePresence>
-                    {openId === item.id && (
+            return (
+              <motion.div
+                key={itemKey}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.05,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <button
+                  onClick={() => setOpenId(isOpen ? null : itemKey)}
+                  aria-expanded={isOpen}
+                  aria-controls={answerId}
+                  className="w-full text-left"
+                >
+                  <div className="group relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 transition-all duration-300 hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:shadow-lg cursor-pointer">
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white text-left group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                        {item.question}
+                      </h3>
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                        className="overflow-hidden"
+                        animate={{ rotate: isOpen ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex-shrink-0"
                       >
-                        <p className="text-slate-600 dark:text-slate-400 leading-relaxed mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-                          {item.answer}
-                        </p>
+                        <ChevronDown className="w-5 h-5 text-emerald-500" />
                       </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </button>
-            </motion.div>
-          ))}
+                    </div>
+
+                    {/* Answer */}
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          id={answerId}
+                          role="region"
+                          aria-label={item.question}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <p className="text-slate-600 dark:text-slate-400 leading-relaxed mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                            {item.answer}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </button>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
