@@ -101,8 +101,8 @@ class ProvisionDemoTenantJobTest extends TestCase
     public function test_jobs_expose_bounded_tries_and_backoff(): void
     {
         $job = new ProvisionDemoTenantJob('retry@example.com', 'Retry Sandbox', 'DZ');
-        $this->assertSame(3, $job->tries);
-        $this->assertSame([15, 60], $job->backoff());
+        $this->assertSame(5, $job->tries);
+        $this->assertSame([30, 60, 120, 300], $job->backoff());
 
         $comm = new DispatchCommunicationJob(1, null, 'welcome', [], null);
         $this->assertSame(3, $comm->tries);

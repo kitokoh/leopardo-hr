@@ -9,7 +9,8 @@
       "export": "Export"
     },
     "confirm": {
-      "delete": "Are you sure you want to delete :name?"
+      "delete": "Are you sure you want to delete :name?",
+      "title": "Delete this user?"
     },
     "errors": {
       "name_required": "The full name is required.",
@@ -34,7 +35,8 @@
       "created": "Impersonation session created",
       "error": "Error creating the impersonation session",
       "done": "Done",
-      "employee": "Linked employee #:id"
+      "employee": "Linked employee #:id",
+      "copyFailed": "Unable to copy the token automatically. Copy it manually from the field above."
     },
     "filters": {
       "advanced": {
@@ -306,7 +308,8 @@
     "load_error": "Failed to load the contributions.",
     "empty": "No contribution recorded for this country.",
     "title": "Social contributions by country",
-    "th_country": "Country"
+    "th_country": "Country",
+    "delete_confirm_title": "Delete this contribution?"
   },
   "welcome": {
     "story": {
@@ -378,7 +381,9 @@
     "load_error": "Failed to load the tax brackets.",
     "empty": "No bracket recorded for this country.",
     "simulator_title": "Impact simulator",
-    "title": "Tax brackets by country"
+    "title": "Tax brackets by country",
+    "delete_confirm_title": "Delete this tax bracket?",
+    "reset_confirm_title": "Reset tax brackets?"
   },
   "companies": {
     "toast": {
@@ -455,7 +460,9 @@
       "th_status": "Status",
       "th_date": "Gregorian date",
       "th_name": "Holiday",
-      "title": "Islamic holidays"
+      "title": "Islamic holidays",
+      "confirm_title": "Confirm the year?",
+      "delete_confirm_title": "Delete this public holiday?"
     },
     "type_christian": "Christian",
     "cancel": "Cancel",
@@ -899,7 +906,10 @@
     "statusInProgress": "In progress",
     "statusFailed": "Failed",
     "download": "Download",
-    "downloading": "Downloading..."
+    "downloading": "Downloading...",
+    "historyClientOnly": "Export history available in the client space",
+    "clientSpaceNote": "Available in the client space",
+    "historyError": "Unable to load export history."
   },
   "companyDetail": {
     "analyzing": "Analyzing client data...",
