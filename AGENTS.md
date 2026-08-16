@@ -87,6 +87,21 @@ reste ouverte même une fois le correctif livré. Règles :
   preuve code : commentaire + état closed).
 - Fallback : fermeture manuelle avec vérification du code sur main.
 
+## Lecon 2026-08-16 — Famine du pipeline de deploiement (issue #3545)
+
+- **`cancel-in-progress: false` ne protege PAS les runs `pending`** : GitHub ne
+  conserve qu'UN run pending par groupe de concurrence. Sous rafale de merges
+  (~1/2 min), les runs Tests de main etaient annules en pending (48/50
+  cancelled) et `deploy-main.yml` (dependance `workflow_run.conclusion ==
+  success`) skipait le deploy a 100 % — prod figee sans signal rouge.
+- **Garde : tout workflow de deploiement déclenché sur main doit écouter
+  `push: main` et poller les runs/checks du SHA (timeout borne, ~30 min) au
+  lieu de lire la conclusion d'un parent `workflow_run` potentiellement
+  annulé.** Toujours re-verifier que le SHA est encore la tete de main avant
+  de deployer (garde anti-stale, audit #1705).
+- Tout skip de deploiement doit emettre `::warning::` + `$GITHUB_STEP_SUMMARY`
+  (raison, SHA, conclusions) — un skip silencieux ressemble a un success.
+
 ## Regles obligatoires
 
 - **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
@@ -148,6 +163,14 @@ Le dossier `dev-hub/prompts/` contient des prompts numerotes prets a l'emploi po
 - **CI/Merge** : prompts 03, 12 — reparer la CI, merger les branches
 - **Anti-regression** : `dev-hub/prompts/13_REGRESSION_GUARD.md` — traquer les patterns interdits
 - Voir `dev-hub/prompts/README.md` pour l'index complet
+
+## Prérequis Git LFS (#4124)
+
+`assets/**` (design, screenshots) et les icônes mobiles sont trackés en **vrai
+Git LFS** (pointeurs) — les médias vitrine (`front/web/public/**`) sont des
+binaires réels hors LFS. Un agent clonant sans git-lfs verra des fichiers
+pointeurs (~130 o) pour les assets LFS : installer git-lfs (`git lfs install`)
+pour les résoudre au checkout.
 
 ## Strategie CI rapide
 
@@ -841,3 +864,9 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
 
 ### 2026-08-16 - Migrations PostgreSQL concurrentes
 - `Schema::hasColumn()` suivi de `Schema::table()` n'est pas atomique sous Render/Neon : plusieurs processus peuvent franchir le test puis provoquer `SQLSTATE[42701] Duplicate column`. Pour les réconciliations additives publiques, utiliser `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` avec un schéma explicitement résolu et ne pas avaler les autres erreurs (issue #4123).
+
+### 2026-08-16 - Contraintes PostgreSQL tenant concurrentes
+- PostgreSQL ne propose pas `ADD CONSTRAINT IF NOT EXISTS`. Pour les migrations Render exécutées en concurrence, utiliser un advisory lock transactionnel, inspecter `pg_constraint`, traiter une définition équivalente comme no-op et refuser une définition incompatible; ne pas faire `DROP` puis `ADD` sans vérification (issue #4156).
+
+### 2026-08-16 - Défauts de config vs défauts de seeder (racine #2646)
+- Un défaut de config peut diverger silencieusement du défaut d'un seeder qui crée le même objet (`config/demo.php` fixait `super_admin_email` à `admin@example.com` alors que `SuperAdminSeeder` crée `admin@leopardo-rh.com` → `syncDemoSuperAdmin` ciblait un compte inexistant → no-op silencieux → INVALID_CREDENTIALS pour le parcours démo, issue #3775). Règle : dès qu'un seeder lit `env('X', default)`, la config correspondante DOIT porter le même défaut, et tout sync « démo » sur un compte absent DOIT émettre un warning (pas de no-op silencieux).

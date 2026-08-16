@@ -7,6 +7,7 @@ use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
+use App\Http\Middleware\EnsureKioskSearchPathReset;
 use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\RequireTenantCountry;
@@ -105,7 +106,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant.country' => RequireTenantCountry::class,
             // #3368 : restaure le search_path après chaque requête kiosque
             // (les handlers basculent vers le schéma tenant sans try/finally).
-            'kiosk.search_path' => \App\Http\Middleware\EnsureKioskSearchPathReset::class,
+            'kiosk.search_path' => EnsureKioskSearchPathReset::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.
@@ -122,9 +123,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $errorCode = $exception->errorCode();
             $translatedMessage = __('errors.'.$errorCode);
-            $message = $translatedMessage !== 'errors.'.$errorCode
+            $catalogHasCode = $translatedMessage !== 'errors.'.$errorCode;
+
+            // #4171 : quand le code n'est pas au catalogue, le message brut de
+            // l'exception (français interne, détails de service) ne doit
+            // JAMAIS fuiter vers le client — réponse générique localisée +
+            // trace serveur pour le diagnostic.
+            if (! $catalogHasCode) {
+                report($exception);
+            }
+
+            $message = $catalogHasCode
                 ? $translatedMessage
-                : $exception->getMessage();
+                : __('errors.SERVER_ERROR');
 
             return new JsonResponse([
                 'error' => $errorCode,

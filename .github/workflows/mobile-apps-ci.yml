@@ -44,7 +44,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
+  API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
 
 concurrency:
   group: mobile-apps-ci-${{ github.ref }}

@@ -49,7 +49,11 @@ export default async function PricingLayout({
   // Issue #3921 : FAQ Schema généré depuis le contenu localisé de la page
   // (mêmes questions/answers que l'UI visible, dans la langue de la page).
   const headerList = await headers();
-  const locale = resolveSsrLang(headerList.get('accept-language'));
+  // #4201 : le schéma JSON-LD suit la même source de locale que les
+  // métadonnées (?lang= via x-vitrine-lang, sinon Accept-Language) — un
+  // visiteur ?lang=en ne doit pas recevoir un schéma FR.
+  const locale = (headerList.get('x-vitrine-lang') as AppLocale | null)
+    ?? resolveSsrLang(headerList.get('accept-language'));
   const faqSchema = generateFAQSchema(
     getPricingFaq(locale).map((item) => ({ question: item.question, answer: item.answer }))
   );

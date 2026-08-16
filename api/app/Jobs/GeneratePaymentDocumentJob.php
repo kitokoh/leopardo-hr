@@ -275,5 +275,29 @@ class GeneratePaymentDocumentJob implements ShouldQueue, TenantScopedJob
 
         return $document;
     }
-}
 
+    /**
+     * #4205 : épuisement des retries — le document reste marqué `failed`
+     * (déjà posé par handle() en cas d'erreur) + log d'alerte.
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('GeneratePaymentDocumentJob.failed', [
+            'payment_document_id' => $this->paymentDocumentId,
+            'exception' => $e->getMessage(),
+        ]);
+
+        try {
+            $document = \App\Modules\Payroll\Domain\Models\PaymentDocument::query()->find($this->paymentDocumentId);
+            if ($document !== null) {
+                $document->update([
+                    'status' => \App\Modules\Payroll\Domain\Models\PaymentDocument::STATUS_FAILED,
+                    'error_message' => mb_substr($e->getMessage(), 0, 1000),
+                ]);
+            }
+        } catch (Throwable) {
+            // non bloquant
+        }
+    }
+
+}
