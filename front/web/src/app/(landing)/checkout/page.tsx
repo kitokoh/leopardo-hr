@@ -31,7 +31,7 @@ import { getApiBaseUrl } from '@/lib/backend-url';
    Montants alignés sur PlanSeeder (api/database/seeders/PlanSeeder.php,
    schéma canonique #2977/#3919) :
    Free 0€/5 emp · Pilot 29€/mois (24€/an, 30 employés) ·
-   Operations 99€/mois (79€/an, 250 employés) · Enterprise sur devis.
+   Operations 79€/mois (66€/mois en annuel, 200 employés) · Enterprise sur devis. (ADR-0014)
    Tarif annuel affiché au mois (24/79 €) — équivalent 290/949 €/an.
    Essai : 14 jours (décision D-E4-01).
 ───────────────────────────────────────────── */
@@ -74,7 +74,7 @@ const PLAN_CONFIG = {
       'Support prioritaire 24h',
     ],
     trialDays: 14,
-    employeeLimit: "Jusqu'à 250 employés",
+    employeeLimit: "Jusqu'à 200 employés",
   },
   enterprise: {
     label: 'Enterprise',
