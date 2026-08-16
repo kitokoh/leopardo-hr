@@ -7,12 +7,6 @@ parameters:
 			path: app/Console/Commands/BackfillNotificationPreferences.php
 
 		-
-			message: '#^Offset ''enterprise''\|''free''\|''operations''\|''pilot'' on array\{free\: array\{amount\: 0\.0, currency\: ''EUR''\}, pilot\: array\{amount\: 29\.0, currency\: ''EUR''\}, operations\: array\{amount\: 99\.0, currency\: ''EUR''\}, enterprise\: array\{amount\: 299\.0, currency\: ''EUR''\}\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 1
-			path: app/Console/Commands/GenerateMonthlyInvoices.php
-
-		-
 			message: '#^Cannot call method diffForHumans\(\) on Illuminate\\Support\\Carbon\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -317,12 +311,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Core/Feature/Infrastructure/Services/FeatureFlag.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>plan" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Core/Feature/Infrastructure/Services/FeatureService.php
 
 		-
 			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\ReflectionService\:\:analyzeClass\(\) return type has no value type specified in iterable type array\.$#'
@@ -1417,18 +1405,6 @@ parameters:
 			path: app/Jobs/DispatchWebhook.php
 
 		-
-			message: '#^Method App\\Modules\\Notification\\Infrastructure\\Services\\PushNotificationService\:\:sendToEmployee\(\) invoked with 2 parameters, 3\-4 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Jobs/GeneratePaySlipPdfJob.php
-
-		-
-			message: '#^Parameter \#2 \$title of method App\\Modules\\Notification\\Infrastructure\\Services\\PushNotificationService\:\:sendToEmployee\(\) expects string, array\<string, \(array\|string\)\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/GeneratePaySlipPdfJob.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Carbon\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 2
@@ -1463,12 +1439,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Jobs/ProcessPayrollBatchJob.php
-
-		-
-			message: '#^Method App\\Jobs\\ProvisionDemoTenantJob\:\:issueDemoAccess\(\) is unused\.$#'
-			identifier: method.unused
-			count: 1
-			path: app/Jobs/ProvisionDemoTenantJob.php
 
 		-
 			message: '#^Method App\\Jobs\\SendBulkNotificationsJob\:\:__construct\(\) has parameter \$notificationData with no value type specified in iterable type array\.$#'
@@ -1589,18 +1559,6 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Attendance/Domain/Models/ApprovalRequest.php
-
-		-
-			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_seen_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
-
-		-
-			message: '#^PHPDoc tag @property for property App\\Modules\\Attendance\\Domain\\Models\\AttendanceKiosk\:\:\$last_sync_at contains unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Modules/Attendance/Domain/Models/AttendanceKiosk.php
 
 		-
 			message: '#^Class App\\Modules\\Attendance\\Domain\\Models\\AttendanceLog has PHPDoc tag @property for property \$punch_meta with no value type specified in iterable type array\.$#'
@@ -1969,18 +1927,6 @@ parameters:
 			path: app/Modules/Attendance/Interfaces/Api/V1/BiometricEnrollmentController.php
 
 		-
-			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
-			message: '#^Call to method toIso8601String\(\) on an unknown class App\\Modules\\Attendance\\Domain\\Models\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Modules/Attendance/Interfaces/Api/V1/KioskController.php
-
-		-
 			message: '#^Method App\\Modules\\Attendance\\Interfaces\\Api\\V1\\KioskController\:\:serializeKiosk\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2104,30 +2050,6 @@ parameters:
 			message: '#^Class App\\Modules\\Billing\\Domain\\Models\\Feature uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
-			path: app/Modules/Billing/Domain/Models/Feature.php
-
-		-
-			message: '#^Method App\\Modules\\Billing\\Domain\\Models\\Feature\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Billing/Domain/Models/Feature.php
-
-		-
-			message: '#^Method App\\Modules\\Billing\\Domain\\Models\\Feature\:\:scopeCompatibleWith\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Billing/Domain/Models/Feature.php
-
-		-
-			message: '#^Method App\\Modules\\Billing\\Domain\\Models\\Feature\:\:scopeForApiVersion\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Billing/Domain/Models/Feature.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 3
 			path: app/Modules/Billing/Domain/Models/Feature.php
 
 		-
@@ -2259,18 +2181,12 @@ parameters:
 		-
 			message: '#^Unreachable statement \- code above always terminates\.$#'
 			identifier: deadCode.unreachable
-			count: 2
+			count: 1
 			path: app/Modules/Billing/Interfaces/Api/V1/CompanyRequestController.php
 
 		-
 			message: '#^Parameter \#1 \$companyId of method App\\Modules\\Billing\\Interfaces\\Api\\V1\\FeatureFlagController\:\:getCompanyPlan\(\) expects string, string\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Modules/Billing/Interfaces/Api/V1/FeatureFlagController.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>plan" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Modules/Billing/Interfaces/Api/V1/FeatureFlagController.php
 
@@ -2437,19 +2353,7 @@ parameters:
 			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
 
 		-
-			message: '#^Property App\\Modules\\Cameras\\Domain\\Camera\:\:\$company_id \(int\) does not accept string\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
 			message: '#^Property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$camera_id \(int\) does not accept int\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
-
-		-
-			message: '#^Property App\\Modules\\Cameras\\Domain\\CameraAccessLog\:\:\$company_id \(int\) does not accept int\|string\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: app/Modules/Cameras/Infrastructure/Services/CameraService.php
@@ -2893,12 +2797,6 @@ parameters:
 			path: app/Modules/HR/Infrastructure/Services/UserInvitationService.php
 
 		-
-			message: '#^Property App\\Modules\\HR\\Domain\\Models\\UserInvitation\:\:\$employee_id \(string\|null\) does not accept int\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/HR/Infrastructure/Services/UserInvitationService.php
-
-		-
 			message: '#^Call to function is_array\(\) with array\<mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
@@ -2927,12 +2825,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: app/Modules/HR/Interfaces/Api/V1/Controllers/ContractController.php
-
-		-
-			message: '#^Property App\\Modules\\HR\\Domain\\Models\\Department\:\:\$company_id \(int\|null\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Modules/HR/Interfaces/Api/V1/Controllers/DepartmentController.php
 
 		-
 			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(string\|null\)\: mixed\)\|null, ''trim'' given\.$#'
@@ -3571,18 +3463,6 @@ parameters:
 			path: app/Modules/Onboarding/Domain/Contracts/OnboardingRepositoryInterface.php
 
 		-
-			message: '#^Call to function abort_if\(\) with false and 401 will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingChecklistController.php
-
-		-
-			message: '#^Instanceof between App\\Core\\Auth\\Domain\\Models\\Employee and App\\Core\\Auth\\Domain\\Models\\Employee will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: app/Modules/Onboarding/Interfaces/Api/V1/Controllers/OnboardingChecklistController.php
-
-		-
 			message: '#^Method App\\Modules\\Onboarding\\Interfaces\\Api\\V1\\Controllers\\OnboardingChecklistController\:\:step\(\) has parameter \$metrics with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3607,24 +3487,6 @@ parameters:
 			path: app/Modules/Payroll/Application/Actions/GeneratePayroll.php
 
 		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\PaySlip\:\:scopeForEmployee\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/PaySlip.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\PaySlip\:\:scopeValidated\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/PaySlip.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 2
-			path: app/Modules/Payroll/Domain/Models/PaySlip.php
-
-		-
 			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\PaymentConfirmation\:\:recordAudit\(\) has parameter \$new with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3637,40 +3499,10 @@ parameters:
 			path: app/Modules/Payroll/Domain/Models/PaymentConfirmation.php
 
 		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: app/Modules/Payroll/Domain/Models/PaymentConfirmation.php
-
-		-
 			message: '#^Class App\\Modules\\Payroll\\Domain\\Models\\Payroll uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Modules/Payroll/Domain/Models/Payroll.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\:\:scopeCalculated\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/PayrollRun.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\:\:scopeDraft\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/PayrollRun.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\PayrollRun\:\:scopeValidated\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/PayrollRun.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 3
-			path: app/Modules/Payroll/Domain/Models/PayrollRun.php
 
 		-
 			message: '#^Class App\\Modules\\Payroll\\Domain\\Models\\SalaryAdvance uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
@@ -3689,108 +3521,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Modules/Payroll/Domain/Models/SalaryAdvance.php
-
-		-
-			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Http\\Request\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 3
-			path: app/Modules/Payroll/Domain/Models/SalaryAdvance.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SalaryComponent\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SalaryComponent\:\:scopeDeductions\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SalaryComponent\:\:scopeEarnings\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SalaryComponent\:\:scopeEmployerContributions\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 4
-			path: app/Modules/Payroll/Domain/Models/SalaryComponent.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SalaryStructure\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SalaryStructure.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SalaryStructure\:\:scopeForCountry\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SalaryStructure.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 2
-			path: app/Modules/Payroll/Domain/Models/SalaryStructure.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SocialContribution\:\:scopeEffective\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SocialContribution\:\:scopeEmployee\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SocialContribution\:\:scopeEmployer\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\SocialContribution\:\:scopeForCountry\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 4
-			path: app/Modules/Payroll/Domain/Models/SocialContribution.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\TaxSlab\:\:scopeEffective\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/TaxSlab.php
-
-		-
-			message: '#^Method App\\Modules\\Payroll\\Domain\\Models\\TaxSlab\:\:scopeForCountry\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Modules/Payroll/Domain/Models/TaxSlab.php
-
-		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$q$#'
-			identifier: parameter.notFound
-			count: 2
-			path: app/Modules/Payroll/Domain/Models/TaxSlab.php
 
 		-
 			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
@@ -4061,12 +3791,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Modules/Payroll/Interfaces/Api/V1/SalaryAdvanceController.php
-
-		-
-			message: '#^Match expression does not handle remaining value\: mixed$#'
-			identifier: match.unhandled
-			count: 2
-			path: app/Modules/Payroll/Interfaces/Api/V1/SocialDeclarationController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
@@ -4405,18 +4129,6 @@ parameters:
 			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/MetricsController.php
 
 		-
-			message: '#^Method App\\Modules\\Platform\\Interfaces\\Api\\V1\\Controllers\\PlatformAdminDashboardController\:\:redisAlert\(\) never returns array\<string, mixed\> so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAdminDashboardController.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 20
-			path: app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAdminDashboardController.php
-
-		-
 			message: '#^Ternary operator condition is always true\.$#'
 			identifier: ternary.alwaysTrue
 			count: 2
@@ -4687,42 +4399,6 @@ parameters:
 			path: app/Notifications/EdgeNodeSilentAlert.php
 
 		-
-			message: '#^Method App\\Policies\\Cameras\\CameraPolicy\:\:activePermission\(\) is unused\.$#'
-			identifier: method.unused
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Result of \|\| is always true\.$#'
-			identifier: booleanOr.alwaysTrue
-			count: 3
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Strict comparison using \!\=\= between int and string\|null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 3
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between int and string\|null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 3
-			path: app/Policies/Cameras/CameraPolicy.php
-
-		-
 			message: '#^Access to an undefined property App\\Core\\Auth\\Domain\\Models\\Employee\|App\\Core\\Auth\\Domain\\Models\\User\|App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:\$company_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4893,7 +4569,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 39
+			count: 35
 			path: tests/Feature/Attendance/AttendanceRegularityTest.php
 
 		-
@@ -5173,20 +4849,8 @@ parameters:
 			path: tests/Feature/CalendarSyncControllerTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/CalendarSyncServiceTest.php
-
-		-
 			message: '#^Parameter \#1 \$value of function decrypt expects string, string\|null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Feature/CalendarSyncServiceTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\CalendarSyncServiceTest\:\:\$absenceType \(App\\Modules\\Planning\\Domain\\Models\\AbsenceType\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/CalendarSyncServiceTest.php
 
@@ -5319,7 +4983,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 2
 			path: tests/Feature/Contracts/ApiListQueryContractTest.php
 
 		-
@@ -5327,6 +4991,18 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: tests/Feature/Contracts/ApiListQueryContractTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\HR\\Domain\\Models\\Contract\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/Contracts/ContractLifecycleTest.php
+
+		-
+			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Contracts/ContractLifecycleTest.php
 
 		-
 			message: '#^Cannot access property \$signed_at on App\\Modules\\HR\\Domain\\Models\\Contract\|null\.$#'
@@ -5551,6 +5227,18 @@ parameters:
 			path: tests/Feature/DashboardControllerTest.php
 
 		-
+			message: '#^Method Tests\\Feature\\DataModel\\CompositeTenantIndexesTest\:\:indexProvider\(\) should return array\<string, string\> but returns array\<string, list\<string\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Feature/DataModel/CompositeTenantIndexesTest.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: tests/Feature/DataModel/CompositeTenantIndexesTest.php
+
+		-
 			message: '#^Method Tests\\Feature\\Demo\\DemoMagicLinkTest\:\:createDemoManager\(\) has parameter \$extraData with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -5647,10 +5335,10 @@ parameters:
 			path: tests/Feature/Edge/EdgeConflictResolutionTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeConflictResolutionTest\:\:\$schedule \(App\\Modules\\Planning\\Domain\\Models\\Schedule\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
+			message: '#^Method Tests\\Feature\\Edge\\EdgeDownloadControllerTest\:\:assertAssetMatchesRepoFile\(\) has parameter \$response with generic class Illuminate\\Testing\\TestResponse but does not specify its types\: TResponse$#'
+			identifier: missingType.generics
 			count: 1
-			path: tests/Feature/Edge/EdgeConflictResolutionTest.php
+			path: tests/Feature/Edge/EdgeDownloadControllerTest.php
 
 		-
 			message: '#^Access to an undefined property object\:\:\$id\.$#'
@@ -5763,7 +5451,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 3
 			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
 
 		-
@@ -5803,12 +5491,6 @@ parameters:
 			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
 
 		-
-			message: '#^Parameter \#3 \$schedule of method Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:createLog\(\) expects App\\Modules\\Planning\\Domain\\Models\\Schedule, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
 			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$companyA \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -5828,18 +5510,6 @@ parameters:
 
 		-
 			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$employeeB \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$scheduleA \(App\\Modules\\Planning\\Domain\\Models\\Schedule\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeMultiTenantIsolationTest\:\:\$scheduleB \(App\\Modules\\Planning\\Domain\\Models\\Schedule\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeMultiTenantIsolationTest.php
@@ -5882,12 +5552,6 @@ parameters:
 
 		-
 			message: '#^Property Tests\\Feature\\Edge\\EdgeOfflinePunchTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeOfflinePunchTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeOfflinePunchTest\:\:\$schedule \(App\\Modules\\Planning\\Domain\\Models\\Schedule\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeOfflinePunchTest.php
@@ -5972,12 +5636,6 @@ parameters:
 
 		-
 			message: '#^Property Tests\\Feature\\Edge\\EdgeSyncOnReconnectTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: tests/Feature/Edge/EdgeSyncOnReconnectTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Edge\\EdgeSyncOnReconnectTest\:\:\$schedule \(App\\Modules\\Planning\\Domain\\Models\\Schedule\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Edge/EdgeSyncOnReconnectTest.php
@@ -6171,13 +5829,19 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 27
+			count: 34
+			path: tests/Feature/EmployeeLoanControllerTest.php
+
+		-
+			message: '#^Cannot access property \$amount on App\\Modules\\Payroll\\Domain\\Models\\LoanRepayment\|null\.$#'
+			identifier: property.nonObject
+			count: 1
 			path: tests/Feature/EmployeeLoanControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 7
+			count: 8
 			path: tests/Feature/EmployeeLoanControllerTest.php
 
 		-
@@ -6197,6 +5861,24 @@ parameters:
 			identifier: argument.templateType
 			count: 1
 			path: tests/Feature/EmployeesRbacTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 7
+			path: tests/Feature/ExceptionLeakRegressionTest.php
+
+		-
+			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Feature/ExceptionLeakRegressionTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Feature/ExceptionLeakRegressionTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -6243,13 +5925,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 6
 			path: tests/Feature/FeatureFlagControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 5
+			count: 4
 			path: tests/Feature/FeatureFlagControllerTest.php
 
 		-
@@ -6311,6 +5993,12 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: tests/Feature/GenerateBankExportJobTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/GeneratePaySlipPdfJobNotifyTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -6583,10 +6271,10 @@ parameters:
 			path: tests/Feature/GrowthModuleTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\HR\\EmployeeTenantIsolationTest\:\:authHeader\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
+			message: '#^Method Tests\\Feature\\HR\\EmployeeImportRaceTest\:\:makeCompany\(\) should return App\\Core\\Tenant\\Domain\\Models\\Company but returns Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: return.type
 			count: 1
-			path: tests/Feature/HR/EmployeeTenantIsolationTest.php
+			path: tests/Feature/HR/EmployeeImportRaceTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -6637,12 +6325,6 @@ parameters:
 			path: tests/Feature/HR/HrControllerTest.php
 
 		-
-			message: '#^Property App\\Modules\\HR\\Domain\\Models\\Department\:\:\$company_id \(int\|null\) does not accept string\.$#'
-			identifier: assign.propertyType
-			count: 3
-			path: tests/Feature/HR/OrganigrammeTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 8
@@ -6683,18 +6365,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/KioskMultiEventPunchTest.php
-
-		-
-			message: '#^Unable to resolve the template type TKey in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/KioskSyncSkippedEventsTest.php
-
-		-
-			message: '#^Unable to resolve the template type TValue in call to function collect$#'
-			identifier: argument.templateType
-			count: 1
-			path: tests/Feature/KioskSyncSkippedEventsTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -6779,6 +6449,12 @@ parameters:
 			identifier: property.notFound
 			count: 6
 			path: tests/Feature/Marketing/DisconnectSocialAccountActionTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Marketing\\MarketingLeadControllerTest\:\:authorizedHeaders\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Marketing/MarketingLeadControllerTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -7117,9 +6793,15 @@ parameters:
 			path: tests/Feature/PaySlipControllerTest.php
 
 		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:twice\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/PaySlipControllerTest.php
+
+		-
 			message: '#^Cannot access property \$status on App\\Modules\\Payroll\\Domain\\Models\\PaySlip\|null\.$#'
 			identifier: property.nonObject
-			count: 1
+			count: 2
 			path: tests/Feature/PaySlipControllerTest.php
 
 		-
@@ -7137,7 +6819,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\PaySlipControllerTest\:\:payrollSlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 4
 			path: tests/Feature/PaySlipControllerTest.php
 
 		-
@@ -7489,6 +7171,12 @@ parameters:
 			path: tests/Feature/PayrollRunControllerTest.php
 
 		-
+			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Feature/PlanSeederTrialDaysAlignmentTest.php
+
+		-
 			message: '#^Property Tests\\Feature\\PlanningControllerTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -7743,7 +7431,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 2
 			path: tests/Feature/PrivacyControllerTest.php
 
 		-
@@ -7759,6 +7447,12 @@ parameters:
 			path: tests/Feature/ProcessBulkPaymentJobTest.php
 
 		-
+			message: '#^Call to static method mock\(\) on an unknown class Tests\\Feature\\Mockery\.$#'
+			identifier: class.notFound
+			count: 1
+			path: tests/Feature/ProcessBulkPaymentJobTest.php
+
+		-
 			message: '#^Method Tests\\Feature\\ProcessBulkPaymentJobTest\:\:companyAndManager\(\) should return array\{App\\Core\\Tenant\\Domain\\Models\\Company, App\\Core\\Auth\\Domain\\Models\\Employee\} but returns array\{Illuminate\\Database\\Eloquent\\Model, Illuminate\\Database\\Eloquent\\Model\}\.$#'
 			identifier: return.type
 			count: 1
@@ -7767,7 +7461,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$employee of method Tests\\Feature\\ProcessBulkPaymentJobTest\:\:paySlip\(\) expects App\\Core\\Auth\\Domain\\Models\\Employee, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 8
+			count: 10
 			path: tests/Feature/ProcessBulkPaymentJobTest.php
 
 		-
@@ -7791,13 +7485,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 15
+			count: 19
 			path: tests/Feature/PublicCareerControllerTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
 			identifier: property.notFound
-			count: 11
+			count: 15
 			path: tests/Feature/PublicCareerControllerTest.php
 
 		-
@@ -7909,6 +7603,42 @@ parameters:
 			path: tests/Feature/Security/AuthenticatedGuardrailsTest.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/Security/CheckThenCreateRaceTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Security\\ExposedSyncEngineService\:\:exposeApplyAttendanceLog\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Security/CheckThenCreateRaceTest.php
+
+		-
+			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Security/CheckThenCreateRaceTest.php
+
+		-
+			message: '#^Property App\\Core\\Tenant\\Domain\\Models\\Company\:\:\$referrer_partner_id \(int\<0, max\>\|null\) does not accept int\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Security/CheckThenCreateRaceTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Security\\CheckThenCreateRaceTest\:\:\$company \(App\\Core\\Tenant\\Domain\\Models\\Company\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Security/CheckThenCreateRaceTest.php
+
+		-
+			message: '#^Property Tests\\Feature\\Security\\CheckThenCreateRaceTest\:\:\$employee \(App\\Core\\Auth\\Domain\\Models\\Employee\) does not accept Illuminate\\Database\\Eloquent\\Model\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Feature/Security/CheckThenCreateRaceTest.php
+
+		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 5
@@ -7996,6 +7726,18 @@ parameters:
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 5
+			path: tests/Feature/Security/TenantScopeFailClosedTest.php
+
+		-
+			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 5
+			path: tests/Feature/Security/TenantScopeFailClosedTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 5
 			path: tests/Feature/Security/WebhookSsrfGuardTest.php
 
 		-
@@ -8043,7 +7785,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$verification_token on App\\Core\\Tenant\\Domain\\Models\\CompanyRequest\|null\.$#'
 			identifier: property.nonObject
-			count: 3
+			count: 5
 			path: tests/Feature/SelfServiceTrialTest.php
 
 		-
@@ -8054,12 +7796,6 @@ parameters:
 
 		-
 			message: '#^Method Tests\\Feature\\SelfServiceTrialTest\:\:test_can_verify_otp_and_provision_trial_tenant\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/SelfServiceTrialTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\SelfServiceTrialTest\:\:test_rejects_duplicate_manager_email\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: tests/Feature/SelfServiceTrialTest.php
@@ -8077,6 +7813,12 @@ parameters:
 			path: tests/Feature/SelfServiceTrialTest.php
 
 		-
+			message: '#^Method Tests\\Feature\\SelfServiceTrialTest\:\:test_signup_does_not_enumerate_existing_manager_email\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Feature/SelfServiceTrialTest.php
+
+		-
 			message: '#^Method Tests\\Feature\\SelfServiceTrialTest\:\:test_signup_sends_otp_and_creates_pending_request\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -8084,6 +7826,12 @@ parameters:
 
 		-
 			message: '#^Method Tests\\Feature\\SelfServiceTrialTest\:\:test_validates_required_fields\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Feature/SelfServiceTrialTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\SelfServiceTrialTest\:\:test_verify_rejects_duplicate_manager_email_after_otp\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: tests/Feature/SelfServiceTrialTest.php
@@ -8273,6 +8021,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/TrialDripEmailLocalizationTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\TrialProvisioningDedupTest\:\:guidedTrialPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/TrialProvisioningDedupTest.php
+
+		-
+			message: '#^Cannot access property \$google_id on App\\Core\\Auth\\Domain\\Models\\User\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: tests/Feature/User/UserAuthGoogleSignInSecurityTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
@@ -8519,18 +8279,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Unit/Rules/ValidIbanTest.php
-
-		-
-			message: '#^Call to an undefined method object\:\:getFillable\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/SensitiveFillableGuardTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\SensitiveFillableGuardTest\:\:test_sensitive_fields_are_not_mass_assignable\(\) has parameter \$forbidden with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/SensitiveFillableGuardTest.php
 
 		-
 			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\FeatureDetector@anonymous/tests/Unit/Services/FeatureDetectorTest\.php\:81\:\:isValidFeature\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
