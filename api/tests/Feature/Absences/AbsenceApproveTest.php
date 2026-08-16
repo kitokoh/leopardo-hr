@@ -57,13 +57,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -71,13 +71,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -159,13 +159,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -173,13 +173,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -261,13 +261,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => true,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -275,13 +275,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -351,13 +351,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -365,13 +365,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -436,13 +436,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee', // Regular employee, not manager
@@ -505,13 +505,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -519,13 +519,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -605,13 +605,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -619,13 +619,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -718,13 +718,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -732,13 +732,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -829,13 +829,13 @@ class AbsenceApproveTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -843,13 +843,13 @@ class AbsenceApproveTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

@@ -53,12 +53,12 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Meriem',
             'last_name' => 'RH',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $companyA->id,
             'role' => 'manager',
@@ -137,10 +137,10 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -171,12 +171,12 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Karim',
             'last_name' => 'Principal',
             'email' => 'principal@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -209,12 +209,12 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Sami',
             'last_name' => 'Employe',
             'email' => 'employe@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

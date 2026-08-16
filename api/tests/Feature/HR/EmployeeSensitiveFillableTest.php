@@ -41,16 +41,16 @@ class EmployeeSensitiveFillableTest extends TestCase
             'country' => 'DZ',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Mass',
             'last_name' => 'Assignment',
             'email' => 'mass-assignment@example.test',
             'company_id' => $company->id,
-            'password_hash' => Hash::make('attacker-controlled'),
             'biometric_face_reference_path' => 'face/attacker.jpg',
             'biometric_fingerprint_reference_path' => 'finger/attacker.jpg',
             'email_bounced_at' => now(),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('attacker-controlled')])->save();
 
         $fresh = $employee->fresh();
 
