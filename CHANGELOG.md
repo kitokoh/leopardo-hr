@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): /blog/[slug] — metadata propre par article (canonical, hreflang ×4, og:type article, publishedTime) via layout serveur (Closes #4611).** Avant : canonical=/blog sur tous les articles (soft-duplicates Google) et hreflang du sitemap contredits par le HTML.
 - **fix(web): /demo — ids des champs alignés sur les labels `htmlFor` (régression #4678).** Le dédoublonnage #4678 a retiré les `id` des champs mais les labels pointent toujours `htmlFor="demo-*"` → association a11y cassée (axe « form elements must have labels »). `id="demo-*"` rétabli sur les 7 champs.
 
 - **fix(api): UpdateEmployeeDTO::fromRequest — plus de fallback `$request->all()` (Closes #4609).** Le type de paramètre acceptait un `Request` brut et retombait sur `all()` sans validation → réactivation silencieuse du mass-assignment role/status/manager_role (contournement #3677/#4496). Signature restreinte à `UpdateEmployeeRequest|UpdateProfileRequest` + `validated()` uniquement (les 2 callers passent déjà des FormRequest). Tests : `UpdateEmployeeDtoGuardTest` (TypeError sur Request brut + garde structurelle).
