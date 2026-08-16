@@ -76,6 +76,36 @@ class PasswordResetTest extends TestCase
         Mail::assertNothingSent();
     }
 
+    public function test_forgot_password_unknown_email_does_not_sweep_tenant_schemas(): void
+    {
+        // #4495 : l'ancien fallback balayait TOUS les schémas tenants pour un
+        // email inconnu (oracle de timing — un email existant répondait en 1
+        // lookup indexé, un email inconnu en N SET search_path + SELECT).
+        // Le chemin public se résout via user_lookups uniquement : le nombre
+        // de SET search_path reste CONSTANT (middleware tenant, ≤ 1) quel que
+        // soit le nombre de schémas tenants.
+        foreach (['tenant_schema_a', 'tenant_schema_b', 'tenant_schema_c'] as $schema) {
+            DB::statement("CREATE SCHEMA IF NOT EXISTS {$schema}");
+            Company::factory()->create(['schema_name' => $schema]);
+        }
+
+        $searchPathStatements = 0;
+        DB::listen(function ($query) use (&$searchPathStatements): void {
+            if (str_contains($query->sql, 'SET search_path')) {
+                $searchPathStatements++;
+            }
+        });
+
+        $this->postJson('/api/v1/auth/forgot-password', ['email' => 'unknown@example.com'])
+            ->assertOk();
+
+        $this->assertLessThanOrEqual(
+            1,
+            $searchPathStatements,
+            'Le chemin public ne doit plus balayer les schémas tenants (oracle de timing #4495) : SET search_path constant.'
+        );
+    }
+
     public function test_reset_password_updates_password_and_revokes_tokens(): void
     {
         $token = $this->issueToken('reset-me@example.com');

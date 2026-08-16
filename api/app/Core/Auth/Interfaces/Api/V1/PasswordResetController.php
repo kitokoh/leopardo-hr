@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use stdClass;
 use Illuminate\Support\Str;
 
 /**
@@ -42,7 +43,9 @@ class PasswordResetController
 
         $email = strtolower(trim($validated['email']));
 
-        [$employee] = $this->resolveEmployeeAnywhere($email);
+        // #4495 : chemin public — résolution via user_lookups uniquement
+        // (pas de balayage multi-schéma : absence = aucun compte, temps ≈ constant).
+        [$employee] = $this->resolveEmployeePublicly($email);
 
         // Anti-énumération : même réponse que l'email existe ou non.
         if ($employee !== null) {
@@ -93,7 +96,14 @@ class PasswordResetController
             ], 422);
         }
 
-        [$employee, $employeeSchema] = $this->resolveEmployeeAnywhere($email);
+        // #4495 : résolution via la ligne de jeton (company_id + employee_id) —
+        // O(1), pas de dépendance au balayage multi-schéma. Fallback lookup
+        // public pour les jetons legacy/test sans company_id/employee_id.
+        if (isset($row->company_id, $row->employee_id)) {
+            [$employee, $employeeSchema] = $this->resolveEmployeeForToken($row);
+        } else {
+            [$employee, $employeeSchema] = $this->resolveEmployeePublicly($email);
+        }
 
         if ($employee === null) {
             return new JsonResponse([
@@ -151,17 +161,19 @@ class PasswordResetController
     }
 
     /**
-     * Résout un employé par email dans TOUS les tenants (shared + schémas),
-     * avec restauration du search_path. Même pattern que AuthService::login.
-     */
-    /**
+     * Résolution PUBLIQUE d'un employé par email — #4495.
+     *
+     * Chemin non authentifié (POST /auth/forgot-password) : user_lookups
+     * uniquement, jamais de balayage multi-schéma. Un email absent du lookup
+     * est traité « aucun compte » (réponse uniforme + temps ≈ constant) —
+     * l'ancien fallback `findEmployeeInTenantSchemas()` créait un oracle de
+     * timing (N SET search_path + SELECT par tenant pour un email inconnu).
+     *
      * @return array{0: Employee|null, 1: string|null} — [employé, schéma tenant éventuel]
      */
-    private function resolveEmployeeAnywhere(string $email): array
+    private function resolveEmployeePublicly(string $email): array
     {
         $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
-        $employee = null;
-        $employeeSchema = null;
 
         try {
             $lookup = null;
@@ -171,38 +183,32 @@ class PasswordResetController
                     ->first();
             }
 
-            if ($lookup) {
-                $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
-
-                if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
-                    $this->setTenantSearchPath($lookupSchema);
-                    $employeeSchema = $lookupSchema;
-                }
-
-                // #2652 : schéma tenant absent/migré partiel ⇒ traité « aucun employé ».
-                if ($lookupSchema === null || $this->tenantEmployeesTableExists($lookupSchema)) {
-                    /** @var Employee|null $employee */
-                    $employee = Employee::withoutGlobalScopes()
-                        ->where('company_id', $lookup->company_id)
-                        ->where('id', $lookup->employee_id)
-                        ->where('email', $email)
-                        ->first();
-                }
+            if (! $lookup) {
+                return [null, null];
             }
 
-            if (! $employee) {
-                [$employee, $employeeSchema] = $this->findEmployeeInTenantSchemas($email);
+            $lookupSchema = is_string($lookup->schema_name ?? null) ? $lookup->schema_name : null;
+
+            if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
+                $this->setTenantSearchPath($lookupSchema);
             }
 
-            if (! $employee) {
-                /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->where('email', $email)
-                    ->first();
+            // #2652 : schéma tenant absent/migré partiel ⇒ « aucun employé ».
+            if ($lookupSchema !== null && ! $this->tenantEmployeesTableExists($lookupSchema)) {
+                return [null, null];
             }
+
+            /** @var Employee|null $employee */
+            $employee = Employee::withoutGlobalScopes()
+                ->where('company_id', $lookup->company_id)
+                ->where('id', $lookup->employee_id)
+                ->where('email', $email)
+                ->first();
+
+            return [$employee, $lookupSchema];
         } catch (QueryException $e) {
             // Jamais de 500 sur la résolution (schéma absent, table partielle).
-            Log::warning('auth.password_reset_employee_resolution_failed', [
+            Log::warning('auth.password_reset_public_resolution_failed', [
                 'email' => $email,
                 'message' => $e->getMessage(),
             ]);
@@ -213,60 +219,56 @@ class PasswordResetController
                 DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }
-
-        return [$employee, $employeeSchema];
     }
 
     /**
-     * Cherche l'employé dans tous les schémas tenants connus (fallback quand
-     * le lookup est absent ou périmé).
+     * Résolution authentifiée par le jeton — #4495.
+     *
+     * Chemin `reset()` : la ligne `public.password_reset_tokens` porte
+     * company_id + employee_id → on charge l'employé depuis SON schéma tenant
+     * (via public.companies.schema_name) en O(1), sans dépendre du lookup ni
+     * du balayage multi-schéma.
+     *
+     * @return array{0: Employee|null, 1: string|null} — [employé, schéma tenant éventuel]
      */
-    /**
-     * @return array{0: Employee|null, 1: string|null}
-     */
-    private function findEmployeeInTenantSchemas(string $email): array
+    private function resolveEmployeeForToken(stdClass $tokenRow): array
     {
-        if (DB::getDriverName() !== 'pgsql') {
-            return [null, null];
-        }
-
-        $schemas = DB::table('public.companies')
-            ->whereNotNull('schema_name')
-            ->pluck('schema_name')
-            ->filter(fn (mixed $schema): bool => is_string($schema) && $this->isSafeSchemaName($schema))
-            ->unique()
-            ->values();
-
-        if ($schemas->isEmpty()) {
-            return [null, null];
-        }
-
-        $previous = $this->currentSearchPath();
+        $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
 
         try {
-            foreach ($schemas as $schema) {
-                if (! $this->tenantEmployeesTableExists((string) $schema)) {
-                    continue;
-                }
+            $schema = DB::table('public.companies')
+                ->where('id', $tokenRow->company_id)
+                ->value('schema_name');
 
-                $this->setTenantSearchPath((string) $schema);
+            $schemaName = is_string($schema) && $schema !== '' ? $schema : null;
 
-                /** @var Employee|null $employee */
-                $employee = Employee::withoutGlobalScopes()
-                    ->where('email', $email)
-                    ->first();
-
-                if ($employee instanceof Employee) {
-                    return [$employee, (string) $schema];
-                }
+            if ($schemaName !== null && $this->isSafeSchemaName($schemaName)) {
+                $this->setTenantSearchPath($schemaName);
             }
+
+            if ($schemaName !== null && ! $this->tenantEmployeesTableExists($schemaName)) {
+                return [null, null];
+            }
+
+            /** @var Employee|null $employee */
+            $employee = Employee::withoutGlobalScopes()
+                ->where('company_id', $tokenRow->company_id)
+                ->where('id', $tokenRow->employee_id)
+                ->first();
+
+            return [$employee, $schemaName];
+        } catch (QueryException $e) {
+            Log::warning('auth.password_reset_token_resolution_failed', [
+                'company_id' => $tokenRow->company_id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return [null, null];
         } finally {
-            if ($previous !== null && $previous !== '') {
-                DB::statement('SET search_path TO '.$previous);
+            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+                DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }
-
-        return [null, null];
     }
 
     private function lookupTable(): string
