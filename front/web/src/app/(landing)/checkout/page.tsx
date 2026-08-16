@@ -24,6 +24,7 @@ import {
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
@@ -37,62 +38,31 @@ import { getApiBaseUrl } from '@/lib/backend-url';
 ───────────────────────────────────────────── */
 const PLAN_CONFIG = {
   pilot: {
-    label: 'Pilot',
     icon: Rocket,
     color: 'blue',
     gradient: 'from-blue-500 to-indigo-600',
     priceMonthly: 29,
     priceAnnual: 24,
     savings: 60,
-    features: [
-      'Pointage web & mobile',
-      'Absences & congés',
-      'Dossiers employés',
-      'Bulletins de paie PDF',
-      'Dashboard manager',
-      'Apps Employee & Manager',
-      'Support email 48h',
-    ],
     trialDays: 14,
-    employeeLimit: "Jusqu'à 30 employés",
   },
   operations: {
-    label: 'Operations',
     icon: Zap,
     color: 'emerald',
     gradient: 'from-emerald-500 to-cyan-600',
     priceMonthly: 99,
     priceAnnual: 79,
     savings: 240,
-    features: [
-      'Tout Pilot inclus',
-      'Paie automatisée',
-      'Biométrie ZKTeco',
-      'API & Webhooks',
-      'Exports comptables',
-      'Support prioritaire 24h',
-    ],
     trialDays: 14,
-    employeeLimit: "Jusqu'à 250 employés",
   },
   enterprise: {
-    label: 'Enterprise',
     icon: Building2,
     color: 'violet',
     gradient: 'from-violet-500 to-fuchsia-600',
     priceMonthly: null,
     priceAnnual: null,
     savings: 0,
-    features: [
-      'Tout Operations inclus',
-      'Multi-pays & multi-devises',
-      'SSO SAML/OIDC (bientot disponible)',
-      'Audit trail immuable',
-      'Schema PostgreSQL isolé',
-      'Account manager dédié',
-    ],
     trialDays: 14,
-    employeeLimit: 'Employés illimités',
   },
 } as const;
 
@@ -199,8 +169,11 @@ function PlanSummaryCard({
 }) {
   const cfg = PLAN_CONFIG[plan];
   const Icon = cfg.icon;
+  const { locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
+  const planCopy = copy.plans[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
-  const priceLabel = price === null ? 'Sur devis' : String(price);
+  const priceLabel = price === null ? copy.quote : String(price);
 
   return (
     <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50">
@@ -211,19 +184,19 @@ function PlanSummaryCard({
             <Icon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-white/80 text-xs font-semibold uppercase tracking-wider">Plan choisi</p>
-            <h3 className="text-white font-black text-xl">{cfg.label}</h3>
+            <p className="text-white/80 text-xs font-semibold uppercase tracking-wider">{copy.planChosen}</p>
+            <h3 className="text-white font-black text-xl">{planCopy.label}</h3>
           </div>
         </div>
         <div>
           <div className="flex items-baseline gap-1">
             {price !== null && <span className="text-white/70 text-sm">EUR</span>}
             <span className="text-white font-black text-5xl">{priceLabel}</span>
-            {price !== null && <span className="text-white/70 text-sm">/mois</span>}
+            {price !== null && <span className="text-white/70 text-sm">{copy.perMonth}</span>}
           </div>
           {billing === 'annual' && price !== null && (
             <p className="text-white/70 text-xs mt-1">
-              Facturé annuellement — économisez EUR {cfg.savings}/an
+              {copy.billedAnnually.replace('{savings}', String(cfg.savings))}
             </p>
           )}
         </div>
@@ -240,7 +213,7 @@ function PlanSummaryCard({
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              Mensuel
+              {copy.monthly}
             </button>
             <button
               onClick={() => onChangeBilling('annual')}
@@ -250,15 +223,15 @@ function PlanSummaryCard({
                   : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              Annuel
-              <span className="ml-1.5 text-[10px] font-black">-17%</span>
+              {copy.annual}
+              <span className="ml-1.5 text-[10px] font-black">{copy.annualDiscount}</span>
             </button>
           </div>
       </div>
 
       {/* Features */}
       <ul className="p-5 space-y-2.5">
-        {cfg.features.map((f) => (
+        {planCopy.features.map((f) => (
           <li key={f} className="flex items-center gap-2.5 text-sm text-slate-700 dark:text-slate-300">
             <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
             {f}
@@ -271,7 +244,7 @@ function PlanSummaryCard({
         <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50">
           <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
           <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-            {cfg.trialDays} jours gratuits inclus · Aucune CB débitée avant la fin de l&apos;essai
+            {copy.trialBadge.replace('{days}', String(cfg.trialDays))}
           </p>
         </div>
       </div>
@@ -283,12 +256,14 @@ function PlanSummaryCard({
    TRUST BADGES
 ───────────────────────────────────────────── */
 function TrustBadges() {
+  const { locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
   return (
     <div className="mt-6 space-y-2">
       {[
-        { icon: Lock, text: 'Paiement sécurisé TLS 1.3 + AES-256' },
-        { icon: ShieldCheck, text: 'Données hébergées en Europe — conforme RGPD' },
-        { icon: Shield, text: 'Sans engagement · Résiliation en 2 clics' },
+        { icon: Lock, text: copy.trust.secure },
+        { icon: ShieldCheck, text: copy.trust.rgpd },
+        { icon: Shield, text: copy.trust.cancel },
       ].map(({ icon: Icon, text }) => (
         <div key={text} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <Icon className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
@@ -302,7 +277,9 @@ function TrustBadges() {
 /* ─────────────────────────────────────────────
    GOOGLE OAUTH BUTTON (reusable)
 ───────────────────────────────────────────── */
-function GoogleButton({ label = 'Continuer avec Google' }: { label?: string }) {
+function GoogleButton({ label }: { label?: string }) {
+  const { locale } = useVitrineLocale();
+  const resolvedLabel = label ?? getCheckoutCopy(locale).continueWithGoogle;
   return (
     <a
       href={googleAuthHref()}
@@ -326,7 +303,7 @@ function GoogleButton({ label = 'Continuer avec Google' }: { label?: string }) {
           fill="#EA4335"
         />
       </svg>
-      {label}
+      {resolvedLabel}
     </a>
   );
 }
@@ -347,7 +324,9 @@ function StepRecap({
 }) {
   const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
-  const priceLabel = price === null ? 'Sur devis' : String(price);
+  const { locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
+  const priceLabel = price === null ? copy.quote : String(price);
 
   return (
     <motion.div
@@ -357,22 +336,23 @@ function StepRecap({
       transition={{ duration: 0.3 }}
     >
       <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-        Votre plan sélectionné
+        {copy.recap.title}
       </h2>
       <p className="text-slate-500 dark:text-slate-400 mb-8">
-        Vérifiez les détails avant de créer votre compte.
+        {copy.recap.subtitle}
       </p>
 
       <PlanSummaryCard plan={plan} billing={billing} onChangeBilling={onChangeBilling} />
 
       <div className="mt-6 p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 text-sm text-blue-800 dark:text-blue-300">
-        <strong>Essai gratuit de {cfg.trialDays} jours.</strong> Votre carte ne sera débitée qu&apos;après la période d&apos;essai. Annulez à tout moment depuis votre tableau de bord.
+        <strong>{copy.recap.trialNote.replace('{days}', String(cfg.trialDays)).split('. ')[0]}.</strong>{' '}
+        {copy.recap.trialNote.replace('{days}', String(cfg.trialDays)).split('. ').slice(1).join('. ')}
       </div>
 
       <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-        <span>Mauvais plan ? </span>
+        <span>{copy.recap.wrongPlan} </span>
         <Link href="/pricing" className="font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-2">
-          Voir tous les plans
+          {copy.recap.viewAllPlans}
         </Link>
       </div>
 
@@ -380,7 +360,12 @@ function StepRecap({
         onClick={onNext}
         className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
-        <>{price === null ? 'Demander un devis' : `Continuer — EUR ${price}/mois`} <ArrowRight className="w-5 h-5" /></>
+        <>
+          {price === null
+            ? copy.quote
+            : copy.recap.continueCta.replace('{price}', String(price))}{' '}
+          <ArrowRight className="w-5 h-5" />
+        </>
       </button>
     </motion.div>
   );
@@ -412,16 +397,18 @@ function StepAccount({
   onNext: () => void;
   onBack: () => void;
 }) {
+  const { locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
   const [errors, setErrors] = useState<Partial<AccountData>>({});
 
   function validate(): boolean {
     const e: Partial<AccountData> = {};
-    if (!data.firstName.trim()) e.firstName = 'Prénom requis';
-    if (!data.lastName.trim()) e.lastName = 'Nom requis';
+    if (!data.firstName.trim()) e.firstName = copy.account.errors.firstName;
+    if (!data.lastName.trim()) e.lastName = copy.account.errors.lastName;
     if (!data.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
-      e.email = 'Email professionnel valide requis';
+      e.email = copy.account.errors.email;
     if (!data.company.trim() || data.company.length < 2)
-      e.company = 'Nom de société requis';
+      e.company = copy.account.errors.company;
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -446,14 +433,14 @@ function StepAccount({
         onClick={onBack}
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-6 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Retour
+        <ArrowLeft className="w-4 h-4" /> {copy.back}
       </button>
 
       <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-        Créez votre compte
+        {copy.account.title}
       </h2>
       <p className="text-slate-500 dark:text-slate-400 mb-6">
-        Votre espace Leopardo sera prêt en quelques secondes.
+        {copy.account.subtitle}
       </p>
 
       {/* Google OAuth button */}
@@ -463,7 +450,7 @@ function StepAccount({
 
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
-        <span className="text-xs text-slate-400 font-medium">ou avec votre email</span>
+        <span className="text-xs text-slate-400 font-medium">{copy.account.orEmail}</span>
         <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
       </div>
 
@@ -472,7 +459,7 @@ function StepAccount({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Prénom <span className="text-red-500">*</span>
+              {copy.account.firstName} <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -480,7 +467,7 @@ function StepAccount({
                 type="text"
                 value={data.firstName}
                 onChange={(e) => onChange({ firstName: e.target.value })}
-                placeholder="Marie"
+                placeholder={copy.account.placeholders.firstName}
                 className={`${inputBase} pl-10 ${errors.firstName ? inputErr : inputOk}`}
               />
             </div>
@@ -488,13 +475,13 @@ function StepAccount({
           </div>
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Nom <span className="text-red-500">*</span>
+              {copy.account.lastName} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               value={data.lastName}
               onChange={(e) => onChange({ lastName: e.target.value })}
-              placeholder="Dupont"
+              placeholder={copy.account.placeholders.lastName}
               className={`${inputBase} ${errors.lastName ? inputErr : inputOk}`}
             />
             {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>}
@@ -504,7 +491,7 @@ function StepAccount({
         {/* Email */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            Email professionnel <span className="text-red-500">*</span>
+            {copy.account.email} <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -512,7 +499,7 @@ function StepAccount({
               type="email"
               value={data.email}
               onChange={(e) => onChange({ email: e.target.value })}
-              placeholder="marie@societe.com"
+              placeholder={copy.account.placeholders.email}
               className={`${inputBase} pl-10 ${errors.email ? inputErr : inputOk}`}
             />
           </div>
@@ -522,7 +509,7 @@ function StepAccount({
         {/* Company */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            Société <span className="text-red-500">*</span>
+            {copy.account.company} <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -530,7 +517,7 @@ function StepAccount({
               type="text"
               value={data.company}
               onChange={(e) => onChange({ company: e.target.value })}
-              placeholder="Nom de votre entreprise"
+              placeholder={copy.account.placeholders.company}
               className={`${inputBase} pl-10 ${errors.company ? inputErr : inputOk}`}
             />
           </div>
@@ -541,7 +528,7 @@ function StepAccount({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Téléphone
+              {copy.account.phone}
             </label>
             <div className="relative">
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -549,7 +536,7 @@ function StepAccount({
                 type="tel"
                 value={data.phone}
                 onChange={(e) => onChange({ phone: e.target.value })}
-                placeholder="+33 6 00 00 00 00"
+                placeholder={copy.account.placeholders.phone}
                 className={`${inputBase} pl-10 ${inputOk}`}
               />
             </div>
@@ -557,14 +544,14 @@ function StepAccount({
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               <Users className="inline w-3.5 h-3.5 mr-1" />
-              Effectif
+              {copy.account.employees}
             </label>
             <select
               value={data.employees}
               onChange={(e) => onChange({ employees: e.target.value })}
               className={`${inputBase} ${inputOk}`}
             >
-              <option value="">Choisir</option>
+              <option value="">{copy.account.choose}</option>
               <option value="1-10">1-10</option>
               <option value="11-50">11-50</option>
               <option value="51-200">51-200</option>
@@ -579,7 +566,7 @@ function StepAccount({
         onClick={handleNext}
         className="mt-8 w-full flex items-center justify-center gap-2.5 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:scale-[1.01] active:scale-[0.99] text-base"
       >
-        Passer au paiement
+        {copy.account.next}
         <ArrowRight className="w-5 h-5" />
       </button>
     </motion.div>
@@ -603,6 +590,8 @@ function StepPayment({
   const router = useRouter();
   const cfg = PLAN_CONFIG[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
+  const { locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
 
   const [cardNumber, setCardNumber] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.number : '');
   const [expiry, setExpiry] = useState(CHECKOUT_SANDBOX ? SANDBOX_CARD.expiry : '');
@@ -639,7 +628,7 @@ function StepPayment({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!cardNumber || !expiry || !cvc || !cardName) {
-      setError('Veuillez remplir tous les champs de paiement.');
+      setError(copy.payment.errors.fillAll);
       return;
     }
 
@@ -674,10 +663,10 @@ function StepPayment({
       if (data.success && data.checkout_url) {
         router.push(data.checkout_url);
       } else {
-        setError(data.message || 'Erreur lors du traitement du paiement.');
+        setError(data.message || copy.payment.errors.generic);
       }
     } catch {
-      setError('Impossible de contacter le serveur. Vérifiez votre connexion.');
+      setError(copy.payment.errors.network);
     } finally {
       setLoading(false);
     }
@@ -697,11 +686,11 @@ function StepPayment({
         onClick={onBack}
         className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-6 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Retour
+        <ArrowLeft className="w-4 h-4" /> {copy.back}
       </button>
 
       <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-1">
-        Informations de paiement
+        {copy.payment.title}
       </h2>
 
       {/* Sandbox notice (dev/staging only — never shown in production, #2628) */}
@@ -713,10 +702,10 @@ function StepPayment({
           </div>
           <div>
             <p className="text-sm font-bold text-amber-900 dark:text-amber-200 mb-1">
-              Mode test activé — Aucune carte réelle débitée
+              {copy.payment.sandboxNoticeTitle}
             </p>
             <p className="text-xs text-amber-700 dark:text-amber-400 mb-2">
-              Les Stripe Price IDs ne sont pas encore configurés. Utilisez la carte de test ci-dessous.
+              {copy.payment.sandboxNoticeBody}
             </p>
             <button
               type="button"
@@ -724,7 +713,7 @@ function StepPayment({
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white text-xs font-black rounded-lg hover:bg-amber-600 transition-colors"
             >
               <Sparkles className="w-3 h-3" />
-              {sandboxFilled ? '✓ Carte test remplie' : 'Remplir avec la carte test'}
+              {sandboxFilled ? copy.payment.filledTestCard : copy.payment.fillTestCard}
             </button>
             <div className="mt-2 font-mono text-xs text-amber-700 dark:text-amber-400 space-y-0.5">
               <p>Carte : {SANDBOX_CARD.number}</p>
@@ -741,7 +730,7 @@ function StepPayment({
         {/* Card number */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            Numéro de carte
+            {copy.payment.cardLabel}
           </label>
           <div className="relative">
             <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -755,7 +744,7 @@ function StepPayment({
             />
             {isSandboxCard && (
               <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-black text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">
-                TEST
+                {copy.payment.testBadge}
               </span>
             )}
           </div>
@@ -765,7 +754,7 @@ function StepPayment({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Date d&apos;expiration
+              {copy.payment.expiryLabel}
             </label>
             <input
               type="text"
@@ -778,7 +767,7 @@ function StepPayment({
           </div>
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              CVC
+              {copy.payment.cvcLabel}
             </label>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -797,13 +786,13 @@ function StepPayment({
         {/* Card name */}
         <div>
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-            Nom sur la carte
+            {copy.payment.cardNameLabel}
           </label>
           <input
             type="text"
             value={cardName}
             onChange={(e) => setCardName(e.target.value)}
-            placeholder="Marie Dupont"
+            placeholder={copy.payment.cardNamePlaceholder}
             className={inputBase}
           />
         </div>
@@ -822,15 +811,15 @@ function StepPayment({
         {/* Summary */}
         <div className="p-4 rounded-2xl bg-transparent dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-600 dark:text-slate-400">Plan {cfg.label}</span>
+            <span className="text-slate-600 dark:text-slate-400">{copy.payment.planRow.replace('{label}', copy.plans[plan].label)}</span>
             <span className="font-bold text-slate-900 dark:text-white">EUR {price}/mois</span>
           </div>
           <div className="flex items-center justify-between text-sm mt-1">
-            <span className="text-slate-600 dark:text-slate-400">Essai gratuit</span>
-            <span className="font-bold text-emerald-600">{cfg.trialDays} jours</span>
+            <span className="text-slate-600 dark:text-slate-400">{copy.payment.freeTrialRow}</span>
+            <span className="font-bold text-emerald-600">{cfg.trialDays} {locale === 'fr' ? 'jours' : locale === 'tr' ? 'gün' : locale === 'ar' ? 'أيام' : 'days'}</span>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-3 pt-3 flex items-center justify-between">
-            <span className="font-bold text-slate-900 dark:text-white">Dû aujourd&apos;hui</span>
+            <span className="font-bold text-slate-900 dark:text-white">{copy.payment.dueToday}</span>
             <span className="font-black text-lg text-emerald-600">EUR 0,00</span>
           </div>
         </div>
@@ -848,27 +837,27 @@ function StepPayment({
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
               />
-              Traitement en cours...
+              {copy.payment.processing}
             </>
           ) : (
             <>
               <Lock className="w-4 h-4" />
-              Démarrer l&apos;essai gratuit — EUR 0,00 dû maintenant
+              {copy.payment.submitCta}
               <ArrowRight className="w-5 h-5" />
             </>
           )}
         </button>
 
         <p className="text-center text-xs text-slate-400 dark:text-slate-500">
-          En confirmant, vous acceptez nos{' '}
+          {copy.payment.legal.prefix}{' '}
           <Link href="/terms" className="underline underline-offset-2 hover:text-slate-600">
-            conditions d&apos;utilisation
+            {copy.payment.legal.terms}
           </Link>{' '}
-          et notre{' '}
+          {copy.payment.legal.and}{' '}
           <Link href="/privacy" className="underline underline-offset-2 hover:text-slate-600">
-            politique de confidentialité
+            {copy.payment.legal.privacy}
           </Link>
-          .
+          {copy.payment.legal.suffix}
         </p>
       </form>
     </motion.div>
@@ -893,7 +882,9 @@ function CheckoutInner() {
 
   const cfg = PLAN_CONFIG[plan];
   const totalSteps = 3;
-  const stepLabels = ['Récapitulatif', 'Compte', 'Paiement'];
+  const { locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
+  const stepLabels = [copy.steps.recap, copy.steps.account, copy.steps.payment];
 
   const { isDark, toggleDarkMode } = useDarkMode();
   const [step, setStep] = useState(0);
@@ -922,24 +913,23 @@ function CheckoutInner() {
         <main className="py-24 px-4 sm:px-6 lg:px-8">
           <div className="max-w-xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
-              Plan Free — 0 €/mois · 5 employés
+              {copy.free.badge}
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">
-              L&apos;essai guidé démarre ici
+              {copy.free.title}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 mb-8">
-              Le plan Free se souscrit via une demande d&apos;essai guidé : notre équipe
-              configure votre entreprise et vous accompagne. Aucune carte bancaire requise.
+              {copy.free.body}
             </p>
             <Link
               href="/signup?source=checkout_plan_free"
               className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-lg font-bold rounded-2xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-xl shadow-emerald-500/20"
             >
-              Démarrer l&apos;essai guidé
+              {copy.free.cta}
             </Link>
             <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
               <Link href="/pricing" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                Voir les tarifs
+                {copy.free.seePricing}
               </Link>
             </p>
           </div>
@@ -964,7 +954,7 @@ function CheckoutInner() {
             className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-8 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Retour aux tarifs
+            {copy.backToPricing}
           </Link>
 
           <StepIndicator step={step} total={totalSteps} stepLabels={stepLabels} />

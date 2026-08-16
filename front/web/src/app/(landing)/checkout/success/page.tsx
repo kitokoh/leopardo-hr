@@ -20,6 +20,7 @@ import {
 import { Navbar, Footer } from '@/modules/vitrine';
 import { DEFAULT_BACKEND_API_URL } from '@/lib/backend-url';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getCheckoutCopy } from '@/modules/vitrine/data/checkout';
 
 /* ─────────────────────────────────────────────
    CONFETTI (lightweight CSS-based)
@@ -69,36 +70,28 @@ function Confetti() {
 }
 
 /* ─────────────────────────────────────────────
-   NEXT STEPS
+   NEXT STEPS (icônes/couleurs structurelles ; textes localisés
+   via getCheckoutCopy(locale).success.nextSteps — issue #4185)
 ───────────────────────────────────────────── */
-const nextSteps = [
+const NEXT_STEP_META = [
   {
     icon: LogIn,
     color: 'emerald',
-    title: 'Connectez-vous à votre espace',
-    desc: 'Accédez au dashboard manager et configurez votre première équipe.',
     // Issue #2234 (T010) : l'URL API Laravel renvoyait JSON/404 —
     // la route web du portail client est /auth/login.
     href: '/auth/login',
-    cta: 'Accéder au dashboard',
     external: false,
   },
   {
     icon: Smartphone,
     color: 'blue',
-    title: 'Téléchargez les apps mobiles',
-    desc: 'Apps Employee et Manager disponibles sur Android et iOS.',
     href: '/download',
-    cta: 'Télécharger les apps',
     external: false,
   },
   {
     icon: Mail,
     color: 'violet',
-    title: 'Invitez votre équipe',
-    desc: 'Envoyez les invitations depuis le dashboard — vos employés reçoivent leur accès par email.',
     href: '/auth/login',
-    cta: 'Gérer les invitations',
     external: false,
   },
 ];
@@ -108,7 +101,9 @@ const nextSteps = [
 ───────────────────────────────────────────── */
 function SuccessInner() {
   const searchParams = useSearchParams();
-  const { direction } = useVitrineLocale();
+  const { direction, locale } = useVitrineLocale();
+  const copy = getCheckoutCopy(locale);
+  const nextSteps = copy.success.nextSteps.map((step, i) => ({ ...NEXT_STEP_META[i], ...step }));
 
   const isSandbox = searchParams.get('sandbox') === '1';
   const sessionId = searchParams.get('session_id') || '';
@@ -187,19 +182,21 @@ function SuccessInner() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
               <Sparkles className="w-3.5 h-3.5" />
-              {isSandbox ? 'Simulation réussie — Mode sandbox' : 'Paiement confirmé'}
+              {isSandbox ? copy.success.badgeSandbox : copy.success.badgePaid}
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
-              Votre espace Leopardo{' '}
+              {copy.success.title}{' '}
               <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
-                est prêt !
+                {copy.success.titleAccent}
               </span>
             </h1>
 
             <p className="text-xl text-slate-500 dark:text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed">
-              {company ? `${company} — ` : ''} Plan <strong className="text-slate-900 dark:text-white">{plan}</strong>
-              {billing === 'annual' ? ' (annuel)' : ' (mensuel)'}. 14 jours offerts, aucune carte débitée aujourd&apos;hui.
+              {copy.success.subtitle
+                .replace('{company}', company)
+                .replace('{plan}', plan)
+                .replace('{period}', billing === 'annual' ? copy.success.periodAnnual : copy.success.periodMonthly)}
             </p>
           </motion.div>
 
@@ -215,41 +212,41 @@ function SuccessInner() {
                 <Rocket className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <h2 className="font-black text-slate-900 dark:text-white">Récapitulatif de votre essai</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Gardez ces informations</p>
+                <h2 className="font-black text-slate-900 dark:text-white">{copy.success.cardTitle}</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{copy.success.cardSubtitle}</p>
               </div>
             </div>
 
             <div className="space-y-3">
               {email && (
                 <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-sm text-slate-500 dark:text-slate-400">Email</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.emailRow}</span>
                   <span className="text-sm font-bold text-slate-900 dark:text-white">{email}</span>
                 </div>
               )}
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Plan</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.planRow}</span>
                 <span className="text-sm font-bold text-slate-900 dark:text-white">{plan}</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Période d&apos;essai</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.trialPeriodRow}</span>
                 <span className="text-sm font-bold text-emerald-600">14 jours gratuits</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-sm text-slate-500 dark:text-slate-400">Débité aujourd&apos;hui</span>
+                <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.chargedTodayRow}</span>
                 <span className="text-sm font-black text-emerald-600">EUR 0,00</span>
               </div>
               {isSandbox && (
                 <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
-                  <span className="text-sm text-slate-500 dark:text-slate-400">Mode</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.modeRow}</span>
                   <span className="text-xs font-black text-amber-600 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full">
-                    SANDBOX — simulation
+                    {copy.success.sandboxBadge}
                   </span>
                 </div>
               )}
               {sessionId && (
                 <div className="flex items-center justify-between py-3">
-                  <span className="text-sm text-slate-500 dark:text-slate-400">Réf. session</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.sessionRow}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-slate-600 dark:text-slate-400 truncate max-w-[160px]">
                       {sessionId.slice(0, 24)}…
@@ -257,11 +254,11 @@ function SuccessInner() {
                     <button
                       onClick={copySessionId}
                       className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      title="Copier la référence"
+                      title={copy.success.copyTitle}
                     >
                       <ClipboardCopy className="w-3.5 h-3.5" />
                     </button>
-                    {copied && <span className="text-xs text-emerald-600 font-semibold">Copié !</span>}
+                    {copied && <span className="text-xs text-emerald-600 font-semibold">{copy.success.copied}</span>}
                   </div>
                 </div>
               )}
@@ -277,7 +274,7 @@ function SuccessInner() {
           >
             <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             <p className="text-sm text-blue-800 dark:text-blue-300">
-              <strong>Un email de confirmation</strong> a été envoyé à <strong>{email || 'votre adresse'}</strong> avec vos identifiants d&apos;accès et les instructions de démarrage.
+              {copy.success.emailNotice.replace('{email}', email || copy.success.emailFallback)}
             </p>
           </motion.div>
 
@@ -288,7 +285,7 @@ function SuccessInner() {
             transition={{ duration: 0.7, delay: 0.8 }}
           >
             <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6 text-left">
-              Prochaines étapes
+              {copy.success.nextStepsTitle}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
               {nextSteps.map((step, i) => {
@@ -348,14 +345,14 @@ function SuccessInner() {
               className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black rounded-2xl hover:from-emerald-600 hover:to-cyan-600 transition-all duration-300 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.98] text-base"
             >
               <LogIn className="w-5 h-5" />
-              Accéder à mon espace
+              {copy.success.primaryCta}
             </Link>
             <Link
               href="/download"
               className="group flex items-center justify-center gap-2.5 px-8 py-4 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all duration-300 hover:shadow-lg text-base"
             >
               <Download className="w-5 h-5" />
-              Télécharger les apps
+              {copy.success.secondaryCta}
             </Link>
           </motion.div>
 
@@ -366,11 +363,11 @@ function SuccessInner() {
             transition={{ duration: 0.6, delay: 1.4 }}
             className="mt-10 text-sm text-slate-400 dark:text-slate-500"
           >
-            Des questions ?{' '}
+            {copy.success.helpPrefix}{' '}
             <Link href="/contact" className="font-semibold text-emerald-600 hover:text-emerald-700 underline underline-offset-2">
-              Contacter le support
+              {copy.success.helpLink}
             </Link>{' '}
-            · Nous répondons sous 24h ouvrables.
+            {copy.success.helpSuffix}
           </motion.p>
         </div>
       </main>
