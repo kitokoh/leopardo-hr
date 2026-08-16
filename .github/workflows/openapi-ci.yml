@@ -36,6 +36,7 @@ concurrency:
 
 jobs:
   lint-openapi:
+    timeout-minutes: 30
     name: Lint OpenAPI contract
     runs-on: ubuntu-latest
     steps:
@@ -60,6 +61,7 @@ jobs:
         run: node dev-hub/tools/generate-openapi-sdk.mjs --check
 
   route-coverage:
+    timeout-minutes: 45
     name: Route → OpenAPI coverage guard (issue #1473)
     runs-on: ubuntu-latest
     steps:

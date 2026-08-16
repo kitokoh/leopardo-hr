@@ -100,6 +100,36 @@ class EdgeController extends Controller
         ]);
     }
 
+    /**
+     * GET /edge/readiness
+     *
+     * #4411 : readiness = health + schéma SQLite provisionné. Le liveness
+     * (`/edge/health`) reste volontairement sans DB (mode autonome offline) ;
+     * ce endpoint vérifie que le schéma local existe (SELECT 1 sur sync_queue)
+     * — sans lui, un nœud frais répondait « ok » avec une sync morte
+     * (« no such table: sync_queue » en boucle dans le daemon).
+     */
+    public function readiness(): JsonResponse
+    {
+        try {
+            \Illuminate\Support\Facades\DB::connection('sqlite')->select('SELECT 1 FROM sync_queue LIMIT 1');
+        } catch (\Throwable $e) {
+            return response()->json([
+                'edge' => true,
+                'status' => 'not_ready',
+                'reason' => 'edge_schema_missing',
+                'time' => Carbon::now()->toIso8601String(),
+            ], 503);
+        }
+
+        return response()->json([
+            'edge' => true,
+            'status' => 'ok',
+            'schema' => 'provisioned',
+            'time' => Carbon::now()->toIso8601String(),
+        ]);
+    }
+
     // =========================================================================
     // Heartbeat Edge → Cloud
     // =========================================================================

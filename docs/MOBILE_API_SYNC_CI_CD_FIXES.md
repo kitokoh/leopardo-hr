@@ -17,13 +17,13 @@
 
 #### 2. Dart Code Formatting
 **Files**: 7 Dart files formatted
-- `front/mobile/lib/models/detail_schema.dart`
-- `front/mobile/lib/models/feature.dart`
-- `front/mobile/lib/models/feature_manifest.dart`
-- `front/mobile/lib/models/form_schema.dart`
-- `front/mobile/lib/models/list_schema.dart`
-- `front/mobile/lib/models/sync_models_example.dart`
-- `front/mobile/test/models/sync_models_test.dart`
+- `front/mobile_apps/leopardo_core/lib/models/detail_schema.dart`
+- `front/mobile_apps/leopardo_core/lib/models/feature.dart`
+- `front/mobile_apps/leopardo_core/lib/models/feature_manifest.dart`
+- `front/mobile_apps/leopardo_core/lib/models/form_schema.dart`
+- `front/mobile_apps/leopardo_core/lib/models/list_schema.dart`
+- `front/mobile_apps/leopardo_core/lib/models/sync_models_example.dart`
+- `front/mobile_apps/leopardo_core/test/models/sync_models_test.dart`
 
 **Status**: ✅ Complete
 
