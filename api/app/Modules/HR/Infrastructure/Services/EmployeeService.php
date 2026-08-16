@@ -55,7 +55,29 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
+        // Issue #4307 : role/manager_role/status/company_id ne sont PAS dans
+        // Employee::$fillable depuis le durcissement #3677 — Eloquent les
+        // écarte silencieusement via create(). On les extrait et on les pose
+        // explicitement après la création pour éviter le 500 (role=null →
+        // TypeError dans EmployeeResource::getAppDownloadLink).
+        $sensitiveFields = [
+            'role'         => Arr::pull($payload, 'role', 'employee'),
+            'manager_role' => Arr::pull($payload, 'manager_role'),
+            'status'       => Arr::pull($payload, 'status', 'active'),
+            'company_id'   => Arr::pull($payload, 'company_id'),
+        ];
+
         $employee = Employee::query()->create($payload);
+
+        // Assignation directe des champs sensibles (contournement volontaire
+        // du fillable — l'acteur a déjà été autorisé par authorize() +
+        // FormRequest avant d'arriver ici).
+        foreach ($sensitiveFields as $field => $value) {
+            if ($value !== null) {
+                $employee->{$field} = $value;
+            }
+        }
+        $employee->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
@@ -130,7 +152,21 @@ class EmployeeService
         $previousManagerRole = $employee->manager_role;
         $roleChangeRequested = array_key_exists('manager_role', $payload) || array_key_exists('role', $payload);
 
+        // Issue #4307 : même protection que create() — extraire les champs
+        // hors fillable avant fill() pour les poser explicitement.
+        $sensitiveUpdate = [];
+        foreach (['role', 'manager_role', 'status', 'company_id'] as $field) {
+            if (array_key_exists($field, $payload)) {
+                $sensitiveUpdate[$field] = Arr::pull($payload, $field);
+            }
+        }
+
         $employee->fill($payload);
+
+        foreach ($sensitiveUpdate as $field => $value) {
+            $employee->{$field} = $value;
+        }
+
         $employee->save();
 
         if ($employee->company_id !== null) {

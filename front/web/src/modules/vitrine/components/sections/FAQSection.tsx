@@ -107,16 +107,25 @@ export function FAQSection({
 
         {/* FAQ Items */}
         <div className="space-y-4">
-          {filteredItems.map((item, index) => (
+          {filteredItems.map((item, index) => {
+            // Issue #4321 : item.id peut être undefined (pages modules) → on
+            // dérive un itemId stable des deux côtés (onClick + render) pour
+            // que l'accordéon fonctionne même sans id explicite.
+            const itemId = item.id ?? `faq-${index}`;
+            const isOpen = openId === itemId;
+            const answerId = `${itemId}-answer`;
+            return (
             <motion.div
-              key={item.id ?? `${item.question}-${index}`}
+              key={itemId}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.6, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }}
             >
               <button
-                onClick={() => setOpenId(openId === (item.id ?? `${index}`) ? null : (item.id ?? `${index}`))}
+                onClick={() => setOpenId(isOpen ? null : itemId)}
+                aria-expanded={isOpen}
+                aria-controls={answerId}
                 className="w-full text-left"
               >
                 <div className="group relative bg-white dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/80 dark:border-slate-800/80 p-6 transition-all duration-300 hover:border-emerald-200/50 dark:hover:border-emerald-800/50 hover:shadow-lg cursor-pointer">
@@ -125,7 +134,7 @@ export function FAQSection({
                       {item.question}
                     </h3>
                     <motion.div
-                      animate={{ rotate: openId === item.id ? 180 : 0 }}
+                      animate={{ rotate: isOpen ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                       className="flex-shrink-0"
                     >
@@ -135,7 +144,7 @@ export function FAQSection({
 
                   {/* Answer */}
                   <AnimatePresence>
-                    {openId === item.id && (
+                    {isOpen && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
@@ -152,7 +161,8 @@ export function FAQSection({
                 </div>
               </button>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

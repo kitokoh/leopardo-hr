@@ -113,7 +113,7 @@ const healthCheckTimestamp = ref(null)
 const apiLive = ref(null)
 const apiCheckTimestamp = ref(null)
 
-// Issue #2789 — GET /admin/metrics/overview : agrégats plateforme (Infrastructure)
+// Issue #4328 : la route réelle est /platform/metrics/overview (pas /admin/metrics/overview)
 const platformMetrics = ref(null)
 const infraCheckTimestamp = ref(null)
 
@@ -212,10 +212,10 @@ const apiDetails = computed(() => {
     : `Erreur: ${apiLive.value.error || 'service injoignable'}`
 })
 
-// Issue #2789 — GET /admin/metrics/overview (agrégats plateforme)
+// GET /platform/metrics/overview (agrégats plateforme — Issue #4328)
 const infraStatus = computed(() => (platformMetrics.value ? 'healthy' : 'unavailable'))
 const infraDetails = computed(() => {
-  if (!platformMetrics.value) return 'Non disponible — GET /admin/metrics/overview'
+  if (!platformMetrics.value) return 'Non disponible — GET /platform/metrics/overview'
   const companies = platformMetrics.value.companies
   const system = platformMetrics.value.system || {}
   return `${companies?.active ?? '?'} compagnies actives · PHP ${system.php_version ?? '?'} · queue ${system.queue_driver ?? '?'}`
@@ -233,13 +233,16 @@ async function loadApiLiveness() {
 }
 
 async function loadPlatformMetrics() {
+  // Issue #4328 : la route réelle est /platform/metrics/overview
+  // (l'intercepteur global affiche déjà un toast sur 404 — pas de toast local
+  // pour éviter le double toast signalé dans l'issue).
   try {
-    const response = await api.get('/admin/metrics/overview')
+    const response = await api.get('/platform/metrics/overview')
     platformMetrics.value = response.data?.data || null
     infraCheckTimestamp.value = new Date()
   } catch (error) {
     console.error('Failed to load platform metrics:', error)
-    toast.error('Erreur lors du chargement des métriques plateforme')
+    // Pas de toast.error ici : l'intercepteur global gère le message d'erreur.
   }
 }
 
