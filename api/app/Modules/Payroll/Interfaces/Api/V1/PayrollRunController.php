@@ -266,7 +266,7 @@ class PayrollRunController extends Controller
         }
 
         if (in_array($payrollRun->status, ['paid', 'cancelled', 'locked'], true)) {
-            return response()->json(['message' => 'Payroll run cannot be cancelled in current status.'], 422);
+            return response()->json(['message' => __('errors.PAYROLL_RUN_CANCEL_NOT_ALLOWED')], 422);
         }
 
         $payrollRun->update(['status' => 'cancelled']);

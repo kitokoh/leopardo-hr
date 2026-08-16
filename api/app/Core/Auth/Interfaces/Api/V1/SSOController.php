@@ -83,7 +83,7 @@ class SSOController extends Controller
 
         return response()->json([
             'data' => $config->toArray(),
-            'message' => 'SSO configure avec succes.',
+            'message' => __('errors.SSO_CONFIGURED'),
         ]);
     }
 
@@ -98,7 +98,7 @@ class SSOController extends Controller
         $this->ssoService->disableSSO($actor->company_id);
 
         return response()->json([
-            'message' => 'SSO desactive.',
+            'message' => __('errors.SSO_DISABLED'),
         ]);
     }
 
@@ -122,7 +122,7 @@ class SSOController extends Controller
 
             return response()->json([
                 'data' => $result,
-                'message' => 'SAML assertion recue.',
+                'message' => __('errors.SAML_ASSERTION_RECEIVED'),
             ]);
         } catch (SSOValidationNotImplementedException $e) {
             return response()->json(['error' => 'SAML_AUTH_NOT_IMPLEMENTED'], 501);
@@ -163,7 +163,7 @@ class SSOController extends Controller
 
             return response()->json([
                 'data' => $result,
-                'message' => 'Connexion OIDC réussie.',
+                'message' => __('errors.OIDC_SIGNIN_SUCCESS'),
             ]);
         } catch (\RuntimeException $e) {
             Log::error('sso.oidc_callback_failed', ['company_id' => $companyId, 'error' => $e->getMessage()]);

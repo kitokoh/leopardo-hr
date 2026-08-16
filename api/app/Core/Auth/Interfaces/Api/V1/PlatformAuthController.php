@@ -42,7 +42,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->status !== 'active') {
             return new JsonResponse([
                 'error' => 'ACCOUNT_SUSPENDED',
-                'message' => 'Votre compte a été suspendu. Contactez votre administrateur.',
+                'message' => __('errors.ACCOUNT_SUSPENDED_CONTACT_ADMIN'),
                 'localized_message' => __('errors.ACCOUNT_SUSPENDED'),
             ], 403);
         }

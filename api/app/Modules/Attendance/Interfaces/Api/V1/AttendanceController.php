@@ -513,13 +513,13 @@ class AttendanceController extends Controller
 
         if ($effectiveCheckOut !== null && $effectiveCheckIn === null) {
             throw ValidationException::withMessages([
-                'check_out' => ['Le départ manuel nécessite une heure d\'arrivée.'],
+                'check_out' => [__('errors.ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN')],
             ]);
         }
 
         if ($effectiveCheckIn !== null && $effectiveCheckOut !== null && $effectiveCheckOut <= $effectiveCheckIn) {
             throw ValidationException::withMessages([
-                'check_out' => ['L\'heure de départ doit être postérieure à l\'heure d\'arrivée.'],
+                'check_out' => [__('errors.ATTENDANCE_CHECKOUT_AFTER_CHECKIN')],
             ]);
         }
 

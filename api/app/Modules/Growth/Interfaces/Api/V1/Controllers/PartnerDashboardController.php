@@ -67,8 +67,8 @@ class PartnerDashboardController extends Controller
         } catch (\App\Exceptions\DomainException $e) {
             return new JsonResponse([
                 'error' => $e->errorCode(),
-                'message' => 'Candidature deja soumise.',
-                'localized_message' => 'Candidature deja soumise.',
+                'message' => __('errors.PARTNER_APPLICATION_ALREADY_SUBMITTED'),
+                'localized_message' => __('errors.PARTNER_APPLICATION_ALREADY_SUBMITTED'),
             ], 400);
         }
 
@@ -99,8 +99,8 @@ class PartnerDashboardController extends Controller
             // Erreur métier propre : code d'erreur générique, jamais de message brut.
             return new JsonResponse([
                 'error' => $e->errorCode(),
-                'message' => 'Demande de paiement refusee.',
-                'localized_message' => 'Demande de paiement refusee.',
+                'message' => __('errors.PAYOUT_REQUEST_REJECTED'),
+                'localized_message' => __('errors.PAYOUT_REQUEST_REJECTED'),
             ], $e->statusCode());
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('partner.payout.request_failed', [
@@ -110,8 +110,8 @@ class PartnerDashboardController extends Controller
 
             return new JsonResponse([
                 'error' => 'PAYOUT_REQUEST_FAILED',
-                'message' => 'Une erreur est survenue lors de la demande de paiement.',
-                'localized_message' => 'Une erreur est survenue lors de la demande de paiement.',
+                'message' => __('errors.PAYOUT_REQUEST_FAILED'),
+                'localized_message' => __('errors.PAYOUT_REQUEST_FAILED'),
             ], 500);
         }
     }
@@ -140,7 +140,7 @@ class PartnerDashboardController extends Controller
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (!$partner) {
-            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
+            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => __('errors.NOT_A_PARTNER')], 403);
         }
 
         // Optimized with SQL aggregations instead of memory loading
