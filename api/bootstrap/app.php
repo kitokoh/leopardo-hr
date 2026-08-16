@@ -72,10 +72,29 @@ return Application::configure(basePath: dirname(__DIR__))
         // undefined behaviour for X-Forwarded-For, which weakens per-IP rate
         // limiting (RateLimiter::for('api', ...) etc). See
         // docs/security/AUDIT_API_2026-07-19.md, section 5.
-        $middleware->trustProxies(at: '*', headers: Request::HEADER_X_FORWARDED_FOR
-            | Request::HEADER_X_FORWARDED_HOST
-            | Request::HEADER_X_FORWARDED_PORT
-            | Request::HEADER_X_FORWARDED_PROTO);
+        //
+        // Issue #4494 : `at: '*'` trustait n'importe quel proxy — un client
+        // internet direct pouvait forger X-Forwarded-For et changer d'IP à
+        // chaque requête, contournant TOUS les limiteurs IP (auth-sensitive,
+        // trial signup, public-careers, webhooks-inbound, kiosk-punch…).
+        // On ne fait confiance qu'aux réseaux privés (loopback + RFC1918 +
+        // ULA) : Render atteint l'app depuis son réseau privé, donc XFF y est
+        // honoré ; un peer public hors liste → XFF ignoré → `$request->ip()`
+        // reflète l'IP réelle. CIDR documenté dans render.yaml.
+        $middleware->trustProxies(
+            at: [
+                '127.0.0.1',
+                '::1',
+                '10.0.0.0/8',
+                '172.16.0.0/12',
+                '192.168.0.0/16',
+                'fc00::/7',
+            ],
+            headers: Request::HEADER_X_FORWARDED_FOR
+                | Request::HEADER_X_FORWARDED_HOST
+                | Request::HEADER_X_FORWARDED_PORT
+                | Request::HEADER_X_FORWARDED_PROTO
+        );
 
         $middleware->api(prepend: [RequestIdMiddleware::class, ApiVersionMiddleware::class, SetLocale::class, StructuredLogging::class, SentryContextMiddleware::class, CompressResponse::class]);
 
