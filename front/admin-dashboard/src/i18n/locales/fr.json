@@ -68,7 +68,15 @@
     "password_change_failed": "Le changement de mot de passe a échoué.",
     "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
     "two_fa_invalid": "Le code 2FA fourni est invalide.",
-    "disable_two_fa_failed": "La désactivation du 2FA a échoué."
+    "disable_two_fa_failed": "La désactivation du 2FA a échoué.",
+    "email_field_label": "Adresse email",
+    "access_key_label": "Clé d'Accès",
+    "two_fa_code_label": "Code 2FA",
+    "hide_password": "Masquer le mot de passe",
+    "show_password": "Afficher le mot de passe",
+    "remember_me": "Se souvenir de moi",
+    "loading": "Authentification…",
+    "unexpected_error": "Une erreur inattendue est survenue."
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"

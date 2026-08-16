@@ -507,7 +507,15 @@
     "password_change_failed": "Şifre değiştirme başarısız.",
     "two_fa_setup_failed": "2FA sırrı oluşturma başarısız.",
     "two_fa_invalid": "Sağlanan 2FA kodu geçersiz.",
-    "disable_two_fa_failed": "2FA devre dışı bırakma başarısız."
+    "disable_two_fa_failed": "2FA devre dışı bırakma başarısız.",
+    "email_field_label": "E-posta adresi",
+    "access_key_label": "Erişim anahtarı",
+    "two_fa_code_label": "2FA Kodu",
+    "hide_password": "Şifreyi gizle",
+    "show_password": "Şifreyi göster",
+    "remember_me": "Beni hatırla",
+    "loading": "Kimlik doğrulanıyor…",
+    "unexpected_error": "Beklenmeyen bir hata oluştu."
   },
   "social_contrib": {
     "ignore_caps": "Yasal tavan olmadan",

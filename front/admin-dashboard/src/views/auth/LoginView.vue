@@ -33,7 +33,7 @@
             <div class="space-y-5">
               <FormField
                 id="email"
-                label="Adresse email"
+                :label="t('auth.email_field_label', 'Adresse email')"
                 required
                 :error="fieldErrors.email"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -60,7 +60,7 @@
 
               <FormField
                 id="password"
-                label="Clé d'Accès"
+                :label="t('auth.access_key_label', 'Clé d'Accès')"
                 required
                 :error="fieldErrors.password"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -85,7 +85,7 @@
                     type="button"
                     class="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-white transition-colors"
                     @click="showPassword = !showPassword"
-                    :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    :aria-label="showPassword ? t('auth.hide_password', 'Masquer le mot de passe') : t('auth.show_password', 'Afficher le mot de passe')"
                   >
                     <EyeSlashIcon v-if="showPassword" class="h-5 w-5" />
                     <EyeIcon v-else class="h-5 w-5" />
@@ -96,7 +96,7 @@
               <FormField
                 v-if="requiresTwoFactor"
                 id="two-factor-code"
-                label="Code 2FA"
+                :label="t('auth.two_fa_code_label', 'Code 2FA')"
                 required
                 :error="fieldErrors.twoFactorCode"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -126,7 +126,7 @@
                   class="h-4 w-4 rounded border-white/10 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl text-brand-600 focus:ring-brand-500 transition-all duration-300"
                 />
                 <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Se souvenir de moi
+                  {{ t('auth.remember_me', 'Se souvenir de moi') }}
                 </label>
               </div>
 
@@ -157,7 +157,7 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 </span>
-                {{ isLoading ? 'Authentification...' : 'Se connecter' }}
+                {{ isLoading ? t('auth.loading', 'Authentification…') : t('auth.login.title', 'Se connecter') }}
               </button>
 
 
@@ -255,12 +255,12 @@ async function handleLogin() {
       router.push('/')
     } else if (result.requiresTwoFactor) {
       requiresTwoFactor.value = true
-      error.value = result.message || 'Un code de vérification est requis.'
+      error.value = result.message || t('auth.two_fa_required_msg', 'Un code de vérification est requis.')
     } else {
-      error.value = result.message || 'Erreur de connexion'
+      error.value = result.message || t('auth.connection_error', 'Erreur de connexion.')
     }
   } catch (err) {
-    error.value = 'Une erreur inattendue est survenue'
+    error.value = t('auth.unexpected_error', 'Une erreur inattendue est survenue.')
     console.error('Login error:', err)
   } finally {
     isLoading.value = false

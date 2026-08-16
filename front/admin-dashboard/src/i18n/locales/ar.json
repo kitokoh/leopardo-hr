@@ -797,7 +797,15 @@
     "password_change_failed": "فشل تغيير كلمة المرور.",
     "two_fa_setup_failed": "فشل إنشاء مفتاح 2FA.",
     "two_fa_invalid": "رمز 2FA المقدم غير صالح.",
-    "disable_two_fa_failed": "فشل تعطيل 2FA."
+    "disable_two_fa_failed": "فشل تعطيل 2FA.",
+    "email_field_label": "عنوان البريد الإلكتروني",
+    "access_key_label": "مفتاح الوصول",
+    "two_fa_code_label": "رمز 2FA",
+    "hide_password": "إخفاء كلمة المرور",
+    "show_password": "إظهار كلمة المرور",
+    "remember_me": "تذكرني",
+    "loading": "جارٍ التحقق…",
+    "unexpected_error": "حدث خطأ غير متوقع."
   },
   "app": {
     "title": "ليوباردو للموارد البشرية"
