@@ -92,6 +92,13 @@ return [
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Yalnızca aktif sözleşmeler askıya alınabilir.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Sözleşmenin feshedilmesi için aktif veya askıda olması gerekir.',
 
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => 'Bu deneme talebi zaten işlendi.',
+    'INVALID_OR_EXPIRED_CODE' => 'Geçersiz veya süresi dolmuş doğrulama kodu.',
+    'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
+    'INVALID_COUNTRY' => 'Kayıt ülkesi geçersiz veya desteklenmiyor. Lütfen kaydı yeniden başlatın.',
+    'NO_PLAN_AVAILABLE' => 'Deneme hizmeti geçici olarak kullanılamıyor.',
+    'PROVISIONING_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
     'PARTNER_APPLICATION_ALREADY_SUBMITTED' => 'Bu başvuru zaten gönderilmiş.',
     'PAYOUT_REQUEST_REJECTED' => 'Ödeme talebi reddedildi.',
     'NOT_A_PARTNER' => 'Ortak olarak kayıtlı değilsiniz.',
@@ -118,10 +125,9 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Maaş çalışması mevcut durumunda iptal edilemez.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'VERIFICATION_CODE_INVALID' => 'Doğrulama kodu geçersiz veya süresi dolmuş.',
-    'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
     'TRIAL_SPACE_CREATION_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.', origin/main
     'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
     'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).'
 ];

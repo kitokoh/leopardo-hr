@@ -79,7 +79,7 @@ jobs:
       - name: Build Next.js vitrine
         working-directory: front/web
         env:
-          NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+          NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
         run: npm run build
 
   web-marketing-funnel-e2e:
@@ -111,14 +111,14 @@ jobs:
       - name: Run preview funnel tests
         working-directory: front/web
         env:
-          NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+          NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
         run: npx playwright test e2e/marketing-funnel.spec.ts --project=chromium --workers=1
 
       - name: Run preview authenticated client smokes
         working-directory: front/web
         env:
-          NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+          NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
         run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts --project=chromium --workers=1
 

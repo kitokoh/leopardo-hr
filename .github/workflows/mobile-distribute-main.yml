@@ -39,7 +39,7 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL }}
 
 jobs:
   distribute-mobile:
@@ -82,6 +82,15 @@ jobs:
             android_package: com.leopardo.rh
 
     steps:
+      - name: Guard PROD_API_BASE_URL (#4524)
+        shell: bash
+        run: |
+          if [[ -z "${{ vars.PROD_API_BASE_URL }}" ]]; then
+            echo "::error::PROD_API_BASE_URL must be set (fail-open fallback removed, issue #4524)."
+            exit 1
+          fi
+          echo "PROD_API_BASE_URL=${{ vars.PROD_API_BASE_URL }}"
+
       # Security note (CodeQL actions/untrusted-checkout fix):
       # `github.sha` here is always the verified commit on the protected `main` branch —
       # no cross-job SHA propagation from a `workflow_run` event. This eliminates the
