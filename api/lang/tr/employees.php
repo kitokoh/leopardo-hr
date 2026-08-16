@@ -47,4 +47,10 @@ return [
     'gender' => 'Cinsiyet',
     'hire_date' => 'İşe başlama tarihi',
     'emergency_contact' => 'Acil durum irtibatı',
+
+    'evaluation_exists' => 'Bu calisan icin bu donemde zaten bir degerlendirme var.',
+    'evaluation_acknowledged_locked' => 'Teslim alinmis bir degerlendirme artik degistirilemez.',
+    'evaluation_not_draft_submit' => 'Yalnizca taslak degerlendirme gonderilebilir.',
+    'evaluation_not_draft_delete' => 'Yalnizca taslak degerlendirme silinebilir.',
+    'evaluation_not_submitted' => 'Yalnizca gonderilmis bir degerlendirme teslim alinabilir.',
 ];

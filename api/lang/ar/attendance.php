@@ -49,4 +49,6 @@ return [
     'correction_filter_applied' => 'مطبقة',
     'correction_filter_rejected' => 'مرفوضة',
     'correction_filter_all' => 'الكل',
+
+    'correction_transmitted' => 'تم إرسال طلب التعديل إلى الموارد البشرية.',
 ];
