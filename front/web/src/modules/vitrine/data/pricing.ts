@@ -32,6 +32,25 @@ export type PricingPlan = {
 const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   fr: [
     {
+      name: 'Free',
+      price: '0',
+      annualPrice: '0',
+      period: '/mois',
+      annualPeriod: '/mois',
+      description: 'Pour les petites équipes qui démarrent',
+      priceNote: 'Sans carte bancaire. 5 employés inclus.',
+      employeeLimit: "Jusqu'à 5 employés",
+      features: [
+        'Pointage web',
+        'Absences, congés et soldes',
+        'App mobile Employee incluse',
+        'Support communautaire',
+      ],
+      cta: 'Créer mon compte gratuit',
+      popular: false,
+      gradient: 'from-slate-300 to-slate-400',
+    },
+    {
       name: 'Pilot',
       price: '29',
       annualPrice: '24',
@@ -98,6 +117,25 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
     },
   ],
   en: [
+    {
+      name: 'Free',
+      price: '0',
+      annualPrice: '0',
+      period: '/month',
+      annualPeriod: '/month',
+      description: 'For small teams getting started',
+      priceNote: 'No credit card required. 5 employees included.',
+      employeeLimit: 'Up to 5 employees',
+      features: [
+        'Web attendance',
+        'Absences & leave balances',
+        'Employee mobile app included',
+        'Community support',
+      ],
+      cta: 'Create my free account',
+      popular: false,
+      gradient: 'from-slate-300 to-slate-400',
+    },
     {
       name: 'Pilot',
       price: '29',
@@ -166,6 +204,25 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   ],
   tr: [
     {
+      name: 'Free',
+      price: '0',
+      annualPrice: '0',
+      period: '/ay',
+      annualPeriod: '/ay',
+      description: 'Yeni baslayan kucuk ekipler icin',
+      priceNote: 'Kredi karti gerekmez. 5 çalışan dahil.',
+      employeeLimit: '5 çalışana kadar',
+      features: [
+        'Web yoklama',
+        'Izin ve devamsizlik takibi',
+        'Employee mobil uygulamasi dahil',
+        'Topluluk destegi',
+      ],
+      cta: 'Ücretsiz hesabımı oluştur',
+      popular: false,
+      gradient: 'from-slate-300 to-slate-400',
+    },
+    {
       name: 'Pilot',
       price: '29',
       annualPrice: '24',
@@ -232,6 +289,25 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
     },
   ],
   ar: [
+    {
+      name: 'Free',
+      price: '0',
+      annualPrice: '0',
+      period: '/شهر',
+      annualPeriod: '/شهر',
+      description: 'للفرق الصغيرة التي تبدأ للتو',
+      priceNote: 'بدون بطاقة ائتمانية. يشمل 5 موظفين.',
+      employeeLimit: 'حتى 5 موظفين',
+      features: [
+        'الحضور عبر الويب',
+        'الإجازات والغيابات والأرصدة',
+        'تطبيق الموظفين مشمول',
+        'دعم المجتمع',
+      ],
+      cta: 'أنشئ حسابي المجاني',
+      popular: false,
+      gradient: 'from-slate-300 to-slate-400',
+    },
     {
       name: 'Pilot',
       price: '29',
