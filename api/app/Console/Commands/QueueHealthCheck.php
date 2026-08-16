@@ -22,7 +22,7 @@ class QueueHealthCheck extends Command
     protected $description = 'Check Redis connectivity and queue depths (Upstash-compatible)';
 
     /** Named queues defined in Plan 63. */
-    private array $defaultQueues = ['default', 'documents', 'pdf', 'notifications', 'payroll', 'webhooks'];
+    private array $defaultQueues = ['default', 'documents', 'pdf', 'notifications', 'payroll', 'webhooks', 'audit'];
 
     public function handle(): int
     {

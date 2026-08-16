@@ -112,8 +112,8 @@ class PartnerDashboardController extends Controller
             // Erreur métier propre : code d'erreur générique, jamais de message brut.
             return new JsonResponse([
                 'error' => $e->errorCode(),
-                'message' => 'Demande de paiement refusee.',
-                'localized_message' => 'Demande de paiement refusee.',
+                'message' => $e->errorCode(),
+                'localized_message' => __('errors.PAYOUT_REQUEST_REFUSED'),
             ], $e->statusCode());
         } catch (\Throwable $e) {
             Log::error('partner.payout.request_failed', [
@@ -123,8 +123,8 @@ class PartnerDashboardController extends Controller
 
             return new JsonResponse([
                 'error' => 'PAYOUT_REQUEST_FAILED',
-                'message' => 'Une erreur est survenue lors de la demande de paiement.',
-                'localized_message' => 'Une erreur est survenue lors de la demande de paiement.',
+                'message' => 'PAYOUT_REQUEST_FAILED',
+                'localized_message' => __('errors.PAYOUT_REQUEST_FAILED'),
             ], 500);
         }
     }
