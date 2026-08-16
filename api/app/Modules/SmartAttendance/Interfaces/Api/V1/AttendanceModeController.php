@@ -72,7 +72,7 @@ class AttendanceModeController extends Controller
         $settings = AttendanceModeSettings::where('company_id', $company->id)->first();
         if ($settings && $settings->hasForcedMode()) {
             return response()->json([
-                'message' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
+                'message' => __('errors.COMPANY_MODE_FORCED'),
                 'code'    => 'COMPANY_MODE_FORCED',
             ], 403);
         }
@@ -97,7 +97,7 @@ class AttendanceModeController extends Controller
             ]);
         } catch (GpsConsentMissingException) {
             return response()->json([
-                'message' => 'Le consentement GPS est obligatoire pour activer le pointage automatique.',
+                'message' => __('errors.GPS_CONSENT_REQUIRED'),
                 'code'    => 'GPS_CONSENT_REQUIRED',
             ], 422);
         }

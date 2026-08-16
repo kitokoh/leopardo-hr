@@ -65,7 +65,7 @@ class PaymentBatchController extends Controller
 
         if (! in_array($run->status, ['calculated', 'validated', 'paid'], true)) {
             throw ValidationException::withMessages([
-                'payroll_run_id' => ['Le cycle de paie doit etre calcule ou valide avant de creer un lot de paiement.'],
+                'payroll_run_id' => [__('errors.PAYMENT_BATCH_RUN_INVALID')],
             ]);
         }
 
@@ -180,7 +180,7 @@ class PaymentBatchController extends Controller
 
         return response()->json([
             'data' => $this->batchPayload($batch, includeItems: true),
-            'message' => 'Paiement en masse declare. Les confirmations employes et documents sont traites en arriere-plan.',
+            'message' => __('errors.PAYMENT_BATCH_CREATED'),
         ], 202);
     }
 
