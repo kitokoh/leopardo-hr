@@ -25,6 +25,7 @@ concurrency:
 
 jobs:
   check:
+    timeout-minutes: 15
     name: Check branch protection (issue #2011)
     runs-on: ubuntu-latest
     env:
