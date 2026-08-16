@@ -41,11 +41,11 @@ class PlatformAdminDashboardApiTest extends TestCase
         $this->company = $company;
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Super Admin Test',
             'email' => 'sa-admin-test@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
         $this->superAdmin = $superAdmin;
 

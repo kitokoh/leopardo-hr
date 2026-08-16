@@ -323,11 +323,11 @@ class QaHardeningEndpointsTest extends TestCase
 
     public function test_super_admin_lists_real_platform_users(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
         /** @var Company $company */

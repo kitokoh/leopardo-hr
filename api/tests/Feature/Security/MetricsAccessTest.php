@@ -43,11 +43,11 @@ class MetricsAccessTest extends TestCase
     /** @test */
     public function metrics_requires_super_admin(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => fake()->unique()->safeEmail(),
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
@@ -68,11 +68,11 @@ class MetricsAccessTest extends TestCase
         // anti-fingerprinting des versions internes).
         config(['security.rate_limits.metrics_per_minute' => 2]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin 2',
             'email' => fake()->unique()->safeEmail(),
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 

@@ -28,11 +28,11 @@ class PlatformCompanyFeatureApiTest extends TestCase
     public function test_super_admin_can_view_and_update_company_feature_flags(): void
     {
         $company = Company::factory()->create(['features' => ['rh' => true]]);
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
