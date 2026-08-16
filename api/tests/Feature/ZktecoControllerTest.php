@@ -277,6 +277,7 @@ class ZktecoControllerTest extends TestCase
         // #4187 : un manager du tenant A ne doit pas pouvoir pousser des
         // utilisateurs vers un appareil du tenant B connu par serial_number
         // (lookup autrefois par serial seul → action cross-tenant).
+        /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create();
         $otherDevice = ZktecoDevice::query()->create([
             'company_id' => $otherCompany->id,

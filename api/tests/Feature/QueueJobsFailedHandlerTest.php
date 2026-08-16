@@ -23,7 +23,7 @@ class QueueJobsFailedHandlerTest extends TestCase
 
     public function test_failed_handlers_log_without_rethrowing(): void
     {
-        Log::spy();
+        $log = Log::spy();
 
         $jobs = [
             new ProcessBulkPaymentJob(1, 1, null),
@@ -36,13 +36,14 @@ class QueueJobsFailedHandlerTest extends TestCase
             $job->failed(new RuntimeException('retries exhausted'));
         }
 
-        Log::shouldHaveReceived('error')
+        $log->shouldHaveReceived('error')
             ->withArgs(fn (string $channel, array $ctx) => str_contains($channel, 'failed'))
             ->atLeast()->times(3);
     }
 
     public function test_generate_bank_export_failed_marks_export_failed(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = \App\Core\Tenant\Domain\Models\Company::factory()->create(['country' => 'DZ']);
         $export = BankExport::query()->create([
             'company_id' => $company->id,

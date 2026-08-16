@@ -310,7 +310,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t php_files < <(find app bootstrap config database public routes tests -type f -name '*.php' | sort)
+          # #4291 : `lang` inclu — un ParseError dans les catalogues de
+          # traduction (régression errors.php ×4, merge #4275) cassait TOUTES
+          # les réponses localisées sans être détecté par le lint précédent.
+          mapfile -t php_files < <(find app bootstrap config database public routes tests lang -type f -name '*.php' | sort)
           for file in "${php_files[@]}"; do
             php -l "$file" >/dev/null
           done
