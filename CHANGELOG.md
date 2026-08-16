@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): /demo — id uniques sur les champs (corrige la régression de doublons introduite par le premier volet a11y) (Closes #4613).** Les champs pré-existants (id demo-*) avaient reçu un second id → TS17001. Normalisation : un seul id par champ, aligné sur le htmlFor du label.
 - **docs(qa): session expert SWE/QA 2026-08-16 — merge drain (~55 PRs), 11 implémentations (i18n/SEO/admin/mobile/CI), audit runtime prod, leçons.** Rapport complet : `docs/qa/QA_SESSION_2026-08-16-swe-qa-merge-drain.md`.
 - **docs(ci): CI_CD_SECRETS.md — table des secrets re-synchronisée (Closes #4627).** `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`/`VITE_WEBSOCKET_URL` étaient attribués à `deploy-web-vitrine.yml`, workflow inexistant (déploiement vitrine via intégration Cloudflare Pages ; CI = web-marketing-ci.yml). Usage réel corrigé (deploy-admin-dashboard.yml seul) + note sur le mode de déploiement vitrine.
 - **fix(ci): tests.yml — vestiges mobile morts retirés (Closes #4626).** `DEFAULT_MOBILE_COVERAGE_MIN` défini mais référencé nulle part (la couverture mobile vit dans mobile-apps-ci.yml) et le rapport CI du job notify annonçait des artefacts mobiles jamais produits. Supprimés.
