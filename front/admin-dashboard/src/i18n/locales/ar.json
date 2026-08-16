@@ -1046,13 +1046,15 @@
   },
   "api": {
     "sessionExpired": "انتهت الجلسة. جارٍ إعادة الاتصال...",
-    "accessDenied": "تم رفض الوصول. صلاحيات غير كافية.",
-    "notFound": "المورد غير موجود.",
+    "accessDenied": "تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.",
+    "notFound": "المورد غير موجود: :endpoint",
     "tooManyRequests": "طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.",
-    "serverError": "خطأ في الخادم. حاول مرة أخرى لاحقًا.",
-    "serverUnavailable": "الخادم غير متاح مؤقتًا. يرجى المحاولة بعد قليل.",
+    "serverError": "خطأ في الخادم على :endpoint. :detail",
+    "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). حاول مرة أخرى بعد قليل.",
+    "genericError": "خطأ :status على :endpoint.",
     "invalidData": "بيانات غير صالحة.",
     "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت.",
-    "unexpectedError": "حدث خطأ غير متوقع."
+    "unexpectedError": "حدث خطأ غير متوقع.",
+    "serverErrorRetry": "حاول مرة أخرى لاحقًا."
   }
 }

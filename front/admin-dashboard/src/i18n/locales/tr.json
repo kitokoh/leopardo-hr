@@ -1046,13 +1046,15 @@
   },
   "api": {
     "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
-    "accessDenied": "Erişim reddedildi. Yetersiz izinler.",
-    "notFound": "Kaynak bulunamadı.",
+    "accessDenied": ":endpoint üzerinde erişim reddedildi. Yetersiz izinler.",
+    "notFound": "Kaynak bulunamadı: :endpoint",
     "tooManyRequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
-    "serverError": "Sunucu hatası. Daha sonra tekrar deneyin.",
-    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor. Lütfen birazdan tekrar deneyin.",
+    "serverError": ":endpoint üzerinde sunucu hatası. :detail",
+    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor (:status). Kısa süre sonra tekrar deneyin.",
+    "genericError": ":endpoint üzerinde :status hatası.",
     "invalidData": "Geçersiz veri.",
     "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
-    "unexpectedError": "Beklenmeyen bir hata oluştu."
+    "unexpectedError": "Beklenmeyen bir hata oluştu.",
+    "serverErrorRetry": "Daha sonra tekrar deneyin."
   }
 }
