@@ -7,6 +7,7 @@ close, branding PATCH, exports history, kiosk provisioning, marketing leads.
 Usage: python3 scripts/qa_api_write_workflows.py [base_url]
 """
 import json
+import os
 import sys
 import urllib.request
 import urllib.error
@@ -68,9 +69,11 @@ def section(title):
     print(f"\n=== {title} ===")
 
 
-tok_emp = login("karim.aouad@techcorp-algerie.dz", "password123")
-tok_mgr = login("ahmed.benali@techcorp-algerie.dz", "password123")
-tok_rh = login("fatima.meziane@techcorp-algerie.dz", "password123")
+# #4416 : creds via env (politique #1697) — pas de mot de passe en clair.
+PASSWD = os.environ.get("LEOPARDO_DEMO_PASSWORD", "")
+tok_emp = login(os.environ.get("LEOPARDO_DEMO_EMPLOYEE_EMAIL", "karim.aouad@techcorp-algerie.dz"), PASSWD)
+tok_mgr = login(os.environ.get("LEOPARDO_DEMO_MANAGER_EMAIL", "ahmed.benali@techcorp-algerie.dz"), PASSWD)
+tok_rh = login(os.environ.get("LEOPARDO_DEMO_RH_EMAIL", "fatima.meziane@techcorp-algerie.dz"), PASSWD)
 
 section("SALARY ADVANCE — double validation workflow")
 advance_id = None
