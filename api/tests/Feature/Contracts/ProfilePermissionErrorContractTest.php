@@ -191,26 +191,30 @@ class ProfilePermissionErrorContractTest extends TestCase
 
         /** @var Employee $manager */
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => $suffix,
             'email' => "manager-{$suffix}@company.test",
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Employee',
             'last_name' => $suffix,
             'email' => "employee-{$suffix}@company.test",
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         return [$company, $manager, $employee];
     }
