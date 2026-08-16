@@ -60,7 +60,6 @@ return [
     'PREFERENCE_UPDATED' => 'Tercih güncellendi.',
     'CONFIG_UPDATED' => 'Yapılandırma güncellendi.',
 
-    // #4312/#4313/#4314 — FR résiduels localisés (vague expert20)
     'PAYOUT_REQUEST_REFUSED' => 'Ödeme talebi reddedildi.',
     'PAYOUT_REQUEST_FAILED' => 'Ödeme talebi sırasında bir hata oluştu.',
     'COMPANY_MODE_FORCED' => 'Şirketiniz bir mesai modu dayatıyor. Değiştiremezsiniz.',
@@ -108,4 +107,8 @@ return [
     'VERIFICATION_CODE_INVALID' => 'Doğrulama kodu geçersiz veya süresi dolmuş.',
     'EMAIL_ALREADY_REGISTERED' => 'Bu e-postayla zaten bir hesap var. Doğrudan giriş yapın.',
     'TRIAL_SPACE_CREATION_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.', origin/main
+    'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
+    'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
 ];

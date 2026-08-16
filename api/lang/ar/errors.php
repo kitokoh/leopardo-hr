@@ -60,7 +60,6 @@ return [
     'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
     'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',
 
-    // #4312/#4313/#4314 — FR résiduels localisés (vague expert20)
     'PAYOUT_REQUEST_REFUSED' => 'تم رفض طلب الدفع.',
     'PAYOUT_REQUEST_FAILED' => 'حدث خطأ أثناء طلب الدفع.',
     'COMPANY_MODE_FORCED' => 'تفرض شركتك وضع تسجيل حضور ولا يمكنك تغييره.',
@@ -108,4 +107,8 @@ return [
     'VERIFICATION_CODE_INVALID' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
     'EMAIL_ALREADY_REGISTERED' => 'يوجد حساب بالفعل بهذا البريد الإلكتروني. سجّل الدخول مباشرة.',
     'TRIAL_SPACE_CREATION_FAILED' => 'حدث خطأ أثناء إنشاء مساحتك. حاول مرة أخرى.', origin/main
+    'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
+    'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.',
 ];
