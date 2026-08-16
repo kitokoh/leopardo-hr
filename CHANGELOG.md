@@ -6,6 +6,9 @@
 
 ## [Unreleased]
 
+- **fix(api/tests): suite Unit verte — création d'employés avec password_hash hors mass-assignment (régression #4558, refs #4586).** #4558 a retiré password_hash du $fillable (correct) mais ~60 fichiers de test utilisaient encore Employee::create(['password_hash' => ...]) → violation NOT NULL en masse (colonne non-nullable). Pattern appliqué : new Employee([fillable]) + forceFill(['password_hash' => ...])->save() (idem #3677/#4307/#4496). Validation : 18 tests ciblés verts, php -l 0 erreur sur api/tests.
+
+
 - **fix(api): EdgeController::health — variable `$sqliteReady` restaurée (ParseError #4577).** Le merge #4577 a livré ` = true;` / `if (! )` (nom de variable avalé par une résolution de conflit) → ParseError PHP sur main. Correctif : `$sqliteReady` reconstruit, lint OK.
 
 - **fix(api): erreurs PHP sur main — littéral  retiré des 4 errors.php (#4565) +  dédupliqué sur SendTrialDripEmailJob/PublishScheduledPostJob (doublon #4296/#4399).** Le merge storm avait (1) injecté un littéral  cassant le parse PHP des 4 catalogues (régression de ma résolution de conflit sur #4441/#4444) et (2) doublé la méthode  via le merge commit 7795d9ec7 + le squash #4443. Correctif : catalogues réparés (comma rétabli), version enrichie conservée dans les 2 jobs. Validation : No syntax errors detected in Standard input code ×4 + ×2 OK.

@@ -88,13 +88,13 @@ class AbsenceProofTest extends TestCase
         $schedule = $this->makeSchedule($company);
         $absenceType = $this->makeAbsenceType($company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -127,13 +127,13 @@ class AbsenceProofTest extends TestCase
         $schedule = $this->makeSchedule($company);
         $absenceType = $this->makeAbsenceType($company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -160,13 +160,13 @@ class AbsenceProofTest extends TestCase
         $schedule = $this->makeSchedule($company);
         $absenceType = $this->makeAbsenceType($company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -199,26 +199,26 @@ class AbsenceProofTest extends TestCase
         $schedule = $this->makeSchedule($company);
         $absenceType = $this->makeAbsenceType($company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -252,26 +252,26 @@ class AbsenceProofTest extends TestCase
         $schedule = $this->makeSchedule($company);
         $absenceType = $this->makeAbsenceType($company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
 
-        $otherEmployee = Employee::query()->create([
+        $otherEmployee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'other@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $otherEmployee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $otherEmployee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -304,13 +304,13 @@ class AbsenceProofTest extends TestCase
         $schedule = $this->makeSchedule($company);
         $absenceType = $this->makeAbsenceType($company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

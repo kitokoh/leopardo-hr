@@ -89,13 +89,13 @@ class ContractWorkflowTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'matricule' => 'MGR-C01',
             'first_name' => 'Boss',
             'last_name' => 'RH',
             'email' => 'boss@contract-co.test',
-            'password_hash' => Hash::make('password'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -104,13 +104,13 @@ class ContractWorkflowTest extends TestCase
         ])->save();
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'matricule' => 'EMP-C01',
             'first_name' => 'Yacine',
             'last_name' => 'B',
             'email' => 'yacine@contract-co.test',
-            'password_hash' => Hash::make('password'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -136,13 +136,13 @@ class ContractWorkflowTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'matricule' => "MGR-C{$suffix}",
             'first_name' => 'Other',
             'last_name' => 'Manager',
             'email' => "boss-{$suffix}@contract-co.test",
-            'password_hash' => Hash::make('password'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -151,13 +151,13 @@ class ContractWorkflowTest extends TestCase
         ])->save();
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'matricule' => "EMP-C{$suffix}",
             'first_name' => 'Other',
             'last_name' => 'Employee',
             'email' => "employee-{$suffix}@contract-co.test",
-            'password_hash' => Hash::make('password'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -436,13 +436,13 @@ class ContractWorkflowTest extends TestCase
     {
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
         /** @var Employee $coworker */
-        $coworker = Employee::query()->create([
+        $coworker = new Employee([
             'matricule' => 'EMP-C04',
             'first_name' => 'Coworker',
             'last_name' => 'Two',
             'email' => 'coworker2@contract-co.test',
-            'password_hash' => Hash::make('password'),
         ]);
+        $coworker->forceFill(['password_hash' => Hash::make('password')])->save();
         $coworker->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -501,13 +501,13 @@ class ContractWorkflowTest extends TestCase
     {
         [$company, $manager, $employee] = $this->makeManagerAndCompany();
         /** @var Employee $coworker */
-        $coworker = Employee::query()->create([
+        $coworker = new Employee([
             'matricule' => 'EMP-C03',
             'first_name' => 'Coworker',
             'last_name' => 'RH',
             'email' => 'coworker@contract-co.test',
-            'password_hash' => Hash::make('password'),
         ]);
+        $coworker->forceFill(['password_hash' => Hash::make('password')])->save();
         $coworker->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

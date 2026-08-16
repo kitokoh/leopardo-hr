@@ -58,10 +58,10 @@ class SupervisorScopedRbacTest extends TestCase
             'status' => 'active',
         ]);
 
-        $supervisorA = Employee::query()->create([
+        $supervisorA = new Employee([
             'email' => 'supervisor-a@scoped.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $supervisorA->forceFill(['password_hash' => Hash::make('password123')])->save();
         $supervisorA->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -69,10 +69,10 @@ class SupervisorScopedRbacTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $supervisorB = Employee::query()->create([
+        $supervisorB = new Employee([
             'email' => 'supervisor-b@scoped.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $supervisorB->forceFill(['password_hash' => Hash::make('password123')])->save();
         $supervisorB->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -80,10 +80,10 @@ class SupervisorScopedRbacTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $supervisorNoTeam = Employee::query()->create([
+        $supervisorNoTeam = new Employee([
             'email' => 'supervisor-noteam@scoped.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $supervisorNoTeam->forceFill(['password_hash' => Hash::make('password123')])->save();
         $supervisorNoTeam->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -91,22 +91,22 @@ class SupervisorScopedRbacTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employeeA = Employee::query()->create([
+        $employeeA = new Employee([
             'manager_id' => $supervisorA->id,
             'email' => 'employee-a@scoped.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employeeA->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employeeA->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
 
-        $employeeB = Employee::query()->create([
+        $employeeB = new Employee([
             'manager_id' => $supervisorB->id,
             'email' => 'employee-b@scoped.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employeeB->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employeeB->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
