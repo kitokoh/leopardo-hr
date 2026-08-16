@@ -4,59 +4,10 @@ import { useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, HeroSection, CTASection, Footer, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { caseStudiesByLocale } from '@/modules/vitrine/data/case-studies';
 import { motion } from 'framer-motion';
 import { TrendingUp, Clock, Users, Building2, CheckCircle, Info } from 'lucide-react';
 
-const caseStudies = [
-  {
-    company: 'TechCorp Algérie',
-    industry: 'Technologie',
-    employees: '120',
-    country: 'Algérie',
-    challenge: 'Suivi des présences manuel avec des feuilles Excel, erreurs fréquentes en paie, 3 jours par mois perdus en vérifications.',
-    solution: 'Déploiement de bornes ZKTeco + module pointage Leopardo RH avec synchronisation automatique vers la paie.',
-    results: [
-      { metric: '-80%', label: 'Temps de suivi présences' },
-      { metric: '-95%', label: 'Erreurs de paie' },
-      { metric: '3j/mois', label: 'Temps récupéré' },
-    ],
-    testimonial: 'Le ROI a été immédiat. Nous avons éliminé les erreurs de pointage dès la première semaine.',
-    author: 'Amina Belkacem, DRH',
-    color: 'emerald',
-  },
-  {
-    company: 'Atlas Industries',
-    industry: 'Manufacture',
-    employees: '350',
-    country: 'Maroc, Tunisie, France',
-    challenge: 'Gestion RH fragmentée sur 3 pays avec des logiciels différents, impossibilité de consolider les rapports.',
-    solution: 'Migration vers Leopardo RH multi-tenant avec paie multi-pays (barèmes fiscaux locaux) et tableau de bord consolidé.',
-    results: [
-      { metric: '1', label: 'Plateforme unique pour 3 pays' },
-      { metric: '-60%', label: 'Coût logiciel RH' },
-      { metric: '100%', label: 'Conformité locale' },
-    ],
-    testimonial: 'Nous gérons maintenant 3 filiales depuis un seul dashboard. La paie multi-pays est un game-changer.',
-    author: 'Mehdi Ouazzani, DG',
-    color: 'blue',
-  },
-  {
-    company: 'LogiTrans Express',
-    industry: 'Transport & Logistique',
-    employees: '200',
-    country: 'Algérie',
-    challenge: 'Chauffeurs sur le terrain sans accès au bureau, suivi des véhicules déconnecté de la RH, pointage impossible.',
-    solution: 'App mobile Flutter pour pointage terrain + module flotte véhicules + kiosque ZKTeco aux dépôts.',
-    results: [
-      { metric: '100%', label: 'Couverture pointage terrain' },
-      { metric: '-40%', label: 'Coûts carburant (optimisation routes)' },
-      { metric: '24/7', label: 'Visibilité temps réel' },
-    ],
-    testimonial: 'Le suivi flotte + RH combiné est unique. Nos chauffeurs pointent depuis leur mobile et on suit tout en temps réel.',
-    author: 'Karim Benali, CEO',
-    color: 'amber',
-  },
-];
 
 const colorMap: Record<string, { bg: string; text: string; border: string; badge: string }> = {
   emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800', badge: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400' },
@@ -66,7 +17,8 @@ const colorMap: Record<string, { bg: string; text: string; border: string; badge
 
 export default function CaseStudiesPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
-  const { copy } = useVitrineLocale();
+  const { copy, locale } = useVitrineLocale();
+  const caseStudies = caseStudiesByLocale[locale] ?? caseStudiesByLocale.fr;
   const cs = copy.caseStudies;
   useScrollReveal();
 
