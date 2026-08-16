@@ -151,12 +151,24 @@ async function initMap() {
   plotVehicles(L)
 }
 
+function escapeHtml(value) {
+  // #4334 : les champs véhicule (plate_number, brand, model, assigned_to) sont
+  // contrôlés par le tenant — les injecter bruts dans le popup Leaflet (innerHTML)
+  // permettrait un XSS côté cockpit super-admin.
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 function plotVehicles(L) {
   if (!leafletMap || !L) return
   vehicles.value.forEach(v => {
     if (v.latitude && v.longitude) {
       L.marker([v.latitude, v.longitude])
-        .bindPopup(`<b>${v.plate_number}</b><br>${v.brand} ${v.model}<br>${v.assigned_to || 'Non assigne'}`)
+        .bindPopup(`<b>${escapeHtml(v.plate_number)}</b><br>${escapeHtml(v.brand)} ${escapeHtml(v.model)}<br>${escapeHtml(v.assigned_to || 'Non assigne')}`)
         .addTo(leafletMap)
     }
   })
@@ -185,7 +197,7 @@ async function fetchData() {
     // ne s'y authentifie pas → 401 attendu. _skipAuthRedirect (#4170) évite
     // que l'intercepteur global détruise la session admin ; l'état d'erreur
     // local ci-dessous fait foi.
-    const vRes = await api.get('/v1/vehicles', { _skipAuthRedirect: true })
+    const vRes = await api.get('/vehicles', { _skipAuthRedirect: true })
     vehicles.value = vRes.data.data || vRes.data || []
   } catch {
     error.value = 'Impossible de charger les donnees de flotte.'
@@ -193,7 +205,7 @@ async function fetchData() {
   // Alertes : best-effort mais jamais silencieux — un échec est surfacé
   // (bannière) au lieu d'une liste vide sans signal (audit 360° T016/#3739).
   try {
-    const aRes = await api.get('/v1/admin/fleet/alerts')
+    const aRes = await api.get('/admin/fleet/alerts')
     alerts.value = aRes.data.data || aRes.data || []
   } catch {
     alertsError.value = 'Impossible de charger les alertes de flotte.'
@@ -213,7 +225,7 @@ function viewVehicle(id) {
 function exportVehicles() {
   // Route tenant (api.manager) : 401 attendu en super-admin (#4170) — le
   // flag évite la déconnexion ; l'utilisateur voit l'état d'erreur local.
-  downloadApiFile('/v1/export/vehicles?format=csv', 'vehicles.csv', { _skipAuthRedirect: true })
+  downloadApiFile('/export/vehicles?format=csv', 'vehicles.csv', { _skipAuthRedirect: true })
 }
 
 onMounted(async () => {

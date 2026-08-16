@@ -117,6 +117,38 @@ describe('canonical/og:url localisés (#4201)', () => {
     expect(metadata.openGraph?.locale).toBe('en_US');
   });
 
+
+  it('generateMetadata (#4400) : hreflang fr pointe vers la base FR, jamais vers l\'URL ?lang= elle-même', () => {
+    const metadata = generateMetadata({
+      title: 'Pricing',
+      description: 'Desc',
+      canonical: 'https://x.example/pricing',
+      locale: 'en',
+    });
+    const langs = metadata.alternates?.languages as Record<string, string>;
+    expect(langs).toBeDefined();
+    // fr → base FR issue du canonical (sans query), JAMAIS l'URL ?lang= elle-même
+    expect(langs.fr).toBe('https://x.example/pricing');
+    expect(langs.fr).not.toContain('lang=');
+    // en/tr/ar → variantes ?lang= sur le host de site
+    expect(langs.en).toBe('https://leopardo-rh.com/pricing?lang=en');
+    expect(langs.tr).toBe('https://leopardo-rh.com/pricing?lang=tr');
+    expect(langs.ar).toBe('https://leopardo-rh.com/pricing?lang=ar');
+  });
+
+  it('generateMetadata (#4400) : homepage sans canonical — alternates sur la racine', () => {
+    const metadata = generateMetadata({
+      title: 'Home',
+      description: 'Desc',
+      locale: 'ar',
+    });
+    const langs = metadata.alternates?.languages as Record<string, string>;
+    expect(langs.fr).toBe('https://leopardo-rh.com');
+    expect(langs.fr).not.toContain('lang=');
+    expect(langs.ar).toBe('https://leopardo-rh.com/?lang=ar');
+    expect(langs.en).toBe('https://leopardo-rh.com/?lang=en');
+  });
+
   it('generateMetadata : locale fr → canonical inchangé', () => {
     const metadata = generateMetadata({
       title: 'Pricing',

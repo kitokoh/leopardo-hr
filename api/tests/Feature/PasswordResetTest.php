@@ -76,6 +76,88 @@ class PasswordResetTest extends TestCase
         Mail::assertNothingSent();
     }
 
+    public function test_forgot_password_unknown_email_does_not_sweep_tenant_schemas(): void
+    {
+        Mail::fake();
+
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Le test anti-oracle multi-schéma nécessite PostgreSQL.');
+        }
+
+        // Un tenant à schéma existe mais SANS entrée user_lookups : l'ancien
+        // code le balayait (1 SET search_path + SELECT par tenant) sur le
+        // chemin public — oracle de timing. Le nouveau code ne doit émettre
+        // AUCUN SET search_path pour un email inconnu.
+        $schema = 'oracle_tenant_schema';
+        DB::statement('DROP SCHEMA IF EXISTS '.$schema.' CASCADE');
+        DB::statement('CREATE SCHEMA '.$schema);
+        DB::statement('CREATE TABLE '.$schema.'.employees (LIKE shared_tenants.employees INCLUDING ALL)');
+        DB::table($schema.'.employees')->insert([
+            'company_id' => Company::factory()->create(['schema_name' => $schema])->id,
+            'first_name' => 'Ghost',
+            'last_name' => 'Tenant',
+            'email' => 'ghost-tenant@example.com',
+            'password_hash' => Hash::make('irrelevant'),
+            'role' => 'manager',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $searchPathStatements = [];
+        DB::listen(static function ($query) use (&$searchPathStatements): void {
+            if (str_starts_with(strtolower(trim((string) $query->sql)), 'set search_path')) {
+                $searchPathStatements[] = $query->sql;
+            }
+        });
+
+        $this->postJson('/api/v1/auth/forgot-password', ['email' => 'unknown@example.com'])
+            ->assertOk();
+
+        $this->assertCount(
+            0,
+            $searchPathStatements,
+            'Le chemin public ne doit jamais balayer les schémas tenants (oracle de timing #4495).'
+        );
+        $this->assertDatabaseMissing('password_reset_tokens', ['email' => 'unknown@example.com']);
+        Mail::assertNothingSent();
+    }
+
+    public function test_forgot_password_schema_tenant_employee_without_lookup_is_not_resolved(): void
+    {
+        Mail::fake();
+
+        if (DB::getDriverName() !== 'pgsql') {
+            $this->markTestSkipped('Le test tenant à schéma nécessite PostgreSQL.');
+        }
+
+        // Employé vivant dans un schéma tenant, absent de public.user_lookups :
+        // comportement voulu depuis #4495 — le chemin public ne balaye plus les
+        // schémas ; sans lookup, l'email est traité « aucun compte » (réponse
+        // générique, pas de jeton, pas de mail).
+        $schema = 'nolookup_tenant_schema';
+        DB::statement('DROP SCHEMA IF EXISTS '.$schema.' CASCADE');
+        DB::statement('CREATE SCHEMA '.$schema);
+        DB::statement('CREATE TABLE '.$schema.'.employees (LIKE shared_tenants.employees INCLUDING ALL)');
+        DB::table($schema.'.employees')->insert([
+            'company_id' => Company::factory()->create(['schema_name' => $schema])->id,
+            'first_name' => 'No',
+            'last_name' => 'Lookup',
+            'email' => 'no-lookup@example.com',
+            'password_hash' => Hash::make('irrelevant'),
+            'role' => 'manager',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->postJson('/api/v1/auth/forgot-password', ['email' => 'no-lookup@example.com'])
+            ->assertOk();
+
+        Mail::assertNothingSent();
+        $this->assertDatabaseMissing('password_reset_tokens', ['email' => 'no-lookup@example.com']);
+    }
+
     public function test_reset_password_updates_password_and_revokes_tokens(): void
     {
         $token = $this->issueToken('reset-me@example.com');
