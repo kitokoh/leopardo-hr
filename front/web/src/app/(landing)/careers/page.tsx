@@ -5,7 +5,7 @@ import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modu
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getCareersContent } from '@/modules/vitrine/data/careers';
 import { motion } from 'framer-motion';
-import { Briefcase, MapPin, Clock, ArrowRight, Heart, Zap, Globe, Users } from 'lucide-react';
+import { Briefcase, MapPin, Clock, Heart, Zap, Globe, Users } from 'lucide-react';
 
 const valueIcons = [Heart, Zap, Globe, Users];
 
@@ -83,11 +83,15 @@ export default function CareersPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="group p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500/30 hover:shadow-lg transition-all cursor-pointer"
+                // #4176 : carte informative — PAS un lien (la route de détail est
+                // tenant-specific [companySlug]/careers/jobs/[jobId]). Retrait de
+                // cursor-pointer et des affordances de lien (flèche, hover titre)
+                // pour ne pas laisser croire à une navigation.
+                className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{job.title}</h3>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">{job.title}</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 mb-3">{job.description}</p>
                     <div className="flex flex-wrap gap-3 text-xs text-slate-500 dark:text-slate-400">
                       <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" />{job.department}</span>
@@ -95,7 +99,6 @@ export default function CareersPage() {
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{job.type}</span>
                     </div>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors flex-shrink-0 mt-1" />
                 </div>
               </motion.div>
             ))}
