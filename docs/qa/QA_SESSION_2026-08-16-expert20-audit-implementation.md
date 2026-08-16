@@ -88,6 +88,10 @@ hreflang/alternates (#3250), `<html lang>` SSR (#4173), checkout i18n (#4287), `
 4. **La branche EST le lock** : vérifier `ls-remote origin fix/<n>-*` avant de pousser un claim (protocole #2400) ; les merge-bots fusionnent en ~75 s.
 5. **Rate limit partagé** : le token ghp est consommé par tous les agents — préférer `git`/WebFetch aux appels API, batcher avec retries.
 
+## 6b. État CI (fin de session)
+
+12 PRs ouvertes, **0 échec** sur les checks exécutés ; bloquées sur la file GitHub Actions saturée (88 queued / 13 in_progress au dernier relevé). Checks lourds (Backend Coverage, PHPStan Strict) encore en attente. Merge-poller actif (throttle 10 min/resync) + relance programmée. Branches synchronisées avec main (vérifié). Pas de régénération requise pour `validate-and-sync` (`sync-backend.js` OK sur les branches lang).
+
 ## 6. Recommandations
 
 1. Débloquer la prod (#3767/#3545) : tous les P1 restants sont des symptômes de prod figée (v4.23.5).
