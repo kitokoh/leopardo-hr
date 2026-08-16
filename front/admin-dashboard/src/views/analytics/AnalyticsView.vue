@@ -33,6 +33,18 @@
     </div>
 
     <!-- Key Metrics Overview (donnees reelles /admin/dashboard/stats) -->
+
+    <!-- #4518 : bannière d'erreur + retry (chargement échoué) -->
+    <div
+      v-if="errorMessage"
+      class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400"
+      role="alert"
+    >
+      {{ errorMessage }}
+      <button class="ml-3 underline font-bold" @click="loadAll">Réessayer</button>
+    </div>
+
+    <!-- Key Metrics Overview (donnees reelles /admin/dashboard/stats) -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <MetricCard
         title="Utilisateurs"
@@ -168,6 +180,9 @@ const localeStore = useLocaleStore()
 const toast = useToast()
 
 const isLoading = ref(false)
+// #4518 : état d'erreur visible + retry (pattern #4333) — avant, un échec de
+// chargement rendait des stats à zéro sans bannière ni moyen de recharger.
+const errorMessage = ref('')
 const stats = reactive({
   totalUsers: 0,
   totalCompanies: 0,
@@ -188,6 +203,7 @@ onMounted(loadAll)
 
 async function loadAll() {
   isLoading.value = true
+  errorMessage.value = ''
   try {
     const [statsRes, activitiesRes, alertsRes] = await Promise.all([
       api.get('/admin/dashboard/stats'),
@@ -204,7 +220,7 @@ async function loadAll() {
     }
   } catch (error) {
     console.error('Failed to load analytics:', error)
-    toast.error("Erreur lors du chargement des analytics")
+    errorMessage.value = "Erreur lors du chargement des analytics. Réessayez."
   } finally {
     isLoading.value = false
   }

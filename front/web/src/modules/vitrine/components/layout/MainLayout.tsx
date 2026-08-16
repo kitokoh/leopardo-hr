@@ -11,7 +11,7 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { isDark, toggleDarkMode, isMounted } = useDarkMode();
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [scrollToTop, setScrollToTop] = useState(false);
 
   useEffect(() => {
@@ -27,10 +27,9 @@ export function MainLayout({ children }: MainLayoutProps) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (!isMounted) {
-    return null;
-  }
-
+  // #4301 : le layout doit se rendre côté serveur (SEO) — seul le toggle
+  // dark est client-side ; l'état initial est résolu de façon synchrone
+  // dans useDarkMode pour éviter tout flash au premier paint.
   return (
     <div className={isDark ? 'dark' : ''}>
       <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">

@@ -407,3 +407,15 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
 export function getPricingPlans(locale: AppLocale): PricingPlan[] {
   return pricingByLocale[locale] ?? pricingByLocale.fr
 }
+
+/**
+ * #4404 — source unique « prix machine vs devis ».
+ * Un plan « sur devis » n'a pas de prix machine : la carte ne doit afficher
+ * aucun montant et son CTA doit mener au contact, jamais au checkout.
+ * Liste complète des libellés « devis » par locale (pricing.ts data) —
+ * attention aux mots AR distincts : « حسب الطلب » (sur demande) est le
+ * libellé de données ; « حسب العرض » (selon l'offre) n'est PAS utilisé.
+ */
+export function showsCurrency(price: string): boolean {
+  return !['Sur devis', 'Custom', 'Teklif', 'Teklif alın', 'حسب الطلب'].includes(price)
+}

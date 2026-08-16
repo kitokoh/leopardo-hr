@@ -460,101 +460,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/announcements/{announcement}/publish", options);
     },
 
-    /** Lister les nœuds edge du tenant */
-    getApiV1Edge(options = {}) {
-      return request("GET", "/api/v1/edge", options);
-    },
-
-    /** Enregistrer un nœud edge */
-    postApiV1Edge(options = {}) {
-      return request("POST", "/api/v1/edge", options);
-    },
-
-    /** Heartbeat d'un nœud edge (machine-to-cloud) */
-    postApiV1EdgeNodeByNodeIdHeartbeat(options = {}) {
-      return request("POST", "/api/v1/edge-node/{nodeId}/heartbeat", options);
-    },
-
-    /** Recuperer le delta de synchronisation pour le nœud edge */
-    getApiV1EdgeNodeByNodeIdPull(options = {}) {
-      return request("GET", "/api/v1/edge-node/{nodeId}/pull", options);
-    },
-
-    /** Pousser les donnees du nœud edge vers le cloud */
-    postApiV1EdgeNodeByNodeIdPush(options = {}) {
-      return request("POST", "/api/v1/edge-node/{nodeId}/push", options);
-    },
-
-    /** Valider une licence edge (machine-to-cloud) */
-    postApiV1EdgeNodeValidateLicense(options = {}) {
-      return request("POST", "/api/v1/edge-node/validate-license", options);
-    },
-
-    /** Detail d'un nœud edge du tenant */
-    getApiV1EdgeByNodeId(options = {}) {
-      return request("GET", "/api/v1/edge/{nodeId}", options);
-    },
-
-    /** Emettre une licence pour un nœud edge */
-    postApiV1EdgeByNodeIdLicense(options = {}) {
-      return request("POST", "/api/v1/edge/{nodeId}/license", options);
-    },
-
-    /** Declencher la synchronisation d'un nœud edge */
-    postApiV1EdgeByNodeIdSync(options = {}) {
-      return request("POST", "/api/v1/edge/{nodeId}/sync", options);
-    },
-
-    /** Caddyfile.edge de reference pour le nœud edge (public) */
-    getApiV1EdgeDownloadCaddyfileEdge(options = {}) {
-      return request("GET", "/api/v1/edge/download/Caddyfile.edge", options);
-    },
-
-    /** Somme SHA-256 de Caddyfile.edge (public) */
-    getApiV1EdgeDownloadCaddyfileEdgeSha256(options = {}) {
-      return request("GET", "/api/v1/edge/download/Caddyfile.edge.sha256", options);
-    },
-
-    /** docker-compose.yml de reference pour le nœud edge (public) */
-    getApiV1EdgeDownloadDockerComposeYml(options = {}) {
-      return request("GET", "/api/v1/edge/download/docker-compose.yml", options);
-    },
-
-    /** Somme SHA-256 de docker-compose.yml edge (public) */
-    getApiV1EdgeDownloadDockerComposeYmlSha256(options = {}) {
-      return request("GET", "/api/v1/edge/download/docker-compose.yml.sha256", options);
-    },
-
-    /** Exemple de fichier d'environnement pour le nœud edge (public) */
-    getApiV1EdgeDownloadEnvExample(options = {}) {
-      return request("GET", "/api/v1/edge/download/env-example", options);
-    },
-
-    /** Sommes SHA-256 des artefacts edge (public) */
-    getApiV1EdgeDownloadSha256Txt(options = {}) {
-      return request("GET", "/api/v1/edge/download/sha256.txt", options);
-    },
-
-    /** Healthcheck edge (public, machine-to-cloud) */
-    getApiV1EdgeHealth(options = {}) {
-      return request("GET", "/api/v1/edge/health", options);
-    },
-
-    /** Heartbeat machine-to-cloud d'un nœud edge (public) */
-    postApiV1EdgeHeartbeat(options = {}) {
-      return request("POST", "/api/v1/edge/heartbeat", options);
-    },
-
-    /** Script d'installation du nœud edge (public) */
-    getApiV1EdgeInstallSh(options = {}) {
-      return request("GET", "/api/v1/edge/install.sh", options);
-    },
-
-    /** Cle publique de verification des licences edge (public) */
-    getApiV1EdgeLicensePublicKey(options = {}) {
-      return request("GET", "/api/v1/edge/license-public-key", options);
-    },
-
     /** Lister les workflows d'approbation */
     getApprovalWorkflows(options = {}) {
       return request("GET", "/approval-workflows", options);
@@ -1163,6 +1068,101 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Enregistrer ou rafraichir le token FCM du device courant */
     postDeviceTokens(options = {}) {
       return request("POST", "/device-tokens", options);
+    },
+
+    /** Lister les nœuds edge du tenant */
+    getEdge(options = {}) {
+      return request("GET", "/edge", options);
+    },
+
+    /** Enregistrer un nœud edge */
+    postEdge(options = {}) {
+      return request("POST", "/edge", options);
+    },
+
+    /** Heartbeat d'un nœud edge (machine-to-cloud) */
+    postEdgeNodeByNodeIdHeartbeat(options = {}) {
+      return request("POST", "/edge-node/{nodeId}/heartbeat", options);
+    },
+
+    /** Recuperer le delta de synchronisation pour le nœud edge */
+    getEdgeNodeByNodeIdPull(options = {}) {
+      return request("GET", "/edge-node/{nodeId}/pull", options);
+    },
+
+    /** Pousser les donnees du nœud edge vers le cloud */
+    postEdgeNodeByNodeIdPush(options = {}) {
+      return request("POST", "/edge-node/{nodeId}/push", options);
+    },
+
+    /** Valider une licence edge (machine-to-cloud) */
+    postEdgeNodeValidateLicense(options = {}) {
+      return request("POST", "/edge-node/validate-license", options);
+    },
+
+    /** Detail d'un nœud edge du tenant */
+    getEdgeByNodeId(options = {}) {
+      return request("GET", "/edge/{nodeId}", options);
+    },
+
+    /** Emettre une licence pour un nœud edge */
+    postEdgeByNodeIdLicense(options = {}) {
+      return request("POST", "/edge/{nodeId}/license", options);
+    },
+
+    /** Declencher la synchronisation d'un nœud edge */
+    postEdgeByNodeIdSync(options = {}) {
+      return request("POST", "/edge/{nodeId}/sync", options);
+    },
+
+    /** Caddyfile.edge de reference pour le nœud edge (public) */
+    getEdgeDownloadCaddyfileEdge(options = {}) {
+      return request("GET", "/edge/download/Caddyfile.edge", options);
+    },
+
+    /** Somme SHA-256 de Caddyfile.edge (public) */
+    getEdgeDownloadCaddyfileEdgeSha256(options = {}) {
+      return request("GET", "/edge/download/Caddyfile.edge.sha256", options);
+    },
+
+    /** docker-compose.yml de reference pour le nœud edge (public) */
+    getEdgeDownloadDockerComposeYml(options = {}) {
+      return request("GET", "/edge/download/docker-compose.yml", options);
+    },
+
+    /** Somme SHA-256 de docker-compose.yml edge (public) */
+    getEdgeDownloadDockerComposeYmlSha256(options = {}) {
+      return request("GET", "/edge/download/docker-compose.yml.sha256", options);
+    },
+
+    /** Exemple de fichier d'environnement pour le nœud edge (public) */
+    getEdgeDownloadEnvExample(options = {}) {
+      return request("GET", "/edge/download/env-example", options);
+    },
+
+    /** Sommes SHA-256 des artefacts edge (public) */
+    getEdgeDownloadSha256Txt(options = {}) {
+      return request("GET", "/edge/download/sha256.txt", options);
+    },
+
+    /** Healthcheck edge (public, machine-to-cloud) */
+    getEdgeHealth(options = {}) {
+      return request("GET", "/edge/health", options);
+    },
+
+    /** Heartbeat machine-to-cloud d'un nœud edge (public) */
+    postEdgeHeartbeat(options = {}) {
+      return request("POST", "/edge/heartbeat", options);
+    },
+
+    /** Script d'installation du nœud edge (public) */
+    getEdgeInstallSh(options = {}) {
+      return request("GET", "/edge/install.sh", options);
+    },
+
+    /** Cle publique de verification des licences edge (public) */
+    getEdgeLicensePublicKey(options = {}) {
+      return request("GET", "/edge/license-public-key", options);
     },
 
     /** Lister les employes */
