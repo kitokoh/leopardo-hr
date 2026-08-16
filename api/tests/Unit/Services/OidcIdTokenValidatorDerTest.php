@@ -20,7 +20,7 @@ final class OidcIdTokenValidatorDerTest extends TestCase
 {
     private function buildPublicKeyPem(string $n, string $e): string
     {
-        $validator = new OidcIdTokenValidator();
+        $validator = new OidcIdTokenValidator;
 
         $method = new ReflectionMethod($validator, 'rsaPublicKeyDer');
 
@@ -42,7 +42,8 @@ final class OidcIdTokenValidatorDerTest extends TestCase
 
         // Le MSB du modulus d'une clé 2048 bits est TOUJOURS à 1 — c'est le
         // cas qui exigeait le préfixe 0x00 (X.690 8.3.2).
-        $this->assertSame(1, ord($details['rsa']['n'][0]) & 0x80);
+        // MSB set = 0x80 = 128 (jamais 1) — issue #4159.
+        $this->assertSame(128, ord($details['rsa']['n'][0]) & 0x80);
 
         $pem = $this->buildPublicKeyPem($details['rsa']['n'], $details['rsa']['e']);
 
@@ -57,18 +58,23 @@ final class OidcIdTokenValidatorDerTest extends TestCase
 
     public function test_openssl_verify_succeeds_with_the_rebuilt_public_key(): void
     {
+        /** @var \OpenSSLAsymmetricKey $key */
         $key = openssl_pkey_new([
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ]);
+        $this->assertNotFalse($key);
         $details = openssl_pkey_get_details($key);
+        $this->assertIsArray($details);
 
         $pem = $this->buildPublicKeyPem($details['rsa']['n'], $details['rsa']['e']);
         $public = openssl_pkey_get_public($pem);
         $this->assertNotFalse($public);
 
         $data = 'oidc-challenge-'.bin2hex(random_bytes(8));
-        $this->assertSame(1, openssl_sign($data, $signature, $key, OPENSSL_ALGO_SHA256));
+        // PHP 8.4 : openssl_sign() retourne bool (true) au lieu de int (1)
+        // (issue #4159) — openssl_verify() retourne encore int (1) sur 8.4.
+        $this->assertTrue((bool) openssl_sign($data, $signature, $key, OPENSSL_ALGO_SHA256));
         $this->assertSame(1, openssl_verify($data, $signature, $public, OPENSSL_ALGO_SHA256));
     }
 

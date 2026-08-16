@@ -4,7 +4,7 @@ test.describe('Recruitment flow', () => {
   test.setTimeout(60_000)
   test.describe.configure({ retries: 3 })
 
-  test('tenant-scoped recruitment view redirects the super-admin to the dashboard', async ({ page }) => {
+  test('removed tenant route /recruitment renders the 404 page for an authenticated super-admin', async ({ page }) => {
     const corsHeaders = {
       // `*` plutôt qu'une origine figée : le port d'origine du webServer
       // (4173) peut être 127.0.0.1 ou localhost selon l'environnement CI.
@@ -55,12 +55,14 @@ test.describe('Recruitment flow', () => {
       sessionStorage.setItem('admin_token', 'playwright-admin-token')
     })
 
-    // Issue #2272 : la console super-admin n'a pas de contexte tenant —
-    // l'accès direct par URL à une vue tenant redirige vers le dashboard,
-    // jamais une page qui échoue en 401 muet.
+    // Issue #4106 : la route /recruitment (vue tenant morte) a été retirée
+    // du routeur par #3837 — un super-admin qui y accède par URL tombe sur
+    // la NotFoundView (état honnête), jamais sur une vue cassée ni un 401
+    // muet. Le cas « vue tenant existante » est couvert par exports-flow.
     await page.goto('/recruitment')
 
-    await expect(page).toHaveURL(/\/$/, { timeout: 10_000 })
-    await expect(page.getByText(/Fonctionnalité entreprise/i)).toBeVisible()
+    await expect(page).toHaveURL(/\/recruitment$/, { timeout: 10_000 })
+    await expect(page.getByText(/Page non trouvée|404/i)).toBeVisible()
+    await expect(page.getByText(/Fonctionnalité entreprise/i)).toHaveCount(0)
   })
 })
