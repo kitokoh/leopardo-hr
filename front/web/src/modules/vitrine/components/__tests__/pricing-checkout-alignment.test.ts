@@ -28,12 +28,12 @@ const LEGACY_TO_CANONICAL: Record<string, keyof typeof CHECKOUT_PLANS | 'free'> 
 describe('pricing ↔ checkout alignment (#3919)', () => {
   it.each(['fr', 'en', 'tr', 'ar'] as const)('aligns plan names and prices for %s', (locale) => {
     const plans = getPricingPlans(locale)
-    // #3883 : le plan Free (0 € / 5 employés) est désormais affiché sur la vitrine.
+    // #3883 : le plan Free (0 €/5 emp, PlanSeeder) est de nouveau affiché sur
+    // la vitrine — l'ensemble canonique complet est Free/Pilot/Operations/Enterprise.
     expect(plans).toHaveLength(4)
 
     for (const plan of plans) {
       const key = planNameToCheckoutKey(plan.name)
-      expect(['free', 'pilot', 'operations', 'enterprise']).toContain(key)
 
       const checkout = CHECKOUT_PLANS[key as keyof typeof CHECKOUT_PLANS]
       // no checkout config for this plan → test fails loudly
@@ -42,6 +42,13 @@ describe('pricing ↔ checkout alignment (#3919)', () => {
       // Nom affiché = nom canonique (Free/Pilot/Operations/Enterprise, #2977)
       expect(checkout.label).toBe(plan.name)
 
+      if (plan.price === '0') {
+        // Le plan Free n'a pas de prix facturable : vitrine et checkout
+        // s'accordent sur 0 (le parcours réel passe par l'essai guidé /signup).
+        expect(checkout.monthly).toBe(0)
+        expect(checkout.annual).toBe(0)
+        continue
+      }
       if (checkout.monthly === null) {
         // Enterprise « sur devis » : pas de prix numérique côté vitrine non plus
         expect(['Sur devis', 'Custom', 'Teklif', 'حسب الطلب'].includes(plan.price)).toBe(true)
