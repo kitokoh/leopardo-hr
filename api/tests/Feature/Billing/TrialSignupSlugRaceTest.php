@@ -30,19 +30,13 @@ class TrialSignupSlugRaceTest extends TestCase
      * retourne un slug DÉJÀ PRIS (comme si l'exists() de l'autre requête
      * concurrente n'avait pas encore vu l'insertion), puis un candidat libre.
      */
-    private function actionWithCollision(): VerifyTrialSignup
+    private function actionWithCollision(): CollidingVerifyTrialSignup
     {
-        return new class(app(TenantManager::class), app(PartnerService::class), app(RequestTrialSignup::class)) extends VerifyTrialSignup
-        {
-            public int $calls = 0;
-
-            protected function resolveUniqueSlug(string $baseSlug): string
-            {
-                $this->calls++;
-
-                return $this->calls === 1 ? 'collision-co' : 'collision-co-1';
-            }
-        };
+        return new CollidingVerifyTrialSignup(
+            app(TenantManager::class),
+            app(PartnerService::class),
+            app(RequestTrialSignup::class),
+        );
     }
 
     public function test_slug_collision_triggers_bounded_retry_instead_of_500(): void
@@ -94,7 +88,26 @@ class TrialSignupSlugRaceTest extends TestCase
         $this->assertSame('collision-co-1', $result['company']->slug);
         $this->assertGreaterThanOrEqual(2, $action->calls, 'Le retry sur collision 23505 aurait dû être déclenché.');
 
-        $this->assertSame('approved', $request->fresh()->status);
-        $this->assertSame($result['company']->id, $request->fresh()->approved_company_id);
+        $fresh = $request->fresh();
+        $this->assertNotNull($fresh);
+        $this->assertSame('approved', $fresh->status);
+        $this->assertSame($result['company']->id, $fresh->approved_company_id);
+    }
+}
+
+/**
+ * Sous-classe de VerifyTrialSignup qui simule une collision de slug au
+ * premier appel de resolveUniqueSlug (race 23505), avec compteur public.
+ * Classe nommée (au lieu d'anonyme) pour que PHPStan strict connaisse $calls.
+ */
+class CollidingVerifyTrialSignup extends VerifyTrialSignup
+{
+    public int $calls = 0;
+
+    protected function resolveUniqueSlug(string $baseSlug): string
+    {
+        $this->calls++;
+
+        return $this->calls === 1 ? 'collision-co' : 'collision-co-1';
     }
 }
