@@ -39,7 +39,7 @@ jobs:
       - name: Check deployed CSP header
         shell: bash
         env:
-          ADMIN_URL: ${{ github.event.inputs.admin_url || 'https://leo-admin.pages.dev' }}
+          ADMIN_URL: ${{ github.event.inputs.admin_url || vars.PROD_ADMIN_URL || 'https://leo-admin.pages.dev' }}
         run: |
           set -euo pipefail
           echo "Probing ${ADMIN_URL}/login for the CSP header served by Cloudflare Pages..."

@@ -13,8 +13,8 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
-  DEFAULT_API_HEALTHCHECK_URL: https://gestionemployerbackend.onrender.com/api/v1/health
+  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+  DEFAULT_API_HEALTHCHECK_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}/health
 
 # Issue #1835 + #3904 : déduplication par SHA — deux parents (Tests + Web CI)
 # complètent chacun pour le même SHA ; le 2e run annule le 1er (qui évalue
