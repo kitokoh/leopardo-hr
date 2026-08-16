@@ -183,7 +183,7 @@ class PlatformCompanyRequestController extends Controller
         // pays valide est rejetée explicitement.
         $country = strtoupper(trim((string) ($companyRequest->country ?? '')));
         if (CountryDefaults::find($country) === null) {
-            abort(422, 'Le pays de la demande est invalide ou non supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').');
+            abort(422, __('errors.COUNTRY_NOT_SUPPORTED', ['countries' => implode(', ', array_column(CountryDefaults::all(), 'country'))]));
         }
 
         $result = $this->companyProvisioningService->provisionSharedCompany([

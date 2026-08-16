@@ -85,7 +85,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'INVALID_OR_EXPIRED_CODE',
-                'message' => 'Code de vérification invalide ou expiré.',
+                'message' => __('errors.VERIFICATION_CODE_INVALID'),
                 'status' => 400,
             ];
         }
@@ -107,7 +107,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'EMAIL_ALREADY_REGISTERED',
-                'message' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+                'message' => __('errors.EMAIL_ALREADY_REGISTERED'),
                 'status' => 409,
             ];
         }
@@ -121,7 +121,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'INVALID_COUNTRY',
-                'message' => 'Le pays du signup est invalide ou non supporté. Veuillez recommencer l\'inscription.',
+                'message' => __('errors.COUNTRY_NOT_SUPPORTED', ['countries' => implode(', ', array_column(CountryDefaults::all(), 'country'))]),
                 'status' => 422,
             ];
         }
@@ -184,7 +184,7 @@ class VerifyTrialSignup
             return [
                 'success' => false,
                 'error' => 'PROVISIONING_FAILED',
-                'message' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
+                'message' => __('errors.TRIAL_SPACE_CREATION_FAILED'),
                 'status' => 500,
             ];
         }

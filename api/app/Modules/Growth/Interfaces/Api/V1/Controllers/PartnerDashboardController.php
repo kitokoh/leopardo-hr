@@ -140,7 +140,7 @@ class PartnerDashboardController extends Controller
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
         if (!$partner) {
-            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
+            return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => __('errors.NOT_A_PARTNER')], 403);
         }
 
         // Optimized with SQL aggregations instead of memory loading

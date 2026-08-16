@@ -34,7 +34,7 @@ class BillingController extends Controller
             ->first();
 
         if (! $subscription) {
-            return response()->json(['data' => null, 'message' => 'No active subscription.'], 404);
+            return response()->json(['data' => null, 'message' => __('errors.NO_ACTIVE_SUBSCRIPTION')], 404);
         }
 
         return (new SubscriptionResource($subscription))->response();
@@ -194,7 +194,7 @@ class BillingController extends Controller
         if (! config('services.stripe.secret')) {
             return new JsonResponse([
                 'error' => 'STRIPE_NOT_CONFIGURED',
-                'message' => __('errors.ONLINE_PAYMENT_NOT_CONFIGURED'),
+                'message' => __('errors.STRIPE_NOT_CONFIGURED'),
             ], 503);
         }
 
@@ -269,7 +269,7 @@ class BillingController extends Controller
 
             return new JsonResponse([
                 'error' => 'PORTAL_FAILED',
-                'message' => __('errors.BILLING_PORTAL_ACCESS_FAILED'),
+                'message' => __('errors.BILLING_PORTAL_FAILED'),
             ], 500);
         }
     }
