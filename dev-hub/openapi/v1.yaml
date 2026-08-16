@@ -293,34 +293,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /api/v1/edge/download/env-example:
-    get:
-      tags: ["Health"]
-      summary: "Exemple de fichier d'environnement pour le nœud edge (public)"
-      security: []
-      responses:
-        "200":
-          description: "Fichier .env.example"
-          content:
-            text/plain:
-              schema:
-                type: string
-
   /api/v1/edge/download/sha256.txt:
     get:
       tags: ["Health"]
-      summary: "Empreintes SHA-256 des assets d'installation edge (public)"
-      description: "Fichier de sommes SHA-256 utilisé par install.sh pour vérifier l'intégrité des téléchargements (issue #3529)."
+      summary: "Sommes SHA-256 des artefacts edge (public)"
+      description: "Manifeste des sommes SHA-256 (format texte) utilise par install.sh pour verifier l'integrite des telechargements (issues #3529/#3770)."
       security: []
       responses:
         "200":
-          description: "Sommes SHA-256 des assets"
+          description: "Manifeste SHA-256"
           content:
             text/plain:
               schema:
                 type: string
         "404":
-          description: "Fichier introuvable"
+          description: "Manifeste introuvable"
           content:
             application/json:
               schema:
@@ -329,24 +316,49 @@ paths:
   /api/v1/edge/download/docker-compose.yml.sha256:
     get:
       tags: ["Health"]
-      summary: "Empreinte SHA-256 de docker-compose.yml (public)"
+      summary: "Somme SHA-256 de docker-compose.yml edge (public)"
       security: []
       responses:
         "200":
-          description: "Somme SHA-256"
+          description: "Somme SHA-256 du fichier docker-compose.yml"
           content:
             text/plain:
               schema:
                 type: string
+        "404":
+          description: "Somme introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/v1/edge/download/Caddyfile.edge.sha256:
     get:
       tags: ["Health"]
-      summary: "Empreinte SHA-256 de Caddyfile.edge (public)"
+      summary: "Somme SHA-256 de Caddyfile.edge (public)"
       security: []
       responses:
         "200":
-          description: "Somme SHA-256"
+          description: "Somme SHA-256 du fichier Caddyfile.edge"
+          content:
+            text/plain:
+              schema:
+                type: string
+        "404":
+          description: "Somme introuvable"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/edge/download/env-example:
+    get:
+      tags: ["Health"]
+      summary: "Exemple de fichier d'environnement pour le nœud edge (public)"
+      security: []
+      responses:
+        "200":
+          description: "Fichier .env.example"
           content:
             text/plain:
               schema:
@@ -2825,25 +2837,6 @@ paths:
           schema:
             type: integer
             default: 20
-      responses:
-        "200":
-          description: "Liste des cours"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-        "401":
-          $ref: "#/components/responses/Error401"
-
-  /admin/training/courses:
-    get:
-      tags: ["Platform"]
-      summary: "Cours de formation cross-tenant (super-admin)"
-      security:
-        - SuperAdminBearerAuth: []
       responses:
         "200":
           description: "Liste des cours"
@@ -6937,7 +6930,267 @@ paths:
         "200":
           description: "Liste vehicules maintenance due"
 
-  # ─── AI Gateway ────────────────────────────────────────────────────
+  # ─── HR Reports (tenant, managers) ───────────────────────────────
+
+  /reports/headcount:
+    get:
+      tags: ["HR Reports"]
+      summary: "Effectif par département, type de contrat et genre"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Payload {total, by_department[], by_contract_type[], by_gender[]}"
+
+  /reports/turnover:
+    get:
+      tags: ["HR Reports"]
+      summary: "Taux de rotation (turnover) sur N mois"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: months
+          required: false
+          schema:
+            type: integer
+            default: 12
+      responses:
+        "200":
+          description: "Taux de rotation mensuel et agrégé"
+
+  /reports/absenteeism:
+    get:
+      tags: ["HR Reports"]
+      summary: "Absentéisme du mois/année"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Taux d'absentéisme et ventilation"
+
+  /reports/payroll-summary:
+    get:
+      tags: ["HR Reports"]
+      summary: "Synthèse paie du mois/année"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Synthèse brute/net/cotisations"
+
+  /reports/overtime:
+    get:
+      tags: ["HR Reports"]
+      summary: "Heures supplémentaires du mois/année"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Heures supplémentaires par employé"
+
+  /reports/recruitment-pipeline:
+    get:
+      tags: ["HR Reports"]
+      summary: "Pipeline recrutement (candidatures par statut)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Candidatures comptées par statut"
+
+  /reports/training-completion:
+    get:
+      tags: ["HR Reports"]
+      summary: "Taux de complétion des formations"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Complétion par formation"
+
+  /reports/loan-summary:
+    get:
+      tags: ["HR Reports"]
+      summary: "Synthèse des avances/prêts employés"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Avances et prêts par employé/statut"
+
+  /reports/demographics:
+    get:
+      tags: ["HR Reports"]
+      summary: "Ventilation démographique des employés"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Répartition âge/genre/ancienneté/département"
+
+  /reports/cost-analysis:
+    get:
+      tags: ["HR Reports"]
+      summary: "Analyse des coûts (masse salariale par département)"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Coûts salariaux ventilés"
+
+  # ─── Departments (tenant, managers) ──────────────────────────────
+
+  /departments:
+    get:
+      tags: ["Departments"]
+      summary: "Lister les départements du tenant"
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: "Liste paginée des départements"
+    post:
+      tags: ["Departments"]
+      summary: "Créer un département"
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "201":
+          description: "Département créé"
+
+  /departments/{department}:
+    get:
+      tags: ["Departments"]
+      summary: "Détail d'un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Département"
+        "404":
+          description: "Département introuvable ou hors tenant"
+    put:
+      tags: ["Departments"]
+      summary: "Mettre à jour un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                parent_id:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: "Département mis à jour"
+    patch:
+      tags: ["Departments"]
+      summary: "Mise à jour partielle d'un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "200":
+          description: "Département mis à jour"
+    delete:
+      tags: ["Departments"]
+      summary: "Supprimer un département"
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: department
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "Département supprimé"
 
   /ai/chat:
     post:
