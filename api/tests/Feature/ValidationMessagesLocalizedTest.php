@@ -21,8 +21,6 @@ class ValidationMessagesLocalizedTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private const LOCALES = ['fr', 'en', 'tr', 'ar'];
-
     public function test_employee_create_password_or_invitation_localized(): void
     {
         $expected = [
@@ -32,7 +30,9 @@ class ValidationMessagesLocalizedTest extends TestCase
             'ar' => 'كلمة المرور أو دعوة البريد الإلكتروني مطلوبة.',
         ];
 
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
@@ -63,7 +63,9 @@ class ValidationMessagesLocalizedTest extends TestCase
             'ar' => 'نوع المدير مطلوب.',
         ];
 
+        /** @var Company $company */
         $company = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
@@ -94,6 +96,7 @@ class ValidationMessagesLocalizedTest extends TestCase
             'ar' => 'يمكن للمدير الرئيسي فقط تعديل أدوار الموارد البشرية.',
         ];
 
+        /** @var Company $company */
         $company = Company::factory()->create();
 
         /** @var Employee $rhManager */
@@ -129,7 +132,9 @@ class ValidationMessagesLocalizedTest extends TestCase
             'ar' => 'يجب أن تتطابق دولة التشغيل مع الدولة القانونية للمستأجر (DZ).',
         ];
 
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($manager);
 
@@ -157,7 +162,9 @@ class ValidationMessagesLocalizedTest extends TestCase
             'ar' => 'يجب أن تتطابق السنة مع سنة التاريخ.',
         ];
 
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
+        /** @var Employee $principal */
         $principal = Employee::factory()->manager()->create(['company_id' => $company->id]);
         Sanctum::actingAs($principal);
 

@@ -89,7 +89,7 @@ class LeaveBalancesSnapshotTest extends TestCase
             'last_name' => 'Manager',
             'email' => 'manager@a.test',
         ]);
-        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $this->manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $this->manager->forceFill([
             'company_id' => $this->company->id,
             'role' => 'manager',
@@ -103,7 +103,7 @@ class LeaveBalancesSnapshotTest extends TestCase
             'last_name' => 'Employee',
             'email' => 'employee@a.test',
         ]);
-        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $this->employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $this->employee->forceFill([
             'company_id' => $this->company->id,
             'role' => 'employee',

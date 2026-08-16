@@ -41,7 +41,7 @@ class AdminImpersonationTest extends TestCase
         $this->assertInstanceOf(Employee::class, $employee);
         $this->employee = $employee;
 
-        $this->admin = SuperAdmin::create([
+        $this->admin = SuperAdmin::forceCreate([
             'name' => 'Admin',
             'email' => 'admin@leopardo.test',
             'password_hash' => Hash::make('secret'),

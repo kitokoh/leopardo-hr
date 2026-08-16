@@ -6,6 +6,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -45,11 +46,11 @@ class AuthSelfRegistrationTest extends TestCase
     private function createInvitation(string $email, ?string $token = 'valid-token-123'): string
     {
         // Issue #2617 : l'inscription nécessite une invitation valide.
-        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
         DB::table('public.user_invitations')->insert([
-            'id' => (string) \Illuminate\Support\Str::uuid(),
+            'id' => (string) Str::uuid(),
             'company_id' => $company->id,
             'schema_name' => 'shared_tenants',
             'employee_id' => 0,
@@ -118,7 +119,7 @@ class AuthSelfRegistrationTest extends TestCase
 
     public function test_an_ordinary_user_can_submit_a_company_request()
     {
-        $employee = Employee::create([
+        $employee = Employee::forceCreate([
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',

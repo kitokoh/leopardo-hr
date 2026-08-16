@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\SmartAttendance;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\Hash;
@@ -23,19 +23,24 @@ class GeoEntryExitTest extends TestCase
     use RefreshTenantDatabase;
 
     // Coordonnées géofence de référence (Alger)
-    private const GEO_LAT  = 36.7538;
-    private const GEO_LNG  = 3.0588;
+    private const GEO_LAT = 36.7538;
+
+    private const GEO_LNG = 3.0588;
+
     private const GEO_RADIUS = 200;
 
     // Point dans la zone
     private const LAT_INSIDE = 36.7539;
+
     private const LNG_INSIDE = 3.0589;
 
     // Point hors zone (Paris)
     private const LAT_OUTSIDE = 48.8566;
+
     private const LNG_OUTSIDE = 2.3522;
 
     private Company $company;
+
     private Employee $employee;
 
     protected function setUp(): void
@@ -43,20 +48,20 @@ class GeoEntryExitTest extends TestCase
         parent::setUp();
 
         $this->company = Company::query()->create([
-            'name'         => 'TestCorp Geo',
-            'slug'         => 'testcorp-geo',
-            'sector'       => 'tech',
-            'country'      => 'DZ',
-            'city'         => 'Alger',
-            'email'        => 'geo@testcorp.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'TestCorp Geo',
+            'slug' => 'testcorp-geo',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'geo@testcorp.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'Africa/Algiers',
-            'metadata'     => [
+            'status' => 'active',
+            'timezone' => 'Africa/Algiers',
+            'metadata' => [
                 'attendance_geofence' => [
-                    'lat'           => self::GEO_LAT,
-                    'lng'           => self::GEO_LNG,
+                    'lat' => self::GEO_LAT,
+                    'lng' => self::GEO_LNG,
                     'radius_meters' => self::GEO_RADIUS,
                 ],
             ],
@@ -68,29 +73,28 @@ class GeoEntryExitTest extends TestCase
         ]);
 
         $schedule = Schedule::query()->create([
-            'company_id'                => $this->company->id,
-            'name'                      => 'Standard',
-            'start_time'                => '08:00:00',
-            'end_time'                  => '17:00:00',
-            'late_tolerance_minutes'    => 15,
-            'overtime_threshold_daily'  => 8.0,
-            'is_default'                => true,
+            'company_id' => $this->company->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
+            'overtime_threshold_daily' => 8.0,
+            'is_default' => true,
         ]);
 
         $this->employee = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'emp@testcorp.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'emp@testcorp.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employee->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
     }
-
 
     // ── Tests ────────────────────────────────────────────────────────────────
 
@@ -103,9 +107,9 @@ class GeoEntryExitTest extends TestCase
         Sanctum::actingAs($this->employee);
 
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
-            'event_type'      => 'zone_enter',
-            'latitude'        => self::LAT_INSIDE,
-            'longitude'       => self::LNG_INSIDE,
+            'event_type' => 'zone_enter',
+            'latitude' => self::LAT_INSIDE,
+            'longitude' => self::LNG_INSIDE,
             'accuracy_meters' => 10,
         ]);
 
@@ -118,8 +122,8 @@ class GeoEntryExitTest extends TestCase
 
         $this->assertDatabaseHas('geo_attendance_sessions', [
             'employee_id' => $this->employee->id,
-            'company_id'  => $this->company->id,
-            'status'      => GeoAttendanceSession::STATUS_DETECTED,
+            'company_id' => $this->company->id,
+            'status' => GeoAttendanceSession::STATUS_DETECTED,
         ]);
     }
 
@@ -131,20 +135,20 @@ class GeoEntryExitTest extends TestCase
     {
         // Créer une session ouverte
         $session = GeoAttendanceSession::query()->create([
-            'employee_id'   => $this->employee->id,
-            'company_id'    => $this->company->id,
-            'started_at'    => now()->subHour(),
-            'check_in_lat'  => self::LAT_INSIDE,
-            'check_in_lng'  => self::LNG_INSIDE,
-            'status'        => GeoAttendanceSession::STATUS_DETECTED,
+            'employee_id' => $this->employee->id,
+            'company_id' => $this->company->id,
+            'started_at' => now()->subHour(),
+            'check_in_lat' => self::LAT_INSIDE,
+            'check_in_lng' => self::LNG_INSIDE,
+            'status' => GeoAttendanceSession::STATUS_DETECTED,
         ]);
 
         Sanctum::actingAs($this->employee);
 
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
-            'event_type'      => 'zone_exit',
-            'latitude'        => self::LAT_INSIDE,
-            'longitude'       => self::LNG_INSIDE,
+            'event_type' => 'zone_exit',
+            'latitude' => self::LAT_INSIDE,
+            'longitude' => self::LNG_INSIDE,
             'accuracy_meters' => 12,
         ]);
 
@@ -170,9 +174,9 @@ class GeoEntryExitTest extends TestCase
         Sanctum::actingAs($this->employee);
 
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
-            'event_type'      => 'zone_enter',
-            'latitude'        => self::LAT_OUTSIDE,
-            'longitude'       => self::LNG_OUTSIDE,
+            'event_type' => 'zone_enter',
+            'latitude' => self::LAT_OUTSIDE,
+            'longitude' => self::LNG_OUTSIDE,
             'accuracy_meters' => 15,
         ]);
 
@@ -193,20 +197,20 @@ class GeoEntryExitTest extends TestCase
     {
         // Créer une session ouverte
         GeoAttendanceSession::query()->create([
-            'employee_id'   => $this->employee->id,
-            'company_id'    => $this->company->id,
-            'started_at'    => now()->subMinutes(30),
-            'check_in_lat'  => self::LAT_INSIDE,
-            'check_in_lng'  => self::LNG_INSIDE,
-            'status'        => GeoAttendanceSession::STATUS_DETECTED,
+            'employee_id' => $this->employee->id,
+            'company_id' => $this->company->id,
+            'started_at' => now()->subMinutes(30),
+            'check_in_lat' => self::LAT_INSIDE,
+            'check_in_lng' => self::LNG_INSIDE,
+            'status' => GeoAttendanceSession::STATUS_DETECTED,
         ]);
 
         Sanctum::actingAs($this->employee);
 
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
             'event_type' => 'zone_enter',
-            'latitude'   => self::LAT_INSIDE,
-            'longitude'  => self::LNG_INSIDE,
+            'latitude' => self::LAT_INSIDE,
+            'longitude' => self::LNG_INSIDE,
         ]);
 
         $response->assertStatus(409);
@@ -225,8 +229,8 @@ class GeoEntryExitTest extends TestCase
     {
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
             'event_type' => 'zone_enter',
-            'latitude'   => self::LAT_INSIDE,
-            'longitude'  => self::LNG_INSIDE,
+            'latitude' => self::LAT_INSIDE,
+            'longitude' => self::LNG_INSIDE,
         ]);
 
         $response->assertStatus(401);
@@ -242,8 +246,8 @@ class GeoEntryExitTest extends TestCase
 
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
             'event_type' => 'zone_exit',
-            'latitude'   => self::LAT_INSIDE,
-            'longitude'  => self::LNG_INSIDE,
+            'latitude' => self::LAT_INSIDE,
+            'longitude' => self::LNG_INSIDE,
         ]);
 
         // Le contrôleur retourne 200 avec data=null selon GeoAttendanceController::event()
@@ -251,4 +255,3 @@ class GeoEntryExitTest extends TestCase
         $response->assertJsonPath('data', null);
     }
 }
-

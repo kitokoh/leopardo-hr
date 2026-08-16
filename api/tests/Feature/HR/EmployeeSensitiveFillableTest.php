@@ -53,6 +53,7 @@ class EmployeeSensitiveFillableTest extends TestCase
         $employee->forceFill(['password_hash' => Hash::make('attacker-controlled')])->save();
 
         $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
 
         $this->assertNull($fresh->password_hash, 'password_hash ne doit pas être mass-assignable.');
         $this->assertNull($fresh->biometric_face_reference_path, 'Référence biométrique visage non mass-assignable.');
@@ -86,6 +87,7 @@ class EmployeeSensitiveFillableTest extends TestCase
         ])->save();
 
         $fresh = $employee->fresh();
+        $this->assertNotNull($fresh);
 
         $this->assertTrue(Hash::check('legit-password', (string) $fresh->password_hash));
         $this->assertSame('face/legit.jpg', $fresh->biometric_face_reference_path);
