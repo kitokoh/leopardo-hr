@@ -879,3 +879,6 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
 
 ### 2026-08-16 - Défauts de config vs défauts de seeder (racine #2646)
 - Un défaut de config peut diverger silencieusement du défaut d'un seeder qui crée le même objet (`config/demo.php` fixait `super_admin_email` à `admin@example.com` alors que `SuperAdminSeeder` crée `admin@leopardo-rh.com` → `syncDemoSuperAdmin` ciblait un compte inexistant → no-op silencieux → INVALID_CREDENTIALS pour le parcours démo, issue #3775). Règle : dès qu'un seeder lit `env('X', default)`, la config correspondante DOIT porter le même défaut, et tout sync « démo » sur un compte absent DOIT émettre un warning (pas de no-op silencieux).
+
+### 2026-08-16 — Tests Payroll déterministes et précision overtime (#4266)
+Les tests Golden ne doivent jamais dépendre des dates aléatoires d’`EmployeeFactory` : lorsqu’une période complète est attendue, fixer explicitement `contract_start` avant `period_start` et `contract_end` à `null`. Pour `computeOvertimePay`, la précision complète est conservée jusqu’à l’arrondi final; les attentes doivent donc refléter `4327.01` et `6923.21` pour la formule de référence 60 000 / 173.33, et non des valeurs obtenues après arrondi prématuré.

@@ -76,6 +76,7 @@ class PayrollCalculatorCoverageTest extends TestCase
         // Issue #2685 : précision complète jusqu'à l'arrondi final.
         // Taux horaire 60000 / 173,33 = 346,160503… (non arrondi) ;
         // 10 h × 346,160503… × 1,25 = 4327,0063… → round(…, 2) = 4327,01.
+        // La précision est conservée jusqu'à l'arrondi final : 4327,01.
         $this->assertSame(4327.01, $this->calculator->computeOvertimePay(60000.0, 10.0, 10));
     }
 
@@ -83,6 +84,7 @@ class PayrollCalculatorCoverageTest extends TestCase
     {
         // Issue #2685 : 15 h = 10 h à 1,25 (4327,0063…) + 5 h à 1,50
         // (5 × 346,160503… × 1,50 = 2596,2038…) → 6923,2101… → 6923,21.
+        // 15 h : 10 h à 1,25 + 5 h à 1,50, arrondi final : 6923,21.
         $this->assertSame(6923.21, $this->calculator->computeOvertimePay(60000.0, 15.0, 10));
     }
 
