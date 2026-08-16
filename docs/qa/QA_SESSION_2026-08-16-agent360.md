@@ -88,7 +88,12 @@ self-assign → checkout → claim marker → push immédiat.
    documents/comptabilite/marketing ×3 locales (contenu aligné sur le FR réel —
    « comptabilite » = paie, « marketing » = email/SMS/réseaux), pages branchées
    sur `getModulePageContent(locale)`, test garde renforcé (parité clés + anti-placeholder).
-4. **Fermetures prouvées** : #3842, #3846.
+4. **PR #4466** — `fix(api): PayrollRunController` (Closes #4355, résiduel #4310) :
+   fin de la fuite `localized_message = $e->getMessage()` ×4 catch (validate/lock/
+   unlock/regularize) — le message FR des exceptions de domaine fuyait vers les
+   tenants EN/TR/AR ; remplacé par `__('errors.'.$e->errorCode())` + 3 clés ×4
+   locales + tests renforcés (dont chemin 423 lock).
+5. **Fermetures prouvées** : #3842, #3846, #3248 (10+ pages vitrine localisées).
 5. **Issue #4388** créée (spec-kit : problème/impact/critères).
 
 ## Leçons du run
