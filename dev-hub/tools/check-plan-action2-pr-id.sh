@@ -6,7 +6,7 @@
 # types de commit/PR qui ne correspondent a aucun ticket de backlog produit
 # — ex. mise a jour de dependances, reformattage, typo doc ponctuelle).
 #
-# Contexte: le protocole multi-agent (docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md)
+# Contexte: le protocole multi-agent (docs/archive/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md)
 # et le garde de claim (PA2-AUTO-011, check-plan-action2-claim.sh) supposent
 # tous les deux qu'une PR portant sur le backlog PLAN_ACTION2 reference son
 # ticket. Rien ne signalait une PR "PA2-like" (touchant du code produit)

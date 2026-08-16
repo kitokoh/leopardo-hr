@@ -46,6 +46,7 @@ concurrency:
 
 jobs:
   should-run:
+    timeout-minutes: 45
     name: Check deployment status
     runs-on: ubuntu-latest
     outputs:
@@ -112,6 +113,7 @@ jobs:
             core.setOutput('run_e2e', deployApiConclusion === 'success' ? 'true' : 'false');
 
   e2e-api-smoke:
+    timeout-minutes: 45
     name: API Smoke Tests
     runs-on: ubuntu-latest
     needs: should-run
@@ -195,6 +197,7 @@ jobs:
         run: bash dev-hub/tools/staging-demo-auth-smoke.sh "${BASE_URL}"
 
   e2e-admin-dashboard:
+    timeout-minutes: 45
     name: Admin Dashboard E2E (Playwright)
     runs-on: ubuntu-latest
     needs: should-run
@@ -268,6 +271,7 @@ jobs:
   # cette suite-ci valide le portail blade + le fix a11y S-6 (labels for/id,
   # aria-invalid/aria-describedby/role=alert) — voir issue #1763.
   e2e-blade-portal:
+    timeout-minutes: 45
     name: Portail Blade E2E (Playwright)
     runs-on: ubuntu-latest
     needs: should-run
@@ -335,6 +339,7 @@ jobs:
           retention-days: 14
 
   e2e-web-vitrine:
+    timeout-minutes: 45
     name: Web Vitrine E2E (Playwright)
     runs-on: ubuntu-latest
     needs: should-run
