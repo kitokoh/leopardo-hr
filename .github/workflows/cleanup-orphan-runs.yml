@@ -43,6 +43,7 @@ concurrency:
 
 jobs:
   cancel-orphan-runs:
+    timeout-minutes: 15
     name: Cancel runs on deleted branches
     runs-on: ubuntu-latest
     # Le token d'une PR venant d'un fork n'a pas `actions: write` ; le

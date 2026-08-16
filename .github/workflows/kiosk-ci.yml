@@ -26,6 +26,7 @@ concurrency:
 
 jobs:
   kiosk-ci:
+    timeout-minutes: 90
     name: Lint + i18n tests
     runs-on: ubuntu-latest
 

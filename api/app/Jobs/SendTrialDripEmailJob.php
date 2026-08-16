@@ -38,6 +38,8 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
 
     public int $backoff = 300;
 
+    public int $timeout = 120;
+
     public function __construct(
         private readonly Company $company,
         private readonly int $dayNumber,
@@ -50,12 +52,33 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
         return $this->company->id;
     }
 
+    public function failed(\Throwable $e): void
+    {
+        Log::error('[DripEmail] failed definitively', [
+            'error' => $e->getMessage(),
+            'company_id' => $this->company->id,
+            'day' => $this->dayNumber,
+        ]);
+    }
+
     /**
      * @return array<int, object>
      */
     public function middleware(): array
     {
         return [new EnsureTenantContext];
+    }
+
+    /**
+     * Échec terminal après épuisement des retries (#4296) — jamais silencieux.
+     */
+    public function failed(\Throwable $e): void
+    {
+        Log::error('SendTrialDripEmailJob.failed', [
+            'company_id' => $this->company->id,
+            'day' => $this->dayNumber,
+            'exception' => $e->getMessage(),
+        ]);
     }
 
     public function handle(): void

@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   generate-baseline:
+    timeout-minutes: 15
     name: Generate PHPStan/Larastan baseline artifact
     runs-on: ubuntu-latest
 

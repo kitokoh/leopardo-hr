@@ -13,6 +13,7 @@ return [
         // sit outside the API 'auth-sensitive'/'api' limiters, so they need their
         // own dedicated buckets to stay protected against brute-force attempts.
         'web_login_per_minute' => (int) env('RATE_LIMIT_WEB_LOGIN_PER_MINUTE', 10),
+        'web_activate_per_minute' => (int) env('RATE_LIMIT_WEB_ACTIVATE_PER_MINUTE', 10),
         'kiosk_punch_per_minute' => (int) env('RATE_LIMIT_KIOSK_PUNCH_PER_MINUTE', 30),
         // Public careers portal (job listing, job detail, XML feed, and
         // candidate application submission) is unauthenticated by design,

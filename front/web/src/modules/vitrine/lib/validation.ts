@@ -21,6 +21,7 @@ function buildSignupValidationMessages(locale: AppLocale) {
     companyTooLong: t(locale, 'signup.validation.companyTooLong'),
     roleRequired: t(locale, 'signup.validation.roleRequired'),
     employeesRequired: t(locale, 'signup.validation.employeesRequired'),
+    countryRequired: t(locale, 'signup.validation.countryRequired'),
     phoneInvalid: t(locale, 'signup.validation.phoneInvalid'),
     agreeTerms: t(locale, 'signup.validation.agreeTerms'),
   };
@@ -49,6 +50,13 @@ export function signupFormSchema(locale: AppLocale) {
         message: m.employeesRequired,
       })
       .optional(),
+    // MULTI-PAYS (#1867/#4476) : le pays est obligatoire côté API
+    // (required|size:2|SupportedCountry) — le formulaire doit l'envoyer,
+    // sinon le tunnel se dégrade silencieusement en capture de lead.
+    country: z
+      .string()
+      .length(2, { message: m.countryRequired })
+      .refine((v) => v === v.toUpperCase(), { message: m.countryRequired }),
     phone: z
       .string()
       .regex(

@@ -46,6 +46,7 @@ env:
 
 jobs:
   actionlint:
+    timeout-minutes: 15
     name: actionlint (+ shellcheck)
     runs-on: ubuntu-latest
     steps:

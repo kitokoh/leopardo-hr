@@ -42,6 +42,7 @@ concurrency:
 
 jobs:
   golden:
+    timeout-minutes: 45
     name: Golden tests paie DZ
     runs-on: ubuntu-latest
     services:
@@ -84,6 +85,7 @@ jobs:
         run: dev-hub/tools/payroll-golden-report.sh
 
   payroll-tests:
+    timeout-minutes: 45
     name: Tests module Payroll
     runs-on: ubuntu-latest
     services:
@@ -123,6 +125,7 @@ jobs:
         run: php artisan test tests/Feature/Payroll --stop-on-failure
 
   coverage:
+    timeout-minutes: 45
     name: Coverage Payroll ≥ 80 %
     runs-on: ubuntu-latest
     # S-4 (#1664) : gate BLOQUANTE — la migration RefreshTenantDatabase
@@ -322,6 +325,7 @@ jobs:
             }
 
   phpstan:
+    timeout-minutes: 45
     name: PHPStan module Payroll
     runs-on: ubuntu-latest
     steps:

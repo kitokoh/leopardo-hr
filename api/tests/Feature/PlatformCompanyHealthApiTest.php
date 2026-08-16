@@ -35,9 +35,10 @@ class PlatformCompanyHealthApiTest extends TestCase
 
         DB::table('plans')->insert([
             'id' => 1,
-            'name' => 'Pro',
+            'name' => 'Operations',
             'price_monthly' => 99,
-            'price_yearly' => 990,
+            'price_yearly' => 948,
+            'max_employees' => 250,
             'trial_days' => 14,
             'is_active' => true,
         ]);
@@ -85,7 +86,7 @@ class PlatformCompanyHealthApiTest extends TestCase
         $response->assertJsonPath('data.company.id', $company->id);
         $response->assertJsonPath('data.company.slug', $company->slug);
         $response->assertJsonPath('data.company.created_at', $company->created_at?->toIso8601String());
-        $response->assertJsonPath('data.plan.name', 'Pro');
+        $response->assertJsonPath('data.plan.name', 'Operations');
         $response->assertJsonPath('data.subscription.mrr', 99);
         $response->assertJsonPath('data.features.active.finance', true);
         $response->assertJsonPath('data.adoption.risk_level', 'low');
@@ -105,9 +106,10 @@ class PlatformCompanyHealthApiTest extends TestCase
     {
         DB::table('plans')->insert([
             'id' => 1,
-            'name' => 'Starter',
+            'name' => 'Pilot',
             'price_monthly' => 29,
             'price_yearly' => 290,
+            'max_employees' => 30,
             'trial_days' => 14,
             'is_active' => true,
         ]);
@@ -131,8 +133,8 @@ class PlatformCompanyHealthApiTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-05-08 10:00:00', 'UTC'));
 
         DB::table('plans')->insert([
-            ['id' => 1, 'name' => 'Starter', 'price_monthly' => 29, 'price_yearly' => 290, 'trial_days' => 14, 'is_active' => true],
-            ['id' => 2, 'name' => 'Pro', 'price_monthly' => 99, 'price_yearly' => 990, 'trial_days' => 14, 'is_active' => true],
+            ['id' => 1, 'name' => 'Pilot', 'price_monthly' => 29, 'price_yearly' => 290, 'max_employees' => 30, 'trial_days' => 14, 'is_active' => true],
+            ['id' => 2, 'name' => 'Operations', 'price_monthly' => 99, 'price_yearly' => 948, 'max_employees' => 250, 'trial_days' => 14, 'is_active' => true],
         ]);
 
         $healthy = Company::factory()->create([
@@ -190,9 +192,10 @@ class PlatformCompanyHealthApiTest extends TestCase
     {
         DB::table('plans')->insert([
             'id' => 1,
-            'name' => 'Starter',
+            'name' => 'Pilot',
             'price_monthly' => 29,
             'price_yearly' => 290,
+            'max_employees' => 30,
             'trial_days' => 14,
             'is_active' => true,
         ]);
