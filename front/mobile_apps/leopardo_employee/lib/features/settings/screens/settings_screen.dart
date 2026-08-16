@@ -432,6 +432,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return FutureBuilder<EmployeeCareer>(
       future: ref.read(settingsRepositoryProvider).loadCareer(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildSectionError(
+            title: 'Parcours professionnel',
+            message: 'Impossible de charger votre parcours.',
+          );
+        }
         final career = snapshot.data;
         final timeline = career?.timeline ?? const <EmployeeCareerEntry>[];
 
@@ -655,6 +661,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return FutureBuilder<CabinetStats>(
       future: ref.read(settingsRepositoryProvider).loadCabinetStats(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return _buildSectionError(
+            title: 'Placard numerique',
+            message: 'Impossible de charger les statistiques.',
+          );
+        }
         final stats = snapshot.data;
 
         return Container(
@@ -1660,5 +1672,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     }
   }
-}
 
+  Widget _buildSectionError({
+    required String title,
+    required String message,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: MobileSurface.cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            style: AppTypography.bodySmall.copyWith(
+              color: MobileSurface.secondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => setState(() {}),
+            icon: const Icon(Icons.refresh, size: 18),
+            label: const Text('Réessayer'),
+          ),
+        ],
+      ),
+    );
+  }
+}
