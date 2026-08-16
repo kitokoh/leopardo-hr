@@ -74,3 +74,4 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
+];

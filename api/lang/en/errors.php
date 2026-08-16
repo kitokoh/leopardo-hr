@@ -74,3 +74,4 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Attendance mode personalization is disabled.',
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
+];
