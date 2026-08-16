@@ -164,6 +164,11 @@ api.interceptors.response.use(
     const toast = useToast()
     const originalRequest = error.config
 
+    // #4713 (audit 360° 2026-08-16) : opt-out _skipToast — les vues qui
+    // gèrent leur propre état d'erreur + retry (EdgeNodesView, AnalyticsView,
+    // ExportsView, GrowthDashboardView) évitent le double toast.
+    const skipToast = originalRequest?._skipToast === true
+
     if (error.response) {
       const { status, data } = error.response
       const requestUrl = originalRequest?.url || ''

@@ -206,9 +206,9 @@ async function loadAll() {
   errorMessage.value = ''
   try {
     const [statsRes, activitiesRes, alertsRes] = await Promise.all([
-      api.get('/admin/dashboard/stats'),
-      api.get('/admin/dashboard/activities'),
-      api.get('/admin/dashboard/alerts')
+      api.get('/admin/dashboard/stats', { _skipToast: true }),
+      api.get('/admin/dashboard/activities', { _skipToast: true }),
+      api.get('/admin/dashboard/alerts', { _skipToast: true })
     ])
     Object.assign(stats, statsRes.data || {})
     activities.value = activitiesRes.data?.data || []

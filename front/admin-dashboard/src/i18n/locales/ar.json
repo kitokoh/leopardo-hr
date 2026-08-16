@@ -789,7 +789,13 @@
     "email_label": "البريد الالكتروني",
     "continue_with_google": "الاستمرار مع Google",
     "email_invalid": "بريد الكتروني غير صالح",
-    "password_too_short": "كلمة المرور قصيرة جدا"
+    "password_too_short": "كلمة المرور قصيرة جدا",
+    "access_key_label": "مفتاح الوصول",
+    "two_fa_label": "رمز 2FA",
+    "login_placeholder_email": "admin@leopardo-rh.com",
+    "login_submit": "تسجيل الدخول",
+    "remember_me": "تذكرني",
+    "login_subtitle": "سجل الدخول إلى مساحتك"
   },
   "app": {
     "title": "ليوباردو للموارد البشرية"

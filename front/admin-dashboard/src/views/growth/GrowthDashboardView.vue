@@ -185,13 +185,13 @@ const loadData = async () => {
     // renvoient {data:[...]}, /history renvoie {commissions, audit_logs}
     // (contrat GrowthAdminController). Un wrap défensif évite un crash de
     // rendu (v-for / .length) si le contrat backend évolue.
-    const pResponse = await api.get('/platform/growth/partners');
+    const pResponse = await api.get('/platform/growth/partners', { _skipToast: true });
     partners.value = Array.isArray(pResponse.data?.data) ? pResponse.data.data : [];
 
-    const hResponse = await api.get('/platform/growth/history');
+    const hResponse = await api.get('/platform/growth/history', { _skipToast: true });
     auditLogs.value = Array.isArray(hResponse.data?.audit_logs) ? hResponse.data.audit_logs : [];
 
-    const payResponse = await api.get('/platform/growth/payouts');
+    const payResponse = await api.get('/platform/growth/payouts', { _skipToast: true });
     payouts.value = Array.isArray(payResponse.data?.data) ? payResponse.data.data : [];
   } catch (e) {
     console.error("Growth Admin: Data load failed", e);

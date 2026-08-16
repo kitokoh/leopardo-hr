@@ -724,7 +724,13 @@
     "back_tooltip": "Back",
     "email_label": "Email",
     "password_required": "Password required",
-    "try_demo_account": "Try a demo account"
+    "try_demo_account": "Try a demo account",
+    "access_key_label": "Access Key",
+    "two_fa_label": "2FA Code",
+    "login_placeholder_email": "admin@leopardo-rh.com",
+    "login_submit": "Sign in",
+    "remember_me": "Remember me",
+    "login_subtitle": "Sign in to your workspace"
   },
   "marketing": {
     "oauth": {
