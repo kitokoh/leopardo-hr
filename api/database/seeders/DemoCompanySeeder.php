@@ -1651,7 +1651,7 @@ SQL);
             [
                 'name' => 'TechCorp Algerie SARL',
                 'slug' => 'techcorp-algerie',
-                'plan' => 'Starter',
+                'plan' => 'Pilot',
                 'sector' => 'Technologie',
                 'country' => 'DZ',
                 'city' => 'Alger',
@@ -1755,7 +1755,7 @@ SQL);
             [
                 'name' => 'PharmaPlus Casablanca',
                 'slug' => 'pharmaplus-casablanca',
-                'plan' => 'Business',
+                'plan' => 'Operations',
                 'sector' => 'Sante',
                 'country' => 'MA',
                 'city' => 'Casablanca',
@@ -1832,7 +1832,7 @@ SQL);
             [
                 'name' => 'DigitalFlow Tunis',
                 'slug' => 'digitalflow-tunis',
-                'plan' => 'Business',
+                'plan' => 'Operations',
                 'sector' => 'Services numeriques',
                 'country' => 'TN',
                 'city' => 'Tunis',
