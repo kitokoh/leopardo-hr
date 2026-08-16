@@ -74,10 +74,6 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Demande de paiement refusee.',
     'PAYOUT_REQUEST_FAILED' => 'Une erreur est survenue lors de la demande de paiement.',
     'COMPANY_MODE_FORCED' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
@@ -97,6 +93,14 @@ return [
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Seuls les contrats actifs peuvent être suspendus.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Le contrat doit être actif ou suspendu pour être rompu.',
 
+    // API responses — batch i18n v4 (#4396)
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
+    'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
+    'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
+    'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
+    'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
+    'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
     'PARTNER_APPLICATION_ALREADY_SUBMITTED' => 'Cette candidature a déjà été soumise.',
     'PAYOUT_REQUEST_REJECTED' => 'Demande de paiement refusée.',
     'NOT_A_PARTNER' => 'Vous n\'êtes pas enregistré comme partenaire.',
@@ -123,10 +127,29 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Le run de paie ne peut pas être annulé dans son état actuel.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Votre compte a été suspendu. Contactez votre administrateur.',
     'VERIFICATION_CODE_INVALID' => 'Code de vérification invalide ou expiré.',
-    'EMAIL_ALREADY_REGISTERED' => 'Un compte avec cet email existe déjà. Connectez-vous directement.',
     'TRIAL_SPACE_CREATION_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.', origin/main
+    'CANNOT_DISABLE_SELF' => 'Impossible de désactiver votre propre compte.',
+    'CANNOT_SUSPEND_SELF' => 'Impossible de suspendre votre propre compte.',
+    'MANAGER_ONLY_LINK' => 'Seul un manager peut lier un utilisateur.',
+    'ORDINARY_ACCOUNT_NOT_FOUND' => 'Aucun compte ordinaire trouvé avec cet email.',
+    'EMPLOYEE_NOT_FOUND_IN_COMPANY' => 'Employé introuvable dans votre entreprise.',
+    'USER_ALREADY_LINKED' => 'Cet utilisateur est déjà lié à votre entreprise.',
+    'CSV_HEADER_REQUIRED' => 'Le fichier CSV doit contenir un en-tête et au moins une ligne de données.',
+    'CSV_MISSING_COLUMNS' => 'Colonnes requises manquantes : :columns',
+    'CSV_IMPORT_FAILED' => "Erreur lors de l'import.",
+    'NO_ACTIVE_PLAN_FOR_COMPANY' => 'Aucun plan actif disponible pour créer cette société.',
+    'EMAIL_ALREADY_USED_BY_USER' => 'Cet email est déjà utilisé par un utilisateur existant.',
+    'COMPANY_REQUEST_ALREADY_PROCESSED' => 'Cette demande a déjà été traitée.',
+    'LEAVE_REQUESTS_PENDING_VALIDATION' => 'Des demandes de congés attendent votre validation.',
+    'TRAININGS_PENDING_CLOSURE' => 'Des formations sont terminées mais les inscriptions ne sont pas clôturées.',
+    'LOW_LEAVE_DAYS' => 'Certains collaborateurs ont 2 jours ou moins de congés restants.',
+    'ONLINE_PAYMENT_NOT_CONFIGURED' => "Le paiement en ligne n'est pas encore configuré.",
+    'BILLING_PORTAL_ACCESS_FAILED' => "Impossible d'accéder au portail de facturation.",
+    'FLEET_ALERTS_LOAD_FAILED' => 'Impossible de charger les alertes de flotte.',
+    'COMPANY_BRANDING_UPDATED' => 'Identité entreprise mise à jour.',
+    'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'Ce run de paie ne concerne pas :country.',
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.'
 ];
