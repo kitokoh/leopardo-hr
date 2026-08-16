@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\AuditLogResource;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\AuditLogResource;
+use App\Support\CsvCellSanitizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -115,12 +116,14 @@ class AuditLogController extends Controller
 
                     fputcsv($handle, [
                         $log->id,
-                        $userName,
-                        $log->action,
-                        $log->auditable_type,
+                        // #4169 : les champs texte (user, action, valeurs JSON)
+                        // sont neutralisés contre l'injection de formule CSV.
+                        CsvCellSanitizer::neutralize($userName),
+                        CsvCellSanitizer::neutralize((string) $log->action),
+                        CsvCellSanitizer::neutralize((string) $log->auditable_type),
                         $log->auditable_id,
-                        is_array($log->old_values) ? json_encode($log->old_values) : ($log->old_values ?? ''),
-                        is_array($log->new_values) ? json_encode($log->new_values) : ($log->new_values ?? ''),
+                        CsvCellSanitizer::neutralize(is_array($log->old_values) ? json_encode($log->old_values) : ($log->old_values ?? '')),
+                        CsvCellSanitizer::neutralize(is_array($log->new_values) ? json_encode($log->new_values) : ($log->new_values ?? '')),
                         $log->created_at?->toIso8601String() ?? '',
                     ]);
                 }
@@ -132,4 +135,3 @@ class AuditLogController extends Controller
         ]);
     }
 }
-

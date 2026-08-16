@@ -38,10 +38,10 @@ class SmartAttendanceFlowTest extends TestCase
     {
         parent::setUp();
 
-        // Le schéma MVP ne crée pas les tables SmartAttendance (elles sont
-        // seulement droppées par le trait) — on les crée ici, alignées sur
-        // les migrations tenant/2026_06_29_0002xx.
-        $this->createSmartAttendanceSchema();
+        // #4243 : RefreshTenantDatabase exécute les migrations tenant —
+        // dont 2026_06_29_0002xx qui créent les 4 tables SmartAttendance
+        // avec le schéma PostgreSQL. Plus de DDL manuel (l'ancien était du
+        // MySQL → SQLSTATE 42601 sur pgsql → 12 tests rouges).
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
@@ -63,96 +63,11 @@ class SmartAttendanceFlowTest extends TestCase
         $this->managerRh = $managerRh;
     }
 
-    protected function tearDown(): void
-    {
-        // RefreshTenantDatabase (migrate:fresh) nettoie la base entre tests ;
-        // on droppe quand même les tables SmartAttendance créées manuellement
-        // (le schéma MVP ne les porte pas) pour un état propre.
-        DB::statement('DROP TABLE IF EXISTS employee_location_events');
-        DB::statement('DROP TABLE IF EXISTS geo_attendance_sessions');
-        DB::statement('DROP TABLE IF EXISTS attendance_mode_settings');
-        parent::tearDown();
-    }
+    // #4243 : plus de tearDown custom ni de createSmartAttendanceSchema —
+    // RefreshTenantDatabase (migrate:fresh) recrée les tables depuis les
+    // migrations tenant (2026_06_29_0002xx).
 
-    private function createSmartAttendanceSchema(): void
-    {
-        DB::statement('DROP TABLE IF EXISTS employee_location_events');
-        DB::statement('DROP TABLE IF EXISTS geo_attendance_sessions');
-        DB::statement('DROP TABLE IF EXISTS attendance_mode_settings');
-        DB::statement('DROP TABLE IF EXISTS employee_attendance_preferences');
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE geo_attendance_sessions (
-                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                employee_id INT UNSIGNED NOT NULL,
-                company_id CHAR(36) NOT NULL,
-                site_id INT UNSIGNED NULL,
-                started_at TIMESTAMP NULL,
-                ended_at TIMESTAMP NULL,
-                duration_seconds INT UNSIGNED NULL,
-                check_in_lat DECIMAL(10, 8) NOT NULL,
-                check_in_lng DECIMAL(11, 8) NOT NULL,
-                check_in_accuracy_meters SMALLINT UNSIGNED NULL,
-                check_out_lat DECIMAL(10, 8) NULL,
-                check_out_lng DECIMAL(11, 8) NULL,
-                check_out_accuracy_meters SMALLINT UNSIGNED NULL,
-                attendance_log_id BIGINT UNSIGNED NULL,
-                validated_by INT UNSIGNED NULL,
-                validated_at TIMESTAMP NULL,
-                validation_note TEXT NULL,
-                status VARCHAR(20) NOT NULL DEFAULT 'detected',
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE employee_location_events (
-                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                employee_id INT UNSIGNED NOT NULL,
-                company_id CHAR(36) NOT NULL,
-                geo_session_id BIGINT UNSIGNED NULL,
-                event_type VARCHAR(30) NOT NULL,
-                latitude DECIMAL(10, 8) NULL,
-                longitude DECIMAL(11, 8) NULL,
-                accuracy_meters SMALLINT UNSIGNED NULL,
-                device_timestamp TIMESTAMP NULL,
-                metadata JSON NULL,
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE attendance_mode_settings (
-                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                company_id CHAR(36) NOT NULL UNIQUE,
-                forced_mode VARCHAR(20) NULL,
-                gps_enabled TINYINT(1) NOT NULL DEFAULT 0,
-                latitude DECIMAL(10, 8) NULL,
-                longitude DECIMAL(11, 8) NULL,
-                radius_meters SMALLINT UNSIGNED NOT NULL DEFAULT 100,
-                allow_employee_override TINYINT(1) NOT NULL DEFAULT 1,
-                requires_punch_photo TINYINT(1) NOT NULL DEFAULT 0,
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE employee_attendance_preferences (
-                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                employee_id INT UNSIGNED NOT NULL,
-                preferred_mode VARCHAR(20) NOT NULL DEFAULT 'manual',
-                gps_consent_given TINYINT(1) NOT NULL DEFAULT 0,
-                gps_consent_at TIMESTAMP NULL,
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-    }
-
-    /** @param array<string, mixed> $overrides
+    /** @param array<string, mixed> $overrides    /** @param array<string, mixed> $overrides
      * @return array<string, mixed>
      */
     private function geoEvent(array $overrides = []): array

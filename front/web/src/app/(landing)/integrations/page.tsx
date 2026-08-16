@@ -219,8 +219,10 @@ export default function IntegrationsPage() {
           >
             <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-full px-6 py-3 text-slate-600 dark:text-slate-400">
               <span className="text-sm">{data.docsNote}</span>
-              <a href={`${resolveBackendBaseUrl().replace(/\/api\/v1$/, '')}/docs`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
-                /docs <ArrowRight className="w-3 h-3" />
+              {/* #4178 : surface documentée réelle du contrat OpenAPI —
+                  /docs n'existe pas ; l'explorateur vit sur /api-explorer. */}
+              <a href={`${resolveBackendBaseUrl().replace(/\/api\/v1$/, '')}/api-explorer`} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1">
+                /api-explorer <ArrowRight className="w-3 h-3" />
               </a>
             </div>
           </motion.div>

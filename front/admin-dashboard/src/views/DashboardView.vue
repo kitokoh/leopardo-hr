@@ -61,20 +61,20 @@
     <div v-if="!isLoading && !errorMessage" class="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-3 animate-slide-up" style="animation-delay: 0.1s">
       <section class="card lg:col-span-2">
         <div class="flex items-center justify-between border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 bg-surface-bright/20 dark:bg-surface-bright/20 backdrop-blur-md">
-          <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Priorités Portefeuille</h2>
+          <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.portfolioPriorities') }}</h2>
           <router-link class="text-xs font-black uppercase tracking-widest text-emerald-500 hover:text-brand-500" to="/analytics">
-            Voir tout
+            {{ t('dashboard.seeAll') }}
           </router-link>
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-white/5 dark:divide-white/5">
             <thead class="bg-slate-50/80 dark:bg-slate-900/80">
               <tr>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Client</th>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Santé</th>
-                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">Risque</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.client') }}</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.health') }}</th>
+                <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.risk') }}</th>
                 <th class="px-6 py-3 text-left text-[10px] font-black uppercase tracking-widest text-slate-400">MRR</th>
-                <th class="px-6 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">Actions</th>
+                <th class="px-6 py-3 text-right text-[10px] font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.actions') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/5 bg-transparent dark:divide-white/5 dark:bg-transparent">
@@ -117,14 +117,14 @@
             </tbody>
           </table>
           <div v-if="priorityCompanies.length === 0" class="p-8 text-center">
-            <p class="text-sm font-medium text-slate-400">Aucune entreprise prioritaire pour le moment.</p>
+            <p class="text-sm font-medium text-slate-400">{{ t('dashboard.noPriorityCompanies') }}</p>
           </div>
         </div>
       </section>
 
       <section class="card">
         <div class="border-b border-slate-200/50 px-6 py-4 dark:border-slate-800/50 bg-surface-bright/20 dark:bg-surface-bright/20 backdrop-blur-md">
-          <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Inscriptions en attente</h2>
+          <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.pendingRegistrations') }}</h2>
         </div>
         <div class="divide-y divide-white/5 dark:divide-white/5">
           <div v-for="request in pendingCompanyRequests" :key="request.id" class="p-6 transition-colors hover:bg-white/5 dark:hover:bg-slate-900/5">
@@ -143,7 +143,7 @@
             </div>
           </div>
           <div v-if="pendingCompanyRequests.length === 0" class="p-8 text-center">
-            <p class="text-sm font-medium text-slate-400">Aucune demande en attente.</p>
+            <p class="text-sm font-medium text-slate-400">{{ t('dashboard.noPendingRequests') }}</p>
           </div>
         </div>
         <div class="border-t border-slate-200 dark:border-slate-800 px-6 py-4 bg-surface-bright/20 dark:bg-surface-bright/20 backdrop-blur-md">
@@ -156,36 +156,36 @@
 
     <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-6 lg:grid-cols-3 animate-slide-up" style="animation-delay: 0.2s">
       <section class="card p-6">
-        <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Adoption</h2>
+        <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.adoption') }}</h2>
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Pointages 30j</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.checkins30d') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.attendance_logs }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Employés actifs</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.activeEmployees') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ adoption.active_employees }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Clients à risque</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.clientsAtRisk') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ summary.risk.high + summary.risk.medium }}</dd>
           </div>
         </dl>
       </section>
 
       <section class="card p-6">
-        <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Revenus</h2>
+        <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.revenue') }}</h2>
         <dl class="mt-4 space-y-4 text-sm">
           <div class="flex items-center justify-between">
             <dt class="text-xs font-black uppercase tracking-widest text-slate-400">MRR</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.mrr, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Encaisse 30j</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.collected30d') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.collected_30d, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Impayés</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.overdue') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(revenue.overdue_total, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
@@ -193,18 +193,18 @@
             <dd class="font-black text-slate-900 dark:text-white">{{ formatCurrency(averageRevenuePerAccount, revenue.currency) }}</dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">Abonnements actifs</dt>
+            <dt class="text-xs font-black uppercase tracking-widest text-slate-400">{{ t('dashboard.activeSubscriptions') }}</dt>
             <dd class="font-black text-slate-900 dark:text-white">{{ subscriptionMetrics.active }}</dd>
           </div>
         </dl>
       </section>
 
       <section class="card p-6">
-        <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">Raccourcis</h2>
+        <h2 class="text-lg font-black tracking-tight text-slate-950 dark:text-white uppercase">{{ t('dashboard.shortcuts') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-3">
-          <router-link class="btn-secondary justify-center shadow-sm text-xs font-black uppercase tracking-widest" to="/companies">Portefeuille clients</router-link>
-          <router-link class="btn-secondary justify-center shadow-sm text-xs font-black uppercase tracking-widest" to="/subscriptions">Abonnements</router-link>
-          <router-link class="btn-secondary justify-center shadow-sm text-xs font-black uppercase tracking-widest" to="/support">Demandes clients</router-link>
+          <router-link class="btn-secondary justify-center shadow-sm text-xs font-black uppercase tracking-widest" to="/companies">{{ t('dashboard.clientPortfolio') }}</router-link>
+          <router-link class="btn-secondary justify-center shadow-sm text-xs font-black uppercase tracking-widest" to="/subscriptions">{{ t('dashboard.subscriptions') }}</router-link>
+          <router-link class="btn-secondary justify-center shadow-sm text-xs font-black uppercase tracking-widest" to="/support">{{ t('dashboard.clientRequests') }}</router-link>
         </div>
       </section>
     </div>
@@ -220,10 +220,16 @@ import {
 } from '@heroicons/vue/24/outline'
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
+import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
+
+// #4206 : traduction des libellés du cockpit via le catalogue admin.
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
 const isLoading = ref(false)
 const errorMessage = ref('')
 const summary = ref({
@@ -290,49 +296,49 @@ const formattedMrr = computed(() => formatCurrency(revenue.value.mrr || summary.
 
 const workflowCards = computed(() => [
   {
-    title: 'Créer ou activer un client',
+    title: t('dashboard.createActivateClient'),
     description: 'Qualifier une entreprise, ouvrir son tenant et vérifier son statut de lancement.',
-    action: 'Ouvrir le portefeuille clients',
+    action: t('dashboard.openClientPortfolio'),
     to: '/companies',
     badge: `${companyMetrics.value.total} tenants`,
     badgeClass: 'rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-500 dark:bg-brand-900/40 dark:text-brand-300 border border-emerald-500/20 dark:border-brand-800',
   },
   {
-    title: 'Traiter les demandes entrantes',
+    title: t('dashboard.processIncomingRequests'),
     description: 'Suivre les demandes d’essai, prioriser les leads et éviter les prospects bloqués.',
-    action: 'Voir les demandes clients',
+    action: t('dashboard.viewClientRequests'),
     to: '/support',
     badge: `${pendingRequests.value} à traiter`,
     badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
   },
   {
-    title: 'Surveiller les clients à risque',
+    title: t('dashboard.monitorAtRiskClients'),
     description: 'Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.',
-    action: 'Analyser les priorités',
+    action: t('dashboard.analyzePriorities'),
     to: '/analytics',
     badge: `${summary.value.risk.high + summary.value.risk.medium} risques`,
     badgeClass: 'rounded-lg bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800',
   },
   {
-    title: 'Piloter abonnements et revenus',
+    title: t('dashboard.manageSubscriptionsRevenue'),
     description: 'Contrôler MRR, impayés, plans actifs et trajectoire commerciale de la plateforme.',
-    action: 'Ouvrir abonnements',
+    action: t('dashboard.openSubscriptions'),
     to: '/subscriptions',
     badge: formatCurrency(revenue.value.mrr, revenue.value.currency),
     badgeClass: 'rounded-lg bg-purple-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border border-purple-200 dark:border-purple-800',
   },
   {
-    title: 'Vérifier système et sécurité',
+    title: t('dashboard.checkSystemSecurity'),
     description: 'Contrôler santé API, configuration, logs, sauvegardes et signaux d’incident.',
-    action: 'Ouvrir système',
+    action: t('dashboard.openSystem'),
     to: '/system',
     badge: 'Ops',
     badgeClass: 'rounded-lg bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
   },
   {
-    title: 'Préparer intégrations partenaires',
+    title: t('dashboard.preparePartnerIntegrations'),
     description: 'Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.',
-    action: 'Ouvrir les webhooks',
+    action: t('dashboard.openWebhooks'),
     to: '/webhooks',
     badge: 'API',
     badgeClass: 'rounded-lg bg-cyan-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800',
@@ -357,7 +363,7 @@ async function loadDashboard() {
     pendingRequests.value = requestsResponse.data?.meta?.total || pendingCompanyRequests.value.length
   } catch (error) {
     console.error('Failed to load platform dashboard:', error)
-    errorMessage.value = 'Impossible de charger le cockpit plateforme.'
+    errorMessage.value = t('dashboard.loadError')
   } finally {
     isLoading.value = false
   }
@@ -392,12 +398,12 @@ function riskClass(risk) {
 }
 
 function riskLabel(risk) {
-  const labels = { high: 'Risque eleve', medium: 'Risque moyen', low: 'Risque faible' }
+  const labels = { high: t('dashboard.riskHigh'), medium: t('dashboard.riskMedium'), low: t('dashboard.riskLow') }
   return labels[risk] || risk
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseigné'
+  if (!value) return t('dashboard.notProvided')
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), { dateStyle: 'medium' }).format(new Date(value))
 }
 

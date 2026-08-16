@@ -15,6 +15,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Throwable;
 
 class SendBulkNotificationsJob implements ShouldQueue, TenantScopedJob
 {
@@ -90,4 +91,18 @@ class SendBulkNotificationsJob implements ShouldQueue, TenantScopedJob
             "notification:{$this->notificationClass}",
         ];
     }
+
+    /**
+     * #4205 : épuisement des retries — log d'alerte (lot de notifications).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('SendBulkNotificationsJob.failed', [
+            'notification_class' => $this->notificationClass,
+            'user_count' => count($this->userIds),
+            'company_id' => $this->companyId,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
 }

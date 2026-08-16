@@ -44,7 +44,7 @@ class AttendanceRepository {
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
       );
-      return AttendanceLog.fromJson(_dataMap(response.data));
+      return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
       if (_isOfflineError(e)) {
         await _saveOfflinePunch('check-in', payload);
@@ -74,7 +74,7 @@ class AttendanceRepository {
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
       );
-      return AttendanceLog.fromJson(_dataMap(response.data));
+      return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
       if (_isOfflineError(e)) {
         await _saveOfflinePunch('check-out', payload);
@@ -144,7 +144,7 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return AttendanceLog.fromJson(_dataMap(response.data));
+    return AttendanceLog.fromJson(extractDataMap(response.data));
   }
 
   Future<void> requestCorrection({
@@ -252,13 +252,7 @@ class AttendanceRepository {
       timeoutOverride: _readTimeout,
       queryParameters: {'employee_id': employeeId},
     );
-    final raw = response.data is Map
-        ? (response.data as Map).cast<String, dynamic>()
-        : const <String, dynamic>{};
-    final payload = raw['data'];
-    final data = payload is Map
-        ? payload.cast<String, dynamic>()
-        : const <String, dynamic>{};
+    final data = extractDataMap(response.data);
     return EmployeeDayDetail.fromJson(data);
   }
 
@@ -278,7 +272,7 @@ class AttendanceRepository {
         'per_page': 50,
       },
     );
-    final data = _dataMap(response.data);
+    final data = extractDataMap(response.data);
     return ManagerAnomalyReport.fromJson(data);
   }
 
@@ -393,7 +387,7 @@ class AttendanceRepository {
     return DateTime(now.year, now.month, now.day, hour, minute);
   }
 
-  static Map<String, dynamic> _dataMap(dynamic responseData) {
+  static Map<String, dynamic> extractDataMap(dynamic responseData) {
     final response = responseData is Map
         ? responseData.cast<String, dynamic>()
         : const <String, dynamic>{};

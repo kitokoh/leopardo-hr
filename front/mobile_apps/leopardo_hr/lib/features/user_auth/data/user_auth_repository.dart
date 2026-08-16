@@ -184,6 +184,8 @@ class UserAuthRepository {
       return root;
     }
 
+    // #4199 : parse multi-formes volontaire (token racine / data / auth) —
+    // le helper extractDataMap() ne couvre que l'enveloppe {data:{...}}.
     final data = root['data'];
     if (data is Map) {
       final dataMap = data.cast<String, dynamic>();

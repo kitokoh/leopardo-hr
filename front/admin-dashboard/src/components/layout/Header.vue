@@ -55,7 +55,7 @@
             id="admin-language-select"
             :value="localeStore.current"
             :aria-label="$t('common.language.label', 'Language')"
-            class="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            class="rounded-lg border border-slate-200/60 bg-white/70 px-2 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30 backdrop-blur-md dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-200"
             @change="localeStore.setLocale($event.target.value)"
           >
             <option v-for="locale in localeStore.supported" :key="locale" :value="locale">
@@ -98,7 +98,7 @@
             <!-- Notifications dropdown -->
             <div
               v-if="showNotifications"
-              class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700 focus:outline-none"
+              class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-xl glass-effect py-1 shadow-glass focus:outline-none"
               @click.stop
             >
               <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">

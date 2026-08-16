@@ -140,6 +140,12 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/{companySlug}/jobs/{jobPosting}/apply', [CandidateApplicationController::class, 'store'])->whereNumber('jobPosting');
     });
 
+    // Issue #4217 (audit 360° 2026-08-16) — registre multi-pays canonique
+    // (#1867) accessible SANS auth : la vitrine, l'onboarding public et les
+    // apps mobiles pré-login listent les pays supportés avant toute connexion.
+    // Aucune donnée sensible (codes ISO, devises, fuseaux, confidenceLevel).
+    Route::middleware(['throttle:public-registry'])->get('/supported-countries', [SupportedCountryController::class, 'index']);
+
     Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan'])->group(function (): void {
         Route::get('/auth/me', [AuthController::class, 'me']);
         Route::patch('/auth/profile', [AuthController::class, 'updateProfile']);
@@ -153,10 +159,6 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/communication/analytics', CommunicationAnalyticsController::class)->middleware('throttle:platform-sensitive');
         Route::get('/launch-readiness', LaunchReadinessController::class);
         Route::get('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'myStatus']);
-        // MULTI-PAYS (#1867) — registre unique des pays supportés (pays, devise,
-        // fuseau, langue, confiance des règles, disponibilité). Source de vérité
-        // pour les formulaires de provisioning et les écrans de calcul.
-        Route::get('/supported-countries', [SupportedCountryController::class, 'index']);
         Route::post('/auth/biometric-enrollment', [BiometricEnrollmentController::class, 'store']);
         Route::middleware(['throttle:privacy-sensitive'])->group(function (): void {
             Route::get('/privacy/export', [PrivacyController::class, 'export']);

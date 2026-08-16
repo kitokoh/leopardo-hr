@@ -31,9 +31,9 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_STAGING_URL: https://gestionemployerbackend.onrender.com
-  DEFAULT_ADMIN_STAGING_URL: https://leo-admin.pages.dev
-  DEFAULT_WEB_STAGING_URL: https://gestionemployer-backend.vercel.app
+  DEFAULT_STAGING_URL: ${{ vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+  DEFAULT_ADMIN_STAGING_URL: ${{ vars.PROD_ADMIN_URL || 'https://leo-admin.pages.dev' }}
+  DEFAULT_WEB_STAGING_URL: ${{ vars.PROD_WEB_URL || 'https://gestionemployer-backend.vercel.app' }}
 
 concurrency:
   # Issue #2131 : groupe par SHA du déploiement déclencheur (et non par ref) —

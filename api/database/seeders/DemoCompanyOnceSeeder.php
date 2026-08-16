@@ -318,6 +318,14 @@ class DemoCompanyOnceSeeder extends Seeder
         $superAdmin = DB::table('super_admins')->where('email', $email)->first();
 
         if (! $superAdmin) {
+            // #2646/#3775 : si le compte cible n'existe pas (SUPER_ADMIN_EMAIL
+            // surchargé, seeder non exécuté), ne rien faire en silence rend le
+            // parcours démo indiagnosticable — prévenir l'opérateur.
+            $this->command?->warn(sprintf(
+                'DemoCompanyOnceSeeder: super-admin "%s" introuvable — parcours démo KO tant que SuperAdminSeeder ne l a pas créé.',
+                $email,
+            ));
+
             return;
         }
 

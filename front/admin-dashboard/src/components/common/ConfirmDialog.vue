@@ -5,7 +5,7 @@
       class="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/50 p-4"
       @click.self="cancel"
     >
-      <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-6 shadow-xl">
+      <div class="w-full max-w-md glass-card p-6">
         <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ title }}</h3>
         <p v-if="message" class="mt-1 text-sm text-gray-500 dark:text-slate-400">{{ message }}</p>
         <div class="mt-4 flex justify-end gap-2">

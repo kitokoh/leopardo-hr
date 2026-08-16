@@ -87,3 +87,43 @@ describe('og:locale (#3807)', () => {
     expect(metadata.openGraph?.locale).toBeUndefined();
   });
 });
+
+describe('canonical/og:url localisés (#4201)', () => {
+  const { generateMetadata, localizedCanonical } = require('@/modules/vitrine/lib/seo');
+
+  it('localizedCanonical laisse la locale fr inchangée', () => {
+    expect(localizedCanonical('https://x.example/pricing', 'fr')).toBe('https://x.example/pricing');
+    expect(localizedCanonical('https://x.example/pricing', undefined)).toBe('https://x.example/pricing');
+  });
+
+  it('localizedCanonical ajoute ?lang= pour les locales non-fr', () => {
+    expect(localizedCanonical('https://x.example/pricing', 'en')).toBe('https://x.example/pricing?lang=en');
+    expect(localizedCanonical('https://x.example/faq', 'ar')).toBe('https://x.example/faq?lang=ar');
+  });
+
+  it('localizedCanonical préserve les query params existants', () => {
+    expect(localizedCanonical('https://x.example/blog/x?ref=home', 'tr')).toBe('https://x.example/blog/x?ref=home&lang=tr');
+  });
+
+  it('generateMetadata : canonical et og:url suivent la locale', () => {
+    const metadata = generateMetadata({
+      title: 'Pricing',
+      description: 'Desc',
+      canonical: 'https://x.example/pricing',
+      locale: 'en',
+    });
+    expect(metadata.alternates?.canonical).toBe('https://x.example/pricing?lang=en');
+    expect(metadata.openGraph?.url).toBe('https://x.example/pricing?lang=en');
+    expect(metadata.openGraph?.locale).toBe('en_US');
+  });
+
+  it('generateMetadata : locale fr → canonical inchangé', () => {
+    const metadata = generateMetadata({
+      title: 'Pricing',
+      description: 'Desc',
+      canonical: 'https://x.example/pricing',
+      locale: 'fr',
+    });
+    expect(metadata.alternates?.canonical).toBe('https://x.example/pricing');
+  });
+});
