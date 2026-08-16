@@ -81,6 +81,14 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
         $appDart = Get-Content -LiteralPath $appDartPath -Raw
         $routes = Get-AppRoutes $appDart
         $libContent = Get-DartContent $root
+        # Issue #4102 : les endpoints partagés (/device-tokens, push FCM)
+        # vivent dans le package partagé leopardo_core (PushNotificationService)
+        # consommé par toutes les apps — l'inclure dans la recherche pour que
+        # la garde reflète l'implémentation réelle (sinon faux positifs).
+        $coreRoot = Join-Path $repoRoot "front/mobile_apps/leopardo_core"
+        if (Test-Path -LiteralPath (Join-Path $coreRoot "lib")) {
+            $libContent += "`n" + (Get-DartContent $coreRoot)
+        }
 
         if ($null -ne $app.requiredBackendExperienceRoutes) {
             foreach ($route in @($app.requiredBackendExperienceRoutes)) {
