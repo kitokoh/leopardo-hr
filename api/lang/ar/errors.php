@@ -72,6 +72,7 @@ return [
     'SAML_AUTH_FAILED' => 'فشل المصادقة عبر SAML. حاول مرة أخرى أو تواصل مع المسؤول.',
     'SOCIAL_CONTRIBUTION_SUBMIT_FAILED' => 'فشل إرسال الاشتراك الاجتماعي. تحقق من حالة السطر ثم حاول مرة أخرى.',
     'TAX_SLAB_SUBMIT_FAILED' => 'فشل إرسال الشريحة الضريبية. تحقق من حالة السطر ثم حاول مرة أخرى.',
+
     'PAYOUT_REQUEST_REFUSED' => 'تم رفض طلب الدفع.',
     'PAYOUT_REQUEST_FAILED' => 'حدث خطأ أثناء طلب الدفع.',
     'COMPANY_MODE_FORCED' => 'تفرض شركتك وضع تسجيل حضور ولا يمكنك تغييره.',
@@ -90,4 +91,8 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'يمكن تفعيل العقود المسودة فقط.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'يمكن تعليق العقود النشطة فقط.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'يجب أن يكون العقد نشطاً أو معلقاً لإنهائه.',
+    'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
+    'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.',
 ];

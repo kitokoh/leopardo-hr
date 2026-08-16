@@ -72,6 +72,7 @@ return [
     'SAML_AUTH_FAILED' => 'SAML kimlik doğrulaması başarısız oldu. Tekrar deneyin veya yöneticinizle iletişime geçin.',
     'SOCIAL_CONTRIBUTION_SUBMIT_FAILED' => 'Prim gönderimi başarısız oldu. Satır durumunu kontrol edip tekrar deneyin.',
     'TAX_SLAB_SUBMIT_FAILED' => 'Vergi dilimi gönderimi başarısız oldu. Satır durumunu kontrol edip tekrar deneyin.',
+
     'PAYOUT_REQUEST_REFUSED' => 'Ödeme talebi reddedildi.',
     'PAYOUT_REQUEST_FAILED' => 'Ödeme talebi sırasında bir hata oluştu.',
     'COMPANY_MODE_FORCED' => 'Şirketiniz bir mesai modu dayatıyor. Değiştiremezsiniz.',
@@ -90,4 +91,8 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Yalnızca taslak sözleşmeler etkinleştirilebilir.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Yalnızca aktif sözleşmeler askıya alınabilir.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Sözleşmenin feshedilmesi için aktif veya askıda olması gerekir.',
+    'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
+    'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
 ];
