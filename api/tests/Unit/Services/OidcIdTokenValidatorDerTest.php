@@ -20,7 +20,7 @@ final class OidcIdTokenValidatorDerTest extends TestCase
 {
     private function buildPublicKeyPem(string $n, string $e): string
     {
-        $validator = new OidcIdTokenValidator();
+        $validator = new OidcIdTokenValidator;
 
         $method = new ReflectionMethod($validator, 'rsaPublicKeyDer');
 
@@ -57,11 +57,14 @@ final class OidcIdTokenValidatorDerTest extends TestCase
 
     public function test_openssl_verify_succeeds_with_the_rebuilt_public_key(): void
     {
+        /** @var \OpenSSLAsymmetricKey $key */
         $key = openssl_pkey_new([
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ]);
+        $this->assertNotFalse($key);
         $details = openssl_pkey_get_details($key);
+        $this->assertIsArray($details);
 
         $pem = $this->buildPublicKeyPem($details['rsa']['n'], $details['rsa']['e']);
         $public = openssl_pkey_get_public($pem);
