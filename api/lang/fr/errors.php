@@ -75,7 +75,6 @@ return [
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
 
-    // #4312/#4313/#4314 — FR résiduels localisés (vague expert20)
     'PAYOUT_REQUEST_REFUSED' => 'Demande de paiement refusee.',
     'PAYOUT_REQUEST_FAILED' => 'Une erreur est survenue lors de la demande de paiement.',
     'COMPANY_MODE_FORCED' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
@@ -118,4 +117,8 @@ return [
     'FLEET_ALERTS_LOAD_FAILED' => 'Impossible de charger les alertes de flotte.',
     'COMPANY_BRANDING_UPDATED' => 'Identité entreprise mise à jour.',
     'PAYROLL_RUN_NOT_FOR_COUNTRY' => 'Ce run de paie ne concerne pas :country.',
+    'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
+    'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.',
 ];
