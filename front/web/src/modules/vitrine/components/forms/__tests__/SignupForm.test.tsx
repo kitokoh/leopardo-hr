@@ -80,6 +80,35 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
   },
 }));
 
+jest.mock('@/modules/vitrine/data/supported-countries', () => ({
+  fetchSupportedCountries: jest.fn().mockResolvedValue([
+    { code: 'DZ', label: 'Algérie' },
+    { code: 'MA', label: 'Maroc' },
+  ]),
+}));
+
+/**
+ * Env jsdom + React 19 : `userEvent.click` ne pose PAS le focus sur les
+ * inputs et le clic sur un bouton submit ne déclenche pas toujours la
+ * soumission du formulaire (quirk user-event/jest-jsdom, reproduit sur main
+ * 2026-08-16). Pour des tests déterministes de la logique de validation, on
+ * remplit les champs via fireEvent.change (synchrone, fiable) et on soumet
+ * via fireEvent.submit(form) — le comportement navigateur réel (focus +
+ * default action du submit) est couvert par les E2E Playwright.
+ */
+function submitForm(): void {
+  const form = document.querySelector('form');
+  if (!form) throw new Error('No form element rendered');
+  fireEvent.submit(form);
+}
+
+async function fillField(label: RegExp, value: string): Promise<void> {
+  const el = screen.getByRole('textbox', { name: label }) as HTMLInputElement;
+  fireEvent.change(el, { target: { value } });
+  fireEvent.blur(el);
+}
+
+
 const mockedSubmitSignupForm = submitSignupForm as jest.Mock;
 
 // The component is localized via useVitrineLocale(); the test environment
@@ -116,9 +145,8 @@ describe('SignupForm Component', () => {
   describe('Form Validation', () => {
     it('should show error for invalid email', async () => {
       render(<SignupForm />);
-      const emailInput = screen.getByRole('textbox', { name: /email/i });
-      await userEvent.type(emailInput, 'invalid-email');
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+      await fillField(/email/i, 'invalid-email');
+      submitForm();
       
       await waitFor(() => {
         expect(screen.getByText(/email invalide|valid email/i)).toBeInTheDocument();
@@ -127,8 +155,7 @@ describe('SignupForm Component', () => {
 
     it('should show error for empty email', async () => {
       render(<SignupForm />);
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
-      await userEvent.click(submitButton);
+      submitForm();
       
       await waitFor(() => {
         expect(screen.getByText(/email (invalide|trop court)/i)).toBeInTheDocument();
@@ -137,10 +164,8 @@ describe('SignupForm Component', () => {
 
     it('should show error for empty company', async () => {
       render(<SignupForm />);
-      const emailInput = screen.getByRole('textbox', { name: /email/i });
-      await userEvent.type(emailInput, 'test@example.com');
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
-      await userEvent.click(submitButton);
+      await fillField(/email/i, 'test@example.com');
+      submitForm();
       
       await waitFor(() => {
         expect(screen.getByText(/entreprise doit contenir/i)).toBeInTheDocument();
@@ -164,13 +189,10 @@ describe('SignupForm Component', () => {
 
     it('should show error for invalid phone', async () => {
       render(<SignupForm />);
-      const emailInput = screen.getByRole('textbox', { name: /email/i });
-      await userEvent.type(emailInput, 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
-      await userEvent.type(screen.getByRole('textbox', { name: /téléphone/i }), 'not-a-phone');
-
-      const submitButton = screen.getByRole('button', { name: /recevoir mon code de vérification/i });
-      await userEvent.click(submitButton);
+      await fillField(/email/i, 'test@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
+      await fillField(/téléphone/i, 'not-a-phone');
+      submitForm();
       
       await waitFor(() => {
         expect(screen.getByText(/numéro de téléphone invalide/i)).toBeInTheDocument();
@@ -220,23 +242,22 @@ describe('SignupForm Component', () => {
     });
 
     async function fillValidForm() {
-      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      await fillField(/email/i, 'test@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
       const selects = screen.getAllByRole('combobox');
       // employees AVANT role : SignupForm fait `watch('role')` — la sélection
       // du rôle re-rend le composant et (avec le mock framer-motion, commits
       // synchrones) peut orpheliner la référence du 2e select → la valeur
       // « employees » était perdue. L'ordre des champs n'a pas d'importance
       // métier : on remplit employees en premier pour un test déterministe.
-      await userEvent.selectOptions(selects[1], '1-10');
-      await userEvent.selectOptions(selects[0], 'founder');
+      fireEvent.change(selects[1], { target: { value: '1-10' } });
+      fireEvent.change(selects[0], { target: { value: 'founder' } });
       // #4476 : le pays est obligatoire (trial/signup MULTI-PAYS #1867) — le
-      // sélecteur se remplit via fetchSupportedCountries (fallback statique en
-      // jsdom). Attendre l'option avant de sélectionner.
+      // sélecteur se remplit via fetchSupportedCountries (mock déterministe).
       await screen.findByRole('option', { name: /algérie/i });
       const countrySelect = screen.getByRole('combobox', { name: /pays/i });
-      await userEvent.selectOptions(countrySelect, 'DZ');
-      await userEvent.click(screen.getByRole('checkbox'));
+      fireEvent.change(countrySelect, { target: { value: 'DZ' } });
+      fireEvent.click(screen.getByRole('checkbox'));
     }
 
     it('shows the "we will contact you" pending screen instead of a fake OTP step when provisioned is false', async () => {
@@ -249,7 +270,7 @@ describe('SignupForm Component', () => {
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+      submitForm();
 
       await waitFor(() => {
         expect(screen.getByRole('heading', { name: /demande d'essai reçue/i })).toBeInTheDocument();
@@ -268,7 +289,7 @@ describe('SignupForm Component', () => {
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+      submitForm();
 
       await waitFor(() => {
         expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
@@ -284,23 +305,22 @@ describe('SignupForm Component', () => {
     });
 
     async function fillValidForm() {
-      await userEvent.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
-      await userEvent.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+      await fillField(/email/i, 'test@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
       const selects = screen.getAllByRole('combobox');
       // employees AVANT role : SignupForm fait `watch('role')` — la sélection
       // du rôle re-rend le composant et (avec le mock framer-motion, commits
       // synchrones) peut orpheliner la référence du 2e select → la valeur
       // « employees » était perdue. L'ordre des champs n'a pas d'importance
       // métier : on remplit employees en premier pour un test déterministe.
-      await userEvent.selectOptions(selects[1], '1-10');
-      await userEvent.selectOptions(selects[0], 'founder');
+      fireEvent.change(selects[1], { target: { value: '1-10' } });
+      fireEvent.change(selects[0], { target: { value: 'founder' } });
       // #4476 : le pays est obligatoire (trial/signup MULTI-PAYS #1867) — le
-      // sélecteur se remplit via fetchSupportedCountries (fallback statique en
-      // jsdom). Attendre l'option avant de sélectionner.
+      // sélecteur se remplit via fetchSupportedCountries (mock déterministe).
       await screen.findByRole('option', { name: /algérie/i });
       const countrySelect = screen.getByRole('combobox', { name: /pays/i });
-      await userEvent.selectOptions(countrySelect, 'DZ');
-      await userEvent.click(screen.getByRole('checkbox'));
+      fireEvent.change(countrySelect, { target: { value: 'DZ' } });
+      fireEvent.click(screen.getByRole('checkbox'));
     }
 
     it('shows the "Suivre l\'etat de mon espace" link on the OTP screen when a provisioning token is returned', async () => {
@@ -313,7 +333,7 @@ describe('SignupForm Component', () => {
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+      submitForm();
 
       await waitFor(() => {
         expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
@@ -331,7 +351,7 @@ describe('SignupForm Component', () => {
 
       render(<SignupForm />);
       await fillValidForm();
-      await userEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+      submitForm();
 
       await waitFor(() => {
         expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
@@ -357,17 +377,20 @@ describe('SignupForm Component', () => {
           });
 
         render(<SignupForm />);
-        await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com');
-        await user.type(screen.getByRole('textbox', { name: /entreprise/i }), 'Acme Corp');
+        await fillField(/email/i, 'test@example.com');
+        await fillField(/entreprise/i, 'Acme Corp');
         const selects = screen.getAllByRole('combobox');
-        await user.selectOptions(selects[1], '1-10');
-        await user.selectOptions(selects[0], 'founder');
+        fireEvent.change(selects[1], { target: { value: '1-10' } });
+        fireEvent.change(selects[0], { target: { value: 'founder' } });
+        await screen.findByRole('option', { name: /algérie/i });
+        const countrySelect = screen.getByRole('combobox', { name: /pays/i });
+        fireEvent.change(countrySelect, { target: { value: 'DZ' } });
         // fireEvent (et non user.click) : avec jest.useFakeTimers() actif au
         // milieu de la suite, les clicks userEvent sont intermittemment avalés
         // (désynchronisation pointerup/click par l'avancement des timers) —
         // échec non déterministe sur main. fireEvent est synchrone.
         fireEvent.click(screen.getByRole('checkbox'));
-        fireEvent.click(screen.getByRole('button', { name: /recevoir mon code de vérification/i }));
+        submitForm();
         await screen.findByText(/vérifiez votre email/i);
 
         fireEvent.click(screen.getByRole('button', { name: /suivre l'état de mon espace/i }));
@@ -391,12 +414,31 @@ describe('SignupForm Component', () => {
   });
 
   describe('User Interactions', () => {
-    it('should clear form after successful submission', async () => {
+    it('should submit valid data (incl. country #4476) and move to OTP', async () => {
+      mockedSubmitSignupForm.mockResolvedValue({
+        success: true,
+        provisioned: true,
+        message: 'Code de vérification envoyé.',
+        data: {},
+      });
       render(<SignupForm />);
-      const emailInput = screen.getByRole('textbox', { name: /email/i }) as HTMLInputElement;
-      await userEvent.type(emailInput, 'test@example.com');
-      
-      expect(emailInput.value).toBe('test@example.com');
+      await fillField(/email/i, 'test@example.com');
+      await fillField(/entreprise/i, 'Acme Corp');
+      const selects = screen.getAllByRole('combobox');
+      fireEvent.change(selects[1], { target: { value: '1-10' } });
+      fireEvent.change(selects[0], { target: { value: 'founder' } });
+      await screen.findByRole('option', { name: /algérie/i });
+      fireEvent.change(screen.getByRole('combobox', { name: /pays/i }), { target: { value: 'DZ' } });
+      fireEvent.click(screen.getByRole('checkbox'));
+      submitForm();
+
+      await waitFor(() => {
+        expect(screen.getByText(/vérifiez votre email/i)).toBeInTheDocument();
+      });
+      expect(mockedSubmitSignupForm).toHaveBeenCalledWith(
+        expect.objectContaining({ email: 'test@example.com', company: 'Acme Corp', country: 'DZ' }),
+        expect.anything()
+      );
     });
 
     it('should show loading state during submission', async () => {

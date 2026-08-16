@@ -310,6 +310,7 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                     className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100/80 dark:hover:bg-slate-800/80"
                     onClick={() => setOpenDropdown(openDropdown === entry.label ? null : entry.label)}
                     aria-expanded={openDropdown === entry.label}
+                    aria-haspopup="true"
                   >
                     {entry.label}
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === entry.label ? 'rotate-180' : ''}`} />

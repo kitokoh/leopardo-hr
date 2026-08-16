@@ -1043,5 +1043,16 @@
     "loadError": "Müşteri talepleri senkronize edilemedi.",
     "toastApproved": "Talep onaylandı. Sağlama başladı.",
     "toastRejected": "Talep reddedildi."
+  },
+  "api": {
+    "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
+    "accessDenied": "Erişim reddedildi. Yetersiz izinler.",
+    "notFound": "Kaynak bulunamadı.",
+    "tooManyRequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
+    "serverError": "Sunucu hatası. Daha sonra tekrar deneyin.",
+    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor. Lütfen birazdan tekrar deneyin.",
+    "invalidData": "Geçersiz veri.",
+    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
+    "unexpectedError": "Beklenmeyen bir hata oluştu."
   }
 }
