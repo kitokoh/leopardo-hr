@@ -51,14 +51,23 @@ class CorsAndTrustedProxyTest extends TestCase
         // (https://leo-admin.pages.dev) — origin absente de la allowlist →
         // aucune en-tête ACAO, panneau inutilisable depuis Pages. L'origin
         // exacte est listée en dur et les previews couvertes par un pattern
-        // `https://*.pages.dev` (jamais de wildcard `*`).
+        // regex complet `#^https://([a-z0-9-]+\.)*pages\.dev$#i` (jamais de
+        // wildcard `*`). Le glob `https://*.pages.dev` a été remplacé par la
+        // regex le 2026-08-15 (commit 44e88ccc8, #2333) : le glob crashait en
+        // 500 (preg_match delimiter) sur toute preview Pages.
         $origins = config('cors.allowed_origins');
         $patterns = config('cors.allowed_origins_patterns');
 
         $this->assertIsArray($origins);
         $this->assertIsArray($patterns);
         $this->assertContains('https://leo-admin.pages.dev', $origins);
-        $this->assertContains('https://*.pages.dev', $patterns);
+        $this->assertNotEmpty($patterns, 'Au moins un pattern CORS doit exister.');
+        foreach ($patterns as $pattern) {
+            $this->assertNotSame('*', $pattern);
+            // Chaque pattern doit être une regex complète utilisable par
+            // preg_match() (fruitcake/php-cors) — un glob crashe en 500.
+            $this->assertNotSame(0, @preg_match($pattern, 'https://preview-123.pages.dev'));
+        }
 
         foreach (array_merge($origins, $patterns) as $entry) {
             $this->assertNotSame('*', $entry);

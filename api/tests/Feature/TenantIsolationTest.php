@@ -123,10 +123,10 @@ class TenantIsolationTest extends TestCase
 
         app()->instance('current_company', $company);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'auto.company@test.local',
-            'password_hash' => bcrypt('secret'),
         ]);
+        $employee->forceFill(['password_hash' => bcrypt('secret')])->save();
 
         $this->assertSame($company->id, $employee->company_id);
     }

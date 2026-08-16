@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { useSyncExternalStore } from 'react';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 type EmployeeRecord = {
   id: number;
@@ -22,6 +25,7 @@ type EmployeesPayload = {
 };
 
 export default function EmployeesPage() {
+  const locale = useSyncExternalStore<AppLocale>(() => () => {}, getPreferredLocale, () => 'fr');
   const [employees, setEmployees] = useState<EmployeeRecord[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +50,7 @@ export default function EmployeesPage() {
           return;
         }
 
-        setError(err instanceof ApiError ? err.message : 'Impossible de charger les employés.');
+        setError(err instanceof ApiError ? err.message : i18nT(locale, 'employees.load_error'));
       } finally {
         if (active) {
           setLoading(false);
@@ -59,12 +63,12 @@ export default function EmployeesPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [locale]);
 
   return (
     <ModulePageShell
-      title="Equipe"
-      subtitle="Vue manager branchee a l’API RH: liste des collaborateurs, statut et points d’entree essentiels."
+      title={i18nT(locale, 'employees.title')}
+      subtitle={i18nT(locale, 'employees.subtitle')}
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {error ? (
@@ -75,28 +79,28 @@ export default function EmployeesPage() {
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Total équipe</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{i18nT(locale, 'employees.total_team')}</p>
           <p className="mt-3 text-4xl font-black text-slate-950">{loading ? '...' : total}</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Source</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{i18nT(locale, 'employees.source')}</p>
           <p className="mt-3 text-lg font-bold text-slate-950">GET /employees</p>
         </div>
         <div className="rounded-2xl border border-app-border bg-white p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Etat</p>
-          <p className="mt-3 text-lg font-bold text-slate-950">{loading ? 'Chargement' : 'Connecte a l API'}</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{i18nT(locale, 'employees.state')}</p>
+          <p className="mt-3 text-lg font-bold text-slate-950">{loading ? i18nT(locale, 'employees.loading_short') : i18nT(locale, 'employees.connected_api')}</p>
         </div>
       </section>
 
       <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
         <div className="border-b border-app-border px-6 py-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Collaborateurs recents</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{i18nT(locale, 'employees.recent_collaborators')}</h2>
         </div>
         <div className="divide-y divide-app-border">
           {loading ? (
-            <div className="px-6 py-8 text-sm text-slate-500">Chargement de la liste équipe...</div>
+            <div className="px-6 py-8 text-sm text-slate-500">{i18nT(locale, 'employees.list_loading')}</div>
           ) : employees.length === 0 ? (
-            <div className="px-6 py-8 text-sm text-slate-500">Aucun employe visible pour ce compte.</div>
+            <div className="px-6 py-8 text-sm text-slate-500">{i18nT(locale, 'employees.empty_list')}</div>
           ) : (
             employees.map((employee) => {
               const fullName = `${employee.first_name ?? ''} ${employee.last_name ?? ''}`.trim() || employee.email || `Employe #${employee.id}`;

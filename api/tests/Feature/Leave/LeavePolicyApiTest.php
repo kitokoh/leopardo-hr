@@ -101,13 +101,13 @@ class LeavePolicyApiTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'matricule' => 'MGR-001',
             'first_name' => 'Manager',
             'last_name' => 'Test',
             'email' => 'mgr@leave-test.com',
-            'password_hash' => Hash::make('password'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',

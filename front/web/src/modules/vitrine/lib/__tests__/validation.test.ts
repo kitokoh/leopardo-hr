@@ -29,7 +29,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'invalid-email',
         company: 'Acme Corp',
-        country: 'DZ',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
@@ -39,7 +38,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: '',
-        country: 'DZ',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
@@ -49,7 +47,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: 'not-a-phone',
         agreeToTerms: true,
       };
@@ -91,8 +88,8 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '',
+        country: 'DZ', // requis depuis #4476 (pays obligatoire côté API)
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
@@ -102,7 +99,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         agreeToTerms: false,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
@@ -120,7 +116,7 @@ describe('Form Validation Schemas', () => {
         const data = {
           email,
           company: 'Acme Corp',
-        country: 'DZ',
+          country: 'DZ', // requis depuis #4476
           agreeToTerms: true,
         };
         expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
@@ -134,7 +130,6 @@ describe('Form Validation Schemas', () => {
         name: 'John Doe',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).not.toThrow();
@@ -145,7 +140,6 @@ describe('Form Validation Schemas', () => {
         name: 'John Doe',
         email: 'invalid-email',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).toThrow();
@@ -156,7 +150,6 @@ describe('Form Validation Schemas', () => {
         name: '',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).toThrow();
@@ -167,7 +160,6 @@ describe('Form Validation Schemas', () => {
         name: 'J',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).toThrow();
@@ -178,7 +170,6 @@ describe('Form Validation Schemas', () => {
         name: 'John Doe',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
       };
       expect(() => demoFormSchema.parse(data)).not.toThrow();
     });
@@ -272,6 +263,81 @@ describe('Form Validation Schemas', () => {
     });
   });
 
+  describe('Validation Helper Functions', () => {
+    describe('validateEmail', () => {
+      it('should validate correct emails', () => {
+        expect(validateEmail('test@example.com')).toBe(true);
+        expect(validateEmail('user.name@example.co.uk')).toBe(true);
+      });
+
+      it('should reject invalid emails', () => {
+        expect(validateEmail('invalid')).toBe(false);
+        expect(validateEmail('invalid@')).toBe(false);
+        expect(validateEmail('@example.com')).toBe(false);
+      });
+    });
+
+    describe('validatePassword', () => {
+      it('should validate strong passwords', () => {
+        const result = validatePassword('ValidPassword123!');
+        expect(result.isValid).toBe(true);
+        expect(result.errors.length).toBe(0);
+      });
+
+      it('should reject weak passwords', () => {
+        const result = validatePassword('weak');
+        expect(result.isValid).toBe(false);
+        expect(result.errors.length).toBeGreaterThan(0);
+      });
+
+      it('should identify missing uppercase', () => {
+        const result = validatePassword('validpassword123!');
+        expect(result.errors.some(e => e.includes('majuscule'))).toBe(true);
+      });
+
+      it('should identify missing number', () => {
+        const result = validatePassword('ValidPassword!');
+        expect(result.errors.some(e => e.includes('chiffre'))).toBe(true);
+      });
+
+      it('should identify missing special character', () => {
+        const result = validatePassword('ValidPassword123');
+        expect(result.errors.some(e => e.includes('spécial'))).toBe(true);
+      });
+    });
+
+    describe('validatePhoneNumber', () => {
+      it('should validate correct phone numbers', () => {
+        expect(validatePhoneNumber('+33612345678')).toBe(true);
+        expect(validatePhoneNumber('0612345678')).toBe(true);
+        expect(validatePhoneNumber('+1-234-567-8900')).toBe(true);
+      });
+
+      it('should reject invalid phone numbers', () => {
+        expect(validatePhoneNumber('invalid')).toBe(false);
+        expect(validatePhoneNumber('123')).toBe(false);
+      });
+    });
+
+    describe('sanitizeInput', () => {
+      it('should remove angle brackets', () => {
+        expect(sanitizeInput('<script>alert("xss")</script>')).not.toContain('<');
+        expect(sanitizeInput('<script>alert("xss")</script>')).not.toContain('>');
+      });
+
+      it('should remove javascript protocol', () => {
+        expect(sanitizeInput('javascript:alert("xss")')).not.toContain('javascript:');
+      });
+
+      it('should remove event handlers', () => {
+        expect(sanitizeInput('onclick=alert("xss")')).not.toContain('onclick');
+      });
+
+      it('should trim whitespace', () => {
+        expect(sanitizeInput('  test  ')).toBe('test');
+      });
+    });
+  });
 
   describe('RateLimiter', () => {
     it('should allow requests within limit', () => {
@@ -313,7 +379,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'invalid',
         company: '',
-        country: 'DZ',
         agreeToTerms: false,
       };
 
