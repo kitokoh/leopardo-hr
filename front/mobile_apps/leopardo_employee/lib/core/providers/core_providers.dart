@@ -80,7 +80,7 @@ final syncServiceProvider = Provider<SyncService>((ref) {
     dio: Dio(),
     edgeBaseUrl: preferences.edgeBaseUrl.isNotEmpty
         ? preferences.edgeBaseUrl
-        : 'http://leopardo.local:7878',
+        : SyncService.defaultEdgeBaseUrl,
     cloudBaseUrl: ApiClient.resolveBaseUrl().replaceFirst('/api/v1', ''),
     edgeNodeId: preferences.edgeNodeId,
     edgeToken: preferences.edgeToken,

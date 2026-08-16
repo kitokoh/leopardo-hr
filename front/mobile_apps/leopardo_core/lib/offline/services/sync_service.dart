@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:flutter/material.dart' show debugPrint;
 
 import '../database/edge_database.dart';
 
@@ -30,7 +31,11 @@ class SyncService {
   }
 
   SyncMode _currentMode = SyncMode.offline;
+  static const String defaultEdgeBaseUrl = 'http://leopardo.local:7878';
+
   Timer? _syncTimer;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  bool _stopped = false;
   bool _isSyncing = false;
 
   final _modeController = StreamController<SyncMode>.broadcast();
@@ -58,7 +63,11 @@ class SyncService {
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {
-    Connectivity().onConnectivityChanged.listen(_onConnectivityChangedList);
+    // Issue #3867 : la subscription est conservée pour être annulée dans
+    // stop() — avant, chaque start() créait un listener orphelin (fuite).
+    _connectivitySub = Connectivity().onConnectivityChanged.listen(
+      _onConnectivityChangedList,
+    );
     _syncTimer = Timer.periodic(
       const Duration(minutes: 5),
       (_) => syncNow(),
@@ -67,8 +76,17 @@ class SyncService {
   }
 
   void stop() {
+    if (_stopped) return;
+    _stopped = true;
     _syncTimer?.cancel();
-    _modeController.close();
+    _syncTimer = null;
+    // Issue #3867 : annuler la subscription connectivity (fuite à chaque
+    // cycle de vie du provider sans cette ligne).
+    _connectivitySub?.cancel();
+    _connectivitySub = null;
+    if (!_modeController.isClosed) {
+      _modeController.close();
+    }
   }
 
   Future<void> _detectMode() async {
@@ -223,8 +241,10 @@ class SyncService {
       if (delta == null) return;
 
       await _applyDelta(delta);
-    } catch (_) {
-      // Pull failures are silent — will retry next cycle
+    } catch (e) {
+      // Issue #3867 : échec de pull loggé (mode, erreur) — silencieux avant,
+      // impossible à diagnostiquer sur le terrain.
+      debugPrint('[SyncService] pull failed (${_mode}) — ${e.runtimeType}: $e');
     }
   }
 
@@ -261,7 +281,10 @@ class SyncService {
         ),
       );
       return response.statusCode == 200;
-    } catch (_) {
+    } catch (e) {
+      // Issue #3867 : probe de reachabilité loggée en debug — utile pour
+      // diagnostiquer les modes offline inattendus sans polluer la prod.
+      debugPrint('[SyncService] probe failed ($url) — ${e.runtimeType}');
       return false;
     }
   }
