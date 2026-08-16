@@ -6,6 +6,7 @@
 
 ## [Unreleased]
 - **fix(admin): api.js — messages d'erreur de l'intercepteur localisés ×4 (namespace api.* ajouté aux catalogues) (Closes #4621).** Les toasts 404/429/5xx/réseau restaient FR pour les admins EN/TR/AR.
+- **fix(api): PHPStan Modules vert sur main — 2 erreurs post-merge #4558/#4580 (Closes #4660).** `EmployeeImportController` (unset défensif de `password_hash` sur un tableau non typé — annotation `array<string, mixed>`) et `SupportedCountryController::index()` (type de retour `JsonResponse` incompatible avec la branche 304 ETag de #4502 — les deux classes sont sœurs sous Symfony, retour typé `Symfony\Component\HttpFoundation\Response`).
 - **fix(admin): ExportsView — dates par défaut en composantes locales (plus de décalage UTC+1..+3 : 31 déc. N-1 / hier) (Closes #4619).**
 - **fix(ci/mobile): mobile-distribute-main — filtre workflow_dispatch app= réellement bloquant (env SHOULD_BUILD) + input app documente hr (Closes #4622).** Avant : le step « exit 0 » ne sautait rien → les 4 apps étaient buildées et distribuées Firebase quel que soit app=.
 - **fix(api): kiosk.show — bucket dédié kiosk-show (120/min, device+IP) au lieu de partager kiosk-punch (30/min pénalisait les bornes actives) (Closes #4607).**

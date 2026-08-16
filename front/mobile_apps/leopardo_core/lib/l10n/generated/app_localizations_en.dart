@@ -136,40 +136,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonOr => 'or';
 
   @override
-  String get commonCountriesDz => 'Algeria';
+  String get commonCountriesBf => 'Burkina Faso';
 
   @override
-  String get commonCountriesCm => 'Cameroon';
+  String get commonCountriesBj => 'Benin';
 
   @override
-  String get commonCountriesCi => 'Côte d\'Ivoire';
+  String get commonCountriesCa => 'Canada';
 
   @override
-  String get commonCountriesSn => 'Senegal';
-
-  @override
-  String get commonCountriesMa => 'Morocco';
-
-  @override
-  String get commonCountriesTn => 'Tunisia';
-
-  @override
-  String get commonCountriesFr => 'France';
-
-  @override
-  String get commonCountriesTr => 'Türkiye';
+  String get commonCountriesCf => 'Central African Republic';
 
   @override
   String get commonCountriesCg => 'Congo';
 
   @override
+  String get commonCountriesCi => 'Côte d\'Ivoire';
+
+  @override
+  String get commonCountriesCm => 'Cameroon';
+
+  @override
+  String get commonCountriesDz => 'Algeria';
+
+  @override
+  String get commonCountriesFr => 'France';
+
+  @override
   String get commonCountriesGa => 'Gabon';
 
   @override
-  String get commonCountriesBf => 'Burkina Faso';
+  String get commonCountriesGb => 'United Kingdom';
+
+  @override
+  String get commonCountriesGq => 'Equatorial Guinea';
+
+  @override
+  String get commonCountriesMa => 'Morocco';
 
   @override
   String get commonCountriesMl => 'Mali';
+
+  @override
+  String get commonCountriesNe => 'Niger';
+
+  @override
+  String get commonCountriesSn => 'Senegal';
+
+  @override
+  String get commonCountriesTd => 'Chad';
+
+  @override
+  String get commonCountriesTg => 'Togo';
+
+  @override
+  String get commonCountriesTn => 'Tunisia';
+
+  @override
+  String get commonCountriesTr => 'Türkiye';
+
+  @override
+  String get commonCountriesUs => 'United States';
 
   @override
   String get modulesAttendance => 'Attendance';
@@ -554,6 +581,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usersToastSelectionexportdone => 'Selection export completed';
 
   @override
+  String get usersToastBulkdone => 'Update completed';
+
+  @override
   String get usersConfirmDelete => 'Are you sure you want to delete :name?';
 
   @override
@@ -564,6 +594,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'Please fix the highlighted fields';
+
+  @override
+  String get usersErrorsPasswordMin => 'Password must be at least 8 characters';
+
+  @override
+  String get usersErrorsSearchNoMatch => 'No page matches your search';
+
+  @override
+  String get usersErrorsUpdateFailed => 'Failed to update user';
+
+  @override
+  String get usersImpersonationTitle => 'Impersonate an employee';
+
+  @override
+  String get usersImpersonationSubtitle => 'Open a session as :name';
+
+  @override
+  String get usersImpersonationReason =>
+      'Reason (required, 5 characters minimum)';
+
+  @override
+  String get usersImpersonationReasonmin =>
+      'Reason is required (5 characters minimum).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'No linked employee on this account — impersonation unavailable.';
+
+  @override
+  String get usersImpersonationStart => 'Create session';
+
+  @override
+  String get usersImpersonationCancel => 'Cancel';
+
+  @override
+  String get usersImpersonationTokentitle => 'Impersonation token (single-use)';
+
+  @override
+  String get usersImpersonationExpires => 'Expires on :date';
+
+  @override
+  String get usersImpersonationCopy => 'Copy token';
+
+  @override
+  String get usersImpersonationCopied => 'Token copied';
+
+  @override
+  String get usersImpersonationCreated => 'Impersonation session created';
+
+  @override
+  String get usersImpersonationError =>
+      'Error creating the impersonation session';
+
+  @override
+  String get usersImpersonationDone => 'Done';
+
+  @override
+  String get usersImpersonationEmployee => 'Linked employee #:id';
+
+  @override
+  String get usersEditTitle => 'Edit user';
+
+  @override
+  String get usersEditStatus => 'Status';
+
+  @override
+  String get usersEditSave => 'Update';
 
   @override
   String get dashboardTitle => 'Dashboard';
@@ -594,11 +691,152 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardLeoIaAnnouncementBody =>
-      'Congrats to the whole team: lateness is down 15% this week. Keep up the momentum!';
+      'Congrats to the whole team for this week\'s engagement. Keep up the momentum!';
 
   @override
   String get dashboardLeoIaAnnouncementError =>
       'Couldn\'t send the message. Please try again in a few moments.';
+
+  @override
+  String dashboardLeoPresenceInsight(Object active, Object today) {
+    return 'Today, $today check-in(s) out of $active active employee(s). Would you like to send a congratulations message to the team?';
+  }
+
+  @override
+  String get dashboardLeoPresenceEmpty =>
+      'No attendance data available right now. Would you still like to send a congratulations message to the team?';
+
+  @override
+  String dashboardLeoAnnouncementsCount(Object count) {
+    return '$count announcement(s) published in your company.';
+  }
+
+  @override
+  String get dashboardPresenceTodayTitle => 'Attendance today';
+
+  @override
+  String dashboardPresenceTodaySummary(Object active, Object present) {
+    return '$present check-in(s) out of $active active employee(s) today';
+  }
+
+  @override
+  String get dashboardPresenceTodayEmpty => 'No attendance data available.';
+
+  @override
+  String get dashboardPortfoliopriorities => 'Portfolio priorities';
+
+  @override
+  String get dashboardClient => 'Client';
+
+  @override
+  String get dashboardHealth => 'Health';
+
+  @override
+  String get dashboardRisk => 'Risk';
+
+  @override
+  String get dashboardActions => 'Actions';
+
+  @override
+  String get dashboardSeeall => 'See all';
+
+  @override
+  String get dashboardNoprioritycompanies => 'No priority companies for now.';
+
+  @override
+  String get dashboardPendingregistrations => 'Pending registrations';
+
+  @override
+  String get dashboardNopendingrequests => 'No pending requests.';
+
+  @override
+  String get dashboardAdoption => 'Adoption';
+
+  @override
+  String get dashboardCheckins30d => 'Check-ins 30d';
+
+  @override
+  String get dashboardActiveemployees => 'Active employees';
+
+  @override
+  String get dashboardClientsatrisk => 'At-risk clients';
+
+  @override
+  String get dashboardRevenue => 'Revenue';
+
+  @override
+  String get dashboardCollected30d => 'Collected 30d';
+
+  @override
+  String get dashboardOverdue => 'Overdue';
+
+  @override
+  String get dashboardActivesubscriptions => 'Active subscriptions';
+
+  @override
+  String get dashboardShortcuts => 'Shortcuts';
+
+  @override
+  String get dashboardClientportfolio => 'Client portfolio';
+
+  @override
+  String get dashboardSubscriptions => 'Subscriptions';
+
+  @override
+  String get dashboardClientrequests => 'Client requests';
+
+  @override
+  String get dashboardCreateactivateclient => 'Create or activate a client';
+
+  @override
+  String get dashboardOpenclientportfolio => 'Open client portfolio';
+
+  @override
+  String get dashboardProcessincomingrequests => 'Process incoming requests';
+
+  @override
+  String get dashboardViewclientrequests => 'View client requests';
+
+  @override
+  String get dashboardMonitoratriskclients => 'Monitor at-risk clients';
+
+  @override
+  String get dashboardAnalyzepriorities => 'Analyze priorities';
+
+  @override
+  String get dashboardManagesubscriptionsrevenue =>
+      'Manage subscriptions and revenue';
+
+  @override
+  String get dashboardOpensubscriptions => 'Open subscriptions';
+
+  @override
+  String get dashboardChecksystemsecurity => 'Check system and security';
+
+  @override
+  String get dashboardOpensystem => 'Open system';
+
+  @override
+  String get dashboardPreparepartnerintegrations =>
+      'Prepare partner integrations';
+
+  @override
+  String get dashboardOpenwebhooks => 'Open webhooks';
+
+  @override
+  String get dashboardLoaderror => 'Unable to load the platform cockpit.';
+
+  @override
+  String get dashboardRiskhigh => 'High risk';
+
+  @override
+  String get dashboardRiskmedium => 'Medium risk';
+
+  @override
+  String get dashboardRisklow => 'Low risk';
+
+  @override
+  String get dashboardNotprovided => 'Not provided';
 
   @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
@@ -1390,7 +1628,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get signupBadge => 'Free 30-day trial';
+  String get signupBadge => 'Free 14-day trial';
 
   @override
   String get signupTitle => 'Try Leopardo with your company';
@@ -1601,6 +1839,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signupTrialnote => 'Free trial of';
 
   @override
+  String get signupTrialdaysunit => 'days';
+
+  @override
   String get signupTrialnotesuffix => 'no credit card required';
 
   @override
@@ -1640,4 +1881,577 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signupValidationAgreeterms => 'You must accept the terms of use';
+
+  @override
+  String get signupValidationCountryrequired => 'Country is required.';
+
+  @override
+  String get signupLabelcountry => 'Country';
+
+  @override
+  String get signupCountryplaceholder => 'Select your country';
+
+  @override
+  String get companiesToastLoadFailed => 'Unable to load the company details.';
+
+  @override
+  String get companiesToastTicketsFailed =>
+      'Unable to load the support tickets.';
+
+  @override
+  String get companiesToastSubscriptionFailed =>
+      'Failed to update the subscription.';
+
+  @override
+  String get companiesToastFeaturesFailed =>
+      'Failed to save the module configuration.';
+
+  @override
+  String get companiesPortfolio => 'Client Portfolio';
+
+  @override
+  String get companiesDirectory => 'Companies Directory';
+
+  @override
+  String get companiesDirectorysub =>
+      'Listed by health score and commercial priority.';
+
+  @override
+  String get companiesSyncing => 'Syncing portfolio...';
+
+  @override
+  String get companiesRetry => 'Retry';
+
+  @override
+  String get companiesCompany => 'Company';
+
+  @override
+  String get companiesPlanmrr => 'Plan & MRR';
+
+  @override
+  String get companiesHealthop => 'Op. Health';
+
+  @override
+  String get companiesCheckins30d => 'Check-ins (30d)';
+
+  @override
+  String get companiesRecommendedaction => 'Recommended Action';
+
+  @override
+  String get companiesManagement => 'Management';
+
+  @override
+  String get companiesSystem => 'System';
+
+  @override
+  String get companiesCompanyname => 'Company name *';
+
+  @override
+  String get companiesContactemail => 'Contact email *';
+
+  @override
+  String get companiesCountry => 'Country *';
+
+  @override
+  String get companiesCity => 'Deployment city *';
+
+  @override
+  String get companiesCurrency => 'Currency';
+
+  @override
+  String get companiesTimezone => 'Time Zone';
+
+  @override
+  String get companiesDefaultlang => 'Default Language';
+
+  @override
+  String get companiesManagerfirst => 'Manager first name *';
+
+  @override
+  String get companiesManagerlast => 'Manager last name *';
+
+  @override
+  String get companiesManageremail => 'Primary manager email *';
+
+  @override
+  String get companiesActivatenow => 'Activate immediately';
+
+  @override
+  String get companiesActivateclientnow => 'Activate the client immediately';
+
+  @override
+  String get companiesActivateclienthint =>
+      'Otherwise the client stays on trial.';
+
+  @override
+  String get seoPricingDescription =>
+      'Transparent pricing: Free plan, Pilot €29/month, Operations €99/month, Enterprise on quote. 14-day free trial.';
+
+  @override
+  String get adminchatConversation => 'Conversation';
+
+  @override
+  String get adminchatError => 'Sorry, an error occurred. Please try again.';
+
+  @override
+  String get adminchatHistoryempty => 'No conversations.';
+
+  @override
+  String get adminchatNew => 'New conversation';
+
+  @override
+  String get adminchatPlaceholder => 'Type your message...';
+
+  @override
+  String get adminchatSend => 'Send';
+
+  @override
+  String get adminchatStart => 'Start a conversation with the AI assistant.';
+
+  @override
+  String get adminchatSubtitle => 'Ask about HR, payroll, recruitment...';
+
+  @override
+  String get adminchatThinking => 'Thinking...';
+
+  @override
+  String get adminchatTitle => 'Leopardo AI Assistant';
+
+  @override
+  String get adminchatUnavailablebadge => 'Unavailable';
+
+  @override
+  String get adminchatUnavailablebody =>
+      'The AI chat is not enabled for the super-admin console. Use a supported company workspace to access this assistant.';
+
+  @override
+  String get adminchatUnavailabletitle =>
+      'AI assistant unavailable at platform level';
+
+  @override
+  String get navigationAnalytics => 'Analytics';
+
+  @override
+  String get navigationAudit => 'Audit Log';
+
+  @override
+  String get navigationChat => 'AI Chat';
+
+  @override
+  String get navigationCompanies => 'Companies';
+
+  @override
+  String get navigationContracts => 'Contracts';
+
+  @override
+  String get navigationCrm => 'CRM Pipeline';
+
+  @override
+  String get navigationDashboard => 'Dashboard';
+
+  @override
+  String get navigationEdge => 'Edge Nodes';
+
+  @override
+  String get navigationExports => 'Exports & Reports';
+
+  @override
+  String get navigationFleet => 'Vehicle Fleet';
+
+  @override
+  String get navigationGlobe => 'Real-time Globe';
+
+  @override
+  String get navigationGrowth => 'Growth Administration';
+
+  @override
+  String get navigationLeaves => 'Leave & Absence';
+
+  @override
+  String get navigationMainmenu => 'Main menu';
+
+  @override
+  String get navigationMarketing => 'Marketing';
+
+  @override
+  String get navigationPayroll => 'Payroll';
+
+  @override
+  String get navigationPredictions => 'AI Predictive Dashboard';
+
+  @override
+  String get navigationRecruitment => 'Recruitment';
+
+  @override
+  String get navigationReports => 'HR Reports';
+
+  @override
+  String get navigationSubscriptions => 'Subscriptions';
+
+  @override
+  String get navigationSupport => 'Support';
+
+  @override
+  String get navigationSupporttickets => 'Customer Support Center';
+
+  @override
+  String get navigationSystem => 'System';
+
+  @override
+  String get navigationTraining => 'Training';
+
+  @override
+  String get navigationUsers => 'Users';
+
+  @override
+  String get navigationWebhooks => 'Webhooks';
+
+  @override
+  String get navigationLogin => 'Sign in';
+
+  @override
+  String get navigationLogout => 'Sign out';
+
+  @override
+  String get navigationCompanydetail => 'Company detail';
+
+  @override
+  String get navigationContributions => 'Social contributions';
+
+  @override
+  String get navigationTaxbrackets => 'Tax brackets';
+
+  @override
+  String get navigationLegalrates => 'Legal rates';
+
+  @override
+  String get navigationAccount => 'My account';
+
+  @override
+  String get navigationNotfound => 'Page not found';
+
+  @override
+  String get webhooksConfirmDelete => 'Delete this webhook?';
+
+  @override
+  String get a11ySkipToContent => 'Skip to main content';
+
+  @override
+  String get a11yClose => 'Close';
+
+  @override
+  String get a11yPreviousMonth => 'Previous month';
+
+  @override
+  String get a11yNextMonth => 'Next month';
+
+  @override
+  String get shellConnected => 'Connected';
+
+  @override
+  String get shellFallbackpolling => 'Fallback mode (polling)';
+
+  @override
+  String get shellPushunconfigured => 'Push not configured';
+
+  @override
+  String get shellDisconnected => 'Disconnected';
+
+  @override
+  String get shellSearch => 'Search';
+
+  @override
+  String get shellNotifications => 'Notifications';
+
+  @override
+  String get shellNonotifications => 'No notifications';
+
+  @override
+  String get shellCriticalalerts => 'Critical alerts';
+
+  @override
+  String get shellLevel => 'Level:';
+
+  @override
+  String get shellFallbackpollingtitle =>
+      'Notifications via fallback polling (push unavailable)';
+
+  @override
+  String get shellTenantonly =>
+      'Enterprise feature — reserved for client workspaces';
+
+  @override
+  String get exportsReportemployees => 'Employees';
+
+  @override
+  String get exportsReportemployeesdesc =>
+      'Full list with positions, contracts, departments.';
+
+  @override
+  String get exportsReportattendance => 'Attendance';
+
+  @override
+  String get exportsReportattendancedesc =>
+      'Attendance register with hours and anomalies.';
+
+  @override
+  String get exportsReportpayslips => 'Payslips';
+
+  @override
+  String get exportsReportpayslipsdesc =>
+      'Monthly payslip export with salary details.';
+
+  @override
+  String get exportsReportabsences => 'Absences & leave';
+
+  @override
+  String get exportsReportabsencesdesc =>
+      'Requests and balances history per employee.';
+
+  @override
+  String get exportsReporttraining => 'Training';
+
+  @override
+  String get exportsReporttrainingdesc =>
+      'Catalog, sessions, enrollments and progress.';
+
+  @override
+  String get exportsReportvehicles => 'Vehicles';
+
+  @override
+  String get exportsReportvehiclesdesc => 'Fleet, mileage, maintenance.';
+
+  @override
+  String get exportsHrreportstitle => 'Custom HR reports';
+
+  @override
+  String get exportsHrreportssub =>
+      'Generate advanced reports with period and department filters.';
+
+  @override
+  String get exportsReporttype => 'Report type';
+
+  @override
+  String get exportsTypeheadcount => 'Headcount';
+
+  @override
+  String get exportsTypeturnover => 'Turnover';
+
+  @override
+  String get exportsTypeabsenteeism => 'Absenteeism';
+
+  @override
+  String get exportsTypepayrollsummary => 'Payroll summary';
+
+  @override
+  String get exportsTypetrainingprogress => 'Training progress';
+
+  @override
+  String get exportsStartdate => 'Start date';
+
+  @override
+  String get exportsEnddate => 'End date';
+
+  @override
+  String get exportsGenerate => 'Generate';
+
+  @override
+  String get exportsGenerating => 'Generating...';
+
+  @override
+  String get exportsStatusdone => 'Completed';
+
+  @override
+  String get exportsStatusinprogress => 'In progress';
+
+  @override
+  String get exportsStatusfailed => 'Failed';
+
+  @override
+  String get exportsDownload => 'Download';
+
+  @override
+  String get exportsDownloading => 'Downloading...';
+
+  @override
+  String get companydetailAnalyzing => 'Analyzing client data...';
+
+  @override
+  String get companydetailRetry => 'Retry';
+
+  @override
+  String get companydetailFieldadoption => 'Field Adoption';
+
+  @override
+  String get companydetailOnboarding => 'Onboarding';
+
+  @override
+  String get companydetailAnomalies30d => 'Anomalies 30d';
+
+  @override
+  String get companydetailPayrollready => 'Payroll Ready';
+
+  @override
+  String get companydetailActiveemployees30d => 'Active Employees (30d)';
+
+  @override
+  String get companydetailNopriorityblockers =>
+      'No priority blockers detected.';
+
+  @override
+  String get companydetailModulesconfig => 'Modules Configuration';
+
+  @override
+  String get companydetailServiceplan => 'Service plan';
+
+  @override
+  String get companydetailCommercialstatus => 'Commercial status';
+
+  @override
+  String get companydetailStatustrial => 'Trial';
+
+  @override
+  String get companydetailStatusactive => 'Active';
+
+  @override
+  String get companydetailStatussuspended => 'Suspended';
+
+  @override
+  String get companydetailStatusexpired => 'Expired';
+
+  @override
+  String get companydetailStartdate => 'Start';
+
+  @override
+  String get companydetailInternalnotes => 'Internal notes';
+
+  @override
+  String get companydetailNosupporttickets =>
+      'No support tickets for this client.';
+
+  @override
+  String get companydetailTechnicalidentity => 'Technical identity';
+
+  @override
+  String get companydetailPlatformid => 'Platform ID';
+
+  @override
+  String get companydetailSlug => 'Slug';
+
+  @override
+  String get companydetailCountrycurrency => 'Country / Currency';
+
+  @override
+  String get companydetailRegisteredon => 'Registered on';
+
+  @override
+  String get companydetailLastactivity => 'Last activity';
+
+  @override
+  String get userAuthPersonalLogin => 'Personal login';
+
+  @override
+  String get userAuthLoginSubtitle =>
+      'Access your workspace, documents and requests.';
+
+  @override
+  String get userAuthNoAccount => 'No account yet? Sign up';
+
+  @override
+  String userAuthGoogleError(String error) {
+    return 'Google error: $error';
+  }
+
+  @override
+  String get authTogglePasswordVisibility => 'Show or hide password';
+
+  @override
+  String get authDemoAccess => 'Demo access';
+
+  @override
+  String get userAuthRegisterTitle => 'Create my account';
+
+  @override
+  String get userAuthRegisterSubtitle => 'Join your team on Leopardo RH.';
+
+  @override
+  String get userAuthFirstName => 'First name';
+
+  @override
+  String get userAuthLastName => 'Last name';
+
+  @override
+  String get userAuthFirstNameRequired => 'First name required';
+
+  @override
+  String get userAuthLastNameRequired => 'Last name required';
+
+  @override
+  String get userAuthRegisterButton => 'Create my account';
+
+  @override
+  String get userAuthAlreadyAccount => 'Already have an account? Sign in';
+
+  @override
+  String get userAuthCompanyRequestTitle => 'Request submitted!';
+
+  @override
+  String get userAuthCompanyRequestBody =>
+      'An administrator will review your request. You will receive a notification once it is processed.';
+
+  @override
+  String get userAuthBackToHome => 'Back to home';
+
+  @override
+  String get userAuthSubmitError => 'Error submitting request';
+
+  @override
+  String get userAuthRegisterError => 'Registration error';
+
+  @override
+  String get userAuthLoginError => 'Invalid credentials';
+
+  @override
+  String get userAuthGoogleLoginError => 'Google login error';
+
+  @override
+  String get commonRequired => 'Required';
+
+  @override
+  String get userAuthPhoneOptional => 'Phone (optional)';
+
+  @override
+  String get userAuthPhone => 'Phone';
+
+  @override
+  String get userAuthCreateCompany => 'Create a company';
+
+  @override
+  String get userAuthCompanyRequestInfo =>
+      'Fill in your company information. An administrator will validate your request.';
+
+  @override
+  String get userAuthCompanyName => 'Company name';
+
+  @override
+  String get userAuthCompanyEmail => 'Company email';
+
+  @override
+  String get userAuthSector => 'Business sector';
+
+  @override
+  String get userAuthCountry => 'Country';
+
+  @override
+  String get userAuthCity => 'City';
+
+  @override
+  String get userAuthDescription => 'Description';
+
+  @override
+  String get userAuthSubmitRequest => 'Submit request';
+
+  @override
+  String get userAuthRegisterSubtitleAlt =>
+      'Access your personal workspace and organise your documents.';
 }
