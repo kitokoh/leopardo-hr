@@ -1,25 +1,21 @@
 name: Deploy Staging - Leopardo RH
 
-# Audit §4.1 / Plan P3 — BEHAVIOR CHANGE, flagged for explicit team review:
+# Issue #4341 — miroir du correctif #3545/#4359 de deploy-main.yml :
 #
-# Previously triggered on `push: [main]` with a manual JS polling loop
-# (up to 10 min) looking for a check run whose *name* merely `includes`
-# both "Backend" and "PHP" — fragile to renames, and on timeout it deployed
-# anyway ("optimistic" deploy with no CI signal). This resolves both
-# documented problems at once by switching to `workflow_run`, the same
-# pattern already proven in deploy-main.yml: the job simply never starts
-# until "Tests - Leopardo RH" concludes, so there is no polling window and
-# no timeout to be optimistic about — the previous optimistic-deploy
-# fallback is removed rather than reconfigured, since workflow_run has no
-# equivalent failure mode to be optimistic about.
+# L'ancien déclencheur `workflow_run` lisait `workflow_run.conclusion`
+# directement : un run « Tests - Leopardo RH » annulé en pending (famine de
+# file GitHub Actions sous rafale de merges) → should_deploy=false → gate VERT
+# + deploy sauté avec un simple `core.warning` noyé (échec silencieux).
 #
-# If the team specifically wants to preserve a way to deploy staging without
-# waiting on full CI (e.g. hotfix), workflow_dispatch still allows that
-# explicitly, same as before.
+# Nouveau pattern (identique à deploy-main) :
+#   - `push: main` = unique source de vérité (pas de workflow_run redondant) ;
+#   - le gate poll les runs du SHA (borné 30 min, intervalle 60 s) au lieu de
+#     lire la conclusion d'un parent — le run du DERNIER SHA aboutit toujours ;
+#   - garde anti-stale : on ne déploie jamais un SHA devenu obsolète pendant
+#     l'attente ;
+#   - skip EXPLICITE (`::warning::` + step summary), jamais un gate vert muet.
 on:
-  workflow_run:
-    workflows: ["Tests - Leopardo RH"]
-    types: [completed]
+  push:
     branches: [main]
   workflow_dispatch:
 
@@ -32,49 +28,195 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
-  group: deploy-staging
-  cancel-in-progress: false
+  group: deploy-staging-${{ github.sha }}
+  cancel-in-progress: true
 
 jobs:
   gate:
+    timeout-minutes: 45
     name: Verify CI passed
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.check.outputs.should_deploy }}
-      sha: ${{ steps.check.outputs.sha }}
+      should_deploy: ${{ steps.final.outputs.should_deploy }}
+      sha: ${{ steps.context.outputs.sha }}
     steps:
-      - name: Check required CI workflow conclusion
-        id: check
+      - name: Resolve deployment source
+        id: context
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WR_EVENT: ${{ github.event.workflow_run.event }}
+          WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          WR_HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          BASE_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" ]]; then
+            if [[ "${GITHUB_REF_NAME}" != "main" ]]; then
+              echo "::warning::workflow_dispatch hors main (${GITHUB_REF_NAME}) — déploiement staging ignoré."
+              echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+              echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
+            echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # #3545 : push main = déclenchement direct. Le gate (étape
+          # workflow_gate) poll les runs du SHA ; le run du dernier SHA
+          # aboutit toujours (rien de plus récent pour l'annuler en pending).
+          if [[ "${EVENT_NAME}" == "push" ]]; then
+            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
+            echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Défense en profondeur : ne traiter un workflow_run que s'il a
+          # réussi, était un push, ciblait main et venait du repo de base.
+          if [[ "${WR_CONCLUSION}" == "success" && "${WR_EVENT}" == "push" && "${WR_HEAD_BRANCH}" == "main" && "${WR_HEAD_REPO}" == "${BASE_REPO}" ]]; then
+            echo "should_deploy=pending-validation" >> "$GITHUB_OUTPUT"
+            echo "sha=${WR_HEAD_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::workflow_run conclusion=${WR_CONCLUSION} event=${WR_EVENT} branch=${WR_HEAD_BRANCH} — déploiement staging ignoré."
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            echo "sha=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify required workflow conclusions for deployment SHA
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: workflow_gate
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
-            if (context.eventName === 'workflow_dispatch') {
+            const EVENT = `${{ github.event_name }}`;
+            const sha = `${{ steps.context.outputs.sha }}`;
+            const { owner, repo } = context.repo;
+
+            if (EVENT === 'workflow_dispatch') {
+              core.info('Manual staging deployment on main: bypassing workflow_run lookup.');
+              core.setOutput('tests_conclusion', 'manual-dispatch');
               core.setOutput('should_deploy', 'true');
-              core.setOutput('sha', context.sha);
-              core.info('Manual trigger — deploying.');
               return;
             }
 
-            const conclusion = context.payload.workflow_run?.conclusion;
-            const headBranch = context.payload.workflow_run?.head_branch;
-            const headSha = context.payload.workflow_run?.head_sha;
-            const headRepoFullName = context.payload.workflow_run?.head_repository?.full_name;
-            const baseRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
+            const REQUIRED_WORKFLOWS = ['Tests - Leopardo RH'];
+            const conclusionIsGreen = (c) => c === 'success' || c === 'skipped';
 
-            // Same defense-in-depth as deploy-main.yml: only ever deploy for a
-            // workflow_run that (a) succeeded, (b) targeted main, and (c) ran
-            // in this base repository (never a fork).
-            if (conclusion === 'success' && headBranch === 'main' && headRepoFullName === baseRepoFullName) {
-              core.setOutput('should_deploy', 'true');
-              core.setOutput('sha', headSha);
-              core.info(`Tests - Leopardo RH succeeded for ${headSha}.`);
-            } else {
+            // #3545 : mode push = polling borné des runs du SHA (timeout 30
+            // min, intervalle 60 s). On attend que les runs du SHA terminent
+            // vraiment au lieu de lire la conclusion d'un parent annulable.
+            core.info(`Push-triggered staging deploy: polling runs for ${sha}.`);
+            const deadline = Date.now() + 30 * 60 * 1000;
+            const intervalMs = 60 * 1000;
+            let consecutiveEmpty = 0;
+
+            while (Date.now() < deadline) {
+              let runsForSha = [];
+              try {
+                runsForSha = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+                  owner,
+                  repo,
+                  branch: 'main',
+                  event: 'push',
+                  per_page: 100,
+                });
+                runsForSha = runsForSha.filter((run) => run.head_sha === sha);
+              } catch (err) {
+                core.warning(`listWorkflowRunsForRepo failed: ${err.message}`);
+              }
+
+              const relevant = runsForSha.filter((run) => REQUIRED_WORKFLOWS.includes(run.name));
+              const pending = relevant.filter((run) => run.status === 'queued' || run.status === 'in_progress');
+
+              if (relevant.length === 0) {
+                consecutiveEmpty += 1;
+                if (consecutiveEmpty >= 5) {
+                  core.warning(`Deploy staging skip — aucun run "Tests - Leopardo RH" pour le SHA ${sha} (chemin non couvert ou runs non créés).`);
+                  core.setOutput('tests_conclusion', 'no-runs');
+                  core.setOutput('should_deploy', 'false');
+                  return;
+                }
+                core.info(`No relevant runs yet for ${sha} (${consecutiveEmpty}/5 empty polls) — waiting ${intervalMs / 1000}s...`);
+                await new Promise((r) => setTimeout(r, intervalMs));
+                continue;
+              }
+              consecutiveEmpty = 0;
+
+              const testsRun = relevant.find((run) => run.name === 'Tests - Leopardo RH');
+              const testsConclusion = testsRun ? testsRun.conclusion : null;
+
+              if (pending.length > 0) {
+                core.info(`Runs still pending/in_progress for ${sha} (${pending.length}) — waiting ${intervalMs / 1000}s...`);
+                await new Promise((r) => setTimeout(r, intervalMs));
+                continue;
+              }
+
+              // Plus aucun run en attente : l'état est stabilisé.
+              let shouldDeploy = true;
+              let reason = '';
+              if (!testsRun) {
+                shouldDeploy = false;
+                reason = `aucun run "Tests - Leopardo RH" pour le SHA ${sha}`;
+              } else if (!conclusionIsGreen(testsConclusion)) {
+                shouldDeploy = false;
+                reason = `conclusion "Tests - Leopardo RH" = ${testsConclusion} pour le SHA ${sha}`;
+              }
+
+              core.info(`Tests workflow conclusion: ${testsConclusion}`);
+
+              if (shouldDeploy) {
+                // #3545 : ne jamais déployer un SHA devenu obsolète pendant
+                // l'attente — un push plus récent a pu arriver pendant le
+                // polling.
+                const { data: mainBranch } = await github.rest.repos.getBranch({
+                  owner,
+                  repo,
+                  branch: 'main',
+                });
+                const mainHead = mainBranch.commit.sha;
+                if (mainHead !== sha) {
+                  core.warning(`Deploy staging skip — SHA stale pendant l'attente (${sha} ≠ main ${mainHead}).`);
+                  core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
+                  core.setOutput('should_deploy', 'false');
+                  return;
+                }
+                core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
+                core.setOutput('should_deploy', 'true');
+                return;
+              }
+
+              core.warning(`Deploy staging skip — ${reason}.`);
+              core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
               core.setOutput('should_deploy', 'false');
-              core.setOutput('sha', headSha ?? '');
-              core.warning(`Tests - Leopardo RH conclusion=${conclusion} branch=${headBranch} repo=${headRepoFullName}. Skipping staging deploy.`);
+              return;
             }
 
+            core.warning(`Deploy staging skip — timeout 30 min en attente des runs du SHA ${sha}.`);
+            core.setOutput('tests_conclusion', 'timeout');
+            core.setOutput('should_deploy', 'false');
+
+      - name: Deployment decision summary
+        id: final
+        if: always()
+        shell: bash
+        run: |
+          echo "should_deploy=${{ steps.workflow_gate.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Staging Deployment Decision"
+            echo ""
+            echo "| Item | Value |"
+            echo "|------|-------|"
+            echo "| SHA | \`${{ steps.context.outputs.sha }}\` |"
+            echo "| Tests - Leopardo RH | ${{ steps.workflow_gate.outputs.tests_conclusion }} |"
+            echo "| Decision | ${{ steps.workflow_gate.outputs.should_deploy }} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   deploy-staging-api:
+    timeout-minutes: 45
     name: Deploy API to Staging (Render)
     runs-on: ubuntu-latest
     needs: gate
@@ -141,6 +283,7 @@ jobs:
           exit 1
 
   notify:
+    timeout-minutes: 30
     name: Post-deploy summary
     runs-on: ubuntu-latest
     needs: [gate, deploy-staging-api]

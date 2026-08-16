@@ -1,5 +1,6 @@
 import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Briefcase, MapPin, Clock, Wallet } from 'lucide-react';
@@ -7,6 +8,8 @@ import { CareersNavbar } from '../../CareersNavbar';
 import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
+import { normalizeLocale, type AppLocale } from '@/lib/i18n';
+import { getTenantCareersCopy, tenantJobMetaTitle } from '@/modules/vitrine/data/tenant-careers';
 import {
   getPublicCareersCompany,
   getPublicJobPosting,
@@ -15,23 +18,39 @@ import {
 } from '@/lib/careers-api';
 import { ApplyForm } from './ApplyForm';
 
-interface JobDetailPageProps {
-  params: Promise<{ companySlug: string; jobId: string }>;
+// #4448 : locale SSR. Ces routes (hors groupe `(landing)`) ne passent pas
+// par le middleware vitrine → `x-vitrine-lang` n'y est JAMAIS posé (sinon
+// tout retombait en 'fr'). On résout `?lang=` (prioritaire, #4173) puis
+// Accept-Language normalisé, même règle que le RootLayout (#2657/#4393).
+async function resolveJobLocale(urlLang?: string): Promise<AppLocale> {
+  const h = await headers();
+  const fromUrl = normalizeLocale(urlLang ?? '');
+  if (fromUrl !== 'fr' || urlLang) return fromUrl;
+  const accept = h.get('accept-language') ?? '';
+  return normalizeLocale(accept.split(',')[0] ?? '');
 }
 
-export async function generateMetadata({ params }: JobDetailPageProps): Promise<Metadata> {
+interface JobDetailPageProps {
+  params: Promise<{ companySlug: string; jobId: string }>;
+  searchParams: Promise<{ lang?: string }>;
+}
+
+export async function generateMetadata({ params, searchParams }: JobDetailPageProps): Promise<Metadata> {
   const { companySlug, jobId } = await params;
+  const { lang } = await searchParams;
   const job = await getPublicJobPosting(companySlug, jobId);
+  const locale = await resolveJobLocale(lang);
 
   if (!job) {
-    return { title: 'Offre introuvable' };
+    return { title: getTenantCareersCopy(locale).jobNotFoundTitle };
   }
 
   const company = await getPublicCareersCompany(companySlug);
+  const copy = getTenantCareersCopy(locale);
 
   return generateSEOMetadata({
-    title: `${job.title}${company ? ` chez ${company.display_name}` : ''}`,
-    description: job.description?.slice(0, 155) || `Postulez a l'offre "${job.title}".`,
+    title: tenantJobMetaTitle(locale, job.title, company?.display_name ?? ''),
+    description: job.description?.slice(0, 155) || copy.applyTitle,
     canonical: `${SITE_URL}/${companySlug}/careers/jobs/${job.id}`,
     ogType: 'article',
     ogImage: company?.logo_url ?? undefined,
@@ -53,12 +72,15 @@ function schemaEmploymentType(contractType: string): string {
   );
 }
 
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
+export default async function JobDetailPage({ params, searchParams }: JobDetailPageProps) {
   const { companySlug, jobId } = await params;
+  const { lang } = await searchParams;
   const [job, company] = await Promise.all([
     getPublicJobPosting(companySlug, jobId),
     getPublicCareersCompany(companySlug),
   ]);
+  const locale = await resolveJobLocale(lang);
+  const copy = getTenantCareersCopy(locale);
 
   if (!job) {
     notFound();
@@ -116,7 +138,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
           style={{ color: brandColor }}
         >
           <ArrowLeft className="w-4 h-4" />
-          Retour aux offres chez {organizationName}
+          {copy.backToJobs(organizationName)}
         </Link>
 
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">{job.title}</h1>
@@ -154,7 +176,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
 
         {job.skills_required && job.skills_required.length > 0 && (
           <div className="mt-8">
-            <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Competences recherchees</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">{copy.skillsTitle}</h2>
             <div className="flex flex-wrap gap-2">
               {job.skills_required.map((skill) => (
                 <span
@@ -169,7 +191,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
         )}
 
         <div className="mt-12 border-t border-slate-200 dark:border-slate-800 pt-10">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Postuler a cette offre</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{copy.applyTitle}</h2>
           <ApplyForm companySlug={companySlug} jobId={job.id} />
         </div>
       </div>

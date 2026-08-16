@@ -81,8 +81,13 @@ Route::middleware('guest:web')->group(function (): void {
         ->name('login.store');
 });
 
-Route::get('/activate/{token}', [InvitationController::class, 'showActivationForm'])->name('invitation.activate.show');
-Route::post('/activate/{token}', [InvitationController::class, 'activate'])->name('invitation.activate.store');
+// #4498 : endpoints publics de pose de mot de passe — throttle dédié (token + IP).
+Route::get('/activate/{token}', [InvitationController::class, 'showActivationForm'])
+    ->middleware('throttle:web-activate')
+    ->name('invitation.activate.show');
+Route::post('/activate/{token}', [InvitationController::class, 'activate'])
+    ->middleware('throttle:web-activate')
+    ->name('invitation.activate.store');
 Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])->name('kiosk.show');
 // PA2-API-005: public, device-code based, unauthenticated-by-Sanctum kiosk
 // punch endpoint gets its own 'kiosk-punch' throttle bucket (keyed by device

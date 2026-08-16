@@ -38,6 +38,8 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
 
     public int $backoff = 300;
 
+    public int $timeout = 120;
+
     public function __construct(
         private readonly Company $company,
         private readonly int $dayNumber,
@@ -50,6 +52,15 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
         return $this->company->id;
     }
 
+    public function failed(\Throwable $e): void
+    {
+        Log::error('[DripEmail] failed definitively', [
+            'error' => $e->getMessage(),
+            'company_id' => $this->company->id,
+            'day' => $this->dayNumber,
+        ]);
+    }
+
     /**
      * @return array<int, object>
      */
@@ -58,6 +69,7 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext];
     }
 
+    
     public function handle(): void
     {
         if ($this->company->status !== 'trial') {

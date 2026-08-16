@@ -116,7 +116,7 @@ async function saveProvider(provider) {
     if (form.clientSecret.trim()) {
       payload.client_secret = form.clientSecret
     }
-    await api.put('/v1/admin/platform/marketing/oauth-config', payload)
+    await api.put('/admin/platform/marketing/oauth-config', payload)
     toast.success(t('marketing.oauth.saved_ok', { provider }))
     forms[provider].clientSecret = ''
   } catch (e) {
@@ -130,7 +130,7 @@ async function saveProvider(provider) {
 /** Charge la configuration existante (GET /admin/platform/marketing/oauth-config). */
 async function loadConfig() {
   try {
-    const { data } = await api.get('/v1/admin/platform/marketing/oauth-config')
+    const { data } = await api.get('/admin/platform/marketing/oauth-config')
     const configs = data?.data || {}
     for (const [provider, cfg] of Object.entries(configs)) {
       if (forms[provider]) {

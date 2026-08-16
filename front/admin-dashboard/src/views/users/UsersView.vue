@@ -187,7 +187,7 @@
             </p>
             <code class="mt-2 block break-all rounded-lg glass-bg p-2 text-xs">{{ impersonationResult.token }}</code>
             <p class="mt-2 text-xs text-emerald-700 dark:text-emerald-400">
-              {{ t('users.impersonation.expires', 'Expire le :date').replace(':date', new Date(impersonationResult.expires_at).toLocaleString()) }}
+              {{ t('users.impersonation.expires', 'Expire le :date').replace(':date', new Date(impersonationResult.expires_at).toLocaleString(toIntlLocale(localeStore.current))) }}
             </p>
           </div>
           <div class="flex justify-end gap-2">
@@ -218,7 +218,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useToast } from 'vue-toastification'
 import api from '@/services/api'
-import { translate } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
 // Components
@@ -513,7 +513,7 @@ async function exportUsers(rows = null) {
       return `"${str.replace(/"/g, '""')}"`
     }
     const formatDate = (d) => (d instanceof Date && !Number.isNaN(d.getTime()))
-      ? d.toLocaleDateString('fr-FR')
+      ? d.toLocaleDateString(toIntlLocale(localeStore.current))
       : ''
     const csvContent = "data:text/csv;charset=utf-8," +
       "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +

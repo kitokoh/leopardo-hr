@@ -163,12 +163,12 @@ const reportTypes = reactive([
   // employee/manager) — le super-admin n'a pas de contrat equivalent dans le
   // cockpit (/admin/*). Marques `clientSpace` : la carte affiche un etat
   // honnete au lieu d'un bouton qui echoue en 401.
-  { key: 'employees', title: 'exports.reportEmployees', description: 'exports.reportEmployeesDesc', icon: UsersIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/employees', clientSpace: true },
-  { key: 'attendance', title: 'exports.reportAttendance', description: 'exports.reportAttendanceDesc', icon: ClipboardDocumentListIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/attendance', clientSpace: true },
-  { key: 'payslips', title: 'exports.reportPayslips', description: 'exports.reportPayslipsDesc', icon: CurrencyEuroIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/pay-slips', clientSpace: true },
-  { key: 'absences', title: 'exports.reportAbsences', description: 'exports.reportAbsencesDesc', icon: DocumentTextIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/absences', clientSpace: true },
-  { key: 'training', title: 'exports.reportTraining', description: 'exports.reportTrainingDesc', icon: AcademicCapIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/training', clientSpace: true },
-  { key: 'vehicles', title: 'exports.reportVehicles', description: 'exports.reportVehiclesDesc', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/vehicles', clientSpace: true },
+  { key: 'employees', title: 'exports.reportEmployees', description: 'exports.reportEmployeesDesc', icon: UsersIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/export/employees', clientSpace: true },
+  { key: 'attendance', title: 'exports.reportAttendance', description: 'exports.reportAttendanceDesc', icon: ClipboardDocumentListIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/export/attendance', clientSpace: true },
+  { key: 'payslips', title: 'exports.reportPayslips', description: 'exports.reportPayslipsDesc', icon: CurrencyEuroIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/export/pay-slips', clientSpace: true },
+  { key: 'absences', title: 'exports.reportAbsences', description: 'exports.reportAbsencesDesc', icon: DocumentTextIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/export/absences', clientSpace: true },
+  { key: 'training', title: 'exports.reportTraining', description: 'exports.reportTrainingDesc', icon: AcademicCapIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/export/training', clientSpace: true },
+  { key: 'vehicles', title: 'exports.reportVehicles', description: 'exports.reportVehiclesDesc', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/export/vehicles', clientSpace: true },
 ])
 
 const historyColumns = [
@@ -203,7 +203,7 @@ async function generateHrReport() {
   generatingReport.value = true
   hrReportError.value = ''
   try {
-    const res = await api.get('/v1/admin/hr-reports', { params: hrReport })
+    const res = await api.get('/admin/hr-reports', { params: hrReport })
     hrReportResult.value = res.data.data || res.data || null
   } catch (err) {
     hrReportResult.value = null
@@ -219,7 +219,7 @@ async function fetchHistory() {
   try {
     // Issue #2710 — un échec backend s'affiche comme une erreur explicite
     // (plus de catch silencieux qui ressemble à « aucun export »).
-    const res = await api.get('/v1/export/history', { _skipAuthRedirect: true })
+    const res = await api.get('/export/history', { _skipAuthRedirect: true })
     exportHistory.value = res.data.data || res.data || []
   } catch (err) {
     // #3395 : état d'erreur visible + retry au lieu d'une liste vide trompeuse.
