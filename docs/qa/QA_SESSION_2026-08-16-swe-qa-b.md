@@ -53,3 +53,19 @@ bilans). Contributions de **cette session** :
    checks requis.
 5. **`Illuminate\Http\Response` et `JsonResponse` sont des sœurs** (pas de
    sous-typage) — typage par le parent commun `Symfony\HttpFoundation\Response`.
+
+## Complément — Vérification finale (18:45 UTC)
+
+- **Suite Unit sur main** : verte (553 passed) vérifiée localement à 17:39
+  (état pré-#4656). La régression #4656 (password_hash mass-assignable) a été
+  corrigée et mergée par l'agent concurrent (#4682) — la suite Unit est verte
+  sur le main courant selon la validation de cette PR.
+- **PHPStan Modules** : était rouge sur main (2 erreurs post #4558/#4580) →
+  corrigé par #4661 (cette session). **PHPStan Strict round 3 (#4642, check
+  REQUIS)** : claimé par l'agent concurrent (branche fix/4642-main-phpstan-round3,
+  commit marker seul) — toujours bloquant au moment de la clôture de session.
+- **Diagnostic environnement** : les re-exécutions locales de la suite ont
+  montré des blocages liés à l'état de la DB de test (ALTER TABLE orphelin
+  après kill de run, connections zombies) — leçon du sandbox : toujours
+  `DROP DATABASE WITH (FORCE)` + recreate avant une passe de tests ; aucun
+  échec de test code-avéré constaté sur main.
