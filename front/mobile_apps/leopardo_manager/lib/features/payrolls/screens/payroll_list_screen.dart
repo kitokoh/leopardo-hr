@@ -198,7 +198,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${NumberFormat.decimalPattern(deviceIntlDateLocale).format(payroll.netSalary)}${currencySuffix(payroll.currency)} net',
+                                '${NumberFormat.decimalPattern(deviceIntlNumberLocale).format(payroll.netSalary)}${currencySuffix(payroll.currency)} net',
                                 style: AppTypography.caption.copyWith(
                                   color: MobileSurface.secondary,
                                 ),
@@ -573,7 +573,7 @@ class _SummaryCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${NumberFormat.decimalPattern(deviceIntlDateLocale).format(item.remaining)}${currencySuffix(item.currency)}',
+                          '${NumberFormat.decimalPattern(deviceIntlNumberLocale).format(item.remaining)}${currencySuffix(item.currency)}',
                           style: AppTypography.caption.copyWith(
                             color: MobileSurface.text,
                             fontWeight: FontWeight.w700,
