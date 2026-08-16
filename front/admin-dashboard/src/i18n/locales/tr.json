@@ -865,7 +865,10 @@
     "confirm_delete": "Bu webhook silinsin mi?"
   },
   "a11y": {
-    "skip_to_content": "Ana içeriğe geç"
+    "skip_to_content": "Ana içeriğe geç",
+    "close": "Kapat",
+    "previous_month": "Önceki ay",
+    "next_month": "Sonraki ay"
   },
   "shell": {
     "connected": "Bagli",
