@@ -45,4 +45,7 @@ return [
         'placeholder' => ['message' => ":country için değersiz taslak: vergi ve sosyal güvenlik katkı tutarları henüz belgelenmemiştir ve değiştirilene kadar gerçek maaş döngülerinde kullanılmamalıdır."],
         'unknown' => ['message' => ":country için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."],
     ],
+
+    'run_must_be_validated' => 'Gondermeden once bordro dongusu dogrulanmalidir.',
+    'bulletins_sent' => '{sent} bordro gonderildi, {notified} push bildirimi tetiklendi.',
 ];
