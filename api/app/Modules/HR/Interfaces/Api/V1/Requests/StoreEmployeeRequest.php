@@ -95,15 +95,15 @@ class StoreEmployeeRequest extends FormRequest
             $sendInvitation = filter_var($this->input('send_invitation', false), FILTER_VALIDATE_BOOLEAN);
 
             if (! $password && ! $sendInvitation) {
-                $validator->errors()->add('password', 'Le mot de passe ou l\'invitation email est requis.');
+                $validator->errors()->add('password', __('errors.EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED'));
             }
 
             if ($role === 'manager' && ! $this->input('manager_role')) {
-                $validator->errors()->add('manager_role', 'Le type de manager est requis.');
+                $validator->errors()->add('manager_role', __('errors.EMPLOYEE_MANAGER_ROLE_REQUIRED'));
             }
 
             if ($role === 'manager' && $this->user()?->isManager() && $this->input('manager_role') === 'principal') {
-                $validator->errors()->add('manager_role', 'Seul le super admin peut creer un manager principal.');
+                $validator->errors()->add('manager_role', __('errors.EMPLOYEE_PRINCIPAL_MANAGER_CREATION_FORBIDDEN'));
             }
         });
     }

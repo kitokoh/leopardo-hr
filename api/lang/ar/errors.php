@@ -150,5 +150,13 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
     'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
     'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.'
+    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.',
+    'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'كلمة المرور أو دعوة البريد الإلكتروني مطلوبة.',
+    'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'نوع المدير مطلوب.',
+    'EMPLOYEE_PRINCIPAL_MANAGER_CREATION_FORBIDDEN' => 'يمكن للمسؤول الفائق فقط إنشاء مدير رئيسي.',
+    'EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY' => 'يمكن للمدير الرئيسي فقط تعديل أدوار الموارد البشرية.',
+    'EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN' => 'يمكن للمسؤول الفائق فقط ترقية مدير إلى مدير رئيسي.',
+    'PAYROLL_RUN_COUNTRY_MISMATCH' => 'يجب أن تتطابق دولة التشغيل مع الدولة القانونية للمستأجر (:country).',
+    'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'يجب أن تتطابق السنة مع سنة التاريخ.',
+    'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'يجب أن يتطابق اليوم والشهر مع يوم وشهر التاريخ.',
 ];
