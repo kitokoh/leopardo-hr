@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -113,7 +113,7 @@ class OrgChartControllerTest extends TestCase
         $company = Company::factory()->create();
         $actor = Employee::factory()->create([
             'company_id' => $company->id,
-            'role' => 'employee',
+            'role' => 'manager',
             'status' => 'active',
         ]);
         Sanctum::actingAs($actor);
@@ -123,14 +123,103 @@ class OrgChartControllerTest extends TestCase
         $response->assertNotFound();
     }
 
+    public function test_non_manager_cannot_query_other_employee_subordinates(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $actor */
+        $actor = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        /** @var Employee $target */
+        $target = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($actor);
+
+        $this->getJson("/api/v1/org-chart/{$target->id}/subordinates")->assertForbidden();
+    }
+
+    public function test_non_manager_cannot_query_other_employee_manager_chain(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $actor */
+        $actor = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        /** @var Employee $target */
+        $target = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($actor);
+
+        $this->getJson("/api/v1/org-chart/{$target->id}/manager-chain")->assertForbidden();
+    }
+
+    public function test_manager_can_query_any_employee_subordinates(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ]);
+        /** @var Employee $target */
+        $target = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ]);
+        Sanctum::actingAs($manager);
+
+        $this->getJson("/api/v1/org-chart/{$target->id}/subordinates")->assertOk();
+    }
+
+    public function test_employee_can_query_own_manager_chain(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $director */
+        $director = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+            'manager_id' => null,
+        ]);
+        /** @var Employee $actor */
+        $actor = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+            'manager_id' => $director->id,
+        ]);
+        Sanctum::actingAs($actor);
+
+        $this->getJson("/api/v1/org-chart/{$actor->id}/manager-chain")->assertOk();
+    }
+
     public function test_tenant_isolation_org_chart(): void
     {
+        /** @var Employee $managerA */
         $managerA = Employee::factory()->create([
             'company_id' => Company::factory()->create()->id,
             'role' => 'manager',
             'status' => 'active',
         ]);
 
+        /** @var Employee $managerB */
         $managerB = Employee::factory()->create([
             'company_id' => Company::factory()->create()->id,
             'role' => 'manager',
@@ -147,4 +236,3 @@ class OrgChartControllerTest extends TestCase
         $this->assertNotContains($managerB->id, $ids);
     }
 }
-

@@ -35,11 +35,14 @@ class OrgChartController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->authorizeAccess($actor, $employeeId);
+
         $directReports = Employee::query()
             ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'email', 'status'])
             ->where('company_id', $actor->company_id)
             ->where('manager_id', $employeeId)
             ->where('status', 'active')
+            ->visibleToManager($actor)
             ->get();
 
         return response()->json(['data' => $directReports]);
@@ -49,6 +52,9 @@ class OrgChartController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorizeAccess($actor, $employeeId);
+
         $chain = [];
         $current = Employee::query()
             ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])
@@ -80,6 +86,20 @@ class OrgChartController extends Controller
         }
 
         return response()->json(['data' => $chain]);
+    }
+
+    /**
+     * #4497 — un employé ne peut pas interroger les subordonnés / la chaîne de
+     * management (emails inclus) d'un AUTRE employé. Seuls soi-même et les
+     * managers y ont accès (lecture RH, même règle que EmployeePolicy::view).
+     */
+    private function authorizeAccess(Employee $actor, int $employeeId): void
+    {
+        if ($actor->id === $employeeId || $actor->isManager()) {
+            return;
+        }
+
+        abort(403);
     }
 
     /**

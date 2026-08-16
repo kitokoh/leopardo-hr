@@ -11,7 +11,8 @@ declare(strict_types=1);
  *   - /me/* routes: all authenticated employees
  *   - Admin routes (policies, contracts CRUD, recruitment, webhooks, audit): managers
  *   - Reports, audit and predictions: all managers; controller policies still apply where relevant
- *   - Org chart: all authenticated (read-only)
+ *   - Org chart: all authenticated (read-only) ; subordinates/manager-chain gated (#4497):
+ *     soi-même ou manager uniquement (emails d'autres employés protégés)
  *   - Approval actions: context-dependent (manager for workflows, all for own approvals)
  */
 
