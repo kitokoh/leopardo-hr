@@ -1,8 +1,8 @@
 import { getModulePageContent, modulePageContent, modulePageContentByLocale } from '../content'
 
 // Issue #4196 : les pages modules de la vitrine doivent rester localisées.
-// Lot 1 : « employes » traduit en/tr/ar ; les autres modules retombent sur FR
-// (fusion getModulePageContent). Ce test garantit que :
+// Lot 1 : « employes » traduit en/tr/ar ; lot 2 : documents/comptabilite/
+// marketing (les 4 modules complets). Ce test garantit que :
 //   1. le FR reste la référence complète (4 modules) ;
 //   2. chaque locale partielle n'expose que des modules complets (clés égales
 //      à la référence FR pour le module fourni) ;
@@ -27,12 +27,35 @@ describe('module page content i18n (#4196)', () => {
     for (const locale of ['en', 'tr', 'ar'] as const) {
       const partial = modulePageContentByLocale[locale]
       const providedModules = Object.keys(partial).sort()
-      // Lot 1 : seul employes doit être fourni (les lots suivants l'étendent).
-      expect(providedModules).toEqual(['employes'])
+      // Lots 1+2 : les 4 modules sont fournis pour chaque locale.
+      expect(providedModules).toEqual(['comptabilite', 'documents', 'employes', 'marketing'])
       for (const mod of providedModules) {
         const reference = deepKeys(modulePageContent[mod as keyof typeof modulePageContent]).sort()
         const actual = deepKeys(partial[mod as keyof typeof partial]).sort()
         expect(actual).toEqual(reference)
+      }
+    }
+  })
+
+  it('aucune valeur vide ou placeholder dans les modules traduits', () => {
+    for (const locale of ['en', 'tr', 'ar'] as const) {
+      const partial = modulePageContentByLocale[locale]
+      for (const mod of ['comptabilite', 'documents', 'employes', 'marketing'] as const) {
+        const textValues = deepKeys(partial[mod] ?? {})
+          .map((k) => {
+            const cursor = (partial[mod] as Record<string, unknown>)
+            const segs = k.split('.')
+            let v: unknown = cursor
+            for (const s of segs) v = (v as Record<string, unknown>)?.[s]
+            return typeof v === 'string' ? v : ''
+          })
+          .filter(Boolean)
+        expect(textValues.length).toBeGreaterThan(0)
+        for (const t of textValues) {
+          expect(t.length).toBeGreaterThan(2)
+          // Pas de placeholder technique résiduel type « TODO » ou clé brute
+          expect(t).not.toMatch(/^(en|tr|ar)\./)
+        }
       }
     }
   })

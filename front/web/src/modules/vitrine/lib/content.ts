@@ -877,6 +877,622 @@ const modulePageContentEn: Partial<ModulePageContent> = {
       ctaSecondary: { text: 'Request a demo', href: '/demo?module=employes' },
     },
   },
+  documents: {
+    hero: {
+      headline: "Secure Digital Cabinet for Your Documents",
+      subheadline: "Compliant storage, sharing and archiving",
+      ctaPrimary: {
+        text: "Free trial",
+        href: "/signup?module=documents",
+      },
+      ctaSecondary: {
+        text: "See the demo",
+        href: "/demo?module=documents",
+      },
+    },
+    problem: {
+      title: "Documents scattered and unsecured?",
+      subtitle: "The risks of not having a centralized solution",
+      items: [
+        {
+          title: "Scattered Documents",
+          description: "Emails, folders, USB drives - impossible to find documents",
+        },
+        {
+          title: "Security Risks",
+          description: "Unencrypted sensitive data, uncontrolled access",
+        },
+        {
+          title: "Complex Sharing",
+          description: "Sharing by email, multiple versions, confusion",
+        },
+        {
+          title: "Non-Compliance",
+          description: "No traceability, missing audit trail, GDPR breach",
+        },
+      ],
+    },
+    solution: {
+      title: "A Secure Digital Cabinet",
+      subtitle: "Centralize and secure all your documents",
+      description: "Leopardo offers a digital cabinet with AES-256 encryption, granular permissions and GDPR compliance.",
+      features: [
+        {
+          title: "Secure Storage",
+          description: "AES-256 encryption, automatic backup, redundancy",
+        },
+        {
+          title: "Controlled Sharing",
+          description: "Granular permissions, temporary links, audit trail",
+        },
+        {
+          title: "Automatic Archiving",
+          description: "Automatic retention, secure destruction, compliance",
+        },
+        {
+          title: "GDPR Compliance",
+          description: "Regulation compliance, certifications, legal support",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "Real-World Use Cases",
+      subtitle: "How our clients use the digital cabinet",
+      items: [
+        {
+          title: "Law Firm: Client Files",
+          description: "Secure management of confidential client files",
+          industry: "Legal",
+          metrics: [
+            {
+              label: "Files managed",
+              value: "1000+",
+            },
+            {
+              label: "Time saved",
+              value: "20h/month",
+            },
+            {
+              label: "Compliance",
+              value: "100%",
+            },
+          ],
+          link: "/case-studies/law-firm",
+        },
+        {
+          title: "HR: Employee Files",
+          description: "Centralizing confidential employee files",
+          industry: "HR",
+          metrics: [
+            {
+              label: "Employees",
+              value: "500+",
+            },
+            {
+              label: "Security",
+              value: "AES-256",
+            },
+            {
+              label: "Access",
+              value: "Controlled",
+            },
+          ],
+          link: "/case-studies/hr-files",
+        },
+        {
+          title: "Finance: Accounting Documents",
+          description: "Secure archiving of accounting documents",
+          industry: "Finance",
+          metrics: [
+            {
+              label: "Documents",
+              value: "10K+",
+            },
+            {
+              label: "Retention",
+              value: "Automatic",
+            },
+            {
+              label: "Audit",
+              value: "Complete",
+            },
+          ],
+          link: "/case-studies/accounting",
+        },
+      ],
+    },
+    testimonials: {
+      title: "Client Testimonials",
+      subtitle: "What our clients say about the digital cabinet",
+      items: [
+        {
+          quote: "Finally a secure solution for our confidential documents!",
+          author: "Maître Dubois",
+          role: "Lawyer",
+          company: "Dubois & Partners Law Firm",
+          avatar: "/avatars/dubois.svg",
+          rating: 5,
+        },
+        {
+          quote: "Guaranteed GDPR compliance and a simple interface. Perfect!",
+          author: "Isabelle Moreau",
+          role: "HR Manager",
+          company: "Moreau Group",
+          avatar: "/avatars/moreau.svg",
+          rating: 5,
+        },
+        {
+          quote: "Secure sharing with our clients. Very professional.",
+          author: "Thomas Lefevre",
+          role: "CFO",
+          company: "Finance Solutions",
+          avatar: "/avatars/lefevre.svg",
+          rating: 5,
+        },
+        {
+          quote: "Excellent support and fast onboarding. Recommended!",
+          author: "Claire Rousseau",
+          role: "Manager",
+          company: "Consulting Pro",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Find the answers to your questions",
+      items: [
+        {
+          question: "What is the encryption level?",
+          answer: "We use AES-256 encryption, the industry standard for maximum security.",
+        },
+        {
+          question: "How does sharing work?",
+          answer: "You can share documents with granular permissions (read, edit, delete). Links can be temporary.",
+        },
+        {
+          question: "How much storage space is available?",
+          answer: "Storage depends on your plan. Pilot: 100GB, Operations: 1TB, Enterprise: Unlimited.",
+        },
+        {
+          question: "How does archiving work?",
+          answer: "You define retention rules. Documents are automatically archived or deleted according to your settings.",
+        },
+        {
+          question: "Can you guarantee GDPR compliance?",
+          answer: "Yes, we are GDPR certified and offer legal support to ensure your compliance.",
+        },
+        {
+          question: "How long does setup take?",
+          answer: "Setup takes less than 5 minutes. You can start uploading documents immediately.",
+        },
+      ],
+    },
+    cta: {
+      headline: "Secure your documents now",
+      subheadline: "14-day free trial, no commitment",
+      ctaPrimary: {
+        text: "Free trial",
+        href: "/signup?module=documents",
+      },
+      ctaSecondary: {
+        text: "Request a demo",
+        href: "/demo?module=documents",
+      },
+    },
+  },
+  comptabilite: {
+    hero: {
+      headline: "Automated Payroll with Guaranteed Compliance",
+      subheadline: "Accurate calculations, generated payslips, accounting exports",
+      ctaPrimary: {
+        text: "Free trial",
+        href: "/signup?module=comptabilite",
+      },
+      ctaSecondary: {
+        text: "See the demo",
+        href: "/demo?module=comptabilite",
+      },
+    },
+    problem: {
+      title: "Manual payroll = Errors and wasted time",
+      subtitle: "The challenges of traditional payroll management",
+      items: [
+        {
+          title: "Manual Calculations",
+          description: "Errors, omissions, complex calculations, lost time",
+        },
+        {
+          title: "Complex Compliance",
+          description: "Changing rates, regulations, hard-to-keep-update updates",
+        },
+        {
+          title: "Accounting Exports",
+          description: "Different formats, manual integrations, errors",
+        },
+        {
+          title: "Salary Advances",
+          description: "Manual requests, complex calculations, forgotten deductions",
+        },
+      ],
+    },
+    solution: {
+      title: "Complete Automated Payroll",
+      subtitle: "Full automation of your payroll management",
+      description: "Leopardo automates all payroll calculations, generates payslips and exports directly to your accounting.",
+      features: [
+        {
+          title: "Automatic Calculation",
+          description: "Multi-currency, automatic contributions, up-to-date rates",
+        },
+        {
+          title: "Generated Payslips",
+          description: "Automatic PDFs, email delivery, secure archiving",
+        },
+        {
+          title: "Accounting Exports",
+          description: "Standard formats, direct integration, error-free",
+        },
+        {
+          title: "Automated Advances",
+          description: "Requests, validation, automatic deduction",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "Real-World Use Cases",
+      subtitle: "How our clients manage their payroll",
+      items: [
+        {
+          title: "SME: 50 Employees",
+          description: "Automated monthly payroll for a growing SME",
+          industry: "SME",
+          metrics: [
+            {
+              label: "Time saved",
+              value: "8h/month",
+            },
+            {
+              label: "Errors",
+              value: "0",
+            },
+            {
+              label: "Satisfaction",
+              value: "100%",
+            },
+          ],
+          link: "/case-studies/sme-payroll",
+        },
+        {
+          title: "Startup: Automated Advances",
+          description: "Salary advance management for a startup",
+          industry: "Startup",
+          metrics: [
+            {
+              label: "Advances/month",
+              value: "20+",
+            },
+            {
+              label: "Processing",
+              value: "Automatic",
+            },
+            {
+              label: "Errors",
+              value: "0",
+            },
+          ],
+          link: "/case-studies/startup-advances",
+        },
+        {
+          title: "Group: Multi-Entity",
+          description: "Multi-entity, multi-currency payroll for a group",
+          industry: "Group",
+          metrics: [
+            {
+              label: "Entities",
+              value: "5",
+            },
+            {
+              label: "Currencies",
+              value: "3",
+            },
+            {
+              label: "Employees",
+              value: "500+",
+            },
+          ],
+          link: "/case-studies/group-payroll",
+        },
+      ],
+    },
+    testimonials: {
+      title: "Client Testimonials",
+      subtitle: "What our clients say about automated payroll",
+      items: [
+        {
+          quote: "Zero errors for 2 years. Incredible!",
+          author: "Jean Martin",
+          role: "Accountant",
+          company: "Finance Pro",
+          avatar: "/avatars/martin.svg",
+          rating: 5,
+        },
+        {
+          quote: "3x faster than Excel. We save 10 hours a month!",
+          author: "Sophie Leclerc",
+          role: "HR Manager",
+          company: "Tech Solutions",
+          avatar: "/avatars/leclerc.svg",
+          rating: 5,
+        },
+        {
+          quote: "Direct accounting exports. No manual manipulation!",
+          author: "Marc Dubois",
+          role: "Chartered Accountant",
+          company: "Dubois & Associates",
+          avatar: "/avatars/dubois.svg",
+          rating: 5,
+        },
+        {
+          quote: "Guaranteed compliance. We sleep well!",
+          author: "Nathalie Rousseau",
+          role: "Director",
+          company: "Rousseau Group",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Find the answers to your questions",
+      items: [
+        {
+          question: "Do you support multiple currencies?",
+          answer: "Yes, we support more than 150 currencies with automatic conversion and up-to-date rates.",
+        },
+        {
+          question: "How does compliance work?",
+          answer: "Our rates and rules are updated automatically according to local regulations. You are always compliant.",
+        },
+        {
+          question: "Can you export to my accounting software?",
+          answer: "Yes, we export directly to popular accounting software (Sage, Ciel, etc.).",
+        },
+        {
+          question: "How do advances work?",
+          answer: "Employees request an advance through the app. Managers approve. The deduction is automatic on the next payslip.",
+        },
+        {
+          question: "How long does setup take?",
+          answer: "Setup takes less than 5 minutes. You can generate your first payroll immediately.",
+        },
+        {
+          question: "Can you manage multiple entities?",
+          answer: "Yes, you can manage multiple entities with different configurations from a single dashboard.",
+        },
+      ],
+    },
+    cta: {
+      headline: "Automate your payroll today",
+      subheadline: "14-day free trial, no commitment",
+      ctaPrimary: {
+        text: "Free trial",
+        href: "/signup?module=comptabilite",
+      },
+      ctaSecondary: {
+        text: "Request a demo",
+        href: "/demo?module=comptabilite",
+      },
+    },
+  },
+  marketing: {
+    hero: {
+      headline: "Integrated Marketing Tools for SMEs",
+      subheadline: "Email, SMS, social networks in one place",
+      ctaPrimary: {
+        text: "Free trial",
+        href: "/signup?module=marketing",
+      },
+      ctaSecondary: {
+        text: "See the demo",
+        href: "/demo?module=marketing",
+      },
+    },
+    problem: {
+      title: "Scattered and expensive marketing tools?",
+      subtitle: "The challenges of fragmented marketing management",
+      items: [
+        {
+          title: "Multiple Tools",
+          description: "Email, SMS, social networks - each in a different tool",
+        },
+        {
+          title: "High Costs",
+          description: "Multiple subscriptions, separate invoices, uncontrolled budget",
+        },
+        {
+          title: "No Overview",
+          description: "Impossible to see overall campaign performance",
+        },
+        {
+          title: "Complex Integration",
+          description: "No link with your HR data, manual segmentation",
+        },
+      ],
+    },
+    solution: {
+      title: "Complete Integrated Marketing",
+      subtitle: "All your marketing tools in one place",
+      description: "Leopardo offers email, SMS, social networks and analytics integrated with your HR platform.",
+      features: [
+        {
+          title: "Email Marketing",
+          description: "Templates, segmentation, automation, A/B testing",
+        },
+        {
+          title: "SMS Marketing",
+          description: "Targeted campaigns, tracking, HR integration",
+        },
+        {
+          title: "Social Networks",
+          description: "Automatic sharing, scheduling, analytics",
+        },
+        {
+          title: "Centralized Analytics",
+          description: "ROI, engagement, conversions - all in one place",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "Real-World Use Cases",
+      subtitle: "How our clients use marketing",
+      items: [
+        {
+          title: "Recruitment: Targeted Campaigns",
+          description: "Targeted and automated recruitment campaigns",
+          industry: "HR",
+          metrics: [
+            {
+              label: "Applications",
+              value: "3x+",
+            },
+            {
+              label: "Cost per applicant",
+              value: "-40%",
+            },
+            {
+              label: "Response rate",
+              value: "35%",
+            },
+          ],
+          link: "/case-studies/recruitment",
+        },
+        {
+          title: "Engagement: Employee Newsletters",
+          description: "Internal newsletters to engage employees",
+          industry: "Engagement",
+          metrics: [
+            {
+              label: "Open rate",
+              value: "45%",
+            },
+            {
+              label: "Clicks",
+              value: "15%",
+            },
+            {
+              label: "Satisfaction",
+              value: "90%",
+            },
+          ],
+          link: "/case-studies/employee-engagement",
+        },
+        {
+          title: "Promotion: Customer Campaigns",
+          description: "Promotional campaigns towards customers",
+          industry: "Marketing",
+          metrics: [
+            {
+              label: "Conversion rate",
+              value: "8%",
+            },
+            {
+              label: "ROI",
+              value: "300%",
+            },
+            {
+              label: "Customers acquired",
+              value: "50+",
+            },
+          ],
+          link: "/case-studies/customer-campaigns",
+        },
+      ],
+    },
+    testimonials: {
+      title: "Client Testimonials",
+      subtitle: "What our clients say about marketing",
+      items: [
+        {
+          quote: "More effective and cheaper campaigns. Excellent!",
+          author: "Luc Moreau",
+          role: "Marketing Manager",
+          company: "Tech Marketing",
+          avatar: "/avatars/moreau.svg",
+          rating: 5,
+        },
+        {
+          quote: "45% email open rate. Incredible!",
+          author: "Céline Dupont",
+          role: "Marketing Lead",
+          company: "Growth Co",
+          avatar: "/avatars/dupont.svg",
+          rating: 5,
+        },
+        {
+          quote: "Perfect HR integration. Automatic segmentation!",
+          author: "David Leclerc",
+          role: "Marketing Director",
+          company: "Digital Solutions",
+          avatar: "/avatars/leclerc.svg",
+          rating: 5,
+        },
+        {
+          quote: "300% ROI on our campaigns. Recommended!",
+          author: "Valérie Rousseau",
+          role: "CMO",
+          company: "Rousseau Group",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Find the answers to your questions",
+      items: [
+        {
+          question: "Can you segment by HR data?",
+          answer: "Yes, you can segment automatically by department, location, role, etc.",
+        },
+        {
+          question: "Which channels are supported?",
+          answer: "Email, SMS and social networks (Facebook, Instagram, LinkedIn, X/Twitter).",
+        },
+        {
+          question: "Can I schedule campaigns in advance?",
+          answer: "Yes, plan your campaigns with a shared calendar and automatic sending.",
+        },
+        {
+          question: "Can I track ROI?",
+          answer: "Yes, centralized analytics track ROI, engagement and conversions.",
+        },
+        {
+          question: "Is it suitable for agencies?",
+          answer: "Yes, agencies manage all client campaigns from a single workspace.",
+        },
+        {
+          question: "How long does setup take?",
+          answer: "Connect your channels in under 10 minutes and launch your first campaign.",
+        },
+      ],
+    },
+    cta: {
+      headline: "Grow with integrated marketing",
+      subheadline: "14-day free trial, no commitment",
+      ctaPrimary: {
+        text: "Free trial",
+        href: "/signup?module=marketing",
+      },
+      ctaSecondary: {
+        text: "Request a demo",
+        href: "/demo?module=marketing",
+      },
+    },
+  }
+
 }
 
 const modulePageContentTr: Partial<ModulePageContent> = {
@@ -1022,6 +1638,622 @@ const modulePageContentTr: Partial<ModulePageContent> = {
       ctaSecondary: { text: 'Demo talep edin', href: '/demo?module=employes' },
     },
   },
+  documents: {
+    hero: {
+      headline: "Belgeleriniz için Güvenli Dijital Kasa",
+      subheadline: "Uyumlu depolama, paylaşım ve arşivleme",
+      ctaPrimary: {
+        text: "Ücretsiz deneme",
+        href: "/signup?module=documents",
+      },
+      ctaSecondary: {
+        text: "Demoyu gör",
+        href: "/demo?module=documents",
+      },
+    },
+    problem: {
+      title: "Belgeler dağınık ve güvensiz mi?",
+      subtitle: "Merkezi bir çözümün olmamasının riskleri",
+      items: [
+        {
+          title: "Dağınık Belgeler",
+          description: "E-postalar, klasörler, USB bellekler - Belgeleri bulmak imkânsız",
+        },
+        {
+          title: "Güvenlik Riskleri",
+          description: "Şifrelenmemiş hassas veriler, kontrolsüz erişim",
+        },
+        {
+          title: "Karmaşık Paylaşım",
+          description: "E-postayla paylaşım, çoklu sürümler, karışıklık",
+        },
+        {
+          title: "Uyumsuzluk",
+          description: "İzlenebilirlik yok, denetim izi yok, GDPR ihlali",
+        },
+      ],
+    },
+    solution: {
+      title: "Güvenli Bir Dijital Kasa",
+      subtitle: "Tüm belgelerinizi merkezileştirin ve güvenceye alın",
+      description: "Leopardo; AES-256 şifreleme, ayrıntılı izinler ve GDPR uyumluluğu sunan bir dijital kasa sağlar.",
+      features: [
+        {
+          title: "Güvenli Depolama",
+          description: "AES-256 şifreleme, otomatik yedekleme, yedeklilik",
+        },
+        {
+          title: "Kontrollü Paylaşım",
+          description: "Ayrıntılı izinler, geçici bağlantılar, denetim izi",
+        },
+        {
+          title: "Otomatik Arşivleme",
+          description: "Otomatik saklama, güvenli imha, uyumluluk",
+        },
+        {
+          title: "GDPR Uyumluluğu",
+          description: "Yönetmeliklere uyum, sertifikalar, yasal destek",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "Gerçek Kullanım Örnekleri",
+      subtitle: "Müşterilerimiz dijital kasayı nasıl kullanıyor",
+      items: [
+        {
+          title: "Hukuk Bürosu: Müvekkil Dosyaları",
+          description: "Gizli müvekkil dosyalarının güvenli yönetimi",
+          industry: "Hukuk",
+          metrics: [
+            {
+              label: "Yönetilen dosya",
+              value: "1000+",
+            },
+            {
+              label: "Kazanılan süre",
+              value: "20sa/ay",
+            },
+            {
+              label: "Uyumluluk",
+              value: "100%",
+            },
+          ],
+          link: "/case-studies/law-firm",
+        },
+        {
+          title: "İK: Çalışan Dosyaları",
+          description: "Gizli çalışan dosyalarının merkezileştirilmesi",
+          industry: "İK",
+          metrics: [
+            {
+              label: "Çalışan",
+              value: "500+",
+            },
+            {
+              label: "Güvenlik",
+              value: "AES-256",
+            },
+            {
+              label: "Erişim",
+              value: "Kontrollü",
+            },
+          ],
+          link: "/case-studies/hr-files",
+        },
+        {
+          title: "Finans: Muhasebe Belgeleri",
+          description: "Muhasebe belgelerinin güvenli arşivlenmesi",
+          industry: "Finans",
+          metrics: [
+            {
+              label: "Belge",
+              value: "10K+",
+            },
+            {
+              label: "Saklama",
+              value: "Otomatik",
+            },
+            {
+              label: "Denetim",
+              value: "Tam",
+            },
+          ],
+          link: "/case-studies/accounting",
+        },
+      ],
+    },
+    testimonials: {
+      title: "Müşteri Yorumları",
+      subtitle: "Müşterilerimiz dijital kasa hakkında ne diyor",
+      items: [
+        {
+          quote: "Sonunda gizli belgelerimiz için güvenli bir çözüm!",
+          author: "Av. Dubois",
+          role: "Avukat",
+          company: "Dubois & Ortakları Hukuk Bürosu",
+          avatar: "/avatars/dubois.svg",
+          rating: 5,
+        },
+        {
+          quote: "Garantili GDPR uyumu ve basit arayüz. Harika!",
+          author: "Isabelle Moreau",
+          role: "İK Sorumlusu",
+          company: "Moreau Grubu",
+          avatar: "/avatars/moreau.svg",
+          rating: 5,
+        },
+        {
+          quote: "Müşterilerimizle güvenli paylaşım. Çok profesyonel.",
+          author: "Thomas Lefevre",
+          role: "Finans Direktörü",
+          company: "Finance Solutions",
+          avatar: "/avatars/lefevre.svg",
+          rating: 5,
+        },
+        {
+          quote: "Mükemmel destek ve hızlı kurulum. Tavsiye ederim!",
+          author: "Claire Rousseau",
+          role: "Yönetici",
+          company: "Consulting Pro",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "Sıkça Sorulan Sorular",
+      subtitle: "Sorularınızın yanıtlarını bulun",
+      items: [
+        {
+          question: "Şifreleme düzeyi nedir?",
+          answer: "Maksimum güvenlik için sektör standardı olan AES-256 şifrelemesini kullanıyoruz.",
+        },
+        {
+          question: "Paylaşım nasıl çalışır?",
+          answer: "Belgeleri ayrıntılı izinlerle (okuma, düzenleme, silme) paylaşabilirsiniz. Bağlantılar geçici olabilir.",
+        },
+        {
+          question: "Depolama alanı ne kadar?",
+          answer: "Alan planınıza bağlıdır. Pilot: 100GB, Operations: 1TB, Enterprise: Sınırsız.",
+        },
+        {
+          question: "Arşivleme nasıl çalışır?",
+          answer: "Saklama kurallarını siz belirlersiniz. Belgeler ayarlarınıza göre otomatik arşivlenir veya silinir.",
+        },
+        {
+          question: "GDPR uyumluluğunu garanti edebilir misiniz?",
+          answer: "Evet, GDPR sertifikalıyız ve uyumunuzu sağlamak için yasal destek sunuyoruz.",
+        },
+        {
+          question: "Kurulum ne kadar sürer?",
+          answer: "Kurulum 5 dakikadan kısadır. Hemen belge yüklemeye başlayabilirsiniz.",
+        },
+      ],
+    },
+    cta: {
+      headline: "Belgelerinizi şimdi güvenceye alın",
+      subheadline: "14 gün ücretsiz deneme, taahhüt yok",
+      ctaPrimary: {
+        text: "Ücretsiz deneme",
+        href: "/signup?module=documents",
+      },
+      ctaSecondary: {
+        text: "Demo iste",
+        href: "/demo?module=documents",
+      },
+    },
+  },
+  comptabilite: {
+    hero: {
+      headline: "Garantili Uyumla Otomatik Maaş Bordrosu",
+      subheadline: "Doğru hesaplamalar, oluşturulan bordrolar, muhasebe dışa aktarımları",
+      ctaPrimary: {
+        text: "Ücretsiz deneme",
+        href: "/signup?module=comptabilite",
+      },
+      ctaSecondary: {
+        text: "Demoyu gör",
+        href: "/demo?module=comptabilite",
+      },
+    },
+    problem: {
+      title: "Manuel bordro = Hatalar ve zaman kaybı",
+      subtitle: "Geleneksel bordro yönetiminin zorlukları",
+      items: [
+        {
+          title: "Manuel Hesaplamalar",
+          description: "Hatalar, eksiklikler, karmaşık hesaplamalar, kayıp zaman",
+        },
+        {
+          title: "Karmaşık Uyumluluk",
+          description: "Değişen oranlar, yönetmelikler, zor güncellemeler",
+        },
+        {
+          title: "Muhasebe Dışa Aktarımları",
+          description: "Farklı biçimler, manuel entegrasyonlar, hatalar",
+        },
+        {
+          title: "Maaş Avansları",
+          description: "Manuel talepler, karmaşık hesaplamalar, unutulan kesintiler",
+        },
+      ],
+    },
+    solution: {
+      title: "Eksiksiz Otomatik Bordro",
+      subtitle: "Bordro yönetiminizin tam otomasyonu",
+      description: "Leopardo tüm bordro hesaplamalarını otomatikleştirir, bordroları oluşturur ve doğrudan muhasebenize aktarır.",
+      features: [
+        {
+          title: "Otomatik Hesaplama",
+          description: "Çoklu para birimi, otomatik primler, güncel oranlar",
+        },
+        {
+          title: "Oluşturulan Bordrolar",
+          description: "Otomatik PDF'ler, e-posta gönderimi, güvenli arşivleme",
+        },
+        {
+          title: "Muhasebe Dışa Aktarımları",
+          description: "Standart biçimler, doğrudan entegrasyon, hatasız",
+        },
+        {
+          title: "Otomatik Avanslar",
+          description: "Talepler, onay, otomatik kesinti",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "Gerçek Kullanım Örnekleri",
+      subtitle: "Müşterilerimiz bordroyu nasıl yönetiyor",
+      items: [
+        {
+          title: "KOBİ: 50 Çalışan",
+          description: "Büyüyen bir KOBİ için otomatik aylık bordro",
+          industry: "KOBİ",
+          metrics: [
+            {
+              label: "Kazanılan süre",
+              value: "8sa/ay",
+            },
+            {
+              label: "Hatalar",
+              value: "0",
+            },
+            {
+              label: "Memnuniyet",
+              value: "100%",
+            },
+          ],
+          link: "/case-studies/sme-payroll",
+        },
+        {
+          title: "Startup: Otomatik Avanslar",
+          description: "Bir startup için maaş avansı yönetimi",
+          industry: "Startup",
+          metrics: [
+            {
+              label: "Avans/ay",
+              value: "20+",
+            },
+            {
+              label: "İşlem",
+              value: "Otomatik",
+            },
+            {
+              label: "Hatalar",
+              value: "0",
+            },
+          ],
+          link: "/case-studies/startup-advances",
+        },
+        {
+          title: "Grup: Çoklu Kuruluş",
+          description: "Bir grup için çoklu kuruluş ve çoklu para birimi bordrosu",
+          industry: "Grup",
+          metrics: [
+            {
+              label: "Kuruluş",
+              value: "5",
+            },
+            {
+              label: "Para birimi",
+              value: "3",
+            },
+            {
+              label: "Çalışan",
+              value: "500+",
+            },
+          ],
+          link: "/case-studies/group-payroll",
+        },
+      ],
+    },
+    testimonials: {
+      title: "Müşteri Yorumları",
+      subtitle: "Müşterilerimiz otomatik bordro hakkında ne diyor",
+      items: [
+        {
+          quote: "2 yıldır sıfır hata. İnanılmaz!",
+          author: "Jean Martin",
+          role: "Muhasebeci",
+          company: "Finance Pro",
+          avatar: "/avatars/martin.svg",
+          rating: 5,
+        },
+        {
+          quote: "Excel'den 3 kat hızlı. Ayda 10 saat tasarruf ediyoruz!",
+          author: "Sophie Leclerc",
+          role: "İK Yöneticisi",
+          company: "Tech Solutions",
+          avatar: "/avatars/leclerc.svg",
+          rating: 5,
+        },
+        {
+          quote: "Doğrudan muhasebe dışa aktarımları. Manuel işlem yok!",
+          author: "Marc Dubois",
+          role: "Yeminli Mali Müşavir",
+          company: "Dubois & Ortakları",
+          avatar: "/avatars/dubois.svg",
+          rating: 5,
+        },
+        {
+          quote: "Garantili uyumluluk. Rahat uyuyoruz!",
+          author: "Nathalie Rousseau",
+          role: "Yönetici",
+          company: "Rousseau Grubu",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "Sıkça Sorulan Sorular",
+      subtitle: "Sorularınızın yanıtlarını bulun",
+      items: [
+        {
+          question: "Birden fazla para birimini destekliyor musunuz?",
+          answer: "Evet, otomatik dönüştürme ve güncel oranlarla 150'den fazla para birimini destekliyoruz.",
+        },
+        {
+          question: "Uyumluluk nasıl çalışır?",
+          answer: "Oranlarımız ve kurallarımız yerel yönetmeliklere göre otomatik güncellenir. Her zaman uyumlusunuz.",
+        },
+        {
+          question: "Muhasebe yazılımıma aktarım yapabilir misiniz?",
+          answer: "Evet, popüler muhasebe yazılımlarına (Sage, Ciel vb.) doğrudan aktarım yapıyoruz.",
+        },
+        {
+          question: "Avanslar nasıl çalışır?",
+          answer: "Çalışanlar uygulama üzerinden avans talep eder. Yöneticiler onaylar. Kesinti sonraki bordroda otomatik yapılır.",
+        },
+        {
+          question: "Kurulum ne kadar sürer?",
+          answer: "Kurulum 5 dakikadan kısadır. İlk bordronuzu hemen oluşturabilirsiniz.",
+        },
+        {
+          question: "Birden fazla kuruluşu yönetebilir misiniz?",
+          answer: "Evet, tek bir panelden farklı yapılandırmalara sahip birden fazla kuruluşu yönetebilirsiniz.",
+        },
+      ],
+    },
+    cta: {
+      headline: "Bordronuzu bugün otomatikleştirin",
+      subheadline: "14 gün ücretsiz deneme, taahhüt yok",
+      ctaPrimary: {
+        text: "Ücretsiz deneme",
+        href: "/signup?module=comptabilite",
+      },
+      ctaSecondary: {
+        text: "Demo iste",
+        href: "/demo?module=comptabilite",
+      },
+    },
+  },
+  marketing: {
+    hero: {
+      headline: "KOBİ'ler için Entegre Pazarlama Araçları",
+      subheadline: "E-posta, SMS, sosyal ağlar tek yerde",
+      ctaPrimary: {
+        text: "Ücretsiz deneme",
+        href: "/signup?module=marketing",
+      },
+      ctaSecondary: {
+        text: "Demoyu gör",
+        href: "/demo?module=marketing",
+      },
+    },
+    problem: {
+      title: "Dağınık ve pahalı pazarlama araçları mı?",
+      subtitle: "Parçalanmış pazarlama yönetiminin zorlukları",
+      items: [
+        {
+          title: "Çoklu Araçlar",
+          description: "E-posta, SMS, sosyal ağlar - her biri farklı bir araçta",
+        },
+        {
+          title: "Yüksek Maliyetler",
+          description: "Çoklu abonelikler, ayrı faturalar, kontrolsüz bütçe",
+        },
+        {
+          title: "Genel Bakış Yok",
+          description: "Kampanya performansını bir arada görmek imkânsız",
+        },
+        {
+          title: "Karmaşık Entegrasyon",
+          description: "İK verilerinizle bağlantı yok, manuel segmentasyon",
+        },
+      ],
+    },
+    solution: {
+      title: "Eksiksiz Entegre Pazarlama",
+      subtitle: "Tüm pazarlama araçlarınız tek yerde",
+      description: "Leopardo; İK platformunuza entegre e-posta, SMS, sosyal ağlar ve analitik sunar.",
+      features: [
+        {
+          title: "E-posta Pazarlama",
+          description: "Şablonlar, segmentasyon, otomasyon, A/B testi",
+        },
+        {
+          title: "SMS Pazarlama",
+          description: "Hedefli kampanyalar, takip, İK entegrasyonu",
+        },
+        {
+          title: "Sosyal Ağlar",
+          description: "Otomatik paylaşım, planlama, analitik",
+        },
+        {
+          title: "Merkezi Analitik",
+          description: "ROI, etkileşim, dönüşümler - hepsi tek yerde",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "Gerçek Kullanım Örnekleri",
+      subtitle: "Müşterilerimiz pazarlamayı nasıl kullanıyor",
+      items: [
+        {
+          title: "İşe Alım: Hedefli Kampanyalar",
+          description: "Hedefli ve otomatik işe alım kampanyaları",
+          industry: "İK",
+          metrics: [
+            {
+              label: "Başvuru",
+              value: "3x+",
+            },
+            {
+              label: "Aday başına maliyet",
+              value: "-40%",
+            },
+            {
+              label: "Yanıt oranı",
+              value: "35%",
+            },
+          ],
+          link: "/case-studies/recruitment",
+        },
+        {
+          title: "Bağlılık: Çalışan Bültenleri",
+          description: "Çalışanları bağlamak için iç bültenler",
+          industry: "Bağlılık",
+          metrics: [
+            {
+              label: "Açılma oranı",
+              value: "45%",
+            },
+            {
+              label: "Tıklamalar",
+              value: "15%",
+            },
+            {
+              label: "Memnuniyet",
+              value: "90%",
+            },
+          ],
+          link: "/case-studies/employee-engagement",
+        },
+        {
+          title: "Tanıtım: Müşteri Kampanyaları",
+          description: "Müşterilere yönelik tanıtım kampanyaları",
+          industry: "Pazarlama",
+          metrics: [
+            {
+              label: "Dönüşüm oranı",
+              value: "8%",
+            },
+            {
+              label: "ROI",
+              value: "300%",
+            },
+            {
+              label: "Kazanılan müşteri",
+              value: "50+",
+            },
+          ],
+          link: "/case-studies/customer-campaigns",
+        },
+      ],
+    },
+    testimonials: {
+      title: "Müşteri Yorumları",
+      subtitle: "Müşterilerimiz pazarlama hakkında ne diyor",
+      items: [
+        {
+          quote: "Daha etkili ve daha ucuz kampanyalar. Mükemmel!",
+          author: "Luc Moreau",
+          role: "Pazarlama Müdürü",
+          company: "Tech Marketing",
+          avatar: "/avatars/moreau.svg",
+          rating: 5,
+        },
+        {
+          quote: "%45 e-posta açılma oranı. İnanılmaz!",
+          author: "Céline Dupont",
+          role: "Pazarlama Lideri",
+          company: "Growth Co",
+          avatar: "/avatars/dupont.svg",
+          rating: 5,
+        },
+        {
+          quote: "Mükemmel İK entegrasyonu. Otomatik segmentasyon!",
+          author: "David Leclerc",
+          role: "Pazarlama Direktörü",
+          company: "Digital Solutions",
+          avatar: "/avatars/leclerc.svg",
+          rating: 5,
+        },
+        {
+          quote: "Kampanyalarımızda %300 ROI. Tavsiye ederim!",
+          author: "Valérie Rousseau",
+          role: "CMO",
+          company: "Rousseau Grubu",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "Sıkça Sorulan Sorular",
+      subtitle: "Sorularınızın yanıtlarını bulun",
+      items: [
+        {
+          question: "İK verilerine göre segmentasyon yapabilir misiniz?",
+          answer: "Evet, departman, konum, rol vb. ölçütlere göre otomatik segmentasyon yapabilirsiniz.",
+        },
+        {
+          question: "Hangi kanallar destekleniyor?",
+          answer: "E-posta, SMS ve sosyal ağlar (Facebook, Instagram, LinkedIn, X/Twitter).",
+        },
+        {
+          question: "Kampanyaları önceden planlayabilir miyim?",
+          answer: "Evet, ortak bir takvimle kampanyalarınızı planlayın ve otomatik gönderin.",
+        },
+        {
+          question: "ROI'yi takip edebilir miyim?",
+          answer: "Evet, merkezi analitik ROI, etkileşim ve dönüşümleri takip eder.",
+        },
+        {
+          question: "Ajanslar için uygun mu?",
+          answer: "Evet, ajanslar tüm müşteri kampanyalarını tek bir çalışma alanından yönetir.",
+        },
+        {
+          question: "Kurulum ne kadar sürer?",
+          answer: "Kanallarınızı 10 dakikadan kısa sürede bağlayın ve ilk kampanyanızı başlatın.",
+        },
+      ],
+    },
+    cta: {
+      headline: "Entegre pazarlamayla büyüyün",
+      subheadline: "14 gün ücretsiz deneme, taahhüt yok",
+      ctaPrimary: {
+        text: "Ücretsiz deneme",
+        href: "/signup?module=marketing",
+      },
+      ctaSecondary: {
+        text: "Demo iste",
+        href: "/demo?module=marketing",
+      },
+    },
+  }
+
 }
 
 const modulePageContentAr: Partial<ModulePageContent> = {
@@ -1167,6 +2399,622 @@ const modulePageContentAr: Partial<ModulePageContent> = {
       ctaSecondary: { text: 'اطلب عرضاً', href: '/demo?module=employes' },
     },
   },
+  documents: {
+    hero: {
+      headline: "خزانة رقمية آمنة لمستنداتك",
+      subheadline: "تخزين ومشاركة وأرشفة متوافقة",
+      ctaPrimary: {
+        text: "تجربة مجانية",
+        href: "/signup?module=documents",
+      },
+      ctaSecondary: {
+        text: "عرض العرض التوضيحي",
+        href: "/demo?module=documents",
+      },
+    },
+    problem: {
+      title: "مستندات مشتتة وغير آمنة؟",
+      subtitle: "مخاطر عدم وجود حل مركزي",
+      items: [
+        {
+          title: "مستندات مشتتة",
+          description: "رسائل بريد، مجلدات، أقراص USB - استحالة العثور على المستندات",
+        },
+        {
+          title: "مخاطر أمنية",
+          description: "بيانات حساسة غير مشفرة، وصول غير مراقب",
+        },
+        {
+          title: "مشاركة معقدة",
+          description: "المشاركة عبر البريد، إصدارات متعددة، ارتباك",
+        },
+        {
+          title: "عدم الامتثال",
+          description: "لا تتبّع، لا سجل تدقيق، انتهاك للائحة GDPR",
+        },
+      ],
+    },
+    solution: {
+      title: "خزانة رقمية آمنة",
+      subtitle: "مركزية وتأمين جميع مستنداتك",
+      description: "توفر Leopardo خزانة رقمية بتشفير AES-256 وصلاحيات دقيقة وامتثال للائحة GDPR.",
+      features: [
+        {
+          title: "تخزين آمن",
+          description: "تشفير AES-256، نسخ احتياطي تلقائي، تكرار",
+        },
+        {
+          title: "مشاركة محكومة",
+          description: "صلاحيات دقيقة، روابط مؤقتة، سجل تدقيق",
+        },
+        {
+          title: "أرشفة تلقائية",
+          description: "احتفاظ تلقائي، إتلاف آمن، امتثال",
+        },
+        {
+          title: "الامتثال للائحة GDPR",
+          description: "الالتزام باللوائح، شهادات، دعم قانوني",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "حالات استخدام حقيقية",
+      subtitle: "كيف يستخدم عملاؤنا الخزانة الرقمية",
+      items: [
+        {
+          title: "مكتب محاماة: ملفات العملاء",
+          description: "إدارة آمنة لملفات العملاء السرية",
+          industry: "قانوني",
+          metrics: [
+            {
+              label: "ملفات مُدارة",
+              value: "1000+",
+            },
+            {
+              label: "وقت موفر",
+              value: "20س/شهر",
+            },
+            {
+              label: "امتثال",
+              value: "100%",
+            },
+          ],
+          link: "/case-studies/law-firm",
+        },
+        {
+          title: "الموارد البشرية: ملفات الموظفين",
+          description: "مركزية ملفات الموظفين السرية",
+          industry: "موارد بشرية",
+          metrics: [
+            {
+              label: "موظفون",
+              value: "500+",
+            },
+            {
+              label: "الأمان",
+              value: "AES-256",
+            },
+            {
+              label: "الوصول",
+              value: "محكوم",
+            },
+          ],
+          link: "/case-studies/hr-files",
+        },
+        {
+          title: "المالية: مستندات محاسبية",
+          description: "أرشفة آمنة للمستندات المحاسبية",
+          industry: "مالية",
+          metrics: [
+            {
+              label: "مستندات",
+              value: "10K+",
+            },
+            {
+              label: "الاحتفاظ",
+              value: "تلقائي",
+            },
+            {
+              label: "التدقيق",
+              value: "كامل",
+            },
+          ],
+          link: "/case-studies/accounting",
+        },
+      ],
+    },
+    testimonials: {
+      title: "آراء العملاء",
+      subtitle: "ماذا يقول عملاؤنا عن الخزانة الرقمية",
+      items: [
+        {
+          quote: "أخيراً حل آمن لمستنداتنا السرية!",
+          author: "الأستاذ دوبوا",
+          role: "محامٍ",
+          company: "مكتب دوبوا وشركاه",
+          avatar: "/avatars/dubois.svg",
+          rating: 5,
+        },
+        {
+          quote: "امتثال مضمون للائحة GDPR وواجهة بسيطة. ممتاز!",
+          author: "إيزابيل مورو",
+          role: "مسؤولة موارد بشرية",
+          company: "مجموعة مورو",
+          avatar: "/avatars/moreau.svg",
+          rating: 5,
+        },
+        {
+          quote: "مشاركة آمنة مع عملائنا. احترافية عالية.",
+          author: "توماس لوفيفر",
+          role: "مدير مالي",
+          company: "حلول المالية",
+          avatar: "/avatars/lefevre.svg",
+          rating: 5,
+        },
+        {
+          quote: "دعم ممتاز وإعداد سريع. أنصح به!",
+          author: "كلير روسو",
+          role: "مديرة",
+          company: "برو للاستشارات",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "الأسئلة الشائعة",
+      subtitle: "اعثر على إجابات لأسئلتك",
+      items: [
+        {
+          question: "ما مستوى التشفير؟",
+          answer: "نستخدم تشفير AES-256، المعيار الصناعي لأقصى درجات الأمان.",
+        },
+        {
+          question: "كيف تعمل المشاركة؟",
+          answer: "يمكنك مشاركة المستندات بصلاحيات دقيقة (قراءة، تعديل، حذف). يمكن أن تكون الروابط مؤقتة.",
+        },
+        {
+          question: "كم مساحة التخزين؟",
+          answer: "تعتمد المساحة على باقتك. Pilot: 100GB، Operations: 1TB، Enterprise: غير محدود.",
+        },
+        {
+          question: "كيف تعمل الأرشفة؟",
+          answer: "تحدد قواعد الاحتفاظ. تُؤرشف المستندات أو تُحذف تلقائياً وفق إعداداتك.",
+        },
+        {
+          question: "هل تضمنون الامتثال للائحة GDPR؟",
+          answer: "نعم، نحن معتمدون وفق GDPR ونقدم دعماً قانونياً لضمان امتثالك.",
+        },
+        {
+          question: "كم يستغرق الإعداد؟",
+          answer: "يستغرق الإعداد أقل من 5 دقائق. يمكنك البدء برفع المستندات فوراً.",
+        },
+      ],
+    },
+    cta: {
+      headline: "أمّن مستنداتك الآن",
+      subheadline: "تجربة مجانية 14 يوماً دون التزام",
+      ctaPrimary: {
+        text: "تجربة مجانية",
+        href: "/signup?module=documents",
+      },
+      ctaSecondary: {
+        text: "اطلب عرضاً",
+        href: "/demo?module=documents",
+      },
+    },
+  },
+  comptabilite: {
+    hero: {
+      headline: "رواتب آلية مع امتثال مضمون",
+      subheadline: "حسابات دقيقة، قسائم رواتب مولّدة، تصديرات محاسبية",
+      ctaPrimary: {
+        text: "تجربة مجانية",
+        href: "/signup?module=comptabilite",
+      },
+      ctaSecondary: {
+        text: "عرض العرض التوضيحي",
+        href: "/demo?module=comptabilite",
+      },
+    },
+    problem: {
+      title: "الرواتب اليدوية = أخطاء ووقت ضائع",
+      subtitle: "تحديات إدارة الرواتب التقليدية",
+      items: [
+        {
+          title: "حسابات يدوية",
+          description: "أخطاء، سهو، حسابات معقدة، وقت ضائع",
+        },
+        {
+          title: "امتثال معقد",
+          description: "معدلات متغيرة، لوائح، تحديثات صعبة",
+        },
+        {
+          title: "تصديرات محاسبية",
+          description: "صيغ مختلفة، تكاملات يدوية، أخطاء",
+        },
+        {
+          title: "سلف الرواتب",
+          description: "طلبات يدوية، حسابات معقدة، خصومات منسية",
+        },
+      ],
+    },
+    solution: {
+      title: "رواتب آلية متكاملة",
+      subtitle: "أتمتة كاملة لإدارة رواتبك",
+      description: "تؤتمت Leopardo جميع حسابات الرواتب، وتولّد قسائم الدفع وتصدّر مباشرة إلى محاسبتك.",
+      features: [
+        {
+          title: "حساب تلقائي",
+          description: "تعدد العملات، اشتراكات تلقائية، معدلات محدثة",
+        },
+        {
+          title: "قسائم مولّدة",
+          description: "PDF تلقائية، إرسال بالبريد، أرشفة آمنة",
+        },
+        {
+          title: "تصديرات محاسبية",
+          description: "صيغ قياسية، تكامل مباشر، بلا أخطاء",
+        },
+        {
+          title: "سلف آلية",
+          description: "طلبات، موافقات، خصم تلقائي",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "حالات استخدام حقيقية",
+      subtitle: "كيف يدير عملاؤنا رواتبهم",
+      items: [
+        {
+          title: "شركة صغيرة: 50 موظفاً",
+          description: "رواتب شهرية آلية لشركة صغيرة في نمو",
+          industry: "شركة صغيرة",
+          metrics: [
+            {
+              label: "وقت موفر",
+              value: "8س/شهر",
+            },
+            {
+              label: "أخطاء",
+              value: "0",
+            },
+            {
+              label: "رضا",
+              value: "100%",
+            },
+          ],
+          link: "/case-studies/sme-payroll",
+        },
+        {
+          title: "ناشئة: سلف آلية",
+          description: "إدارة سلف الرواتب لشركة ناشئة",
+          industry: "ناشئة",
+          metrics: [
+            {
+              label: "سلف/شهر",
+              value: "20+",
+            },
+            {
+              label: "المعالجة",
+              value: "تلقائية",
+            },
+            {
+              label: "أخطاء",
+              value: "0",
+            },
+          ],
+          link: "/case-studies/startup-advances",
+        },
+        {
+          title: "مجموعة: كيانات متعددة",
+          description: "رواتب متعددة الكيانات والعملات لمجموعة",
+          industry: "مجموعة",
+          metrics: [
+            {
+              label: "كيانات",
+              value: "5",
+            },
+            {
+              label: "عملات",
+              value: "3",
+            },
+            {
+              label: "موظفون",
+              value: "500+",
+            },
+          ],
+          link: "/case-studies/group-payroll",
+        },
+      ],
+    },
+    testimonials: {
+      title: "آراء العملاء",
+      subtitle: "ماذا يقول عملاؤنا عن الرواتب الآلية",
+      items: [
+        {
+          quote: "صفر أخطاء منذ عامين. مذهل!",
+          author: "جان مارتان",
+          role: "محاسب",
+          company: "المالية برو",
+          avatar: "/avatars/martin.svg",
+          rating: 5,
+        },
+        {
+          quote: "أسرع 3 مرات من Excel. نوفر 10 ساعات شهرياً!",
+          author: "صوفي لوكلير",
+          role: "مديرة موارد بشرية",
+          company: "حلول التقنية",
+          avatar: "/avatars/leclerc.svg",
+          rating: 5,
+        },
+        {
+          quote: "تصديرات محاسبية مباشرة. لا معالجة يدوية!",
+          author: "مارك دوبوا",
+          role: "خبير محاسبة",
+          company: "دوبوا وشركاه",
+          avatar: "/avatars/dubois.svg",
+          rating: 5,
+        },
+        {
+          quote: "امتثال مضمون. ننام باطمئنان!",
+          author: "ناتالي روسو",
+          role: "مديرة",
+          company: "مجموعة روسو",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "الأسئلة الشائعة",
+      subtitle: "اعثر على إجابات لأسئلتك",
+      items: [
+        {
+          question: "هل تدعمون عملات متعددة؟",
+          answer: "نعم، ندعم أكثر من 150 عملة مع تحويل تلقائي ومعدلات محدثة.",
+        },
+        {
+          question: "كيف يعمل الامتثال؟",
+          answer: "يتم تحديث معدلاتنا وقواعدنا تلقائياً وفق اللوائح المحلية. أنت متوافق دائماً.",
+        },
+        {
+          question: "هل يمكنكم التصدير إلى برنامج المحاسبة الخاص بي؟",
+          answer: "نعم، نصدّر مباشرة إلى برامج المحاسبة الشهيرة (Sage، Ciel، وغيرها).",
+        },
+        {
+          question: "كيف تعمل السلف؟",
+          answer: "يطلب الموظفون سلفة عبر التطبيق. يوافق المديرون. يكون الخصم تلقائياً في قسيمة الرواتب التالية.",
+        },
+        {
+          question: "كم يستغرق الإعداد؟",
+          answer: "يستغرق الإعداد أقل من 5 دقائق. يمكنك توليد أول رواتبك فوراً.",
+        },
+        {
+          question: "هل يمكنكم إدارة كيانات متعددة؟",
+          answer: "نعم، يمكنك إدارة كيانات متعددة بإعدادات مختلفة من لوحة تحكم واحدة.",
+        },
+      ],
+    },
+    cta: {
+      headline: "أتمت رواتبك اليوم",
+      subheadline: "تجربة مجانية 14 يوماً دون التزام",
+      ctaPrimary: {
+        text: "تجربة مجانية",
+        href: "/signup?module=comptabilite",
+      },
+      ctaSecondary: {
+        text: "اطلب عرضاً",
+        href: "/demo?module=comptabilite",
+      },
+    },
+  },
+  marketing: {
+    hero: {
+      headline: "أدوات تسويق متكاملة للشركات الصغيرة",
+      subheadline: "البريد، الرسائل القصيرة، شبكات التواصل في مكان واحد",
+      ctaPrimary: {
+        text: "تجربة مجانية",
+        href: "/signup?module=marketing",
+      },
+      ctaSecondary: {
+        text: "عرض العرض التوضيحي",
+        href: "/demo?module=marketing",
+      },
+    },
+    problem: {
+      title: "أدوات تسويق مشتتة ومكلفة؟",
+      subtitle: "تحديات إدارة التسويق المجزأة",
+      items: [
+        {
+          title: "أدوات متعددة",
+          description: "البريد، الرسائل القصيرة، شبكات التواصل - كلٌّ في أداة مختلفة",
+        },
+        {
+          title: "تكاليف مرتفعة",
+          description: "اشتراكات متعددة، فواتير منفصلة، ميزانية غير مضبوطة",
+        },
+        {
+          title: "لا نظرة شاملة",
+          description: "استحالة رؤية الأداء الكلي للحملات",
+        },
+        {
+          title: "تكامل معقد",
+          description: "لا ربط مع بيانات الموارد البشرية، تقسيم يدوي",
+        },
+      ],
+    },
+    solution: {
+      title: "تسويق متكامل شامل",
+      subtitle: "جميع أدواتك التسويقية في مكان واحد",
+      description: "توفر Leopardo البريد الإلكتروني والرسائل القصيرة وشبكات التواصل والتحليلات مدمجة مع منصة الموارد البشرية.",
+      features: [
+        {
+          title: "التسويق بالبريد",
+          description: "قوالب، تقسيم، أتمتة، اختبار A/B",
+        },
+        {
+          title: "التسويق بالرسائل القصيرة",
+          description: "حملات مستهدفة، تتبّع، تكامل مع الموارد البشرية",
+        },
+        {
+          title: "شبكات التواصل",
+          description: "مشاركة تلقائية، جدولة، تحليلات",
+        },
+        {
+          title: "تحليلات مركزية",
+          description: "العائد، التفاعل، التحويلات - كل ذلك في مكان واحد",
+        },
+      ],
+    },
+    caseStudies: {
+      title: "حالات استخدام حقيقية",
+      subtitle: "كيف يستخدم عملاؤنا التسويق",
+      items: [
+        {
+          title: "التوظيف: حملات مستهدفة",
+          description: "حملات توظيف مستهدفة ومؤتمتة",
+          industry: "موارد بشرية",
+          metrics: [
+            {
+              label: "طلبات",
+              value: "3x+",
+            },
+            {
+              label: "تكلفة المرشح",
+              value: "-40%",
+            },
+            {
+              label: "معدل الاستجابة",
+              value: "35%",
+            },
+          ],
+          link: "/case-studies/recruitment",
+        },
+        {
+          title: "التفاعل: نشرات الموظفين",
+          description: "نشرات داخلية لتفاعل الموظفين",
+          industry: "تفاعل",
+          metrics: [
+            {
+              label: "معدل الفتح",
+              value: "45%",
+            },
+            {
+              label: "نقرات",
+              value: "15%",
+            },
+            {
+              label: "رضا",
+              value: "90%",
+            },
+          ],
+          link: "/case-studies/employee-engagement",
+        },
+        {
+          title: "الترويج: حملات العملاء",
+          description: "حملات ترويجية موجهة للعملاء",
+          industry: "تسويق",
+          metrics: [
+            {
+              label: "معدل التحويل",
+              value: "8%",
+            },
+            {
+              label: "العائد",
+              value: "300%",
+            },
+            {
+              label: "عملاء مكتسبون",
+              value: "50+",
+            },
+          ],
+          link: "/case-studies/customer-campaigns",
+        },
+      ],
+    },
+    testimonials: {
+      title: "آراء العملاء",
+      subtitle: "ماذا يقول عملاؤنا عن التسويق",
+      items: [
+        {
+          quote: "حملات أكثر فعالية وأقل تكلفة. ممتاز!",
+          author: "لوك مورو",
+          role: "مدير تسويق",
+          company: "تسويق التقنية",
+          avatar: "/avatars/moreau.svg",
+          rating: 5,
+        },
+        {
+          quote: "معدل فتح البريد 45%. مذهل!",
+          author: "سيلين دوبون",
+          role: "مسؤولة تسويق",
+          company: "غروث كو",
+          avatar: "/avatars/dupont.svg",
+          rating: 5,
+        },
+        {
+          quote: "تكامل مثالي مع الموارد البشرية. تقسيم تلقائي!",
+          author: "دافيد لوكلير",
+          role: "مدير تسويق",
+          company: "حلول رقمية",
+          avatar: "/avatars/leclerc.svg",
+          rating: 5,
+        },
+        {
+          quote: "عائد 300% على حملاتنا. أنصح به!",
+          author: "فاليري روسو",
+          role: "مديرة تسويق أولى",
+          company: "مجموعة روسو",
+          avatar: "/avatars/rousseau.svg",
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: "الأسئلة الشائعة",
+      subtitle: "اعثر على إجابات لأسئلتك",
+      items: [
+        {
+          question: "هل يمكنكم التقسيم حسب بيانات الموارد البشرية؟",
+          answer: "نعم، يمكنك التقسيم تلقائياً حسب القسم والموقع والدور وغيرها.",
+        },
+        {
+          question: "ما القنوات المدعومة؟",
+          answer: "البريد الإلكتروني والرسائل القصيرة وشبكات التواصل (فيسبوك، إنستغرام، لينكدإن، إكس/تويتر).",
+        },
+        {
+          question: "هل يمكنني جدولة الحملات مسبقاً؟",
+          answer: "نعم، خطط حملاتك بتقويم مشترك وأرسل تلقائياً.",
+        },
+        {
+          question: "هل يمكنني تتبع العائد؟",
+          answer: "نعم، تتبع التحليلات المركزية العائد والتفاعل والتحويلات.",
+        },
+        {
+          question: "هل تناسب الوكالات؟",
+          answer: "نعم، تدير الوكالات جميع حملات العملاء من مساحة عمل واحدة.",
+        },
+        {
+          question: "كم يستغرق الإعداد؟",
+          answer: "اربط قنواتك في أقل من 10 دقائق وأطلق أول حملة.",
+        },
+      ],
+    },
+    cta: {
+      headline: "انمُ بتسويق متكامل",
+      subheadline: "تجربة مجانية 14 يوماً دون التزام",
+      ctaPrimary: {
+        text: "تجربة مجانية",
+        href: "/signup?module=marketing",
+      },
+      ctaSecondary: {
+        text: "اطلب عرضاً",
+        href: "/demo?module=marketing",
+      },
+    },
+  }
+
 }
 
 /**
