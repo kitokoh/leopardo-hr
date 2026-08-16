@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:leopardo_manager/features/attendance/data/attendance_repository.dart';
@@ -105,7 +106,13 @@ class AttendanceNotifier extends StateNotifier<AttendanceState> {
         final summary = await _repository.getMyDailySummary();
         state = state.copyWith(summary: summary);
       } catch (e) {
-        // Ignore summary loading errors, non-blocking
+        // #4339 : résumé non bloquant mais tracé + état dégradé (parité avec
+        // le chemin principal _loadData) — un échec muet cachait un backend
+        // injoignable derrière un résumé à zéro.
+        debugPrint('AttendanceProvider: summary load failed: $e');
+        state = state.copyWith(
+          context: {...?state.context, 'load_degraded': true},
+        );
       }
     }
   }

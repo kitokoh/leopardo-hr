@@ -2,6 +2,7 @@
 
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { motion } from 'framer-motion';
@@ -247,7 +248,21 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; badge
 export default function MobilePage() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { locale: lang, direction, setLocale } = useVitrineLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   useScrollReveal();
+
+  // #4468 : même mécanique que le Navbar (Navbar.tsx handleLocaleChange) —
+  // la locale choisie DOIT être reflétée dans l'URL (?lang=) pour survivre
+  // au partage/rechargement et alimenter le SSR/metadata (header x-vitrine-lang).
+  const handleLocaleChange = (nextLocale: Lang) => {
+    setLocale(nextLocale);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('lang', nextLocale);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
 
   const t = copy[lang];
   const isRtl = direction === 'rtl';
@@ -267,7 +282,7 @@ export default function MobilePage() {
             {langs.map((l) => (
               <button
                 key={l}
-                onClick={() => setLocale(l)}
+                onClick={() => handleLocaleChange(l)}
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
                   lang === l
                     ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
