@@ -23,11 +23,11 @@ class QueueJobsFailedHandlerTest extends TestCase
 
     public function test_failed_handlers_log_without_rethrowing(): void
     {
-        // #4382/#4439 : l'API fluide du spy Mockery n'est pas typée (withArgs/
-        // atLeast/times sur LegacyMockInterface) — on pose l'expectation typée
-        // via Log::shouldReceive() (MockInterface) avant l'exécution.
+        // #4382/#4439 : l'API fluide du spy Mockery (withArgs/atLeast/times sur
+        // LegacyMockInterface) n'est pas typée pour Larastan. Expectation typée
+        // posée AVANT exécution via Log::shouldReceive() (MockInterface) —
+        // Mockery vérifie atLeast()->times(3) au teardown.
         Log::shouldReceive('error')->atLeast()->times(3);
-        $log = Log::spy();
 
         $jobs = [
             new ProcessBulkPaymentJob(1, 1, null),
@@ -40,7 +40,6 @@ class QueueJobsFailedHandlerTest extends TestCase
             $job->failed(new RuntimeException('retries exhausted'));
         }
 
-        $log->shouldHaveReceived('error');
     }
 
     public function test_generate_bank_export_failed_marks_export_failed(): void
