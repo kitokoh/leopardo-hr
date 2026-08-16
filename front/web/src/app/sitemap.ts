@@ -22,12 +22,20 @@ function localizedAlternates(path: string) {
   };
 }
 
-function page(path: string, changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'], priority: number): MetadataRoute.Sitemap[number] {
+function page(
+  path: string,
+  changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'],
+  priority: number,
+  withAlternates = true,
+): MetadataRoute.Sitemap[number] {
   return {
     url: `${siteUrl}${path === '/' ? '/' : path}`,
     changeFrequency,
     priority,
-    alternates: localizedAlternates(path),
+    // #4401 : /privacy et /terms sont 100 % FR (aucune localisation,
+    // middleware sans x-vitrine-lang) — des variantes ?lang= fantômes
+    // serviraient du HTML FR sous des URLs censées être en/tr/ar.
+    ...(withAlternates ? { alternates: localizedAlternates(path) } : {}),
   };
 }
 
@@ -59,14 +67,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/branding', 'monthly', 0.5),
     page('/careers', 'monthly', 0.5),
     page('/mobile', 'monthly', 0.6),
-    page('/privacy', 'yearly', 0.4),
-    page('/terms', 'yearly', 0.4),
+    page('/privacy', 'yearly', 0.4, false),
+    page('/terms', 'yearly', 0.4, false),
     page('/guides/rh-startup', 'monthly', 0.7),
     page('/guides/checklist-paie', 'monthly', 0.7),
     page('/guides/planning-employes', 'monthly', 0.7),
     // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
     page('/blog', 'weekly', 0.7),
-    page('/offline', 'monthly', 0.4),
   ];
 
   // #3807 : /signup et /checkout sont noindex (pageMetadata.signup/checkout.robots
