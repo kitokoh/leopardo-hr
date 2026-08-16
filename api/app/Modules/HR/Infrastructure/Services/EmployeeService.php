@@ -55,7 +55,33 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
-        $employee = Employee::query()->create($payload);
+        // Issue #4496 : password_hash n'est plus mass-assignable (retiré du
+        // $fillable). Issue #4307 : role/manager_role/status/company_id/salary_base
+        // non mass-assignables (durcissement #3677). Les passer dans create()
+        // les ferait silencieusement perdre (role null → TypeError
+        // EmployeeResource, company_id null → hors tenant, salary_base → 0).
+        // On pose explicitement après création (pattern #3677/#4151) : l'acteur
+        // est déjà autorisé (policy + FormRequest).
+        $passwordHash = (string) Arr::pull($payload, 'password_hash');
+
+        $employee = Employee::query()->create(Arr::except($payload, [
+            'role', 'manager_role', 'status', 'company_id', 'salary_base',
+        ]));
+        $employee->forceFill([
+            'company_id' => $companyId,
+            'role' => $payload['role'],
+            'manager_role' => $payload['manager_role'] ?? null,
+            'status' => $payload['status'],
+            'salary_base' => $payload['salary_base'] ?? 0.0,
+        ])->save();
+
+        if ($passwordHash !== '') {
+            $employee->forceFill(['password_hash' => $passwordHash])->save();
+        }
+
+        if ($passwordHash !== '') {
+            $employee->forceFill(['password_hash' => $passwordHash])->save();
+        }
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
@@ -130,7 +156,15 @@ class EmployeeService
         $previousManagerRole = $employee->manager_role;
         $roleChangeRequested = array_key_exists('manager_role', $payload) || array_key_exists('role', $payload);
 
-        $employee->fill($payload);
+        // Issue #4307 : role/manager_role/status/salary_base non
+        // mass-assignables (#3677) — fill() les écarterait silencieusement
+        // (revoke rh jamais persisté, PATCH salary_base mobile jamais appliqué).
+        $sensitiveKeys = ['role', 'manager_role', 'status', 'salary_base'];
+        $sensitive = Arr::only($payload, $sensitiveKeys);
+        $employee->fill(Arr::except($payload, $sensitiveKeys));
+        foreach ($sensitive as $key => $value) {
+            $employee->{$key} = $value;
+        }
         $employee->save();
 
         if ($employee->company_id !== null) {
