@@ -70,6 +70,12 @@
         <form class="mt-4 space-y-4" @submit.prevent="saveWebhook">
           <div v-if="!editingWebhook">
             <label class="block text-sm font-medium text-gray-700">Societe</label>
+            <div v-if="companiesError" class="mb-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-800" role="alert">
+              Impossible de charger la liste des societes.
+              <button type="button" class="ml-1 font-semibold text-indigo-600 hover:text-indigo-800" @click="fetchCompanies">
+                Reessayer
+              </button>
+            </div>
             <select v-model="form.company_id" required class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
               <option :value="null" disabled>Selectionner une societe...</option>
               <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
@@ -133,6 +139,7 @@ const saving = ref(false)
 const error = ref('')
 const webhooks = ref([])
 const companies = ref([])
+const companiesError = ref(false)
 const showCreateModal = ref(false)
 const editingWebhook = ref(null)
 
@@ -170,8 +177,13 @@ async function fetchCompanies() {
   try {
     const res = await api.get('/platform/companies')
     companies.value = res.data.data || res.data || []
-  } catch {
-    companies.value = []
+    companiesError.value = false
+  } catch (err) {
+    // #4333 : ne pas vider la liste au catch — le select « entreprise cible »
+    // devenait silencieusement vide (indistinguable d'un vide réel). État
+    // d'erreur visible + retry ; l'intercepteur global toast déjà.
+    companiesError.value = true
+    console.warn('Failed to load target companies', err)
   }
 }
 
