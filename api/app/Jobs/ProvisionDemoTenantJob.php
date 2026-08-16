@@ -28,6 +28,17 @@ class ProvisionDemoTenantJob implements ShouldQueue
         public readonly ?string $provisioningToken = null,
     ) {}
 
+    // Issue #3600 : provisioning trial = opération lourde et critique — retries
+    // espacés (30s, 1min, 2min, 5min) au lieu d'une rafale par défaut, et
+    // échec final visible via failed().
+    public int $tries = 5;
+
+    /** @return array<int, int> */
+    public function backoff(): array
+    {
+        return [30, 60, 120, 300];
+    }
+
     public function handle(ProvisionGuidedTrial $provisioner): void
     {
         Log::info('ProvisionDemoTenantJob started', ['company_name' => $this->companyName, 'email' => $this->email, 'country' => $this->country]);
@@ -70,6 +81,35 @@ class ProvisionDemoTenantJob implements ShouldQueue
                         'updated_at' => now(),
                     ]);
             }
+
+            // Issue #3600 : rethrow — le job doit être re-tenté par la queue
+            // (tries=5, backoff 30/60/120/300) au lieu de « réussir » en
+            // silence. Le statut 'failed' ci-dessus reste visible pendant les
+            // retries ; un succès ultérieur le repassera à 'ready'.
+            throw $e;
+        }
+    }
+
+    /**
+     * Issue #3600 : épuisement des retries — alerte visible en logs
+     * (les jobs « réussis » en silence étaient invisibles).
+     */
+    public function failed(\Throwable $e): void
+    {
+        Log::error('ProvisionDemoTenantJob failed permanently after retries', [
+            'email' => $this->email,
+            'company_name' => $this->companyName,
+            'error' => $e->getMessage(),
+        ]);
+
+        if ($this->provisioningToken !== null) {
+            DB::table('trial_provisionings')
+                ->where('provisioning_token', $this->provisioningToken)
+                ->update([
+                    'status' => 'failed',
+                    'error' => mb_substr($e->getMessage(), 0, 500),
+                    'updated_at' => now(),
+                ]);
         }
     }
 
