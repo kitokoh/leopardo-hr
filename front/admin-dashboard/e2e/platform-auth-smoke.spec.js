@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 
+// #4415 : creds de test via env — jamais de littéral prod dans le dépôt (politique #1697).
+const E2E_ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'e2e-fixture-password'
+
 // Mock helpers — les GET du client portent un cache-buster `_t=<ts>` :
 // les patterns doivent tolérer la query string (sinon la requête part en
 // vrai réseau → 401 sur token factice → logout global → spec cassée).
@@ -83,7 +86,7 @@ test('platform administrator can sign in and reach the admin dashboard', async (
 
   await page.goto('/login')
   await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
-  await page.locator('#password').fill('password123')
+  await page.locator('#password').fill(E2E_ADMIN_PASSWORD)
   await page.getByRole('button', { name: /^Se connecter$/i }).click()
 
   await expect(page).toHaveURL(/\/$/)

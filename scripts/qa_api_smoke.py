@@ -7,6 +7,7 @@ payroll -> tasks -> schedules -> notifications -> platform admin.
 Usage: python3 scripts/qa_api_smoke.py [base_url]
 """
 import json
+import os
 import sys
 import urllib.request
 import urllib.error
@@ -68,9 +69,11 @@ def section(title):
     print(f"\n=== {title} ===")
 
 
-tok_manager = login("ahmed.benali@techcorp-algerie.dz", "password123")
-tok_rh = login("fatima.meziane@techcorp-algerie.dz", "password123")
-tok_employee = login("karim.aouad@techcorp-algerie.dz", "password123")
+# #4416 : creds via env (politique #1697) — pas de mot de passe en clair.
+PASSWD = os.environ.get("LEOPARDO_DEMO_PASSWORD", "")
+tok_manager = login(os.environ.get("LEOPARDO_DEMO_MANAGER_EMAIL", "ahmed.benali@techcorp-algerie.dz"), PASSWD)
+tok_rh = login(os.environ.get("LEOPARDO_DEMO_RH_EMAIL", "fatima.meziane@techcorp-algerie.dz"), PASSWD)
+tok_employee = login(os.environ.get("LEOPARDO_DEMO_EMPLOYEE_EMAIL", "karim.aouad@techcorp-algerie.dz"), PASSWD)
 
 section("AUTH / ME")
 if tok_manager:
@@ -175,7 +178,7 @@ if tok_employee:
         check(f"GET {ep} {st}", st == 200, f"{st} {str(d)[:200]}")
 
 section("PLATFORM ADMIN (super-admin)")
-st, d = call("POST", "/platform/auth/login", body={"email": "admin@leopardo-rh.com", "password": "password123"})
+st, d = call("POST", "/platform/auth/login", body={"email": os.environ.get("LEOPARDO_DEMO_ADMIN_EMAIL", "admin@leopardo-rh.com"), "password": PASSWD})
 tok_sa = None
 if isinstance(d, dict):
     data = d.get("data", d)
