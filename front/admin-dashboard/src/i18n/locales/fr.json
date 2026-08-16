@@ -846,11 +846,11 @@
       "exportError": "Erreur lors de l'export",
       "updated": "Utilisateur mis a jour",
       "deleted": "Utilisateur supprime",
-      "bulkDone": "Mise à jour effectuée"
+      "bulkDone": ":count utilisateur(s) mis à jour"
     },
     "page": {
       "title": "Gestion des Utilisateurs",
-      "summary": ":count utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui"
+      "summary": ":count utilisateur(s)"
     },
     "actions": {
       "new": "Nouveau",

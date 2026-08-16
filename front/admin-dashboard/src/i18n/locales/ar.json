@@ -370,7 +370,7 @@
       "title": "حذف هذا المستخدم؟"
     },
     "page": {
-      "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم",
+      "summary": ":count مستخدم",
       "title": "إدارة المستخدمين"
     },
     "toast": {
@@ -388,7 +388,7 @@
       "exportError": "فشل التصدير",
       "exportDone": "تم التصدير",
       "deleteError": "خطأ في حذف المستخدم",
-      "bulkDone": "تم التحديث"
+      "bulkDone": "تم تحديث :count مستخدم"
     },
     "edit": {
       "title": "تعديل المستخدم",
