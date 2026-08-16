@@ -149,9 +149,9 @@ return Application::configure(basePath: dirname(__DIR__))
             return new JsonResponse([
                 'error' => 'VALIDATION_ERROR',
                 'message' => 'VALIDATION_ERROR',
-                'localized_message' => 'Le fichier envoyé dépasse la taille maximale autorisée.',
+                'localized_message' => __('errors.FILE_TOO_LARGE'),
                 'errors' => [
-                    'file' => ['Le fichier dépasse la taille maximale autorisée.'],
+                    'file' => [__('errors.FILE_TOO_LARGE')],
                 ],
             ], 422);
         });
