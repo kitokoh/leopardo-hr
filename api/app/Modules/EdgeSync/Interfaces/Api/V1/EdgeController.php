@@ -93,9 +93,34 @@ class EdgeController extends Controller
      */
     public function health(): JsonResponse
     {
+        // #4411 : probe DB réelle (SELECT 1 sur SQLite) — uniquement dans le
+        // runtime Edge (DB_CONNECTION=sqlite). Avant : réponse 200 « ok »
+        // même avec un schéma jamais provisionné (migrate --path inexistant)
+        // → nœuds frais verts en surface, sync morte en silence. Hors Edge
+        // (cloud/tests, PostgreSQL) le probe est inactif : pas de fichier
+        // SQLite créé par effet de bord et contrat existant inchangé.
+         = true;
+        if (config('database.default') === 'sqlite') {
+            try {
+                 = DB::connection('sqlite')->selectOne('SELECT 1 AS ok') !== null;
+            } catch (\Throwable) {
+                 = false;
+            }
+        }
+
+        if (! ) {
+            return response()->json([
+                'edge' => true,
+                'status' => 'degraded',
+                'database' => 'unavailable',
+                'time' => Carbon::now()->toIso8601String(),
+            ], 503);
+        }
+
         return response()->json([
             'edge' => true,
             'status' => 'ok',
+            'database' => 'ok',
             'time' => Carbon::now()->toIso8601String(),
         ]);
     }
