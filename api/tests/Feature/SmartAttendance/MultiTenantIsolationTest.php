@@ -74,27 +74,31 @@ class MultiTenantIsolationTest extends TestCase
         ]);
 
         $this->employeeA = Employee::query()->create([
-            'company_id'    => $this->companyA->id,
             'schedule_id'   => $scheduleA->id,
             'email'         => 'emp@company-a.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'employee',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->employeeA->forceFill([
+            'company_id'    => $this->companyA->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         $this->managerA = Employee::query()->create([
-            'company_id'    => $this->companyA->id,
             'schedule_id'   => $scheduleA->id,
             'email'         => 'manager@company-a.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->managerA->forceFill([
+            'company_id'    => $this->companyA->id,
+            'role'          => 'manager',
+            'manager_role'  => 'rh',
+            'status'        => 'active',
+        ])->save();
 
         // ── Company B ─────────────────────────────────────────────────────
         $this->companyB = Company::query()->create([
@@ -133,27 +137,31 @@ class MultiTenantIsolationTest extends TestCase
         ]);
 
         $this->employeeB = Employee::query()->create([
-            'company_id'    => $this->companyB->id,
             'schedule_id'   => $scheduleB->id,
             'email'         => 'emp@company-b.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'employee',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->employeeB->forceFill([
+            'company_id'    => $this->companyB->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         $this->managerB = Employee::query()->create([
-            'company_id'    => $this->companyB->id,
             'schedule_id'   => $scheduleB->id,
             'email'         => 'manager@company-b.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->managerB->forceFill([
+            'company_id'    => $this->companyB->id,
+            'role'          => 'manager',
+            'manager_role'  => 'rh',
+            'status'        => 'active',
+        ])->save();
     }
 
 
