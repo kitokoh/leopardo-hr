@@ -88,7 +88,13 @@ Route::get('/activate/{token}', [InvitationController::class, 'showActivationFor
 Route::post('/activate/{token}', [InvitationController::class, 'activate'])
     ->middleware('throttle:web-activate')
     ->name('invitation.activate.store');
-Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])->name('kiosk.show');
+// #4607 : le GET de la page kiosk (device_code = seule credential de la borne)
+// partage le bucket kiosk-punch (device_code + IP) — sans throttle, le
+// device_code était énumérable en force brute (lookup DB + écriture session
+// à chaque hit).
+Route::get('/kiosk/{deviceCode}', [KioskController::class, 'show'])
+    ->middleware('throttle:kiosk-punch')
+    ->name('kiosk.show');
 // PA2-API-005: public, device-code based, unauthenticated-by-Sanctum kiosk
 // punch endpoint gets its own 'kiosk-punch' throttle bucket (keyed by device
 // code + IP) to guard against brute force / abuse.
