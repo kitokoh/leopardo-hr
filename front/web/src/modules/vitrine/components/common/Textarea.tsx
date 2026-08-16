@@ -25,8 +25,9 @@ export function Textarea({
   onChange,
   ...props
 }: TextareaProps) {
-  const fallbackId = useId();
-  const textareaId = id || `textarea-${fallbackId}`;
+  // #4326 : id stable entre SSR et client (Math.random() → mismatch d'hydratation).
+  const generatedId = useId();
+  const textareaId = id || generatedId;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
