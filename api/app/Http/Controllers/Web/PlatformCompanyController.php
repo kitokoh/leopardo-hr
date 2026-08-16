@@ -128,7 +128,7 @@ class PlatformCompanyController extends Controller
         $validated['country'] = strtoupper(trim($validated['country']));
         $countryDefaults = CountryDefaults::find($validated['country']);
         if ($countryDefaults === null) {
-            $message = 'Le pays est invalide ou non supporté ('.implode(', ', array_column(CountryDefaults::all(), 'country')).').';
+            $message = __('errors.COUNTRY_NOT_SUPPORTED', ['countries' => implode(', ', array_column(CountryDefaults::all(), 'country'))]);
             if ($request->expectsJson()) {
                 return new JsonResponse([
                     'message' => $message,
@@ -152,7 +152,7 @@ class PlatformCompanyController extends Controller
         if (! $validated['plan_id']) {
             if ($request->expectsJson()) {
                 return new JsonResponse([
-                    'message' => 'Aucun plan actif disponible pour creer cette societe.',
+                    'message' => __('errors.NO_ACTIVE_PLAN_FOR_COMPANY'),
                     'errors' => [
                         'plan_id' => ['Aucun plan actif disponible pour creer cette societe.'],
                     ],
@@ -167,7 +167,7 @@ class PlatformCompanyController extends Controller
         if (DB::getDriverName() === 'pgsql' && DB::table('public.user_lookups')->where('email', $validated['manager_email'])->exists()) {
             if ($request->expectsJson()) {
                 return new JsonResponse([
-                    'message' => 'Cet email est deja utilise par un utilisateur existant.',
+                    'message' => __('errors.EMAIL_ALREADY_USED_BY_USER'),
                     'errors' => [
                         'manager_email' => ['Cet email est deja utilise par un utilisateur existant.'],
                     ],

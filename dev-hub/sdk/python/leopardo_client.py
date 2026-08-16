@@ -388,82 +388,6 @@ class LeopardoClient:
         """Publier immediatement une annonce (moderation PA2-COMM-011)"""
         return self.request("POST", "/announcements/{announcement}/publish", **kwargs)
 
-    def get_api_v1_edge(self, **kwargs):
-        """Lister les nœuds edge du tenant"""
-        return self.request("GET", "/api/v1/edge", **kwargs)
-
-    def post_api_v1_edge(self, **kwargs):
-        """Enregistrer un nœud edge"""
-        return self.request("POST", "/api/v1/edge", **kwargs)
-
-    def post_api_v1_edge_node_by_nodeid_heartbeat(self, **kwargs):
-        """Heartbeat d'un nœud edge (machine-to-cloud)"""
-        return self.request("POST", "/api/v1/edge-node/{nodeId}/heartbeat", **kwargs)
-
-    def get_api_v1_edge_node_by_nodeid_pull(self, **kwargs):
-        """Recuperer le delta de synchronisation pour le nœud edge"""
-        return self.request("GET", "/api/v1/edge-node/{nodeId}/pull", **kwargs)
-
-    def post_api_v1_edge_node_by_nodeid_push(self, **kwargs):
-        """Pousser les donnees du nœud edge vers le cloud"""
-        return self.request("POST", "/api/v1/edge-node/{nodeId}/push", **kwargs)
-
-    def post_api_v1_edge_node_validate_license(self, **kwargs):
-        """Valider une licence edge (machine-to-cloud)"""
-        return self.request("POST", "/api/v1/edge-node/validate-license", **kwargs)
-
-    def get_api_v1_edge_by_nodeid(self, **kwargs):
-        """Detail d'un nœud edge du tenant"""
-        return self.request("GET", "/api/v1/edge/{nodeId}", **kwargs)
-
-    def post_api_v1_edge_by_nodeid_license(self, **kwargs):
-        """Emettre une licence pour un nœud edge"""
-        return self.request("POST", "/api/v1/edge/{nodeId}/license", **kwargs)
-
-    def post_api_v1_edge_by_nodeid_sync(self, **kwargs):
-        """Declencher la synchronisation d'un nœud edge"""
-        return self.request("POST", "/api/v1/edge/{nodeId}/sync", **kwargs)
-
-    def get_api_v1_edge_download_caddyfile_edge(self, **kwargs):
-        """Caddyfile.edge de reference pour le nœud edge (public)"""
-        return self.request("GET", "/api/v1/edge/download/Caddyfile.edge", **kwargs)
-
-    def get_api_v1_edge_download_caddyfile_edge_sha256(self, **kwargs):
-        """Somme SHA-256 de Caddyfile.edge (public)"""
-        return self.request("GET", "/api/v1/edge/download/Caddyfile.edge.sha256", **kwargs)
-
-    def get_api_v1_edge_download_docker_compose_yml(self, **kwargs):
-        """docker-compose.yml de reference pour le nœud edge (public)"""
-        return self.request("GET", "/api/v1/edge/download/docker-compose.yml", **kwargs)
-
-    def get_api_v1_edge_download_docker_compose_yml_sha256(self, **kwargs):
-        """Somme SHA-256 de docker-compose.yml edge (public)"""
-        return self.request("GET", "/api/v1/edge/download/docker-compose.yml.sha256", **kwargs)
-
-    def get_api_v1_edge_download_env_example(self, **kwargs):
-        """Exemple de fichier d'environnement pour le nœud edge (public)"""
-        return self.request("GET", "/api/v1/edge/download/env-example", **kwargs)
-
-    def get_api_v1_edge_download_sha256_txt(self, **kwargs):
-        """Sommes SHA-256 des artefacts edge (public)"""
-        return self.request("GET", "/api/v1/edge/download/sha256.txt", **kwargs)
-
-    def get_api_v1_edge_health(self, **kwargs):
-        """Healthcheck edge (public, machine-to-cloud)"""
-        return self.request("GET", "/api/v1/edge/health", **kwargs)
-
-    def post_api_v1_edge_heartbeat(self, **kwargs):
-        """Heartbeat machine-to-cloud d'un nœud edge (public)"""
-        return self.request("POST", "/api/v1/edge/heartbeat", **kwargs)
-
-    def get_api_v1_edge_install_sh(self, **kwargs):
-        """Script d'installation du nœud edge (public)"""
-        return self.request("GET", "/api/v1/edge/install.sh", **kwargs)
-
-    def get_api_v1_edge_license_public_key(self, **kwargs):
-        """Cle publique de verification des licences edge (public)"""
-        return self.request("GET", "/api/v1/edge/license-public-key", **kwargs)
-
     def get_approval_workflows(self, **kwargs):
         """Lister les workflows d'approbation"""
         return self.request("GET", "/approval-workflows", **kwargs)
@@ -951,6 +875,82 @@ class LeopardoClient:
     def post_device_tokens(self, **kwargs):
         """Enregistrer ou rafraichir le token FCM du device courant"""
         return self.request("POST", "/device-tokens", **kwargs)
+
+    def get_edge(self, **kwargs):
+        """Lister les nœuds edge du tenant"""
+        return self.request("GET", "/edge", **kwargs)
+
+    def post_edge(self, **kwargs):
+        """Enregistrer un nœud edge"""
+        return self.request("POST", "/edge", **kwargs)
+
+    def post_edge_node_by_nodeid_heartbeat(self, **kwargs):
+        """Heartbeat d'un nœud edge (machine-to-cloud)"""
+        return self.request("POST", "/edge-node/{nodeId}/heartbeat", **kwargs)
+
+    def get_edge_node_by_nodeid_pull(self, **kwargs):
+        """Recuperer le delta de synchronisation pour le nœud edge"""
+        return self.request("GET", "/edge-node/{nodeId}/pull", **kwargs)
+
+    def post_edge_node_by_nodeid_push(self, **kwargs):
+        """Pousser les donnees du nœud edge vers le cloud"""
+        return self.request("POST", "/edge-node/{nodeId}/push", **kwargs)
+
+    def post_edge_node_validate_license(self, **kwargs):
+        """Valider une licence edge (machine-to-cloud)"""
+        return self.request("POST", "/edge-node/validate-license", **kwargs)
+
+    def get_edge_by_nodeid(self, **kwargs):
+        """Detail d'un nœud edge du tenant"""
+        return self.request("GET", "/edge/{nodeId}", **kwargs)
+
+    def post_edge_by_nodeid_license(self, **kwargs):
+        """Emettre une licence pour un nœud edge"""
+        return self.request("POST", "/edge/{nodeId}/license", **kwargs)
+
+    def post_edge_by_nodeid_sync(self, **kwargs):
+        """Declencher la synchronisation d'un nœud edge"""
+        return self.request("POST", "/edge/{nodeId}/sync", **kwargs)
+
+    def get_edge_download_caddyfile_edge(self, **kwargs):
+        """Caddyfile.edge de reference pour le nœud edge (public)"""
+        return self.request("GET", "/edge/download/Caddyfile.edge", **kwargs)
+
+    def get_edge_download_caddyfile_edge_sha256(self, **kwargs):
+        """Somme SHA-256 de Caddyfile.edge (public)"""
+        return self.request("GET", "/edge/download/Caddyfile.edge.sha256", **kwargs)
+
+    def get_edge_download_docker_compose_yml(self, **kwargs):
+        """docker-compose.yml de reference pour le nœud edge (public)"""
+        return self.request("GET", "/edge/download/docker-compose.yml", **kwargs)
+
+    def get_edge_download_docker_compose_yml_sha256(self, **kwargs):
+        """Somme SHA-256 de docker-compose.yml edge (public)"""
+        return self.request("GET", "/edge/download/docker-compose.yml.sha256", **kwargs)
+
+    def get_edge_download_env_example(self, **kwargs):
+        """Exemple de fichier d'environnement pour le nœud edge (public)"""
+        return self.request("GET", "/edge/download/env-example", **kwargs)
+
+    def get_edge_download_sha256_txt(self, **kwargs):
+        """Sommes SHA-256 des artefacts edge (public)"""
+        return self.request("GET", "/edge/download/sha256.txt", **kwargs)
+
+    def get_edge_health(self, **kwargs):
+        """Healthcheck edge (public, machine-to-cloud)"""
+        return self.request("GET", "/edge/health", **kwargs)
+
+    def post_edge_heartbeat(self, **kwargs):
+        """Heartbeat machine-to-cloud d'un nœud edge (public)"""
+        return self.request("POST", "/edge/heartbeat", **kwargs)
+
+    def get_edge_install_sh(self, **kwargs):
+        """Script d'installation du nœud edge (public)"""
+        return self.request("GET", "/edge/install.sh", **kwargs)
+
+    def get_edge_license_public_key(self, **kwargs):
+        """Cle publique de verification des licences edge (public)"""
+        return self.request("GET", "/edge/license-public-key", **kwargs)
 
     def get_employees(self, **kwargs):
         """Lister les employes"""

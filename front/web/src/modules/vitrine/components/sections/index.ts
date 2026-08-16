@@ -10,9 +10,6 @@ export { SolutionSection, type SolutionSectionProps, type SolutionFeature } from
 export { FeatureCard, type FeatureCardProps } from './FeatureCard';
 export { FeaturesSection, type FeaturesSectionProps } from './FeaturesSection';
 
-// Pricing Components
-export { PricingCard, type PricingCardProps } from './PricingCard';
-export { PricingSection, type PricingSectionProps } from './PricingSection';
 
 // Testimonial Components
 export { TestimonialCard, type TestimonialCardProps } from './TestimonialCard';

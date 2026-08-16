@@ -118,7 +118,7 @@ function SuccessInner() {
     enterprise: 'Enterprise',
     scale: 'Enterprise',
   };
-  const plan = PLAN_DISPLAY[searchParams.get('plan') || ''] || 'Pilot';
+  const plan = PLAN_DISPLAY[searchParams.get('plan') || ''] || '';
   const billing = searchParams.get('billing') || 'monthly';
   const email = searchParams.get('email') || '';
   const company = searchParams.get('company') || '';
