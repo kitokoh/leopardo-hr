@@ -759,8 +759,11 @@
       "roleRequired": "اختر دورك",
       "employeesRequired": "اختر حجم الفريق",
       "phoneInvalid": "رقم الهاتف غير صالح",
-      "agreeTerms": "يجب عليك قبول شروط الاستخدام"
-    }
+      "agreeTerms": "يجب عليك قبول شروط الاستخدام",
+      "countryRequired": "البلد مطلوب."
+    },
+    "labelCountry": "البلد",
+    "countryPlaceholder": "اختر بلدك"
   },
   "companies": {
     "toast": {
