@@ -151,12 +151,24 @@ async function initMap() {
   plotVehicles(L)
 }
 
+function escapeHtml(value) {
+  // #4334 : les champs véhicule (plate_number, brand, model, assigned_to) sont
+  // contrôlés par le tenant — les injecter bruts dans le popup Leaflet (innerHTML)
+  // permettrait un XSS côté cockpit super-admin.
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
+}
+
 function plotVehicles(L) {
   if (!leafletMap || !L) return
   vehicles.value.forEach(v => {
     if (v.latitude && v.longitude) {
       L.marker([v.latitude, v.longitude])
-        .bindPopup(`<b>${v.plate_number}</b><br>${v.brand} ${v.model}<br>${v.assigned_to || 'Non assigne'}`)
+        .bindPopup(`<b>${escapeHtml(v.plate_number)}</b><br>${escapeHtml(v.brand)} ${escapeHtml(v.model)}<br>${escapeHtml(v.assigned_to || 'Non assigne')}`)
         .addTo(leafletMap)
     }
   })

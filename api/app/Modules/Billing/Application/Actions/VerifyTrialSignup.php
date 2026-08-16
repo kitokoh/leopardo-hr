@@ -285,7 +285,6 @@ class VerifyTrialSignup
                             'last_name' => $payload['manager_last_name'],
                             'email' => $payload['manager_email'],
                             'phone' => $payload['manager_phone'],
-                            'password_hash' => Hash::make($payload['temp_password']),
                             'contract_type' => 'CDI',
                             'contract_start' => now()->toDateString(),
                             'salary_type' => 'fixed',
@@ -298,6 +297,8 @@ class VerifyTrialSignup
                         ]);
                         $manager->forceFill([
                             'company_id' => $company->id,
+                            // Issue #4496 : password_hash non mass-assignable.
+                            'password_hash' => Hash::make($payload['temp_password']),
                             'role' => 'manager',
                             'manager_role' => 'principal',
                             'status' => 'active',

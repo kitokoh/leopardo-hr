@@ -72,6 +72,8 @@ RUN mkdir -p /var/leopardo && chmod 755 /var/leopardo
 # ── Config Files ───────────────────────────────────────────
 COPY edge/nginx.edge.conf /etc/nginx/nginx.conf
 COPY edge/supervisord.edge.conf /etc/supervisor/conf.d/leopardo.conf
+COPY edge/docker-entrypoint.publish.sh /usr/local/bin/docker-entrypoint.publish.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.publish.sh
 
 # ── Edge-specific .env ─────────────────────────────────────
 ENV APP_ENV=edge \
@@ -87,4 +89,6 @@ VOLUME ["/var/leopardo"]
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost/api/v1/edge/readiness || exit 1
 
+# #4411 : migrations SQLite AVANT supervisord (schéma edge jamais provisionné).
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.publish.sh"]
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/leopardo.conf"]

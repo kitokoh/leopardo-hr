@@ -151,7 +151,6 @@ export default function DocsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="search"
-              aria-label={copy.hero.searchPlaceholder}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={copy.hero.searchPlaceholder}
               aria-label={copy.hero.searchPlaceholder}
