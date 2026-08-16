@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): <title> — marque dupliquée retirée des titres localisés (le template racine garde « | Leopardo RH ») (Closes #4612).** Les titres en/tr/ar contenaient déjà leur marque traduite → « Changelog | Leopardo HR | Leopardo RH » (mix FR + doublon) dans 3 locales sur 4.
 - **fix(web): Navbar — bouton sous-menu desktop avec aria-haspopup (a11y, résiduel #4510) (Closes #4614).** Le toggle mobile avait aria-expanded+haspopup depuis #4510 ; le bouton desktop (click+hover) n'avait que aria-expanded.
 - **fix(web): formulaire /demo — 7 champs avec id/htmlFor (WCAG 1.3.1) (Closes #4613).** Les labels n'étaient associés à aucun champ (placeholder seul) → les lecteurs d'écran ne pouvaient pas associer libellés et champs.
 - **fix(admin): UsersView — sous-titre : placeholders :active/:newToday interpolés (plus de tokens bruts) (Closes #4618).** Le header affichait littéralement « 12 utilisateur(s) - :active actif(s) - :newToday nouveau(x) aujourd'hui » dans les 4 locales.
