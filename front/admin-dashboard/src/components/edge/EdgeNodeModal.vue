@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" @click.self="$emit('close')">
-      <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 w-full max-w-lg mx-4 shadow-2xl">
+      <div class="glass-card w-full max-w-lg mx-4">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <h2 class="font-semibold text-gray-900 dark:text-white">Détails du node Edge</h2>

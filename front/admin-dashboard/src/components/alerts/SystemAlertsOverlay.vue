@@ -21,7 +21,7 @@
           <div class="order-3 mt-2 w-full flex-shrink-0 sm:order-2 sm:mt-0 sm:w-auto">
             <button
               @click="viewSystemAlerts"
-              class="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-red-50"
+              class="flex items-center justify-center rounded-md border border-transparent bg-white/70 px-4 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-red-50 backdrop-blur-md dark:bg-slate-800/70"
             >
               Voir les détails
             </button>
@@ -71,7 +71,7 @@
           <div class="order-2 flex-shrink-0 sm:ml-3">
             <button
               @click="realtimeStore.connect()"
-              class="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-1 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50"
+              class="flex items-center justify-center rounded-md border border-transparent bg-white/70 px-4 py-1 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50 backdrop-blur-md dark:bg-slate-800/70"
             >
               Reconnecter
             </button>
