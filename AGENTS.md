@@ -113,6 +113,15 @@ reste ouverte même une fois le correctif livré. Règles :
   Apps CI rouge sur main. Garde : `Get-DartContent $root @('*mock*.dart')`.
   Tout nouveau fichier de mock doit suivre le pattern `*mock*.dart`.
 
+- **Lecon 2026-08-16 (swe-qa-360)** : sous rafale de pushes concurrents, GitHub
+  Actions peut NE PAS creer de runs pour certains evenements `synchronize` (zéro
+  check suite `github-actions` sur le nouveau head, alors que la file compte 300+
+  runs queued). Correctifs : (1) annuler les runs queued supersedes de la meme
+  (branche, workflow) — un run pending par groupe de concurrency bloque les
+  suivants (cf. #3545) ; (2) `git commit --allow-empty -m "ci: nudge"` + push
+  pour forcer un nouvel evenement. Le check « Workers Builds: gestionemploye »
+  echoue sur TOUTES les PR (deploy Cloudflare hors PR) — ce n'est pas un check
+  requis, ne pas le traiter comme rouge.
 - **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
 
 - Avant de travailler sur une branche existante, faire `git fetch origin main` puis comparer avec `origin/main`.
