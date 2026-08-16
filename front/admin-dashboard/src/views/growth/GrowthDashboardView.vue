@@ -95,7 +95,7 @@
               <tr v-for="payout in payouts" :key="payout.id">
                 <td class="px-6 py-4 font-bold text-slate-900">{{ payout.partner?.user?.first_name }}</td>
                 <td class="px-6 py-4 font-black text-slate-900">{{ (payout.amount / 100).toFixed(2) }} {{ payout.currency }}</td>
-                <td class="px-6 py-4 text-sm text-slate-500">{{ new Date(payout.created_at).toLocaleDateString() }}</td>
+                <td class="px-6 py-4 text-sm text-slate-500">{{ formatDate(payout.created_at) }}</td>
                 <td class="px-6 py-4">
                   <span :class="getStatusClass(payout.status)" class="px-2.5 py-1 text-[10px] font-black rounded-full uppercase tracking-tighter">
                     {{ payout.status }}
@@ -155,6 +155,13 @@
 import { ref, onMounted } from 'vue';
 import api from '@/services/api';
 import { useToast } from 'vue-toastification';
+import { useLocaleStore } from '@/stores/locale';
+import { toIntlLocale } from '@/i18n/index.js';
+
+const localeStore = useLocaleStore();
+// #4517 : dates au format de la locale active.
+const formatDate = (value) =>
+  new Intl.DateTimeFormat(toIntlLocale(localeStore.current), { dateStyle: 'medium' }).format(new Date(value));
 
 const toast = useToast();
 

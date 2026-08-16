@@ -858,7 +858,10 @@
     "confirm_delete": "Delete this webhook?"
   },
   "a11y": {
-    "skip_to_content": "Skip to main content"
+    "skip_to_content": "Skip to main content",
+    "close": "Close",
+    "previous_month": "Previous month",
+    "next_month": "Next month"
   },
   "shell": {
     "connected": "Connected",

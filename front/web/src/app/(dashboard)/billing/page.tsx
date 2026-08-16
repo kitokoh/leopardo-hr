@@ -30,10 +30,16 @@ type Invoice = {
   paid_at?: string | null;
 };
 
+// ADR-0014 : noms canoniques Free/Pilot/Operations/Enterprise
+// Includes legacy aliases for backward compatibility with old tenants
 const PLAN_LABELS: Record<string, string> = {
-  starter: 'Starter',
-  business: 'Business',
+  free: 'Free',
+  pilot: 'Pilot',
+  operations: 'Operations',
   enterprise: 'Enterprise',
+  // Legacy aliases (anciens tenants créés avant ADR-0014)
+  starter: 'Pilot',
+  business: 'Operations',
 };
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
