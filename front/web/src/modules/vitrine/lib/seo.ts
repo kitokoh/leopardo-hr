@@ -498,50 +498,6 @@ export const pageMetadata = {
  * Structured Data (JSON-LD)
  */
 
-export function generateOrganizationSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: siteName,
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description: "Plateforme complète de gestion RH pour PME et startups",
-    sameAs: [
-      "https://x.com/leopardo_hr",
-      "https://linkedin.com/company/leopardo",
-      "https://www.facebook.com/leopardo_hr",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "Customer Support",
-      email: "support@leopardo-rh.com",
-      availableLanguage: ["fr", "en"],
-    },
-  };
-}
-
-export function generateProductSchema(productName: string, description: string) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: productName,
-    description: description,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    offers: {
-      "@type": "Offer",
-      price: "29",
-      priceCurrency: "EUR",
-      availability: "https://schema.org/InStock",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "500",
-    },
-  };
-}
-
 export function generateFAQSchema(
   faqs: Array<{ question: string; answer: string }>
 ) {
@@ -555,42 +511,6 @@ export function generateFAQSchema(
         "@type": "Answer",
         text: faq.answer,
       },
-    })),
-  };
-}
-
-export function generateReviewSchema(
-  author: string,
-  rating: number,
-  reviewText: string
-) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Review",
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: rating.toString(),
-      bestRating: "5",
-    },
-    author: {
-      "@type": "Person",
-      name: author,
-    },
-    reviewBody: reviewText,
-  };
-}
-
-export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>
-) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: item.url,
     })),
   };
 }

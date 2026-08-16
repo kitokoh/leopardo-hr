@@ -179,7 +179,8 @@ const routes = [
         component: () => import('@/views/fleet/FleetView.vue'),
         meta: {
           title: 'navigation.fleet',
-          icon: 'TruckIcon'
+          icon: 'TruckIcon',
+          requiresTenant: true
         }
       },
       {
@@ -206,7 +207,8 @@ const routes = [
         component: () => import('@/views/exports/ExportsView.vue'),
         meta: {
           title: 'navigation.exports',
-          icon: 'ArrowDownTrayIcon'
+          icon: 'ArrowDownTrayIcon',
+          requiresTenant: true
         }
       },
       {

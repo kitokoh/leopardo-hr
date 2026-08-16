@@ -95,18 +95,7 @@ class PublishScheduledPostJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext];
     }
 
-    /**
-     * Échec terminal après épuisement des retries (#4296) — log d'alerte,
-     * jamais de re-lancement silencieux (pattern #4205).
-     */
-    public function failed(\Throwable $e): void
-    {
-        Log::error('PublishScheduledPostJob.failed', [
-            'social_post_id' => $this->socialPostId,
-            'exception' => $e->getMessage(),
-        ]);
-    }
-
+    
     public function handle(SocialPublishingService $publishingService): void
     {
         // Le scope tenant courant est deja etabli par EnsureTenantContext,
