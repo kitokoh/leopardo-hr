@@ -865,7 +865,10 @@
     "confirm_delete": "حذف خطاف الويب هذا؟"
   },
   "a11y": {
-    "skip_to_content": "الانتقال إلى المحتوى الرئيسي"
+    "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
+    "close": "إغلاق",
+    "previous_month": "الشهر السابق",
+    "next_month": "الشهر التالي"
   },
   "shell": {
     "connected": "متصل",
@@ -939,5 +942,45 @@
     "countryCurrency": "البلد / العملة",
     "registeredOn": "مسجل في",
     "lastActivity": "آخر نشاط"
+  },
+  "support": {
+    "title": "طلبات العملاء",
+    "subtitle": "استقبال تجاري، تأهيل والتحقق من الشركات الجديدة.",
+    "refresh": "تحديث",
+    "kpiTotal": "إجمالي الطلبات",
+    "kpiPending": "قيد الانتظار",
+    "kpiApproved": "تمت الموافقة",
+    "kpiRejected": "مرفوض",
+    "queueTitle": "قائمة التأهيل",
+    "queueSub": "أولوية العملاء المحتملين لتسريع النشر.",
+    "syncing": "جارٍ مزامنة الطلبات...",
+    "retry": "إعادة المحاولة",
+    "empty": "لا توجد طلبات",
+    "statusPending": "قيد الانتظار",
+    "statusApproved": "تمت الموافقة",
+    "statusRejected": "مرفوض",
+    "filterAll": "الكل",
+    "filterPending": "للمراجعة",
+    "filterApproved": "المقبولة",
+    "filterRejected": "المرفوضة",
+    "sectorUnknown": "القطاع غير محدد",
+    "cityUnknown": "مدينة غير معروفة",
+    "countryUnknown": "بلد غير معروف",
+    "noDescription": "لا يوجد وصف.",
+    "emailLabel": "بريد التواصل",
+    "phoneLabel": "الهاتف",
+    "notProvided": "غير محدد",
+    "reviewedBy": "تمت المراجعة بواسطة",
+    "systemAdmin": "مدير النظام",
+    "internalNotes": "ملاحظات داخلية",
+    "notesPlaceholder": "قيّم شرعية العميل المحتمل وحجم الشركة...",
+    "reject": "رفض",
+    "approve": "موافقة",
+    "finalDecision": "القرار النهائي: ",
+    "showingPrefix": "عرض",
+    "showingSuffix": "طلبات",
+    "loadError": "تعذرت مزامنة طلبات العملاء.",
+    "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
+    "toastRejected": "تم رفض الطلب."
   }
 }

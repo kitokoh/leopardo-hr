@@ -865,7 +865,10 @@
     "notFound": "Page non trouvee"
   },
   "a11y": {
-    "skip_to_content": "Aller au contenu principal"
+    "skip_to_content": "Aller au contenu principal",
+    "close": "Fermer",
+    "previous_month": "Mois précédent",
+    "next_month": "Mois suivant"
   },
   "shell": {
     "connected": "Connecte",
@@ -939,5 +942,45 @@
     "countryCurrency": "Pays / Devise",
     "registeredOn": "Inscrit le",
     "lastActivity": "Derniere Activite"
+  },
+  "support": {
+    "title": "Demandes clients",
+    "subtitle": "Intake commercial, qualification et validation des nouvelles entreprises.",
+    "refresh": "Actualiser",
+    "kpiTotal": "Total Demandes",
+    "kpiPending": "À Traiter",
+    "kpiApproved": "Approuvées",
+    "kpiRejected": "Rejetées",
+    "queueTitle": "File de qualification",
+    "queueSub": "Priorisez les leads pour accélérer le déploiement.",
+    "syncing": "Synchronisation des demandes...",
+    "retry": "Réessayer",
+    "empty": "Aucune demande trouvée",
+    "statusPending": "Attente",
+    "statusApproved": "Validé",
+    "statusRejected": "Refusé",
+    "filterAll": "Toutes",
+    "filterPending": "À traiter",
+    "filterApproved": "Approuvées",
+    "filterRejected": "Rejetées",
+    "sectorUnknown": "Secteur non précisé",
+    "cityUnknown": "Ville inconnue",
+    "countryUnknown": "Pays inconnu",
+    "noDescription": "Aucune description fournie.",
+    "emailLabel": "Email Contact",
+    "phoneLabel": "Téléphone",
+    "notProvided": "Non renseigné",
+    "reviewedBy": "Traité par",
+    "systemAdmin": "Admin Système",
+    "internalNotes": "Notes Internes",
+    "notesPlaceholder": "Évaluez la légitimité du lead, taille de l'entreprise...",
+    "reject": "Refuser",
+    "approve": "Approuver",
+    "finalDecision": "Décision finale : ",
+    "showingPrefix": "Affichage de",
+    "showingSuffix": "demandes",
+    "loadError": "Impossible de synchroniser les demandes clients.",
+    "toastApproved": "Demande approuvée. Provisionnement lancé.",
+    "toastRejected": "Demande rejetée."
   }
 }

@@ -865,7 +865,10 @@
     "confirm_delete": "Delete this webhook?"
   },
   "a11y": {
-    "skip_to_content": "Skip to main content"
+    "skip_to_content": "Skip to main content",
+    "close": "Close",
+    "previous_month": "Previous month",
+    "next_month": "Next month"
   },
   "shell": {
     "connected": "Connected",
@@ -939,5 +942,45 @@
     "countryCurrency": "Country / Currency",
     "registeredOn": "Registered on",
     "lastActivity": "Last activity"
+  },
+  "support": {
+    "title": "Client Requests",
+    "subtitle": "Commercial intake, qualification and validation of new companies.",
+    "refresh": "Refresh",
+    "kpiTotal": "Total Requests",
+    "kpiPending": "Pending",
+    "kpiApproved": "Approved",
+    "kpiRejected": "Rejected",
+    "queueTitle": "Qualification queue",
+    "queueSub": "Prioritize leads to speed up deployment.",
+    "syncing": "Syncing requests...",
+    "retry": "Retry",
+    "empty": "No request found",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "filterAll": "All",
+    "filterPending": "To review",
+    "filterApproved": "Approved",
+    "filterRejected": "Rejected",
+    "sectorUnknown": "Sector not specified",
+    "cityUnknown": "Unknown city",
+    "countryUnknown": "Unknown country",
+    "noDescription": "No description provided.",
+    "emailLabel": "Contact email",
+    "phoneLabel": "Phone",
+    "notProvided": "Not provided",
+    "reviewedBy": "Reviewed by",
+    "systemAdmin": "System Admin",
+    "internalNotes": "Internal Notes",
+    "notesPlaceholder": "Assess lead legitimacy, company size...",
+    "reject": "Reject",
+    "approve": "Approve",
+    "finalDecision": "Final decision: ",
+    "showingPrefix": "Showing",
+    "showingSuffix": "requests",
+    "loadError": "Unable to sync client requests.",
+    "toastApproved": "Request approved. Provisioning started.",
+    "toastRejected": "Request rejected."
   }
 }
