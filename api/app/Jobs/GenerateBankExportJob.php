@@ -143,4 +143,29 @@ class GenerateBankExportJob implements ShouldQueue, TenantScopedJob
             'queue:documents',
         ];
     }
+
+    /**
+     * #4205 : épuisement des retries — l'export bancaire passe à l'état
+     * `failed` (visible dans l'UI) + log d'alerte.
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('GenerateBankExportJob.failed', [
+            'bank_export_id' => $this->bankExportId,
+            'exception' => $e->getMessage(),
+        ]);
+
+        try {
+            $export = \App\Modules\Payroll\Domain\Models\BankExport::query()->find($this->bankExportId);
+            if ($export !== null && in_array($export->status, ['pending', 'generating'], true)) {
+                $export->forceFill([
+                    'status' => \App\Modules\Payroll\Domain\Models\BankExport::STATUS_FAILED,
+                    'error_message' => mb_substr($e->getMessage(), 0, 1000),
+                ])->save();
+            }
+        } catch (Throwable) {
+            // non bloquant — le log ci-dessus reste la trace
+        }
+    }
+
 }
