@@ -131,12 +131,16 @@ class EmployeeImportController extends Controller
                 $status = $fillData['status'] ?? 'active';
                 unset($fillData['status']);
 
-                $fillData['password_hash'] = Hash::make(Str::random(32));
+                // Issue #4496 : password_hash n'est plus mass-assignable —
+                // extrait du tableau de création, posé explicitement après.
+                $passwordHash = Hash::make(Str::random(32));
+                unset($fillData['password_hash']);
 
                 try {
                     $employee = Employee::create($fillData);
                     $employee->company_id = $companyId;
                     $employee->status = $status;
+                    $employee->password_hash = $passwordHash;
                     $employee->save();
                     $imported++;
                 } catch (QueryException $e) {

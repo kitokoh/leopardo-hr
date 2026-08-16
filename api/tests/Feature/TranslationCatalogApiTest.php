@@ -36,4 +36,29 @@ class TranslationCatalogApiTest extends TestCase
         ])->get('/api/v1/i18n/catalog/ar-SA')
             ->assertStatus(304);
     }
+
+    public function test_catalog_has_its_own_rate_limit_bucket(): void
+    {
+        // Issue #4501 : le catalogue i18n partageait le bucket auth-sensitive
+        // (10/min par email|IP) avec le login — un échec de login affamait les
+        // traductions de la UI et vice-versa (self-DoS derrière NAT).
+        // Désormais sur son propre bucket public-registry.
+        config(['security.rate_limits.auth_per_minute' => 2]);
+
+        $payload = [
+            'email' => 'catalog-bucket@example.test',
+            'password' => 'wrong-password',
+            'device_name' => 'test-suite',
+        ];
+
+        // Épuise le bucket auth-sensitive (3e appel → 429).
+        $this->postJson('/api/v1/auth/login', $payload)->assertStatus(401);
+        $this->postJson('/api/v1/auth/login', $payload)->assertStatus(401);
+        $this->postJson('/api/v1/auth/login', $payload)->assertStatus(429);
+
+        // Le catalogue répond toujours : bucket indépendant.
+        $this->getJson('/api/v1/i18n/catalog')
+            ->assertOk()
+            ->assertJsonPath('success', true);
+    }
 }

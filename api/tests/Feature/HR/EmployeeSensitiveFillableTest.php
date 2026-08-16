@@ -1,0 +1,95 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\HR;
+
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Support\Facades\Hash;
+use Tests\Support\CreatesMvpSchema;
+use Tests\TestCase;
+
+/**
+ * Issue #4496 — password_hash, chemins biométriques et email_bounced_at ne
+ * sont plus mass-assignables sur Employee : un futur `create($request->all())`
+ * ou oubli d'allowlist ne peut plus écraser silencieusement un mot de passe
+ * ou des références biométriques (inversé du durcissement #3597/#3677).
+ */
+class EmployeeSensitiveFillableTest extends TestCase
+{
+    use CreatesMvpSchema;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->setUpMvpSchema();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->tearDownMvpSchema();
+        parent::tearDown();
+    }
+
+    public function test_sensitive_fields_are_not_written_by_mass_assignment(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Sensitive QA',
+            'slug' => 'sensitive-qa',
+            'sector' => 'tech',
+            'country' => 'DZ',
+        ]);
+
+        $employee = Employee::query()->create([
+            'first_name' => 'Mass',
+            'last_name' => 'Assignment',
+            'email' => 'mass-assignment@example.test',
+            'company_id' => $company->id,
+            'password_hash' => Hash::make('attacker-controlled'),
+            'biometric_face_reference_path' => 'face/attacker.jpg',
+            'biometric_fingerprint_reference_path' => 'finger/attacker.jpg',
+            'email_bounced_at' => now(),
+        ]);
+
+        $fresh = $employee->fresh();
+
+        $this->assertNull($fresh->password_hash, 'password_hash ne doit pas être mass-assignable.');
+        $this->assertNull($fresh->biometric_face_reference_path, 'Référence biométrique visage non mass-assignable.');
+        $this->assertNull($fresh->biometric_fingerprint_reference_path, 'Référence biométrique empreinte non mass-assignable.');
+        $this->assertNull($fresh->email_bounced_at, 'email_bounced_at non mass-assignable.');
+    }
+
+    public function test_sensitive_fields_can_still_be_set_explicitly(): void
+    {
+        $company = Company::query()->create([
+            'name' => 'Explicit QA',
+            'slug' => 'explicit-qa',
+            'sector' => 'tech',
+            'country' => 'DZ',
+        ]);
+
+        $employee = Employee::query()->create([
+            'first_name' => 'Explicit',
+            'last_name' => 'Writer',
+            'email' => 'explicit-writer@example.test',
+        ]);
+        $employee->company_id = $company->id;
+
+        // Écriture légitime hors fillable (pattern #4496 : les services
+        // autorisés posent ces champs explicitement).
+        $employee->forceFill([
+            'password_hash' => Hash::make('legit-password'),
+            'biometric_face_reference_path' => 'face/legit.jpg',
+            'biometric_fingerprint_reference_path' => 'finger/legit.jpg',
+            'email_bounced_at' => now(),
+        ])->save();
+
+        $fresh = $employee->fresh();
+
+        $this->assertTrue(Hash::check('legit-password', (string) $fresh->password_hash));
+        $this->assertSame('face/legit.jpg', $fresh->biometric_face_reference_path);
+        $this->assertSame('finger/legit.jpg', $fresh->biometric_fingerprint_reference_path);
+        $this->assertNotNull($fresh->email_bounced_at);
+    }
+}
