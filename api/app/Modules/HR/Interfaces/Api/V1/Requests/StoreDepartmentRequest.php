@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreDepartmentRequest extends FormRequest
 {
@@ -18,7 +19,13 @@ class StoreDepartmentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'manager_id' => ['nullable', 'integer', 'min:1'],
+            'manager_id' => ['nullable', 'integer', 'min:1', Rule::exists('employees', 'id')->where(fn ($query) => $query->where('company_id', $this->companyId()))],
         ];
+    }
+    /** Compagnie du user courant (pattern #3065/#3428 — scope compagnie sur les FK). */
+    private function companyId(): ?string
+    {
+        return $this->user()?->company_id
+            ?? (app()->bound('current_company') ? currentCompany()->id : null);
     }
 }

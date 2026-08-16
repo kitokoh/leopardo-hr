@@ -25,10 +25,9 @@ export function Textarea({
   onChange,
   ...props
 }: TextareaProps) {
-  // #4326 : useId() (stable SSR/hydration) au lieu de Math.random() —
-  // un id aléatoire différent entre serveur et client cassait l'hydration.
+  // #4326 : id stable entre SSR et client (Math.random() → mismatch d'hydratation).
   const generatedId = useId();
-  const textareaId = id || `textarea-${generatedId}`;
+  const textareaId = id || generatedId;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {

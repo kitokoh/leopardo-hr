@@ -526,6 +526,7 @@ export function SignupForm({
                   onChange={(e) => handleOtpChange(i, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(i, e)}
                   onPaste={i === 0 ? handleOtpPaste : undefined}
+                  aria-label={`${c.otpTitle} ${i + 1}`}
                   className={`h-14 w-12 rounded-xl border-2 text-center text-2xl font-bold outline-none transition-all
                     ${otpError
                       ? 'border-red-300 bg-red-50 text-red-900 dark:border-red-700 dark:bg-red-950/30 dark:text-red-200'

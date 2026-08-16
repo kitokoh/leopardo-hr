@@ -154,6 +154,7 @@ export default function DocsPage() {
               aria-label={copy.hero.searchPlaceholder}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={copy.hero.searchPlaceholder}
+              aria-label={copy.hero.searchPlaceholder}
               className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             />
           </div>
