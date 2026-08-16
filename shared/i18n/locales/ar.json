@@ -759,8 +759,11 @@
       "roleRequired": "اختر دورك",
       "employeesRequired": "اختر حجم الفريق",
       "phoneInvalid": "رقم الهاتف غير صالح",
-      "agreeTerms": "يجب عليك قبول شروط الاستخدام"
-    }
+      "agreeTerms": "يجب عليك قبول شروط الاستخدام",
+      "countryRequired": "البلد مطلوب."
+    },
+    "labelCountry": "البلد",
+    "countryPlaceholder": "اختر بلدك"
   },
   "companies": {
     "toast": {
@@ -855,7 +858,10 @@
     "confirm_delete": "حذف خطاف الويب هذا؟"
   },
   "a11y": {
-    "skip_to_content": "الانتقال إلى المحتوى الرئيسي"
+    "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
+    "close": "إغلاق",
+    "previous_month": "الشهر السابق",
+    "next_month": "الشهر التالي"
   },
   "shell": {
     "connected": "متصل",

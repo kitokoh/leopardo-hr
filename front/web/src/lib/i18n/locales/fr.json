@@ -759,8 +759,11 @@
       "roleRequired": "Sélectionnez votre rôle",
       "employeesRequired": "Sélectionnez une taille d'équipe",
       "phoneInvalid": "Numéro de téléphone invalide",
-      "agreeTerms": "Vous devez accepter les conditions d'utilisation"
-    }
+      "agreeTerms": "Vous devez accepter les conditions d'utilisation",
+      "countryRequired": "Le pays est requis."
+    },
+    "labelCountry": "Pays",
+    "countryPlaceholder": "Sélectionnez votre pays"
   },
   "companies": {
     "toast": {
@@ -855,7 +858,10 @@
     "confirm_delete": "Supprimer ce webhook ?"
   },
   "a11y": {
-    "skip_to_content": "Aller au contenu principal"
+    "skip_to_content": "Aller au contenu principal",
+    "close": "Fermer",
+    "previous_month": "Mois précédent",
+    "next_month": "Mois suivant"
   },
   "shell": {
     "connected": "Connecte",

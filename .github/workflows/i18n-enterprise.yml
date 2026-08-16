@@ -8,7 +8,6 @@ on:
       - 'front/mobile_apps/leopardo_employee/lib/**'
       - 'front/mobile_apps/leopardo_manager/lib/**'
       - 'front/mobile_apps/leopardo_platform_admin/lib/**'
-      - 'front/admin-dashboard/src/i18n/**'     # chemin réel dans le repo
       - 'front/admin-dashboard/src/**'
       - 'front/web/src/lib/i18n/**'             # client Next.js
       - 'front/web/src/app/**'
@@ -27,7 +26,6 @@ on:
       - 'front/mobile_apps/leopardo_employee/lib/**'
       - 'front/mobile_apps/leopardo_manager/lib/**'
       - 'front/mobile_apps/leopardo_platform_admin/lib/**'
-      - 'front/admin-dashboard/src/i18n/**'
       - 'front/admin-dashboard/src/**'
       - 'front/web/src/lib/i18n/**'
       - 'front/web/src/app/**'
@@ -50,6 +48,7 @@ concurrency:
 
 jobs:
   validate-and-sync:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
 
     steps:
@@ -87,6 +86,7 @@ jobs:
   # PA2-I18N-015) never blocks unrelated PRs — this only prevents the debt
   # from growing.
   check-new-hardcoded-strings:
+    timeout-minutes: 15
     name: I18N — No new hardcoded strings (diff)
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

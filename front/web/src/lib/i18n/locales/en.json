@@ -95,7 +95,8 @@
       "TN": "Tunisia",
       "TR": "Türkiye",
       "US": "United States"
-    }
+    },
+    "close": "Close"
   },
   "modules": {
     "attendance": "Attendance",
@@ -759,8 +760,11 @@
       "roleRequired": "Select your role",
       "employeesRequired": "Select a team size",
       "phoneInvalid": "Invalid phone number",
-      "agreeTerms": "You must accept the terms of use"
-    }
+      "agreeTerms": "You must accept the terms of use",
+      "countryRequired": "Country is required."
+    },
+    "labelCountry": "Country",
+    "countryPlaceholder": "Select your country"
   },
   "companies": {
     "toast": {
@@ -855,7 +859,10 @@
     "confirm_delete": "Delete this webhook?"
   },
   "a11y": {
-    "skip_to_content": "Skip to main content"
+    "skip_to_content": "Skip to main content",
+    "close": "Close",
+    "previous_month": "Previous month",
+    "next_month": "Next month"
   },
   "shell": {
     "connected": "Connected",

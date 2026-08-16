@@ -194,7 +194,8 @@
       "phoneInvalid": "رقم الهاتف غير صالح",
       "companyTooShort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
       "roleRequired": "اختر دورك",
-      "agreeTerms": "يجب عليك قبول شروط الاستخدام"
+      "agreeTerms": "يجب عليك قبول شروط الاستخدام",
+      "countryRequired": "البلد مطلوب."
     },
     "timeoutTitle": "لا يزال الإنشاء جاريًا",
     "otpTitle": "تحقق من بريدك الإلكتروني",
@@ -254,7 +255,9 @@
     "otpSentTo": "أرسلنا رمز تحقق من 6 أرقام إلى:",
     "badge": "تجربة مجانية لمدة 14 يومًا",
     "roleFounder": "مؤسس / مدير عام",
-    "copyLink": "نسخ الرابط"
+    "copyLink": "نسخ الرابط",
+    "labelCountry": "البلد",
+    "countryPlaceholder": "اختر بلدك"
   },
   "platform_login": {
     "email_label": "بريد المسؤول الاعلى",
@@ -477,6 +480,64 @@
     "activateNow": "تفعيل فوراً",
     "activateClientNow": "تفعيل العميل فوراً",
     "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي."
+  },
+  "subscriptions": {
+    "title": "الاشتراكات",
+    "subtitle": "الباقات والعائد الشهري المتكرر وعقود العملاء المتاحة للوحة تحكم المشرف.",
+    "refresh": "تحديث",
+    "retry": "إعادة المحاولة",
+    "unlimited": "غير محدود",
+    "employees": "موظف",
+    "trialDays": "تجربة",
+    "public": "عام",
+    "archived": "مؤرشف",
+    "perMonth": "/ شهريًا",
+    "billedAnnually": "تُدفع سنويًا",
+    "loadError": "خطأ أثناء تحميل الاشتراكات.",
+    "noPlan": "بدون خطة",
+    "manage": "إدارة",
+    "noRisk": "لا توجد مخاطر فورية",
+    "catalogTitle": "كتالوج العروض",
+    "catalogSub": "مصدر الحقيقة لواجهة API للحدود والميزات.",
+    "healthTitle": "الصحة التجارية",
+    "retentionTitle": "أولويات الاحتفاظ",
+    "kpi": {
+      "portfolioMrr": "MRR المحفظة",
+      "activeSubscriptions": "الاشتراكات النشطة",
+      "pastDue": "مدفوعات متأخرة",
+      "totalOverdue": "إجمالي المتأخرات",
+      "arr": "العائد السنوي المتكرر المقدّر",
+      "collected30d": "المحصّل خلال 30 يومًا",
+      "totalSubscribers": "إجمالي المشتركين",
+      "trials": "الفترات التجريبية"
+    },
+    "risk": {
+      "high": "مخاطر عالية",
+      "medium": "مخاطر متوسطة",
+      "low": "مخاطر منخفضة"
+    },
+    "features": {
+      "rh": "الموارد البشرية",
+      "finance": "المالية",
+      "ai": "Leo AI",
+      "cameras": "الفيديو",
+      "tracking": "التتبع",
+      "planning": "التخطيط",
+      "training": "التدريبات",
+      "cabinet": "المستندات",
+      "biometric": "القياسات الحيوية",
+      "tasks": "المهام",
+      "advanced_reports": "تقارير متقدمة",
+      "excel_export": "تصدير Excel",
+      "bank_export": "تصدير بنكي",
+      "billing_auto": "فوترة تلقائية",
+      "multi_managers": "عدة مديرين",
+      "photo_attendance": "تسجيل حضور بالصورة",
+      "api_public": "API عامة",
+      "evaluations": "التقييمات",
+      "schema_isolation": "عزل المخطط"
+    },
+    "trialUnit": "يوم"
   },
   "profile": {
     "department_label": "القسم",
@@ -865,7 +926,10 @@
     "confirm_delete": "حذف خطاف الويب هذا؟"
   },
   "a11y": {
-    "skip_to_content": "الانتقال إلى المحتوى الرئيسي"
+    "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
+    "close": "إغلاق",
+    "previous_month": "الشهر السابق",
+    "next_month": "الشهر التالي"
   },
   "shell": {
     "connected": "متصل",
@@ -939,5 +1003,45 @@
     "countryCurrency": "البلد / العملة",
     "registeredOn": "مسجل في",
     "lastActivity": "آخر نشاط"
+  },
+  "support": {
+    "title": "طلبات العملاء",
+    "subtitle": "استقبال تجاري، تأهيل والتحقق من الشركات الجديدة.",
+    "refresh": "تحديث",
+    "kpiTotal": "إجمالي الطلبات",
+    "kpiPending": "قيد الانتظار",
+    "kpiApproved": "تمت الموافقة",
+    "kpiRejected": "مرفوض",
+    "queueTitle": "قائمة التأهيل",
+    "queueSub": "أولوية العملاء المحتملين لتسريع النشر.",
+    "syncing": "جارٍ مزامنة الطلبات...",
+    "retry": "إعادة المحاولة",
+    "empty": "لا توجد طلبات",
+    "statusPending": "قيد الانتظار",
+    "statusApproved": "تمت الموافقة",
+    "statusRejected": "مرفوض",
+    "filterAll": "الكل",
+    "filterPending": "للمراجعة",
+    "filterApproved": "المقبولة",
+    "filterRejected": "المرفوضة",
+    "sectorUnknown": "القطاع غير محدد",
+    "cityUnknown": "مدينة غير معروفة",
+    "countryUnknown": "بلد غير معروف",
+    "noDescription": "لا يوجد وصف.",
+    "emailLabel": "بريد التواصل",
+    "phoneLabel": "الهاتف",
+    "notProvided": "غير محدد",
+    "reviewedBy": "تمت المراجعة بواسطة",
+    "systemAdmin": "مدير النظام",
+    "internalNotes": "ملاحظات داخلية",
+    "notesPlaceholder": "قيّم شرعية العميل المحتمل وحجم الشركة...",
+    "reject": "رفض",
+    "approve": "موافقة",
+    "finalDecision": "القرار النهائي: ",
+    "showingPrefix": "عرض",
+    "showingSuffix": "طلبات",
+    "loadError": "تعذرت مزامنة طلبات العملاء.",
+    "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
+    "toastRejected": "تم رفض الطلب."
   }
 }

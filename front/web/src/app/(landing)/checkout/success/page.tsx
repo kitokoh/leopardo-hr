@@ -118,7 +118,7 @@ function SuccessInner() {
     enterprise: 'Enterprise',
     scale: 'Enterprise',
   };
-  const plan = PLAN_DISPLAY[searchParams.get('plan') || ''] || 'Pilot';
+  const plan = PLAN_DISPLAY[searchParams.get('plan') || ''] || '';
   const billing = searchParams.get('billing') || 'monthly';
   const email = searchParams.get('email') || '';
   const company = searchParams.get('company') || '';
@@ -230,11 +230,11 @@ function SuccessInner() {
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.trialPeriodRow}</span>
-                <span className="text-sm font-bold text-emerald-600">14 jours gratuits</span>
+                <span className="text-sm font-bold text-emerald-600">{copy.success.trialValue}</span>
               </div>
               <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400">{copy.success.chargedTodayRow}</span>
-                <span className="text-sm font-black text-emerald-600">EUR 0,00</span>
+                <span className="text-sm font-black text-emerald-600">{copy.success.zeroAmount}</span>
               </div>
               {isSandbox && (
                 <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800">
@@ -384,7 +384,7 @@ export default function CheckoutSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-950">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}

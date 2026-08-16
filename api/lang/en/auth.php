@@ -9,7 +9,7 @@ return [
     'account_suspended' => 'Your account has been suspended. Contact your manager.',
     'welcome' => 'Welcome :name!',
     'password_changed' => 'Password changed successfully.',
-    'password_reset_sent' => 'A password reset email has been sent.',
+    'password_reset_sent' => 'If an account exists for this email, a reset link has been sent.',
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 

@@ -35,7 +35,7 @@ class EmployeeImportController extends Controller
 
         if (count($lines) < 2) {
             return response()->json([
-                'message' => 'Le fichier CSV doit contenir un en-tete et au moins une ligne de donnees.',
+                'message' => __('errors.CSV_HEADER_REQUIRED'),
             ], 422);
         }
 
@@ -45,7 +45,7 @@ class EmployeeImportController extends Controller
 
         if (! empty($missing)) {
             return response()->json([
-                'message' => 'Colonnes requises manquantes : '.implode(', ', $missing),
+                'message' => __('errors.CSV_MISSING_COLUMNS', ['columns' => implode(', ', $missing)]),
                 'required_columns' => $requiredHeaders,
                 'found_columns' => $headers,
             ], 422);
@@ -131,12 +131,16 @@ class EmployeeImportController extends Controller
                 $status = $fillData['status'] ?? 'active';
                 unset($fillData['status']);
 
-                $fillData['password_hash'] = Hash::make(Str::random(32));
+                // Issue #4496 : password_hash n'est plus mass-assignable —
+                // extrait du tableau de création, posé explicitement après.
+                $passwordHash = Hash::make(Str::random(32));
+                unset($fillData['password_hash']);
 
                 try {
                     $employee = Employee::create($fillData);
                     $employee->company_id = $companyId;
                     $employee->status = $status;
+                    $employee->password_hash = $passwordHash;
                     $employee->save();
                     $imported++;
                 } catch (QueryException $e) {
@@ -171,7 +175,7 @@ class EmployeeImportController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Erreur lors de l\'import.',
+                'message' => __('errors.CSV_IMPORT_FAILED'),
                 'error' => 'EMPLOYEE_IMPORT_FAILED',
             ], 500);
         }

@@ -158,6 +158,64 @@
     "activateClientNow": "Musteriyi hemen etkinlestir",
     "activateClientHint": "Aksi halde musteri deneme modunda kalir."
   },
+  "subscriptions": {
+    "title": "Abonelikler",
+    "subtitle": "Süper admin kokpiti için paketler, MRR ve müşteri sözleşmeleri.",
+    "refresh": "Yenile",
+    "retry": "Tekrar Dene",
+    "unlimited": "Sınırsız",
+    "employees": "çalışan",
+    "trialDays": "deneme",
+    "public": "Herkese Açık",
+    "archived": "Arşiv",
+    "perMonth": "/ ay",
+    "billedAnnually": "yıllık faturalanır",
+    "loadError": "Abonelikler yüklenirken hata oluştu.",
+    "noPlan": "Plansız",
+    "manage": "Yönet",
+    "noRisk": "Acil risk tespit edilmedi",
+    "catalogTitle": "Teklif Kataloğu",
+    "catalogSub": "Kotalar ve özellikler için API kaynağı.",
+    "healthTitle": "Ticari Sağlık",
+    "retentionTitle": "Tutma Öncelikleri",
+    "kpi": {
+      "portfolioMrr": "Portföy MRR",
+      "activeSubscriptions": "Aktif Abonelikler",
+      "pastDue": "Gecikmiş Ödemeler",
+      "totalOverdue": "Toplam Gecikmiş",
+      "arr": "Tahmini ARR",
+      "collected30d": "30g Tahsilat",
+      "totalSubscribers": "Toplam Abone",
+      "trials": "Denemeler"
+    },
+    "risk": {
+      "high": "yüksek risk",
+      "medium": "orta risk",
+      "low": "düşük risk"
+    },
+    "features": {
+      "rh": "İK",
+      "finance": "Finans",
+      "ai": "Leo IA",
+      "cameras": "Video",
+      "tracking": "Takip",
+      "planning": "Planlama",
+      "training": "Eğitimler",
+      "cabinet": "Belgeler",
+      "biometric": "Biyometri",
+      "tasks": "Görevler",
+      "advanced_reports": "Gelişmiş raporlar",
+      "excel_export": "Excel dışa aktarma",
+      "bank_export": "Banka dışa aktarma",
+      "billing_auto": "Otomatik faturalama",
+      "multi_managers": "Çoklu yönetici",
+      "photo_attendance": "Fotoğraflı yoklama",
+      "api_public": "Genel API",
+      "evaluations": "Değerlendirmeler",
+      "schema_isolation": "Şema izolasyonu"
+    },
+    "trialUnit": "g"
+  },
   "platform_login": {
     "submitting": "Giris yapiliyor...",
     "subtitle": "Platform yonetimine ayrilmis mobil kokpit.",
@@ -608,7 +666,8 @@
       "companyTooLong": "Şirket adı çok uzun",
       "employeesRequired": "Bir ekip boyutu seçin",
       "emailInvalid": "Geçersiz e-posta",
-      "emailTooLong": "E-posta çok uzun"
+      "emailTooLong": "E-posta çok uzun",
+      "countryRequired": "Ülke zorunludur."
     },
     "pendingTitle": "Deneme talebi alındı",
     "preparingTitle": "Alanınız hazırlanıyor",
@@ -669,7 +728,9 @@
     "labelPhone": "Telefon (isteğe bağlı)",
     "copied": "Kopyalandı!",
     "labelCompany": "Şirket",
-    "copyLink": "Bağlantıyı kopyala"
+    "copyLink": "Bağlantıyı kopyala",
+    "labelCountry": "Ülke",
+    "countryPlaceholder": "Ülkenizi seçin"
   },
   "holidays": {
     "scope_national": "Ulusal",
@@ -865,7 +926,10 @@
     "confirm_delete": "Bu webhook silinsin mi?"
   },
   "a11y": {
-    "skip_to_content": "Ana içeriğe geç"
+    "skip_to_content": "Ana içeriğe geç",
+    "close": "Kapat",
+    "previous_month": "Önceki ay",
+    "next_month": "Sonraki ay"
   },
   "shell": {
     "connected": "Bagli",
@@ -939,5 +1003,45 @@
     "countryCurrency": "Ulke / Para birimi",
     "registeredOn": "Kayit tarihi",
     "lastActivity": "Son aktivite"
+  },
+  "support": {
+    "title": "Müşteri Talepleri",
+    "subtitle": "Ticari giriş, yeni şirketlerin nitelendirilmesi ve onaylanması.",
+    "refresh": "Yenile",
+    "kpiTotal": "Toplam Talep",
+    "kpiPending": "Bekleyen",
+    "kpiApproved": "Onaylandı",
+    "kpiRejected": "Reddedildi",
+    "queueTitle": "Nitelendirme kuyruğu",
+    "queueSub": "Dağıtımı hızlandırmak için adaylara öncelik verin.",
+    "syncing": "Talepler senkronize ediliyor...",
+    "retry": "Tekrar dene",
+    "empty": "Talep bulunamadı",
+    "statusPending": "Beklemede",
+    "statusApproved": "Onaylandı",
+    "statusRejected": "Reddedildi",
+    "filterAll": "Tümü",
+    "filterPending": "İncelenecek",
+    "filterApproved": "Onaylanan",
+    "filterRejected": "Reddedilen",
+    "sectorUnknown": "Sektör belirtilmedi",
+    "cityUnknown": "Bilinmeyen şehir",
+    "countryUnknown": "Bilinmeyen ülke",
+    "noDescription": "Açıklama sağlanmadı.",
+    "emailLabel": "İletişim e-postası",
+    "phoneLabel": "Telefon",
+    "notProvided": "Belirtilmedi",
+    "reviewedBy": "İnceleyen",
+    "systemAdmin": "Sistem Yöneticisi",
+    "internalNotes": "Dahili Notlar",
+    "notesPlaceholder": "Adayın meşruiyetini, şirket boyutunu değerlendirin...",
+    "reject": "Reddet",
+    "approve": "Onayla",
+    "finalDecision": "Son karar: ",
+    "showingPrefix": "Gösterilen",
+    "showingSuffix": "talep",
+    "loadError": "Müşteri talepleri senkronize edilemedi.",
+    "toastApproved": "Talep onaylandı. Sağlama başladı.",
+    "toastRejected": "Talep reddedildi."
   }
 }

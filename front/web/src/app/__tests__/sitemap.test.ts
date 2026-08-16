@@ -24,7 +24,6 @@ jest.doMock('@/modules/vitrine/lib/env', () => ({
     gaId: '',
     mixpanelToken: '',
     formEndpoint: '/api/forms',
-    sendgridApiKey: '',
     siteUrl: 'https://www.leopardo-rh.com',
     siteName: 'Leopardo',
     enableAnalytics: false,
@@ -50,9 +49,22 @@ describe('sitemap integrity (#3807)', () => {
     urls = entries.map((entry) => entry.url);
   });
 
-  it("n'inclut aucune URL noindex (signup, checkout)", () => {
+  it("n'inclut aucune URL noindex (signup, checkout, offline)", () => {
     expect(urls.some((url) => url.includes('/signup'))).toBe(false);
     expect(urls.some((url) => url.includes('/checkout'))).toBe(false);
+    // #4401 : /offline est robots:noindex (offline/layout.tsx) — retiré.
+    expect(urls.some((url) => url.includes('/offline'))).toBe(false);
+  });
+
+  it('#4401 : /privacy et /terms n\'émettent pas de variantes ?lang fantômes', () => {
+    const privacy = entries.find((entry) => entry.url.endsWith('/privacy'));
+    const terms = entries.find((entry) => entry.url.endsWith('/terms'));
+    expect(privacy?.alternates).toBeUndefined();
+    expect(terms?.alternates).toBeUndefined();
+  });
+
+  it("ne publie pas /blog quand NEXT_PUBLIC_ENABLE_BLOG est off (#4467 — régression #2647/#2904)", () => {
+    expect(urls.some((url) => url.includes('/blog'))).toBe(false);
   });
 
   it('publie les études de cas individuelles', () => {

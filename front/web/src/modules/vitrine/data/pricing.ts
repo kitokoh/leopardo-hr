@@ -1,20 +1,24 @@
 import type { AppLocale } from '@/lib/i18n'
 
 /**
- * Source de vérité des montants : api/database/seeders/PlanSeeder.php
- * (schéma canonique #2977) :
- *   Free       0€/mois  · 5 employés
- *   Pilot      29€/mois (24€/mois en annuel · 30 employés inclus)
- *   Operations 99€/mois (79€/mois en annuel · 250 employés inclus)
- *   Enterprise  sur devis · employés illimités
- * Essai : 14 jours (décision propriétaire D-E4-01, PRs #3135/#3218).
- * Aucun supplément par employé actif : les plafonds d'employés sont inclus
- * dans le prix (cohérent avec PlanSeeder.max_employees).
- * Les anciens libellés Starter/Business sont migrés par le seeder
- * (LEGACY_NAMES) ; la vitrine n'affiche plus que les noms canoniques.
+ * Source de vérité des montants — alignée sur api/database/seeders/PlanSeeder.php
+ * et PlanCode.php (ADR-0014 · 2026-08-15).
+ *
+ * Plans canoniques :
+ *   free        0 €/mois · 5 employés max · 30 jours d'essai (freemium)
+ *   pilot      29 €/mois (24 €/mois annuel = 290 €/an) · 30 employés max · 14j
+ *   operations 79 €/mois (66 €/mois annuel = 790 €/an) · 200 employés max · 14j
+ *   enterprise  sur devis · illimité · 14j
+ *
+ * ⚠ Les anciens libellés "Starter" et "Business" sont des alias legacy migrés
+ * par PlanSeeder.migrateLegacyPlanNames(). Ne plus les utiliser ici.
+ * Le champ `planCode` est envoyé tel quel au checkout — doit correspondre
+ * exactement aux valeurs de PlanCode.php.
  */
 
 export type PricingPlan = {
+  /** Code métier envoyé au checkout et à l'API — doit être un PlanCode valide */
+  planCode: 'free' | 'pilot' | 'operations' | 'enterprise'
   name: string
   price: string
   annualPrice: string
@@ -32,39 +36,41 @@ export type PricingPlan = {
 const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   fr: [
     {
+      planCode: 'free',
       name: 'Free',
       price: '0',
       annualPrice: '0',
       period: '/mois',
-      annualPeriod: '/mois, gratuit pour toujours',
-      description: 'Pour les toutes petites équipes qui veulent tester Leopardo sans engagement',
-      priceNote: 'Gratuit pour toujours. Jusqu\'à 5 employés.',
+      annualPeriod: '/mois',
+      description: 'Pour démarrer sans engagement — idéal pour les équipes de 5 personnes',
+      priceNote: '30 jours d\'essai. Jusqu\'à 5 employés.',
       employeeLimit: 'Jusqu\'à 5 employés',
       features: [
-        'Pointage web',
-        'Absences, conges et soldes',
-        'Dossiers employes et documents RH',
-        'App mobile Employee incluse',
-        'Jusqu\'à 5 employés',
-        'Support email',
+        'Pointage web et mobile basique',
+        'Absences et congés (consultation)',
+        'Dossiers employés essentiels',
+        'Bulletins de paie PDF',
+        'App Employee incluse',
+        'Support communautaire',
       ],
       cta: 'Commencer gratuitement',
       popular: false,
-      gradient: 'from-slate-500 to-slate-600',
+      gradient: 'from-gray-500 to-gray-600',
     },
     {
+      planCode: 'pilot',
       name: 'Pilot',
       price: '29',
       annualPrice: '24',
       period: '/mois',
       annualPeriod: '/mois, facturé annuellement',
-      description: 'Pour tester Leopardo sur un site, une equipe ou une agence',
-      priceNote: '14 jours offerts. 30 employés inclus.',
-      employeeLimit: "Jusqu'à 30 employés",
+      description: 'Pour piloter Leopardo sur un site, une équipe ou une agence',
+      priceNote: '14 jours offerts. Jusqu\'à 30 employés.',
+      employeeLimit: 'Jusqu\'à 30 employés',
       features: [
         'Pointage web et mobile',
-        'Absences, conges et soldes',
-        'Dossiers employes et documents RH',
+        'Absences, congés et soldes',
+        'Dossiers employés et documents RH',
         'Bulletins de paie PDF et exports essentiels',
         'Portail client et espace manager',
         'Apps Employee et Manager incluses',
@@ -75,21 +81,22 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       gradient: 'from-slate-600 to-slate-700',
     },
     {
+      planCode: 'operations',
       name: 'Operations',
-      price: '99',
-      annualPrice: '79',
+      price: '79',
+      annualPrice: '66',
       period: '/mois',
       annualPeriod: '/mois, facturé annuellement',
-      description: 'Pour les PME multi-equipes qui veulent piloter terrain, RH et paie simple',
-      priceNote: '14 jours offerts. 250 employés inclus.',
-      employeeLimit: "Jusqu'à 250 employés",
+      description: 'Pour les PME multi-équipes qui pilotent terrain, RH et paie',
+      priceNote: '14 jours offerts. Jusqu\'à 200 employés.',
+      employeeLimit: 'Jusqu\'à 200 employés',
       features: [
         'Tout Pilot, plus :',
         'Paie multi-pays et validations RH',
-        'Managers, equipes et workflows d approbation',
+        'Managers, équipes et workflows d\'approbation',
         'Pointage ZKTeco, kiosque et mobile',
-        'Analytics RH, readiness et exports avances',
-        'API, webhooks et integrations',
+        'Analytics RH, readiness et exports avancés',
+        'API, webhooks et intégrations',
         'Support prioritaire sous 24h',
       ],
       cta: 'Essayer Operations',
@@ -97,19 +104,20 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       gradient: 'from-emerald-500 to-cyan-500',
     },
     {
+      planCode: 'enterprise',
       name: 'Enterprise',
       price: 'Sur devis',
       annualPrice: 'Sur devis',
-      period: '/mois',
-      annualPeriod: '/mois, facturé annuellement',
-      description: 'Pour groupes multi-pays, franchises, reseaux de sites et exigences fortes',
+      period: '',
+      annualPeriod: '',
+      description: 'Pour groupes multi-pays, franchises, réseaux de sites et exigences fortes',
       priceNote: '14 jours offerts. Employés illimités.',
       employeeLimit: 'Employés illimités',
       features: [
         'Tout Operations, plus :',
-        'SSO SAML/OIDC (bientot disponible) et politiques avancees',
+        'SSO SAML/OIDC et politiques avancées',
         'SLA, accompagnement migration et formation',
-        'Environnements dedies ou region cloud choisie',
+        'Environnements dédiés ou région cloud choisie',
         'Audit trail, exports compliance et support prioritaire',
         'Options IA, connecteurs et gouvernance sur mesure',
       ],
@@ -120,34 +128,36 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   ],
   en: [
     {
+      planCode: 'free',
       name: 'Free',
       price: '0',
       annualPrice: '0',
       period: '/month',
-      annualPeriod: '/month, free forever',
-      description: 'For very small teams who want to try Leopardo with no commitment',
-      priceNote: 'Free forever. Up to 5 employees.',
+      annualPeriod: '/month',
+      description: 'Start without commitment — ideal for teams of up to 5 people',
+      priceNote: '30-day trial. Up to 5 employees.',
       employeeLimit: 'Up to 5 employees',
       features: [
-        'Web attendance',
-        'Leave, absences and balances',
-        'Employee records and HR documents',
-        'Employee mobile app included',
-        'Up to 5 employees',
-        'Email support',
+        'Basic web and mobile attendance',
+        'Leave and absence consultation',
+        'Essential employee records',
+        'PDF pay slips',
+        'Employee app included',
+        'Community support',
       ],
       cta: 'Start for free',
       popular: false,
-      gradient: 'from-slate-500 to-slate-600',
+      gradient: 'from-gray-500 to-gray-600',
     },
     {
+      planCode: 'pilot',
       name: 'Pilot',
       price: '29',
       annualPrice: '24',
       period: '/month',
       annualPeriod: '/month, billed annually',
       description: 'For testing Leopardo on one site, team or branch',
-      priceNote: '14 days free. Up to 30 employees included.',
+      priceNote: '14 days free. Up to 30 employees.',
       employeeLimit: 'Up to 30 employees',
       features: [
         'Web and mobile attendance',
@@ -163,14 +173,15 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       gradient: 'from-slate-600 to-slate-700',
     },
     {
+      planCode: 'operations',
       name: 'Operations',
-      price: '99',
-      annualPrice: '79',
+      price: '79',
+      annualPrice: '66',
       period: '/month',
       annualPeriod: '/month, billed annually',
-      description: 'For SMBs managing field teams, HR workflows and simple payroll',
-      priceNote: '14 days free. Up to 250 employees included.',
-      employeeLimit: 'Up to 250 employees',
+      description: 'For SMBs managing field teams, HR workflows and payroll',
+      priceNote: '14 days free. Up to 200 employees.',
+      employeeLimit: 'Up to 200 employees',
       features: [
         'Everything in Pilot, plus:',
         'Multi-country payroll and HR validations',
@@ -185,17 +196,18 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       gradient: 'from-emerald-500 to-cyan-500',
     },
     {
+      planCode: 'enterprise',
       name: 'Enterprise',
       price: 'Custom',
       annualPrice: 'Custom',
-      period: '/month',
-      annualPeriod: '/month, billed annually',
+      period: '',
+      annualPeriod: '',
       description: 'For multi-country groups, franchises, site networks and strict governance',
       priceNote: '14 days free. Unlimited employees.',
       employeeLimit: 'Unlimited employees',
       features: [
         'Everything in Operations, plus:',
-        'SAML/OIDC SSO (coming soon) and advanced policies',
+        'SAML/OIDC SSO and advanced policies',
         'SLA, migration guidance and training',
         'Dedicated environments or selected cloud region',
         'Audit trail, compliance exports and priority support',
@@ -208,86 +220,90 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   ],
   tr: [
     {
+      planCode: 'free',
       name: 'Free',
       price: '0',
       annualPrice: '0',
       period: '/ay',
-      annualPeriod: '/ay, sonsuza dek ücretsiz',
-      description: 'Leopardo yu taahhutsuz denemek isteyen cok kucuk ekipler icin',
-      priceNote: 'Sonsuza dek ücretsiz. 5 çalışana kadar.',
+      annualPeriod: '/ay',
+      description: 'Taahhütsüz başlayın — 5 kişiye kadar ekipler için ideal',
+      priceNote: '30 gün deneme. 5 çalışana kadar.',
       employeeLimit: '5 çalışana kadar',
       features: [
-        'Web yoklama',
-        'Izin, devamsizlik ve bakiye takibi',
-        'Calisan dosyalari ve IK belgeleri',
-        'Employee mobil uygulamasi dahil',
-        '5 çalışana kadar',
-        'E-posta destegi',
+        'Temel web ve mobil yoklama',
+        'İzin ve devamsızlık görüntüleme',
+        'Temel çalışan kayıtları',
+        'PDF bordro dökümleri',
+        'Employee uygulaması dahil',
+        'Topluluk desteği',
       ],
       cta: 'Ücretsiz başla',
       popular: false,
-      gradient: 'from-slate-500 to-slate-600',
+      gradient: 'from-gray-500 to-gray-600',
     },
     {
+      planCode: 'pilot',
       name: 'Pilot',
       price: '29',
       annualPrice: '24',
       period: '/ay',
-      annualPeriod: '/ay, yillik faturalama',
-      description: 'Leopardo yu tek saha, ekip veya subede denemek icin',
-      priceNote: '14 gün ücretsiz. 30 çalışan dahil.',
+      annualPeriod: '/ay, yıllık faturalama',
+      description: 'Leopardo\'yu tek saha, ekip veya şubede denemek için',
+      priceNote: '14 gün ücretsiz. 30 çalışana kadar.',
       employeeLimit: '30 çalışana kadar',
       features: [
         'Web ve mobil yoklama',
-        'Izin, devamsizlik ve bakiye takibi',
-        'Calisan dosyalari ve IK belgeleri',
-        'PDF bordro dokumu ve temel dis aktarimlar',
-        'Musteri portali ve yonetici alani',
-        'Employee ve Manager uygulamalari dahil',
-        '48 saat icinde e-posta destegi',
+        'İzin, devamsızlık ve bakiye takibi',
+        'Çalışan dosyaları ve İK belgeleri',
+        'PDF bordro dökümleri ve temel dışa aktarımlar',
+        'Müşteri portalı ve yönetici alanı',
+        'Employee ve Manager uygulamaları dahil',
+        '48 saat içinde e-posta desteği',
       ],
       cta: 'Ücretsiz denemeye başla',
       popular: false,
       gradient: 'from-slate-600 to-slate-700',
     },
     {
+      planCode: 'operations',
       name: 'Operations',
-      price: '99',
-      annualPrice: '79',
+      price: '79',
+      annualPrice: '66',
       period: '/ay',
-      annualPeriod: '/ay, yillik faturalama',
-      description: 'Saha ekipleri, IK akislari ve basit bordro yoneten KOBI ler icin',
-      priceNote: '14 gün ücretsiz. 250 çalışan dahil.',
-      employeeLimit: '250 çalışana kadar',
+      annualPeriod: '/ay, yıllık faturalama',
+      description: 'Saha ekipleri, İK akışları ve bordro yöneten KOBİ\'ler için',
+      priceNote: '14 gün ücretsiz. 200 çalışana kadar.',
+      employeeLimit: '200 çalışana kadar',
       features: [
-        'Pilot taki her sey, arti:',
-        'Cok ulkeli bordro ve IK onaylari',
-        'Yoneticiler, ekipler ve onay akislari',
+        'Pilot\'taki her şey, artı:',
+        'Çok ülkeli bordro ve İK onayları',
+        'Yöneticiler, ekipler ve onay akışları',
         'ZKTeco, kiosk ve mobil yoklama',
-        'IK analitigi, readiness ve gelismis dis aktarimlar',
+        'İK analitiği, readiness ve gelişmiş dışa aktarımlar',
         'API, webhook ve entegrasyonlar',
-        '24 saat icinde oncelikli destek',
+        '24 saat içinde öncelikli destek',
       ],
-      cta: 'Operations’ı dene',
+      cta: 'Operations\'ı dene',
       popular: true,
       gradient: 'from-emerald-500 to-cyan-500',
     },
     {
+      planCode: 'enterprise',
       name: 'Enterprise',
       price: 'Teklif',
       annualPrice: 'Teklif',
-      period: '/ay',
-      annualPeriod: '/ay, yillik faturalama',
-      description: 'Cok ulkeli gruplar, franchise lar, saha aglari ve yuksek yonetisim icin',
+      period: '',
+      annualPeriod: '',
+      description: 'Çok ülkeli gruplar, franchise\'lar, saha ağları ve yüksek yönetişim için',
       priceNote: '14 gün ücretsiz. Sınırsız çalışan.',
       employeeLimit: 'Sınırsız çalışan',
       features: [
-        'Operations taki her sey, arti:',
-        'SAML/OIDC SSO (yakinda) ve gelismis politikalar',
-        'SLA, gecis destegi ve egitim',
-        'Ozel ortamlar veya secilen bulut bolgesi',
-        'Denetim izi, uyumluluk dis aktarimlari ve oncelikli destek',
-        'IA, baglayicilar ve yonetisim opsiyonlari',
+        'Operations\'taki her şey, artı:',
+        'SAML/OIDC SSO ve gelişmiş politikalar',
+        'SLA, geçiş desteği ve eğitim',
+        'Özel ortamlar veya seçilen bulut bölgesi',
+        'Denetim izi, uyumluluk dışa aktarımları ve öncelikli destek',
+        'AI, bağlayıcılar ve yönetişim seçenekleri',
       ],
       cta: 'Satışla iletişime geç',
       popular: false,
@@ -296,35 +312,37 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   ],
   ar: [
     {
+      planCode: 'free',
       name: 'Free',
       price: '0',
       annualPrice: '0',
       period: '/شهر',
-      annualPeriod: '/شهر، مجاني للأبد',
-      description: 'للفرق الصغيرة جدا التي تريد تجربة Leopardo دون التزام',
-      priceNote: 'مجاني للأبد. حتى 5 موظفين.',
+      annualPeriod: '/شهر',
+      description: 'ابدأ بدون التزام — مثالي للفرق حتى 5 أشخاص',
+      priceNote: '30 يومًا مجانًا. حتى 5 موظفين.',
       employeeLimit: 'حتى 5 موظفين',
       features: [
-        'الحضور عبر الويب',
-        'الإجازات والغيابات والأرصدة',
-        'ملفات الموظفين والوثائق الإدارية',
-        'تطبيق Employee للجوال مشمول',
-        'حتى 5 موظفين',
-        'دعم عبر البريد الإلكتروني',
+        'الحضور الأساسي عبر الويب والجوال',
+        'عرض الإجازات والغيابات',
+        'سجلات الموظفين الأساسية',
+        'قسائم رواتب PDF',
+        'تطبيق Employee مشمول',
+        'دعم المجتمع',
       ],
       cta: 'ابدأ مجانًا',
       popular: false,
-      gradient: 'from-slate-500 to-slate-600',
+      gradient: 'from-gray-500 to-gray-600',
     },
     {
+      planCode: 'pilot',
       name: 'Pilot',
       price: '29',
       annualPrice: '24',
       period: '/شهر',
       annualPeriod: '/شهر مع فوترة سنوية',
       description: 'لاختبار Leopardo على موقع واحد أو فريق أو فرع',
-      priceNote: '14 يوما مجانا. يشمل 30 موظفا.',
-      employeeLimit: 'حتى 30 موظفا',
+      priceNote: '14 يومًا مجانًا. يشمل حتى 30 موظفًا.',
+      employeeLimit: 'حتى 30 موظفًا',
       features: [
         'الحضور عبر الويب والجوال',
         'الإجازات والغيابات والأرصدة',
@@ -339,20 +357,21 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       gradient: 'from-slate-600 to-slate-700',
     },
     {
+      planCode: 'operations',
       name: 'Operations',
-      price: '99',
-      annualPrice: '79',
+      price: '79',
+      annualPrice: '66',
       period: '/شهر',
       annualPeriod: '/شهر مع فوترة سنوية',
       description: 'للشركات الصغيرة والمتوسطة التي تحتاج الحضور والرواتب والمديرين والتحليلات',
-      priceNote: '14 يوما مجانا. يشمل 250 موظفا.',
-      employeeLimit: 'حتى 250 موظفا',
+      priceNote: '14 يومًا مجانًا. يشمل حتى 200 موظف.',
+      employeeLimit: 'حتى 200 موظف',
       features: [
         'كل ما في Pilot، بالإضافة إلى:',
-        'رواتب متعددة البلدان وموافقات موارد بشرية',
+        'رواتب متعددة البلدان وموافقات الموارد البشرية',
         'مديرون وفرق ومسارات اعتماد',
         'حضور ZKTeco والكشك والجوال',
-        'تحليلات موارد بشرية وجاهزية وتصديرات متقدمة',
+        'تحليلات الموارد البشرية وجاهزية وتصديرات متقدمة',
         'API وwebhooks وتكاملات',
         'دعم أولوية خلال 24 ساعة',
       ],
@@ -361,17 +380,18 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       gradient: 'from-emerald-500 to-cyan-500',
     },
     {
+      planCode: 'enterprise',
       name: 'Enterprise',
       price: 'حسب الطلب',
       annualPrice: 'حسب الطلب',
-      period: '/شهر',
-      annualPeriod: '/شهر مع فوترة سنوية',
+      period: '',
+      annualPeriod: '',
       description: 'للمجموعات متعددة البلدان وشبكات المواقع والحوكمة المتقدمة',
-      priceNote: '14 يوما مجانا. موظفون بلا حدود.',
+      priceNote: '14 يومًا مجانًا. موظفون بلا حدود.',
       employeeLimit: 'موظفون بلا حدود',
       features: [
         'كل ما في Operations، بالإضافة إلى:',
-        'SSO عبر SAML/OIDC (قريبًا) وسياسات متقدمة',
+        'SSO عبر SAML/OIDC وسياسات متقدمة',
         'اتفاقية خدمة ومرافقة انتقال وتدريب',
         'بيئات مخصصة أو منطقة سحابية مختارة',
         'سجل تدقيق وتصديرات امتثال ودعم أولوية',
@@ -386,4 +406,16 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
 
 export function getPricingPlans(locale: AppLocale): PricingPlan[] {
   return pricingByLocale[locale] ?? pricingByLocale.fr
+}
+
+/**
+ * #4404 — source unique « prix machine vs devis ».
+ * Un plan « sur devis » n'a pas de prix machine : la carte ne doit afficher
+ * aucun montant et son CTA doit mener au contact, jamais au checkout.
+ * Liste complète des libellés « devis » par locale (pricing.ts data) —
+ * attention aux mots AR distincts : « حسب الطلب » (sur demande) est le
+ * libellé de données ; « حسب العرض » (selon l'offre) n'est PAS utilisé.
+ */
+export function showsCurrency(price: string): boolean {
+  return !['Sur devis', 'Custom', 'Teklif', 'Teklif alın', 'حسب الطلب'].includes(price)
 }

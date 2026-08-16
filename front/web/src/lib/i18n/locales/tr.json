@@ -759,8 +759,11 @@
       "roleRequired": "Rolünüzü seçin",
       "employeesRequired": "Bir ekip boyutu seçin",
       "phoneInvalid": "Geçersiz telefon numarası",
-      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
-    }
+      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz",
+      "countryRequired": "Ülke zorunludur."
+    },
+    "labelCountry": "Ülke",
+    "countryPlaceholder": "Ülkenizi seçin"
   },
   "companies": {
     "toast": {
@@ -855,7 +858,10 @@
     "confirm_delete": "Bu webhook silinsin mi?"
   },
   "a11y": {
-    "skip_to_content": "Ana içeriğe geç"
+    "skip_to_content": "Ana içeriğe geç",
+    "close": "Kapat",
+    "previous_month": "Önceki ay",
+    "next_month": "Sonraki ay"
   },
   "shell": {
     "connected": "Bagli",

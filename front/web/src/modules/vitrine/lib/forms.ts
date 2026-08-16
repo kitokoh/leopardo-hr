@@ -83,6 +83,9 @@ export async function submitSignupForm(
       role: data.role,
       employees: data.employees,
       phone: data.phone ? sanitizeInput(data.phone) : undefined,
+      // #4476 : le pays est requis par l'API trial/signup (MULTI-PAYS #1867) —
+      // sans lui le tunnel se dégradait en lead capture pour 100 % des demandes.
+      country: data.country ? data.country.toUpperCase() : undefined,
     };
 
     const response = await fetch("/api/forms/signup", {

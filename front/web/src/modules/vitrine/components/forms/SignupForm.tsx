@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  Globe,
 } from 'lucide-react';
 import { Input } from '@/modules/vitrine/components/common/Input';
 import { Button } from '@/modules/vitrine/components/common/Button';
@@ -29,6 +30,7 @@ import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
+import { fetchSupportedCountries, type SupportedCountryOption } from '@/modules/vitrine/data/supported-countries';
 import { t } from '@/lib/i18n/locale-catalog';
 
 interface SignupFormProps {
@@ -54,7 +56,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -87,6 +89,20 @@ export function SignupForm({
   const [formState, dispatch] = useReducer(createFormReducer(), initialFormState);
   const { trackSignup } = useAnalyticsForm();
   const role = watch('role');
+
+  // #4476 — pays supportés pour l'essai guidé (registre public #4217, fallback
+  // statique si le backend est injoignable). Sans pays, l'API trial/signup
+  // répond 422 et le tunnel se dégradait en capture de lead silencieuse.
+  const [countries, setCountries] = useState<SupportedCountryOption[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetchSupportedCountries().then((list) => {
+      if (!cancelled) setCountries(list);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Multi-step state
   const [currentStep, setCurrentStep] = useState<Step>('form');
@@ -407,6 +423,31 @@ export function SignupForm({
                 </label>
               </div>
 
+              <label className="block">
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  <Globe className="h-4 w-4" />
+                  {c.labelCountry}
+                </span>
+                <select
+                  className={selectClassName}
+                  aria-invalid={errors.country ? true : undefined}
+                  aria-describedby={errors.country ? 'signup-country-error' : undefined}
+                  {...register('country')}
+                >
+                  <option value="">{c.countryPlaceholder}</option>
+                  {countries.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.country && (
+                  <p id="signup-country-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    {errors.country.message}
+                  </p>
+                )}
+              </label>
+
               <Input
                 label={c.labelPhone}
                 type="tel"
@@ -525,6 +566,7 @@ export function SignupForm({
                   onChange={(e) => handleOtpChange(i, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(i, e)}
                   onPaste={i === 0 ? handleOtpPaste : undefined}
+                  aria-label={`${c.otpTitle} ${i + 1}`}
                   className={`h-14 w-12 rounded-xl border-2 text-center text-2xl font-bold outline-none transition-all
                     ${otpError
                       ? 'border-red-300 bg-red-50 text-red-900 dark:border-red-700 dark:bg-red-950/30 dark:text-red-200'

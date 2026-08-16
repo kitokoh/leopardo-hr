@@ -55,4 +55,40 @@ class SupportedCountryControllerTest extends TestCase
         // Non-régression : seul le registre public est sorti du groupe auth.
         $this->getJson('/api/v1/auth/me')->assertUnauthorized();
     }
+
+    public function test_registry_warning_language_is_consistent_per_country(): void
+    {
+        // #4446 : le champ brut `warning` doit être dans la langue des règles
+        // (EN pour pilot/placeholder/unknown — source docs), indépendamment de
+        // la locale de la requête ; `warning_localized` porte la localisation.
+        $response = $this->getJson('/api/v1/supported-countries')->assertOk();
+        $registry = $response->json('data');
+        $this->assertNotEmpty($registry);
+
+        $frenchWarnings = 0;
+        foreach ($registry as $entry) {
+            $this->assertIsString($entry['compliance']['warning']);
+            $this->assertIsString($entry['compliance']['warning_localized']);
+            // Le warning brut ne doit plus être un littéral FR (régression #4446).
+            if (str_contains($entry['compliance']['warning'], 'Pays sans règles')
+                || str_contains($entry['compliance']['warning'], 'Règles de structure')
+                || str_contains($entry['compliance']['warning'], 'Règles pilotes')) {
+                $frenchWarnings++;
+            }
+        }
+        $this->assertSame(0, $frenchWarnings, 'Aucun warning brut FR ne doit rester dans le registre public.');
+    }
+
+    public function test_english_countries_have_english_labels(): void
+    {
+        // #4446 : les pays déclarés `language: en` servent un label en anglais
+        // (United States / United Kingdom), pas le libellé FR francisé.
+        $response = $this->getJson('/api/v1/supported-countries')->assertOk();
+        $byCode = collect($response->json('data'))->keyBy('country');
+
+        $this->assertSame('United States', $byCode['US']['label'] ?? null, 'Label US doit être en anglais.');
+        $this->assertSame('United Kingdom', $byCode['GB']['label'] ?? null, 'Label GB doit être en anglais.');
+        $this->assertSame('en', $byCode['US']['language'] ?? null);
+        $this->assertSame('en', $byCode['GB']['language'] ?? null);
+    }
 }

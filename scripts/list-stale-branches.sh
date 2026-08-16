@@ -3,7 +3,7 @@
 # PA2-AUTO-009: liste les branches distantes fusionnees dans la branche de
 # base (par defaut `main`) et/ou stale (aucun commit depuis N jours), pour
 # aider a la suppression manuelle controlee. N'effectue AUCUNE suppression
-# automatique par design (protocole multi-agent, docs/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md,
+# automatique par design (protocole multi-agent, docs/archive/PLAN_ACTION2/01_MODE_EXECUTION_MULTI_AGENT.md,
 # n'autorise que le merge de PR verifiees comme preuve de livraison ;
 # supprimer une branche sans confirmation humaine pourrait detruire le
 # travail en cours d'un agent qui n'a pas encore ouvert de PR).

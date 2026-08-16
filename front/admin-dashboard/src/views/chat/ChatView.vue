@@ -128,6 +128,9 @@ import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+// #4564 : refs d'état d'erreur manquants (utilisés par le template + fetch, #4333).
+const conversationsError = ref(false)
+const messagesError = ref(false)
 const conversations = ref([])
 const activeConversation = ref(null)
 const messages = ref([])

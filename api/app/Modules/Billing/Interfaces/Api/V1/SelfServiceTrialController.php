@@ -287,9 +287,9 @@ class SelfServiceTrialController extends Controller
                     'ends_at' => now()->addDays(14)->toIso8601String(),
                 ],
                 'next_steps' => [
-                    'login' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',
-                    'change_password' => 'Changez votre mot de passe dès la première connexion.',
-                    'add_employees' => 'Ajoutez vos premiers employés via QR ou manuellement.',
+                    'login' => __('errors.TRIAL_STEP_LOGIN'),
+                    'change_password' => __('errors.TRIAL_STEP_CHANGE_PASSWORD'),
+                    'add_employees' => __('errors.TRIAL_STEP_ADD_EMPLOYEES'),
                 ],
             ],
         ], 201);
