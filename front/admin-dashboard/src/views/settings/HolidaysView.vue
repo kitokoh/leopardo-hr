@@ -231,7 +231,7 @@
   <ConfirmDialog
     :open="confirmYearOpen"
     :title="t('holidays.islamic.confirm_title', 'Confirmer l\'année ?')"
-    :message="t('holidays.islamic.confirm_dialog', { year: islamicYear.value })"
+    :message="t('holidays.islamic.confirm_dialog', { year: islamicYear })"
     confirm-label="Confirmer"
     @confirm="confirmYear"
     @cancel="confirmYearOpen = false"
