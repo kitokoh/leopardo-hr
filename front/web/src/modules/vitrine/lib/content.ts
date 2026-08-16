@@ -2,6 +2,8 @@
  * Module page content for the vitrine
  */
 
+import type { AppLocale } from '@/lib/i18n'
+
 export const modulePageContent = {
   employes: {
     hero: {
@@ -719,3 +721,466 @@ export const modulePageContent = {
     },
   },
 };
+
+/* ─────────────────────────────────────────────────────────────
+   LOCALISATION (issue #4196) — lot 1 : module « employes ».
+   Le contenu FR ci-dessus (modulePageContent) sert de référence et
+   de fallback. Les locales en/tr/ar fournissent leurs traductions
+   module par module ; `getModulePageContent(locale)` fusionne la
+   locale sur le FR (les modules non encore traduits retombent sur FR,
+   pattern des lots #4206/#4191). Les lots suivants complètent
+   documents / comptabilite / marketing.
+────────────────────────────────────────────────────────────── */
+
+type ModulePageContent = typeof modulePageContent
+
+const modulePageContentEn: Partial<ModulePageContent> = {
+  employes: {
+    hero: {
+      headline: 'Simplified HR Management for SMEs',
+      subheadline: 'Time tracking, absences, schedules and reviews in one place',
+      ctaPrimary: { text: 'Free trial', href: '/signup?module=employes' },
+      ctaSecondary: { text: 'See the demo', href: '/demo?module=employes' },
+    },
+    problem: {
+      title: 'Still managing employees with Excel and emails?',
+      subtitle: 'Common challenges of SMEs without an HR solution',
+      items: [
+        { title: 'Manual time tracking', description: 'Errors, fraud, and wasted time managing paper timesheets' },
+        { title: 'No visibility', description: 'No way to see who is present, absent or on leave in real time' },
+        { title: 'Complex leave management', description: 'Scattered requests, manual approvals, wrong balances' },
+        { title: 'Difficult scheduling', description: 'Manual planning, undetected conflicts, inefficient communication' },
+      ],
+    },
+    solution: {
+      title: 'How Leopardo Solves These Problems',
+      subtitle: 'A centralized platform for all your HR management',
+      description: 'Leopardo automates and centralizes every aspect of managing your employees, from payroll to absences.',
+      features: [
+        { title: 'Smart time tracking', description: 'NFC, biometrics, QR code or geolocation — choose your method' },
+        { title: 'Leave management', description: 'Automated requests, multi-level approvals, real-time balances' },
+        { title: 'Flexible scheduling', description: 'Shared calendars, smart alerts, conflict management' },
+        { title: 'Reviews & performance', description: 'Continuous feedback, aligned goals, performance tracking' },
+      ],
+    },
+    caseStudies: {
+      title: 'Real Use Cases',
+      subtitle: 'See how our customers use Leopardo',
+      items: [
+        {
+          title: 'Tech Startup: from 5 to 50 employees',
+          description: 'How a startup managed its growth with Leopardo',
+          industry: 'Technology',
+          metrics: [
+            { label: 'Time saved', value: '15h/week' },
+            { label: 'Payroll errors', value: '0' },
+            { label: 'Satisfaction', value: '98%' },
+          ],
+          link: '/case-studies/startup',
+        },
+        {
+          title: 'Retail: 50 point-of-sale locations',
+          description: 'Centralized time tracking for a store chain',
+          industry: 'Retail',
+          metrics: [
+            { label: 'Locations', value: '50' },
+            { label: 'Employees managed', value: '500+' },
+            { label: 'Cost reduction', value: '30%' },
+          ],
+          link: '/case-studies/retail',
+        },
+        {
+          title: 'Factory: advanced biometrics',
+          description: 'Biometric time tracking for a 200-employee factory',
+          industry: 'Manufacturing',
+          metrics: [
+            { label: 'Employees', value: '200' },
+            { label: 'Accuracy', value: '99.9%' },
+            { label: 'Fraud reduced', value: '95%' },
+          ],
+          link: '/case-studies/factory',
+        },
+      ],
+    },
+    testimonials: {
+      title: 'Customer Testimonials',
+      subtitle: 'What our customers say about Leopardo',
+      items: [
+        {
+          quote: 'Leopardo transformed our HR management. We save 10 hours a week!',
+          author: 'Marie Dupont',
+          role: 'HR Manager',
+          company: 'TechStartup Inc',
+          avatar: '/avatars/marie.svg',
+          rating: 5,
+        },
+        {
+          quote: 'The best HR solution we have ever used. Zero errors for 2 years.',
+          author: 'Jean Martin',
+          role: 'Accountant',
+          company: 'Finance Pro',
+          avatar: '/avatars/jean.svg',
+          rating: 5,
+        },
+        {
+          quote: 'Excellent support and an intuitive interface. Our employees love it!',
+          author: 'Sophie Bernard',
+          role: 'Director',
+          company: 'Retail Solutions',
+          avatar: '/avatars/sophie.svg',
+          rating: 5,
+        },
+        {
+          quote: 'Finally a solution that grows with us. Impressive scalability.',
+          author: 'Pierre Leclerc',
+          role: 'Founder',
+          company: 'Growth Ventures',
+          avatar: '/avatars/pierre.svg',
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: 'Frequently Asked Questions',
+      subtitle: 'Find answers to your questions',
+      items: [
+        {
+          question: 'Which time tracking methods do you support?',
+          answer: 'We support several methods: facial recognition, NFC, QR code, geolocation and manual entry. You can combine methods to fit your needs.',
+        },
+        {
+          question: 'How do you manage absences?',
+          answer: 'Employees request time off from the mobile app. Managers approve according to your workflow. Balances are computed automatically and updated in real time.',
+        },
+        {
+          question: 'Can you manage multiple sites?',
+          answer: 'Yes, Leopardo supports multiple sites with different configurations. Manage all your sites from a single dashboard.',
+        },
+        {
+          question: 'How does scheduling work?',
+          answer: 'Create shared calendars, assign shifts, and Leopardo automatically detects conflicts. Employees are notified of their shifts.',
+        },
+        {
+          question: 'Can you integrate with our payroll?',
+          answer: 'Yes, time tracking and absence data are automatically synchronized with the payroll module for accurate calculations.',
+        },
+        {
+          question: 'How long does it take to get started?',
+          answer: 'Setup takes less than 5 minutes. You can start using Leopardo immediately after signing up.',
+        },
+      ],
+    },
+    cta: {
+      headline: 'Ready to simplify your HR management?',
+      subheadline: 'Start your free 14-day trial today',
+      ctaPrimary: { text: 'Free trial', href: '/signup?module=employes' },
+      ctaSecondary: { text: 'Request a demo', href: '/demo?module=employes' },
+    },
+  },
+}
+
+const modulePageContentTr: Partial<ModulePageContent> = {
+  employes: {
+    hero: {
+      headline: "KOBİ'ler için Basitleştirilmiş İK Yönetimi",
+      subheadline: 'Yoklama, izinler, planlamalar ve değerlendirmeler tek yerde',
+      ctaPrimary: { text: 'Ücretsiz deneme', href: '/signup?module=employes' },
+      ctaSecondary: { text: 'Demoyu gör', href: '/demo?module=employes' },
+    },
+    problem: {
+      title: 'Çalışanlarınızı hâlâ Excel ve e-postalarla mı yönetiyorsunuz?',
+      subtitle: "İK çözümü olmayan KOBİ'lerin karşılaştığı zorluklar",
+      items: [
+        { title: 'Manuel yoklama', description: 'Hatalar, sahtecilik ve kağıt puantajlarla harcanan zaman' },
+        { title: 'Görünürlük yok', description: 'Kimin işte, kimin izinli olduğunu gerçek zamanlı görememek' },
+        { title: 'Karmaşık izin yönetimi', description: 'Dağınık talepler, manuel onaylar, hatalı bakiyeler' },
+        { title: 'Zor planlama', description: 'Manuel planlama, fark edilmeyen çakışmalar, verimsiz iletişim' },
+      ],
+    },
+    solution: {
+      title: 'Leopardo Bu Sorunları Nasıl Çözer',
+      subtitle: 'Tüm İK yönetiminiz için merkezi bir platform',
+      description: 'Leopardo, bordrodan izinlere kadar çalışan yönetiminizin her yönünü otomatikleştirir ve merkezileştirir.',
+      features: [
+        { title: 'Akıllı yoklama', description: 'NFC, biyometri, QR kod veya konum — yönteminizi seçin' },
+        { title: 'İzin yönetimi', description: 'Otomatik talepler, çok seviyeli onaylar, gerçek zamanlı bakiyeler' },
+        { title: 'Esnek planlama', description: 'Paylaşılan takvimler, akıllı uyarılar, çakışma yönetimi' },
+        { title: 'Değerlendirme ve performans', description: 'Sürekli geri bildirim, uyumlu hedefler, performans takibi' },
+      ],
+    },
+    caseStudies: {
+      title: 'Gerçek Kullanım Örnekleri',
+      subtitle: "Müşterilerimizin Leopardo'yu nasıl kullandığını görün",
+      items: [
+        {
+          title: "Teknoloji girişimi: 5'ten 50 çalışana",
+          description: 'Bir girişim büyümesini Leopardo ile nasıl yönetti',
+          industry: 'Teknoloji',
+          metrics: [
+            { label: 'Tasarruf edilen zaman', value: '15s/hafta' },
+            { label: 'Bordro hatası', value: '0' },
+            { label: 'Memnuniyet', value: '%98' },
+          ],
+          link: '/case-studies/startup',
+        },
+        {
+          title: 'Perakende: 50 satış noktası',
+          description: 'Bir mağaza zinciri için merkezi yoklama',
+          industry: 'Perakende',
+          metrics: [
+            { label: 'Satış noktası', value: '50' },
+            { label: 'Yönetilen çalışan', value: '500+' },
+            { label: 'Maliyet düşüşü', value: '%30' },
+          ],
+          link: '/case-studies/retail',
+        },
+        {
+          title: 'Fabrika: gelişmiş biyometri',
+          description: '200 çalışanlı bir fabrika için biyometrik yoklama',
+          industry: 'Üretim',
+          metrics: [
+            { label: 'Çalışan', value: '200' },
+            { label: 'Doğruluk', value: '%99,9' },
+            { label: 'Azaltılan sahtecilik', value: '%95' },
+          ],
+          link: '/case-studies/factory',
+        },
+      ],
+    },
+    testimonials: {
+      title: 'Müşteri Görüşleri',
+      subtitle: 'Müşterilerimizin Leopardo hakkında söyledikleri',
+      items: [
+        {
+          quote: 'Leopardo İK yönetimimizi dönüştürdü. Haftada 10 saat tasarruf ediyoruz!',
+          author: 'Marie Dupont',
+          role: 'İK Müdürü',
+          company: 'TechStartup Inc',
+          avatar: '/avatars/marie.svg',
+          rating: 5,
+        },
+        {
+          quote: 'Şimdiye kadar kullandığımız en iyi İK çözümü. 2 yıldır sıfır hata.',
+          author: 'Jean Martin',
+          role: 'Muhasebeci',
+          company: 'Finance Pro',
+          avatar: '/avatars/jean.svg',
+          rating: 5,
+        },
+        {
+          quote: 'Mükemmel destek ve sezgisel arayüz. Çalışanlarımız bayılıyor!',
+          author: 'Sophie Bernard',
+          role: 'Direktör',
+          company: 'Retail Solutions',
+          avatar: '/avatars/sophie.svg',
+          rating: 5,
+        },
+        {
+          quote: 'Sonunda bizimle büyüyen bir çözüm. Etkileyici ölçeklenebilirlik.',
+          author: 'Pierre Leclerc',
+          role: 'Kurucu',
+          company: 'Growth Ventures',
+          avatar: '/avatars/pierre.svg',
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: 'Sık Sorulan Sorular',
+      subtitle: 'Sorularınızın yanıtlarını bulun',
+      items: [
+        {
+          question: 'Hangi yoklama yöntemlerini destekliyorsunuz?',
+          answer: 'Birçok yöntemi destekliyoruz: yüz tanıma, NFC, QR kod, konum ve manuel giriş. İhtiyaçlarınıza göre yöntemleri birleştirebilirsiniz.',
+        },
+        {
+          question: 'İzinleri nasıl yönetiyorsunuz?',
+          answer: 'Çalışanlar izin taleplerini mobil uygulamadan yapar. Yöneticiler iş akışınıza göre onaylar. Bakiyeler otomatik hesaplanır ve gerçek zamanlı güncellenir.',
+        },
+        {
+          question: 'Birden fazla şubeyi yönetebilir misiniz?',
+          answer: 'Evet, Leopardo farklı yapılandırmalara sahip birden fazla şubeyi destekler. Tüm şubelerinizi tek bir panelden yönetebilirsiniz.',
+        },
+        {
+          question: 'Planlama nasıl çalışır?',
+          answer: 'Paylaşılan takvimler oluşturun, vardiyaları atayın; Leopardo çakışmaları otomatik tespit eder. Çalışanlar vardiyalarından haberdar edilir.',
+        },
+        {
+          question: 'Bordromuzla entegre olabilir misiniz?',
+          answer: 'Evet, yoklama ve izin verileri doğru hesaplama için bordro modülüyle otomatik senkronize edilir.',
+        },
+        {
+          question: 'Kurulum ne kadar sürer?',
+          answer: "Kurulum 5 dakikadan kısa sürer. Kaydolduktan hemen sonra Leopardo'yu kullanmaya başlayabilirsiniz.",
+        },
+      ],
+    },
+    cta: {
+      headline: 'İK yönetiminizi basitleştirmeye hazır mısınız?',
+      subheadline: '14 günlük ücretsiz denemenize hemen başlayın',
+      ctaPrimary: { text: 'Ücretsiz deneme', href: '/signup?module=employes' },
+      ctaSecondary: { text: 'Demo talep edin', href: '/demo?module=employes' },
+    },
+  },
+}
+
+const modulePageContentAr: Partial<ModulePageContent> = {
+  employes: {
+    hero: {
+      headline: 'إدارة موارد بشرية مبسّطة للشركات الصغيرة والمتوسطة',
+      subheadline: 'تسجيل الحضور والإجازات والجداول والتقييمات في مكان واحد',
+      ctaPrimary: { text: 'تجربة مجانية', href: '/signup?module=employes' },
+      ctaSecondary: { text: 'شاهد العرض', href: '/demo?module=employes' },
+    },
+    problem: {
+      title: 'هل ما زلت تدير موظفيك عبر Excel والبريد الإلكتروني؟',
+      subtitle: 'التحديات الشائعة للشركات الصغيرة دون حل موارد بشرية',
+      items: [
+        { title: 'تسجيل حضور يدوي', description: 'أخطاء واحتيال ووقت ضائع في إدارة أوراق الحضور' },
+        { title: 'لا رؤية', description: 'لا يمكن معرفة من هو حاضر أو غائب أو في إجازة في الوقت الفعلي' },
+        { title: 'إدارة إجازات معقدة', description: 'طلبات متفرقة وموافقات يدوية وأرصدة خاطئة' },
+        { title: 'جداول صعبة', description: 'تخطيط يدوي وتعارضات غير مكتشفة وتواصل غير فعّال' },
+      ],
+    },
+    solution: {
+      title: 'كيف يحل ليوباردو هذه المشاكل',
+      subtitle: 'منصة مركزية لكل إدارة الموارد البشرية',
+      description: 'يعمل ليوباردو على أتمتة ومركزة كل جانب من إدارة موظفيك، من الرواتب إلى الإجازات.',
+      features: [
+        { title: 'تسجيل حضور ذكي', description: 'NFC أو بصمة أو رمز QR أو تحديد الموقع — اختر طريقتك' },
+        { title: 'إدارة الإجازات', description: 'طلبات آلية وموافقات متعددة المستويات وأرصدة في الوقت الفعلي' },
+        { title: 'جدولة مرنة', description: 'تقويمات مشتركة وتنبيهات ذكية وإدارة التعارضات' },
+        { title: 'التقييمات والأداء', description: 'ملاحظات مستمرة وأهداف متوافقة وتتبع الأداء' },
+      ],
+    },
+    caseStudies: {
+      title: 'حالات استخدام حقيقية',
+      subtitle: 'اكتشف كيف يستخدم عملاؤنا ليوباردو',
+      items: [
+        {
+          title: 'شركة ناشئة تقنية: من 5 إلى 50 موظفاً',
+          description: 'كيف أدارت شركة ناشئة نموها مع ليوباردو',
+          industry: 'تقنية',
+          metrics: [
+            { label: 'وقت موفّر', value: '15 ساعة/أسبوع' },
+            { label: 'أخطاء الرواتب', value: '0' },
+            { label: 'رضا', value: '98%' },
+          ],
+          link: '/case-studies/startup',
+        },
+        {
+          title: 'تجارة التجزئة: 50 نقطة بيع',
+          description: 'تسجيل حضور مركزي لسلسلة متاجر',
+          industry: 'تجزئة',
+          metrics: [
+            { label: 'نقاط البيع', value: '50' },
+            { label: 'موظفون مُدارون', value: '500+' },
+            { label: 'خفض التكاليف', value: '30%' },
+          ],
+          link: '/case-studies/retail',
+        },
+        {
+          title: 'مصنع: بصمة متقدمة',
+          description: 'تسجيل حضور بالبصمة لمصنع يضم 200 موظف',
+          industry: 'صناعة',
+          metrics: [
+            { label: 'موظفون', value: '200' },
+            { label: 'دقة', value: '99.9%' },
+            { label: 'انخفاض الاحتيال', value: '95%' },
+          ],
+          link: '/case-studies/factory',
+        },
+      ],
+    },
+    testimonials: {
+      title: 'آراء العملاء',
+      subtitle: 'ماذا يقول عملاؤنا عن ليوباردو',
+      items: [
+        {
+          quote: 'غيّر ليوباردو إدارة الموارد البشرية لدينا. نوفّر 10 ساعات أسبوعياً!',
+          author: 'ماري دوبون',
+          role: 'مديرة موارد بشرية',
+          company: 'TechStartup Inc',
+          avatar: '/avatars/marie.svg',
+          rating: 5,
+        },
+        {
+          quote: 'أفضل حل للموارد البشرية استخدمناه على الإطلاق. صفر أخطاء منذ عامين.',
+          author: 'جان مارتن',
+          role: 'محاسب',
+          company: 'Finance Pro',
+          avatar: '/avatars/jean.svg',
+          rating: 5,
+        },
+        {
+          quote: 'دعم ممتاز وواجهة بديهية. موظفونا يعشقونها!',
+          author: 'صوفي برنار',
+          role: 'مديرة',
+          company: 'Retail Solutions',
+          avatar: '/avatars/sophie.svg',
+          rating: 5,
+        },
+        {
+          quote: 'أخيراً حل ينمو معنا. قابلية توسع مذهلة.',
+          author: 'بيير لوكلير',
+          role: 'مؤسس',
+          company: 'Growth Ventures',
+          avatar: '/avatars/pierre.svg',
+          rating: 5,
+        },
+      ],
+    },
+    faq: {
+      title: 'الأسئلة الشائعة',
+      subtitle: 'اعثر على إجابات لأسئلتك',
+      items: [
+        {
+          question: 'ما طرق تسجيل الحضور التي تدعمونها؟',
+          answer: 'ندعم عدة طرق: التعرف على الوجه، NFC، رمز QR، تحديد الموقع، والإدخال اليدوي. يمكنك دمج الطرق حسب احتياجاتك.',
+        },
+        {
+          question: 'كيف تديرون الإجازات؟',
+          answer: 'يطلب الموظفون الإجازة من تطبيق الجوال. يوافق المديرون وفق سير عملك. تُحسب الأرصدة تلقائياً وتُحدَّث في الوقت الفعلي.',
+        },
+        {
+          question: 'هل يمكنكم إدارة عدة مواقع؟',
+          answer: 'نعم، يدعم ليوباردو عدة مواقع بإعدادات مختلفة. يمكنك إدارة جميع مواقعك من لوحة تحكم واحدة.',
+        },
+        {
+          question: 'كيف تعمل الجدولة؟',
+          answer: 'أنشئ تقاويم مشتركة وعيّن الورديات، ويكتشف ليوباردو التعارضات تلقائياً. يتلقى الموظفون إشعارات بوردياتهم.',
+        },
+        {
+          question: 'هل يمكنكم التكامل مع نظام الرواتب لدينا؟',
+          answer: 'نعم، تتم مزامنة بيانات الحضور والإجازات تلقائياً مع وحدة الرواتب لحساب دقيق.',
+        },
+        {
+          question: 'كم يستغرق الإعداد؟',
+          answer: 'يستغرق الإعداد أقل من 5 دقائق. يمكنك البدء في استخدام ليوباردو فور التسجيل.',
+        },
+      ],
+    },
+    cta: {
+      headline: 'مستعد لتبسيط إدارة الموارد البشرية لديك؟',
+      subheadline: 'ابدأ تجربتك المجانية لمدة 14 يوماً الآن',
+      ctaPrimary: { text: 'تجربة مجانية', href: '/signup?module=employes' },
+      ctaSecondary: { text: 'اطلب عرضاً', href: '/demo?module=employes' },
+    },
+  },
+}
+
+/**
+ * Catalogues localisés — lot 1 (#4196) : seul « employes » est traduit
+ * en/tr/ar ; les autres modules retombent sur le FR (fusion par module).
+ */
+export const modulePageContentByLocale: Record<AppLocale, Partial<ModulePageContent>> = {
+  fr: modulePageContent,
+  en: modulePageContentEn,
+  tr: modulePageContentTr,
+  ar: modulePageContentAr,
+}
+
+export function getModulePageContent(locale: AppLocale): ModulePageContent {
+  const partial = modulePageContentByLocale[locale] ?? modulePageContentByLocale.en
+  return { ...modulePageContent, ...partial }
+}
