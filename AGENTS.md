@@ -889,3 +889,9 @@ Les tests Golden ne doivent jamais dépendre des dates aléatoires d’`Employee
 Le workflow `deploy-main.yml` doit utiliser le `push` sur `main` comme source automatique unique. Ajouter également `workflow_run` pour les mêmes parents crée plusieurs runs pour un même SHA, empile E2E/ZAP et peut affamer le déploiement Render. Le groupe de concurrence doit rester indexé directement sur `github.sha`, avec une garde anti-stale et un résumé explicite en cas d’annulation.
 
 Référence : issue Spec Kit #4359.
+
+## Leçon 2026-08-16 — Matrice Android Flutter homogène (#4378)
+
+- Les cinq apps sous `front/mobile_apps/` partagent la même chaîne Flutter/Android CI : Gradle 8.14.3, AGP 8.9.2 et Kotlin 2.1.20. Une app restée sur une version antérieure peut échouer sur les builds release même si les autres apps passent.
+- Toute mise à niveau doit comparer les cinq fichiers `android/settings.gradle.kts`, les wrappers Gradle et les variantes Firebase avant de modifier un seul projet. Ne pas migrer vers AGP 9 sans validation explicite de la version Flutter utilisée en CI et du nouveau DSL supporté.
+- Le workflow `Mobile Distribute - Main` doit rester atomique : aucun artefact Firebase ne doit être publié si le build de l’app correspondante échoue.
