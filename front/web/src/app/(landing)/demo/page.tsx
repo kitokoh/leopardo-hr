@@ -379,12 +379,13 @@ export default function DemoPage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.name}
                       </label>
-                      <input
+                      <input id="name"
                         type="text"
-                        name="name"
+                        id="demo-name"
+                    name="name"
                         required
                         value={formData.name}
                         onChange={handleChange}
@@ -394,12 +395,13 @@ export default function DemoPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.email}
                       </label>
-                      <input
+                      <input id="email"
                         type="email"
-                        name="email"
+                        id="demo-email"
+                    name="email"
                         required
                         value={formData.email}
                         onChange={handleChange}
@@ -409,12 +411,13 @@ export default function DemoPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.company}
                       </label>
-                      <input
+                      <input id="company"
                         type="text"
-                        name="company"
+                        id="demo-company"
+                    name="company"
                         required
                         value={formData.company}
                         onChange={handleChange}
@@ -424,12 +427,13 @@ export default function DemoPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-phone" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.phone}
                       </label>
-                      <input
+                      <input id="phone"
                         type="tel"
-                        name="phone"
+                        id="demo-phone"
+                    name="phone"
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder={copy.placeholders.phone}
@@ -438,10 +442,11 @@ export default function DemoPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-employees" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.employees}
                       </label>
                       <select
+                        id="demo-employees"
                         name="employees"
                         value={formData.employees}
                         onChange={handleChange}
@@ -457,12 +462,13 @@ export default function DemoPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-preferredDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.preferredDate}
                       </label>
-                      <input
+                      <input id="preferredDate"
                         type="date"
-                        name="preferredDate"
+                        id="demo-preferredDate"
+                    name="preferredDate"
                         value={formData.preferredDate}
                         onChange={handleChange}
                         className={inputClass}
@@ -470,10 +476,10 @@ export default function DemoPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="demo-message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.message}
                       </label>
-                      <textarea
+                      <textarea id="message"
                         name="message"
                         value={formData.message}
                         onChange={handleChange}

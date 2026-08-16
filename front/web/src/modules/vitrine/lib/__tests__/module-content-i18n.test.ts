@@ -52,7 +52,11 @@ describe('module page content i18n (#4196)', () => {
           .filter(Boolean)
         expect(textValues.length).toBeGreaterThan(0)
         for (const t of textValues) {
-          expect(t.length).toBeGreaterThan(2)
+          // Valeurs légitimes courtes : stats chiffrées ('0', '50', '8%'),
+          // abréviations sectorielles ('HR', 'İK'). Tout le reste doit être
+          // une vraie phrase (longueur > 2).
+          const isShortButLegit = /^[\d%.,]+$/.test(t) || ['HR', 'İK', 'RH'].includes(t)
+          expect(isShortButLegit || t.length > 2).toBe(true)
           // Pas de placeholder technique résiduel type « TODO » ou clé brute
           expect(t).not.toMatch(/^(en|tr|ar)\./)
         }
