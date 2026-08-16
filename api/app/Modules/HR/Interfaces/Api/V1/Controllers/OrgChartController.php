@@ -35,6 +35,8 @@ class OrgChartController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        $this->authorizeTargetAccess($actor, $employeeId);
+
         $directReports = Employee::query()
             ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'email', 'status'])
             ->where('company_id', $actor->company_id)
@@ -49,6 +51,9 @@ class OrgChartController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        $this->authorizeTargetAccess($actor, $employeeId);
+
         $chain = [];
         $current = Employee::query()
             ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])
@@ -80,6 +85,39 @@ class OrgChartController extends Controller
         }
 
         return response()->json(['data' => $chain]);
+    }
+
+    /**
+     * Issue #4497 : subordinates/manager-chain exposent emails + hiérarchie —
+     * réservés à soi-même et aux managers, dans leur périmètre visible.
+     * Un employé non-manager ne peut consulter que ses propres données ;
+     * un manager company-wide voit toute la compagnie ; un manager team-scoped
+     * (dept/superviseur) voit son équipe via `visibleToManager()` (fails closed).
+     * Cible inexistante dans la compagnie → 404 ; existante mais hors périmètre → 403.
+     */
+    private function authorizeTargetAccess(Employee $actor, int $employeeId): void
+    {
+        if ($actor->id === $employeeId) {
+            return;
+        }
+
+        if (! $actor->isManager()) {
+            abort(403);
+        }
+
+        $targetVisible = Employee::query()
+            ->visibleToManager($actor)
+            ->where('id', $employeeId)
+            ->exists();
+
+        if (! $targetVisible) {
+            $existsInCompany = Employee::query()
+                ->where('company_id', $actor->company_id)
+                ->where('id', $employeeId)
+                ->exists();
+
+            abort($existsInCompany ? 403 : 404);
+        }
     }
 
     /**
