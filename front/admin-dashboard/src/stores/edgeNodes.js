@@ -6,16 +6,16 @@ export const useEdgeNodesStore = defineStore('edgeNodes', () => {
   const nodes = ref([]);
 
   async function fetchNodes() {
-    const { data } = await api.get('/v1/admin/edge-nodes');
+    const { data } = await api.get('/admin/edge-nodes');
     nodes.value = data.data;
   }
 
   async function triggerSync(nodeId) {
-    await api.post(`/v1/admin/edge-nodes/${nodeId}/sync`);
+    await api.post(`/admin/edge-nodes/${nodeId}/sync`);
   }
 
   async function revokeLicense(nodeId) {
-    await api.post(`/v1/admin/edge-nodes/${nodeId}/revoke`);
+    await api.post(`/admin/edge-nodes/${nodeId}/revoke`);
     await fetchNodes();
   }
 

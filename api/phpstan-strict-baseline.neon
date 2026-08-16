@@ -5865,19 +5865,25 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 11
+			path: tests/Feature/ExceptionLeakRegressionTest.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$preferred_language\.$#'
+			identifier: property.notFound
+			count: 2
 			path: tests/Feature/ExceptionLeakRegressionTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 5
 			path: tests/Feature/ExceptionLeakRegressionTest.php
 
 		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
-			count: 4
+			count: 6
 			path: tests/Feature/ExceptionLeakRegressionTest.php
 
 		-
