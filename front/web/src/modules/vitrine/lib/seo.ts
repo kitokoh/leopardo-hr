@@ -535,7 +535,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
-    changelog: { title: "Changelog", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
+    changelog: { title: "Changelog | Leopardo RH", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
     docs: { title: "API Documentation | Leopardo HR Technical Guides", description: "Technical documentation and integration guides for the Leopardo HR API: authentication, endpoints and webhooks." },
     download: { title: "Download Leopardo HR | Windows, macOS, Android, iOS", description: "Download the ZKTeco desktop client and Leopardo HR mobile apps for employees, managers and admins." },
     contact: { title: "Contact Us | Leopardo HR Support and Sales", description: "A question about Leopardo HR? Contact our sales or support team by email, phone or chat." },
