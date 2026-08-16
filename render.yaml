@@ -1,5 +1,16 @@
 # render.yaml — Leopardo RH infrastructure on Render
 # https://render.com/docs/infrastructure-as-code
+#
+# Modèle de confiance proxy (issue #4494) :
+# Render est l'unique proxy de bord devant l'API (web service
+# gestionemployerbackend). Le middleware trustProxies de l'app ne fait
+# confiance qu'aux réseaux privés (loopback + RFC1918 10/8, 172.16/12,
+# 192.168/16 + ULA IPv6 fc00::/7) : Render atteint l'app depuis son réseau
+# interne, donc X-Forwarded-For y est honoré ; toute connexion directe
+# (peer IP publique) voit XFF ignoré → `$request->ip()` = IP réelle du
+# client, rate-limits par IP non contournables.
+# ⚠️ Si Render migre son réseau interne hors RFC1918, mettre à jour la liste
+# dans api/bootstrap/app.php AVANT tout déploiement.
 
 services:
   # ──────────────────────────────────────────────────────────────────────────
