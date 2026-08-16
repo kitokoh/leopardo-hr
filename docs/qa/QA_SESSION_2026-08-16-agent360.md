@@ -79,9 +79,9 @@ self-assign → checkout → claim marker → push immédiat.
 
 ## Phase 2/3 — Contributions livrées par ce run
 
-1. **PR #4389** — `fix(ci/mobile): main vert` (Closes #4388) : garde Plan 29
-   ciblée `mobile-distribute-main.yml` + Gradle 8.14.3 ×5 apps. Issue #4388 créée
-   avec critères d'acceptation spec-kit.
+1. **PR #4389 — MERGÉE (14:03 UTC, main d00183fa)** — `fix(ci/mobile): main
+   vert` (Closes #4388) : garde Plan 29 ciblée `mobile-distribute-main.yml` +
+   Gradle 8.14.3 ×5 apps. Issue #4388 créée avec critères d'acceptation spec-kit.
 2. **PR #4437** — `fix(admin): SupportView 100 % localisée` (résiduel #4206) :
    namespace `support.*` (38 clés ×4), helper `t()` local, filtres computed.
 3. **PR #4290 (contribution lot 2)** — `fix(web): pages modules localisées` :
@@ -94,6 +94,12 @@ self-assign → checkout → claim marker → push immédiat.
    tenants EN/TR/AR ; remplacé par `__('errors.'.$e->errorCode())` + 3 clés ×4
    locales + tests renforcés (dont chemin 423 lock).
 5. **Fermetures prouvées** : #3842, #3846, #3248 (10+ pages vitrine localisées).
+6. **PR #4483** — `fix(web): signup envoie country` (Closes #4476, P1 onboarding)
+   : sélecteur pays alimenté par `GET /api/v1/supported-countries` (fallback
+   statique complet des pays `available:true`), champ `country` zod + payload,
+   3 clés i18n ×4 locales (shared → sync). PR #4481 (agent parallèle) couvre le
+   même sujet mais source `CURRENCY_OPTIONS` (7 pays, inclut US non supporté,
+   omet ~12 pays) — revue postée ; ma PR reste ouverte tant que le gap n'est pas corrigé.
 5. **Issue #4388** créée (spec-kit : problème/impact/critères).
 
 ## Leçons du run
