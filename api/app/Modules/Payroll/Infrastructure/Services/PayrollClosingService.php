@@ -102,7 +102,12 @@ class PayrollClosingService
             throw new PayrollRunLockedException;
         }
         if ($run->status !== PayrollRun::STATUS_VALIDATED) {
-            throw new PayrollAlreadyValidatedException('Un run doit être validé (étape RH) avant verrouillage comptable.');
+            // #4310 : même classe pour un état distinct (« pas encore validé ») —
+            // code d'erreur dédié pour un message localisé précis.
+            throw new PayrollAlreadyValidatedException(
+                'Un run doit être validé (étape RH) avant verrouillage comptable.',
+                'PAYROLL_RUN_NOT_VALIDATED'
+            );
         }
 
         // Issue #1767 : interdire la clôture comptable d'un run à 0 bulletin.
