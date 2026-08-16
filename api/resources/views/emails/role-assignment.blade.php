@@ -50,10 +50,13 @@
                        style="display: inline-block; background: #1e293b; color: white; text-decoration: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px;">
                         🤖 {{ __('emails.role_assignment_android') }}
                     </a>
-                    <a href="{{ $appLinks['ios'] }}"
-                       style="display: inline-block; background: #1e293b; color: white; text-decoration: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px;">
-                        🍎 {{ __('emails.role_assignment_ios') }}
-                    </a>
+                    @if (! empty($appLinks['ios']))
+                        {{-- #4180 : lien iOS omis tant qu'aucun identifiant App Store réel n'est configuré. --}}
+                        <a href="{{ $appLinks['ios'] }}"
+                           style="display: inline-block; background: #1e293b; color: white; text-decoration: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px;">
+                            🍎 {{ __('emails.role_assignment_ios') }}
+                        </a>
+                    @endif
                 </div>
             </div>
 
