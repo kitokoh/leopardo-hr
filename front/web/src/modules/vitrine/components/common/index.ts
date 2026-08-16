@@ -7,7 +7,5 @@ export { Input } from './Input';
 export { Textarea } from './Textarea';
 
 // Utility Components
-export { Icon, Icons, type IconName } from './Icon';
-export { Divider, type DividerVariant } from './Divider';
 export { Container, type ContainerSize } from './Container';
 export { Section as SectionWrapper, type SectionSize } from './Section';

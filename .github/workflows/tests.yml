@@ -711,6 +711,7 @@ jobs:
           - Backend quality summary artifact: backend-quality-summary
           - Backend coverage artifacts: backend-coverage-reports
           - Backend coverage summary artifact: backend-coverage-summary
+
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
           - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile, SmartAttendance (GPS geofencing, validation manager, multi-tenant isolation)

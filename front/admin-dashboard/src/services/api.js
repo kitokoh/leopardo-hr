@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { normalizeLocale } from '@/i18n/index.js'
+import { normalizeLocale, translate } from '@/i18n/index.js'
 import { getAuthToken, removeAuthToken } from '@/services/token-storage'
 
 /** Résout la locale active depuis localStorage ou navigator. */
@@ -14,13 +14,7 @@ function resolveAdminLocale() {
   const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr'
   return normalizeLocale(nav)
 }
-import { translate } from '@/i18n/index.js'
 import { useToast } from 'vue-toastification'
-
-/** #4621 : messages d'erreur de la couche service localisés (4 catalogues admin). */
-function t(key, fallback = '') {
-  return translate(resolveAdminLocale(), key, fallback)
-}
 
 const ERROR_BREADCRUMBS = []
 const MAX_BREADCRUMBS = 50
@@ -55,25 +49,38 @@ function contextualErrorMessage(status, data, url) {
   const serverMsg = data?.message || ''
   // Le backend fournit `localized_message` (clé traduite) : toujours prioritaire.
   const localized = data?.localized_message || ''
+  const locale = resolveAdminLocale()
+  const t = (key, fallback) => translate(locale, key, fallback)
   switch (status) {
     case 401:
       return localized || t('api.sessionExpired', 'Session expirée. Reconnexion en cours...')
     case 403:
-      return localized || t('api.accessDenied', `Accès refusé sur ${endpoint}. Permissions insuffisantes.`)
+      return (
+        localized ||
+        t('api.accessDenied', 'Accès refusé sur :endpoint. Permissions insuffisantes.').replace(
+          ':endpoint',
+          endpoint,
+        )
+      )
     case 404:
-      return t('api.notFound', `Ressource introuvable : ${endpoint}`)
+      return t('api.notFound', 'Ressource introuvable : :endpoint').replace(':endpoint', endpoint)
     case 422:
       return null
     case 429:
       return t('api.tooManyRequests', 'Trop de requêtes. Veuillez patienter quelques secondes.')
     case 500:
-      return t('api.serverError', `Erreur serveur sur ${endpoint}. ${serverMsg ? '(' + serverMsg + ')' : 'Réessayez plus tard.'}`)
+      return t('api.serverError', 'Erreur serveur sur :endpoint. :detail')
+        .replace(':endpoint', endpoint)
+        .replace(':detail', serverMsg ? `(${serverMsg})` : t('api.serverErrorRetry', 'Réessayez plus tard.'))
     case 502:
     case 503:
     case 504:
-      return t('api.serverUnavailable', `Le serveur est temporairement indisponible (${status}). Réessayez dans quelques instants.`)
+      return t('api.serverUnavailable', 'Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.').replace(
+        ':status',
+        String(status),
+      )
     default:
-      return serverMsg || `Erreur ${status} sur ${endpoint}.`
+      return serverMsg || t('api.genericError', 'Erreur :status sur :endpoint.').replace(':status', String(status)).replace(':endpoint', endpoint)
   }
 }
 
@@ -235,7 +242,10 @@ api.interceptors.response.use(
               .flat()
               .forEach((message) => toast.error(message))
           } else {
-            toast.error(data.message || t('api.invalidData', 'Données invalides.'))
+            toast.error(
+              data.message ||
+                translate(resolveAdminLocale(), 'api.invalidData', 'Données invalides.'),
+            )
           }
           break
 
@@ -251,10 +261,18 @@ api.interceptors.response.use(
         url: originalRequest?.url,
         method: originalRequest?.method,
       })
-      toast.error(t('api.connectionError', 'Erreur de connexion. Verifiez votre connexion internet.'))
+      toast.error(
+        translate(
+          resolveAdminLocale(),
+          'api.connectionError',
+          'Erreur de connexion. Vérifiez votre connexion internet.',
+        ),
+      )
     } else {
       addBreadcrumb('api.unexpected', error.message || 'Unknown error')
-      toast.error(t('api.unexpectedError', 'Une erreur inattendue est survenue.'))
+      toast.error(
+        translate(resolveAdminLocale(), 'api.unexpectedError', 'Une erreur inattendue est survenue.'),
+      )
     }
 
     return Promise.reject(error)
