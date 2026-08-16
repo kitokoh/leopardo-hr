@@ -23,7 +23,7 @@
 | `K6_EMPLOYEE_TOKENS` / `K6_MANAGER_TOKENS` / `K6_PAYROLL_RUN_IDS` | `k6-load-smoke.yml` | Tokens/scénarios k6 des parcours authentifiés | Optional (health-only sans) |
 | `BRANCH_PROTECTION_TOKEN` | `branch-protection-guard.yml` | Lecture de la protection de branche (check cron) | Required for the guard |
 
-> **Déploiement de la vitrine** : la vitrine `front/web` est déployée via l'intégration Cloudflare Pages (pas de workflow `deploy-web-vitrine.yml` — le workflow CI vitrine s'appelle `web-marketing-ci.yml`). Aucun secret GitHub n'est requis pour ce déploiement.
+> **Déploiement de la vitrine** : la vitrine `front/web` est déployée via l'intégration Cloudflare Pages — aucun workflow de déploiement vitrine dédié n'existe (le workflow CI vitrine s'appelle `web-marketing-ci.yml`), donc aucun secret GitHub n'est requis pour ce déploiement.
 
 ## Secrets
 
