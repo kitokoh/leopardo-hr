@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci/i18n): garde i18n alignée sur la surface leopardo_hr — paths i18n-enterprise.yml + watchedPathPrefixes de check-i18n-diff.js (Closes #4623).** Complète #4397 (scanner) : les PRs ne touchant que leopardo_hr/lib ne déclenchaient ni validate-and-sync ni check-new-hardcoded-strings.
 - **fix(ci/docs): CI_CD_SECRETS.md — référence au workflow inexistant deploy-web-vitrine.yml corrigée (Closes #4627).**
 - **fix(ci): tests.yml — références mobiles mortes supprimées (DEFAULT_MOBILE_COVERAGE_MIN inutilisé + artefacts annoncés inexistants) (Closes #4626).**
 - **fix(admin): api.js — retry cold-start limité aux méthodes idempotentes (GET/HEAD/OPTIONS) (Closes #4620).** Les 502/503/504 étaient rejoués sur TOUTES les méthodes : un POST/PUT traité mais à réponse perdue (cold-start Render) était exécuté 2× (webhook dupliqué, impersonation en double, désactivation rejouée).
