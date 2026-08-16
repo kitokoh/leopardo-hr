@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(api): kiosk.show — bucket dédié kiosk-show (120/min, device+IP) au lieu de partager kiosk-punch (30/min pénalisait les bornes actives) (Closes #4607).**
 - **fix(api): /p/{code} — throttle 60/min/IP + user_agent/referrer_url tronqués à 255 (500 évité sur Referer long) (Closes #4606).**
 - **fix(api): GET /kiosk/{deviceCode} throttlé (bucket kiosk-punch) — fin de l'énumération du device_code (Closes #4607).**
 - **fix(ci): tests.yml — références mobiles mortes supprimées (DEFAULT_MOBILE_COVERAGE_MIN + 2 lignes d'artefacts fantômes) (Closes #4626).**
