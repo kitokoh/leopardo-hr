@@ -69,25 +69,25 @@ class HrAppRoutesTest extends TestCase
             'salary_type'   => 'monthly',
         ];
 
-        $this->principal = Employee::query()->create(array_merge($base, [
+        $this->principal = Employee::query()->forceCreate(array_merge($base, [
             'email'        => 'principal@test.hr',
             'role'         => 'manager',
             'manager_role' => 'principal',
         ]));
 
-        $this->hrManager = Employee::query()->create(array_merge($base, [
+        $this->hrManager = Employee::query()->forceCreate(array_merge($base, [
             'email'        => 'rh@test.hr',
             'role'         => 'manager',
             'manager_role' => 'rh',
         ]));
 
-        $this->regularEmployee = Employee::query()->create(array_merge($base, [
+        $this->regularEmployee = Employee::query()->forceCreate(array_merge($base, [
             'email'        => 'employee@test.hr',
             'role'         => 'employee',
             'manager_role' => null,
         ]));
 
-        $this->marketingManager = Employee::query()->create(array_merge($base, [
+        $this->marketingManager = Employee::query()->forceCreate(array_merge($base, [
             'email'        => 'marketing@test.hr',
             'role'         => 'manager',
             'manager_role' => 'marketing',

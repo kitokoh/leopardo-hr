@@ -34,6 +34,9 @@ class SocialContributionAdminControllerTest extends TestCase
             'email' => 'sa-social-admin@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
         ]);
+            $superAdmin->role = 'super_admin';
+            $superAdmin->save();
+
         $this->superAdmin = $superAdmin;
     }
 

@@ -48,6 +48,9 @@ class TaxSlabValidationWorkflowTest extends TestCase
             'email' => 'sa-rate-validation@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
         ]);
+            $superAdmin->role = 'super_admin';
+            $superAdmin->save();
+
         $this->superAdmin = $superAdmin;
 
         /** @var Employee $manager */
@@ -309,11 +312,14 @@ class TaxSlabValidationWorkflowTest extends TestCase
         // (la chaîne listener → tenant → notification in-app est prouvée
         // de bout en bout avec la table réelle).
         // Un platform_admin existe : la soumission déclenche l'email best-effort.
-        SuperAdmin::query()->create([
+        $createdSuperAdmin = SuperAdmin::query()->create([
             'name' => 'Admin Notif',
             'email' => 'sa-notif@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
         ]);
+            $createdSuperAdmin->role = 'super_admin';
+            $createdSuperAdmin->save();
+
 
         Sanctum::actingAs($this->manager);
 

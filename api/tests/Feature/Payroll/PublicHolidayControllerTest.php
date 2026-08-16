@@ -52,6 +52,9 @@ class PublicHolidayControllerTest extends TestCase
             'email' => 'sa-holidays-test@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
         ]);
+            $superAdmin->role = 'super_admin';
+            $superAdmin->save();
+
         $this->superAdmin = $superAdmin;
 
         /** @var Employee $principalA */
