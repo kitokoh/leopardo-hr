@@ -126,10 +126,14 @@ class DashboardController extends Controller
         $user = $request->user();
         $companyId = $user->company_id;
 
+        // #4499 : limit borné (1..100) — une valeur négative = « illimité » en
+        // PostgreSQL, une valeur énorme vidait tout audit_logs en une requête.
+        $limit = max(1, min(100, $request->integer('limit', 20)));
+
         $activities = DB::table('audit_logs')
             ->where('company_id', $companyId)
             ->orderByDesc('created_at')
-            ->limit($request->integer('limit', 20))
+            ->limit($limit)
             ->get(['id', 'user_id', 'action', 'auditable_type', 'auditable_id', 'created_at']);
 
         return response()->json(['data' => $activities]);
