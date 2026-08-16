@@ -7,7 +7,7 @@ info:
     name: "MIT"
     url: "https://github.com/kitokoh/leopardo-hr/blob/main/LICENSE"
   description: |
-    OpenAPI alignee sur la surface API reellement exposee par origin/main.
+    OpenAPI alignee sur la surface API reellement exposee par l'API.
 
     Cette specification sert de contrat pour les apps employee, manager,
     platform admin, kiosque, vitrine client et futurs integrateurs tiers.
