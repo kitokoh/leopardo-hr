@@ -61,16 +61,16 @@
       />
       <SystemStatusCard
         title="Services API"
-        status="unavailable"
-        details="Aucun endpoint backend dédié pour le moment."
-        :show-details="false"
+        :status="apiStatus"
+        :details="apiDetails"
+        :last-check="apiCheckTimestamp"
         icon="CloudIcon"
       />
       <SystemStatusCard
         title="Infrastructure"
-        status="unavailable"
-        details="Aucun endpoint backend dédié pour le moment."
-        :show-details="false"
+        :status="infraStatus"
+        :details="infraDetails"
+        :last-check="infraCheckTimestamp"
         icon="WifiIcon"
       />
     </div>
@@ -109,6 +109,14 @@ const lastUpdated = ref(null)
 const healthCheck = ref(null)
 const healthCheckTimestamp = ref(null)
 
+// Issue #2789 — GET /health/live : disponibilité des Services API
+const apiLive = ref(null)
+const apiCheckTimestamp = ref(null)
+
+// Issue #2789 — GET /admin/metrics/overview : agrégats plateforme (Infrastructure)
+const platformMetrics = ref(null)
+const infraCheckTimestamp = ref(null)
+
 // Statut global dérivé de stats.systemHealth (good | warning | error)
 const globalHealthStatus = computed(() => {
   const map = {
@@ -144,7 +152,9 @@ onMounted(async () => {
   await Promise.all([
     loadSystemStats(),
     loadQueueObservability(),
-    loadNotificationObservability()
+    loadNotificationObservability(),
+    loadApiLiveness(),
+    loadPlatformMetrics()
   ])
 })
 
@@ -189,6 +199,47 @@ async function loadNotificationObservability() {
     toast.error('Erreur lors du chargement de l\'observabilité des notifications')
   } finally {
     isLoadingNotificationObservability.value = false
+  }
+}
+
+// Issue #2789 — GET /health/live (sonde liveness API publique)
+const apiStatus = computed(() => (apiLive.value?.status === 'ok' || apiLive.value?.status === 'pass') ? 'healthy' : 'unavailable')
+const apiDetails = computed(() => {
+  if (!apiLive.value) return 'Non disponible — GET /health/live'
+  const db = apiLive.value?.checks?.database
+  return apiLive.value.status === 'ok'
+    ? `API opérationnelle${db?.latency_ms != null ? ` — DB ${db.latency_ms} ms` : ''}`
+    : `Erreur: ${apiLive.value.error || 'service injoignable'}`
+})
+
+// Issue #2789 — GET /admin/metrics/overview (agrégats plateforme)
+const infraStatus = computed(() => (platformMetrics.value ? 'healthy' : 'unavailable'))
+const infraDetails = computed(() => {
+  if (!platformMetrics.value) return 'Non disponible — GET /admin/metrics/overview'
+  const companies = platformMetrics.value.companies
+  const system = platformMetrics.value.system || {}
+  return `${companies?.active ?? '?'} compagnies actives · PHP ${system.php_version ?? '?'} · queue ${system.queue_driver ?? '?'}`
+})
+
+async function loadApiLiveness() {
+  try {
+    const response = await api.get('/health/live')
+    apiLive.value = response.data
+    apiCheckTimestamp.value = new Date()
+  } catch (error) {
+    apiLive.value = null
+    console.error('Failed to load API liveness:', error)
+  }
+}
+
+async function loadPlatformMetrics() {
+  try {
+    const response = await api.get('/admin/metrics/overview')
+    platformMetrics.value = response.data?.data || null
+    infraCheckTimestamp.value = new Date()
+  } catch (error) {
+    console.error('Failed to load platform metrics:', error)
+    toast.error('Erreur lors du chargement des métriques plateforme')
   }
 }
 
