@@ -74,7 +74,10 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Attendance mode personalization is disabled.',
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Payout request refused.',
     'PAYOUT_REQUEST_FAILED' => 'An error occurred while requesting the payout.',
     'COMPANY_MODE_FORCED' => 'Your company enforces a clocking mode. You cannot change it.',

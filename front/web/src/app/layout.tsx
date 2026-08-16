@@ -207,7 +207,7 @@ export default async function RootLayout({
         >
           {t(ssrLang, 'a11y.skip_to_content', 'Aller au contenu principal')}
         </a>
-        <OrganizationJsonLd />
+        <OrganizationJsonLd locale={ssrLang} />
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />
