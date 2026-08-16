@@ -21,24 +21,33 @@ import {
   REMOTE_POLICY_LABELS,
 } from '@/lib/careers-api';
 
-// #4448 : locale SSR depuis le header normalisé par le middleware (`?lang=`
-// → `x-vitrine-lang`, #4004/#4173), même mécanisme que le RootLayout.
-async function resolveCareersLocale(): Promise<AppLocale> {
+// #4448 : locale SSR. Ces routes (hors groupe `(landing)`) ne passent pas
+// par le middleware vitrine → `x-vitrine-lang` n'y est JAMAIS posé (sinon
+// tout retombait en 'fr'). On résout `?lang=` (prioritaire, #4173) puis
+// Accept-Language normalisé, même règle que le RootLayout (#2657/#4393).
+async function resolveCareersLocale(
+  urlLang?: string,
+): Promise<AppLocale> {
   const h = await headers();
-  return normalizeLocale(h.get('x-vitrine-lang') ?? 'fr');
+  const fromUrl = normalizeLocale(urlLang ?? '');
+  if (fromUrl !== 'fr' || urlLang) return fromUrl;
+  const accept = h.get('accept-language') ?? '';
+  return normalizeLocale(accept.split(',')[0] ?? '');
 }
 
 interface CareersPortalPageProps {
   params: Promise<{ companySlug: string }>;
+  searchParams: Promise<{ lang?: string }>;
 }
 
-export async function generateMetadata({ params }: CareersPortalPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CareersPortalPageProps): Promise<Metadata> {
   const { companySlug } = await params;
+  const { lang } = await searchParams;
   const [jobs, company] = await Promise.all([
     getPublicJobPostings(companySlug),
     getPublicCareersCompany(companySlug),
   ]);
-  const locale = await resolveCareersLocale();
+  const locale = await resolveCareersLocale(lang);
 
   if (jobs === null) {
     return { title: getTenantCareersCopy(locale).portalNotFoundTitle };
@@ -55,13 +64,14 @@ export async function generateMetadata({ params }: CareersPortalPageProps): Prom
   });
 }
 
-export default async function CareersPortalPage({ params }: CareersPortalPageProps) {
+export default async function CareersPortalPage({ params, searchParams }: CareersPortalPageProps) {
   const { companySlug } = await params;
+  const { lang } = await searchParams;
   const [jobs, company] = await Promise.all([
     getPublicJobPostings(companySlug),
     getPublicCareersCompany(companySlug),
   ]);
-  const locale = await resolveCareersLocale();
+  const locale = await resolveCareersLocale(lang);
   const copy = getTenantCareersCopy(locale);
 
   if (jobs === null) {

@@ -21,21 +21,28 @@ import {
 } from '@/lib/careers-api';
 import { ApplyForm } from './ApplyForm';
 
-// #4448 : locale SSR depuis le header normalisé par le middleware (`?lang=`
-// → `x-vitrine-lang`, #4004/#4173).
-async function resolveJobLocale(): Promise<AppLocale> {
+// #4448 : locale SSR. Ces routes (hors groupe `(landing)`) ne passent pas
+// par le middleware vitrine → `x-vitrine-lang` n'y est JAMAIS posé (sinon
+// tout retombait en 'fr'). On résout `?lang=` (prioritaire, #4173) puis
+// Accept-Language normalisé, même règle que le RootLayout (#2657/#4393).
+async function resolveJobLocale(urlLang?: string): Promise<AppLocale> {
   const h = await headers();
-  return normalizeLocale(h.get('x-vitrine-lang') ?? 'fr');
+  const fromUrl = normalizeLocale(urlLang ?? '');
+  if (fromUrl !== 'fr' || urlLang) return fromUrl;
+  const accept = h.get('accept-language') ?? '';
+  return normalizeLocale(accept.split(',')[0] ?? '');
 }
 
 interface JobDetailPageProps {
   params: Promise<{ companySlug: string; jobId: string }>;
+  searchParams: Promise<{ lang?: string }>;
 }
 
-export async function generateMetadata({ params }: JobDetailPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: JobDetailPageProps): Promise<Metadata> {
   const { companySlug, jobId } = await params;
+  const { lang } = await searchParams;
   const job = await getPublicJobPosting(companySlug, jobId);
-  const locale = await resolveJobLocale();
+  const locale = await resolveJobLocale(lang);
 
   if (!job) {
     return { title: getTenantCareersCopy(locale).jobNotFoundTitle };
@@ -68,13 +75,14 @@ function schemaEmploymentType(contractType: string): string {
   );
 }
 
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
+export default async function JobDetailPage({ params, searchParams }: JobDetailPageProps) {
   const { companySlug, jobId } = await params;
+  const { lang } = await searchParams;
   const [job, company] = await Promise.all([
     getPublicJobPosting(companySlug, jobId),
     getPublicCareersCompany(companySlug),
   ]);
-  const locale = await resolveJobLocale();
+  const locale = await resolveJobLocale(lang);
   const copy = getTenantCareersCopy(locale);
 
   if (!job) {
