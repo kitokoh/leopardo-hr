@@ -65,7 +65,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page('/guides/checklist-paie', 'monthly', 0.7),
     page('/guides/planning-employes', 'monthly', 0.7),
     // Audit expert 2026-08-15 (issue #2608) : pages manquantes ajoutées.
-    page('/blog', 'weekly', 0.7),
+    // #4467 : /blog rejoint le bloc `if (enableBlog)` — la route répond 404
+    // quand le flag est off (blog/layout.tsx → notFound()), le sitemap ne
+    // doit pas publier d'URL qui 404 (régression #2647/#2904 : les posts
+    // étaient gated, l'entrée statique oubliée).
     page('/offline', 'monthly', 0.4),
   ];
 
@@ -92,7 +95,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // NEXT_PUBLIC_ENABLE_BLOG (blog/layout.tsx → notFound() si off → 404 live).
   // Le sitemap ne doit JAMAIS publier d'URLs /blog/* quand le flag est off,
   // sinon crawl 404 massif. `enableBlog` était relu mais inutilisé.
+  // #4467 : l'entrée statique `/blog` (liste) rejoint aussi ce gate — elle
+  // répondait 404 quand le flag est off alors que le sitemap la publiait.
   if (enableBlog) {
+    const blogIndexPage: MetadataRoute.Sitemap = [page('/blog', 'weekly', 0.7)];
     const postsBySlug = new Map<string, BlogPost>();
     for (const locale of locales) {
       for (const post of getBlogPosts(locale)) {
@@ -110,7 +116,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       alternates: localizedAlternates(`/blog/${post.slug}`),
     }));
 
-    return [...allStatic, ...blogPages];
+    return [...allStatic, ...blogIndexPage, ...blogPages];
   }
 
   return allStatic;
