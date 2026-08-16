@@ -51,6 +51,7 @@ class QueueJobsFailedHandlerTest extends TestCase
 
     public function test_generate_bank_export_failed_marks_export_failed(): void
     {
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = \App\Core\Tenant\Domain\Models\Company::factory()->create(['country' => 'DZ']);
         $export = BankExport::query()->create([
             'company_id' => $company->id,
