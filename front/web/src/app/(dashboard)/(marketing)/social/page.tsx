@@ -22,9 +22,9 @@ const WEEKDAY_LABELS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 function useA11yLabels(): { previousMonth: string; nextMonth: string; close: string } {
   const locale = getPreferredLocale();
   return {
-    previousMonth: i18nT(locale, 'a11y.previous_month', 'Mois précédent'),
-    nextMonth: i18nT(locale, 'a11y.next_month', 'Mois suivant'),
-    close: i18nT(locale, 'a11y.close', 'Fermer'),
+    previousMonth: i18nT(locale, 'a11y.previous_month'),
+    nextMonth: i18nT(locale, 'a11y.next_month'),
+    close: i18nT(locale, 'a11y.close'),
   };
 }
 
