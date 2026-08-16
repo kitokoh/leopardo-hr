@@ -4,6 +4,8 @@ import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer, HeroSection, CTASection, useScrollReveal } from '@/modules/vitrine';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getCareersContent } from '@/modules/vitrine/data/careers';
+import { withLocaleHref } from '@/modules/vitrine/lib/locale-href';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Clock, ArrowRight, Heart, Zap, Globe, Users } from 'lucide-react';
 
@@ -14,6 +16,7 @@ export default function CareersPage() {
   const { locale } = useVitrineLocale();
   useScrollReveal();
   const content = getCareersContent(locale);
+  const searchParams = useSearchParams();
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
@@ -77,13 +80,14 @@ export default function CareersPage() {
           </div>
           <div className="space-y-4">
             {content.openings.items.map((job, i) => (
-              <motion.div
+              <motion.a
                 key={i}
+                href={withLocaleHref('/contact', searchParams.toString())}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="group p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500/30 hover:shadow-lg transition-all cursor-pointer"
+                className="group p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500/30 hover:shadow-lg transition-all cursor-pointer block"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
@@ -97,7 +101,7 @@ export default function CareersPage() {
                   </div>
                   <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-emerald-500 transition-colors flex-shrink-0 mt-1" />
                 </div>
-              </motion.div>
+              </motion.a>
             ))}
           </div>
         </div>
