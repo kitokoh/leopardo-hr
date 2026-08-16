@@ -8,11 +8,9 @@ use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
-use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Policies\ExportPolicy;
-use App\Policies\WebhookEndpointPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -68,10 +66,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // PA2-ARCH-008 : point d'enregistrement unique. Tous les Gate::policy(...)
-        // vivent desormais exclusivement dans AuthServiceProvider::boot() ; ce
-        // provider ne garde que les Gate::define(...) qui n'y sont pas dupliques.
-        Gate::policy(WebhookEndpoint::class, WebhookEndpointPolicy::class);
-
+        // vivent exclusivement dans AuthServiceProvider::boot() (y compris
+        // WebhookEndpoint) ; ce provider ne garde que les Gate::define(...).
         Gate::define('export', [ExportPolicy::class, 'export']);
         Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
         Gate::define('downloadExport', [ExportPolicy::class, 'download']);
@@ -211,6 +207,17 @@ class AppServiceProvider extends ServiceProvider
 
             return Limit::perMinute((int) config('security.rate_limits.web_login_per_minute', 10))
                 ->by('web-login:'.$email.'|'.$request->ip());
+        });
+
+        // #4498 — invitation activation (public, token-based, sets the employee
+        // password) : same brute-force exposure as the API twin
+        // /onboarding/invitation/{token} (throttled 10/min). Dedicated bucket
+        // keyed by token + IP.
+        RateLimiter::for('web-activate', function (Request $request) {
+            $token = (string) $request->route('token', 'unknown');
+
+            return Limit::perMinute((int) config('security.rate_limits.web_activate_per_minute', 10))
+                ->by('web-activate:'.$token.'|'.$request->ip());
         });
 
         // PA2-API-005 — The kiosk web punch endpoint (public, device-code based,
