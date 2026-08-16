@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\SmartAttendance;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Support\Facades\Hash;
@@ -26,8 +26,11 @@ class AttendanceModeConfigTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $company;
+
     private Employee $employee;
+
     private Employee $manager;
+
     private Employee $principal;
 
     protected function setUp(): void
@@ -35,16 +38,16 @@ class AttendanceModeConfigTest extends TestCase
         parent::setUp();
 
         $this->company = Company::query()->create([
-            'name'         => 'ModeCorp',
-            'slug'         => 'mode-corp',
-            'sector'       => 'tech',
-            'country'      => 'DZ',
-            'city'         => 'Alger',
-            'email'        => 'mode@corp.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'ModeCorp',
+            'slug' => 'mode-corp',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'mode@corp.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'UTC',
+            'status' => 'active',
+            'timezone' => 'UTC',
             'plan_id' => 1,
             'subscription_start' => '2026-01-01',
             'subscription_end' => '2027-01-01',
@@ -53,57 +56,56 @@ class AttendanceModeConfigTest extends TestCase
         ]);
 
         $schedule = Schedule::query()->create([
-            'company_id'               => $this->company->id,
-            'name'                     => 'Standard',
-            'start_time'               => '08:00:00',
-            'end_time'                 => '17:00:00',
-            'late_tolerance_minutes'   => 15,
+            'company_id' => $this->company->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
             'overtime_threshold_daily' => 8.0,
-            'is_default'               => true,
+            'is_default' => true,
         ]);
 
         $this->employee = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'emp@mode.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'emp@mode.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employee->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
 
         $this->manager = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'manager@mode.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'manager@mode.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->manager->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
         ])->save();
 
         $this->principal = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'principal@mode.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'principal@mode.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $principal->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->principal->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->principal->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'manager',
-            'manager_role'  => 'principal',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
         ])->save();
     }
-
 
     // ── Tests GET /config ─────────────────────────────────────────────────────
 
@@ -113,11 +115,11 @@ class AttendanceModeConfigTest extends TestCase
     public function test_get_config_returns_company_forced_mode(): void
     {
         AttendanceModeSettings::query()->create([
-            'company_id'   => $this->company->id,
-            'forced_mode'  => 'gps_auto',
-            'gps_enabled'  => true,
-            'latitude'     => 36.7538,
-            'longitude'    => 3.0588,
+            'company_id' => $this->company->id,
+            'forced_mode' => 'gps_auto',
+            'gps_enabled' => true,
+            'latitude' => 36.7538,
+            'longitude' => 3.0588,
             'radius_meters' => 200,
         ]);
 
@@ -158,16 +160,16 @@ class AttendanceModeConfigTest extends TestCase
     {
         // Paramétrer la company pour autoriser l'override
         AttendanceModeSettings::query()->create([
-            'company_id'              => $this->company->id,
-            'forced_mode'             => null,
-            'gps_enabled'             => true,
+            'company_id' => $this->company->id,
+            'forced_mode' => null,
+            'gps_enabled' => true,
             'allow_employee_override' => true,
         ]);
 
         Sanctum::actingAs($this->employee);
 
         $response = $this->putJson('/api/v1/smart-attendance/preferences', [
-            'preferred_mode'    => 'gps_auto',
+            'preferred_mode' => 'gps_auto',
             'gps_consent_given' => true,
         ]);
 
@@ -184,7 +186,7 @@ class AttendanceModeConfigTest extends TestCase
     {
         // Mode forcé défini
         AttendanceModeSettings::query()->create([
-            'company_id'  => $this->company->id,
+            'company_id' => $this->company->id,
             'forced_mode' => 'manual',
             'gps_enabled' => false,
         ]);
@@ -193,7 +195,7 @@ class AttendanceModeConfigTest extends TestCase
 
         // Tenter de changer la préférence → 403 COMPANY_MODE_FORCED
         $response = $this->putJson('/api/v1/smart-attendance/preferences', [
-            'preferred_mode'    => 'gps_auto',
+            'preferred_mode' => 'gps_auto',
             'gps_consent_given' => true,
         ]);
 
@@ -216,11 +218,11 @@ class AttendanceModeConfigTest extends TestCase
         Sanctum::actingAs($this->principal);
 
         $response = $this->putJson('/api/v1/smart-attendance/mode-settings', [
-            'forced_mode'             => 'gps_auto',
-            'gps_enabled'             => true,
-            'latitude'                => 36.7538,
-            'longitude'               => 3.0588,
-            'radius_meters'           => 150,
+            'forced_mode' => 'gps_auto',
+            'gps_enabled' => true,
+            'latitude' => 36.7538,
+            'longitude' => 3.0588,
+            'radius_meters' => 150,
             'allow_employee_override' => false,
         ]);
 
@@ -230,7 +232,7 @@ class AttendanceModeConfigTest extends TestCase
         $response->assertJsonPath('data.radius_meters', 150);
 
         $this->assertDatabaseHas('attendance_mode_settings', [
-            'company_id'  => $this->company->id,
+            'company_id' => $this->company->id,
             'forced_mode' => 'gps_auto',
         ]);
     }
@@ -250,4 +252,3 @@ class AttendanceModeConfigTest extends TestCase
         $response->assertStatus(403);
     }
 }
-

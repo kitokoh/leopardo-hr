@@ -48,7 +48,7 @@ class TrialSignupLocalizationTest extends TestCase
         ])->assertStatus(200);
 
         $expected = [
-            'fr' => "Code de vérification invalide ou expiré.",
+            'fr' => 'Code de vérification invalide ou expiré.',
             'en' => 'Invalid or expired verification code.',
             'tr' => 'Geçersiz veya süresi dolmuş doğrulama kodu.',
             'ar' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
@@ -75,8 +75,10 @@ class TrialSignupLocalizationTest extends TestCase
             'country' => 'DZ',
         ])->assertStatus(200);
 
+        /** @var CompanyRequest|null $request */
         $request = CompanyRequest::where('email', 'founder@claimed-localized.dz')
             ->where('status', 'pending')->first();
+        $this->assertNotNull($request);
         $otp = $request->verification_token;
 
         // Simule le claim d'une requête concurrente (fenêtre de provisioning).

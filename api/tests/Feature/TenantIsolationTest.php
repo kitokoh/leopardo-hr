@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -88,7 +88,7 @@ class TenantIsolationTest extends TestCase
         ]);
 
         app()->instance('current_company', $companyA);
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'email' => 'a.employee@test.local',
             'password_hash' => bcrypt('secret'),
         ]);
@@ -131,4 +131,3 @@ class TenantIsolationTest extends TestCase
         $this->assertSame($company->id, $employee->company_id);
     }
 }
-

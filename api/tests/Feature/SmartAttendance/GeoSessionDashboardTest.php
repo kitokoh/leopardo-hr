@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\SmartAttendance;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\EmployeeLocationEvent;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
@@ -30,7 +30,9 @@ class GeoSessionDashboardTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $company;
+
     private Employee $employee;
+
     private Employee $manager;
 
     protected function setUp(): void
@@ -38,16 +40,16 @@ class GeoSessionDashboardTest extends TestCase
         parent::setUp();
 
         $this->company = Company::query()->create([
-            'name'         => 'DashboardCorp',
-            'slug'         => 'dashboard-corp',
-            'sector'       => 'tech',
-            'country'      => 'DZ',
-            'city'         => 'Alger',
-            'email'        => 'dash@corp.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'DashboardCorp',
+            'slug' => 'dashboard-corp',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'dash@corp.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'UTC',
+            'status' => 'active',
+            'timezone' => 'UTC',
             'plan_id' => 1,
             'subscription_start' => '2026-01-01',
             'subscription_end' => '2027-01-01',
@@ -56,43 +58,42 @@ class GeoSessionDashboardTest extends TestCase
         ]);
 
         $schedule = Schedule::query()->create([
-            'company_id'               => $this->company->id,
-            'name'                     => 'Standard',
-            'start_time'               => '08:00:00',
-            'end_time'                 => '17:00:00',
-            'late_tolerance_minutes'   => 15,
+            'company_id' => $this->company->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
             'overtime_threshold_daily' => 8.0,
-            'is_default'               => true,
+            'is_default' => true,
         ]);
 
         $this->employee = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'emp@dashboard.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'emp@dashboard.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employee->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
 
         $this->manager = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'manager@dashboard.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'manager@dashboard.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->manager->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
         ])->save();
     }
-
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -100,14 +101,14 @@ class GeoSessionDashboardTest extends TestCase
     {
         /** @var GeoAttendanceSession */
         return GeoAttendanceSession::query()->create(array_merge([
-            'employee_id'      => $this->employee->id,
-            'company_id'       => $this->company->id,
-            'started_at'       => now()->subHours(8),
-            'ended_at'         => now()->subHour(),
+            'employee_id' => $this->employee->id,
+            'company_id' => $this->company->id,
+            'started_at' => now()->subHours(8),
+            'ended_at' => now()->subHour(),
             'duration_seconds' => 7 * 3600,
-            'check_in_lat'     => 36.7539,
-            'check_in_lng'     => 3.0589,
-            'status'           => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+            'check_in_lat' => 36.7539,
+            'check_in_lng' => 3.0589,
+            'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
         ], $override));
     }
 
@@ -201,21 +202,21 @@ class GeoSessionDashboardTest extends TestCase
         $yesterday = Carbon::yesterday()->setTime(9, 0, 0);
         $this->createSession([
             'started_at' => $yesterday,
-            'ended_at'   => $yesterday->copy()->addHours(8),
+            'ended_at' => $yesterday->copy()->addHours(8),
         ]);
 
         // Session il y a une semaine
         $lastWeek = Carbon::now()->subDays(7)->setTime(9, 0, 0);
         $this->createSession([
             'started_at' => $lastWeek,
-            'ended_at'   => $lastWeek->copy()->addHours(8),
+            'ended_at' => $lastWeek->copy()->addHours(8),
         ]);
 
         Sanctum::actingAs($this->manager);
 
         // Filtrer uniquement sur hier
         $dateFrom = Carbon::yesterday()->toDateString();
-        $dateTo   = Carbon::yesterday()->toDateString();
+        $dateTo = Carbon::yesterday()->toDateString();
 
         $response = $this->getJson("/api/v1/smart-attendance/sessions?date_from={$dateFrom}&date_to={$dateTo}");
 
@@ -234,12 +235,12 @@ class GeoSessionDashboardTest extends TestCase
 
         // Ajouter un événement de localisation
         EmployeeLocationEvent::query()->create([
-            'employee_id'     => $this->employee->id,
-            'company_id'      => $this->company->id,
-            'geo_session_id'  => $session->id,
-            'event_type'      => EmployeeLocationEvent::TYPE_ZONE_ENTER,
-            'latitude'        => 36.7539,
-            'longitude'       => 3.0589,
+            'employee_id' => $this->employee->id,
+            'company_id' => $this->company->id,
+            'geo_session_id' => $session->id,
+            'event_type' => EmployeeLocationEvent::TYPE_ZONE_ENTER,
+            'latitude' => 36.7539,
+            'longitude' => 3.0589,
             'accuracy_meters' => 10,
         ]);
 
@@ -280,13 +281,13 @@ class GeoSessionDashboardTest extends TestCase
         // Créer des sessions aujourd'hui avec différents statuts
         $this->createSession([
             'started_at' => now()->subHours(3),
-            'ended_at'   => now()->subHour(),
-            'status'     => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+            'ended_at' => now()->subHour(),
+            'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
         ]);
         $this->createSession([
             'started_at' => now()->subHours(5),
-            'ended_at'   => now()->subHours(2),
-            'status'     => GeoAttendanceSession::STATUS_APPROVED,
+            'ended_at' => now()->subHours(2),
+            'status' => GeoAttendanceSession::STATUS_APPROVED,
         ]);
 
         Sanctum::actingAs($this->manager);
@@ -312,4 +313,3 @@ class GeoSessionDashboardTest extends TestCase
         $this->assertArrayHasKey(GeoAttendanceSession::STATUS_APPROVED, $data['stats']);
     }
 }
-

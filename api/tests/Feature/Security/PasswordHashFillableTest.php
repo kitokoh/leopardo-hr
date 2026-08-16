@@ -24,7 +24,7 @@ class PasswordHashFillableTest extends TestCase
         $user->refresh();
 
         $this->assertSame('Changed', $user->first_name);
-        $this->assertFalse(Hash::check('evil', $user->password_hash), 'password_hash ne doit pas être rempli par mass-assignment.');
+        $this->assertFalse(Hash::check('evil', (string) $user->password_hash), 'password_hash ne doit pas être rempli par mass-assignment.');
     }
 
     public function test_super_admin_password_hash_is_not_mass_assignable(): void
@@ -42,7 +42,7 @@ class PasswordHashFillableTest extends TestCase
         $admin->refresh();
 
         $this->assertSame('Changed', $admin->name);
-        $this->assertFalse(Hash::check('evil', $admin->password_hash), 'password_hash ne doit pas être rempli par mass-assignment.');
-        $this->assertTrue(Hash::check('original-password', $admin->password_hash));
+        $this->assertFalse(Hash::check('evil', (string) $admin->password_hash), 'password_hash ne doit pas être rempli par mass-assignment.');
+        $this->assertTrue(Hash::check('original-password', (string) $admin->password_hash));
     }
 }

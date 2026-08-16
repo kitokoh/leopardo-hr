@@ -24,6 +24,9 @@ class UpdateEmployeeDtoGuardTest extends BaseTestCase
 
         $this->expectException(\TypeError::class);
 
+        // Violation de type INTENTIONNELLE (garde structurelle #4609) — le
+        // TypeError est le comportement attendu.
+        // @phpstan-ignore-next-line argument.type
         UpdateEmployeeDTO::fromRequest($raw);
     }
 

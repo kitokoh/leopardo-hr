@@ -220,7 +220,7 @@ class AuthController extends Controller
             }
 
             /** @var Employee $employee */
-            $employee = Employee::create([
+            $employee = Employee::forceCreate([
                 'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',
                 'email' => $googleUser->getEmail(),
