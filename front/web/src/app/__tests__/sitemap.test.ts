@@ -55,6 +55,10 @@ describe('sitemap integrity (#3807)', () => {
     expect(urls.some((url) => url.includes('/checkout'))).toBe(false);
   });
 
+  it("ne publie pas /blog quand NEXT_PUBLIC_ENABLE_BLOG est off (#4467 — régression #2647/#2904)", () => {
+    expect(urls.some((url) => url.includes('/blog'))).toBe(false);
+  });
+
   it('publie les études de cas individuelles', () => {
     expect(urls).toContain('https://www.leopardo-rh.com/case-studies/techcorp-algerie');
     expect(urls).toContain('https://www.leopardo-rh.com/case-studies/pharmaplus-casablanca');
