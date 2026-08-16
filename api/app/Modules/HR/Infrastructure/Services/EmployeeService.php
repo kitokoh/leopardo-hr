@@ -79,10 +79,6 @@ class EmployeeService
             $employee->forceFill(['password_hash' => $passwordHash])->save();
         }
 
-        if ($passwordHash !== '') {
-            $employee->forceFill(['password_hash' => $passwordHash])->save();
-        }
-
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
         }
