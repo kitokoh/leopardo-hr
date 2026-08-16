@@ -60,25 +60,31 @@ class EmployeeTenantIsolationTest extends TestCase
 
     private function makeManager(Company $company, string $email, string $managerRole): Employee
     {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => $email,
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => $managerRole,
             'status' => 'active',
-        ]);
+        ])->save();
+        return $sensitiveEmployee1;
     }
 
     private function makeEmployee(Company $company, string $email): Employee
     {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => $email,
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
+        return $sensitiveEmployee0;
     }
 
     /**
