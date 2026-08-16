@@ -95,7 +95,8 @@
       "TN": "Tunisie",
       "TR": "Turquie",
       "US": "États-Unis"
-    }
+    },
+    "close": "Fermer"
   },
   "modules": {
     "attendance": "Pointage",

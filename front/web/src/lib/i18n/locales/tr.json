@@ -95,7 +95,8 @@
       "TN": "Tunus",
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
-    }
+    },
+    "close": "Kapat"
   },
   "modules": {
     "attendance": "Puantaj",

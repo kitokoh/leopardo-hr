@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 
@@ -25,7 +25,10 @@ export function Textarea({
   onChange,
   ...props
 }: TextareaProps) {
-  const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+  // #4326 : useId() (stable SSR/hydration) au lieu de Math.random() —
+  // un id aléatoire différent entre serveur et client cassait l'hydration.
+  const generatedId = useId();
+  const textareaId = id || `textarea-${generatedId}`;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {

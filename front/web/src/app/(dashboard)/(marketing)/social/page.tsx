@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, ListChecks, Plus, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getPreferredLocale, toIntlLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 import { PostEditor, type PostEditorSubmitPayload } from '@/modules/marketing/components/PostEditor';
 import {
   STATUS_STYLES,
@@ -319,7 +320,7 @@ export default function SocialCalendarPage() {
               type="button"
               onClick={() => setComposerDay(null)}
               className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-              aria-label="Fermer"
+              aria-label={t(getPreferredLocale(), 'common.close', 'Fermer')}
             >
               <X className="h-4 w-4" />
             </button>
@@ -357,7 +358,7 @@ export default function SocialCalendarPage() {
                 type="button"
                 onClick={() => setSelectedPost(null)}
                 className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-                aria-label="Fermer"
+                aria-label={t(getPreferredLocale(), 'common.close', 'Fermer')}
               >
                 <X className="h-4 w-4" />
               </button>

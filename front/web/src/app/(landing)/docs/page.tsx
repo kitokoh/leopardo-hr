@@ -131,8 +131,8 @@ export default function DocsPage() {
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
-      {/* Hero */}
-      <section className="pt-32 pb-16 px-4">
+      {/* Hero — id="intro" cible du lien /docs#intro (4 locales) */}
+      <section id="intro" className="pt-32 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
             <BookOpen className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export default function DocsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="search"
-              value={search}
+              aria-label={copy.hero.searchPlaceholder}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={copy.hero.searchPlaceholder}
               className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"

@@ -43,28 +43,28 @@ const TOPIC_TO_SUBJECT: Record<string, string> = {
 
 const contactCopy: Record<string, {
   hero: { headline: string; subheadline: string; cta1: string; cta2: string; badge: string };
-  info: { title: string; email: string; phone: string; address: string; hours: string; responseTime: string };
+  info: { title: string; email: string; phone: string; address: string; hours: string; responseTime: string; addressValue: string; hoursValue: string };
   form: { name: string; email: string; company: string; subject: string; subjectPlaceholder: string; message: string; send: string; sending: string; successTitle: string; successBody: string; errorSend: string; errorGeneric: string };
 }> = {
   fr: {
     hero: { headline: 'Contactez-nous', subheadline: 'Notre équipe est là pour répondre à toutes vos questions', cta1: 'Envoyer un message', cta2: 'Demander une démo', badge: 'Contact' },
-    info: { title: 'Informations', email: 'Email', phone: 'Téléphone', address: 'Adresse', hours: 'Horaires', responseTime: 'Temps de réponse moyen : moins de 24 h' },
+    info: { title: 'Informations', email: 'Email', phone: 'Téléphone', address: 'Adresse', hours: 'Horaires', responseTime: 'Temps de réponse moyen : moins de 24 h', addressValue: 'Alger, Algérie', hoursValue: 'Lun-Ven 9h-18h (GMT+1)' },
 
     form: { name: 'Nom complet', email: 'Email', company: 'Entreprise', subject: 'Sujet', subjectPlaceholder: 'Choisir un sujet', message: 'Message', send: 'Envoyer le message', sending: 'Envoi en cours...', successTitle: 'Message envoyé !', successBody: 'Notre équipe vous répondra sous 24h.', errorSend: 'Erreur lors de l\'envoi', errorGeneric: 'Une erreur est survenue. Veuillez réessayer.' },
   },
   en: {
     hero: { headline: 'Contact us', subheadline: 'Our team is here to answer all your questions', cta1: 'Send a message', cta2: 'Request a demo', badge: 'Contact' },
-    info: { title: 'Information', email: 'Email', phone: 'Phone', address: 'Address', hours: 'Hours', responseTime: 'Average response time: under 24h' },
+    info: { title: 'Information', email: 'Email', phone: 'Phone', address: 'Address', hours: 'Hours', responseTime: 'Average response time: under 24h', addressValue: 'Algiers, Algeria', hoursValue: 'Mon-Fri 9am-6pm (GMT+1)' },
     form: { name: 'Full name', email: 'Email', company: 'Company', subject: 'Subject', subjectPlaceholder: 'Choose a subject', message: 'Message', send: 'Send message', sending: 'Sending...', successTitle: 'Message sent!', successBody: 'Our team will reply within 24 hours.', errorSend: 'Error while sending', errorGeneric: 'Something went wrong. Please try again.' },
   },
   tr: {
     hero: { headline: 'Bize ulaşın', subheadline: 'Ekibimiz tüm sorularınızı yanıtlamak için burada', cta1: 'Mesaj gönder', cta2: 'Demo iste', badge: 'İletişim' },
-    info: { title: 'Bilgiler', email: 'E-posta', phone: 'Telefon', address: 'Adres', hours: 'Çalışma saatleri', responseTime: 'Ortalama yanıt süresi: 24 saatten az' },
+    info: { title: 'Bilgiler', email: 'E-posta', phone: 'Telefon', address: 'Adres', hours: 'Çalışma saatleri', responseTime: 'Ortalama yanıt süresi: 24 saatten az', addressValue: 'Cezayir, Cezayir', hoursValue: 'Pzt-Cum 9:00-18:00 (GMT+1)' },
     form: { name: 'Ad soyad', email: 'E-posta', company: 'Şirket', subject: 'Konu', subjectPlaceholder: 'Konu seçin', message: 'Mesaj', send: 'Mesajı gönder', sending: 'Gönderiliyor...', successTitle: 'Mesaj gönderildi!', successBody: 'Ekibimiz 24 saat içinde yanıt verecektir.', errorSend: 'Gönderilirken hata oluştu', errorGeneric: 'Bir şeyler ters gitti. Lütfen tekrar deneyin.' },
   },
   ar: {
     hero: { headline: 'اتصل بنا', subheadline: 'فريقنا هنا للإجابة على جميع أسئلتك', cta1: 'أرسل رسالة', cta2: 'اطلب عرضاً تجريبياً', badge: 'اتصال' },
-    info: { title: 'معلومات', email: 'البريد الإلكتروني', phone: 'الهاتف', address: 'العنوان', hours: 'ساعات العمل', responseTime: 'متوسط وقت الاستجابة: أقل من 24 ساعة' },
+    info: { title: 'معلومات', email: 'البريد الإلكتروني', phone: 'الهاتف', address: 'العنوان', hours: 'ساعات العمل', responseTime: 'متوسط وقت الاستجابة: أقل من 24 ساعة', addressValue: 'الجزائر العاصمة، الجزائر', hoursValue: 'الإثنين-الجمعة 9:00-18:00 (GMT+1)' },
     form: { name: 'الاسم الكامل', email: 'البريد الإلكتروني', company: 'الشركة', subject: 'الموضوع', subjectPlaceholder: 'اختر موضوعاً', message: 'الرسالة', send: 'إرسال الرسالة', sending: 'جارٍ الإرسال...', successTitle: 'تم إرسال الرسالة!', successBody: 'سيرد فريقنا خلال 24 ساعة.', errorSend: 'خطأ أثناء الإرسال', errorGeneric: 'حدث خطأ ما. يرجى المحاولة مرة أخرى.' },
   },
 };
@@ -146,8 +146,8 @@ function ContactPageInner() {
                   {[
                     { icon: Mail, label: copy.info.email, value: 'contact@leopardo-rh.com' },
                     { icon: Phone, label: copy.info.phone, value: '+213 (0) 555 123 456' },
-                    { icon: MapPin, label: copy.info.address, value: 'Alger, Algérie' },
-                    { icon: Clock, label: copy.info.hours, value: 'Lun-Ven 9h-18h (GMT+1)' },
+                    { icon: MapPin, label: copy.info.address, value: copy.info.addressValue },
+                    { icon: Clock, label: copy.info.hours, value: copy.info.hoursValue },
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-4">
                       <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
