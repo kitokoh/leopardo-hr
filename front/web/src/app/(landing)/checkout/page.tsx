@@ -745,9 +745,9 @@ function StepPayment({
               {sandboxFilled ? copy.payment.filledTestCard : copy.payment.fillTestCard}
             </button>
             <div className="mt-2 font-mono text-xs text-amber-700 dark:text-amber-400 space-y-0.5">
-              <p>Carte : {SANDBOX_CARD.number}</p>
+              <p>{copy.payment.sandboxCardNumberLabel} {SANDBOX_CARD.number}</p>
               <p>
-                Expiry : {SANDBOX_CARD.expiry} · CVC : {SANDBOX_CARD.cvc}
+                {copy.payment.sandboxExpiryCvcLabel} {SANDBOX_CARD.expiry} · CVC : {SANDBOX_CARD.cvc}
               </p>
             </div>
           </div>

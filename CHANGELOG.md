@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): checkout sandbox — page branchée sur les libellés localisés (complément #4615).** L'encart carte de test utilise désormais `copy.payment.sandboxCardNumberLabel` / `sandboxExpiryCvcLabel`.
 - **fix(web): checkout sandbox — libellés carte de test localisés ×4 (Closes #4615).** « Carte : »/« Expiry : »/« CVC : » FR/EN en dur dans l'encart de test (staging).
 - **fix(web): <title> — marque dupliquée retirée des titres localisés (le template racine garde « | Leopardo RH ») (Closes #4612).** Les titres en/tr/ar contenaient déjà leur marque traduite → « Changelog | Leopardo HR | Leopardo RH » (mix FR + doublon) dans 3 locales sur 4.
 - **fix(web): Navbar — bouton sous-menu desktop avec aria-haspopup (a11y, résiduel #4510) (Closes #4614).** Le toggle mobile avait aria-expanded+haspopup depuis #4510 ; le bouton desktop (click+hover) n'avait que aria-expanded.
