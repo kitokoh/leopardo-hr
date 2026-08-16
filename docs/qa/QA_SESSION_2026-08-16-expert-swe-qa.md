@@ -82,6 +82,24 @@ messages FR mais fonction **morte** (aucun import) — non prioritaire.
 Issues créées : #4383, #4448, #4461 (Redis prod). Commentaires de preuve
 live : #4370 (sondes 500), #2646 (état démo), #4289 (bank-exports résolu).
 
+### Trouvaille majeure n°2 : suite Unit rouge sur main (3 tests)
+
+Reproduit localement ET dans les runs CI des PRs backend : **3 failed,
+4 skipped, 550 passed** sur `--testsuite=Unit` — les mêmes 3 échecs bloquaient
+le job unit de TOUTES les PRs (ex. run #4356) :
+
+1. `TestRtspSsidGuardTest > public targets are allowed` ×2 — régression du
+   merge #3298 (7e3d73312) : TEST-NET-3 (203.0.113.0/24, RFC 5737) repassé en
+   « public » et `camera.example.com` (NXDOMAIN, guard fail-closed) en hôte
+   public. L'intention #3147 (e183b8042) utilisait `www.example.com`
+   (A record garanti RFC 2606).
+2. `PolicyRegistrationTest` — doublon PA2-ARCH-008 : `AppServiceProvider` +
+   `AuthServiceProvider` enregistrent tous deux `Gate::policy(WebhookEndpoint)`.
+
+Fix (**PR #4493**, issue **#4490**) : data provider restauré + doublon retiré.
+Suite Unit locale : **553 passed / 0 failed**. C'est LE déblocage du job unit
+pour toute la file de PRs backend.
+
 ## Leçons
 
 1. **Le « main vert » était une illusion** : la famine CI (#3545) annulait les
