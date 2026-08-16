@@ -59,13 +59,21 @@
         :last-check="healthCheckTimestamp"
         icon="CircleStackIcon"
       />
-      <SystemStatusCard
-        title="Services API"
-        :status="apiStatus"
-        :details="apiDetails"
-        :last-check="apiCheckTimestamp"
-        icon="CloudIcon"
-      />
+      <div>
+        <SystemStatusCard
+          title="Services API"
+          :status="apiStatus"
+          :details="apiDetails"
+          :last-check="apiCheckTimestamp"
+          icon="CloudIcon"
+        />
+        <div v-if="apiProbeError" class="mt-2 rounded-md border border-amber-200 bg-amber-50 p-2 text-center text-xs text-amber-800" role="alert">
+          Sonde /health/live injoignable.
+          <button class="ml-1 font-semibold text-indigo-600 hover:text-indigo-800" @click="retryApiLiveness">
+            Reessayer
+          </button>
+        </div>
+      </div>
       <SystemStatusCard
         title="Infrastructure"
         :status="infraStatus"
@@ -111,6 +119,8 @@ const healthCheckTimestamp = ref(null)
 
 // Issue #2789 — GET /health/live : disponibilité des Services API
 const apiLive = ref(null)
+// #4333 : échec de sonde visible (carte Services API) avec retry explicite.
+const apiProbeError = ref(false)
 const apiCheckTimestamp = ref(null)
 
 // Issue #2789 / #4328 — GET /platform/metrics/overview : agrégats plateforme
@@ -168,7 +178,8 @@ async function loadSystemStats() {
     lastUpdated.value = new Date()
   } catch (error) {
     console.error('Failed to load system stats:', error)
-    toast.error('Erreur lors du chargement des stats système')
+    // #4333 : l'intercepteur global toast déjà sur erreur HTTP — ne pas doubler.
+    if (!error.response) toast.error('Erreur lors du chargement des stats système')
   }
 }
 
@@ -182,7 +193,7 @@ async function loadQueueObservability() {
     queueObservability.value = response.data?.data || null
   } catch (error) {
     console.error('Failed to load queue observability:', error)
-    toast.error('Erreur lors du chargement de l\'observabilité des jobs')
+    if (!error.response) toast.error('Erreur lors du chargement de l\'observabilité des jobs')
   } finally {
     isLoadingObservability.value = false
   }
@@ -198,7 +209,7 @@ async function loadNotificationObservability() {
     notificationObservability.value = response.data?.data || null
   } catch (error) {
     console.error('Failed to load notification observability:', error)
-    toast.error('Erreur lors du chargement de l\'observabilité des notifications')
+    if (!error.response) toast.error('Erreur lors du chargement de l\'observabilité des notifications')
   } finally {
     isLoadingNotificationObservability.value = false
   }
@@ -224,14 +235,20 @@ const infraDetails = computed(() => {
 })
 
 async function loadApiLiveness() {
+  apiProbeError.value = false
   try {
     const response = await api.get('/health/live')
     apiLive.value = response.data
     apiCheckTimestamp.value = new Date()
   } catch (error) {
     apiLive.value = null
+    apiProbeError.value = true
     console.error('Failed to load API liveness:', error)
   }
+}
+
+function retryApiLiveness() {
+  loadApiLiveness()
 }
 
 async function loadPlatformMetrics() {
@@ -241,7 +258,7 @@ async function loadPlatformMetrics() {
     infraCheckTimestamp.value = new Date()
   } catch (error) {
     console.error('Failed to load platform metrics:', error)
-    toast.error('Erreur lors du chargement des métriques plateforme')
+    if (!error.response) toast.error('Erreur lors du chargement des métriques plateforme')
   }
 }
 

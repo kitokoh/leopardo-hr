@@ -68,8 +68,6 @@ class TaxRateChangeLogTest extends TestCase
             'email' => 'sa-rate-log@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
         ]);
-            $admin->role = 'super_admin';
-            $admin->save();
 
 
         /** @var Employee $manager */

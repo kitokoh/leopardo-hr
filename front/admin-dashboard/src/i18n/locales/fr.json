@@ -258,7 +258,9 @@
     "edit_title": "Modifier la tranche",
     "th_max": "Tranche max",
     "reset_confirm": "Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.",
-    "scope_company": "Spécifique entreprise"
+    "scope_company": "Spécifique entreprise",
+    "delete_confirm_title": "Supprimer ce barème ?",
+    "reset_confirm_title": "Réinitialiser les barèmes ?"
   },
   "common": {
     "language": {
@@ -471,7 +473,8 @@
     "delete": "Supprimer",
     "th_cap": "Plafond",
     "sim_employee": "Cotisations salariales",
-    "saved": "Cotisation mise à jour."
+    "saved": "Cotisation mise à jour.",
+    "delete_confirm_title": "Supprimer cette cotisation ?"
   },
   "emails": {
     "absence_approved": {
@@ -600,7 +603,9 @@
       "load_error": "Erreur lors du chargement du calendrier islamique.",
       "th_date": "Date grégorienne",
       "confirm_dialog": "Confirmer toutes les dates islamiques de {year} ?",
-      "saved": "Fête islamique enregistrée."
+      "saved": "Fête islamique enregistrée.",
+      "confirm_title": "Confirmer l'année ?",
+      "delete_confirm_title": "Supprimer ce jour férié ?"
     },
     "type_islamic": "Islamique",
     "confirm": {
@@ -750,10 +755,12 @@
       "created": "Session d'impersonation créée",
       "error": "Erreur lors de la création de la session d'impersonation",
       "done": "Terminé",
-      "employee": "Employé #:id"
+      "employee": "Employé #:id",
+      "copyFailed": "Impossible de copier le jeton automatiquement. Copiez-le manuellement depuis le champ ci-dessus."
     },
     "confirm": {
-      "delete": "Etes-vous sur de vouloir supprimer :name ?"
+      "delete": "Etes-vous sur de vouloir supprimer :name ?",
+      "title": "Supprimer cet utilisateur ?"
     },
     "bulkPanel": {
       "cancel": "Annuler",
@@ -816,7 +823,10 @@
     "placeholder": "Tapez votre message...",
     "thinking": "Réflexion en cours...",
     "error": "Désolé, une erreur est survenue. Veuillez réessayer.",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "historyError": "Impossible de charger les conversations.",
+    "messagesError": "Impossible de charger les messages.",
+    "retry": "Réessayer"
   },
   "navigation": {
     "dashboard": "Tableau de bord",
@@ -855,7 +865,10 @@
     "notFound": "Page non trouvee"
   },
   "a11y": {
-    "skip_to_content": "Aller au contenu principal"
+    "skip_to_content": "Aller au contenu principal",
+    "close": "Fermer",
+    "previous_month": "Mois précédent",
+    "next_month": "Mois suivant"
   },
   "shell": {
     "connected": "Connecte",
@@ -899,7 +912,10 @@
     "statusInProgress": "En cours",
     "statusFailed": "Echec",
     "download": "Telecharger",
-    "downloading": "Telechargement..."
+    "downloading": "Telechargement...",
+    "historyClientOnly": "Historique des exports disponible dans l'espace client",
+    "clientSpaceNote": "Disponible dans l'espace client",
+    "historyError": "Impossible de charger l'historique des exports."
   },
   "companyDetail": {
     "analyzing": "Analyse des donnees client...",
