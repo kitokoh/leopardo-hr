@@ -52,7 +52,16 @@
 ### Positif (vérifié résolu)
 hreflang/alternates (#3250), `<html lang>` SSR (#4173), checkout i18n (#4287), `decimalPattern('fr')` → 0 (#4197), orphelins #3812 → 0, tokens legacy #4200 → 0, glass tokens définis, SyncService/URLs #3867 (partiel : deep links manquants → #4304).
 
-## 3. Phase 3 — Implémentations (8 issues, 8 PRs)
+## 3. Phase 3 — Implémentations (10 issues, 12 PRs)
+
+| PR | Issue | Sujet | Validation |
+|----|-------|-------|-----------|
+| #4365 | 4292 | Résiduel i18n API — ~35 messages FR/EN localisés (PartnerDashboard, SSO, Google, Billing, PlatformUser, abort/validation, trial next_steps, cancel, RequireTenantCountry, VerifyTrialSignup) — 32 clés errors.php ×4 | scans accents + non-accentués → 0 résiduel |
+| #4368 | 4300 | /contact sujets ×4 + badges /pricing ×4 + metadata homepage SSR ×4 | tsc/eslint/jest 438 |
+| #4369 | 4299 | case-studies données + UI ×4 (data/case-studies.ts) | tsc/eslint/jest 438, garde i18n |
+| #4361 | docs | Bilan de session expert20 | — |
+
+(8 PRs précédentes #4350-#4358 inchangées.)
 
 | PR | Issue | Sujet | Validation |
 |----|-------|-------|-----------|
