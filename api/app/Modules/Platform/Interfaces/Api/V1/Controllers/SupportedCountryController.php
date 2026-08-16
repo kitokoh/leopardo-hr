@@ -10,6 +10,7 @@ use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * MULTI-PAYS (#1867) — registre unique des pays supportés.
@@ -25,7 +26,7 @@ class SupportedCountryController extends Controller
 {
     public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): \Symfony\Component\HttpFoundation\Response
     {
         $registry = [];
 

@@ -231,6 +231,18 @@ class AppServiceProvider extends ServiceProvider
                 ->by('kiosk-punch:'.$deviceCode.'|'.$request->ip());
         });
 
+        // #4607 : GET de la page kiosk (device_code = seule credential) —
+        // bucket DÉDIÉ (120/min) pour ne pas partager le quota d'écriture
+        // kiosk-punch (30/min) : une borne active qui recharge la page à
+        // chaque pointage consommerait GET+PUNCH dans le même bucket → 429
+        // sur le flux légitime. 120/min borne quand même l'énumération.
+        RateLimiter::for('kiosk-show', function (Request $request) {
+            $deviceCode = strtoupper((string) $request->route('deviceCode', 'unknown'));
+
+            return Limit::perMinute((int) config('security.rate_limits.kiosk_show_per_minute', 120))
+                ->by('kiosk-show:'.$deviceCode.'|'.$request->ip());
+        });
+
         // Public careers portal (job listing/detail/feed + candidate
         // applications) has no Sanctum guard, so it needs its own IP-keyed
         // throttle bucket rather than relying on the authenticated 'api' one.

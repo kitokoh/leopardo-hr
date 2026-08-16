@@ -194,13 +194,7 @@ export function validatePhoneNumber(phone: string): boolean {
   return phoneRegex.test(phone);
 }
 
-export function validateCompanyName(name: string): boolean {
-  return name.length >= 2 && name.length <= 100;
-}
 
-export function validateMessage(message: string): boolean {
-  return message.length >= 10 && message.length <= 5000;
-}
 
 export function sanitizeInput(input: string): string {
   return input

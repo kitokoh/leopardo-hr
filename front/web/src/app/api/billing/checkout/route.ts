@@ -31,7 +31,7 @@ const SANDBOX_CHECKOUT = process.env.SANDBOX_CHECKOUT === 'true';
 const SANDBOX_PRICES: Record<string, Record<string, number>> = {
   free: { monthly: 0, annual: 0 },
   pilot: { monthly: 2900, annual: 2400 },
-  operations: { monthly: 9900, annual: 7900 },
+  operations: { monthly: 7900, annual: 6600 },
   enterprise: { monthly: 0, annual: 0 },
 };
 

@@ -55,10 +55,10 @@ class TenantIsolationTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $managerA = Employee::query()->create([
+        $managerA = new Employee([
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $managerA->forceFill(['password_hash' => Hash::make('password123')])->save();
         $managerA->forceFill([
             'company_id' => $companyA->id,
             'role' => 'manager',

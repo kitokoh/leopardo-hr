@@ -50,9 +50,13 @@ class ApiVersionAndPlanRateLimitTest extends TestCase
 
     public function test_authenticated_api_is_rate_limited_by_current_plan(): void
     {
-        config(['security.plan_rate_limits.starter_per_minute' => 2]);
+        // Issue #4683 / #4456 (ADR-0014) : codes plans canoniques
+        // Free/Pilot/Operations/Enterprise — « Starter » est un legacy
+        // migré vers Pilot par PlanSeeder, et resolvePlanLimit() ne lit
+        // que pilot_per_minute (jamais starter_per_minute).
+        config(['security.plan_rate_limits.pilot_per_minute' => 2]);
 
-        DB::table('plans')->updateOrInsert(['name' => 'Starter'], [
+        DB::table('plans')->updateOrInsert(['name' => 'Pilot'], [
             'price_monthly' => 29,
             'price_yearly' => 290,
             'max_employees' => 20,
@@ -61,7 +65,7 @@ class ApiVersionAndPlanRateLimitTest extends TestCase
             'is_active' => true,
         ]);
 
-        $planId = DB::table('plans')->where('name', 'Starter')->value('id');
+        $planId = DB::table('plans')->where('name', 'Pilot')->value('id');
 
         $company = Company::factory()->create(['plan_id' => $planId]);
         $employee = Employee::factory()->create([

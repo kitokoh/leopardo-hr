@@ -5,9 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:leopardo_core/core/api/api_exceptions.dart';
-import 'package:leopardo_employee/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+import 'package:leopardo_employee/core/providers/core_providers.dart';
 
 class CompanyRequestScreen extends ConsumerStatefulWidget {
   const CompanyRequestScreen({super.key});
@@ -67,8 +68,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
       }
     } catch (e) {
       if (mounted) {
+        final l10n = context.l10n;
         final msg =
-            e is ApiException ? e.message : 'Erreur lors de la soumission';
+            e is ApiException ? e.message : l10n.userAuthSubmitError;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(msg)));
@@ -80,6 +82,7 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final bg = AppColors.backgroundFor(context);
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
@@ -112,21 +115,20 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                       .scale(begin: const Offset(0.5, 0.5)),
                   const SizedBox(height: 20),
                   Text(
-                    'Demande soumise !',
+                    l10n.userAuthCompanyRequestTitle,
                     style: AppTypography.title.copyWith(color: text),
                     textAlign: TextAlign.center,
                   ).animate().fadeIn(delay: 200.ms),
                   const SizedBox(height: 8),
                   Text(
-                    'Un administrateur examinera votre demande. '
-                    'Vous recevrez une notification des qu\'elle sera traitee.',
+                    l10n.userAuthCompanyRequestBody,
                     style: AppTypography.bodySmall.copyWith(color: muted),
                     textAlign: TextAlign.center,
                   ).animate().fadeIn(delay: 300.ms),
                   const SizedBox(height: 28),
                   ElevatedButton(
                     onPressed: () => context.go('/user-home'),
-                    child: const Text('Retour a l\'accueil'),
+                    child: Text(l10n.userAuthBackToHome),
                   ).animate().fadeIn(delay: 400.ms),
                 ],
               ),
@@ -139,9 +141,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('Creer une entreprise'),
+        title: Text(l10n.userAuthCreateCompany),
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: l10n.authBackTooltip,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             if (context.canPop()) {
@@ -170,8 +172,7 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Remplissez les informations de votre entreprise. '
-                      'Un administrateur validera votre demande.',
+                      l10n.userAuthCompanyRequestInfo,
                       style: AppTypography.caption.copyWith(color: muted),
                     ),
                   ),
@@ -179,14 +180,14 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
               ),
             ).animate().fadeIn(duration: 300.ms),
             const SizedBox(height: 20),
-            _buildForm(text, muted),
+            _buildForm(l10n, text, muted),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildForm(Color text, Color muted) {
+  Widget _buildForm(AppLocalizations l10n, Color text, Color muted) {
     return Form(
       key: _formKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -196,25 +197,25 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
           TextFormField(
             controller: _nameCtrl,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Nom de l\'entreprise *',
-              prefixIcon: Icon(Icons.business_outlined),
+            decoration: InputDecoration(
+              labelText: '${l10n.userAuthCompanyName} *',
+              prefixIcon: const Icon(Icons.business_outlined),
             ),
-            validator: (v) => (v?.trim().isEmpty ?? true) ? 'Nom requis' : null,
+            validator: (v) => (v?.trim().isEmpty ?? true) ? l10n.commonRequired : null,
           ),
           const SizedBox(height: 14),
           TextFormField(
             controller: _emailCtrl,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Email entreprise *',
-              prefixIcon: Icon(Icons.email_outlined),
+            decoration: InputDecoration(
+              labelText: '${l10n.userAuthCompanyEmail} *',
+              prefixIcon: const Icon(Icons.email_outlined),
             ),
             validator: (v) {
               final email = v?.trim() ?? '';
-              if (email.isEmpty) return 'Email requis';
-              if (!email.contains('@')) return 'Email invalide';
+              if (email.isEmpty) return l10n.authEmailRequired;
+              if (!email.contains('@')) return l10n.authEmailInvalid;
               return null;
             },
           ),
@@ -222,9 +223,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
           TextFormField(
             controller: _sectorCtrl,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Secteur d\'activite',
-              prefixIcon: Icon(Icons.category_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.userAuthSector,
+              prefixIcon: const Icon(Icons.category_outlined),
             ),
           ),
           const SizedBox(height: 14),
@@ -234,9 +235,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                 child: TextFormField(
                   controller: _countryCtrl,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Pays',
-                    prefixIcon: Icon(Icons.public_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.userAuthCountry,
+                    prefixIcon: const Icon(Icons.public_outlined),
                   ),
                 ),
               ),
@@ -245,9 +246,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                 child: TextFormField(
                   controller: _cityCtrl,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Ville',
-                    prefixIcon: Icon(Icons.location_city_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.userAuthCity,
+                    prefixIcon: const Icon(Icons.location_city_outlined),
                   ),
                 ),
               ),
@@ -258,9 +259,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
             controller: _phoneCtrl,
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Telephone',
-              prefixIcon: Icon(Icons.phone_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.userAuthPhone,
+              prefixIcon: const Icon(Icons.phone_outlined),
             ),
           ),
           const SizedBox(height: 14),
@@ -268,9 +269,9 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
             controller: _descCtrl,
             maxLines: 3,
             textInputAction: TextInputAction.done,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              prefixIcon: Icon(Icons.description_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.userAuthDescription,
+              prefixIcon: const Icon(Icons.description_outlined),
               alignLabelWithHint: true,
             ),
           ),
@@ -287,7 +288,7 @@ class _CompanyRequestScreenState extends ConsumerState<CompanyRequestScreen> {
                     ),
                   )
                 : const Icon(Icons.send_outlined),
-            label: const Text('Soumettre la demande'),
+            label: Text(l10n.userAuthSubmitRequest),
           ),
         ],
       ),

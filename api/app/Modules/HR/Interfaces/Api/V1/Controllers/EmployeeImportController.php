@@ -133,6 +133,9 @@ class EmployeeImportController extends Controller
 
                 // Issue #4496 : password_hash n'est plus mass-assignable —
                 // extrait du tableau de création, posé explicitement après.
+                // (Le unset est défensif : la colonne ne figure pas dans
+                // $allowedColumns — un CSV malveillant ne peut pas l'injecter.)
+                /** @var array<string, mixed> $fillData */
                 $passwordHash = Hash::make(Str::random(32));
                 unset($fillData['password_hash']);
 
