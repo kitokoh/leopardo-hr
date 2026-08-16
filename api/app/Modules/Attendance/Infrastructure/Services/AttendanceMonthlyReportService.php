@@ -7,6 +7,7 @@ namespace App\Modules\Attendance\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
+use App\Support\CsvCellSanitizer;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -100,8 +101,10 @@ class AttendanceMonthlyReportService
         foreach ($report['data']['employees'] as $row) {
             fputcsv($handle, [
                 $row['employee_id'],
-                $row['matricule'],
-                $row['name'],
+                // #4169 : matricule et nom sont des champs texte contrôlés par
+                // l'utilisateur → neutralisation des préfixes de formule CSV.
+                CsvCellSanitizer::neutralize((string) $row['matricule']),
+                CsvCellSanitizer::neutralize((string) $row['name']),
                 $row['worked_days'],
                 $row['worked_hours'],
                 $row['overtime_hours'],

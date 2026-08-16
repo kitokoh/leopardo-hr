@@ -99,14 +99,17 @@ const PLAN_CONFIG = {
 type PlanKey = keyof typeof PLAN_CONFIG;
 
 // Anciens slugs de plans (pré #2907) : redirigés vers les clés canoniques
-// Clés canoniques pilot/operations/enterprise (#2977/#3919). Les anciens
-// slugs (starter/business/scale/free) restent des alias doux ; « free »
-// (plan supprimé du backend, Closes #3247) atterrit sur Pilot.
+// pilot/operations/enterprise (#2977/#3919) — compat d'URLs, pas une vérité
+// produit. Le plan Free (0 €/mois, 5 employés) EXISTE au backend depuis la
+// recréation #2977 (PlanSeeder is_active) et est vendu sur la vitrine (#3883) ;
+// « free » ne doit JAMAIS atterrir silencieusement sur le paywall Pilot :
+// `/checkout?plan=free` rend un état « essai guidé » explicite (voir
+// CheckoutInner) menant à /signup — jamais un formulaire de paiement.
 const PLAN_ALIASES: Record<string, PlanKey> = {
   starter: 'pilot',
   business: 'operations',
   scale: 'enterprise',
-  free: 'pilot',
+  free: 'pilot', // URL profonde gérée avant résolution : voir rawPlan === 'free'
 };
 
 /* ─────────────────────────────────────────────
@@ -907,6 +910,43 @@ function CheckoutInner() {
   useEffect(() => {
     if (rawBilling) setBilling(rawBilling);
   }, [rawBilling]);
+
+  // #4195 : le plan Free existe au backend (#2977) et la vitrine le vend
+  // (#3883) — une URL profonde ?plan=free ne doit pas présenter un paywall
+  // Pilot silencieux. État « essai guidé » explicite vers /signup.
+  if (rawPlan === 'free') {
+    return (
+      <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-transparent'}`}>
+        <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
+        <main className="py-24 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
+              Plan Free — 0 €/mois · 5 employés
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white mb-4">
+              L&apos;essai guidé démarre ici
+            </h1>
+            <p className="text-slate-500 dark:text-slate-400 mb-8">
+              Le plan Free se souscrit via une demande d&apos;essai guidé : notre équipe
+              configure votre entreprise et vous accompagne. Aucune carte bancaire requise.
+            </p>
+            <Link
+              href="/signup?source=checkout_plan_free"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-lg font-bold rounded-2xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-xl shadow-emerald-500/20"
+            >
+              Démarrer l&apos;essai guidé
+            </Link>
+            <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">
+              <Link href="/pricing" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+                Voir les tarifs
+              </Link>
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div

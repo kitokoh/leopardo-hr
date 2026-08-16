@@ -139,29 +139,33 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
         ]);
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Nadia',
             'last_name' => 'Manager',
             'email' => 'manager@'.$domain,
             'password_hash' => Hash::make('password123'),
+            'salary_type' => 'daily',
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-            'salary_type' => 'daily',
             'salary_base' => 800,
-        ]);
+        ])->save();
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@'.$domain,
             'password_hash' => Hash::make('password123'),
+            'salary_type' => 'daily',
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-            'salary_type' => 'daily',
             'salary_base' => 800,
-        ]);
+        ])->save();
 
         return [$company, $manager, $employee];
     }

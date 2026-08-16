@@ -47,7 +47,6 @@ class TaxSlabValidationWorkflowTest extends TestCase
             'name' => 'Super Admin Test',
             'email' => 'sa-rate-validation@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
         $this->superAdmin = $superAdmin;
 
@@ -314,7 +313,6 @@ class TaxSlabValidationWorkflowTest extends TestCase
             'name' => 'Admin Notif',
             'email' => 'sa-notif@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
 
         Sanctum::actingAs($this->manager);

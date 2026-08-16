@@ -89,15 +89,17 @@ class AbsenceProofTest extends TestCase
         $absenceType = $this->makeAbsenceType($company);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         Sanctum::actingAs($employee);
 
@@ -126,15 +128,17 @@ class AbsenceProofTest extends TestCase
         $absenceType = $this->makeAbsenceType($company);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         Sanctum::actingAs($employee);
 
@@ -157,15 +161,17 @@ class AbsenceProofTest extends TestCase
         $absenceType = $this->makeAbsenceType($company);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $path = UploadedFile::fake()->create('note.pdf', 100)->store('absences/proofs/'.$company->id, 'local');
 
@@ -194,27 +200,31 @@ class AbsenceProofTest extends TestCase
         $absenceType = $this->makeAbsenceType($company);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $path = UploadedFile::fake()->create('note.pdf', 100)->store('absences/proofs/'.$company->id, 'local');
 
@@ -243,26 +253,30 @@ class AbsenceProofTest extends TestCase
         $absenceType = $this->makeAbsenceType($company);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $otherEmployee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'other@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $otherEmployee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $path = UploadedFile::fake()->create('note.pdf', 100)->store('absences/proofs/'.$company->id, 'local');
 
@@ -291,15 +305,17 @@ class AbsenceProofTest extends TestCase
         $absenceType = $this->makeAbsenceType($company);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $absence = Absence::query()->create([
             'company_id' => $company->id,
