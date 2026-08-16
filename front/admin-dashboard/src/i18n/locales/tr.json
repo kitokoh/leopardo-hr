@@ -666,7 +666,8 @@
       "companyTooLong": "Şirket adı çok uzun",
       "employeesRequired": "Bir ekip boyutu seçin",
       "emailInvalid": "Geçersiz e-posta",
-      "emailTooLong": "E-posta çok uzun"
+      "emailTooLong": "E-posta çok uzun",
+      "countryRequired": "Ülke zorunludur."
     },
     "pendingTitle": "Deneme talebi alındı",
     "preparingTitle": "Alanınız hazırlanıyor",
@@ -727,7 +728,9 @@
     "labelPhone": "Telefon (isteğe bağlı)",
     "copied": "Kopyalandı!",
     "labelCompany": "Şirket",
-    "copyLink": "Bağlantıyı kopyala"
+    "copyLink": "Bağlantıyı kopyala",
+    "labelCountry": "Ülke",
+    "countryPlaceholder": "Ülkenizi seçin"
   },
   "holidays": {
     "scope_national": "Ulusal",

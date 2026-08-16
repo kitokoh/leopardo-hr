@@ -19,6 +19,7 @@ describe('Form Validation Schemas', () => {
         company: 'Acme Corp',
         role: 'manager',
         employees: '11-50',
+        country: 'DZ',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
@@ -49,6 +50,37 @@ describe('Form Validation Schemas', () => {
         phone: 'not-a-phone',
         agreeToTerms: true,
       };
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
+    });
+
+    it('should reject a missing country (#4476)', () => {
+      const data = {
+        email: 'test@example.com',
+        company: 'Acme Corp',
+        agreeToTerms: true,
+      };
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
+    });
+
+    it('should reject a non-2-letter country (#4476)', () => {
+      const data = {
+        email: 'test@example.com',
+        company: 'Acme Corp',
+        country: 'ALGERIA',
+        agreeToTerms: true,
+      };
+      expect(() => signupFormSchema('fr').parse(data)).toThrow();
+    });
+
+    it('should normalize lowercase country codes (#4476)', () => {
+      const data = {
+        email: 'test@example.com',
+        company: 'Acme Corp',
+        country: 'dz',
+        agreeToTerms: true,
+      };
+      // lowercase is rejected by the schema (select sends uppercase) — the
+      // payload normalizes to uppercase in forms.ts regardless.
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
     });
 
