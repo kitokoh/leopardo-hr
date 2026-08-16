@@ -75,7 +75,6 @@ return [
     'PREFERENCE_UPDATED' => 'Preference updated.',
     'CONFIG_UPDATED' => 'Configuration updated.',
 
-    // #4312/#4313/#4314 — FR résiduels localisés (vague expert20)
     'PAYOUT_REQUEST_REFUSED' => 'Payout request refused.',
     'PAYOUT_REQUEST_FAILED' => 'An error occurred while requesting the payout.',
     'COMPANY_MODE_FORCED' => 'Your company enforces a clocking mode. You cannot change it.',
@@ -102,4 +101,8 @@ return [
     'INVALID_COUNTRY' => 'The signup country is invalid or unsupported. Please restart the signup.',
     'NO_PLAN_AVAILABLE' => 'The trial service is temporarily unavailable.',
     'PROVISIONING_FAILED' => 'Error creating your workspace. Please try again.',
+    'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
+    'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'Only a locked payroll run can be regularized.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.'
 ];

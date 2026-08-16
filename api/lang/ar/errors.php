@@ -60,7 +60,6 @@ return [
     'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
     'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',
 
-    // #4312/#4313/#4314 — FR résiduels localisés (vague expert20)
     'PAYOUT_REQUEST_REFUSED' => 'تم رفض طلب الدفع.',
     'PAYOUT_REQUEST_FAILED' => 'حدث خطأ أثناء طلب الدفع.',
     'COMPANY_MODE_FORCED' => 'تفرض شركتك وضع تسجيل حضور ولا يمكنك تغييره.',
@@ -87,4 +86,8 @@ return [
     'INVALID_COUNTRY' => 'بلد التسجيل غير صالح أو غير مدعوم. يرجى إعادة بدء التسجيل.',
     'NO_PLAN_AVAILABLE' => 'خدمة التجربة غير متاحة مؤقتًا.',
     'PROVISIONING_FAILED' => 'حدث خطأ أثناء إنشاء مساحة العمل الخاصة بك. يرجى المحاولة مرة أخرى.',
+    'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
+    'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
+    'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.'
 ];
