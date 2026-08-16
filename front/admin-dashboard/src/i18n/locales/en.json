@@ -815,7 +815,10 @@
     "placeholder": "Type your message...",
     "thinking": "Thinking...",
     "error": "Sorry, an error occurred. Please try again.",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "historyError": "Failed to load conversations.",
+    "messagesError": "Failed to load messages.",
+    "retry": "Retry"
   },
   "seo": {
     "pricing": {
