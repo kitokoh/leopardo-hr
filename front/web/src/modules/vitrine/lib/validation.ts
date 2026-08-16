@@ -23,6 +23,7 @@ function buildSignupValidationMessages(locale: AppLocale) {
     employeesRequired: t(locale, 'signup.validation.employeesRequired'),
     phoneInvalid: t(locale, 'signup.validation.phoneInvalid'),
     agreeTerms: t(locale, 'signup.validation.agreeTerms'),
+    countryRequired: t(locale, 'signup.validation.countryRequired'),
   };
 }
 
@@ -47,6 +48,14 @@ export function signupFormSchema(locale: AppLocale) {
     employees: z
       .enum(['1-10', '11-50', '51-200', '201-500', '500+'], {
         message: m.employeesRequired,
+      })
+      .optional(),
+    // #4476 : pays requis par /trial/signup (#1867, pas de fallback DZ
+    // silencieux) — le formulaire vitrine le collecte, pré-rempli depuis la
+    // locale (FR/TR/AR/EN) mais modifiable.
+    country: z
+      .enum(['FR', 'DZ', 'MA', 'TN', 'TR', 'US', 'CA'], {
+        message: m.countryRequired,
       })
       .optional(),
     phone: z

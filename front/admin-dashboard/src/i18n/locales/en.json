@@ -163,7 +163,8 @@
       "companyTooLong": "Company name is too long",
       "emailTooShort": "Email too short",
       "employeesRequired": "Select a team size",
-      "companyTooShort": "Company name must be at least 2 characters"
+      "companyTooShort": "Company name must be at least 2 characters",
+      "countryRequired": "Please select a country"
     },
     "placeholderEmail": "you@company.com",
     "timeoutTitle": "Still being created",
@@ -207,7 +208,9 @@
     "otpInvalidLength": "Please enter the 6 digits of the code.",
     "title": "Try Leopardo with your company",
     "downloadApp": "Download the app",
-    "privacyLink": "privacy policy"
+    "privacyLink": "privacy policy",
+    "labelCountry": "Country",
+    "countryPlaceholder": "Select a country"
   },
   "tax_rates": {
     "saving": "Saving…",

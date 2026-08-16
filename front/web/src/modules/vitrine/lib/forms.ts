@@ -72,6 +72,21 @@ export interface FormSubmissionResponse {
 /**
  * Submit signup form
  */
+
+// #4476 — pays par défaut du formulaire d'essai guidé, dérivé de la locale
+// navigateur (jamais de fallback silencieux DZ côté API : #1867).
+const LOCALE_DEFAULT_COUNTRY: Record<string, string> = {
+  fr: 'FR',
+  tr: 'TR',
+  ar: 'DZ',
+  en: 'US',
+};
+
+export function localeDefaultCountry(locale: string | undefined): string {
+  const base = (locale ?? 'fr').toLowerCase().slice(0, 2);
+  return LOCALE_DEFAULT_COUNTRY[base] ?? 'FR';
+}
+
 export async function submitSignupForm(
   data: SignupFormData,
   page: string
@@ -83,6 +98,9 @@ export async function submitSignupForm(
       role: data.role,
       employees: data.employees,
       phone: data.phone ? sanitizeInput(data.phone) : undefined,
+      // #4476 : /trial/signup exige un pays supporté (#1867) — le formulaire
+      // le collecte ; repli sûr depuis la locale si jamais absent.
+      country: data.country || localeDefaultCountry(getBrowserLocale()),
     };
 
     const response = await fetch("/api/forms/signup", {

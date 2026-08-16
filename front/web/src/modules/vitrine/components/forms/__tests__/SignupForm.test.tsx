@@ -57,6 +57,7 @@ jest.mock('@/modules/vitrine/lib/forms', () => ({
   submitVerifyForm: jest.fn(),
   fetchTrialStatus: jest.fn(),
   getLeadSource: () => 'signup_form',
+  localeDefaultCountry: (locale?: string) => 'FR',
   initialFormState: {
     isSubmitting: false,
     isSuccess: false,
@@ -110,6 +111,15 @@ describe('SignupForm Component', () => {
     it('should render submit button', () => {
       render(<SignupForm />);
       expect(screen.getByRole('button', { name: /recevoir mon code de vérification/i })).toBeInTheDocument();
+    });
+  });
+
+  describe('Country field (#4476)', () => {
+    it('renders a country select with a locale-derived default', async () => {
+      render(<SignupForm page="/signup" />);
+      const countrySelect = await screen.findByLabelText(/Pays|Country|Ülke|البلد/);
+      expect(countrySelect).toBeInTheDocument();
+      expect((countrySelect as HTMLSelectElement).value).toBe('FR');
     });
   });
 

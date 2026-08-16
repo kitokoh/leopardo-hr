@@ -194,7 +194,8 @@
       "phoneInvalid": "رقم الهاتف غير صالح",
       "companyTooShort": "يجب أن يتكون اسم الشركة من حرفين على الأقل",
       "roleRequired": "اختر دورك",
-      "agreeTerms": "يجب عليك قبول شروط الاستخدام"
+      "agreeTerms": "يجب عليك قبول شروط الاستخدام",
+      "countryRequired": "يرجى اختيار البلد"
     },
     "timeoutTitle": "لا يزال الإنشاء جاريًا",
     "otpTitle": "تحقق من بريدك الإلكتروني",
@@ -254,7 +255,9 @@
     "otpSentTo": "أرسلنا رمز تحقق من 6 أرقام إلى:",
     "badge": "تجربة مجانية لمدة 14 يومًا",
     "roleFounder": "مؤسس / مدير عام",
-    "copyLink": "نسخ الرابط"
+    "copyLink": "نسخ الرابط",
+    "labelCountry": "البلد",
+    "countryPlaceholder": "اختر البلد"
   },
   "platform_login": {
     "email_label": "بريد المسؤول الاعلى",

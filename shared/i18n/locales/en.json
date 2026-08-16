@@ -759,8 +759,11 @@
       "roleRequired": "Select your role",
       "employeesRequired": "Select a team size",
       "phoneInvalid": "Invalid phone number",
-      "agreeTerms": "You must accept the terms of use"
-    }
+      "agreeTerms": "You must accept the terms of use",
+      "countryRequired": "Please select a country"
+    },
+    "labelCountry": "Country",
+    "countryPlaceholder": "Select a country"
   },
   "companies": {
     "toast": {

@@ -13,6 +13,7 @@ import {
   Clock3,
   ClipboardCopy,
   Download,
+  Globe,
   LogIn,
   Mail,
   Phone,
@@ -28,6 +29,8 @@ import { signupFormSchema, SignupFormData } from '@/modules/vitrine/lib/validati
 import { submitSignupForm, submitVerifyForm, fetchTrialStatus, createFormReducer, initialFormState, getLeadSource } from '@/modules/vitrine/lib/forms';
 import { useAnalyticsForm } from '@/modules/vitrine/hooks/useAnalytics';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { CURRENCY_OPTIONS } from '@/modules/vitrine/data/currency';
+import { localeDefaultCountry } from '@/modules/vitrine/lib/forms';
 import type { AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 
@@ -54,7 +57,7 @@ type SignupFormCopy = Record<(typeof signupFormKeys)[number], string>;
 // Clés du catalogue i18n partagé (shared/i18n/locales/*.json — source de
 // vérité). Le record est construit via t() (garde PA2-I18N-014 : aucun
 // littéral utilisateur ajouté dans le composant).
-const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
+const signupFormKeys = ['badge', 'title', 'subtitle', 'labelEmail', 'placeholderEmail', 'labelCompany', 'placeholderCompany', 'labelRole', 'rolePlaceholder', 'roleFounder', 'roleManager', 'roleHr', 'roleOperations', 'roleOther', 'labelTeamSize', 'teamPlaceholder', 'labelCountry', 'countryPlaceholder', 'labelPhone', 'placeholderPhone', 'operationsNote', 'agreePrefix', 'termsLink', 'privacyLink', 'agreeSuffix', 'submitLabel', 'submittingLabel', 'codeHint', 'haveAccount', 'loginCta', 'back', 'otpTitle', 'otpSentTo', 'otpInvalidLength', 'otpInvalidCode', 'otpVerifyError', 'verifyLabel', 'verifyingLabel', 'codeValidity', 'trackStatus', 'pendingTitle', 'pendingFallback', 'pendingNote', 'readyTitle', 'readySubtitle', 'accessCta', 'copyLink', 'linkCopied', 'linkEmailed', 'failedTitle', 'failedBody', 'timeoutTitle', 'timeoutBody', 'refreshStatus', 'preparingTitle', 'preparingBody', 'statusFor', 'statusEvery5s', 'successTitle', 'emailVerified', 'credsLabel', 'fieldEmail', 'fieldPassword', 'copyPasswordTitle', 'copied', 'credsSentByEmail', 'credsEmailed', 'trialNote', 'trialDaysUnit', 'trialNoteSuffix', 'downloadApp', 'changePasswordNote', 'defaultError'] as const;
 
 function buildSignupFormCopy(locale: AppLocale): SignupFormCopy {
   const copy = {} as SignupFormCopy;
@@ -72,6 +75,9 @@ export function SignupForm({
 }: SignupFormProps) {
   const { locale } = useVitrineLocale();
   const c = buildSignupFormCopy(locale);
+  // #4476 : pays requis par /trial/signup (#1867) — pré-rempli depuis la
+  // locale, modifiable par l'utilisateur.
+  const defaultCountry = localeDefaultCountry(locale);
 
   const {
     register,
@@ -82,6 +88,7 @@ export function SignupForm({
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupFormSchema(locale)),
     mode: 'onBlur',
+    defaultValues: { country: defaultCountry as SignupFormData['country'] },
   });
 
   const [formState, dispatch] = useReducer(createFormReducer(), initialFormState);
@@ -406,6 +413,30 @@ export function SignupForm({
                   )}
                 </label>
               </div>
+
+              <label className="block">
+                <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  <Globe className="h-4 w-4" />
+                  {c.labelCountry}
+                </span>
+                <select
+                  className={selectClassName}
+                  aria-invalid={errors.country ? true : undefined}
+                  aria-describedby={errors.country ? 'signup-country-error' : undefined}
+                  {...register('country')}
+                >
+                  {CURRENCY_OPTIONS.map((option) => (
+                    <option key={option.country} value={option.country}>
+                      {option.label[locale] ?? option.label.fr}
+                    </option>
+                  ))}
+                </select>
+                {errors.country && (
+                  <p id="signup-country-error" role="alert" className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    {errors.country.message}
+                  </p>
+                )}
+              </label>
 
               <Input
                 label={c.labelPhone}
