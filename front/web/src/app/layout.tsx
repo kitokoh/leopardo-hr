@@ -12,6 +12,7 @@ import { OrganizationJsonLd } from "@/components/JsonLd";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
+import { pageMetadataI18n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
@@ -40,13 +41,19 @@ function ogLocale(locale: AppLocale): string {
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
 
+  // #4405 : title/description localisés (en/tr/ar) — avant : FR en dur pour
+  // toutes les locales (catalogue pageMetadataI18n jamais appliqué à /).
+  const landingMeta = pageMetadataI18n[ssrLocale as 'en' | 'tr' | 'ar']?.landing;
+  const title = landingMeta?.title ?? "Leopardo RH - SaaS RH multilingue pour equipes terrain";
+  const description = landingMeta?.description
+    ?? "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.";
+
   return {
     title: {
-      default: "Leopardo RH - SaaS RH multilingue pour equipes terrain",
+      default: title,
       template: "%s | Leopardo RH",
     },
-    description:
-      "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.",
+    description,
     keywords: [
       "SaaS RH",
       "logiciel RH",
@@ -71,8 +78,8 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       locale: ogLocale(ssrLocale),
       siteName: 'Leopardo RH',
-      title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
-      description: 'Une plateforme RH connectee pour vendre, onboarder et servir vos clients sur web, mobile et kiosque.',
+      title,
+      description,
       url: siteUrl,
       images: [
         {
@@ -85,8 +92,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
-      description: 'Pointage, paie, absences, onboarding et operations terrain en un seul espace client.',
+      title,
+      description,
       images: ['/twitter-image'],
     },
     appleWebApp: {

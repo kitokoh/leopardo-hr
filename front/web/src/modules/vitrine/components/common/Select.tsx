@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, AlertCircle } from 'lucide-react';
 
@@ -30,7 +30,8 @@ export function Select({
   ...props
 }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+  const fallbackId = useId();
+  const selectId = id || `select-${fallbackId}`;
 
   return (
     <div className="w-full">
