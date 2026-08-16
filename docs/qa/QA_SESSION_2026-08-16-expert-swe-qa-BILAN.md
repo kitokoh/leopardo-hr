@@ -66,7 +66,36 @@ autre entreprise) ; `leopardo-rh.com` NXDOMAIN → confirment #2812/#2813/#3452/
 | #4542 | #4510 | Navbar mobile : aria-expanded/haspopup |
 | #4543 | #4499/#4498 | recentActivity clamp + throttle /activate |
 
-## Phase 3 — Implémentation des findings (✅ partiel, 12 PRs)
+## Phase 3 — Implémentation des findings (✅ 17 PRs, toutes mergeable=True, en attente CI)
+
+| PR | Issues | Sujet |
+|---|---|---|
+| #4531 | #4519 | manifest marketing : permission INTERNET (P1) |
+| #4532 | #4503/#4504/#4507 | checkout i18n ×4 + redirect Stripe ?lang |
+| #4533 | #4505 | metadata /checkout/success dédiée ×4 |
+| #4534 | #4523/#4522/#4527 | CI mobile : dart format strict, artefacts, paths |
+| #4535 | #4511 | LoginView admin : creds super-admin retirées du bundle |
+| #4536 | #4513 | clé i18n shell.tenantOnly (toast tenant) |
+| #4538 | #4512 | WebhooksView : events chargés du backend |
+| #4539 | #4515 | checkAuth : session conservée sur erreurs transitoires |
+| #4540 | #4524/#4530 | plus de fallback API legacy en dur + debug→local |
+| #4541 | #4506 | LegalPageShell : ?lang persisté dans l'URL |
+| #4542 | #4510 | Navbar mobile : aria-expanded/haspopup |
+| #4543 | #4499/#4498 | recentActivity clamp + throttle /activate |
+| #4545 | #4517 | formats de date alignés sur la locale ×3 vues |
+| #4546 | #4518 | AnalyticsView : état d'erreur + retry |
+| #4547 | #4526 | mobile-distribute : branche morte supprimée |
+
+Validation locale : `tsc --noEmit`, `eslint --max-warnings 0`, `vite build` (admin),
+YAML parse (workflows). Backend PHP validé par CI (sandbox sans PHP).
+
+## État final de session
+
+- 17 PRs ouvertes par l'agent (toutes `mergeable=True`), 70 branches merge-forwardées,
+  8 PRs mergées en vague 1 (les autres agents + poller continuent le drain).
+- CI GitHub Actions **stallée** en fin de session (213 PRs ouvertes au total — la file
+  dépasse la capacité des runners ; dernier run complété avant 14:30).
+- Issues ouvertes : ~108 (dont 37 créées par cet audit, 28 issues sans PR identifiées).
 
 Voir tableau ci-dessus. Validation locale : `tsc --noEmit`, `eslint --max-warnings 0`,
 `vite build` (admin), YAML parse (workflows). Backend PHP validé par CI (sandbox sans PHP).
