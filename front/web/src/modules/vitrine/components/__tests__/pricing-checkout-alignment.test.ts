@@ -13,6 +13,7 @@ import { planNameToCheckoutKey } from '../PricingSection'
 // Contrat mirroré depuis checkout/page.tsx (PLAN_CONFIG + PLAN_ALIASES).
 // Si le checkout change, ce test casse → les deux surfaces restent alignées.
 const CHECKOUT_PLANS = {
+  free: { label: 'Free', monthly: 0, annual: 0 },
   pilot: { label: 'Pilot', monthly: 29, annual: 24 },
   operations: { label: 'Operations', monthly: 99, annual: 79 },
   enterprise: { label: 'Enterprise', monthly: null, annual: null },
@@ -27,23 +28,20 @@ const LEGACY_TO_CANONICAL: Record<string, keyof typeof CHECKOUT_PLANS | 'free'> 
 describe('pricing ↔ checkout alignment (#3919)', () => {
   it.each(['fr', 'en', 'tr', 'ar'] as const)('aligns plan names and prices for %s', (locale) => {
     const plans = getPricingPlans(locale)
-    expect(plans).toHaveLength(3)
+    // #3883 : le plan Free (0 € / 5 employés) est désormais affiché sur la vitrine.
+    expect(plans).toHaveLength(4)
 
     for (const plan of plans) {
       const key = planNameToCheckoutKey(plan.name)
-      expect(key).not.toBe('free')
+      expect(['free', 'pilot', 'operations', 'enterprise']).toContain(key)
 
       const checkout = CHECKOUT_PLANS[key as keyof typeof CHECKOUT_PLANS]
       // no checkout config for this plan → test fails loudly
       expect(checkout).toBeDefined()
 
-      // Nom affiché = nom canonique (Pilot/Operations/Enterprise, #2977)
+      // Nom affiché = nom canonique (Free/Pilot/Operations/Enterprise, #2977)
       expect(checkout.label).toBe(plan.name)
 
-      if (plan.price === '0') {
-        // free plan non affiché sur la vitrine (garde défensive)
-        continue
-      }
       if (checkout.monthly === null) {
         // Enterprise « sur devis » : pas de prix numérique côté vitrine non plus
         expect(['Sur devis', 'Custom', 'Teklif', 'حسب الطلب'].includes(plan.price)).toBe(true)
