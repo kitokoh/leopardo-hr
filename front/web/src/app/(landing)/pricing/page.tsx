@@ -707,7 +707,10 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/checkout?plan=free"
+              // #4183 : « Commencer gratuitement » → essai guidé sans carte,
+              // jamais le paywall du checkout (leçon #2907 ; le plan Free n'a
+              // pas de config de paiement — PLAN_ALIASES.free → pilot).
+              href="/signup?source=pricing_free"
               className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_20px_60px_-15px_rgba(16,185,129,0.4)] hover:scale-[1.03] active:scale-[0.98]"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -1240,7 +1243,8 @@ export default function PricingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href="/checkout?plan=free"
+              // #4183 : même garde pour le CTA de bas de page — essai guidé.
+              href="/signup?source=pricing_free"
               className="group relative px-10 py-4 bg-white text-emerald-600 font-black rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] text-base"
             >
               <span className="relative z-10 flex items-center gap-2.5">
