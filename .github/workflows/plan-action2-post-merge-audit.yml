@@ -34,6 +34,7 @@ concurrency:
 
 jobs:
   post-merge-audit:
+    timeout-minutes: 15
     name: Audit changelog/openapi/i18n coherence
     runs-on: ubuntu-latest
     steps:
