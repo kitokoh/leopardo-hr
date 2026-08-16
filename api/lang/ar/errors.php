@@ -93,6 +93,13 @@ return [
     'CONTRACT_TERMINATION_INVALID_STATE' => 'يجب أن يكون العقد نشطاً أو معلقاً لإنهائه.',
 
     // API responses — batch i18n v4 (#4396)
+    // Trial signup (audit #4395)
+    'ALREADY_PROCESSED' => 'تمت معالجة طلب التجربة هذا بالفعل.',
+    'INVALID_OR_EXPIRED_CODE' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
+    'EMAIL_ALREADY_REGISTERED' => 'يوجد حساب بهذا البريد الإلكتروني بالفعل. سجّل الدخول مباشرة.',
+    'INVALID_COUNTRY' => 'بلد التسجيل غير صالح أو غير مدعوم. يرجى إعادة بدء التسجيل.',
+    'NO_PLAN_AVAILABLE' => 'خدمة التجربة غير متاحة مؤقتًا.',
+    'PROVISIONING_FAILED' => 'حدث خطأ أثناء إنشاء مساحة العمل الخاصة بك. يرجى المحاولة مرة أخرى.',
     'PARTNER_APPLICATION_ALREADY_SUBMITTED' => 'تم تقديم هذا الطلب بالفعل.',
     'PAYOUT_REQUEST_REJECTED' => 'تم رفض طلب الدفع.',
     'NOT_A_PARTNER' => 'أنت غير مسجل كشريك.',
@@ -119,7 +126,6 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'لا يمكن إلغاء تشغيل الرواتب في حالته الحالية.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'تم تعليق حسابك. تواصل مع المسؤول.',
     'VERIFICATION_CODE_INVALID' => 'رمز التحقق غير صالح أو منتهي الصلاحية.',
-    'EMAIL_ALREADY_REGISTERED' => 'يوجد حساب بالفعل بهذا البريد الإلكتروني. سجّل الدخول مباشرة.',
     'TRIAL_SPACE_CREATION_FAILED' => 'حدث خطأ أثناء إنشاء مساحتك. حاول مرة أخرى.', origin/main
     'CANNOT_DISABLE_SELF' => 'لا يمكنك تعطيل حسابك الخاص.',
     'CANNOT_SUSPEND_SELF' => 'لا يمكنك تعليق حسابك الخاص.',
@@ -144,5 +150,5 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
     'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
     'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.',
+    'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.'
 ];
