@@ -11,8 +11,8 @@ import 'package:leopardo_core/core/api/mock_interceptor.dart';
 typedef RetryCallback = void Function(int attempt, Object error);
 
 class ApiClient {
-  static const String _defaultRemoteBaseUrl =
-      'https://gestionemployerbackend.onrender.com/api/v1';
+  // #4524 : plus d'URL distante en dur — le backend cible est fourni par le
+  // define API_BASE_URL (workflows). En debug, défaut = serveur local (#4530).
   static const String _defaultLocalAndroidBaseUrl =
       'http://10.0.2.2:8000/api/v1';
   static const String _defaultLocalLoopbackBaseUrl =
@@ -100,19 +100,19 @@ class ApiClient {
       return configured;
     }
 
+    // #4524 : un build release/profile sans API_BASE_URL échouait en silence
+    // vers le backend legacy (gestionemployerbackend.onrender.com). Désormais
+    // l'erreur est explicite : le CI passe toujours le define, un build local
+    // release doit le fournir.
     if (kReleaseMode || (!kIsWeb && !kDebugMode)) {
-      return _defaultRemoteBaseUrl;
+      throw StateError(
+        'API_BASE_URL must be provided in release/profile builds '
+        '(silent fallback removed, issue #4524).',
+      );
     }
 
-    const useLocalApi = bool.fromEnvironment(
-      'USE_LOCAL_API',
-      defaultValue: false,
-    );
-
-    if (!useLocalApi && !kIsWeb) {
-      return _defaultRemoteBaseUrl;
-    }
-
+    // #4530 : en debug, défaut = serveur local (10.0.2.2 émulateur Android,
+    // loopback ailleurs). Pointer un backend distant exige API_BASE_URL.
     if (kIsWeb) {
       return _defaultLocalLoopbackBaseUrl;
     }

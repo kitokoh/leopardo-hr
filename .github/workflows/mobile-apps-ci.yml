@@ -44,7 +44,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+  API_BASE_URL: ${{ vars.PROD_API_BASE_URL }}
 
 concurrency:
   group: mobile-apps-ci-${{ github.ref }}
@@ -63,6 +63,15 @@ jobs:
         with:
           lfs: true
           fetch-depth: 0
+
+      - name: Guard PROD_API_BASE_URL (#4524)
+        shell: bash
+        run: |
+          if [[ -z "${{ vars.PROD_API_BASE_URL }}" ]]; then
+            echo "::error::PROD_API_BASE_URL must be set (fail-open fallback removed, issue #4524)."
+            exit 1
+          fi
+          echo "PROD_API_BASE_URL=${{ vars.PROD_API_BASE_URL }}"
 
       - name: Validate mobile apps boundaries
         shell: pwsh
