@@ -597,7 +597,10 @@
     "placeholder": "اكتب رسالتك...",
     "thinking": "جارٍ التفكير...",
     "error": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.",
-    "conversation": "محادثة"
+    "conversation": "محادثة",
+    "historyError": "تعذر تحميل المحادثات.",
+    "messagesError": "تعذر تحميل الرسائل.",
+    "retry": "إعادة المحاولة"
   },
   "_updated_at": "2026-08-14T18:45:00Z",
   "attendance": {
@@ -862,7 +865,10 @@
     "confirm_delete": "حذف خطاف الويب هذا؟"
   },
   "a11y": {
-    "skip_to_content": "الانتقال إلى المحتوى الرئيسي"
+    "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
+    "close": "إغلاق",
+    "previous_month": "الشهر السابق",
+    "next_month": "الشهر التالي"
   },
   "shell": {
     "connected": "متصل",
