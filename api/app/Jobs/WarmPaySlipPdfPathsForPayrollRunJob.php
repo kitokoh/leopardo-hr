@@ -74,15 +74,4 @@ class WarmPaySlipPdfPathsForPayrollRunJob implements ShouldQueue, TenantScopedJo
         }
     }
 
-    /**
-     * #4205 : épuisement des retries — log d'alerte (warmup pdf paths).
-     */
-    public function failed(Throwable $e): void
-    {
-        Log::error('WarmPaySlipPdfPathsForPayrollRunJob.failed', [
-            'payroll_run_id' => $this->payrollRunId,
-            'exception' => $e->getMessage(),
-        ]);
-    }
-
 }
