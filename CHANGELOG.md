@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **docs(qa): session swe-qa-360 2026-08-16 — bilan complet (audit 360°, merge drain, 3 doublons fermés, implémentation #4575).** Bilan : docs/qa/QA_SESSION_2026-08-16-swe-qa-360.md + leçon CI (événements synchronize non créés sous saturation → nudge commit vide + cancel des runs queued supersédés) ajoutée à AGENTS.md.
 
 - **fix(api): CorsAndTrustedProxyTest vert — assertion du pattern CORS Pages alignée sur la regex canonique (Closes #4667).** Le test assertait encore le glob `https://*.pages.dev` remplacé par la regex `#^https://([a-z0-9-]+\.)*pages\.dev$#i` le 2026-08-15 (44e88ccc8, #2333 — le glob crashait en 500 sur les previews). Nouvelle assertion structurelle : chaque pattern doit être une regex preg_match valide matchant `https://preview-123.pages.dev`, jamais `*`.
 - **fix(admin): api.js — helper t() mort retiré (refactor contextualErrorMessage du drain) (Closes #4621).**
