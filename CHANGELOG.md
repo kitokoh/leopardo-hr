@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(mobile/ios): leopardo_employee — UIBackgroundModes + location (Closes #4717).** La géofence iOS (Smart Attendance) promettait la position en arrière-plan (NSLocationAlwaysUsageDescription) et le code existe (geofence_service), mais UIBackgroundModes ne listait pas `location` → iOS ne délivrait pas les événements en arrière-plan. Ajout de `<string>location</string>` (flux Always).
 - **fix(web): a11y + i18n détail case-studies (Closes #4705, #4706, #4703).** Nom accessible rétabli sur la recherche /docs (régression #4566) ; aria-label localisé sur l'input newsletter du blog ; phrases FR de la page détail /case-studies/[slug] localisées ×4 (moduleIllustrates/moduleExplore/discoverModule, clé morte useCasePrefix supprimée).
 
 - **fix(api/security): password_hash retiré du $fillable User + SuperAdmin (Closes #4695).** Même classe que #4558 (Employee) : User et SuperAdmin laissaient password_hash mass-assignable → un `create($request->all())` ou oubli d'allowlist écrasait le mot de passe. Écrivains légitimes basculés en assignation explicite (UserAuthService::register, UserAuthController::changePassword, PlatformUserController::store, DemoDzSeeder) ; 49 sites de test convertis (`new SuperAdmin` + forceFill). DemoDzSeeder utilisait aussi firstOrCreate avec password_hash (silencieusement perdu depuis #4558 → démos sans mot de passe) — corrigé.
