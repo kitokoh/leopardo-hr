@@ -145,3 +145,21 @@ New `api.manager` middleware (`EnsureApiManagerMiddleware`) enforces route-level
 | Payroll engine `/payroll-runs/{run}/declarations/cnps-cm` (#1823) | R | - | - | RW | - | - | CEMAC/CM #1823 : déclaration CNPS mensuelle DAS (CSV) réservée aux managers principal/comptable ; plafond 750 000 XAF appliqué sur l'assiette, AT 2 % non plafonnée, ligne TOTAUX ; 404 cross-tenant. Tests : `CnpsDeclarationTest`. |
 | Payroll engine `/payroll-runs/{run}/regularize` + `/regularizations` (#1818) | W/R | R | - | W/R | - | - | DZ-DEPTH #1818 : seul un run `locked` est régularisable (422 sinon) ; création d'un run `type=regularization` lié par `original_run_id`, motif obligatoire tracé (`payroll_run_regularization_created`) ; le run original n'est jamais modifié. Tests : `PayrollRegularizationTest`. |
 | Payroll engine `/payroll/audit` + `/payroll/audit/{correlationId}` (#1874) | R | R | - | - | - | - | Audit immuable des calculs de paie (runs + simulations) : lecture seule, isolation tenant stricte (404/0 hors société), RBAC manager principal/RH via `PayrollAuditPolicy` (pattern #1917). Platform admin : `GET /admin/payroll/audit[...]` (cross-tenant, filtre `company_id`). Aucun secret dans les snapshots (agrégats uniquement). Tests : `PayrollAuditTest`. |
+
+### Console super-admin vs routes tenant — décision #4189 (2026-08-16)
+
+Le dashboard super-admin (`front/admin-dashboard`) utilise un token `super_admin_api`
+qui ne s'authentifie PAS sur les routes tenant (`auth:sanctum` + `tenant` +
+`sanctum` super_admin_api). Conséquence historique : un 401 tenant déclenchait la
+destruction de session admin (intercepteur `services/api.js`).
+
+**Décision** (option b + c du ticket) :
+- Les appels tenant depuis l'admin passent par `_skipAuthRedirect: true` + état
+  d'erreur local honnête — **jamais** de session kill silencieuse (règle générale).
+- Les surfaces avec équivalent admin réel utilisent l'endpoint admin :
+  `/v1/admin/fleet/alerts` (PlatformAdminFleetAlertController) pour les alertes.
+- Le listing véhicules `/v1/vehicles` (tenant) reste affiché en état « non
+  disponible » pour le super-admin — un endpoint `/admin/fleet/vehicles`
+  cross-tenant pourra être ajouté quand la donnée agrégée existera côté plateforme.
+- Test de régression : `front/admin-dashboard/e2e/fleet-no-session-kill.spec.js`
+  (ouvrir /fleet connecté → pas de redirect /login).
