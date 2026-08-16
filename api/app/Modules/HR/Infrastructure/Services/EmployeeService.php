@@ -55,7 +55,15 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
-        $employee = Employee::query()->create($payload);
+        // Issue #4307 / #3677 : these authorization- and tenancy-sensitive
+        // fields are intentionally excluded from Employee::$fillable. They
+        // must be persisted only after the DTO/FormRequest and policy have
+        // authorized the operation; otherwise Eloquent silently drops them,
+        // producing an employee without tenant/role/status and a 500 in the
+        // resource serializer.
+        $sensitive = Arr::only($payload, ['company_id', 'role', 'status', 'manager_role']);
+        $employee = Employee::query()->create(Arr::except($payload, array_keys($sensitive)));
+        $employee->forceFill($sensitive)->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
@@ -130,8 +138,11 @@ class EmployeeService
         $previousManagerRole = $employee->manager_role;
         $roleChangeRequested = array_key_exists('manager_role', $payload) || array_key_exists('role', $payload);
 
-        $employee->fill($payload);
-        $employee->save();
+        // Issue #4307 / #3677 : persist role/status explicitly after the
+        // normal fill, which deliberately excludes sensitive fields.
+        $sensitive = Arr::only($payload, ['role', 'manager_role', 'status', 'company_id']);
+        $employee->fill(Arr::except($payload, array_keys($sensitive)));
+        $employee->forceFill($sensitive)->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
