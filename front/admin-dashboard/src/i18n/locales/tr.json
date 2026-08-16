@@ -820,7 +820,10 @@
     "placeholder": "Mesajınızı yazın...",
     "thinking": "Düşünüyor...",
     "error": "Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.",
-    "conversation": "Konuşma"
+    "conversation": "Konuşma",
+    "historyError": "Sohbetler yüklenemedi.",
+    "messagesError": "Mesajlar yüklenemedi.",
+    "retry": "Tekrar dene"
   },
   "navigation": {
     "dashboard": "Gösterge Paneli",
@@ -862,7 +865,10 @@
     "confirm_delete": "Bu webhook silinsin mi?"
   },
   "a11y": {
-    "skip_to_content": "Ana içeriğe geç"
+    "skip_to_content": "Ana içeriğe geç",
+    "close": "Kapat",
+    "previous_month": "Önceki ay",
+    "next_month": "Sonraki ay"
   },
   "shell": {
     "connected": "Bagli",
