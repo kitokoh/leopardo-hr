@@ -33,11 +33,11 @@ class PlatformAnnouncementControllerTest extends TestCase
 
     private function actingAsSuperAdmin(): SuperAdmin
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 

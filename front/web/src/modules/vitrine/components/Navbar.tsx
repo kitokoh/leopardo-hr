@@ -206,7 +206,17 @@ const navByLocale: Record<string, NavEntry[]> = {
   ],
 }
 
-function DropdownMenu({ entry, onClose, search }: { entry: NavDropdown; onClose: () => void; search: string }) {
+function DropdownMenu({
+  entry,
+  onClose,
+  search,
+  id,
+}: {
+  entry: NavDropdown;
+  onClose: () => void;
+  search: string;
+  id: string;
+}) {
   const pathname = usePathname()
   return (
     <motion.div
@@ -214,6 +224,7 @@ function DropdownMenu({ entry, onClose, search }: { entry: NavDropdown; onClose:
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.96 }}
       transition={{ duration: 0.15, ease: 'easeOut' }}
+      id={id}
       className="absolute top-full left-1/2 -translate-x-1/2 pt-2 z-50"
     >
       <div className="w-72 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 shadow-xl shadow-slate-900/5 dark:shadow-black/20 p-2">
@@ -311,13 +322,14 @@ export function Navbar({ isDark, onToggleDark }: Props) {
                     onClick={() => setOpenDropdown(openDropdown === entry.label ? null : entry.label)}
                     aria-expanded={openDropdown === entry.label}
                     aria-haspopup="true"
+                    aria-controls={`dropdown-menu-${i}`}
                   >
                     {entry.label}
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openDropdown === entry.label ? 'rotate-180' : ''}`} />
                   </button>
                   <AnimatePresence>
                     {openDropdown === entry.label && (
-                      <DropdownMenu entry={entry} onClose={() => setOpenDropdown(null)} search={search} />
+                      <DropdownMenu entry={entry} onClose={() => setOpenDropdown(null)} search={search} id={`dropdown-menu-${i}`} />
                     )}
                   </AnimatePresence>
                 </div>

@@ -286,11 +286,11 @@ class PayrollAuditTest extends TestCase
         $correlationId = (string) $run->refresh()->correlation_id;
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Super Admin Audit',
             'email' => 'sa-audit@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 

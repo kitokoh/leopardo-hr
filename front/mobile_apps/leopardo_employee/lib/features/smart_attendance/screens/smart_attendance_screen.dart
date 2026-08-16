@@ -123,9 +123,18 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
             config: config,
             sessionState: sessionState,
             onStartMonitoring: () async {
-              await ref
-                  .read(activeGeoSessionProvider.notifier)
-                  .startMonitoring(config);
+              // #4625 : startMonitoring capture désormais les erreurs dans
+              // l'état du provider — on affiche un retour utilisateur au lieu
+              // de laisser l'exception remonter au framework.
+              final notifier = ref.read(activeGeoSessionProvider.notifier);
+              await notifier.startMonitoring(config);
+              final current = ref.read(activeGeoSessionProvider);
+              if (current.error != null && !current.isMonitoring) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text(current.error!)));
+              }
             },
             onStopMonitoring: () {
               ref.read(activeGeoSessionProvider.notifier).stopMonitoring();

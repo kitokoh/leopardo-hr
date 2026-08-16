@@ -246,6 +246,7 @@ export default function BlogPage() {
 
             <NewsletterForm
               locale={locale}
+              ariaLabel={copy.newsletter.title}
               placeholder={copy.newsletter.placeholder}
               submitLabel={copy.newsletter.submit}
               submittingLabel={copy.newsletter.submitting}

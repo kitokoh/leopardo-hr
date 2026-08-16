@@ -135,40 +135,67 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonOr => 'او';
 
   @override
-  String get commonCountriesDz => 'الجزائر';
+  String get commonCountriesBf => 'بوركينا فاسو';
 
   @override
-  String get commonCountriesCm => 'الكاميرون';
+  String get commonCountriesBj => 'بنين';
 
   @override
-  String get commonCountriesCi => 'ساحل العاج';
+  String get commonCountriesCa => 'كندا';
 
   @override
-  String get commonCountriesSn => 'السنغال';
-
-  @override
-  String get commonCountriesMa => 'المغرب';
-
-  @override
-  String get commonCountriesTn => 'تونس';
-
-  @override
-  String get commonCountriesFr => 'فرنسا';
-
-  @override
-  String get commonCountriesTr => 'تركيا';
+  String get commonCountriesCf => 'جمهورية أفريقيا الوسطى';
 
   @override
   String get commonCountriesCg => 'الكونغو';
 
   @override
+  String get commonCountriesCi => 'ساحل العاج';
+
+  @override
+  String get commonCountriesCm => 'الكاميرون';
+
+  @override
+  String get commonCountriesDz => 'الجزائر';
+
+  @override
+  String get commonCountriesFr => 'فرنسا';
+
+  @override
   String get commonCountriesGa => 'الغابون';
 
   @override
-  String get commonCountriesBf => 'بوركينا فاسو';
+  String get commonCountriesGb => 'المملكة المتحدة';
+
+  @override
+  String get commonCountriesGq => 'غينيا الاستوائية';
+
+  @override
+  String get commonCountriesMa => 'المغرب';
 
   @override
   String get commonCountriesMl => 'مالي';
+
+  @override
+  String get commonCountriesNe => 'النيجر';
+
+  @override
+  String get commonCountriesSn => 'السنغال';
+
+  @override
+  String get commonCountriesTd => 'تشاد';
+
+  @override
+  String get commonCountriesTg => 'توغو';
+
+  @override
+  String get commonCountriesTn => 'تونس';
+
+  @override
+  String get commonCountriesTr => 'تركيا';
+
+  @override
+  String get commonCountriesUs => 'الولايات المتحدة';
 
   @override
   String get modulesAttendance => 'الحضور';
@@ -549,6 +576,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get usersToastSelectionexportdone => 'تم تصدير التحديد';
 
   @override
+  String get usersToastBulkdone => 'تم التحديث';
+
+  @override
   String get usersConfirmDelete => 'هل انت متأكد من رغبتك في حذف :name؟';
 
   @override
@@ -559,6 +589,71 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'يرجى تصحيح الحقول المميزة';
+
+  @override
+  String get usersErrorsPasswordMin =>
+      'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل';
+
+  @override
+  String get usersErrorsSearchNoMatch => 'لا توجد صفحة تطابق بحثك';
+
+  @override
+  String get usersErrorsUpdateFailed => 'فشل تحديث المستخدم';
+
+  @override
+  String get usersImpersonationTitle => 'انتحال صفة موظف';
+
+  @override
+  String get usersImpersonationSubtitle => 'فتح جلسة باسم :name';
+
+  @override
+  String get usersImpersonationReason => 'السبب (إلزامي، 5 أحرف على الأقل)';
+
+  @override
+  String get usersImpersonationReasonmin => 'السبب إلزامي (5 أحرف على الأقل).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'لا يوجد موظف مرتبط بهذا الحساب — تعذر انتحال الصفة.';
+
+  @override
+  String get usersImpersonationStart => 'إنشاء الجلسة';
+
+  @override
+  String get usersImpersonationCancel => 'إلغاء';
+
+  @override
+  String get usersImpersonationTokentitle => 'رمز انتحال الصفة (استخدام واحد)';
+
+  @override
+  String get usersImpersonationExpires => 'تنتهي في :date';
+
+  @override
+  String get usersImpersonationCopy => 'نسخ الرمز';
+
+  @override
+  String get usersImpersonationCopied => 'تم نسخ الرمز';
+
+  @override
+  String get usersImpersonationCreated => 'تم إنشاء جلسة انتحال الصفة';
+
+  @override
+  String get usersImpersonationError => 'خطأ في إنشاء جلسة انتحال الصفة';
+
+  @override
+  String get usersImpersonationDone => 'تم';
+
+  @override
+  String get usersImpersonationEmployee => 'الموظف المرتبط #:id';
+
+  @override
+  String get usersEditTitle => 'تعديل المستخدم';
+
+  @override
+  String get usersEditStatus => 'الحالة';
+
+  @override
+  String get usersEditSave => 'تحديث';
 
   @override
   String get dashboardTitle => 'لوحة التحكم';
@@ -589,11 +684,151 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashboardLeoIaAnnouncementBody =>
-      'تهانينا للفريق بأكمله: انخفض التأخير بنسبة 15٪ هذا الأسبوع. واصلوا هذه الديناميكية!';
+      'تهانينا للفريق بأكمله على التزامكم هذا الأسبوع. واصلوا هذه الديناميكية!';
 
   @override
   String get dashboardLeoIaAnnouncementError =>
       'تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل.';
+
+  @override
+  String dashboardLeoPresenceInsight(Object active, Object today) {
+    return 'اليوم، $today حضور من أصل $active موظف نشط. هل ترغب في إرسال رسالة تهنئة إلى الفريق؟';
+  }
+
+  @override
+  String get dashboardLeoPresenceEmpty =>
+      'لا توجد بيانات حضور متاحة حاليًا. هل ما زلت ترغب في إرسال رسالة تهنئة إلى الفريق؟';
+
+  @override
+  String dashboardLeoAnnouncementsCount(Object count) {
+    return 'تم نشر $count إعلان في شركتك.';
+  }
+
+  @override
+  String get dashboardPresenceTodayTitle => 'الحضور اليوم';
+
+  @override
+  String dashboardPresenceTodaySummary(Object active, Object present) {
+    return '$present حضور من أصل $active موظف نشط اليوم';
+  }
+
+  @override
+  String get dashboardPresenceTodayEmpty => 'لا توجد بيانات حضور متاحة.';
+
+  @override
+  String get dashboardPortfoliopriorities => 'أولويات المحفظة';
+
+  @override
+  String get dashboardClient => 'العميل';
+
+  @override
+  String get dashboardHealth => 'الصحة';
+
+  @override
+  String get dashboardRisk => 'المخاطر';
+
+  @override
+  String get dashboardActions => 'الإجراءات';
+
+  @override
+  String get dashboardSeeall => 'عرض الكل';
+
+  @override
+  String get dashboardNoprioritycompanies => 'لا توجد شركات ذات أولوية حالياً.';
+
+  @override
+  String get dashboardPendingregistrations => 'تسجيلات معلقة';
+
+  @override
+  String get dashboardNopendingrequests => 'لا توجد طلبات معلقة.';
+
+  @override
+  String get dashboardAdoption => 'الاعتماد';
+
+  @override
+  String get dashboardCheckins30d => 'تسجيل الحضور 30 يوم';
+
+  @override
+  String get dashboardActiveemployees => 'الموظفون النشطون';
+
+  @override
+  String get dashboardClientsatrisk => 'عملاء معرضون للخطر';
+
+  @override
+  String get dashboardRevenue => 'الإيرادات';
+
+  @override
+  String get dashboardCollected30d => 'المحصل خلال 30 يوم';
+
+  @override
+  String get dashboardOverdue => 'متأخرات';
+
+  @override
+  String get dashboardActivesubscriptions => 'اشتراكات نشطة';
+
+  @override
+  String get dashboardShortcuts => 'اختصارات';
+
+  @override
+  String get dashboardClientportfolio => 'محفظة العملاء';
+
+  @override
+  String get dashboardSubscriptions => 'الاشتراكات';
+
+  @override
+  String get dashboardClientrequests => 'طلبات العملاء';
+
+  @override
+  String get dashboardCreateactivateclient => 'إنشاء أو تفعيل عميل';
+
+  @override
+  String get dashboardOpenclientportfolio => 'فتح محفظة العملاء';
+
+  @override
+  String get dashboardProcessincomingrequests => 'معالجة الطلبات الواردة';
+
+  @override
+  String get dashboardViewclientrequests => 'عرض طلبات العملاء';
+
+  @override
+  String get dashboardMonitoratriskclients => 'مراقبة العملاء المعرضين للخطر';
+
+  @override
+  String get dashboardAnalyzepriorities => 'تحليل الأولويات';
+
+  @override
+  String get dashboardManagesubscriptionsrevenue =>
+      'إدارة الاشتراكات والإيرادات';
+
+  @override
+  String get dashboardOpensubscriptions => 'فتح الاشتراكات';
+
+  @override
+  String get dashboardChecksystemsecurity => 'فحص النظام والأمان';
+
+  @override
+  String get dashboardOpensystem => 'فتح النظام';
+
+  @override
+  String get dashboardPreparepartnerintegrations => 'تحضير تكاملات الشركاء';
+
+  @override
+  String get dashboardOpenwebhooks => 'فتح خطافات الويب';
+
+  @override
+  String get dashboardLoaderror => 'تعذر تحميل لوحة المنصة.';
+
+  @override
+  String get dashboardRiskhigh => 'مخاطر عالية';
+
+  @override
+  String get dashboardRiskmedium => 'مخاطر متوسطة';
+
+  @override
+  String get dashboardRisklow => 'مخاطر منخفضة';
+
+  @override
+  String get dashboardNotprovided => 'غير محدد';
 
   @override
   String get marketingOauthNavTitle => 'تسويق OAuth';
@@ -1387,7 +1622,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get signupBadge => 'تجربة مجانية لمدة 30 يومًا';
+  String get signupBadge => 'تجربة مجانية لمدة 14 يومًا';
 
   @override
   String get signupTitle => 'جرّب Leopardo مع شركتك';
@@ -1598,6 +1833,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signupTrialnote => 'تجربة مجانية لمدة';
 
   @override
+  String get signupTrialdaysunit => 'أيام';
+
+  @override
   String get signupTrialnotesuffix => 'لا حاجة لبطاقة ائتمانية';
 
   @override
@@ -1636,4 +1874,570 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signupValidationAgreeterms => 'يجب عليك قبول شروط الاستخدام';
+
+  @override
+  String get signupValidationCountryrequired => 'البلد مطلوب.';
+
+  @override
+  String get signupLabelcountry => 'البلد';
+
+  @override
+  String get signupCountryplaceholder => 'اختر بلدك';
+
+  @override
+  String get companiesToastLoadFailed => 'تعذّر تحميل تفاصيل الشركة.';
+
+  @override
+  String get companiesToastTicketsFailed => 'تعذّر تحميل تذاكر الدعم.';
+
+  @override
+  String get companiesToastSubscriptionFailed => 'تعذّر تحديث الاشتراك.';
+
+  @override
+  String get companiesToastFeaturesFailed => 'تعذّر حفظ إعدادات الوحدات.';
+
+  @override
+  String get companiesPortfolio => 'محفظة العملاء';
+
+  @override
+  String get companiesDirectory => 'دليل الشركات';
+
+  @override
+  String get companiesDirectorysub =>
+      'مرتبة حسب درجة الصحة والأولوية التجارية.';
+
+  @override
+  String get companiesSyncing => 'جاري مزامنة المحفظة...';
+
+  @override
+  String get companiesRetry => 'إعادة المحاولة';
+
+  @override
+  String get companiesCompany => 'الشركة';
+
+  @override
+  String get companiesPlanmrr => 'الخطة والإيراد الشهري';
+
+  @override
+  String get companiesHealthop => 'الصحة التشغيلية';
+
+  @override
+  String get companiesCheckins30d => 'تسجيل الحضور (30 يوم)';
+
+  @override
+  String get companiesRecommendedaction => 'الإجراء الموصى به';
+
+  @override
+  String get companiesManagement => 'الإدارة';
+
+  @override
+  String get companiesSystem => 'النظام';
+
+  @override
+  String get companiesCompanyname => 'اسم الشركة *';
+
+  @override
+  String get companiesContactemail => 'بريد الاتصال *';
+
+  @override
+  String get companiesCountry => 'البلد *';
+
+  @override
+  String get companiesCity => 'مدينة النشر *';
+
+  @override
+  String get companiesCurrency => 'العملة';
+
+  @override
+  String get companiesTimezone => 'المنطقة الزمنية';
+
+  @override
+  String get companiesDefaultlang => 'اللغة الافتراضية';
+
+  @override
+  String get companiesManagerfirst => 'الاسم الأول للمدير *';
+
+  @override
+  String get companiesManagerlast => 'اسم عائلة المدير *';
+
+  @override
+  String get companiesManageremail => 'بريد المدير الأساسي *';
+
+  @override
+  String get companiesActivatenow => 'تفعيل فوراً';
+
+  @override
+  String get companiesActivateclientnow => 'تفعيل العميل فوراً';
+
+  @override
+  String get companiesActivateclienthint =>
+      'وإلا يبقى العميل في الوضع التجريبي.';
+
+  @override
+  String get seoPricingDescription =>
+      'تسعير شفاف: خطة مجانية، بايلوت 29 يورو شهريًا، عمليات 99 يورو شهريًا، المؤسسات حسب العرض. تجربة مجانية 14 يومًا.';
+
+  @override
+  String get adminchatConversation => 'محادثة';
+
+  @override
+  String get adminchatError => 'عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get adminchatHistoryempty => 'لا توجد محادثات.';
+
+  @override
+  String get adminchatNew => 'محادثة جديدة';
+
+  @override
+  String get adminchatPlaceholder => 'اكتب رسالتك...';
+
+  @override
+  String get adminchatSend => 'إرسال';
+
+  @override
+  String get adminchatStart => 'ابدأ محادثة مع مساعد الذكاء الاصطناعي.';
+
+  @override
+  String get adminchatSubtitle =>
+      'اطرح أسئلتك عن الموارد البشرية والرواتب والتوظيف...';
+
+  @override
+  String get adminchatThinking => 'جارٍ التفكير...';
+
+  @override
+  String get adminchatTitle => 'مساعد ليوباردو للذكاء الاصطناعي';
+
+  @override
+  String get adminchatUnavailablebadge => 'غير متاح';
+
+  @override
+  String get adminchatUnavailablebody =>
+      'دردشة الذكاء الاصطناعي غير مفعّلة لوحدة تحكم المسؤول الأعلى. استخدم مساحة شركة مدعومة للوصول إلى المساعد.';
+
+  @override
+  String get adminchatUnavailabletitle =>
+      'مساعد الذكاء الاصطناعي غير متاح على مستوى المنصة';
+
+  @override
+  String get navigationAnalytics => 'التحليلات';
+
+  @override
+  String get navigationAudit => 'سجل التدقيق';
+
+  @override
+  String get navigationChat => 'محادثة الذكاء الاصطناعي';
+
+  @override
+  String get navigationCompanies => 'الشركات';
+
+  @override
+  String get navigationContracts => 'العقود';
+
+  @override
+  String get navigationCrm => 'مسار CRM';
+
+  @override
+  String get navigationDashboard => 'لوحة التحكم';
+
+  @override
+  String get navigationEdge => 'عُقد Edge';
+
+  @override
+  String get navigationExports => 'التصدير والتقارير';
+
+  @override
+  String get navigationFleet => 'أسطول المركبات';
+
+  @override
+  String get navigationGlobe => 'العالم في الوقت الفعلي';
+
+  @override
+  String get navigationGrowth => 'إدارة Growth';
+
+  @override
+  String get navigationLeaves => 'الإجازات والغياب';
+
+  @override
+  String get navigationMainmenu => 'القائمة الرئيسية';
+
+  @override
+  String get navigationMarketing => 'التسويق';
+
+  @override
+  String get navigationPayroll => 'الرواتب';
+
+  @override
+  String get navigationPredictions => 'لوحة التنبؤ بالذكاء الاصطناعي';
+
+  @override
+  String get navigationRecruitment => 'التوظيف';
+
+  @override
+  String get navigationReports => 'تقارير الموارد البشرية';
+
+  @override
+  String get navigationSubscriptions => 'الاشتراكات';
+
+  @override
+  String get navigationSupport => 'الدعم';
+
+  @override
+  String get navigationSupporttickets => 'مركز دعم العملاء';
+
+  @override
+  String get navigationSystem => 'النظام';
+
+  @override
+  String get navigationTraining => 'التدريب';
+
+  @override
+  String get navigationUsers => 'المستخدمون';
+
+  @override
+  String get navigationWebhooks => 'خطافات الويب';
+
+  @override
+  String get navigationLogin => 'تسجيل الدخول';
+
+  @override
+  String get navigationLogout => 'تسجيل الخروج';
+
+  @override
+  String get navigationCompanydetail => 'تفاصيل الشركة';
+
+  @override
+  String get navigationContributions => 'الاشتراكات الاجتماعية';
+
+  @override
+  String get navigationTaxbrackets => 'شرائح الضرائب';
+
+  @override
+  String get navigationLegalrates => 'المعدلات القانونية';
+
+  @override
+  String get navigationAccount => 'حسابي';
+
+  @override
+  String get navigationNotfound => 'الصفحة غير موجودة';
+
+  @override
+  String get webhooksConfirmDelete => 'حذف خطاف الويب هذا؟';
+
+  @override
+  String get a11ySkipToContent => 'الانتقال إلى المحتوى الرئيسي';
+
+  @override
+  String get a11yClose => 'إغلاق';
+
+  @override
+  String get a11yPreviousMonth => 'الشهر السابق';
+
+  @override
+  String get a11yNextMonth => 'الشهر التالي';
+
+  @override
+  String get shellConnected => 'متصل';
+
+  @override
+  String get shellFallbackpolling => 'وضع احتياطي (استطلاع)';
+
+  @override
+  String get shellPushunconfigured => 'الدفع غير مهيأ';
+
+  @override
+  String get shellDisconnected => 'غير متصل';
+
+  @override
+  String get shellSearch => 'بحث';
+
+  @override
+  String get shellNotifications => 'الإشعارات';
+
+  @override
+  String get shellNonotifications => 'لا توجد إشعارات';
+
+  @override
+  String get shellCriticalalerts => 'تنبيهات حرجة';
+
+  @override
+  String get shellLevel => 'المستوى:';
+
+  @override
+  String get shellFallbackpollingtitle =>
+      'الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)';
+
+  @override
+  String get shellTenantonly => 'ميزة المؤسسات — مخصصة لمساحات العملاء';
+
+  @override
+  String get exportsReportemployees => 'الموظفون';
+
+  @override
+  String get exportsReportemployeesdesc =>
+      'قائمة كاملة بالمناصب والعقود والأقسام.';
+
+  @override
+  String get exportsReportattendance => 'تسجيل الحضور';
+
+  @override
+  String get exportsReportattendancedesc => 'سجل الحضور بالساعات والانحرافات.';
+
+  @override
+  String get exportsReportpayslips => 'كشوف الرواتب';
+
+  @override
+  String get exportsReportpayslipsdesc =>
+      'تصدير شهري لكشوف الرواتب مع تفاصيل الراتب.';
+
+  @override
+  String get exportsReportabsences => 'الغيابات والإجازات';
+
+  @override
+  String get exportsReportabsencesdesc => 'سجل الطلبات والأرصدة لكل موظف.';
+
+  @override
+  String get exportsReporttraining => 'التدريب';
+
+  @override
+  String get exportsReporttrainingdesc =>
+      'الكتالوج والجلسات والتسجيلات والتقدم.';
+
+  @override
+  String get exportsReportvehicles => 'المركبات';
+
+  @override
+  String get exportsReportvehiclesdesc => 'الأسطول والمسافة المقطوعة والصيانة.';
+
+  @override
+  String get exportsHrreportstitle => 'تقارير موارد بشرية مخصصة';
+
+  @override
+  String get exportsHrreportssub =>
+      'أنشئ تقارير متقدمة مع فلاتر الفترة والقسم.';
+
+  @override
+  String get exportsReporttype => 'نوع التقرير';
+
+  @override
+  String get exportsTypeheadcount => 'عدد الموظفين';
+
+  @override
+  String get exportsTypeturnover => 'معدل الدوران';
+
+  @override
+  String get exportsTypeabsenteeism => 'التغيب';
+
+  @override
+  String get exportsTypepayrollsummary => 'ملخص الرواتب';
+
+  @override
+  String get exportsTypetrainingprogress => 'تقدم التدريب';
+
+  @override
+  String get exportsStartdate => 'تاريخ البداية';
+
+  @override
+  String get exportsEnddate => 'تاريخ النهاية';
+
+  @override
+  String get exportsGenerate => 'إنشاء';
+
+  @override
+  String get exportsGenerating => 'جاري الإنشاء...';
+
+  @override
+  String get exportsStatusdone => 'مكتمل';
+
+  @override
+  String get exportsStatusinprogress => 'قيد التنفيذ';
+
+  @override
+  String get exportsStatusfailed => 'فشل';
+
+  @override
+  String get exportsDownload => 'تنزيل';
+
+  @override
+  String get exportsDownloading => 'جاري التنزيل...';
+
+  @override
+  String get companydetailAnalyzing => 'جاري تحليل بيانات العميل...';
+
+  @override
+  String get companydetailRetry => 'إعادة المحاولة';
+
+  @override
+  String get companydetailFieldadoption => 'اعتماد الميدان';
+
+  @override
+  String get companydetailOnboarding => 'الإعداد';
+
+  @override
+  String get companydetailAnomalies30d => 'انحرافات 30 يوم';
+
+  @override
+  String get companydetailPayrollready => 'الرواتب جاهزة';
+
+  @override
+  String get companydetailActiveemployees30d => 'الموظفون النشطون (30 يوم)';
+
+  @override
+  String get companydetailNopriorityblockers =>
+      'لم يتم اكتشاف عوائق ذات أولوية.';
+
+  @override
+  String get companydetailModulesconfig => 'تكوين الوحدات';
+
+  @override
+  String get companydetailServiceplan => 'خطة الخدمات';
+
+  @override
+  String get companydetailCommercialstatus => 'الحالة التجارية';
+
+  @override
+  String get companydetailStatustrial => 'تجريبي';
+
+  @override
+  String get companydetailStatusactive => 'نشط';
+
+  @override
+  String get companydetailStatussuspended => 'موقوف';
+
+  @override
+  String get companydetailStatusexpired => 'منتهي';
+
+  @override
+  String get companydetailStartdate => 'البداية';
+
+  @override
+  String get companydetailInternalnotes => 'ملاحظات داخلية';
+
+  @override
+  String get companydetailNosupporttickets => 'لا توجد تذاكر دعم لهذا العميل.';
+
+  @override
+  String get companydetailTechnicalidentity => 'الهوية التقنية';
+
+  @override
+  String get companydetailPlatformid => 'معرف المنصة';
+
+  @override
+  String get companydetailSlug => 'المعرف';
+
+  @override
+  String get companydetailCountrycurrency => 'البلد / العملة';
+
+  @override
+  String get companydetailRegisteredon => 'مسجل في';
+
+  @override
+  String get companydetailLastactivity => 'آخر نشاط';
+
+  @override
+  String get userAuthPersonalLogin => 'تسجيل الدخول الشخصي';
+
+  @override
+  String get userAuthLoginSubtitle => 'اعثر على مساحتك ومستنداتك وطلباتك.';
+
+  @override
+  String get userAuthNoAccount => 'لا حساب بعد؟ إنشاء حساب';
+
+  @override
+  String userAuthGoogleError(String error) {
+    return 'خطأ Google: $error';
+  }
+
+  @override
+  String get authTogglePasswordVisibility => 'إظهار أو إخفاء كلمة المرور';
+
+  @override
+  String get authDemoAccess => 'وصول تجريبي';
+
+  @override
+  String get userAuthRegisterTitle => 'إنشاء حسابي';
+
+  @override
+  String get userAuthRegisterSubtitle => 'انضم إلى فريقك على Leopardo RH.';
+
+  @override
+  String get userAuthFirstName => 'الاسم الأول';
+
+  @override
+  String get userAuthLastName => 'اسم العائلة';
+
+  @override
+  String get userAuthFirstNameRequired => 'الاسم الأول مطلوب';
+
+  @override
+  String get userAuthLastNameRequired => 'اسم العائلة مطلوب';
+
+  @override
+  String get userAuthRegisterButton => 'إنشاء حسابي';
+
+  @override
+  String get userAuthAlreadyAccount => 'لديك حساب بالفعل؟ تسجيل الدخول';
+
+  @override
+  String get userAuthCompanyRequestTitle => 'تم إرسال الطلب!';
+
+  @override
+  String get userAuthCompanyRequestBody =>
+      'سيقوم أحد المسؤولين بمراجعة طلبك. ستتلقى إشعارًا عند معالجته.';
+
+  @override
+  String get userAuthBackToHome => 'العودة إلى الرئيسية';
+
+  @override
+  String get userAuthSubmitError => 'خطأ أثناء الإرسال';
+
+  @override
+  String get userAuthRegisterError => 'خطأ أثناء التسجيل';
+
+  @override
+  String get userAuthLoginError => 'بيانات اعتماد غير صالحة';
+
+  @override
+  String get userAuthGoogleLoginError => 'خطأ في تسجيل الدخول بـ Google';
+
+  @override
+  String get commonRequired => 'مطلوب';
+
+  @override
+  String get userAuthPhoneOptional => 'الهاتف (اختياري)';
+
+  @override
+  String get userAuthPhone => 'الهاتف';
+
+  @override
+  String get userAuthCreateCompany => 'إنشاء شركة';
+
+  @override
+  String get userAuthCompanyRequestInfo =>
+      'أدخل معلومات شركتك. سيقوم أحد المسؤولين بالتحقق من طلبك.';
+
+  @override
+  String get userAuthCompanyName => 'اسم الشركة';
+
+  @override
+  String get userAuthCompanyEmail => 'البريد الإلكتروني للشركة';
+
+  @override
+  String get userAuthSector => 'قطاع النشاط';
+
+  @override
+  String get userAuthCountry => 'البلد';
+
+  @override
+  String get userAuthCity => 'المدينة';
+
+  @override
+  String get userAuthDescription => 'الوصف';
+
+  @override
+  String get userAuthSubmitRequest => 'إرسال الطلب';
+
+  @override
+  String get userAuthRegisterSubtitleAlt =>
+      'اعثر على مساحتك الشخصية ونظم مستنداتك.';
 }

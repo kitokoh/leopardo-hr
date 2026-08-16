@@ -63,11 +63,11 @@ class TaxRateChangeLogTest extends TestCase
         $company = Company::factory()->create();
 
         /** @var SuperAdmin $admin */
-        $admin = SuperAdmin::query()->create([
+        $admin = new SuperAdmin([
             'name' => 'Super Admin Test',
             'email' => 'sa-rate-log@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $admin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
 
         /** @var Employee $manager */

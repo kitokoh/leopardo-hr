@@ -132,7 +132,8 @@ class UserAuthController extends Controller
             ], 422);
         }
 
-        $user->update(['password_hash' => Hash::make($validated['new_password'])]);
+        // #4695 : password_hash hors $fillable — assignation explicite.
+        $user->forceFill(['password_hash' => Hash::make($validated['new_password'])])->save();
 
         return new JsonResponse(['status' => 'ok']);
     }

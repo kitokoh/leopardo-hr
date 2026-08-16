@@ -29,11 +29,11 @@ class SocialContributionAdminControllerTest extends TestCase
         parent::setUp();
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Super Admin Test',
             'email' => 'sa-social-admin@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
         $this->superAdmin = $superAdmin;
     }
