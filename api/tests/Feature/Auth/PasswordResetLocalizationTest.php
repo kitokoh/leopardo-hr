@@ -31,7 +31,11 @@ class PasswordResetLocalizationTest extends TestCase
 
     public function test_forgot_password_defaults_to_french_without_accept_language(): void
     {
-        $response = $this->postJson('/api/v1/auth/forgot-password', ['email' => 'nobody@example.com']);
+        // Le client de test Laravel injecte Accept-Language: en-us,en;q=0.5
+        // par défaut (Request::create) — on le vide explicitement pour
+        // exercer le fallback FR (Language::DEFAULT) du middleware SetLocale.
+        $response = $this->withHeader('Accept-Language', '')
+            ->postJson('/api/v1/auth/forgot-password', ['email' => 'nobody@example.com']);
 
         $response->assertOk()
             ->assertJsonPath('localized_message', "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé.");
