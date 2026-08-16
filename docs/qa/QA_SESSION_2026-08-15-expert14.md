@@ -53,3 +53,36 @@ Bilan de session agent : audit global, spécifications, implémentations, triage
 - Les **merge-bots** des autres agents fusionnent les PRs vertes toutes les ~75 s : pousser tôt, rebaser souvent, garder les PRs petites.
 - Le **CHANGELOG** est une zone de merge conflictuel constant : insérer sous `## [Unreleased]` juste après l'en-tête, re-vérifier à chaque rebase.
 - Les issues « prod stale » (500 sur endpoints) sont le symptôme #1 de la journée : vérifier le code sur main avant de créer/corriger — souvent déjà fixé, il manque juste le déploiement (#2812/#3767).
+
+---
+
+# Continuation 2026-08-16 (round 2 — drain supplémentaire)
+
+## PRs mergées (7)
+
+| Issue | Correctif | PR |
+|---|---|---|
+| #4181 (P3 admin, sec) | jeton d'impersonation plus jamais dans un toast (clipboard échoué → message générique) | #4254 ✅ |
+| #4178 (P3 web) | /integrations : lien Documentation → /api-explorer (surface réelle du contrat) | #4260 ✅ |
+| #4095 (P3 web) | dashboard : e2e désambiguïsé (.first()) + libellé « Employés » honnête | #4261 ✅ |
+| #4243 (P1 api, tests) | SmartAttendanceFlowTest : DDL MySQL supprimé (12 tests Feature rouges réparés) | #4263 ✅ |
+| #4189 (P1 admin) | FleetView : test Playwright anti session-kill validé localement (10/10 specs verts) + matrice RBAC | #4273 ✅ |
+| #4180 (P3 api) | liens App Store placeholder retirés — superseded par #4227 (canonique mergée) | #4256 (fermée, contenu livré) |
+| #4176 (P3 web) | cartes /careers sans affordance cliquable — superseded par #4231 (canonique, va plus loin : vrais liens) | #4258 (fermée) |
+
+## En vol
+
+- #4197 (P2 mobile, i18n) : `deviceIntlNumberLocale` (core) + 6 sites paie + garde CI `check-mobile-number-locale.sh` — PR #4276 (CI Flutter).
+
+## Triage & cessions
+
+- **Cédé** (branches canoniques d'autres agents posées entre mon check et mon push — leçon : pousser le claim marker dans la SECONDE qui suit le checkout) : #4169, #4209, #4188, #4177, #4202, #4192, #4191, #4190 (celui-ci relâché volontairement : sans runtime PHP, documenter 56 schémas = les deviner — le doc du repo le déconseille).
+- **Fermé avec preuve** : #4235 (déjà corrigé sur main, commit 583fc242).
+- **Refusé** : #4101 (e2e admin ignorés — exige un backend réel seedé, hors sandbox).
+
+## Leçons round 2
+
+1. **La fenêtre de collision est ~2 min** : entre le check « FREE » et le push, 3 issues m'ont été soufflées. Protocole gagnant : self-assign → checkout → commit vide → push (4 commandes en une rafale), PUIS implémenter.
+2. Les **merge-bots ferment les PRs doublons** (« superseded by #XXXX ») — contribuer sur la branche canonique quand elle existe.
+3. Les **branches distantes disparaissent après merge** : le signal « branche absente » ne veut PAS dire « issue libre » — vérifier l'état de l'issue + les PRs ouvertes.
+4. Playwright local : `--disable-gpu --no-sandbox` + serveur pré-buildé en tâche de fond (le webServer intégré timeout sur les gros builds).
