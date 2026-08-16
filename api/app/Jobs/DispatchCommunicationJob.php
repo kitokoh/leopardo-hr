@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class DispatchCommunicationJob implements ShouldQueue, TenantScopedJob
 {
@@ -38,12 +39,33 @@ class DispatchCommunicationJob implements ShouldQueue, TenantScopedJob
         return $this->companyId;
     }
 
+    /** #3600 : retry borné avec backoff pour les erreurs transitoires. */
+    public int $tries = 3;
+
+    public int $timeout = 120;
+
+    /** @return array<int, int> */
+    public function backoff(): array
+    {
+        return [10, 60];
+    }
+
+    public function failed(\Throwable $e): void
+    {
+        Log::error('DispatchCommunicationJob failed definitively', [
+            'error' => $e->getMessage(),
+            'employee_id' => $this->employeeId,
+            'company_id' => $this->companyId,
+            'template_key' => $this->templateKey,
+        ]);
+    }
+
     /**
      * @return array<int, object>
      */
     public function middleware(): array
     {
-        return [new EnsureTenantContext()];
+        return [new EnsureTenantContext];
     }
 
     public function handle(CommunicationService $communication): void
@@ -59,4 +81,3 @@ class DispatchCommunicationJob implements ShouldQueue, TenantScopedJob
         $communication->notifyEmployee($employee, $this->templateKey, $this->context, $this->channels);
     }
 }
-
