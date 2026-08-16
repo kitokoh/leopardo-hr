@@ -34,6 +34,22 @@ const DASHBOARD_PREFIXES = [
 
 const SUPPORTED_LOCALES = ['fr', 'en', 'tr', 'ar'];
 
+/**
+ * #4393 — normalisation Accept-Language (même règle que resolveSsrLang du
+ * layout racine : premier tag, 2 lettres, fr/en/ar/tr, défaut fr). Source
+ * unique pour dériver x-vitrine-lang quand ?lang= est absent : sans cela
+ * les ~20 layouts landing retombaient sur la metadata FR alors que le
+ * layout racine servait html lang=EN (incohérence title/description).
+ */
+function resolveLang(acceptLanguage: string | null): string {
+  const base = (acceptLanguage ?? '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .slice(0, 2);
+  return SUPPORTED_LOCALES.includes(base) ? base : 'fr';
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isDashboard = DASHBOARD_PREFIXES.some((prefix) => pathname.startsWith(prefix));
@@ -55,8 +71,13 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Vitrine : propager ?lang= aux layouts via un en-tête (issue #4004).
-  const lang = request.nextUrl.searchParams.get('lang');
+  // Vitrine : propager la locale aux layouts via un en-tête (issue #4004).
+  // #4393 : ?lang= prioritaire ; sinon Accept-Language (même normalisation
+  // que resolveSsrLang) — corrige les ~20 layouts dont la metadata restait
+  // FR sur le chemin Accept-Language seul.
+  const lang =
+    request.nextUrl.searchParams.get('lang') ??
+    resolveLang(request.headers.get('accept-language'));
   const response = NextResponse.next();
   if (lang && SUPPORTED_LOCALES.includes(lang)) {
     response.headers.set('x-vitrine-lang', lang);
