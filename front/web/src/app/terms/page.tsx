@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   alternates: {
     // #3807 : canonical absolu exigé par Next.js (relatif = canonical invalide).
     canonical: `${SITE_URL}/terms`,
+    // #4405 : page non localisée (hors matcher x-vitrine-lang) — on REMPLACE
+    // les languages hérités du layout racine (qui pointaient vers la homepage).
+    languages: { fr: `${SITE_URL}/terms` },
   },
 }
 

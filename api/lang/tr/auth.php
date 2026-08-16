@@ -9,7 +9,7 @@ return [
     'account_suspended' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'welcome' => 'Hoş geldiniz :name!',
     'password_changed' => 'Şifre başarıyla değiştirildi.',
-    'password_reset_sent' => 'Şifre sıfırlama e-postası gönderildi.',
+    'password_reset_sent' => 'Bu e-posta icin bir hesap varsa, bir sifirlama baglantisi gonderildi.',
     'failed' => 'Bu kimlik bilgileri kayıtlarımızla eşleşmiyor.',
     'throttle' => 'Çok fazla giriş denemesi. Lütfen :seconds saniye sonra tekrar deneyin.',
 
