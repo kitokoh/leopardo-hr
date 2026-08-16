@@ -229,7 +229,7 @@ class PaySlipController extends Controller
         }
 
         if (! in_array($payrollRun->status, ['validated', 'paid'])) {
-            return response()->json(['message' => 'Le run de paie doit être validé avant envoi.'], 422);
+            return response()->json(['message' => __('payroll.run_must_be_validated')], 422);
         }
 
         $slips = $payrollRun->paySlips()
@@ -281,7 +281,7 @@ class PaySlipController extends Controller
         }
 
         return response()->json([
-            'message' => "{$sent} bulletin(s) envoyé(s), {$notified} notification(s) push déclenchée(s).",
+            'message' => __('payroll.bulletins_sent', ['sent' => $sent, 'notified' => $notified]),
             'sent_count' => $sent,
             'notified_count' => $notified,
             'total_slips' => $slips->count(),
@@ -320,7 +320,7 @@ class PaySlipController extends Controller
 
         $disk = Storage::disk($document->disk);
         if (! $disk->exists($document->path)) {
-            abort(404, 'Document archivé introuvable.');
+            abort(404, __('errors.ARCHIVED_DOCUMENT_NOT_FOUND'));
         }
 
         return $disk->download($document->path, $document->original_name, [

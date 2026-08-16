@@ -119,4 +119,15 @@ return [
         'secret' => env('MAIL_BOUNCE_WEBHOOK_SECRET', ''),
     ],
 
+
+    'mobile_app_links' => [
+        // #4180 : liens réels des apps sur l'App Store, par rôle, chargés depuis
+        // l'environnement (JSON : {"rh": "...", "employee": "...", ...}). Tant
+        // que les apps ne sont pas publiées (distribution Firebase App
+        // Distribution), les clés sont absentes → 'ios' reste null et les
+        // surfaces (e-mail, API) n'affichent pas de lien iOS. Interdiction de
+        // revenir aux placeholders id000000000*.
+        'ios' => json_decode((string) env('LEOPARDO_IOS_APP_LINKS', '{}'), true) ?: [],
+    ],
+
 ];

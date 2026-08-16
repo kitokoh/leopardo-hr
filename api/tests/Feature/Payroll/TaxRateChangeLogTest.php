@@ -67,8 +67,8 @@ class TaxRateChangeLogTest extends TestCase
             'name' => 'Super Admin Test',
             'email' => 'sa-rate-log@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
+
 
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);

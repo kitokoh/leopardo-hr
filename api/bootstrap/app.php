@@ -7,6 +7,7 @@ use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
+use App\Http\Middleware\EnsureKioskSearchPathReset;
 use App\Http\Middleware\PartnerLinkMiddleware;
 use App\Http\Middleware\RequestIdMiddleware;
 use App\Http\Middleware\RequireTenantCountry;
@@ -52,16 +53,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // silent/offline Edge node at a client site (or an expiring/expired
         // offline license) went completely unnoticed in production.
         //
-        // NOTE: two competing monitoring commands exist for historical
-        // reasons — edge:monitor (Eloquent EdgeNode model, matches the
-        // canonical UUID schema actually created in production) and
-        // edge:detect-silent-nodes (raw DB::table('edge_nodes') query on
-        // legacy bigint columns like node_id/alert_muted that do not exist
-        // in the canonical schema). Only edge:monitor is schedule-safe here;
-        // scheduling edge:detect-silent-nodes as-is would fail every run
-        // with a "column does not exist" SQL error. See issue #1291 for the
-        // schema unification work and docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md
-        // sections 1.3 and 1.4.
+        // NOTE: edge:detect-silent-nodes was REMOVED (#4317) — it queried
+        // legacy bigint columns (node_id/alert_muted) absent du schéma
+        // canonique UUID ; seul edge:monitor (modèle Eloquent EdgeNode) est
+        // planifiable. Voir issue #1291 et
+        // docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md sections 1.3/1.4.
         $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
     })
     ->withRouting(
@@ -105,7 +101,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant.country' => RequireTenantCountry::class,
             // #3368 : restaure le search_path après chaque requête kiosque
             // (les handlers basculent vers le schéma tenant sans try/finally).
-            'kiosk.search_path' => \App\Http\Middleware\EnsureKioskSearchPathReset::class,
+            'kiosk.search_path' => EnsureKioskSearchPathReset::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.
@@ -122,9 +118,19 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $errorCode = $exception->errorCode();
             $translatedMessage = __('errors.'.$errorCode);
-            $message = $translatedMessage !== 'errors.'.$errorCode
+            $catalogHasCode = $translatedMessage !== 'errors.'.$errorCode;
+
+            // #4171 : quand le code n'est pas au catalogue, le message brut de
+            // l'exception (français interne, détails de service) ne doit
+            // JAMAIS fuiter vers le client — réponse générique localisée +
+            // trace serveur pour le diagnostic.
+            if (! $catalogHasCode) {
+                report($exception);
+            }
+
+            $message = $catalogHasCode
                 ? $translatedMessage
-                : $exception->getMessage();
+                : __('errors.SERVER_ERROR');
 
             return new JsonResponse([
                 'error' => $errorCode,
@@ -143,9 +149,9 @@ return Application::configure(basePath: dirname(__DIR__))
             return new JsonResponse([
                 'error' => 'VALIDATION_ERROR',
                 'message' => 'VALIDATION_ERROR',
-                'localized_message' => 'Le fichier envoyé dépasse la taille maximale autorisée.',
+                'localized_message' => __('errors.FILE_TOO_LARGE'),
                 'errors' => [
-                    'file' => ['Le fichier dépasse la taille maximale autorisée.'],
+                    'file' => [__('errors.FILE_TOO_LARGE')],
                 ],
             ], 422);
         });

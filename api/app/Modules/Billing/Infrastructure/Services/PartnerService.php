@@ -38,6 +38,12 @@ class PartnerService
                 'application_status' => 'pending',
                 'status' => 'suspended', // Suspended until approved
                 'type' => $details['type'] ?? 'individual',
+                // Issue #4186 : coordonnées de candidature persistées (colonnes additives 2026_08_16_000001).
+                'name' => $details['name'] ?? null,
+                'email' => $details['email'] ?? null,
+                'phone' => $details['phone'] ?? null,
+                'website' => $details['website'] ?? null,
+                'commission_rate' => $details['commission_rate'] ?? null,
                 'payment_details' => $encryptedDetails,
             ]);
         } catch (QueryException $e) {

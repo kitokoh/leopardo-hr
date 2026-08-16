@@ -159,10 +159,12 @@ class PaymentDocumentControllerTest extends TestCase
             'employee_id' => $employee->id,
             'amount' => 15000,
             'reason' => 'Urgence familiale',
-            'status' => 'approved',
             'validation_status' => 'manager_approved',
             'amount_remaining' => 15000,
         ]);
+            $advance->status = 'approved';
+            $advance->save();
+
 
         Sanctum::actingAs($manager);
 

@@ -42,7 +42,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->status !== 'active') {
             return new JsonResponse([
                 'error' => 'ACCOUNT_SUSPENDED',
-                'message' => 'Votre compte a été suspendu. Contactez votre administrateur.',
+                'message' => 'ACCOUNT_SUSPENDED',
                 'localized_message' => __('errors.ACCOUNT_SUSPENDED'),
             ], 403);
         }
@@ -52,14 +52,14 @@ class PlatformAuthController extends Controller
             if (! isset($validated['two_fa_code'])) {
                 return new JsonResponse([
                     'error' => 'TWO_FA_REQUIRED',
-                    'message' => 'Un code 2FA est requis pour ce compte.',
+                    'message' => __('auth.twofa_code_required'),
                 ], 202); // 202 Accepted but further action needed
             }
 
             if (! $this->superAdminService->verifyCode($superAdmin, $validated['two_fa_code'])) {
                 return new JsonResponse([
                     'error' => 'INVALID_2FA_CODE',
-                    'message' => 'Le code 2FA est invalide ou a expire.',
+                    'message' => __('auth.twofa_code_invalid'),
                 ], 401);
             }
         }
@@ -121,7 +121,7 @@ class PlatformAuthController extends Controller
             if ($emailTaken) {
                 return new JsonResponse([
                     'error' => 'EMAIL_ALREADY_TAKEN',
-                    'message' => 'Cette adresse email est déjà utilisée.',
+                    'message' => __('auth.email_already_used'),
                 ], 422);
             }
 
@@ -158,7 +158,7 @@ class PlatformAuthController extends Controller
         if (! Hash::check($validated['current_password'], $superAdmin->password_hash)) {
             return new JsonResponse([
                 'error' => 'INVALID_PASSWORD',
-                'message' => 'Le mot de passe actuel est incorrect.',
+                'message' => __('auth.current_password_incorrect'),
             ], 401);
         }
 
@@ -182,7 +182,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->two_fa_secret) {
             return new JsonResponse([
                 'error' => 'ALREADY_ENABLED',
-                'message' => 'Le 2FA est déjà activé pour ce compte.',
+                'message' => __('auth.twofa_already_enabled'),
             ], 400);
         }
 
@@ -211,7 +211,7 @@ class PlatformAuthController extends Controller
         if ($superAdmin->two_fa_secret) {
             return new JsonResponse([
                 'error' => 'ALREADY_ENABLED',
-                'message' => 'Le 2FA est déjà activé pour ce compte.',
+                'message' => __('auth.twofa_already_enabled'),
             ], 400);
         }
 
@@ -221,7 +221,7 @@ class PlatformAuthController extends Controller
         if (! $secret) {
             return new JsonResponse([
                 'error' => 'SETUP_REQUIRED',
-                'message' => 'Veuillez d\'abord appeler setup2fa pour générer un secret.',
+                'message' => __('auth.twofa_not_setup'),
             ], 400);
         }
 
@@ -232,7 +232,7 @@ class PlatformAuthController extends Controller
 
             return new JsonResponse([
                 'error' => 'INVALID_2FA_CODE',
-                'message' => 'Le code 2FA fourni est invalide.',
+                'message' => __('auth.twofa_code_invalid_value'),
             ], 400);
         }
 
@@ -254,7 +254,7 @@ class PlatformAuthController extends Controller
         if (! Hash::check($validated['password'], $superAdmin->password_hash)) {
             return new JsonResponse([
                 'error' => 'INVALID_PASSWORD',
-                'message' => 'Mot de passe incorrect.',
+                'message' => __('auth.password_incorrect'),
             ], 401);
         }
 

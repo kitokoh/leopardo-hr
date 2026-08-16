@@ -310,7 +310,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t php_files < <(find app bootstrap config database public routes tests -type f -name '*.php' | sort)
+          # #4291 : `lang` inclu — un ParseError dans les catalogues de
+          # traduction (régression errors.php ×4, merge #4275) cassait TOUTES
+          # les réponses localisées sans être détecté par le lint précédent.
+          mapfile -t php_files < <(find app bootstrap config database public routes tests lang -type f -name '*.php' | sort)
           for file in "${php_files[@]}"; do
             php -l "$file" >/dev/null
           done
@@ -419,7 +422,8 @@ jobs:
   backend-coverage:
     name: Backend Coverage (PHPUnit)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # Issue #4251 : 45 min < duree reelle (~62 min) -> timeout porte a 75 min.
+    timeout-minutes: 75
     needs: detect-changes
     if: needs.detect-changes.outputs.api_changed == 'true'
 

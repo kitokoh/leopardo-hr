@@ -49,4 +49,13 @@ return [
     'correction_filter_applied' => 'Appliquees',
     'correction_filter_rejected' => 'Refusees',
     'correction_filter_all' => 'Toutes',
+
+    'correction_transmitted' => 'Demande de modification transmise au RH.',
+
+    // #4311 — validations correction/pointage localisées
+    'correction_future_check_in' => 'Impossible de demander une correction avec une heure future.',
+    'correction_future_check_out' => 'Impossible de demander une correction avec une heure future.',
+    'correction_already_processed' => 'Cette demande de correction a deja ete traitee.',
+    'manual_checkout_requires_check_in' => 'Le départ manuel nécessite une heure d\'arrivée.',
+    'checkout_after_checkin' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
 ];

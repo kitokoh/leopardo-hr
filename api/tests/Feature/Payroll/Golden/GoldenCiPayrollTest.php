@@ -405,6 +405,10 @@ class GoldenCiPayrollTest extends TestCase
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => 100000,
+            // Golden CI 2024 : contrat actif pendant toute la période testée.
+            // Sans dates explicites, EmployeeFactory peut proratiser le brut.
+            'contract_start' => '2026-01-01',
+            'contract_end' => null,
         ]);
 
         SalaryStructure::create([

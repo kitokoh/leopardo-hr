@@ -643,9 +643,11 @@ export default function DashboardPage() {
           <GlassCard delay={0.6}>
             <div className="p-6">
               <h4 className="mb-4 font-bold text-slate-950">Actions rapides</h4>
-              <div className="grid grid-cols-2 gap-3">
+              {/* #4095 : data-testid stable pour les e2e (la sidebar a des
+                  liens doublons/disablés feature-gated — sélecteur scopé). */}
+              <div data-testid="quick-actions" className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employé', color: 'bg-security', href: '/employees' },
+                  { icon: Users, label: 'Employés', color: 'bg-security', href: '/employees' },
                   { icon: Calendar, label: 'Congés', color: 'bg-rh', href: '/absences' },
                   { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
                   { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },

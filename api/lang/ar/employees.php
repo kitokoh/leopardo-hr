@@ -47,4 +47,10 @@ return [
     'gender' => 'الجنس',
     'hire_date' => 'تاريخ التوظيف',
     'emergency_contact' => 'جهة اتصال الطوارئ',
+
+    'evaluation_exists' => 'يوجد بالفعل تقييم لهذا الموظف لهذه الفترة.',
+    'evaluation_acknowledged_locked' => 'لا يمكن تعديل تقييم تم استلامه بعد الآن.',
+    'evaluation_not_draft_submit' => 'يمكن إرسال تقييم المسودة فقط.',
+    'evaluation_not_draft_delete' => 'يمكن حذف تقييم المسودة فقط.',
+    'evaluation_not_submitted' => 'يمكن استلام التقييم المُرسل فقط.',
 ];

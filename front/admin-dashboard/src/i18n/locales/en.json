@@ -9,7 +9,8 @@
       "export": "Export"
     },
     "confirm": {
-      "delete": "Are you sure you want to delete :name?"
+      "delete": "Are you sure you want to delete :name?",
+      "title": "Delete this user?"
     },
     "errors": {
       "name_required": "The full name is required.",
@@ -34,7 +35,8 @@
       "created": "Impersonation session created",
       "error": "Error creating the impersonation session",
       "done": "Done",
-      "employee": "Linked employee #:id"
+      "employee": "Linked employee #:id",
+      "copyFailed": "Unable to copy the token automatically. Copy it manually from the field above."
     },
     "filters": {
       "advanced": {
@@ -306,7 +308,8 @@
     "load_error": "Failed to load the contributions.",
     "empty": "No contribution recorded for this country.",
     "title": "Social contributions by country",
-    "th_country": "Country"
+    "th_country": "Country",
+    "delete_confirm_title": "Delete this contribution?"
   },
   "welcome": {
     "story": {
@@ -378,7 +381,9 @@
     "load_error": "Failed to load the tax brackets.",
     "empty": "No bracket recorded for this country.",
     "simulator_title": "Impact simulator",
-    "title": "Tax brackets by country"
+    "title": "Tax brackets by country",
+    "delete_confirm_title": "Delete this tax bracket?",
+    "reset_confirm_title": "Reset tax brackets?"
   },
   "companies": {
     "toast": {
@@ -386,7 +391,32 @@
       "tickets_failed": "Unable to load the support tickets.",
       "features_failed": "Failed to save the module configuration.",
       "load_failed": "Unable to load the company details."
-    }
+    },
+    "portfolio": "Client Portfolio",
+    "directory": "Companies Directory",
+    "directorySub": "Listed by health score and commercial priority.",
+    "syncing": "Syncing portfolio...",
+    "retry": "Retry",
+    "company": "Company",
+    "planMrr": "Plan & MRR",
+    "healthOp": "Op. Health",
+    "checkins30d": "Check-ins (30d)",
+    "recommendedAction": "Recommended Action",
+    "management": "Management",
+    "system": "System",
+    "companyName": "Company name *",
+    "contactEmail": "Contact email *",
+    "country": "Country *",
+    "city": "Deployment city *",
+    "currency": "Currency",
+    "timezone": "Time Zone",
+    "defaultLang": "Default Language",
+    "managerFirst": "Manager first name *",
+    "managerLast": "Manager last name *",
+    "managerEmail": "Primary manager email *",
+    "activateNow": "Activate immediately",
+    "activateClientNow": "Activate the client immediately",
+    "activateClientHint": "Otherwise the client stays on trial."
   },
   "_version": "1.0.0",
   "_updated_at": "2026-08-14T18:45:00Z",
@@ -430,7 +460,9 @@
       "th_status": "Status",
       "th_date": "Gregorian date",
       "th_name": "Holiday",
-      "title": "Islamic holidays"
+      "title": "Islamic holidays",
+      "confirm_title": "Confirm the year?",
+      "delete_confirm_title": "Delete this public holiday?"
     },
     "type_christian": "Christian",
     "cancel": "Cancel",
@@ -694,7 +726,45 @@
     "presence_today_summary": "{present} check-in(s) out of {active} active employee(s) today",
     "upgrade": "Upgrade",
     "leo_ia_announcement_title": "Congratulations team",
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "portfolioPriorities": "Portfolio priorities",
+    "client": "Client",
+    "health": "Health",
+    "risk": "Risk",
+    "actions": "Actions",
+    "seeAll": "See all",
+    "noPriorityCompanies": "No priority companies for now.",
+    "pendingRegistrations": "Pending registrations",
+    "noPendingRequests": "No pending requests.",
+    "adoption": "Adoption",
+    "checkins30d": "Check-ins 30d",
+    "activeEmployees": "Active employees",
+    "clientsAtRisk": "At-risk clients",
+    "revenue": "Revenue",
+    "collected30d": "Collected 30d",
+    "overdue": "Overdue",
+    "activeSubscriptions": "Active subscriptions",
+    "shortcuts": "Shortcuts",
+    "clientPortfolio": "Client portfolio",
+    "subscriptions": "Subscriptions",
+    "clientRequests": "Client requests",
+    "createActivateClient": "Create or activate a client",
+    "openClientPortfolio": "Open client portfolio",
+    "processIncomingRequests": "Process incoming requests",
+    "viewClientRequests": "View client requests",
+    "monitorAtRiskClients": "Monitor at-risk clients",
+    "analyzePriorities": "Analyze priorities",
+    "manageSubscriptionsRevenue": "Manage subscriptions and revenue",
+    "openSubscriptions": "Open subscriptions",
+    "checkSystemSecurity": "Check system and security",
+    "openSystem": "Open system",
+    "preparePartnerIntegrations": "Prepare partner integrations",
+    "openWebhooks": "Open webhooks",
+    "loadError": "Unable to load the platform cockpit.",
+    "riskHigh": "High risk",
+    "riskMedium": "Medium risk",
+    "riskLow": "Low risk",
+    "notProvided": "Not provided"
   },
   "payroll": {
     "confidence": {
@@ -745,7 +815,10 @@
     "placeholder": "Type your message...",
     "thinking": "Thinking...",
     "error": "Sorry, an error occurred. Please try again.",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "historyError": "Failed to load conversations.",
+    "messagesError": "Failed to load messages.",
+    "retry": "Retry"
   },
   "seo": {
     "pricing": {
@@ -806,5 +879,65 @@
     "level": "Level:",
     "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
     "tenantOnly": "Enterprise feature — reserved for client workspaces"
+  },
+  "exports": {
+    "reportEmployees": "Employees",
+    "reportEmployeesDesc": "Full list with positions, contracts, departments.",
+    "reportAttendance": "Attendance",
+    "reportAttendanceDesc": "Attendance register with hours and anomalies.",
+    "reportPayslips": "Payslips",
+    "reportPayslipsDesc": "Monthly payslip export with salary details.",
+    "reportAbsences": "Absences & leave",
+    "reportAbsencesDesc": "Requests and balances history per employee.",
+    "reportTraining": "Training",
+    "reportTrainingDesc": "Catalog, sessions, enrollments and progress.",
+    "reportVehicles": "Vehicles",
+    "reportVehiclesDesc": "Fleet, mileage, maintenance.",
+    "hrReportsTitle": "Custom HR reports",
+    "hrReportsSub": "Generate advanced reports with period and department filters.",
+    "reportType": "Report type",
+    "typeHeadcount": "Headcount",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteeism",
+    "typePayrollSummary": "Payroll summary",
+    "typeTrainingProgress": "Training progress",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "statusDone": "Completed",
+    "statusInProgress": "In progress",
+    "statusFailed": "Failed",
+    "download": "Download",
+    "downloading": "Downloading...",
+    "historyClientOnly": "Export history available in the client space",
+    "clientSpaceNote": "Available in the client space",
+    "historyError": "Unable to load export history."
+  },
+  "companyDetail": {
+    "analyzing": "Analyzing client data...",
+    "retry": "Retry",
+    "fieldAdoption": "Field Adoption",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30d",
+    "payrollReady": "Payroll Ready",
+    "activeEmployees30d": "Active Employees (30d)",
+    "noPriorityBlockers": "No priority blockers detected.",
+    "modulesConfig": "Modules Configuration",
+    "servicePlan": "Service plan",
+    "commercialStatus": "Commercial status",
+    "statusTrial": "Trial",
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "statusExpired": "Expired",
+    "startDate": "Start",
+    "internalNotes": "Internal notes",
+    "noSupportTickets": "No support tickets for this client.",
+    "technicalIdentity": "Technical identity",
+    "platformId": "Platform ID",
+    "slug": "Slug",
+    "countryCurrency": "Country / Currency",
+    "registeredOn": "Registered on",
+    "lastActivity": "Last activity"
   }
 }

@@ -82,7 +82,45 @@
     "company": "Entreprise",
     "leo_presence_empty": "Aucune donnee de presence disponible pour le moment. Souhaitez-vous quand meme envoyer un message de felicitations a l'equipe ?",
     "priority_actions": "Actions prioritaires",
-    "presence_today_summary": "{present} presence(s) sur {active} employe(s) actif(s) aujourd hui"
+    "presence_today_summary": "{present} presence(s) sur {active} employe(s) actif(s) aujourd hui",
+    "portfolioPriorities": "Priorites Portefeuille",
+    "client": "Client",
+    "health": "Sante",
+    "risk": "Risque",
+    "actions": "Actions",
+    "seeAll": "Voir tout",
+    "noPriorityCompanies": "Aucune entreprise prioritaire pour le moment.",
+    "pendingRegistrations": "Inscriptions en attente",
+    "noPendingRequests": "Aucune demande en attente.",
+    "adoption": "Adoption",
+    "checkins30d": "Pointages 30j",
+    "activeEmployees": "Employes actifs",
+    "clientsAtRisk": "Clients a risque",
+    "revenue": "Revenus",
+    "collected30d": "Encaisse 30j",
+    "overdue": "Impayes",
+    "activeSubscriptions": "Abonnements actifs",
+    "shortcuts": "Raccourcis",
+    "clientPortfolio": "Portefeuille clients",
+    "subscriptions": "Abonnements",
+    "clientRequests": "Demandes clients",
+    "createActivateClient": "Creer ou activer un client",
+    "openClientPortfolio": "Ouvrir le portefeuille clients",
+    "processIncomingRequests": "Traiter les demandes entrantes",
+    "viewClientRequests": "Voir les demandes clients",
+    "monitorAtRiskClients": "Surveiller les clients a risque",
+    "analyzePriorities": "Analyser les priorites",
+    "manageSubscriptionsRevenue": "Piloter abonnements et revenus",
+    "openSubscriptions": "Ouvrir abonnements",
+    "checkSystemSecurity": "Verifier systeme et securite",
+    "openSystem": "Ouvrir systeme",
+    "preparePartnerIntegrations": "Preparer integrations partenaires",
+    "openWebhooks": "Ouvrir les webhooks",
+    "loadError": "Impossible de charger le cockpit plateforme.",
+    "riskHigh": "Risque eleve",
+    "riskMedium": "Risque moyen",
+    "riskLow": "Risque faible",
+    "notProvided": "Non renseigne"
   },
   "_version": "1.0.0",
   "signup": {
@@ -220,7 +258,9 @@
     "edit_title": "Modifier la tranche",
     "th_max": "Tranche max",
     "reset_confirm": "Réinitialiser aux valeurs légales par défaut ? Les tranches actuelles seront remplacées.",
-    "scope_company": "Spécifique entreprise"
+    "scope_company": "Spécifique entreprise",
+    "delete_confirm_title": "Supprimer ce barème ?",
+    "reset_confirm_title": "Réinitialiser les barèmes ?"
   },
   "common": {
     "language": {
@@ -354,7 +394,32 @@
       "features_failed": "Échec de la configuration des modules.",
       "load_failed": "Impossible de charger la fiche entreprise.",
       "tickets_failed": "Impossible de charger les tickets support."
-    }
+    },
+    "portfolio": "Portefeuille Clients",
+    "directory": "Repertoire des Entreprises",
+    "directorySub": "Liste classee par score de sante et priorite commerciale.",
+    "syncing": "Synchronisation du portefeuille...",
+    "retry": "Reessayer",
+    "company": "Entreprise",
+    "planMrr": "Plan & MRR",
+    "healthOp": "Sante Oper.",
+    "checkins30d": "Pointage (30j)",
+    "recommendedAction": "Action Recommandee",
+    "management": "Gestion",
+    "system": "Systeme",
+    "companyName": "Nom entreprise *",
+    "contactEmail": "Email contact *",
+    "country": "Pays *",
+    "city": "Ville de deploiement *",
+    "currency": "Devise",
+    "timezone": "Fuseau Horaire",
+    "defaultLang": "Langue Defaut",
+    "managerFirst": "Prenom Manager *",
+    "managerLast": "Nom Manager *",
+    "managerEmail": "Email Manager Principal *",
+    "activateNow": "Activer immediatement",
+    "activateClientNow": "Activer le client immediatement",
+    "activateClientHint": "Sinon le client reste en essai (trial)."
   },
   "app": {
     "title": "Leopardo RH"
@@ -408,7 +473,8 @@
     "delete": "Supprimer",
     "th_cap": "Plafond",
     "sim_employee": "Cotisations salariales",
-    "saved": "Cotisation mise à jour."
+    "saved": "Cotisation mise à jour.",
+    "delete_confirm_title": "Supprimer cette cotisation ?"
   },
   "emails": {
     "absence_approved": {
@@ -537,7 +603,9 @@
       "load_error": "Erreur lors du chargement du calendrier islamique.",
       "th_date": "Date grégorienne",
       "confirm_dialog": "Confirmer toutes les dates islamiques de {year} ?",
-      "saved": "Fête islamique enregistrée."
+      "saved": "Fête islamique enregistrée.",
+      "confirm_title": "Confirmer l'année ?",
+      "delete_confirm_title": "Supprimer ce jour férié ?"
     },
     "type_islamic": "Islamique",
     "confirm": {
@@ -687,10 +755,12 @@
       "created": "Session d'impersonation créée",
       "error": "Erreur lors de la création de la session d'impersonation",
       "done": "Terminé",
-      "employee": "Employé #:id"
+      "employee": "Employé #:id",
+      "copyFailed": "Impossible de copier le jeton automatiquement. Copiez-le manuellement depuis le champ ci-dessus."
     },
     "confirm": {
-      "delete": "Etes-vous sur de vouloir supprimer :name ?"
+      "delete": "Etes-vous sur de vouloir supprimer :name ?",
+      "title": "Supprimer cet utilisateur ?"
     },
     "bulkPanel": {
       "cancel": "Annuler",
@@ -753,7 +823,10 @@
     "placeholder": "Tapez votre message...",
     "thinking": "Réflexion en cours...",
     "error": "Désolé, une erreur est survenue. Veuillez réessayer.",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "historyError": "Impossible de charger les conversations.",
+    "messagesError": "Impossible de charger les messages.",
+    "retry": "Réessayer"
   },
   "navigation": {
     "dashboard": "Tableau de bord",
@@ -806,5 +879,65 @@
     "level": "Niveau :",
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
     "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
+  },
+  "exports": {
+    "reportEmployees": "Employes",
+    "reportEmployeesDesc": "Liste complete avec postes, contrats, departements.",
+    "reportAttendance": "Pointage",
+    "reportAttendanceDesc": "Registre de presence avec heures et anomalies.",
+    "reportPayslips": "Bulletins de paie",
+    "reportPayslipsDesc": "Export mensuel bulletins avec details salaire.",
+    "reportAbsences": "Absences & conges",
+    "reportAbsencesDesc": "Historique demandes et soldes par employe.",
+    "reportTraining": "Formations",
+    "reportTrainingDesc": "Catalogue, sessions, inscriptions et progression.",
+    "reportVehicles": "Vehicules",
+    "reportVehiclesDesc": "Flotte, kilometrage, maintenances.",
+    "hrReportsTitle": "Rapports RH personnalises",
+    "hrReportsSub": "Generez des rapports avances avec filtres de periode et departement.",
+    "reportType": "Type de rapport",
+    "typeHeadcount": "Effectifs",
+    "typeTurnover": "Turnover",
+    "typeAbsenteeism": "Absenteisme",
+    "typePayrollSummary": "Resume paie",
+    "typeTrainingProgress": "Formations",
+    "startDate": "Date debut",
+    "endDate": "Date fin",
+    "generate": "Generer",
+    "generating": "Generation...",
+    "statusDone": "Termine",
+    "statusInProgress": "En cours",
+    "statusFailed": "Echec",
+    "download": "Telecharger",
+    "downloading": "Telechargement...",
+    "historyClientOnly": "Historique des exports disponible dans l'espace client",
+    "clientSpaceNote": "Disponible dans l'espace client",
+    "historyError": "Impossible de charger l'historique des exports."
+  },
+  "companyDetail": {
+    "analyzing": "Analyse des donnees client...",
+    "retry": "Reessayer",
+    "fieldAdoption": "Adoption Terrain",
+    "onboarding": "Onboarding",
+    "anomalies30d": "Anomalies 30j",
+    "payrollReady": "Paie Prete",
+    "activeEmployees30d": "Employes Actifs (30j)",
+    "noPriorityBlockers": "Aucun blocage prioritaire detecte.",
+    "modulesConfig": "Configuration des Modules",
+    "servicePlan": "Plan de services",
+    "commercialStatus": "Statut Commercial",
+    "statusTrial": "Essai (Trial)",
+    "statusActive": "Actif",
+    "statusSuspended": "Suspendu",
+    "statusExpired": "Expire",
+    "startDate": "Debut",
+    "internalNotes": "Notes Internes",
+    "noSupportTickets": "Aucun ticket de support pour ce client.",
+    "technicalIdentity": "Identite Technique",
+    "platformId": "ID Plateforme",
+    "slug": "Slug",
+    "countryCurrency": "Pays / Devise",
+    "registeredOn": "Inscrit le",
+    "lastActivity": "Derniere Activite"
   }
 }

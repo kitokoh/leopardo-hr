@@ -195,25 +195,29 @@ test.describe('Dashboard client — actions rapides et carte Leo IA', () => {
     // /dashboard/… (les anciennes URLs renvoyaient 404). On asserte en plus
     // le contenu de la page cible pour ne pas figer une URL morte.
 
-    // Nouvel employe -> /employees
-    await page.locator('a[href="/employees"]').click();
+    // Nouvel employe -> /employees (#4095 : sélecteur scopé à la carte
+    // « Actions rapides » — la sidebar contient des liens doublons et/ou
+    // désactivés par feature gate).
+    const quickActions = page.getByTestId('quick-actions');
+    await quickActions.locator('a[href="/employees"]').click();
     await expect(page).toHaveURL(/\/employees$/);
     await expect(page.locator('body')).toContainText('Collaborateurs recents');
     await page.goto('/dashboard');
 
     // Conges -> /absences
-    await page.locator('a[href="/absences"]').click();
+    await quickActions.locator('a[href="/absences"]').click();
     await expect(page).toHaveURL(/\/absences$/);
     await expect(page.locator('body')).toContainText('Demandes visibles');
     await page.goto('/dashboard');
 
-    // Rapports et Export -> /reports
-    await page.locator('a[href="/reports"]').first().click();
+    // Rapports et Export -> /reports (la sidebar a un lien /reports désactivé
+    // pour ce rôle mocké — on reste scopé à la carte actions rapides).
+    await quickActions.locator('a[href="/reports"]').first().click();
     await expect(page).toHaveURL(/\/reports$/);
     await expect(page.locator('body')).toContainText('Rapports');
     await page.goto('/dashboard');
 
-    await page.locator('a[href="/reports"]').last().click();
+    await quickActions.locator('a[href="/reports"]').last().click();
     await expect(page).toHaveURL(/\/reports$/);
 
     // « Voir toute l'activite » pointe aussi sur /reports
@@ -264,7 +268,9 @@ test.describe('Dashboard client — actions rapides et carte Leo IA', () => {
 
     await page.getByRole('button', { name: 'Oui, envoyer' }).click();
 
-    await expect(page.getByText(/message envoye a l.equipe/i)).toBeVisible();
+    // #4095 : libellé accentué (« Message envoyé à l'équipe », accents
+    // restaurés #3249) — l'ancien regex ASCII ne matchait plus.
+    await expect(page.getByText(/message envoy[ée] à l.équipe|message envoy[ée] a l.equipe/i)).toBeVisible();
     await expect(page.getByRole('button', { name: 'Oui, envoyer' })).toHaveCount(0);
 
     expect(captured.request).not.toBeNull();

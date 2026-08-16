@@ -322,10 +322,10 @@ class AttendanceController extends Controller
 
         $errors = [];
         if ($requestedCheckIn->isFuture()) {
-            $errors['requested_check_in'] = ['Impossible de demander une correction avec une heure future.'];
+            $errors['requested_check_in'] = [__('attendance.correction_future_check_in')];
         }
         if ($requestedCheckOut !== null && $requestedCheckOut->isFuture()) {
-            $errors['requested_check_out'] = ['Impossible de demander une correction avec une heure future.'];
+            $errors['requested_check_out'] = [__('attendance.correction_future_check_out')];
         }
         if ($errors !== []) {
             throw ValidationException::withMessages($errors);
@@ -364,7 +364,7 @@ class AttendanceController extends Controller
                 'requested_check_in' => $correction->requested_check_in->toIso8601String(),
                 'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
             ],
-            'message' => 'Demande de modification transmise au RH.',
+            'message' => __('attendance.correction_transmitted'),
         ], 201);
     }
 
@@ -413,7 +413,7 @@ class AttendanceController extends Controller
 
         if ($correction->status !== 'pending') {
             throw ValidationException::withMessages([
-                'status' => ['Cette demande de correction a deja ete traitee.'],
+                'status' => [__('attendance.correction_already_processed')],
             ]);
         }
 
@@ -461,7 +461,7 @@ class AttendanceController extends Controller
         return response()->json([
             'data' => $this->correctionPayload($correction),
             'attendance_log' => (new AttendanceLogResource($log))->resolve($request),
-            'message' => 'Correction appliquee au pointage.',
+            'message' => __('attendance.correction_applied'),
         ]);
     }
 
@@ -475,7 +475,7 @@ class AttendanceController extends Controller
 
         if ($correction->status !== 'pending') {
             throw ValidationException::withMessages([
-                'status' => ['Cette demande de correction a deja ete traitee.'],
+                'status' => [__('attendance.correction_already_processed')],
             ]);
         }
 
@@ -489,7 +489,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'data' => $this->correctionPayload($correction),
-            'message' => 'Correction refusee.',
+            'message' => __('attendance.correction_rejected'),
         ]);
     }
 
@@ -513,13 +513,13 @@ class AttendanceController extends Controller
 
         if ($effectiveCheckOut !== null && $effectiveCheckIn === null) {
             throw ValidationException::withMessages([
-                'check_out' => ['Le départ manuel nécessite une heure d\'arrivée.'],
+                'check_out' => [__('attendance.manual_checkout_requires_check_in')],
             ]);
         }
 
         if ($effectiveCheckIn !== null && $effectiveCheckOut !== null && $effectiveCheckOut <= $effectiveCheckIn) {
             throw ValidationException::withMessages([
-                'check_out' => ['L\'heure de départ doit être postérieure à l\'heure d\'arrivée.'],
+                'check_out' => [__('attendance.checkout_after_checkin')],
             ]);
         }
 

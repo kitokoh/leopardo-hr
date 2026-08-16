@@ -27,18 +27,21 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   // Avant, tout plan non-Operations tombait sur 'starter' (Pilot payant) :
   // le CTA « Start for free » du plan Free menait au paywall 24€/mois.
   // #3329 : le plan pilote gratuit doit mener au parcours d'essai sans carte.
+  if (planNameToCheckoutKey(planName) === 'free') return '/signup?source=home_free'
   if (planNameToCheckoutKey(planName) === 'pilot') return `/signup?source=home_pilot`
+  // #3883 : le plan Free (0 €) suit le même funnel sans carte que l'essai guidé
+  // (#2907 : ne jamais mener « Start for free » vers le paywall du checkout).
+  if (planNameToCheckoutKey(planName) === 'free') return '/signup?source=pricing_free'
   const planKey = planNameToCheckoutKey(planName)
   return `/checkout?plan=${planKey}&billing=${billing}`
 }
 
-const savingsLabel: Record<string, string> = {
-  fr: 'Economisez 20%',
-  en: 'Save 20%',
-  tr: '%20 tasarruf',
-  ar: 'وفّر 20%',
+const freePlanLabel: Record<string, string> = {
+  fr: 'Gratuit',
+  en: 'Free',
+  tr: 'Ücretsiz',
+  ar: 'مجاني',
 }
-
 const billingToggle: Record<string, { monthly: string; annual: string }> = {
   fr: { monthly: 'Mensuel', annual: 'Annuel' },
   en: { monthly: 'Monthly', annual: 'Annual' },
@@ -97,12 +100,12 @@ export function PricingSection() {
               animate={{ opacity: 1, scale: 1 }}
               className="ml-1 px-2.5 py-0.5 text-xs font-bold text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full"
             >
-              {savingsLabel[locale] ?? savingsLabel.en}
+              {copy.pricing.annualSavings}
             </motion.span>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {pricingPlans.map((plan, index) => {
             const displayPrice = isAnnual ? plan.annualPrice : plan.price
             const displayPeriod = isAnnual ? plan.annualPeriod : plan.period
@@ -139,10 +142,18 @@ export function PricingSection() {
                       {plan.employeeLimit}
                     </div>
                     <div className="flex items-baseline justify-center gap-1">
-                      {hasNumericPrice && <span className="text-sm text-slate-500">{copy.pricing.currency}</span>}
-                      <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                        {displayPrice}
-                      </span>
+                      {plan.price === '0' ? (
+                        <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                          {freePlanLabel[locale] ?? freePlanLabel.en}
+                        </span>
+                      ) : (
+                        <>
+                          {hasNumericPrice && <span className="text-sm text-slate-500">{copy.pricing.currency}</span>}
+                          <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+                            {displayPrice}
+                          </span>
+                        </>
+                      )}
                     </div>
                     {displayPeriod && (
                       <span className="text-sm text-slate-500">{displayPeriod}</span>

@@ -49,4 +49,13 @@ return [
     'correction_filter_applied' => 'Uygulandi',
     'correction_filter_rejected' => 'Reddedildi',
     'correction_filter_all' => 'Tumu',
+
+    'correction_transmitted' => 'Degisiklik talebi IK\'ya iletildi.',
+
+    // #4311 — validations correction/pointage localisées
+    'correction_future_check_in' => 'Gelecekteki bir saat için düzeltme talep edemezsiniz.',
+    'correction_future_check_out' => 'Gelecekteki bir saat için düzeltme talep edemezsiniz.',
+    'correction_already_processed' => 'Bu düzeltme talebi zaten işlendi.',
+    'manual_checkout_requires_check_in' => 'Manuel çıkış için giriş saati gerekir.',
+    'checkout_after_checkin' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
 ];

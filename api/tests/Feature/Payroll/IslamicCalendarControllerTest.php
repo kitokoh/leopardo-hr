@@ -35,8 +35,8 @@ class IslamicCalendarControllerTest extends TestCase
             'name' => 'Super Admin Test',
             'email' => 'sa-islamic-test@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
+
         $this->superAdmin = $superAdmin;
 
         /** @var Employee $principal */

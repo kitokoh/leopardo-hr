@@ -30,6 +30,40 @@ class ProvisionGuidedTrial
      */
     public function execute(string $email, string $companyName, ?string $country = null): array
     {
+        // #3600 : idempotence — un retry de job (tries/backoff) ou une double
+        // soumission ne doit jamais créer un second tenant sandbox pour le
+        // même email. Le provisioning est transactionnel, mais une erreur
+        // transitoire APRÈS le commit (statut, magic link) déclencherait sinon
+        // une création dupliquée au retry.
+        $existing = Company::query()
+            ->where('email', $email)
+            ->where('status', 'trial')
+            ->where('metadata->provisioned_by', 'guided_trial')
+            ->first();
+
+        if ($existing instanceof Company) {
+            $this->tenantManager->setTenant($existing);
+            try {
+                $manager = Employee::query()->where('email', $email)->first();
+            } finally {
+                $this->tenantManager->resetToPrevious();
+            }
+
+            if ($manager instanceof Employee) {
+                Log::info('Guided trial : tenant sandbox existant réutilisé', ['company_id' => $existing->id, 'email' => $email]);
+
+                return [
+                    'success' => true,
+                    'company' => $existing,
+                    'manager' => $manager,
+                ];
+            }
+
+            // Entreprise existante sans manager (provisioning interrompu) :
+            // on poursuit la création du manager sous ce tenant.
+            Log::warning('Guided trial : company existante sans manager, re-provisioning', ['company_id' => $existing->id, 'email' => $email]);
+        }
+
         $slug = Str::slug($companyName);
         if (! $slug) {
             $slug = 'sandbox-'.Str::random(6);

@@ -276,10 +276,6 @@ class LeopardoClient:
         """Cours de formation cross-tenant (super-admin, avec société et nombre de sessions)"""
         return self.request("GET", "/admin/training/courses", **kwargs)
 
-    def get_admin_training_courses_2(self, **kwargs):
-        """Cours de formation cross-tenant (super-admin)"""
-        return self.request("GET", "/admin/training/courses", **kwargs)
-
     def get_admin_training_enrollments(self, **kwargs):
         """Inscriptions aux formations cross-tenant (super-admin)"""
         return self.request("GET", "/admin/training/enrollments", **kwargs)
@@ -433,7 +429,7 @@ class LeopardoClient:
         return self.request("GET", "/api/v1/edge/download/Caddyfile.edge", **kwargs)
 
     def get_api_v1_edge_download_caddyfile_edge_sha256(self, **kwargs):
-        """Empreinte SHA-256 de Caddyfile.edge (public)"""
+        """Somme SHA-256 de Caddyfile.edge (public)"""
         return self.request("GET", "/api/v1/edge/download/Caddyfile.edge.sha256", **kwargs)
 
     def get_api_v1_edge_download_docker_compose_yml(self, **kwargs):
@@ -441,7 +437,7 @@ class LeopardoClient:
         return self.request("GET", "/api/v1/edge/download/docker-compose.yml", **kwargs)
 
     def get_api_v1_edge_download_docker_compose_yml_sha256(self, **kwargs):
-        """Empreinte SHA-256 de docker-compose.yml (public)"""
+        """Somme SHA-256 de docker-compose.yml edge (public)"""
         return self.request("GET", "/api/v1/edge/download/docker-compose.yml.sha256", **kwargs)
 
     def get_api_v1_edge_download_env_example(self, **kwargs):
@@ -449,7 +445,7 @@ class LeopardoClient:
         return self.request("GET", "/api/v1/edge/download/env-example", **kwargs)
 
     def get_api_v1_edge_download_sha256_txt(self, **kwargs):
-        """Empreintes SHA-256 des assets d'installation edge (public)"""
+        """Sommes SHA-256 des artefacts edge (public)"""
         return self.request("GET", "/api/v1/edge/download/sha256.txt", **kwargs)
 
     def get_api_v1_edge_health(self, **kwargs):
@@ -916,6 +912,30 @@ class LeopardoClient:
         """Comptes demo publics pour la documentation QA"""
         return self.request("GET", "/demo-users", **kwargs)
 
+    def get_departments(self, **kwargs):
+        """Lister les départements du tenant"""
+        return self.request("GET", "/departments", **kwargs)
+
+    def post_departments(self, **kwargs):
+        """Créer un département"""
+        return self.request("POST", "/departments", **kwargs)
+
+    def delete_departments_by_department(self, **kwargs):
+        """Supprimer un département"""
+        return self.request("DELETE", "/departments/{department}", **kwargs)
+
+    def get_departments_by_department(self, **kwargs):
+        """Détail d'un département"""
+        return self.request("GET", "/departments/{department}", **kwargs)
+
+    def patch_departments_by_department(self, **kwargs):
+        """Mise à jour partielle d'un département"""
+        return self.request("PATCH", "/departments/{department}", **kwargs)
+
+    def put_departments_by_department(self, **kwargs):
+        """Mettre à jour un département"""
+        return self.request("PUT", "/departments/{department}", **kwargs)
+
     def get_departments_by_department_hierarchy(self, **kwargs):
         """Organigramme d'un departement (arbre department/teams/managers/employees, scope tenant)"""
         return self.request("GET", "/departments/{department}/hierarchy", **kwargs)
@@ -991,6 +1011,10 @@ class LeopardoClient:
     def get_employees_import_template(self, **kwargs):
         """Template CSV import"""
         return self.request("GET", "/employees/import-template", **kwargs)
+
+    def post_employees_link_user(self, **kwargs):
+        """Manager — lie un utilisateur ordinaire à un employé du tenant"""
+        return self.request("POST", "/employees/link-user", **kwargs)
 
     def get_evaluations(self, **kwargs):
         """Lister les evaluations"""
@@ -1171,6 +1195,34 @@ class LeopardoClient:
     def get_health_ready(self, **kwargs):
         """Readiness probe — base de données disponible"""
         return self.request("GET", "/health/ready", **kwargs)
+
+    def get_hr_dashboard(self, **kwargs):
+        """Dashboard RH — indicateurs et actions en attente"""
+        return self.request("GET", "/hr/dashboard", **kwargs)
+
+    def get_hr_employees(self, **kwargs):
+        """Liste des employés (scope RH)"""
+        return self.request("GET", "/hr/employees", **kwargs)
+
+    def post_hr_employees(self, **kwargs):
+        """Ajoute un employé (scope RH — sans changement de rôle manager)"""
+        return self.request("POST", "/hr/employees", **kwargs)
+
+    def get_hr_employees_by_employee(self, **kwargs):
+        """Détail d'un employé (scope RH)"""
+        return self.request("GET", "/hr/employees/{employee}", **kwargs)
+
+    def patch_hr_employees_by_employee(self, **kwargs):
+        """Modifie un employé (scope RH — sans changement de rôle manager)"""
+        return self.request("PATCH", "/hr/employees/{employee}", **kwargs)
+
+    def get_hr_me(self, **kwargs):
+        """Profil de l'utilisateur RH connecté (manager_role rh/principal)"""
+        return self.request("GET", "/hr/me", **kwargs)
+
+    def get_hr_team_overview(self, **kwargs):
+        """Vue d'ensemble de l'équipe (effectifs, répartition)"""
+        return self.request("GET", "/hr/team-overview", **kwargs)
 
     def get_i18n_catalog(self, **kwargs):
         """Catalogue de traductions complet"""
@@ -1992,6 +2044,46 @@ class LeopardoClient:
         """Publier une offre"""
         return self.request("POST", "/recruitment/jobs/{jobPosting}/publish", **kwargs)
 
+    def get_reports_absenteeism(self, **kwargs):
+        """Absentéisme du mois/année"""
+        return self.request("GET", "/reports/absenteeism", **kwargs)
+
+    def get_reports_cost_analysis(self, **kwargs):
+        """Analyse des coûts (masse salariale par département)"""
+        return self.request("GET", "/reports/cost-analysis", **kwargs)
+
+    def get_reports_demographics(self, **kwargs):
+        """Ventilation démographique des employés"""
+        return self.request("GET", "/reports/demographics", **kwargs)
+
+    def get_reports_headcount(self, **kwargs):
+        """Effectif par département, type de contrat et genre"""
+        return self.request("GET", "/reports/headcount", **kwargs)
+
+    def get_reports_loan_summary(self, **kwargs):
+        """Synthèse des avances/prêts employés"""
+        return self.request("GET", "/reports/loan-summary", **kwargs)
+
+    def get_reports_overtime(self, **kwargs):
+        """Heures supplémentaires du mois/année"""
+        return self.request("GET", "/reports/overtime", **kwargs)
+
+    def get_reports_payroll_summary(self, **kwargs):
+        """Synthèse paie du mois/année"""
+        return self.request("GET", "/reports/payroll-summary", **kwargs)
+
+    def get_reports_recruitment_pipeline(self, **kwargs):
+        """Pipeline recrutement (candidatures par statut)"""
+        return self.request("GET", "/reports/recruitment-pipeline", **kwargs)
+
+    def get_reports_training_completion(self, **kwargs):
+        """Taux de complétion des formations"""
+        return self.request("GET", "/reports/training-completion", **kwargs)
+
+    def get_reports_turnover(self, **kwargs):
+        """Taux de rotation (turnover) sur N mois"""
+        return self.request("GET", "/reports/turnover", **kwargs)
+
     def get_salary_advances(self, **kwargs):
         """Lister les avances sur salaire"""
         return self.request("GET", "/salary-advances", **kwargs)
@@ -2368,13 +2460,45 @@ class LeopardoClient:
         """Vérifie le code OTP et provisionne l'espace d'essai"""
         return self.request("POST", "/trial/verify", **kwargs)
 
+    def post_user_change_password(self, **kwargs):
+        """Change le mot de passe de l'utilisateur connecté"""
+        return self.request("POST", "/user/change-password", **kwargs)
+
+    def get_user_company_requests(self, **kwargs):
+        """Liste les demandes de création d'entreprise de l'utilisateur"""
+        return self.request("GET", "/user/company-requests", **kwargs)
+
+    def post_user_company_requests(self, **kwargs):
+        """Crée une demande de création d'entreprise"""
+        return self.request("POST", "/user/company-requests", **kwargs)
+
+    def get_user_company_requests_by_id(self, **kwargs):
+        """Détail d'une demande de création d'entreprise"""
+        return self.request("GET", "/user/company-requests/{id}", **kwargs)
+
+    def get_user_employee_links(self, **kwargs):
+        """Liste les liens employé de l'utilisateur ordinaire"""
+        return self.request("GET", "/user/employee-links", **kwargs)
+
+    def post_user_google_signin(self, **kwargs):
+        """Connexion ou création de compte via Google (compte ordinaire)"""
+        return self.request("POST", "/user/google-signin", **kwargs)
+
     def post_user_login(self, **kwargs):
         """Connexion utilisateur sans entreprise (parcours legacy mobile)"""
         return self.request("POST", "/user/login", **kwargs)
 
+    def post_user_logout(self, **kwargs):
+        """Déconnecte l'utilisateur (révoque le token)"""
+        return self.request("POST", "/user/logout", **kwargs)
+
     def get_user_me(self, **kwargs):
         """Profil de l'utilisateur connecté"""
         return self.request("GET", "/user/me", **kwargs)
+
+    def patch_user_profile(self, **kwargs):
+        """Met à jour le profil de l'utilisateur connecté"""
+        return self.request("PATCH", "/user/profile", **kwargs)
 
     def post_user_register(self, **kwargs):
         """Crée un compte utilisateur sans entreprise (parcours legacy mobile)"""

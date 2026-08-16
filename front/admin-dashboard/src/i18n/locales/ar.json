@@ -93,7 +93,45 @@
     "leo_ia_announcement_error": "تعذر إرسال الرسالة. حاول مرة أخرى بعد قليل.",
     "company": "الشركة",
     "presence_today_title": "الحضور اليوم",
-    "leo_ia_announcement_title": "تهانينا للفريق"
+    "leo_ia_announcement_title": "تهانينا للفريق",
+    "portfolioPriorities": "أولويات المحفظة",
+    "client": "العميل",
+    "health": "الصحة",
+    "risk": "المخاطر",
+    "actions": "الإجراءات",
+    "seeAll": "عرض الكل",
+    "noPriorityCompanies": "لا توجد شركات ذات أولوية حالياً.",
+    "pendingRegistrations": "تسجيلات معلقة",
+    "noPendingRequests": "لا توجد طلبات معلقة.",
+    "adoption": "الاعتماد",
+    "checkins30d": "تسجيل الحضور 30 يوم",
+    "activeEmployees": "الموظفون النشطون",
+    "clientsAtRisk": "عملاء معرضون للخطر",
+    "revenue": "الإيرادات",
+    "collected30d": "المحصل خلال 30 يوم",
+    "overdue": "متأخرات",
+    "activeSubscriptions": "اشتراكات نشطة",
+    "shortcuts": "اختصارات",
+    "clientPortfolio": "محفظة العملاء",
+    "subscriptions": "الاشتراكات",
+    "clientRequests": "طلبات العملاء",
+    "createActivateClient": "إنشاء أو تفعيل عميل",
+    "openClientPortfolio": "فتح محفظة العملاء",
+    "processIncomingRequests": "معالجة الطلبات الواردة",
+    "viewClientRequests": "عرض طلبات العملاء",
+    "monitorAtRiskClients": "مراقبة العملاء المعرضين للخطر",
+    "analyzePriorities": "تحليل الأولويات",
+    "manageSubscriptionsRevenue": "إدارة الاشتراكات والإيرادات",
+    "openSubscriptions": "فتح الاشتراكات",
+    "checkSystemSecurity": "فحص النظام والأمان",
+    "openSystem": "فتح النظام",
+    "preparePartnerIntegrations": "تحضير تكاملات الشركاء",
+    "openWebhooks": "فتح خطافات الويب",
+    "loadError": "تعذر تحميل لوحة المنصة.",
+    "riskHigh": "مخاطر عالية",
+    "riskMedium": "مخاطر متوسطة",
+    "riskLow": "مخاطر منخفضة",
+    "notProvided": "غير محدد"
   },
   "common": {
     "language": {
@@ -253,7 +291,8 @@
       "created": "تم إنشاء جلسة انتحال الصفة",
       "error": "خطأ في إنشاء جلسة انتحال الصفة",
       "done": "تم",
-      "employee": "الموظف المرتبط #:id"
+      "employee": "الموظف المرتبط #:id",
+      "copyFailed": "تعذّر نسخ الرمز تلقائياً. انسخه يدوياً من الحقل أعلاه."
     },
     "actions": {
       "bulk": "إجراءات (:count)",
@@ -324,7 +363,8 @@
       }
     },
     "confirm": {
-      "delete": "هل انت متأكد من رغبتك في حذف :name؟"
+      "delete": "هل انت متأكد من رغبتك في حذف :name؟",
+      "title": "حذف هذا المستخدم؟"
     },
     "page": {
       "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم",
@@ -401,7 +441,9 @@
     "th_min": "الحد الأدنى",
     "sim_slab_tax": "ضريبة الشريحة",
     "add": "إضافة شريحة",
-    "sim_gross": "الراتب الإجمالي"
+    "sim_gross": "الراتب الإجمالي",
+    "delete_confirm_title": "حذف هذا الشريحة الضريبية؟",
+    "reset_confirm_title": "إعادة تعيين الشرائح الضريبية؟"
   },
   "companies": {
     "toast": {
@@ -409,7 +451,32 @@
       "subscription_failed": "تعذّر تحديث الاشتراك.",
       "load_failed": "تعذّر تحميل تفاصيل الشركة.",
       "tickets_failed": "تعذّر تحميل تذاكر الدعم."
-    }
+    },
+    "portfolio": "محفظة العملاء",
+    "directory": "دليل الشركات",
+    "directorySub": "مرتبة حسب درجة الصحة والأولوية التجارية.",
+    "syncing": "جاري مزامنة المحفظة...",
+    "retry": "إعادة المحاولة",
+    "company": "الشركة",
+    "planMrr": "الخطة والإيراد الشهري",
+    "healthOp": "الصحة التشغيلية",
+    "checkins30d": "تسجيل الحضور (30 يوم)",
+    "recommendedAction": "الإجراء الموصى به",
+    "management": "الإدارة",
+    "system": "النظام",
+    "companyName": "اسم الشركة *",
+    "contactEmail": "بريد الاتصال *",
+    "country": "البلد *",
+    "city": "مدينة النشر *",
+    "currency": "العملة",
+    "timezone": "المنطقة الزمنية",
+    "defaultLang": "اللغة الافتراضية",
+    "managerFirst": "الاسم الأول للمدير *",
+    "managerLast": "اسم عائلة المدير *",
+    "managerEmail": "بريد المدير الأساسي *",
+    "activateNow": "تفعيل فوراً",
+    "activateClientNow": "تفعيل العميل فوراً",
+    "activateClientHint": "وإلا يبقى العميل في الوضع التجريبي."
   },
   "profile": {
     "department_label": "القسم",
@@ -530,7 +597,10 @@
     "placeholder": "اكتب رسالتك...",
     "thinking": "جارٍ التفكير...",
     "error": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.",
-    "conversation": "محادثة"
+    "conversation": "محادثة",
+    "historyError": "تعذر تحميل المحادثات.",
+    "messagesError": "تعذر تحميل الرسائل.",
+    "retry": "إعادة المحاولة"
   },
   "_updated_at": "2026-08-14T18:45:00Z",
   "attendance": {
@@ -575,7 +645,8 @@
     "created": "تم إنشاء الاشتراك.",
     "delete_error": "تعذّر الحذف.",
     "sim_gross": "الراتب الإجمالي",
-    "add_title": "إضافة اشتراك"
+    "add_title": "إضافة اشتراك",
+    "delete_confirm_title": "حذف هذا الاشتراك؟"
   },
   "auth": {
     "manager_login_subtitle": "تسجيل دخول المدير / الموارد البشرية",
@@ -713,7 +784,9 @@
       "confirm": "تأكيد {year}",
       "edit": "تعديل",
       "saved": "تم حفظ العيد الإسلامي.",
-      "th_duration": "المدة"
+      "th_duration": "المدة",
+      "confirm_title": "تأكيد السنة؟",
+      "delete_confirm_title": "حذف هذه العطلة؟"
     },
     "page": {
       "subtitle": "تقويم العطل الرسمية الذي يستخدمه محرك الأجور لحساب أيام العمل الفعلية (issue #1811). العطل الوطنية مشتركة، أما عطل المؤسسة فتبقى خاصة بشركتك.",
@@ -806,5 +879,65 @@
     "level": "المستوى:",
     "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
     "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء"
+  },
+  "exports": {
+    "reportEmployees": "الموظفون",
+    "reportEmployeesDesc": "قائمة كاملة بالمناصب والعقود والأقسام.",
+    "reportAttendance": "تسجيل الحضور",
+    "reportAttendanceDesc": "سجل الحضور بالساعات والانحرافات.",
+    "reportPayslips": "كشوف الرواتب",
+    "reportPayslipsDesc": "تصدير شهري لكشوف الرواتب مع تفاصيل الراتب.",
+    "reportAbsences": "الغيابات والإجازات",
+    "reportAbsencesDesc": "سجل الطلبات والأرصدة لكل موظف.",
+    "reportTraining": "التدريب",
+    "reportTrainingDesc": "الكتالوج والجلسات والتسجيلات والتقدم.",
+    "reportVehicles": "المركبات",
+    "reportVehiclesDesc": "الأسطول والمسافة المقطوعة والصيانة.",
+    "hrReportsTitle": "تقارير موارد بشرية مخصصة",
+    "hrReportsSub": "أنشئ تقارير متقدمة مع فلاتر الفترة والقسم.",
+    "reportType": "نوع التقرير",
+    "typeHeadcount": "عدد الموظفين",
+    "typeTurnover": "معدل الدوران",
+    "typeAbsenteeism": "التغيب",
+    "typePayrollSummary": "ملخص الرواتب",
+    "typeTrainingProgress": "تقدم التدريب",
+    "startDate": "تاريخ البداية",
+    "endDate": "تاريخ النهاية",
+    "generate": "إنشاء",
+    "generating": "جاري الإنشاء...",
+    "statusDone": "مكتمل",
+    "statusInProgress": "قيد التنفيذ",
+    "statusFailed": "فشل",
+    "download": "تنزيل",
+    "downloading": "جاري التنزيل...",
+    "historyClientOnly": "سجل التصدير متاح في مساحة العميل",
+    "clientSpaceNote": "متاح في مساحة العميل",
+    "historyError": "تعذّر تحميل سجل التصدير."
+  },
+  "companyDetail": {
+    "analyzing": "جاري تحليل بيانات العميل...",
+    "retry": "إعادة المحاولة",
+    "fieldAdoption": "اعتماد الميدان",
+    "onboarding": "الإعداد",
+    "anomalies30d": "انحرافات 30 يوم",
+    "payrollReady": "الرواتب جاهزة",
+    "activeEmployees30d": "الموظفون النشطون (30 يوم)",
+    "noPriorityBlockers": "لم يتم اكتشاف عوائق ذات أولوية.",
+    "modulesConfig": "تكوين الوحدات",
+    "servicePlan": "خطة الخدمات",
+    "commercialStatus": "الحالة التجارية",
+    "statusTrial": "تجريبي",
+    "statusActive": "نشط",
+    "statusSuspended": "موقوف",
+    "statusExpired": "منتهي",
+    "startDate": "البداية",
+    "internalNotes": "ملاحظات داخلية",
+    "noSupportTickets": "لا توجد تذاكر دعم لهذا العميل.",
+    "technicalIdentity": "الهوية التقنية",
+    "platformId": "معرف المنصة",
+    "slug": "المعرف",
+    "countryCurrency": "البلد / العملة",
+    "registeredOn": "مسجل في",
+    "lastActivity": "آخر نشاط"
   }
 }

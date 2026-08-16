@@ -50,12 +50,14 @@ class GeneratePaymentDocumentJobTest extends TestCase
             'amount' => 25000,
             'currency' => 'EUR',
             'reason' => 'Frais medicaux',
-            'status' => 'approved',
             'validation_status' => 'payment_declared',
             'amount_remaining' => 10000,
             'payment_reference' => 'VIR-2026-042',
             'payment_declared_at' => now(),
         ]);
+            $advance->status = 'approved';
+            $advance->save();
+
 
         $document = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($advance, $employee->id);
 
@@ -93,10 +95,12 @@ class GeneratePaymentDocumentJobTest extends TestCase
             'employee_id' => $employeeA->id,
             'amount' => 15000,
             'currency' => 'DZD',
-            'status' => 'approved',
             'validation_status' => 'payment_declared',
             'amount_remaining' => 15000,
         ]);
+            $advanceA->status = 'approved';
+            $advanceA->save();
+
 
         $companyB = Company::factory()->create(['currency' => 'XOF']);
         $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
@@ -105,10 +109,12 @@ class GeneratePaymentDocumentJobTest extends TestCase
             'employee_id' => $employeeB->id,
             'amount' => 50000,
             'currency' => 'XOF',
-            'status' => 'approved',
             'validation_status' => 'payment_declared',
             'amount_remaining' => 50000,
         ]);
+            $advanceB->status = 'approved';
+            $advanceB->save();
+
 
         $documentA = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($advanceA, $employeeA->id);
         $documentB = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($advanceB, $employeeB->id);

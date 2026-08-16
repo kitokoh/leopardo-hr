@@ -38,10 +38,12 @@ class GeneratePaymentDocumentJobNotificationTest extends TestCase
             'amount' => 15000,
             'currency' => 'DZD',
             'reason' => 'Urgence familiale',
-            'status' => 'approved',
             'validation_status' => 'payment_declared',
             'amount_remaining' => 15000,
         ]);
+            $advance->status = 'approved';
+            $advance->save();
+
 
         $document = PaymentDocument::query()->create([
             'company_id' => $company->id,

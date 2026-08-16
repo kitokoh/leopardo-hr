@@ -72,14 +72,14 @@ class AttendanceModeController extends Controller
         $settings = AttendanceModeSettings::where('company_id', $company->id)->first();
         if ($settings && $settings->hasForcedMode()) {
             return response()->json([
-                'message' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
+                'message' => __('errors.COMPANY_MODE_FORCED'),
                 'code'    => 'COMPANY_MODE_FORCED',
             ], 403);
         }
 
         if ($settings && ! $settings->allow_employee_override) {
             return response()->json([
-                'message' => 'La personnalisation du mode de pointage est désactivée.',
+                'message' => __('errors.ATTENDANCE_MODE_PERSONALIZATION_DISABLED'),
                 'code'    => 'OVERRIDE_NOT_ALLOWED',
             ], 403);
         }
@@ -88,7 +88,7 @@ class AttendanceModeController extends Controller
             $pref = $this->setEmployeeMode->handle($employee, $request->validated());
 
             return response()->json([
-                'message' => 'Préférence mise à jour.',
+                'message' => __('errors.PREFERENCE_UPDATED'),
                 'data'    => [
                     'preferred_mode'    => $pref->preferred_mode,
                     'gps_consent_given' => $pref->gps_consent_given,
@@ -97,7 +97,7 @@ class AttendanceModeController extends Controller
             ]);
         } catch (GpsConsentMissingException) {
             return response()->json([
-                'message' => 'Le consentement GPS est obligatoire pour activer le pointage automatique.',
+                'message' => __('errors.GPS_CONSENT_REQUIRED'),
                 'code'    => 'GPS_CONSENT_REQUIRED',
             ], 422);
         }
@@ -142,7 +142,7 @@ class AttendanceModeController extends Controller
         );
 
         return response()->json([
-            'message' => 'Configuration mise à jour.',
+            'message' => __('errors.CONFIG_UPDATED'),
             'data'    => [
                 'forced_mode'             => $settings->forced_mode,
                 'punch_photo_mode'        => $settings->punch_photo_mode,

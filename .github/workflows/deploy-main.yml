@@ -1,9 +1,14 @@
 name: Deploy - Leopardo RH
 
 on:
-  workflow_run:
-    workflows: ["Tests - Leopardo RH", "Web CI - Leopardo Admin"]
-    types: [completed]
+  # #3545 / #4359 : le déclencheur `push` direct est l’unique source de vérité
+  # du déploiement; les déclencheurs workflow_run redondants provoquaient
+  # plusieurs runs du même SHA et une famine de file GitHub Actions.
+  #
+  # concurrence : sous rafale de merges (~1/2 min), les runs Tests de main
+  # étaient annulés en pending (48/50 cancelled), conclusion 'cancelled' →
+  # should_deploy=false à 100 %, prod figée depuis le 2026-08-15.
+  push:
     branches: [main]
   workflow_dispatch:
 
@@ -13,22 +18,14 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
-  DEFAULT_API_HEALTHCHECK_URL: https://gestionemployerbackend.onrender.com/api/v1/health
+  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
+  DEFAULT_API_HEALTHCHECK_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}/health
 
-# Issue #1835 + #3904 : déduplication par SHA — deux parents (Tests + Web CI)
-# complètent chacun pour le même SHA ; le 2e run annule le 1er (qui évalue
-# le même SHA, donc même décision) au lieu d'empiler 2 déploiements + 2 E2E
-# + 2 OWASP. Deux SHA différents restent indépendants (pas d'annulation
-# croisée) : le gate anti-stale de deploy-main tranche seul.
-# #3904 : `github.event_name == 'pull_request'` n'était JAMAIS vrai ici
-# (événements workflow_run / workflow_dispatch) → cancel-in-progress restait
-# false et le même SHA s'exécutait en série à chaque run parent (observé :
-# 4× sur un SHA en 11 min). Le groupe est déjà par-SHA ; on active donc
-# l'annulation inconditionnelle. `github.sha` couvre le workflow_dispatch
-# (pas de workflow_run.head_sha) et garde un groupe unique par SHA manuel.
+# #1835 / #3904 / #4359 : un seul run de déploiement par SHA; le push main
+# est désormais l’unique déclencheur automatique. Le groupe par SHA protège
+# encore les déclenchements manuels et annule les doublons explicites.
 concurrency:
-  group: deploy-main-${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+  group: deploy-main-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -68,6 +65,19 @@ jobs:
               } >> "$GITHUB_OUTPUT"
               exit 0
             fi
+            {
+              echo "should_deploy=pending-validation"
+              echo "ref=${GITHUB_REF_NAME}"
+              echo "sha=${GITHUB_SHA}"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # #3545 : déclenchement direct sur push main. Le gate (étape
+          # `workflow_gate`) poll les runs du SHA au lieu de lire la
+          # conclusion d'un parent — le run du DERNIER SHA aboutit toujours
+          # (rien de plus récent pour l'annuler en pending).
+          if [[ "${EVENT_NAME}" == "push" ]]; then
             {
               echo "should_deploy=pending-validation"
               echo "ref=${GITHUB_REF_NAME}"
@@ -152,7 +162,12 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
-            if (`${{ github.event_name }}` === 'workflow_dispatch') {
+            const EVENT = `${{ github.event_name }}`;
+            const sha = `${{ steps.context.outputs.sha }}`;
+            const webChanged = `${{ steps.changes.outputs.web }}` === 'true';
+            const { owner, repo } = context.repo;
+
+            if (EVENT === 'workflow_dispatch') {
               core.info('Manual deployment on main: bypassing workflow_run lookup.');
               core.setOutput('tests_conclusion', 'manual-dispatch');
               core.setOutput('web_conclusion', 'manual-dispatch');
@@ -160,10 +175,125 @@ jobs:
               return;
             }
 
-            const sha = `${{ steps.context.outputs.sha }}`;
-            const webChanged = `${{ steps.changes.outputs.web }}` === 'true';
-            const { owner, repo } = context.repo;
+            const REQUIRED_WORKFLOWS = ['Tests - Leopardo RH', 'Web CI - Leopardo Admin'];
+            const conclusionIsGreen = (c) => c === 'success' || c === 'skipped';
 
+            // #3545 : mode push = polling borné des runs du SHA (timeout 30
+            // min, intervalle 60 s). Le workflow_run n'existe pas encore ou a
+            // pu être annulé en pending ; on attend que les runs du SHA
+            // terminent vraiment, au lieu de lire la conclusion d'un parent.
+            if (EVENT === 'push') {
+              core.info(`Push-triggered deploy: polling runs for ${sha} (web_changed=${webChanged}).`);
+              const deadline = Date.now() + 30 * 60 * 1000;
+              const intervalMs = 60 * 1000;
+              let consecutiveEmpty = 0;
+
+              while (Date.now() < deadline) {
+                let runsForSha = [];
+                try {
+                  runsForSha = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
+                    owner,
+                    repo,
+                    branch: 'main',
+                    event: 'push',
+                    per_page: 100,
+                  });
+                  runsForSha = runsForSha.filter((run) => run.head_sha === sha);
+                } catch (err) {
+                  core.warning(`listWorkflowRunsForRepo failed: ${err.message}`);
+                }
+
+                const relevant = runsForSha.filter((run) => REQUIRED_WORKFLOWS.includes(run.name));
+                const pending = relevant.filter((run) => run.status === 'queued' || run.status === 'in_progress');
+
+                if (relevant.length === 0) {
+                  consecutiveEmpty += 1;
+                  if (consecutiveEmpty >= 5) {
+                    core.warning(`Deploy skipped — aucun run "${REQUIRED_WORKFLOWS.join('" / "')}" pour le SHA ${sha} (chemin non couvert ou runs non créés).`);
+                    core.setOutput('tests_conclusion', 'no-runs');
+                    core.setOutput('web_conclusion', webChanged ? 'no-runs' : 'not-required');
+                    core.setOutput('should_deploy', 'false');
+                    return;
+                  }
+                  core.info(`No relevant runs yet for ${sha} (${consecutiveEmpty}/5 empty polls) — waiting ${intervalMs / 1000}s...`);
+                  await new Promise((r) => setTimeout(r, intervalMs));
+                  continue;
+                }
+                consecutiveEmpty = 0;
+
+                const testsRun = relevant.find((run) => run.name === 'Tests - Leopardo RH');
+                const webRun = relevant.find((run) => run.name === 'Web CI - Leopardo Admin');
+                const testsConclusion = testsRun ? testsRun.conclusion : null;
+                const webConclusion = webRun ? webRun.conclusion : null;
+
+                if (pending.length > 0) {
+                  core.info(`Runs still pending/in_progress for ${sha} (${pending.length}) — waiting ${intervalMs / 1000}s...`);
+                  await new Promise((r) => setTimeout(r, intervalMs));
+                  continue;
+                }
+
+                // Plus aucun run en attente : l'état est stabilisé.
+                let shouldDeploy = true;
+                let reason = '';
+                if (!testsRun) {
+                  shouldDeploy = false;
+                  reason = `aucun run "Tests - Leopardo RH" pour le SHA ${sha}`;
+                } else if (!conclusionIsGreen(testsConclusion)) {
+                  shouldDeploy = false;
+                  reason = `conclusion "Tests - Leopardo RH" = ${testsConclusion} pour le SHA ${sha}`;
+                }
+                if (shouldDeploy && webChanged) {
+                  if (!webRun) {
+                    shouldDeploy = false;
+                    reason = `web_changed=true mais aucun run "Web CI - Leopardo Admin" pour le SHA ${sha}`;
+                  } else if (!conclusionIsGreen(webConclusion)) {
+                    shouldDeploy = false;
+                    reason = `conclusion "Web CI - Leopardo Admin" = ${webConclusion} pour le SHA ${sha}`;
+                  }
+                }
+
+                core.info(`Tests workflow conclusion: ${testsConclusion}`);
+                core.info(`Web workflow conclusion: ${webConclusion}`);
+                core.info(`Web changed: ${webChanged}`);
+
+                if (shouldDeploy) {
+                  // Audit #1705 + #3545 : ne jamais déployer un SHA devenu
+                  // obsolète pendant l'attente — un push plus récent a pu
+                  // arriver pendant le polling.
+                  const { data: mainBranch } = await github.rest.repos.getBranch({
+                    owner,
+                    repo,
+                    branch: 'main',
+                  });
+                  const mainHead = mainBranch.commit.sha;
+                  if (mainHead !== sha) {
+                    core.warning(`Deploy skipped — SHA stale pendant l'attente (${sha} ≠ main ${mainHead}).`);
+                    core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
+                    core.setOutput('web_conclusion', webChanged ? (webConclusion ?? 'missing') : 'not-required');
+                    core.setOutput('should_deploy', 'false');
+                    return;
+                  }
+                  core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
+                  core.setOutput('web_conclusion', webChanged ? (webConclusion ?? 'missing') : 'not-required');
+                  core.setOutput('should_deploy', 'true');
+                  return;
+                }
+
+                core.warning(`Deploy skipped — ${reason}.`);
+                core.setOutput('tests_conclusion', testsConclusion ?? 'missing');
+                core.setOutput('web_conclusion', webConclusion ?? 'not-required');
+                core.setOutput('should_deploy', 'false');
+                return;
+              }
+
+              core.warning(`Deploy skipped — timeout 30 min en attente des runs du SHA ${sha}.`);
+              core.setOutput('tests_conclusion', 'timeout');
+              core.setOutput('web_conclusion', webChanged ? 'timeout' : 'not-required');
+              core.setOutput('should_deploy', 'false');
+              return;
+            }
+
+            // ---- Mode workflow_run (déclenchement historique) ----
             const allRuns = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
               owner,
               repo,
@@ -187,9 +317,9 @@ jobs:
             core.info(`Web workflow conclusion: ${webConclusion}`);
             core.info(`Web changed: ${webChanged}`);
 
-            let shouldDeploy = testsConclusion === 'success';
+            let shouldDeploy = conclusionIsGreen(testsConclusion);
             if (webChanged) {
-              shouldDeploy = shouldDeploy && webConclusion === 'success';
+              shouldDeploy = shouldDeploy && conclusionIsGreen(webConclusion);
             }
 
             // Audit #1705 : race « stale SHA » — si ce SHA n'est plus la tête
@@ -244,6 +374,31 @@ jobs:
             } >> "$GITHUB_OUTPUT"
           fi
 
+      # #3545 US3 : un skip de déploiement ne doit plus jamais être silencieux.
+      - name: Report deployment decision (skip visible)
+        shell: bash
+        env:
+          SHOULD_DEPLOY: ${{ steps.final.outputs.should_deploy }}
+          DEPLOY_SHA: ${{ steps.context.outputs.sha }}
+          APP_VERSION: ${{ steps.final.outputs.app_version }}
+          TESTS_CONCLUSION: ${{ steps.workflow_gate.outputs.tests_conclusion }}
+          WEB_CONCLUSION: ${{ steps.workflow_gate.outputs.web_conclusion }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Résultat du gate de déploiement"
+            echo ""
+            echo "- **SHA** : \`${DEPLOY_SHA:-n/a}\`"
+            echo "- **APP_VERSION** : \`${APP_VERSION:-n/a}\`"
+            echo "- **Conclusion Tests** : \`${TESTS_CONCLUSION:-n/a}\`"
+            echo "- **Conclusion Web** : \`${WEB_CONCLUSION:-n/a}\`"
+            echo "- **Décision** : \`${SHOULD_DEPLOY}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "${SHOULD_DEPLOY}" != "true" ]]; then
+            echo "::warning::Deploy skipped — SHA ${DEPLOY_SHA:-n/a} (Tests=${TESTS_CONCLUSION:-n/a}, Web=${WEB_CONCLUSION:-n/a}). Voir le résumé du run."
+          fi
+
+
   deploy-api:
     name: Deploy API + Web to Render
     runs-on: ubuntu-latest
@@ -269,9 +424,10 @@ jobs:
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
           APP_VERSION: ${{ needs.prepare.outputs.app_version }}
+          DEPLOY_SHA: ${{ needs.prepare.outputs.sha }}
         run: |
           set -euo pipefail
-          echo "Triggering Render deploy for APP_VERSION=${APP_VERSION}"
+          echo "Triggering Render deploy for APP_VERSION=${APP_VERSION} SHA=${DEPLOY_SHA}"
           curl --fail --silent --show-error --request POST "${RENDER_DEPLOY_HOOK_URL}"
 
       - name: Wait for API/Web healthcheck

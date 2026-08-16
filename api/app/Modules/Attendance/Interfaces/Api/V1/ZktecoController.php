@@ -241,7 +241,12 @@ class ZktecoController extends Controller
         $actor = $request->user();
         abort_unless($actor->isManager(), 403, 'FORBIDDEN');
 
+        // #4187 : lookup SCOPE tenant — jamais de résolution par
+        // serial_number seul (le serial est partagé entre tenants) :
+        // un manager ne doit pouvoir pousser que sur SES appareils.
+        $company = currentCompany();
         $device = ZktecoDevice::query()
+            ->where('company_id', $company->id)
             ->where('serial_number', $serialNumber)
             ->firstOrFail();
 

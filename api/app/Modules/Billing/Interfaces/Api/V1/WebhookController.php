@@ -46,11 +46,7 @@ class WebhookController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
+        $this->authorize('viewAny', WebhookEndpoint::class);
 
         // #3948 : pagination alignée sur le contrat des autres listes.
         return WebhookEndpointResource::collection(
@@ -62,6 +58,8 @@ class WebhookController extends Controller
 
     public function store(StoreWebhookEndpointRequest $request): JsonResponse
     {
+        $this->authorize('create', WebhookEndpoint::class);
+
         /** @var Employee $actor */
         $actor = $request->user();
 
@@ -80,14 +78,7 @@ class WebhookController extends Controller
 
     public function show(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
-        if ($webhookEndpoint->company_id !== $actor->company_id) {
-            abort(404);
-        }
+        $this->authorize('view', $webhookEndpoint);
 
         return (new WebhookEndpointResource(
             $webhookEndpoint->load(['deliveries' => fn ($q) => $q->orderByDesc('delivered_at')->limit(20)])
@@ -96,9 +87,7 @@ class WebhookController extends Controller
 
     public function update(UpdateWebhookEndpointRequest $request, WebhookEndpoint $webhookEndpoint): WebhookEndpointResource
     {
-        if ($webhookEndpoint->company_id !== $request->user()->company_id) {
-            abort(404);
-        }
+        $this->authorize('update', $webhookEndpoint);
 
         $webhookEndpoint->update($request->validated());
         if ($request->validated('active')) {
@@ -110,14 +99,7 @@ class WebhookController extends Controller
 
     public function destroy(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
-        if ($webhookEndpoint->company_id !== $actor->company_id) {
-            abort(404);
-        }
+        $this->authorize('delete', $webhookEndpoint);
 
         $webhookEndpoint->delete();
 
@@ -141,18 +123,11 @@ class WebhookController extends Controller
      * duration_ms/delivery et WebhookTestEndpointTest échoue.
      *
      * @return JsonResponse 200 with {status, http_status, duration_ms, delivery}
-     *                       or 422 when the URL is invalid/blocked.
+     *                      or 422 when the URL is invalid/blocked.
      */
     public function test(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->hasManagerRole('principal')) {
-            abort(403);
-        }
-        if ($webhookEndpoint->company_id !== $actor->company_id) {
-            abort(404);
-        }
+        $this->authorize('test', $webhookEndpoint);
 
         // Anti-SSRF defence-in-depth: same guard as DispatchWebhook::handle().
         // `url` est nullable en base → on normalise avant tout usage (PHPStan strict).

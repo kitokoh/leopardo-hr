@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
@@ -582,7 +583,9 @@ class _SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFmt = DateFormat('dd/MM/yyyy');
+    // #4337 : pattern locale-aware (yMd suit la locale active) — le
+    // dd/MM/yyyy en dur ignorait la préférence utilisateur (résiduel #4197).
+    final dateFmt = DateFormat.yMd(deviceIntlDateLocale);
     final timeFmt = DateFormat('HH:mm');
 
     return Container(

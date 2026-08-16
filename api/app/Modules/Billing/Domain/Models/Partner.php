@@ -44,6 +44,15 @@ class Partner extends Model
         'payment_details',
         'payout_threshold',
         'payout_cycle',
+        // Issue #4186 : coordonnées de candidature (Growth) — colonnes additives
+        // 2026_08_16_000001, nullable pour compatibilité avec les lignes existantes.
+        'name',
+        'email',
+        'phone',
+        'website',
+        'company_id',
+        'employee_id',
+        'commission_rate',
     ];
 
     /** @return BelongsTo<User, $this> */

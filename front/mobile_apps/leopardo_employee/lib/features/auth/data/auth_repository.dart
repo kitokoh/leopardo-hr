@@ -29,6 +29,9 @@ class AuthRepository {
     );
 
     final data = _envelope(response.data);
+    // #4199 : token racine (auth.login renvoie {token, employee}) hors
+    //    enveloppe {data:{...}} — helpers locaux documentés, extractDataMap
+    //    ne s'applique pas au premier niveau de ce contrat.
     final employeeJson = extractEmployeeJson(data);
     final token = extractToken(data);
 

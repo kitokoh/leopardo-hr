@@ -54,13 +54,6 @@ POST /v1/employees/{param}/assign-role
 POST /v1/notifications/mark-all-read
 
 ## modules/hr_app.php — 7 route(s)
-GET /v1/hr/dashboard
-GET /v1/hr/employees
-GET /v1/hr/employees/{param}
-GET /v1/hr/me
-GET /v1/hr/team-overview
-PATCH /v1/hr/employees/{param}
-POST /v1/hr/employees
 
 ## modules/hr_extended.php — 17 route(s)
 DELETE /v1/recruitment/applicants/{param}
@@ -104,15 +97,6 @@ PUT /v1/payrolls/{param}
 PUT /v1/payrolls/{param}/validate
 
 ## modules/user.php — 9 route(s)
-GET /user/company-requests
-GET /user/company-requests/{param}
-GET /user/employee-links
-PATCH /user/profile
-POST /employees/link-user
-POST /user/change-password
-POST /user/company-requests
-POST /user/logout
-POST /v1/user/google-signin
 
 ## modules DDD (SmartAttendance) — enregistrees via loadRoutesFrom (hors api/routes/) — 12 route(s)
 GET /api/v1/smart-attendance/config

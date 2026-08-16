@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace Tests\Feature\Demo;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Jobs\DispatchCommunicationJob;
 use App\Jobs\ProvisionDemoTenantJob;
+use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Mail\CommunicationMail;
 use App\Modules\Billing\Application\Actions\ProvisionGuidedTrial;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -48,5 +53,89 @@ class ProvisionDemoTenantJobTest extends TestCase
             return $mail->hasTo($email)
                 && str_contains($mail->bodyText, '/demo-login/');
         });
+    }
+
+    /**
+     * #3600 : une erreur transitoire doit être RETHROWN (retry du worker) et
+     * le statut final 'failed' posé par failed() après le dernier essai.
+     */
+    public function test_job_rethrows_on_failure_and_marks_provisioning_failed(): void
+    {
+        Mail::fake();
+
+        $email = 'fail-'.uniqid().'@example.com';
+        $token = 'token-'.Str::random(32);
+
+        DB::table('trial_provisionings')->insert([
+            'email' => $email,
+            'provisioning_token' => $token,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $provisioner = $this->createMock(ProvisionGuidedTrial::class);
+        $provisioner->method('execute')->willThrowException(new \RuntimeException('DB transient error'));
+
+        $job = new ProvisionDemoTenantJob($email, 'Fail Sandbox', 'DZ', $token);
+
+        // Le handle() doit propager l'exception (retry worker, pas d'avalement).
+        try {
+            $job->handle($provisioner);
+            $this->fail('handle() should rethrow the transient error');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('DB transient error', $e->getMessage());
+        }
+
+        // Statut encore 'pending' pendant les retries (pas de failed prématuré).
+        $this->assertSame('pending', DB::table('trial_provisionings')->where('provisioning_token', $token)->value('status'));
+
+        // failed() (dernier essai) pose le statut définitif.
+        $job->failed(new \RuntimeException('DB transient error'));
+        $this->assertSame('failed', DB::table('trial_provisionings')->where('provisioning_token', $token)->value('status'));
+    }
+
+    /**
+     * #3600 : tries/backoff bornés sur les jobs concernés.
+     */
+    public function test_jobs_expose_bounded_tries_and_backoff(): void
+    {
+        $job = new ProvisionDemoTenantJob('retry@example.com', 'Retry Sandbox', 'DZ');
+        $this->assertSame(5, $job->tries);
+        $this->assertSame([30, 60, 120, 300], $job->backoff());
+
+        $comm = new DispatchCommunicationJob(1, null, 'welcome', [], null);
+        $this->assertSame(3, $comm->tries);
+        $this->assertSame([10, 60], $comm->backoff());
+
+        $warm = new WarmPaySlipPdfPathsForPayrollRunJob(1);
+        $this->assertSame(3, $warm->tries);
+        $this->assertSame(300, $warm->timeout);
+        $this->assertSame([30, 120], $warm->backoff());
+    }
+
+    /**
+     * #3600 : ProvisionGuidedTrial est idempotent — un retry (ou une double
+     * soumission) ne crée pas un second tenant sandbox pour le même email.
+     */
+    public function test_provisioning_is_idempotent_for_same_email(): void
+    {
+        Mail::fake();
+
+        $email = 'idem-'.uniqid().'@example.com';
+        $companyName = 'Idem Sandbox '.uniqid();
+
+        /** @var ProvisionGuidedTrial $provisioner */
+        $provisioner = app(ProvisionGuidedTrial::class);
+
+        $first = $provisioner->execute($email, $companyName, 'DZ');
+        $second = $provisioner->execute($email, $companyName.' bis', 'DZ');
+
+        $this->assertSame($first['company']->id, $second['company']->id);
+        $this->assertSame($first['manager']->id, $second['manager']->id);
+        $this->assertSame(1, Company::query()
+            ->where('email', $email)
+            ->where('metadata->provisioned_by', 'guided_trial')
+            ->count());
     }
 }

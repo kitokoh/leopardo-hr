@@ -96,8 +96,10 @@ class CrossTenantIndexIsolationTest extends TestCase
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'amount' => 10000,
-            'status' => 'pending',
         ]);
+            $advance->status = 'pending';
+            $advance->save();
+
 
         $evaluation = Evaluation::query()->create([
             'company_id' => $company->id,

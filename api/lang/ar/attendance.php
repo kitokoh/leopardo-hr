@@ -49,4 +49,13 @@ return [
     'correction_filter_applied' => 'مطبقة',
     'correction_filter_rejected' => 'مرفوضة',
     'correction_filter_all' => 'الكل',
+
+    'correction_transmitted' => 'تم إرسال طلب التعديل إلى الموارد البشرية.',
+
+    // #4311 — validations correction/pointage localisées
+    'correction_future_check_in' => 'لا يمكنك طلب تصحيح بوقت مستقبلي.',
+    'correction_future_check_out' => 'لا يمكنك طلب تصحيح بوقت مستقبلي.',
+    'correction_already_processed' => 'تمت معالجة طلب التصحيح هذا مسبقاً.',
+    'manual_checkout_requires_check_in' => 'يتطلب تسجيل الخروج اليدوي وقت تسجيل دخول.',
+    'checkout_after_checkin' => 'يجب أن يكون وقت تسجيل الخروج بعد وقت تسجيل الدخول.',
 ];

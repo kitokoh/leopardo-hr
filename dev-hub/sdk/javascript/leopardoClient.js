@@ -320,11 +320,6 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/admin/training/courses", options);
     },
 
-    /** Cours de formation cross-tenant (super-admin) */
-    getAdminTrainingCourses2(options = {}) {
-      return request("GET", "/admin/training/courses", options);
-    },
-
     /** Inscriptions aux formations cross-tenant (super-admin) */
     getAdminTrainingEnrollments(options = {}) {
       return request("GET", "/admin/training/enrollments", options);
@@ -515,7 +510,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/api/v1/edge/download/Caddyfile.edge", options);
     },
 
-    /** Empreinte SHA-256 de Caddyfile.edge (public) */
+    /** Somme SHA-256 de Caddyfile.edge (public) */
     getApiV1EdgeDownloadCaddyfileEdgeSha256(options = {}) {
       return request("GET", "/api/v1/edge/download/Caddyfile.edge.sha256", options);
     },
@@ -525,7 +520,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/api/v1/edge/download/docker-compose.yml", options);
     },
 
-    /** Empreinte SHA-256 de docker-compose.yml (public) */
+    /** Somme SHA-256 de docker-compose.yml edge (public) */
     getApiV1EdgeDownloadDockerComposeYmlSha256(options = {}) {
       return request("GET", "/api/v1/edge/download/docker-compose.yml.sha256", options);
     },
@@ -535,7 +530,7 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/api/v1/edge/download/env-example", options);
     },
 
-    /** Empreintes SHA-256 des assets d'installation edge (public) */
+    /** Sommes SHA-256 des artefacts edge (public) */
     getApiV1EdgeDownloadSha256Txt(options = {}) {
       return request("GET", "/api/v1/edge/download/sha256.txt", options);
     },
@@ -1120,6 +1115,36 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/demo-users", options);
     },
 
+    /** Lister les départements du tenant */
+    getDepartments(options = {}) {
+      return request("GET", "/departments", options);
+    },
+
+    /** Créer un département */
+    postDepartments(options = {}) {
+      return request("POST", "/departments", options);
+    },
+
+    /** Supprimer un département */
+    deleteDepartmentsByDepartment(options = {}) {
+      return request("DELETE", "/departments/{department}", options);
+    },
+
+    /** Détail d'un département */
+    getDepartmentsByDepartment(options = {}) {
+      return request("GET", "/departments/{department}", options);
+    },
+
+    /** Mise à jour partielle d'un département */
+    patchDepartmentsByDepartment(options = {}) {
+      return request("PATCH", "/departments/{department}", options);
+    },
+
+    /** Mettre à jour un département */
+    putDepartmentsByDepartment(options = {}) {
+      return request("PUT", "/departments/{department}", options);
+    },
+
     /** Organigramme d'un departement (arbre department/teams/managers/employees, scope tenant) */
     getDepartmentsByDepartmentHierarchy(options = {}) {
       return request("GET", "/departments/{department}/hierarchy", options);
@@ -1213,6 +1238,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Template CSV import */
     getEmployeesImportTemplate(options = {}) {
       return request("GET", "/employees/import-template", options);
+    },
+
+    /** Manager — lie un utilisateur ordinaire à un employé du tenant */
+    postEmployeesLinkUser(options = {}) {
+      return request("POST", "/employees/link-user", options);
     },
 
     /** Lister les evaluations */
@@ -1438,6 +1468,41 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     /** Readiness probe — base de données disponible */
     getHealthReady(options = {}) {
       return request("GET", "/health/ready", options);
+    },
+
+    /** Dashboard RH — indicateurs et actions en attente */
+    getHrDashboard(options = {}) {
+      return request("GET", "/hr/dashboard", options);
+    },
+
+    /** Liste des employés (scope RH) */
+    getHrEmployees(options = {}) {
+      return request("GET", "/hr/employees", options);
+    },
+
+    /** Ajoute un employé (scope RH — sans changement de rôle manager) */
+    postHrEmployees(options = {}) {
+      return request("POST", "/hr/employees", options);
+    },
+
+    /** Détail d'un employé (scope RH) */
+    getHrEmployeesByEmployee(options = {}) {
+      return request("GET", "/hr/employees/{employee}", options);
+    },
+
+    /** Modifie un employé (scope RH — sans changement de rôle manager) */
+    patchHrEmployeesByEmployee(options = {}) {
+      return request("PATCH", "/hr/employees/{employee}", options);
+    },
+
+    /** Profil de l'utilisateur RH connecté (manager_role rh/principal) */
+    getHrMe(options = {}) {
+      return request("GET", "/hr/me", options);
+    },
+
+    /** Vue d'ensemble de l'équipe (effectifs, répartition) */
+    getHrTeamOverview(options = {}) {
+      return request("GET", "/hr/team-overview", options);
     },
 
     /** Catalogue de traductions complet */
@@ -2465,6 +2530,56 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/recruitment/jobs/{jobPosting}/publish", options);
     },
 
+    /** Absentéisme du mois/année */
+    getReportsAbsenteeism(options = {}) {
+      return request("GET", "/reports/absenteeism", options);
+    },
+
+    /** Analyse des coûts (masse salariale par département) */
+    getReportsCostAnalysis(options = {}) {
+      return request("GET", "/reports/cost-analysis", options);
+    },
+
+    /** Ventilation démographique des employés */
+    getReportsDemographics(options = {}) {
+      return request("GET", "/reports/demographics", options);
+    },
+
+    /** Effectif par département, type de contrat et genre */
+    getReportsHeadcount(options = {}) {
+      return request("GET", "/reports/headcount", options);
+    },
+
+    /** Synthèse des avances/prêts employés */
+    getReportsLoanSummary(options = {}) {
+      return request("GET", "/reports/loan-summary", options);
+    },
+
+    /** Heures supplémentaires du mois/année */
+    getReportsOvertime(options = {}) {
+      return request("GET", "/reports/overtime", options);
+    },
+
+    /** Synthèse paie du mois/année */
+    getReportsPayrollSummary(options = {}) {
+      return request("GET", "/reports/payroll-summary", options);
+    },
+
+    /** Pipeline recrutement (candidatures par statut) */
+    getReportsRecruitmentPipeline(options = {}) {
+      return request("GET", "/reports/recruitment-pipeline", options);
+    },
+
+    /** Taux de complétion des formations */
+    getReportsTrainingCompletion(options = {}) {
+      return request("GET", "/reports/training-completion", options);
+    },
+
+    /** Taux de rotation (turnover) sur N mois */
+    getReportsTurnover(options = {}) {
+      return request("GET", "/reports/turnover", options);
+    },
+
     /** Lister les avances sur salaire */
     getSalaryAdvances(options = {}) {
       return request("GET", "/salary-advances", options);
@@ -2935,14 +3050,54 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("POST", "/trial/verify", options);
     },
 
+    /** Change le mot de passe de l'utilisateur connecté */
+    postUserChangePassword(options = {}) {
+      return request("POST", "/user/change-password", options);
+    },
+
+    /** Liste les demandes de création d'entreprise de l'utilisateur */
+    getUserCompanyRequests(options = {}) {
+      return request("GET", "/user/company-requests", options);
+    },
+
+    /** Crée une demande de création d'entreprise */
+    postUserCompanyRequests(options = {}) {
+      return request("POST", "/user/company-requests", options);
+    },
+
+    /** Détail d'une demande de création d'entreprise */
+    getUserCompanyRequestsById(options = {}) {
+      return request("GET", "/user/company-requests/{id}", options);
+    },
+
+    /** Liste les liens employé de l'utilisateur ordinaire */
+    getUserEmployeeLinks(options = {}) {
+      return request("GET", "/user/employee-links", options);
+    },
+
+    /** Connexion ou création de compte via Google (compte ordinaire) */
+    postUserGoogleSignin(options = {}) {
+      return request("POST", "/user/google-signin", options);
+    },
+
     /** Connexion utilisateur sans entreprise (parcours legacy mobile) */
     postUserLogin(options = {}) {
       return request("POST", "/user/login", options);
     },
 
+    /** Déconnecte l'utilisateur (révoque le token) */
+    postUserLogout(options = {}) {
+      return request("POST", "/user/logout", options);
+    },
+
     /** Profil de l'utilisateur connecté */
     getUserMe(options = {}) {
       return request("GET", "/user/me", options);
+    },
+
+    /** Met à jour le profil de l'utilisateur connecté */
+    patchUserProfile(options = {}) {
+      return request("PATCH", "/user/profile", options);
     },
 
     /** Crée un compte utilisateur sans entreprise (parcours legacy mobile) */

@@ -107,6 +107,15 @@ trait CreatesMvpSchema
             $table->integer('payout_threshold')->default(5000);
             $table->string('payout_cycle')->default('monthly');
             $table->string('type')->default('individual');
+            // Issue #4186 : coordonnées de candidature (alignées migration
+            // 2026_08_16_000001_add_contact_fields_to_partners).
+            $table->string('name', 150)->nullable();
+            $table->string('email', 150)->nullable();
+            $table->string('phone', 40)->nullable();
+            $table->string('website', 255)->nullable();
+            $table->uuid('company_id')->nullable();
+            $table->unsignedBigInteger('employee_id')->nullable();
+            $table->decimal('commission_rate', 6, 4)->nullable();
             $table->timestamps();
         });
 

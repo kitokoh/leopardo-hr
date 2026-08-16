@@ -28,14 +28,20 @@ class PartnerDashboardController extends Controller
         }
 
         if ($authUser instanceof \App\Core\Auth\Domain\Models\Employee) {
-            return \App\Core\Auth\Domain\Models\User::firstOrCreate(
+            $user = \App\Core\Auth\Domain\Models\User::firstOrCreate(
                 ['email' => $authUser->email],
                 [
                     'first_name' => $authUser->first_name,
                     'last_name'  => $authUser->last_name,
-                    'status'     => 'active',
                 ]
             );
+            // Issue #3597/#4151 : status non mass-assignable — assignation explicite.
+            if ($user->wasRecentlyCreated) {
+                $user->status = 'active';
+                $user->save();
+            }
+
+            return $user;
         }
 
         abort(401, 'Unauthorized user type.');
@@ -93,8 +99,8 @@ class PartnerDashboardController extends Controller
             // Erreur métier propre : code d'erreur générique, jamais de message brut.
             return new JsonResponse([
                 'error' => $e->errorCode(),
-                'message' => 'Demande de paiement refusee.',
-                'localized_message' => 'Demande de paiement refusee.',
+                'message' => $e->errorCode(),
+                'localized_message' => __('errors.PAYOUT_REQUEST_REFUSED'),
             ], $e->statusCode());
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('partner.payout.request_failed', [
@@ -104,8 +110,8 @@ class PartnerDashboardController extends Controller
 
             return new JsonResponse([
                 'error' => 'PAYOUT_REQUEST_FAILED',
-                'message' => 'Une erreur est survenue lors de la demande de paiement.',
-                'localized_message' => 'Une erreur est survenue lors de la demande de paiement.',
+                'message' => 'PAYOUT_REQUEST_FAILED',
+                'localized_message' => __('errors.PAYOUT_REQUEST_FAILED'),
             ], 500);
         }
     }

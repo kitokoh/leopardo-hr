@@ -47,15 +47,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
         DB::statement('SET search_path TO shared_tenants,public');
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
@@ -133,15 +135,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
         DB::statement('SET search_path TO shared_tenants,public');
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
@@ -209,15 +213,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
         DB::statement('SET search_path TO shared_tenants,public');
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
