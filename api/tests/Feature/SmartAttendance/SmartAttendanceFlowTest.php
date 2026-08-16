@@ -43,23 +43,34 @@ class SmartAttendanceFlowTest extends TestCase
         // les migrations tenant/2026_06_29_0002xx.
         $this->createSmartAttendanceSchema();
 
-        $this->company = Company::factory()->create(['country' => 'DZ']);
-        $this->employee = Employee::factory()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ']);
+        $this->company = $company;
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'employee',
             'status' => 'active',
         ]);
-        $this->managerRh = Employee::factory()->create([
+        $this->employee = $employee;
+        /** @var Employee $managerRh */
+        $managerRh = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'rh',
             'status' => 'active',
         ]);
+        $this->managerRh = $managerRh;
     }
 
     protected function tearDown(): void
     {
-        $this->tearDownMvpSchema();
+        // RefreshTenantDatabase (migrate:fresh) nettoie la base entre tests ;
+        // on droppe quand même les tables SmartAttendance créées manuellement
+        // (le schéma MVP ne les porte pas) pour un état propre.
+        DB::statement('DROP TABLE IF EXISTS employee_location_events');
+        DB::statement('DROP TABLE IF EXISTS geo_attendance_sessions');
+        DB::statement('DROP TABLE IF EXISTS attendance_mode_settings');
         parent::tearDown();
     }
 
@@ -141,6 +152,9 @@ class SmartAttendanceFlowTest extends TestCase
             SQL);
     }
 
+    /** @param array<string, mixed> $overrides
+     * @return array<string, mixed>
+     */
     private function geoEvent(array $overrides = []): array
     {
         return array_merge([
@@ -231,7 +245,8 @@ class SmartAttendanceFlowTest extends TestCase
         $response->assertStatus(201)
             ->assertJsonPath('data.status', GeoAttendanceSession::STATUS_PENDING_VALIDATION);
 
-        $session = GeoAttendanceSession::where('employee_id', $this->employee->id)->first();
+        /** @var GeoAttendanceSession $session */
+        $session = GeoAttendanceSession::where('employee_id', $this->employee->id)->firstOrFail();
         $this->assertNotNull($session->ended_at);
         $this->assertNotNull($session->duration_seconds);
     }
@@ -265,6 +280,7 @@ class SmartAttendanceFlowTest extends TestCase
 
         $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent())->assertStatus(201);
         // Session d'un autre employé — ne doit pas apparaître.
+        /** @var Employee $other */
         $other = Employee::factory()->create(['company_id' => $this->company->id, 'status' => 'active']);
         GeoAttendanceSession::create([
             'employee_id' => $other->id,
@@ -306,6 +322,7 @@ class SmartAttendanceFlowTest extends TestCase
         ]))->assertStatus(201);
 
         Sanctum::actingAs($this->managerRh);
+        $this->assertNotNull($session);
         $response = $this->postJson("/api/v1/smart-attendance/sessions/{$session->id}/approve");
 
         $response->assertOk();
