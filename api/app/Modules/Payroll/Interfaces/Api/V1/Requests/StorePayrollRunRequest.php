@@ -56,7 +56,7 @@ class StorePayrollRunRequest extends FormRequest
             if ($tenantCountry !== null && strtoupper((string) $this->input('country_code')) !== $tenantCountry) {
                 $validator->errors()->add(
                     'country_code',
-                    "Le pays du run doit correspondre au pays légal du tenant ({$tenantCountry})."
+                    __('errors.PAYROLL_RUN_COUNTRY_MISMATCH', ['country' => $tenantCountry])
                 );
             }
         });

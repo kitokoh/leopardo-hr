@@ -163,7 +163,8 @@
       "companyTooLong": "Company name is too long",
       "emailTooShort": "Email too short",
       "employeesRequired": "Select a team size",
-      "companyTooShort": "Company name must be at least 2 characters"
+      "companyTooShort": "Company name must be at least 2 characters",
+      "countryRequired": "Country is required."
     },
     "placeholderEmail": "you@company.com",
     "timeoutTitle": "Still being created",
@@ -207,7 +208,9 @@
     "otpInvalidLength": "Please enter the 6 digits of the code.",
     "title": "Try Leopardo with your company",
     "downloadApp": "Download the app",
-    "privacyLink": "privacy policy"
+    "privacyLink": "privacy policy",
+    "labelCountry": "Country",
+    "countryPlaceholder": "Select your country"
   },
   "tax_rates": {
     "saving": "Saving…",
@@ -417,6 +420,64 @@
     "activateNow": "Activate immediately",
     "activateClientNow": "Activate the client immediately",
     "activateClientHint": "Otherwise the client stays on trial."
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "subtitle": "Packaging, MRR and client contracts available for the super-admin cockpit.",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "unlimited": "Unlimited",
+    "employees": "employees",
+    "trialDays": "trial",
+    "public": "Public",
+    "archived": "Archived",
+    "perMonth": "/ month",
+    "billedAnnually": "billed annually",
+    "loadError": "Error loading subscriptions.",
+    "noPlan": "No plan",
+    "manage": "Manage",
+    "noRisk": "No immediate risk detected",
+    "catalogTitle": "Offers Catalog",
+    "catalogSub": "API source of truth for quotas and features.",
+    "healthTitle": "Commercial Health",
+    "retentionTitle": "Retention Priorities",
+    "kpi": {
+      "portfolioMrr": "Portfolio MRR",
+      "activeSubscriptions": "Active Subscriptions",
+      "pastDue": "Past Due",
+      "totalOverdue": "Total Overdue",
+      "arr": "Estimated ARR",
+      "collected30d": "Collected 30d",
+      "totalSubscribers": "Total Subscribers",
+      "trials": "Trials"
+    },
+    "risk": {
+      "high": "high risk",
+      "medium": "medium risk",
+      "low": "low risk"
+    },
+    "features": {
+      "rh": "HR",
+      "finance": "Finance",
+      "ai": "Leo AI",
+      "cameras": "Video",
+      "tracking": "Tracking",
+      "planning": "Planning",
+      "training": "Training",
+      "cabinet": "Documents",
+      "biometric": "Biometrics",
+      "tasks": "Tasks",
+      "advanced_reports": "Advanced reports",
+      "excel_export": "Excel export",
+      "bank_export": "Bank export",
+      "billing_auto": "Auto billing",
+      "multi_managers": "Multi-managers",
+      "photo_attendance": "Photo attendance",
+      "api_public": "Public API",
+      "evaluations": "Evaluations",
+      "schema_isolation": "Schema isolation"
+    },
+    "trialUnit": "d"
   },
   "_version": "1.0.0",
   "_updated_at": "2026-08-14T18:45:00Z",

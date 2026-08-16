@@ -283,18 +283,28 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     ).showSnackBar(const SnackBar(content: Text('Envoi en cours...')));
 
     final repo = ref.read(cabinetRepositoryProvider);
-    await repo.uploadDocument(
-      filePath: picked.path,
-      fileName: picked.name,
-      folderId: widget.folderId,
-    );
+    try {
+      await repo.uploadDocument(
+        filePath: picked.path,
+        fileName: picked.name,
+        folderId: widget.folderId,
+      );
 
-    ref.invalidate(cabinetDocumentsProvider(widget.folderId));
+      ref.invalidate(cabinetDocumentsProvider(widget.folderId));
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Document ajoute avec succes')),
-    );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Document ajoute avec succes')),
+      );
+    } catch (_) {
+      // Issue #4407 : timeout/401/5xx → erreur visible + snackbar « Envoi en
+      // cours... » retiré, au lieu d'une exception async non gérée qui laissait
+      // le snackbar affiché pour toujours et perdait l'image sélectionnée.
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Echec de l\'envoi du document. Reessayez.')),
+      );
+    }
   }
 
   void _showShareSheet(CabinetDocument doc) {

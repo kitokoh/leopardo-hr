@@ -56,11 +56,16 @@ export function localizedCanonical(url: string, locale?: string): string {
  */
 export function generateMetadata(seo: SEOMetadata): Metadata {
   // #4201 : canonical/og:url localisés (voir localizedCanonical).
+  // #4400 : les alternates hreflang partent de la BASE FR (sans ?lang) —
+  // sinon sur une page ?lang=en l'entrée fr pointait vers l'URL anglaise
+  // elle-même (auto-référence), et sans canonical tout s'effondrait sur la
+  // homepage.
+  const baseUrl = localizedCanonical(seo.canonical || siteUrl, undefined);
   const url = localizedCanonical(seo.canonical || siteUrl, seo.locale);
   const image = seo.ogImage || `${siteUrl}/og-image.png`;
   const path = (() => {
     try {
-      const parsed = new URL(url, siteUrl);
+      const parsed = new URL(baseUrl, siteUrl);
       return parsed.pathname === "/" ? "/" : parsed.pathname;
     } catch {
       return "/";
@@ -69,7 +74,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
   const localizedAlternates = Object.fromEntries(
     supportedLocales.map((locale) => [
       locale,
-      locale === "fr" ? url : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
+      locale === "fr" ? baseUrl : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
     ])
   );
 
@@ -473,55 +478,25 @@ export const pageMetadata = {
     ogImage: `${siteUrl}/og/default.png`,
     robots: "noindex, follow",
   },
+
+  // #4505 : metadata propre à /checkout/success (ne pas réutiliser « checkout »)
+  checkoutSuccess: {
+    title: "Votre espace Leopardo est pret | Confirmation d'abonnement",
+    description:
+      "Confirmation de votre essai Leopardo RH : votre espace est pret, 14 jours offerts, aucune carte debitee aujourd'hui.",
+    keywords: [
+      "confirmation abonnement RH",
+      "essai gratuit Leopardo RH",
+      "activation espace RH",
+    ],
+    ogImage: `${siteUrl}/og/default.png`,
+    robots: "noindex, follow",
+  },
 };
 
 /**
  * Structured Data (JSON-LD)
  */
-
-export function generateOrganizationSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: siteName,
-    url: siteUrl,
-    logo: `${siteUrl}/logo.png`,
-    description: "Plateforme complète de gestion RH pour PME et startups",
-    sameAs: [
-      "https://x.com/leopardo_hr",
-      "https://linkedin.com/company/leopardo",
-      "https://www.facebook.com/leopardo_hr",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "Customer Support",
-      email: "support@leopardo-rh.com",
-      availableLanguage: ["fr", "en"],
-    },
-  };
-}
-
-export function generateProductSchema(productName: string, description: string) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: productName,
-    description: description,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    offers: {
-      "@type": "Offer",
-      price: "29",
-      priceCurrency: "EUR",
-      availability: "https://schema.org/InStock",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      ratingCount: "500",
-    },
-  };
-}
 
 export function generateFAQSchema(
   faqs: Array<{ question: string; answer: string }>
@@ -536,42 +511,6 @@ export function generateFAQSchema(
         "@type": "Answer",
         text: faq.answer,
       },
-    })),
-  };
-}
-
-export function generateReviewSchema(
-  author: string,
-  rating: number,
-  reviewText: string
-) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Review",
-    reviewRating: {
-      "@type": "Rating",
-      ratingValue: rating.toString(),
-      bestRating: "5",
-    },
-    author: {
-      "@type": "Person",
-      name: author,
-    },
-    reviewBody: reviewText,
-  };
-}
-
-export function generateBreadcrumbSchema(
-  items: Array<{ name: string; url: string }>
-) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items.map((item, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
-      item: item.url,
     })),
   };
 }
@@ -614,6 +553,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     mobile: { title: "Mobile Apps | Leopardo HR on Android and iOS", description: "Leopardo HR mobile apps for employees, managers and admins: attendance, leave, payslips and notifications." },
     signup: { title: "Free Guided Trial | Discover Leopardo HR", description: "Request your free guided Leopardo HR trial: no password required, a specialist contacts you within 24h." },
     checkout: { title: "Choose Your Plan | Leopardo HR Subscription", description: "Select and subscribe to the Leopardo HR plan that fits your company: Free, Pilot, Operations or Enterprise." },
+    checkoutSuccess: { title: "Your Leopardo Space Is Ready | Subscription Confirmation", description: "Your Leopardo HR trial is confirmed: your space is ready, 14 days free, no card charged today." },
   },
   tr: {
     landing: { title: "Çalışan Yönetimi, Maaş & Belgeler | Hepsi Bir Arada Platform", description: "Çalışanlarınızı, maaş işlemlerinizi ve belgelerinizi tek yerden yönetin. 14 gün ücretsiz deneme, kredi kartı gerekmez." },
@@ -643,6 +583,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     mobile: { title: "Mobil Uygulamalar | Android ve iOS'ta Leopardo İK", description: "Çalışan, yönetici ve admin uygulamaları: giriş-çıkış, izinler, maaş bordroları ve bildirimler." },
     signup: { title: "Ücretsiz Rehberli Deneme | Leopardo İK'yı Keşfedin", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
     checkout: { title: "Planınızı Seçin | Leopardo İK Aboneliği", description: "Şirketinize uygun Leopardo İK planını seçin ve abone olun: Free, Pilot, Operations veya Enterprise." },
+    checkoutSuccess: { title: "Leopardo Alanınız Hazır | Abonelik Onayı", description: "Leopardo İK denemeniz onaylandı: alanınız hazır, 14 gün ücretsiz, bugün kartınızdan ücret alınmaz." },
   },
   ar: {
     landing: { title: "إدارة الموظفين والرواتب والمستندات | منصة متكاملة", description: "أدر موظفيك ورواتبهم ومستنداتهم في مكان واحد. نسخة تجريبية مجانية لمدة 14 يومًا دون بطاقة ائتمان." },
@@ -672,6 +613,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     mobile: { title: "تطبيقات الجوال | ليوباردو على Android وiOS", description: "تطبيقات ليوباردو للموظفين والمديرين والمشرفين: الحضور والإجازات وكشوف الرواتب والإشعارات." },
     signup: { title: "تجربة موجهة مجانية | اكتشف ليوباردو", description: "اطلب تجربتك الموجهة المجانية: لا كلمة مرور مطلوبة، ويتواصل معك مختص خلال 24 ساعة." },
     checkout: { title: "اختر خطتك | اشتراك ليوباردو", description: "اختر خطة ليوباردو المناسبة لشركتك واشترك: Free أو Pilot أو Operations أو Enterprise." },
+    checkoutSuccess: { title: "مساحة ليوباردو جاهزة | تأكيد الاشتراك", description: "تم تأكيد تجربتك المجانية: مساحتك جاهزة، 14 يوماً مجاناً، ولن يتم خصم أي مبلغ اليوم." },
   },
 };
 

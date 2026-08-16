@@ -93,9 +93,64 @@ class EdgeController extends Controller
      */
     public function health(): JsonResponse
     {
+        // #4411 : probe DB réelle (SELECT 1 sur SQLite) — uniquement dans le
+        // runtime Edge (DB_CONNECTION=sqlite). Avant : réponse 200 « ok »
+        // même avec un schéma jamais provisionné (migrate --path inexistant)
+        // → nœuds frais verts en surface, sync morte en silence. Hors Edge
+        // (cloud/tests, PostgreSQL) le probe est inactif : pas de fichier
+        // SQLite créé par effet de bord et contrat existant inchangé.
+        $sqliteReady = true;
+        if (config('database.default') === 'sqlite') {
+            try {
+                $sqliteReady = DB::connection('sqlite')->selectOne('SELECT 1 AS ok') !== null;
+            } catch (\Throwable) {
+                $sqliteReady = false;
+            }
+        }
+
+        if (! $sqliteReady) {
+            return response()->json([
+                'edge' => true,
+                'status' => 'degraded',
+                'database' => 'unavailable',
+                'time' => Carbon::now()->toIso8601String(),
+            ], 503);
+        }
+
         return response()->json([
             'edge' => true,
             'status' => 'ok',
+            'database' => 'ok',
+            'time' => Carbon::now()->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * GET /edge/readiness
+     *
+     * #4411 : readiness = health + schéma SQLite provisionné. Le liveness
+     * (`/edge/health`) reste volontairement sans DB (mode autonome offline) ;
+     * ce endpoint vérifie que le schéma local existe (SELECT 1 sur sync_queue)
+     * — sans lui, un nœud frais répondait « ok » avec une sync morte
+     * (« no such table: sync_queue » en boucle dans le daemon).
+     */
+    public function readiness(): JsonResponse
+    {
+        try {
+            \Illuminate\Support\Facades\DB::connection('sqlite')->select('SELECT 1 FROM sync_queue LIMIT 1');
+        } catch (\Throwable $e) {
+            return response()->json([
+                'edge' => true,
+                'status' => 'not_ready',
+                'reason' => 'edge_schema_missing',
+                'time' => Carbon::now()->toIso8601String(),
+            ], 503);
+        }
+
+        return response()->json([
+            'edge' => true,
+            'status' => 'ok',
+            'schema' => 'provisioned',
             'time' => Carbon::now()->toIso8601String(),
         ]);
     }

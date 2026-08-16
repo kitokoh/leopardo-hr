@@ -30,6 +30,21 @@ export function getSiteUrl(): string {
     return 'http://localhost:3000';
   }
 
+  // #4600 / #3452 : le domaine de marque leopardo-rh.com est en NXDOMAIN.
+  // Un build de production sans NEXT_PUBLIC_SITE_URL émettrait des
+  // canonicals/sitemap/JSON-LD vers un domaine mort (perte SEO silencieuse).
+  // Échec bruyant au build au lieu d'un site aux canonicals invalides.
+  if (
+    process.env.NODE_ENV === 'production' &&
+    process.env.NEXT_PHASE === 'phase-production-build'
+  ) {
+    throw new Error(
+      'NEXT_PUBLIC_SITE_URL must be set for production builds — ' +
+        'DEFAULT_SITE_URL (leopardo-rh.com) is NXDOMAIN (issues #3452/#4600) ' +
+        'and cannot be used for canonicals/sitemap.',
+    );
+  }
+
   return DEFAULT_SITE_URL;
 }
 

@@ -9,6 +9,7 @@ use App\Modules\Payroll\Domain\Exceptions\UnsupportedCountryRulesException;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * MULTI-PAYS (#1867) — registre unique des pays supportés.
@@ -24,7 +25,7 @@ class SupportedCountryController extends Controller
 {
     public function __construct(private readonly PayrollCalculator $payrollCalculator) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $registry = [];
 
@@ -56,9 +57,13 @@ class SupportedCountryController extends Controller
                     'verified_at' => $rules->verificationDate(),
                 ];
             } else {
+                // #4446 : le champ brut `warning` suit la langue des règles
+                // (EN pour pilot/placeholder, source docs) — le littéral FR
+                // cassait la cohérence du registre public. `warning_localized`
+                // reste localisé selon la requête.
                 $compliance = [
                     'level' => 'unknown',
-                    'warning' => __('payroll.compliance_warning_unknown'),
+                    'warning' => __('payroll.compliance_warning_unknown', [], 'en'),
                     'warning_localized' => __('payroll.compliance_warning_unknown'),
                     'source' => null,
                     'verified_at' => null,
@@ -77,6 +82,22 @@ class SupportedCountryController extends Controller
             ];
         }
 
-        return response()->json(['data' => $registry]);
+        // Issue #4502 : registre quasi-statique — directives de cache public
+        // (1 h) + ETag pour que les apps mobiles pré-login ne rebrûlent pas le
+        // bucket public-registry 60/min à chaque lancement. `warning_localized`
+        // est locale-dépendant → Vary: Accept-Language obligatoire.
+        $etag = sprintf('W/"%s"', sha1(serialize($registry)));
+
+        if ($request->header('If-None-Match') === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Cache-Control', 'public, max-age=3600')
+                ->header('Vary', 'Accept-Language');
+        }
+
+        return response()->json(['data' => $registry])
+            ->header('ETag', $etag)
+            ->header('Cache-Control', 'public, max-age=3600')
+            ->header('Vary', 'Accept-Language');
     }
 }

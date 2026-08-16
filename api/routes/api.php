@@ -85,6 +85,14 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
         Route::post('/auth/google/token', [AuthController::class, 'handleGoogleToken']);
         Route::post('/platform/auth/login', [PlatformAuthController::class, 'login']);
+    });
+
+    // Issue #4501 : le catalogue i18n pré-login ne doit PAS partager le bucket
+    // auth-sensitive (10/min/IP) avec le login — des échecs de login depuis
+    // la même IP (NAT) affameraient les traductions de la UI et vice-versa.
+    // Bucket public-registry dédié (60/min/IP), largement suffisant avec les
+    // ETag/304 du contrôleur.
+    Route::middleware(['throttle:public-registry'])->group(function (): void {
         Route::get('/i18n/catalog', [TranslationCatalogController::class, 'index']);
         Route::get('/i18n/catalog/{locale}', [TranslationCatalogController::class, 'show']);
     });

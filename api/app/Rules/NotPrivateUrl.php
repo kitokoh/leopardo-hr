@@ -52,7 +52,16 @@ class NotPrivateUrl implements ValidationRule
     {
         $host = strtolower(trim($host, '[]'));
 
-        if ($host === 'localhost' || str_ends_with($host, '.localhost')) {
+        if (
+            $host === 'localhost'
+            || str_ends_with($host, '.localhost')
+            // mDNS / noms d'entreprise résolus par le DNS local (search
+            // domain) : toujours refuser (même classe que la garde RTSP,
+            // #3147/#4490).
+            || str_ends_with($host, '.local')
+            || str_ends_with($host, '.internal')
+            || str_ends_with($host, '.lan')
+        ) {
             return false;
         }
 

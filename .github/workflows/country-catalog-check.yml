@@ -38,6 +38,7 @@ concurrency:
 
 jobs:
   check:
+    timeout-minutes: 15
     name: Check country catalog completeness
     runs-on: ubuntu-latest
     steps:

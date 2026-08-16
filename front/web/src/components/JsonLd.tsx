@@ -66,24 +66,22 @@ export function ArticleJsonLd({
   );
 }
 
-export function OrganizationJsonLd() {
-  const offers = getPricingPlans('fr').map((plan) => {
-    const price = Number(plan.price);
-    const baseOffer = {
+// #4403 — JSON-LD localisé par locale (page) ; les plans « sur devis »
+// (Enterprise) n'ont pas de prix machine : schema.org/Offer EXIGE `price`,
+// une offre sans prix est invalide (Google Rich Results). On n'émet donc
+// que les plans à prix machine (Free/Pilot/Operations). Le prix 0 du plan
+// Free est conservé (offre gratuite réelle).
+export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
+  const offers = getPricingPlans(locale as Parameters<typeof getPricingPlans>[0])
+    .filter((plan) => Number.isFinite(Number(plan.price)))
+    .map((plan) => ({
       '@type': 'Offer' as const,
       name: plan.name,
       description: plan.description,
+      price: Number(plan.price),
       priceCurrency: 'EUR',
       url: `${SITE_URL}/pricing`,
-    };
-
-    return Number.isFinite(price)
-      ? { ...baseOffer, price }
-      : {
-          ...baseOffer,
-          description: `${plan.description} Tarif sur devis.`,
-        };
-  });
+    }));
 
   return (
     <JsonLd
@@ -102,29 +100,6 @@ export function OrganizationJsonLd() {
           name: 'Leopardo RH',
           url: SITE_URL,
         },
-      }}
-    />
-  );
-}
-
-export function FAQJsonLd({
-  items,
-}: {
-  items: { question: string; answer: string }[];
-}) {
-  return (
-    <JsonLd
-      data={{
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: items.map((item) => ({
-          '@type': 'Question',
-          name: item.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: item.answer,
-          },
-        })),
       }}
     />
   );

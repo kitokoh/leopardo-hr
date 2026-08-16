@@ -101,7 +101,7 @@ class UpdateEmployeeRequest extends FormRequest
                 ! $user->hasManagerRole('principal')) {
                 $validator->errors()->add(
                     'role',
-                    'Seul le manager principal peut modifier les roles RH.'
+                    __('errors.EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY')
                 );
             }
 
@@ -111,7 +111,7 @@ class UpdateEmployeeRequest extends FormRequest
             if ($this->input('manager_role') === 'principal' && $user?->isManager()) {
                 $validator->errors()->add(
                     'manager_role',
-                    'Seul le super admin peut promouvoir un manager en principal.'
+                    __('errors.EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN')
                 );
             }
         });

@@ -60,18 +60,21 @@ class SSOController extends Controller
 
         $validated = $request->validate([
             'provider' => 'required|string|in:saml,oidc',
-            'entity_id' => 'nullable|string|url',
-            'sso_url' => 'nullable|string|url',
-            'slo_url' => 'nullable|string|url',
+            // Issue #2231 / audit SSRF : TOUS les champs URL (SAML et OIDC)
+            // passent par NotPrivateUrl — le serveur peut suivre sso_url,
+            // slo_url, issuer/jwks (métadonnées) et redirect_uri ; une cible
+            // privée/réservée/unresolvable doit être refusée (fail-closed).
+            'entity_id' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'sso_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
+            'slo_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
             'certificate' => 'nullable|string',
             'client_id' => 'nullable|string',
             'client_secret' => 'nullable|string',
-            // OpenID Connect (issue #2231) — champs du flux authorize/callback.
-            'issuer' => 'nullable|string|url',
+            'issuer' => ['nullable', 'string', 'url', new NotPrivateUrl],
             'authorize_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
             'token_url' => ['nullable', 'string', 'url', new NotPrivateUrl],
             'jwks_uri' => ['nullable', 'string', 'url', new NotPrivateUrl],
-            'redirect_uri' => 'nullable|string|url',
+            'redirect_uri' => ['nullable', 'string', 'url', new NotPrivateUrl],
             'scopes' => 'nullable|string|max:255',
         ]);
 
@@ -83,7 +86,7 @@ class SSOController extends Controller
 
         return response()->json([
             'data' => $config->toArray(),
-            'message' => 'SSO configure avec succes.',
+            'message' => __('errors.SSO_CONFIGURED'),
         ]);
     }
 
@@ -98,7 +101,7 @@ class SSOController extends Controller
         $this->ssoService->disableSSO($actor->company_id);
 
         return response()->json([
-            'message' => 'SSO desactive.',
+            'message' => __('errors.SSO_DISABLED'),
         ]);
     }
 

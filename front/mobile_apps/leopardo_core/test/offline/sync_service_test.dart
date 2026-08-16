@@ -40,6 +40,14 @@ void main() {
     await db.close();
   });
 
+  test('defaults: Dio injected without options gets connect/receive timeouts', () async {
+    // Issue #4406 : les providers passent `Dio()` nu — SyncService doit
+    // garantir des bornes par défaut pour qu'une requête pendante ne bloque
+    // jamais la sync (le ping garde son propre timeout court par requête).
+    expect(dio.options.connectTimeout, const Duration(seconds: 10));
+    expect(dio.options.receiveTimeout, const Duration(seconds: 30));
+  });
+
   test('syncNow() short-circuits while offline and never calls the API', () async {
     final result = await service.syncNow();
 
