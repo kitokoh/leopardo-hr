@@ -460,7 +460,11 @@ function copyImpersonationToken() {
   if (!impersonationResult.value?.token) return
   navigator.clipboard?.writeText(impersonationResult.value.token)
     .then(() => toast.success(t('users.impersonation.copied', 'Jeton copié')))
-    .catch(() => toast.info(impersonationResult.value.token))
+    // #4181 : ne JAMAIS exposer le jeton dans un toast (capture d'écran /
+    // support) — message générique + renvoi vers le champ visible du modal.
+    .catch(() => toast.error(
+      t('users.impersonation.copyFailed', "Impossible de copier le jeton automatiquement. Copiez-le manuellement depuis le champ ci-dessus.")
+    ))
 }
 
 function closeImpersonate() {
