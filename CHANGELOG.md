@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(api): CorsAndTrustedProxyTest vert — assertion du pattern CORS Pages alignée sur la regex canonique (Closes #4667).** Le test assertait encore le glob `https://*.pages.dev` remplacé par la regex `#^https://([a-z0-9-]+\.)*pages\.dev$#i` le 2026-08-15 (44e88ccc8, #2333 — le glob crashait en 500 sur les previews). Nouvelle assertion structurelle : chaque pattern doit être une regex preg_match valide matchant `https://preview-123.pages.dev`, jamais `*`.
 - **fix(admin): api.js — helper t() mort retiré (refactor contextualErrorMessage du drain) (Closes #4621).**
 - **fix(web): Manager dashboard localisé ×4 — ~45 littéraux FR passés au catalogue i18n (Closes #4579).** Dashboard (KPI stats + deltas, PriorityAction, empty state activité, chargement, bienvenue, onglets aujourd'hui/semaine, readiness go-live, Leo IA, actions rapides, cartes employé, pont super-admin), Rapports (titres/descriptions/labels ×6 rapports + bouton + messages succès/erreur — état résultat refactoré en `{ok, message}` pour un coloriage correct hors FR), Notifications (canaux + catégories + titre + erreur de sauvegarde) et Employés (erreur, total équipe, état, chargement, liste vide). Clés `dashboard.*` (107), `reports.*`, `notifications.*`, `employees.*` ajoutées dans `shared/i18n/locales/{fr,en,tr,ar}.json` (source de vérité) + régénération `sync-web`. Accents FR restaurés au passage (« Présence aujourd'hui », « à traiter »…). Vérifié : tsc 0, eslint 0, mojibake 0, parité ×4 locales, tests existants non affectés.
 - **fix(admin): api.js — import translate dupliqué retiré (main verte eslint) (Closes #4621).**
