@@ -348,14 +348,14 @@
       "deleteError": "Kullanici silinirken hata olustu",
       "exportError": "Disa aktarim basarisiz oldu",
       "bulkError": "Toplu islem basarisiz oldu",
-      "bulkDone": "Güncelleme tamamlandı"
+      "bulkDone": ":count kullanici güncellendi"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?",
       "title": "Bu kullanıcı silinsin mi?"
     },
     "page": {
-      "summary": ":count kullanici - :active aktif - :newToday bugun yeni",
+      "summary": ":count kullanici",
       "title": "Kullanici Yonetimi"
     },
     "filters": {
@@ -1043,5 +1043,16 @@
     "loadError": "Müşteri talepleri senkronize edilemedi.",
     "toastApproved": "Talep onaylandı. Sağlama başladı.",
     "toastRejected": "Talep reddedildi."
+  },
+  "api": {
+    "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
+    "accessDenied": "Erişim reddedildi. Yetersiz izinler.",
+    "notFound": "Kaynak bulunamadı.",
+    "tooManyRequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
+    "serverError": "Sunucu hatası. Daha sonra tekrar deneyin.",
+    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor. Lütfen birazdan tekrar deneyin.",
+    "invalidData": "Geçersiz veri.",
+    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
+    "unexpectedError": "Beklenmeyen bir hata oluştu."
   }
 }

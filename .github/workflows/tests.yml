@@ -23,7 +23,6 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   DEFAULT_BACKEND_COVERAGE_MIN: "65"
-  DEFAULT_MOBILE_COVERAGE_MIN: "21"
 
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.ref }}
@@ -712,9 +711,6 @@ jobs:
           - Backend quality summary artifact: backend-quality-summary
           - Backend coverage artifacts: backend-coverage-reports
           - Backend coverage summary artifact: backend-coverage-summary
-          - Mobile quality artifacts: mobile-test-reports
-          - Mobile quality summary artifact: mobile-quality-summary
-
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
           - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile, SmartAttendance (GPS geofencing, validation manager, multi-tenant isolation)

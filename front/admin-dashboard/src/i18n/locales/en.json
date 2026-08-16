@@ -94,7 +94,7 @@
       }
     },
     "page": {
-      "summary": ":count user(s) - :active active - :newToday new today",
+      "summary": ":count user(s)",
       "title": "User Management"
     },
     "toast": {
@@ -112,7 +112,7 @@
       "bulkDeactivated": ":count user(s) deactivated",
       "impersonating": "Signing in as :name",
       "exportInProgress": "Export in progress...",
-      "bulkDone": "Update completed"
+      "bulkDone": ":count user(s) updated"
     },
     "actions": {
       "new": "New",
@@ -1043,5 +1043,16 @@
     "loadError": "Unable to sync client requests.",
     "toastApproved": "Request approved. Provisioning started.",
     "toastRejected": "Request rejected."
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied. Insufficient permissions.",
+    "notFound": "Resource not found.",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error. Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable. Please try again in a moment.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection.",
+    "unexpectedError": "An unexpected error occurred."
   }
 }
