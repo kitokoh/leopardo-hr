@@ -69,6 +69,18 @@ class SendTrialDripEmailJob implements ShouldQueue, TenantScopedJob
         return [new EnsureTenantContext];
     }
 
+    /**
+     * Échec terminal après épuisement des retries (#4296) — jamais silencieux.
+     */
+    public function failed(\Throwable $e): void
+    {
+        Log::error('SendTrialDripEmailJob.failed', [
+            'company_id' => $this->company->id,
+            'day' => $this->dayNumber,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
     public function handle(): void
     {
         if ($this->company->status !== 'trial') {
