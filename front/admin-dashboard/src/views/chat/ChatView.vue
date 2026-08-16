@@ -161,7 +161,7 @@ function scrollToBottom() {
 async function fetchConversations() {
   conversationsError.value = false
   try {
-    const res = await api.get('/v1/admin/ai/conversations')
+    const res = await api.get('/admin/ai/conversations')
     conversations.value = res.data.data || res.data || []
   } catch (err) {
     // #4333 : état d'erreur visible + retry (l'intercepteur global toast déjà).
@@ -174,7 +174,7 @@ async function selectConversation(conv) {
   activeConversation.value = conv
   messagesError.value = false
   try {
-    const res = await api.get(`/v1/admin/ai/conversations/${conv.id}/messages`)
+    const res = await api.get(`/admin/ai/conversations/${conv.id}/messages`)
     messages.value = res.data.data || res.data || []
     scrollToBottom()
   } catch (err) {

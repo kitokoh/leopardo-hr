@@ -185,7 +185,7 @@ async function fetchData() {
     // ne s'y authentifie pas → 401 attendu. _skipAuthRedirect (#4170) évite
     // que l'intercepteur global détruise la session admin ; l'état d'erreur
     // local ci-dessous fait foi.
-    const vRes = await api.get('/v1/vehicles', { _skipAuthRedirect: true })
+    const vRes = await api.get('/vehicles', { _skipAuthRedirect: true })
     vehicles.value = vRes.data.data || vRes.data || []
   } catch {
     error.value = 'Impossible de charger les donnees de flotte.'
@@ -193,7 +193,7 @@ async function fetchData() {
   // Alertes : best-effort mais jamais silencieux — un échec est surfacé
   // (bannière) au lieu d'une liste vide sans signal (audit 360° T016/#3739).
   try {
-    const aRes = await api.get('/v1/admin/fleet/alerts')
+    const aRes = await api.get('/admin/fleet/alerts')
     alerts.value = aRes.data.data || aRes.data || []
   } catch {
     alertsError.value = 'Impossible de charger les alertes de flotte.'
@@ -213,7 +213,7 @@ function viewVehicle(id) {
 function exportVehicles() {
   // Route tenant (api.manager) : 401 attendu en super-admin (#4170) — le
   // flag évite la déconnexion ; l'utilisateur voit l'état d'erreur local.
-  downloadApiFile('/v1/export/vehicles?format=csv', 'vehicles.csv', { _skipAuthRedirect: true })
+  downloadApiFile('/export/vehicles?format=csv', 'vehicles.csv', { _skipAuthRedirect: true })
 }
 
 onMounted(async () => {
