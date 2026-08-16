@@ -33,7 +33,7 @@ class PlanSeeder extends Seeder
             }
         });
 
-        $this->command->info('Plans créés : Free (0€/5emp), Pilot (29€/30emp), Operations (99€/250emp), Enterprise (sur devis).');
+        $this->command->info('Plans créés : Free (0€/5emp/30j), Pilot (29€/30emp/14j), Operations (79€/200emp/14j), Enterprise (sur devis). — ADR-0014');
     }
 
     /**
@@ -69,7 +69,9 @@ class PlanSeeder extends Seeder
                 'price_monthly' => 0.00,
                 'price_yearly' => 0.00,
                 'max_employees' => 5,
-                'trial_days' => (int) config('billing.trial_days'),
+                // ADR-0014 : Free a 30j de trial pour encourager l'adoption freemium.
+                // Les plans payants utilisent config('billing.trial_days') = 14j.
+                'trial_days' => 30,
                 'is_active' => true,
                 'features' => json_encode([
                     'biometric' => false,
@@ -108,9 +110,11 @@ class PlanSeeder extends Seeder
             ],
             [
                 'name' => 'Operations',
-                'price_monthly' => 99.00,
-                'price_yearly' => 948.00,
-                'max_employees' => 250,
+                // ADR-0014 : 79€/mois (790€/an). Seeder avait 99€ par erreur —
+                // la vitrine l'affichait à 79€ depuis le lancement.
+                'price_monthly' => 79.00,
+                'price_yearly' => 790.00,
+                'max_employees' => 200,
                 'trial_days' => (int) config('billing.trial_days'),
                 'is_active' => true,
                 'features' => json_encode([
