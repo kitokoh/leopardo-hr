@@ -823,7 +823,10 @@
     "placeholder": "Tapez votre message...",
     "thinking": "Réflexion en cours...",
     "error": "Désolé, une erreur est survenue. Veuillez réessayer.",
-    "conversation": "Conversation"
+    "conversation": "Conversation",
+    "historyError": "Impossible de charger les conversations.",
+    "messagesError": "Impossible de charger les messages.",
+    "retry": "Réessayer"
   },
   "navigation": {
     "dashboard": "Tableau de bord",

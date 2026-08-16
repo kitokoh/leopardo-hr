@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 
+// #4415 : creds de test via env — jamais de littéral prod dans le dépôt (politique #1697).
+const E2E_ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'e2e-fixture-password'
+
 // QA 2026-08-15 (#2658) : ce spec exécute un VRAI login super-admin contre un
 // backend. En CI locale (web-ci, webServer 127.0.0.1 sans backend) il échouait
 // systématiquement. Il ne s'exécute que si E2E_BACKEND_URL pointe une API
@@ -22,7 +25,7 @@ test.describe('Tax slabs admin page', () => {
     await page.addInitScript(() => localStorage.setItem('admin_locale', 'fr'))
     await page.goto('/login')
     await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
-    await page.locator('#password').fill('password123')
+    await page.locator('#password').fill(E2E_ADMIN_PASSWORD)
     await page.getByRole('button', { name: /Se connecter/i }).click()
     await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 })
   })
