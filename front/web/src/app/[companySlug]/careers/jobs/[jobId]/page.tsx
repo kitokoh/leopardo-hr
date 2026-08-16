@@ -9,10 +9,7 @@ import { Footer } from '@/modules/vitrine/components/Footer';
 import { generateMetadata as generateSEOMetadata } from '@/modules/vitrine/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 import { normalizeLocale, type AppLocale } from '@/lib/i18n';
-import {
-  getTenantCareersCopy,
-  tenantJobMetaTitle,
-} from '@/modules/vitrine/data/tenant-careers';
+import { getTenantCareersCopy, tenantJobMetaTitle } from '@/modules/vitrine/data/tenant-careers';
 import {
   getPublicCareersCompany,
   getPublicJobPosting,

@@ -10,6 +10,7 @@ export type TenantCareersCopy = {
   portalNotFoundTitle: string;
   jobNotFoundTitle: string;
   badge: string;
+  fallbackCompanyName: string;
   openingsCount: (count: number) => string;
   noOpenings: string;
   noJobsYet: string;
@@ -39,6 +40,7 @@ const fr: TenantCareersCopy = {
   portalNotFoundTitle: 'Portail carrières introuvable',
   jobNotFoundTitle: 'Offre introuvable',
   badge: 'Carrières',
+  fallbackCompanyName: 'notre équipe',
   openingsCount: (count) =>
     `${count} poste${count > 1 ? 's' : ''} actuellement ouvert${count > 1 ? 's' : ''}`,
   noOpenings: 'Aucun poste ouvert pour le moment. Revenez bientôt !',
@@ -70,6 +72,7 @@ const en: TenantCareersCopy = {
   portalNotFoundTitle: 'Careers portal not found',
   jobNotFoundTitle: 'Job not found',
   badge: 'Careers',
+  fallbackCompanyName: 'our team',
   openingsCount: (count) => `${count} open position${count > 1 ? 's' : ''} right now`,
   noOpenings: 'No open positions right now. Please check back soon!',
   noJobsYet: 'No job openings have been published yet.',
@@ -100,6 +103,7 @@ const tr: TenantCareersCopy = {
   portalNotFoundTitle: 'Kariyer portalı bulunamadı',
   jobNotFoundTitle: 'İlan bulunamadı',
   badge: 'Kariyer',
+  fallbackCompanyName: 'ekibimiz',
   openingsCount: (count) => `Şu anda ${count} açık pozisyon`,
   noOpenings: 'Şu anda açık pozisyon yok. Yakında tekrar kontrol edin!',
   noJobsYet: 'Henüz yayınlanmış iş ilanı yok.',
@@ -130,6 +134,7 @@ const ar: TenantCareersCopy = {
   portalNotFoundTitle: 'بوابة الوظائف غير موجودة',
   jobNotFoundTitle: 'الوظيفة غير موجودة',
   badge: 'الوظائف',
+  fallbackCompanyName: 'فريقنا',
   openingsCount: (count) => `${count} وظيفة شاغرة حالياً`,
   noOpenings: 'لا توجد وظائف شاغرة حالياً. عد قريباً!',
   noJobsYet: 'لا توجد وظائف منشورة حتى الآن.',
