@@ -72,9 +72,23 @@ RUN composer install \
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # ---------------------------------------------------------------------------
-# Copie de la PWA web offline
+# PWA web offline — build stage (issue #3965)
+# front/web-offline est un Next.js en static export (`output: 'export'` → out/) :
+# copier l'arbre source brut livrait des routes 404 et des .tsx en texte brut
+# (aucun index.html dans le source ; out/ est gitignoré).
 # ---------------------------------------------------------------------------
-COPY front/web-offline/ /app/public/edge-web/
+FROM node:20-alpine AS pwa-build
+WORKDIR /pwa
+COPY front/web-offline/package.json front/web-offline/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY front/web-offline/ ./
+RUN npm run build
+
+# ---------------------------------------------------------------------------
+# Copie du static export de la PWA web offline (out/ + public/ fusionnés par
+# Next) — Caddyfile.standalone le sert avec fallback SPA → /index.html
+# ---------------------------------------------------------------------------
+COPY --from=pwa-build /pwa/out/ /app/public/edge-web/
 
 # ---------------------------------------------------------------------------
 # Caddyfile Edge (standalone) — sert PWA + API dans le même conteneur
