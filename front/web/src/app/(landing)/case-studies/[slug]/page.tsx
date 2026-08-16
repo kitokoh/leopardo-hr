@@ -132,17 +132,17 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
               <CheckCircle className="h-6 w-6" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2">
-              Ce cas illustre le module {study.moduleLabel}
+              {ui.moduleIllustrates.replace('{module}', study.moduleLabel)}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
-              Découvrez comment Leopardo RH couvre ce besoin au quotidien, ou explorez les autres études de cas.
+              {ui.moduleExplore}
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Link
                 href={study.moduleHref}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
               >
-                Découvrir {study.moduleLabel}
+                {ui.discoverModule.replace('{module}', study.moduleLabel)}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
