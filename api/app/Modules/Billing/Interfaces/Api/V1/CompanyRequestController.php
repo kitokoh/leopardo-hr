@@ -58,7 +58,7 @@ class CompanyRequestController extends Controller
         if ($pending >= 3) {
             return new JsonResponse([
                 'error' => 'TOO_MANY_PENDING_REQUESTS',
-                'message' => 'Vous avez deja 3 demandes en attente.',
+                'message' => __('errors.TOO_MANY_PENDING_REQUESTS'),
             ], 422);
         }
 
