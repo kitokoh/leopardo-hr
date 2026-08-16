@@ -900,5 +900,31 @@
     "statusFailed": "Basarisiz",
     "download": "Indir",
     "downloading": "Indiriliyor..."
+  },
+  "companyDetail": {
+    "analyzing": "Musteri verileri analiz ediliyor...",
+    "retry": "Tekrar dene",
+    "fieldAdoption": "Saha Benimsemesi",
+    "onboarding": "Onboarding",
+    "anomalies30d": "30 gunluk anormallikler",
+    "payrollReady": "Bordro Hazir",
+    "activeEmployees30d": "Aktif Calisanlar (30 gun)",
+    "noPriorityBlockers": "Oncelikli engel tespit edilmedi.",
+    "modulesConfig": "Modul Yapilandirmasi",
+    "servicePlan": "Hizmet plani",
+    "commercialStatus": "Ticari durum",
+    "statusTrial": "Deneme",
+    "statusActive": "Aktif",
+    "statusSuspended": "Askida",
+    "statusExpired": "Suresi dolmus",
+    "startDate": "Baslangic",
+    "internalNotes": "Dahili notlar",
+    "noSupportTickets": "Bu musteri icin destek talebi yok.",
+    "technicalIdentity": "Teknik kimlik",
+    "platformId": "Platform kimligi",
+    "slug": "Slug",
+    "countryCurrency": "Ulke / Para birimi",
+    "registeredOn": "Kayit tarihi",
+    "lastActivity": "Son aktivite"
   }
 }

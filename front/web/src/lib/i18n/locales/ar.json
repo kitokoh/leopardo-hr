@@ -900,5 +900,31 @@
     "statusFailed": "فشل",
     "download": "تنزيل",
     "downloading": "جاري التنزيل..."
+  },
+  "companyDetail": {
+    "analyzing": "جاري تحليل بيانات العميل...",
+    "retry": "إعادة المحاولة",
+    "fieldAdoption": "اعتماد الميدان",
+    "onboarding": "الإعداد",
+    "anomalies30d": "انحرافات 30 يوم",
+    "payrollReady": "الرواتب جاهزة",
+    "activeEmployees30d": "الموظفون النشطون (30 يوم)",
+    "noPriorityBlockers": "لم يتم اكتشاف عوائق ذات أولوية.",
+    "modulesConfig": "تكوين الوحدات",
+    "servicePlan": "خطة الخدمات",
+    "commercialStatus": "الحالة التجارية",
+    "statusTrial": "تجريبي",
+    "statusActive": "نشط",
+    "statusSuspended": "موقوف",
+    "statusExpired": "منتهي",
+    "startDate": "البداية",
+    "internalNotes": "ملاحظات داخلية",
+    "noSupportTickets": "لا توجد تذاكر دعم لهذا العميل.",
+    "technicalIdentity": "الهوية التقنية",
+    "platformId": "معرف المنصة",
+    "slug": "المعرف",
+    "countryCurrency": "البلد / العملة",
+    "registeredOn": "مسجل في",
+    "lastActivity": "آخر نشاط"
   }
 }
