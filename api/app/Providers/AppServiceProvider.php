@@ -190,6 +190,13 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by('trial-status:'.$token.'|'.$request->ip());
         });
 
+        // Issue #4217 (audit 360° 2026-08-16) — GET /supported-countries devient
+        // public (registre multi-pays canonique #1867, aucune PII) : bucket
+        // dédié 60/min par IP pour la vitrine/onboarding/mobile pré-login.
+        RateLimiter::for('public-registry', function (Request $request) {
+            return Limit::perMinute(60)->by('public-registry:'.$request->ip());
+        });
+
         // PA2-API-005 — Session-based web login forms (employee login, super-admin
         // platform login) are not covered by the API 'auth-sensitive' limiter
         // above, which only guards the Sanctum token endpoints. Keyed by e-mail +

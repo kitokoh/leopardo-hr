@@ -26,9 +26,11 @@ implémentation des issues non verrouillées, `main` VERT.
 | #3822 `flutter test` pour toutes les apps livrées en CI | #3980 | CI mobile | ✅ MERGED, issue fermée |
 | #3931 `useRouter()` dans handler → TypeError recherche header | #3994 | admin | ✅ MERGED, issue fermée |
 | #3932 `pushUnavailable` jamais défini → fausse alerte rouge permanente | #4001 | admin | ✅ MERGED, issue fermée |
-| #3919 [P1] triple schéma de prix vitrine (affiché 79 € ≠ facturé 99 €) | #4049 | web | ⏳ CI |
-| #3933 `card-lg` inexistante → toasts sans fond | #4057 | admin | ⏳ CI |
-| #3938 enveloppe API GrowthDashboard non normalisée | #4060 | admin | ⏳ CI |
+| #3919 [P1] triple schéma de prix vitrine (affiché 79 € ≠ facturé 99 €) | #4049 + #4083 (résiduel FAQ) | web | ✅ MERGED ×2, issue fermée |
+| #3933 `card-lg` inexistante → toasts sans fond | #4057 | admin | ✅ MERGED |
+| #3938 enveloppe API GrowthDashboard non normalisée | #4060 | admin | ✅ MERGED |
+| #4091 déconnexion client bloquée par l'appel API (~70 s) | #4094 | web | ⏳ CI |
+| #4095 e2e actions rapides (doublons, liens gated, regex ASCII) | #4097 | web | ⏳ CI |
 
 ### Issues fermées avec preuve code (protocole #2512) — 6
 
@@ -53,6 +55,25 @@ implémentation des issues non verrouillées, `main` VERT.
   (env parity, migrations, orphan interfaces, strict types, canonical domains).
 - openapi route coverage : 121 routes non couvertes, toutes allowlistées
   (drift 0). Vitrine : tsc/eslint/jest 471/471, build OK, ~20 pages 200.
+
+## Audit e2e runtime (constat neuf — campagne 99 tests chromium sur main propre)
+
+- **8-9 échecs = backend prod périmé, PAS le code vitrine** : probe live
+  `POST /api/v1/trial/signup` → **500 « Server Error » en 61,2 s** (preuve
+  postée sur #3259) ; `GET /api/v1/supported-countries` → 404 ; `health` → 200.
+  Les suites signup/demo/marketing-funnel échouent donc en local ET en CI
+  (marketing-funnel tourne dans web-marketing-ci). Correctif sur main, non
+  déployé — famine déploiement #3545.
+- **1 vrai bug code trouvé et corrigé** : `auth/logout` ne redirigeait
+  qu'après `apiFetch` (jusqu'à ~70 s) → #4091, e2e `manager-workday-smoke`
+  repassé 1/1 vert.
+- **1 vrai bug de test corrigé** : `dashboard-quick-actions` (doublons
+  `a[href="/employees"]`, lien sidebar `/reports` désactivé par feature gate,
+  regex `/message envoye a l.equipe/i` ne matchant plus l'accentué) → #4095,
+  e2e 4/4 verts.
+- **1 flake dev-only** : test démo (/demo) timeout 120 s en dev quand la route
+  n'est pas compilée (probe manuelle : navigation OK en <2 s une fois chaude ;
+  en CI la cible est un build, pas un dev server).
 
 ## Méthode
 
@@ -85,3 +106,38 @@ implémentation des issues non verrouillées, `main` VERT.
 4. **Les issues d'audit récentes (#3917-#3972) sont souvent déjà fixées sur
    main** par les PRs qu'elles référencent : toujours vérifier le code avant de
    créer/implémenter (preuve code + fermeture #2512).
+
+
+## Continuation (2026-08-16, même session)
+
+### Nouveau : #4124 [P1][CI] — root cause validate-and-sync LFS (PR #4129)
+`.gitattributes` déclarait `*.png filter=lfs` mais les médias vitrine
+(`front/web/public/og/*.png` ×26, web-offline icons, screenshots, videos) sont
+commités en **blobs pleins** : git-lfs ≥3.7 les réécrit au checkout CI →
+`git diff --exit-code` rougit (validate-and-sync) sur main et TOUTES les PRs
+(y compris docs-only). Correctif : bloc dupliqué supprimé + exemptions larges
+`!filter !diff !merge -text` (pattern #2889) ; `assets/**` et icônes mobiles
+restent en vrai LFS (pointeurs). Scan : 0 blob sous filtre LFS restant.
+`git check-attr` vérifié.
+
+### #3248 [P1][web] — tranches 1+2 implémentées (PR #4132)
+- `/videos` localisée ×4 locales (data/videos.ts).
+- Guides ×3 (`rh-startup`, `planning-employes`, `checklist-paie`) localisés ×4
+  locales (data/guides.ts + composant client `GuidePageContent` — les pages
+  restent des Server Components avec `metadata`, `useVitrineLocale` dans
+  l'enfant). Vérifié navigateur EN/TR/AR, zéro FR résiduel.
+- Reste : pages modules (modulePageContent FR-only, ~344 chaînes) — tranche 3.
+
+### Bloqueurs PHP principaux (main-wide, pris par d'autres agents)
+- Coverage gate 63,92 % < 65 % (#4111/#4115) et drift PHPStan 86 erreurs
+  (#4108/#4120) : requièrent PHP (sandbox Node-only) — PRs dédiées en cours.
+- Mon apport : mes 5 PRs (#4094 #4097 #4100 #4129 #4132) rebasées sur main
+  (23 commits de drift), revalidées (tsc/eslint/jest/i18n) et prêtes à merger
+  dès que les gates PHP passent.
+
+### Leçons supplémentaires
+1. Les pages guides exportent `metadata` (Server Component) : un hook client
+   (`useVitrineLocale`) doit vivre dans un composant enfant `'use client'`.
+2. Le dev server Next en sandbox a besoin de `critters` (dépendance optionnelle
+   non installée par `npm ci` selon config npm) — sinon 500 `MODULE_NOT_FOUND`
+   sur certaines routes.

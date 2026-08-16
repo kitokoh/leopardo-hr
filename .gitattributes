@@ -27,27 +27,16 @@ CHANGELOG.md merge=union
 # Autres binaires (hors LFS pour l'instant)
 *.ico   binary
 *.pdf   binary
-*.png filter=lfs diff=lfs merge=lfs -text
-*.jpg filter=lfs diff=lfs merge=lfs -text
-*.jpeg filter=lfs diff=lfs merge=lfs -text
-*.webp filter=lfs diff=lfs merge=lfs -text
-*.webm filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
-*.gif filter=lfs diff=lfs merge=lfs -text
-*.apk filter=lfs diff=lfs merge=lfs -text
-*.aab filter=lfs diff=lfs merge=lfs -text
 
-# QA #2829 : médias vitrine hors Git LFS — le build Vercel ne résout pas LFS
-# (pointeurs servis en prod → images/vidéo cassées). Binaires réels commités.
-front/web/public/screenshots/*.png -filter -diff -merge
-front/web/public/videos/* -filter -diff -merge
+# QA #2829 + #4124 : médias vitrine commités en binaires réels (HORS Git LFS)
+# — le build Vercel ne résout pas LFS (pointeurs servis en prod → images/vidéo
+# cassées), et git-lfs ≥3.7 les réécrit au checkout CI (devraient être des
+# pointeurs) → la garde `validate-and-sync` (`git diff --exit-code`) rougissait
+# sur main et toutes les PRs. Exemptés du filtre LFS : binaires réels stables.
+front/web/public/*.png          !filter !diff !merge -text
+front/web/public/og/*.png       !filter !diff !merge -text
+front/web/public/screenshots/*.png !filter !diff !merge -text
+front/web/public/videos/*       !filter !diff !merge -text
+front/web-offline/public/*.png  !filter !diff !merge -text
 
-# Fix CI LFS : ces PNG (générés par #2889 depuis les SVG) ont été commités en
-# contenu réel, pas en pointeurs LFS — git-lfs en CI les réécrivait → la garde
-# i18n « Check generated files are committed » échouait sur main. Les exclure
-# du filtre LFS (petits fichiers, aucun besoin de stockage externe).
-front/web/public/apple-touch-icon.png !filter !diff !merge -text
-front/web/public/icon-192.png !filter !diff !merge -text
-front/web/public/icon-512.png !filter !diff !merge -text
-front/web/public/logo.png !filter !diff !merge -text
-front/web/public/og/default.png !filter !diff !merge -text
+# Assets design/screenshots (assets/) : restent en VRAI Git LFS (pointeurs).

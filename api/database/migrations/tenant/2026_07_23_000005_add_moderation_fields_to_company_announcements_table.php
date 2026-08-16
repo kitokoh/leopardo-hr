@@ -50,7 +50,30 @@ return new class extends Migration
         }
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE \"{$schema}\".\"company_announcements\" ADD CONSTRAINT company_announcements_status_check CHECK (status IN ('draft', 'scheduled', 'published', 'cancelled'))");
+            // `ADD CONSTRAINT` has no PostgreSQL `IF NOT EXISTS` form. Serialize
+            // concurrent Render migrations, then treat an equivalent existing
+            // constraint as a no-op and reject a conflicting definition.
+            DB::statement("SELECT pg_advisory_xact_lock(hashtextextended('leopardo:company_announcements_status_check', 0))");
+
+            $constraint = DB::selectOne(
+                'SELECT pg_get_constraintdef(c.oid) AS definition
+                 FROM pg_constraint c
+                 JOIN pg_class r ON r.oid = c.conrelid
+                 JOIN pg_namespace n ON n.oid = r.relnamespace
+                 WHERE c.conname = ? AND r.relname = ? AND n.nspname = ?',
+                ['company_announcements_status_check', 'company_announcements', $schema],
+            );
+
+            if ($constraint === null) {
+                DB::statement("ALTER TABLE \"{$schema}\".\"company_announcements\" ADD CONSTRAINT company_announcements_status_check CHECK (status IN ('draft', 'scheduled', 'published', 'cancelled'))");
+            } else {
+                $definition = strtolower((string) ($constraint->definition ?? ''));
+                foreach (['status', 'draft', 'scheduled', 'published', 'cancelled'] as $requiredToken) {
+                    if (! str_contains($definition, $requiredToken)) {
+                        throw new \RuntimeException('Existing company_announcements_status_check has an incompatible definition.');
+                    }
+                }
+            }
         }
     }
 

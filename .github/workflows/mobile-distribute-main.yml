@@ -39,7 +39,7 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
+  DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
 
 jobs:
   distribute-mobile:
@@ -186,7 +186,7 @@ jobs:
             Build: ${{ matrix.app.version_prefix }}-main-${{ github.run_number }}
             Commit: ${{ github.sha }}
             Workflow: ${{ github.workflow }}
-            Backend: https://gestionemployerbackend.onrender.com
+            Backend: ${{ vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
 
       - name: Verify Firebase App Distribution release is visible
         if: env.MOBILE_DISTRIBUTE_READY == 'true'

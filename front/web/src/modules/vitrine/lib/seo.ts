@@ -32,10 +32,31 @@ export function ogLocaleFor(locale: string): string {
 }
 
 /**
+ * #4201 : canonical/og:url alignés sur la locale RÉELLE de la page.
+ * Sans locale (ou locale fr) → URL inchangée (canonical FR historique).
+ * Avec locale ≠ fr → `?lang=<locale>` ajouté, comme les alternates hreflang
+ * (cohérence #3250 : chaque variante pointe vers sa propre URL, plus de
+ * canonical FR pour une page EN → soft-duplicates).
+ */
+export function localizedCanonical(url: string, locale?: string): string {
+  if (!locale || locale === 'fr') {
+    return url;
+  }
+  try {
+    const parsed = new URL(url, siteUrl);
+    parsed.searchParams.set('lang', locale);
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
  * Generate Next.js Metadata object
  */
 export function generateMetadata(seo: SEOMetadata): Metadata {
-  const url = seo.canonical || siteUrl;
+  // #4201 : canonical/og:url localisés (voir localizedCanonical).
+  const url = localizedCanonical(seo.canonical || siteUrl, seo.locale);
   const image = seo.ogImage || `${siteUrl}/og-image.png`;
   const path = (() => {
     try {
