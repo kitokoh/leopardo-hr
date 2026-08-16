@@ -42,6 +42,7 @@ concurrency:
 
 jobs:
   claim-guard:
+    timeout-minutes: 15
     name: Check PA2 claim collisions
     # Interne : ne s'exécute que sur les PR du dépôt, jamais sur les forks
     # (contributeurs externes, issue #1731).

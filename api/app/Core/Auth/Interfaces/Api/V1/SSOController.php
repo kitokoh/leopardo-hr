@@ -86,7 +86,7 @@ class SSOController extends Controller
 
         return response()->json([
             'data' => $config->toArray(),
-            'message' => 'SSO configure avec succes.',
+            'message' => __('errors.SSO_CONFIGURED'),
         ]);
     }
 
@@ -101,7 +101,7 @@ class SSOController extends Controller
         $this->ssoService->disableSSO($actor->company_id);
 
         return response()->json([
-            'message' => 'SSO desactive.',
+            'message' => __('errors.SSO_DISABLED'),
         ]);
     }
 

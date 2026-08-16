@@ -184,6 +184,13 @@ services:
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
         value: "true"
+      # Audit #4412 : les workers génèrent des URLs absolues (reset password,
+      # notifications, liens bulletins) — APP_URL requis sur tous les services.
+      - key: APP_URL
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          property: host
       - key: LOG_CHANNEL
         value: stderr
       - key: LOG_LEVEL
@@ -280,6 +287,13 @@ services:
       # passe super-admin « password123 » en production.
       - key: DISABLE_DEMO_SEEDING
         value: "true"
+      # Audit #4412 : les workers génèrent des URLs absolues (reset password,
+      # notifications, liens bulletins) — APP_URL requis sur tous les services.
+      - key: APP_URL
+        fromService:
+          name: gestionemployerbackend
+          type: web
+          property: host
       - key: LOG_CHANNEL
         value: stderr
       - key: DB_CONNECTION

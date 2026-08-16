@@ -53,6 +53,7 @@ concurrency:
 
 jobs:
   validate:
+    timeout-minutes: 15
     name: Validate PLAN_ACTION2 backlog
     # Interne : sur PR, ne s'exécute que si la PR vient du dépôt lui-même
     # (jamais depuis un fork externe, issue #1731). Push main + dispatch intacts.
@@ -67,6 +68,7 @@ jobs:
         run: ./dev-hub/tools/validate-plan-action2.ps1
 
   sync-project:
+    timeout-minutes: 15
     name: Sync GitHub Project draft items
     needs: validate
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'

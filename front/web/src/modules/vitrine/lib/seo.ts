@@ -56,11 +56,16 @@ export function localizedCanonical(url: string, locale?: string): string {
  */
 export function generateMetadata(seo: SEOMetadata): Metadata {
   // #4201 : canonical/og:url localisés (voir localizedCanonical).
+  // #4400 : les alternates hreflang partent de la BASE FR (sans ?lang) —
+  // sinon sur une page ?lang=en l'entrée fr pointait vers l'URL anglaise
+  // elle-même (auto-référence), et sans canonical tout s'effondrait sur la
+  // homepage.
+  const baseUrl = localizedCanonical(seo.canonical || siteUrl, undefined);
   const url = localizedCanonical(seo.canonical || siteUrl, seo.locale);
   const image = seo.ogImage || `${siteUrl}/og-image.png`;
   const path = (() => {
     try {
-      const parsed = new URL(url, siteUrl);
+      const parsed = new URL(baseUrl, siteUrl);
       return parsed.pathname === "/" ? "/" : parsed.pathname;
     } catch {
       return "/";
@@ -69,7 +74,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
   const localizedAlternates = Object.fromEntries(
     supportedLocales.map((locale) => [
       locale,
-      locale === "fr" ? url : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
+      locale === "fr" ? baseUrl : `${siteUrl}${path === "/" ? "/" : path}?lang=${locale}`,
     ])
   );
 

@@ -28,6 +28,7 @@ concurrency:
 
 jobs:
   check-csp-header:
+    timeout-minutes: 15
     name: Verify served CSP matches repo _headers
     runs-on: ubuntu-latest
     steps:
