@@ -10,7 +10,7 @@ import {
   Footer,
   useScrollReveal,
 } from '@/modules/vitrine';
-import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+import { getPricingPlans, showsCurrency } from '@/modules/vitrine/data/pricing';
 import { CURRENCY_OPTIONS, DEFAULT_CURRENCY_OPTION, convertEurPrice, type CurrencyOption } from '@/modules/vitrine/data/currency';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import type { AppLocale } from '@/lib/i18n';
@@ -633,10 +633,6 @@ export default function PricingPage() {
   const plans = getPricingPlans(locale);
   useScrollReveal();
 
-  function showsCurrency(price: string) {
-    return !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(price);
-  }
-
   const isEurSelected = currencyOption.currency === 'EUR';
   const convertedPrice = (eurAmount: string) => convertEurPrice(eurAmount, currencyOption);
 
@@ -834,7 +830,7 @@ export default function PricingPage() {
               const displayPeriod = (isAnnual ? plan.annualPeriod : plan.period)
                 || (isAnnual ? copy.plans.periodAnnual : copy.plans.periodMonthly);
               const isFree = plan.price === '0';
-              const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(displayPrice);
+              const hasNumericPrice = showsCurrency(displayPrice);
               const ctaHref = getPlanHref(plan);
 
               return (
@@ -1083,7 +1079,7 @@ export default function PricingPage() {
                   <td className="py-6 px-6" />
                   {plans.map((plan) => {
                     const isFree = plan.price === '0';
-                    const hasNumericPrice = !['Sur devis', 'Custom', 'Teklif', 'حسب العرض', 'Teklif alın', 'حسب الطلب'].includes(plan.price);
+                    const hasNumericPrice = showsCurrency(plan.price);
                     return (
                       <td key={plan.name} className={`py-6 px-4 text-center ${plan.popular ? 'bg-emerald-50/40 dark:bg-emerald-950/10' : ''}`}>
                         <Link
