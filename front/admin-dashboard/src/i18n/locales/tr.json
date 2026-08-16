@@ -878,7 +878,10 @@
     "placeholder": "Mesajınızı yazın...",
     "thinking": "Düşünüyor...",
     "error": "Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.",
-    "conversation": "Konuşma"
+    "conversation": "Konuşma",
+    "historyError": "Sohbetler yüklenemedi.",
+    "messagesError": "Mesajlar yüklenemedi.",
+    "retry": "Tekrar dene"
   },
   "navigation": {
     "dashboard": "Gösterge Paneli",
