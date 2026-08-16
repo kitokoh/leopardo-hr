@@ -7,6 +7,8 @@ namespace Tests\Feature;
 use App\Jobs\GenerateBankExportJob;
 use App\Jobs\ProcessBulkPaymentJob;
 use App\Jobs\SendPushNotificationJob;
+use App\Jobs\SendTrialDripEmailJob;
+use App\Modules\Marketing\Infrastructure\Jobs\PublishScheduledPostJob;
 use App\Modules\Payroll\Domain\Models\BankExport;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -29,7 +31,12 @@ class QueueJobsFailedHandlerTest extends TestCase
             new ProcessBulkPaymentJob(1, 1, null),
             new GenerateBankExportJob(1),
             new SendPushNotificationJob(1, 'title', 'body', []),
+            new PublishScheduledPostJob(1),
         ];
+
+        // SendTrialDripEmailJob nécessite une Company (SerializesModels) — testé à part.
+        $trialCompany = \App\Core\Tenant\Domain\Models\Company::factory()->create(['country' => 'DZ']);
+        $jobs[] = new SendTrialDripEmailJob($trialCompany, 3);
 
         foreach ($jobs as $job) {
             // Ne doit PAS re-lancer — le handler failed() est terminal.
@@ -38,7 +45,7 @@ class QueueJobsFailedHandlerTest extends TestCase
 
         Log::shouldHaveReceived('error')
             ->withArgs(fn (string $channel, array $ctx) => str_contains($channel, 'failed'))
-            ->atLeast()->times(3);
+            ->atLeast()->times(4);
     }
 
     public function test_generate_bank_export_failed_marks_export_failed(): void
