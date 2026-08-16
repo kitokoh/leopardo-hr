@@ -1,17 +1,14 @@
 name: Deploy - Leopardo RH
 
 on:
-  # #3545 (spec .specify/features/ci-deploy-pipeline-starvation) : le
-  # déclencheur `push` direct rend le déploiement indépendant du workflow_run
-  # famine-prone — GitHub n'autorise qu'UN run pending par groupe de
+  # #3545 / #4359 : le déclencheur `push` direct est l’unique source de vérité
+  # du déploiement; les déclencheurs workflow_run redondants provoquaient
+  # plusieurs runs du même SHA et une famine de file GitHub Actions.
+  #
   # concurrence : sous rafale de merges (~1/2 min), les runs Tests de main
   # étaient annulés en pending (48/50 cancelled), conclusion 'cancelled' →
   # should_deploy=false à 100 %, prod figée depuis le 2026-08-15.
   push:
-    branches: [main]
-  workflow_run:
-    workflows: ["Tests - Leopardo RH", "Web CI - Leopardo Admin"]
-    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -24,19 +21,11 @@ env:
   DEFAULT_API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
   DEFAULT_API_HEALTHCHECK_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}/health
 
-# Issue #1835 + #3904 : déduplication par SHA — deux parents (Tests + Web CI)
-# complètent chacun pour le même SHA ; le 2e run annule le 1er (qui évalue
-# le même SHA, donc même décision) au lieu d'empiler 2 déploiements + 2 E2E
-# + 2 OWASP. Deux SHA différents restent indépendants (pas d'annulation
-# croisée) : le gate anti-stale de deploy-main tranche seul.
-# #3904 : `github.event_name == 'pull_request'` n'était JAMAIS vrai ici
-# (événements workflow_run / workflow_dispatch) → cancel-in-progress restait
-# false et le même SHA s'exécutait en série à chaque run parent (observé :
-# 4× sur un SHA en 11 min). Le groupe est déjà par-SHA ; on active donc
-# l'annulation inconditionnelle. `github.sha` couvre le workflow_dispatch
-# (pas de workflow_run.head_sha) et garde un groupe unique par SHA manuel.
+# #1835 / #3904 / #4359 : un seul run de déploiement par SHA; le push main
+# est désormais l’unique déclencheur automatique. Le groupe par SHA protège
+# encore les déclenchements manuels et annule les doublons explicites.
 concurrency:
-  group: deploy-main-${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
+  group: deploy-main-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
