@@ -120,9 +120,9 @@ jobs:
           elif [[ "$INPUT_ENV" == "prod" ]]; then
             TARGET="prod"
             BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
-          elif [[ "${GITHUB_EVENT_NAME}" == "push" && "${GITHUB_REF_NAME}" == "main" ]]; then
-            TARGET="staging"
-            BUILD_NAME="${APP_VERSION_PREFIX}-main-${GITHUB_RUN_NUMBER}"
+          # #4526 : la branche push→main était morte (on: ne déclenche que des
+          # tags v*-staging/v*-prod + workflow_dispatch depuis la scission vers
+          # mobile-distribute-main.yml) — le fallback else couvre déjà ce cas.
           else
             TARGET="staging"
             BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
