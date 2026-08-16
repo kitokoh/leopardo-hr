@@ -122,7 +122,7 @@ class PlatformCompanyRequestController extends Controller
         if (! $companyRequest->isPending()) {
             return new JsonResponse([
                 'error' => 'ALREADY_REVIEWED',
-                'message' => 'Cette demande a deja ete traitee.',
+                'message' => __('errors.COMPANY_REQUEST_ALREADY_PROCESSED'),
             ], 422);
         }
 

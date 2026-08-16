@@ -130,7 +130,7 @@ class PlatformUserController extends Controller
     public function destroy(Request $request, SuperAdmin $user): JsonResponse
     {
         if ($user->id === (int) $request->user()?->getAuthIdentifier()) {
-            return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
+            return new JsonResponse(['message' => __('errors.CANNOT_DISABLE_SELF')], 422);
         }
 
         $user->forceFill(['status' => 'deactivated'])->save();
@@ -153,7 +153,7 @@ class PlatformUserController extends Controller
     public function deactivate(Request $request, SuperAdmin $user): JsonResponse
     {
         if ($user->id === (int) $request->user()?->getAuthIdentifier()) {
-            return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
+            return new JsonResponse(['message' => __('errors.CANNOT_DISABLE_SELF')], 422);
         }
 
         $user->forceFill(['status' => 'deactivated'])->save();
@@ -167,7 +167,7 @@ class PlatformUserController extends Controller
     public function suspend(Request $request, SuperAdmin $user): JsonResponse
     {
         if ($user->id === (int) $request->user()?->getAuthIdentifier()) {
-            return new JsonResponse(['message' => 'Impossible de suspendre votre propre compte.'], 422);
+            return new JsonResponse(['message' => __('errors.CANNOT_SUSPEND_SELF')], 422);
         }
 
         $user->forceFill(['status' => 'suspended'])->save();

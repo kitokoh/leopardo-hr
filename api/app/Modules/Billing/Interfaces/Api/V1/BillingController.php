@@ -194,7 +194,7 @@ class BillingController extends Controller
         if (! config('services.stripe.secret')) {
             return new JsonResponse([
                 'error' => 'STRIPE_NOT_CONFIGURED',
-                'message' => 'Le paiement en ligne n\'est pas encore configuré.',
+                'message' => __('errors.ONLINE_PAYMENT_NOT_CONFIGURED'),
             ], 503);
         }
 
@@ -269,7 +269,7 @@ class BillingController extends Controller
 
             return new JsonResponse([
                 'error' => 'PORTAL_FAILED',
-                'message' => 'Impossible d\'accéder au portail de facturation.',
+                'message' => __('errors.BILLING_PORTAL_ACCESS_FAILED'),
             ], 500);
         }
     }

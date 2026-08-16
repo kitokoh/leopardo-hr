@@ -266,7 +266,7 @@ class AuthController extends Controller
 
             return new JsonResponse([
                 'error' => 'GOOGLE_TOKEN_INVALID',
-                'message' => 'Le jeton Google est invalide ou expiré.',
+                'message' => __('errors.GOOGLE_TOKEN_INVALID'),
             ], 422);
         }
 

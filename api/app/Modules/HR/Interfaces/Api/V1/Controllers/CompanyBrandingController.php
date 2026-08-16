@@ -66,7 +66,7 @@ class CompanyBrandingController extends Controller
 
         return new JsonResponse([
             'data' => $this->payload($this->freshCompany()),
-            'message' => 'Identite entreprise mise a jour.',
+            'message' => __('errors.COMPANY_BRANDING_UPDATED'),
         ]);
     }
 
