@@ -460,7 +460,11 @@ function copyImpersonationToken() {
   if (!impersonationResult.value?.token) return
   navigator.clipboard?.writeText(impersonationResult.value.token)
     .then(() => toast.success(t('users.impersonation.copied', 'Jeton copié')))
-    .catch(() => toast.info(impersonationResult.value.token))
+    .catch(() => toast.error(
+      // #4181 : le jeton d'impersonation est un secret — il ne doit JAMAIS
+      // être affiché dans l'UI (toast) si la copie échoue.
+      t('users.impersonation.copy_failed', 'Impossible de copier le jeton. Réessayez.')
+    ))
 }
 
 function closeImpersonate() {
