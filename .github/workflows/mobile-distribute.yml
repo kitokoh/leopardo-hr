@@ -235,7 +235,9 @@ jobs:
       - name: Flutter analyze
         if: env.SHOULD_BUILD == 'true'
         working-directory: ${{ matrix.app.project_path }}
-        run: flutter analyze --no-fatal-infos
+        # #4724 (audit 360°) : gate aligné sur mobile-apps-ci (strict —
+        # les infos bloquantes en CI étaient acceptées dans la distribution).
+        run: flutter analyze
 
       - name: Build release binary
         if: env.SHOULD_BUILD == 'true'
@@ -314,7 +316,7 @@ jobs:
             Leopardo ${{ matrix.app.name }} ${{ env.BUILD_NAME }}
             Ref: ${{ github.ref_name }}
             Notes: ${{ github.event.inputs.release_notes || 'Tag build' }}
-            Backend: ${{ vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+            Backend: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com' }}
 
       - name: Verify Firebase App Distribution release is visible
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
