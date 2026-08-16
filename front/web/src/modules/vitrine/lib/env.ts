@@ -14,7 +14,6 @@ export interface EnvironmentConfig {
 
   // Forms
   formEndpoint: string;
-  sendgridApiKey: string;
 
   // SEO
   siteUrl: string;
@@ -40,7 +39,6 @@ export function getEnvConfig(): EnvironmentConfig {
 
     // Forms
     formEndpoint: process.env.NEXT_PUBLIC_FORM_ENDPOINT || "/api/forms",
-    sendgridApiKey: process.env.SENDGRID_API_KEY || "",
 
     // SEO
     siteUrl: getSiteUrl(),

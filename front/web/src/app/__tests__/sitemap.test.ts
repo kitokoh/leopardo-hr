@@ -24,7 +24,6 @@ jest.doMock('@/modules/vitrine/lib/env', () => ({
     gaId: '',
     mixpanelToken: '',
     formEndpoint: '/api/forms',
-    sendgridApiKey: '',
     siteUrl: 'https://www.leopardo-rh.com',
     siteName: 'Leopardo',
     enableAnalytics: false,

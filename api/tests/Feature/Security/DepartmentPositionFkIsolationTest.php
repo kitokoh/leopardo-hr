@@ -24,21 +24,36 @@ class DepartmentPositionFkIsolationTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $companyA;
+
     private Company $companyB;
+
     private Employee $managerA;
+
     private Employee $employeeA;
+
     private Employee $employeeB;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->companyA = Company::factory()->create(['name' => 'Fk Company A']);
-        $this->companyB = Company::factory()->create(['name' => 'Fk Company B']);
+        /** @var Company $companyA */
+        $companyA = Company::factory()->create(['name' => 'Fk Company A']);
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create(['name' => 'Fk Company B']);
 
-        $this->managerA = Employee::factory()->manager()->create(['company_id' => $this->companyA->id]);
-        $this->employeeA = Employee::factory()->create(['company_id' => $this->companyA->id]);
-        $this->employeeB = Employee::factory()->create(['company_id' => $this->companyB->id]);
+        /** @var Employee $managerA */
+        $managerA = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        /** @var Employee $employeeA */
+        $employeeA = Employee::factory()->create(['company_id' => $companyA->id]);
+        /** @var Employee $employeeB */
+        $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
+
+        $this->companyA = $companyA;
+        $this->companyB = $companyB;
+        $this->managerA = $managerA;
+        $this->employeeA = $employeeA;
+        $this->employeeB = $employeeB;
     }
 
     public function test_department_manager_id_from_other_company_is_rejected(): void

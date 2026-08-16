@@ -83,7 +83,6 @@ class CompanyProvisioningService
                     'last_name' => $payload['manager_last_name'],
                     'email' => $payload['manager_email'],
                     'phone' => $payload['manager_phone'] ?? null,
-                    'password_hash' => bcrypt(Str::random(32)),
                     'contract_type' => 'CDI',
                     'contract_start' => now()->toDateString(),
                     'salary_type' => 'fixed',
@@ -99,6 +98,8 @@ class CompanyProvisioningService
                 $manager->manager_role = 'principal';
                 $manager->status = 'active';
                 $manager->salary_base = 0;
+                // Issue #4496 : password_hash non mass-assignable.
+                $manager->password_hash = bcrypt(Str::random(32));
                 $manager->save();
 
                 // P1.3: Apply sectorial template
