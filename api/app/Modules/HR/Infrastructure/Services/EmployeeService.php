@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
-use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -35,7 +35,10 @@ class EmployeeService
             ?? (app()->bound('current_company') ? currentCompany()->id : null);
 
         $password = $providedPassword ?: Str::random(32);
-        $payload['password_hash'] = Hash::make($password);
+        // #4496 : `password_hash` n'est PAS mass-assignable (retiré de
+        // $fillable) — posé explicitement après création.
+        $passwordHash = Hash::make($password);
+        unset($payload['password_hash']);
         $payload['contract_type'] = $payload['contract_type'] ?? 'CDI';
         $payload['contract_start'] = $payload['contract_start'] ?? now()->toDateString();
         $payload['hourly_rate'] = $payload['hourly_rate'] ?? 0.0;
@@ -56,6 +59,9 @@ class EmployeeService
         $this->applyBiometricConsent($payload);
 
         $employee = Employee::query()->create($payload);
+
+        // #4496 : champ sensible non mass-assignable — écriture explicite.
+        $employee->forceFill(['password_hash' => $passwordHash])->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
@@ -240,4 +246,3 @@ class EmployeeService
         return is_string($value) && $value !== '' ? $value : null;
     }
 }
-

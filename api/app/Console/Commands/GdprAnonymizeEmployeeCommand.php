@@ -143,7 +143,9 @@ class GdprAnonymizeEmployeeCommand extends Command
         }
 
         DB::transaction(function () use ($employee, $changes, $oldStatus, $photoPath): void {
-            $employee->update($changes);
+            // #4496 : password_hash + références biométriques ne sont plus
+            // mass-assignables — forceFill pour garantir l'effacement RGPD.
+            $employee->forceFill($changes)->save();
 
             // Purge des demandes d'enrôlement biométrique (chemins de référence + notes).
             BiometricEnrollmentRequest::query()

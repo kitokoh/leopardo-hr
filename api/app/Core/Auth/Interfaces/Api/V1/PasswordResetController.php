@@ -132,7 +132,8 @@ class PasswordResetController
                 $this->setTenantSearchPath($employeeSchema);
             }
 
-            $employee->update(['password_hash' => Hash::make($validated['password'])]);
+            // #4496 : `password_hash` non mass-assignable — écriture explicite.
+            $employee->forceFill(['password_hash' => Hash::make($validated['password'])])->save();
 
             // Révocation des tokens Sanctum existants (sécurité — même contrat
             // qu'un changement de mot de passe volontaire).

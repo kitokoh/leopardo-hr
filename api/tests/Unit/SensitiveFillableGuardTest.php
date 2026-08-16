@@ -11,6 +11,7 @@ use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\UserInvitation;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use App\Modules\Planning\Domain\Models\Task;
+use Illuminate\Database\Eloquent\Model;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -32,7 +33,7 @@ final class SensitiveFillableGuardTest extends TestCase
     public static function sensitiveFillableProvider(): array
     {
         return [
-            'Employee' => [Employee::class, ['company_id', 'salary_base', 'role', 'manager_role', 'status', 'failed_login_attempts', 'locked_until']],
+            'Employee' => [Employee::class, ['company_id', 'salary_base', 'role', 'manager_role', 'status', 'failed_login_attempts', 'locked_until', 'password_hash', 'biometric_face_reference_path', 'biometric_fingerprint_reference_path', 'email_bounced_at']],
             'User' => [User::class, ['status', 'email_verified_at', 'failed_login_attempts', 'locked_until']],
             'SuperAdmin' => [SuperAdmin::class, ['status', 'two_fa_secret']],
             'Department' => [Department::class, ['company_id']],
@@ -43,7 +44,7 @@ final class SensitiveFillableGuardTest extends TestCase
     }
 
     /**
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelClass
+     * @param  class-string<Model>  $modelClass
      * @param  array<int, string>  $forbidden
      */
     #[DataProvider('sensitiveFillableProvider')]
