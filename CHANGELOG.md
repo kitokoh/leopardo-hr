@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): /changelog — contenu des releases localisé ×4 (getChangelogReleases(locale), fallback FR) (Closes #4610).** Les 4 locales recevaient les titres/bullets FR alors que le sitemap/hreflang annoncent des variantes en/tr/ar.
 - **fix(admin): api.js — messages d'erreur de l'intercepteur localisés ×4 (namespace api.* ajouté aux catalogues) (Closes #4621).** Les toasts 404/429/5xx/réseau restaient FR pour les admins EN/TR/AR.
 - **fix(api): PHPStan Modules vert sur main — 2 erreurs post-merge #4558/#4580 (Closes #4660).** `EmployeeImportController` (unset défensif de `password_hash` sur un tableau non typé — annotation `array<string, mixed>`) et `SupportedCountryController::index()` (type de retour `JsonResponse` incompatible avec la branche 304 ETag de #4502 — les deux classes sont sœurs sous Symfony, retour typé `Symfony\Component\HttpFoundation\Response`).
 - **fix(admin): ExportsView — dates par défaut en composantes locales (plus de décalage UTC+1..+3 : 31 déc. N-1 / hier) (Closes #4619).**
