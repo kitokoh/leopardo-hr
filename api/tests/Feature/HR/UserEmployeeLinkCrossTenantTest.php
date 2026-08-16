@@ -30,8 +30,10 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
         $user = User::query()->create([
             'email' => 'john.doe@example.com',
             'password_hash' => Hash::make('password123'),
-            'status' => 'active',
         ]);
+            $user->status = 'active';
+            $user->save();
+
 
         Sanctum::actingAs($manager);
 
@@ -61,8 +63,10 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
         $user = User::query()->create([
             'email' => 'jane.doe@example.com',
             'password_hash' => Hash::make('password123'),
-            'status' => 'active',
         ]);
+            $user->status = 'active';
+            $user->save();
+
 
         Sanctum::actingAs($manager);
 

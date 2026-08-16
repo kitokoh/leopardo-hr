@@ -60,25 +60,31 @@ class EmployeeTenantIsolationTest extends TestCase
 
     private function makeManager(Company $company, string $email, string $managerRole): Employee
     {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => $email,
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => $managerRole,
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->manager_role = $managerRole;
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+        return $createdEmployee;
+
     }
 
     private function makeEmployee(Company $company, string $email): Employee
     {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => $email,
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'employee';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+        return $createdEmployee;
+
     }
 
     /**

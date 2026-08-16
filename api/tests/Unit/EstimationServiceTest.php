@@ -148,7 +148,7 @@ class EstimationServiceTest extends TestCase
             'is_default' => true,
         ], $scheduleOverrides));
 
-        $employee = Employee::query()->create(array_merge([
+        $employee = Employee::query()->forceCreate(array_merge([
             'company_id' => $company->id,
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',

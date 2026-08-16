@@ -45,14 +45,17 @@ class EmployeeImportRaceTest extends TestCase
 
     private function makeManager(Company $company): Employee
     {
-        return Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'manager-'.uniqid().'@test.local',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->manager_role = 'principal';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+        return $createdEmployee;
+
     }
 
     public function test_duplicate_email_within_same_file_is_skipped_per_line(): void
@@ -136,13 +139,15 @@ class EmployeeImportRaceTest extends TestCase
         Sanctum::actingAs($this->makeManager($company));
 
         $conflictEmail = 'existing-'.uniqid().'@example.com';
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => $conflictEmail,
             'password_hash' => Hash::make('x'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'employee';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $csv = "first_name,last_name,email\n"
             ."Old,Dup,{$conflictEmail}\n"

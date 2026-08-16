@@ -38,13 +38,15 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',
@@ -80,15 +82,17 @@ class AuthLoginTest extends TestCase
             'language' => 'ar',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'rh@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'rh',
-            'status' => 'active',
             'preferred_language' => 'fr',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->manager_role = 'rh';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'rh@company.test',
@@ -150,13 +154,15 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',

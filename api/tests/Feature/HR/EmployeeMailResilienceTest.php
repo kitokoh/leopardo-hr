@@ -116,16 +116,18 @@ class EmployeeMailResilienceTest extends TestCase
         ]);
 
         $invitation = UserInvitation::query()->create([
-            'company_id' => $this->company->id,
             'employee_id' => $employee->id,
             'email' => $employee->email,
             'schema_name' => $this->company->schema_name,
-            'role' => $employee->role,
             'invited_by_type' => 'manager',
             'invited_by_email' => $this->manager->email,
             'token_hash' => hash('sha256', 'some-token'),
             'expires_at' => now()->addDays(7),
         ]);
+            $invitation->company_id = $this->company->id;
+            $invitation->role = $employee->role;
+            $invitation->save();
+
 
         $this->postJson("/api/v1/invitations/{$invitation->id}/resend")
             ->assertOk()

@@ -37,8 +37,10 @@ class PayrollSimulationControllerTest extends TestCase
             'name' => 'Super Admin Test',
             'email' => 'sa-simulate@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
+            $superAdmin->role = 'super_admin';
+            $superAdmin->save();
+
         $this->superAdmin = $superAdmin;
 
         /** @var Employee $manager */

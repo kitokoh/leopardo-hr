@@ -45,8 +45,10 @@ class PlatformAdminDashboardApiTest extends TestCase
             'name' => 'Super Admin Test',
             'email' => 'sa-admin-test@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
+            $superAdmin->role = 'super_admin';
+            $superAdmin->save();
+
         $this->superAdmin = $superAdmin;
 
         /** @var Employee $manager */

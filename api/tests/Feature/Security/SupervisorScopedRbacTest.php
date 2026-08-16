@@ -59,49 +59,59 @@ class SupervisorScopedRbacTest extends TestCase
         ]);
 
         $supervisorA = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'supervisor-a@scoped.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'superviseur',
-            'status' => 'active',
         ]);
+            $supervisorA->company_id = $company->id;
+            $supervisorA->role = 'manager';
+            $supervisorA->manager_role = 'superviseur';
+            $supervisorA->status = 'active';
+            $supervisorA->save();
+
 
         $supervisorB = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'supervisor-b@scoped.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'superviseur',
-            'status' => 'active',
         ]);
+            $supervisorB->company_id = $company->id;
+            $supervisorB->role = 'manager';
+            $supervisorB->manager_role = 'superviseur';
+            $supervisorB->status = 'active';
+            $supervisorB->save();
+
 
         $supervisorNoTeam = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'supervisor-noteam@scoped.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'superviseur',
-            'status' => 'active',
         ]);
+            $supervisorNoTeam->company_id = $company->id;
+            $supervisorNoTeam->role = 'manager';
+            $supervisorNoTeam->manager_role = 'superviseur';
+            $supervisorNoTeam->status = 'active';
+            $supervisorNoTeam->save();
+
 
         $employeeA = Employee::query()->create([
-            'company_id' => $company->id,
             'manager_id' => $supervisorA->id,
             'email' => 'employee-a@scoped.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $employeeA->company_id = $company->id;
+            $employeeA->role = 'employee';
+            $employeeA->status = 'active';
+            $employeeA->save();
+
 
         $employeeB = Employee::query()->create([
-            'company_id' => $company->id,
             'manager_id' => $supervisorB->id,
             'email' => 'employee-b@scoped.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $employeeB->company_id = $company->id;
+            $employeeB->role = 'employee';
+            $employeeB->status = 'active';
+            $employeeB->save();
+
 
         return [
             'company' => $company,

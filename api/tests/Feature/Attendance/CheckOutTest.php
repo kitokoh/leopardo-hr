@@ -37,14 +37,16 @@ class CheckOutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $employee->company_id = $company->id;
+            $employee->role = 'employee';
+            $employee->status = 'active';
+            $employee->save();
+
 
         Sanctum::actingAs($employee);
 
@@ -85,15 +87,17 @@ class CheckOutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $employee->company_id = $company->id;
+            $employee->role = 'employee';
+            $employee->status = 'active';
+            $employee->save();
+
 
         Sanctum::actingAs($employee);
 

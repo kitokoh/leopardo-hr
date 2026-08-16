@@ -281,19 +281,14 @@ class VerifyTrialSignup
                     try {
                         /** @var Employee $manager */
                         $manager = Employee::query()->create([
-                            'company_id' => $company->id,
                             'first_name' => $payload['manager_first_name'],
                             'last_name' => $payload['manager_last_name'],
                             'email' => $payload['manager_email'],
                             'phone' => $payload['manager_phone'],
                             'password_hash' => Hash::make($payload['temp_password']),
-                            'role' => 'manager',
-                            'manager_role' => 'principal',
-                            'status' => 'active',
                             'contract_type' => 'CDI',
                             'contract_start' => now()->toDateString(),
                             'salary_type' => 'fixed',
-                            'salary_base' => 0,
                             'biometric_face_enabled' => false,
                             'biometric_fingerprint_enabled' => false,
                             'extra_data' => [
@@ -301,6 +296,13 @@ class VerifyTrialSignup
                                 'self_service_trial' => true,
                             ],
                         ]);
+                        // Sensitive fields set explicitly (not mass-assignable, #3677).
+                        $manager->company_id = $company->id;
+                        $manager->role = 'manager';
+                        $manager->manager_role = 'principal';
+                        $manager->status = 'active';
+                        $manager->salary_base = 0;
+                        $manager->save();
                     } finally {
                         $this->tenantManager->resetToPrevious();
                     }

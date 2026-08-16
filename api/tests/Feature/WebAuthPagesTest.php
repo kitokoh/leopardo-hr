@@ -45,14 +45,16 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->manager_role = 'principal';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $this->get('/login');
         $token = session()->token();
@@ -81,13 +83,15 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'employee';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $this->get('/login');
         $token = session()->token();
@@ -116,13 +120,15 @@ class WebAuthPagesTest extends TestCase
             'status' => 'suspended',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $createdEmployee = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $company->id;
+            $createdEmployee->role = 'manager';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $this->get('/login');
         $token = session()->token();
