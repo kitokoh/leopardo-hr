@@ -26,7 +26,9 @@ return [
     /*
      | Cloud API base URL (used by Edge daemon to sync up).
      */
-    'cloud_api_url' => env('CLOUD_API_URL', 'https://gestionemployerbackend.onrender.com'),
+    // #4319 : pas d'URL de prod codée en dur — la valeur vient de l'environnement
+    // (Render prod la définit explicitement ; APP_URL sert de repli local).
+    'cloud_api_url' => env('CLOUD_API_URL', (string) env('APP_URL', '')),
 
     /*
      | Sync interval in minutes for the Edge daemon.

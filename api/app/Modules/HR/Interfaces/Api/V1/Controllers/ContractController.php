@@ -229,7 +229,12 @@ class ContractController extends Controller
         try {
             $contractFresh = $this->contractLifecycle->activate($contract);
         } catch (InvalidContractTransitionException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            // #4314 : code stable + message localisé, jamais le message brut EN.
+            return response()->json([
+                'error' => 'CONTRACT_ACTIVATION_INVALID_STATE',
+                'message' => 'CONTRACT_ACTIVATION_INVALID_STATE',
+                'localized_message' => __('errors.CONTRACT_ACTIVATION_INVALID_STATE'),
+            ], 422);
         }
 
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
@@ -247,7 +252,12 @@ class ContractController extends Controller
         try {
             $contractFresh = $this->contractLifecycle->suspend($contract);
         } catch (InvalidContractTransitionException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            // #4314 : code stable + message localisé.
+            return response()->json([
+                'error' => 'CONTRACT_SUSPENSION_INVALID_STATE',
+                'message' => 'CONTRACT_SUSPENSION_INVALID_STATE',
+                'localized_message' => __('errors.CONTRACT_SUSPENSION_INVALID_STATE'),
+            ], 422);
         }
 
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();
@@ -269,7 +279,12 @@ class ContractController extends Controller
         try {
             $contractFresh = $this->contractLifecycle->terminate($contract, $validated['termination_reason']);
         } catch (InvalidContractTransitionException $e) {
-            return response()->json(['message' => $e->getMessage()], 422);
+            // #4314 : code stable + message localisé.
+            return response()->json([
+                'error' => 'CONTRACT_TERMINATION_INVALID_STATE',
+                'message' => 'CONTRACT_TERMINATION_INVALID_STATE',
+                'localized_message' => __('errors.CONTRACT_TERMINATION_INVALID_STATE'),
+            ], 422);
         }
 
         return (new ContractResource($contractFresh->load('employee:id,first_name,last_name')))->response();

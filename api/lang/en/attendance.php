@@ -51,4 +51,11 @@ return [
     'correction_filter_all' => 'All',
 
     'correction_transmitted' => 'Modification request forwarded to HR.',
+
+    // #4311 — validations correction/pointage localisées
+    'correction_future_check_in' => 'You cannot request a correction with a future time.',
+    'correction_future_check_out' => 'You cannot request a correction with a future time.',
+    'correction_already_processed' => 'This correction request has already been processed.',
+    'manual_checkout_requires_check_in' => 'Manual check-out requires a check-in time.',
+    'checkout_after_checkin' => 'Check-out time must be after check-in time.',
 ];
