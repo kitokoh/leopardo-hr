@@ -310,7 +310,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresTenant)) {
     const toast = useToast()
     const localeStore = useLocaleStore()
-    toast.warning(translate(localeStore.current, 'navigation.tenantOnly', ''))
+    toast.warning(translate(localeStore.current, 'shell.tenantOnly', ''))
     next('/')
     return
   }

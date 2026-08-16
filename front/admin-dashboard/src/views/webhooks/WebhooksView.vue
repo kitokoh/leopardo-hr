@@ -153,14 +153,30 @@ const columns = [
   { key: 'last_triggered_at', label: 'Dernier declenchement', sortable: true },
 ]
 
-const availableEvents = [
-  'employee.created', 'employee.updated',
-  'absence.created', 'absence.approved',
-  'payroll.validated', 'contract.created',
-  'applicant.hired', 'training.completed',
-]
+// #4512 : la liste des events vient du backend (GET /admin/webhooks/events) —
+// la whitelist en dur dérivait (5/8 events invalides → 422 systématique au save).
+const availableEvents = ref([])
+
+async function fetchEvents() {
+  try {
+    const res = await api.get('/admin/webhooks/events')
+    const data = res.data?.data ?? res.data ?? []
+    availableEvents.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    // Fallback : liste canonique connue du backend (PlatformAdminWebhookController).
+    availableEvents.value = [
+      'employee.created', 'employee.updated',
+      'leave.approved', 'leave.rejected',
+      'attendance.synced', 'payroll.processed', 'payroll.validated',
+      'loan.disbursed', 'expense.submitted', 'expense.approved',
+      'webhook.test',
+    ]
+    console.warn('Failed to load webhook events from backend, using fallback', err)
+  }
+}
 
 async function fetchData() {
+  fetchEvents()
   loading.value = true
   error.value = ''
   try {
