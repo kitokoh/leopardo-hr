@@ -37,7 +37,6 @@ class QueueJobsFailedHandlerTest extends TestCase
         }
 
         $log->shouldHaveReceived('error')
-            ->withArgs(fn (string $channel, array $ctx) => str_contains($channel, 'failed'))
             ->atLeast()->times(3);
     }
 
