@@ -48,6 +48,13 @@ class DatabaseSeeder extends Seeder
             IslamicCalendarSeeder::class, // Calendrier islamique par année (BUG #1895)
         ]);
 
+        // FeaturePlanMatrixSeeder opère sur la table feature_plan_matrix qui
+        // vit dans shared_tenants. Il remet lui-même le search_path correct
+        // avant ses insertions (cf. DatabaseSeeder::run() qui force public).
+        $this->call([
+            FeaturePlanMatrixSeeder::class, // Matrice features × plans (free/pilot/operations/enterprise)
+        ]);
+
         $this->command->info('');
         $this->command->info('═══════════════════════════════════════════════════');
         $this->command->info('✅ Base de données initialisée avec succès !');

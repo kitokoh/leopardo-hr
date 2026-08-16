@@ -151,5 +151,13 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.'
+    'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.',
+    'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'Le mot de passe ou l\'invitation email est requis.',
+    'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'Le type de manager est requis.',
+    'EMPLOYEE_PRINCIPAL_MANAGER_CREATION_FORBIDDEN' => 'Seul le super admin peut créer un manager principal.',
+    'EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY' => 'Seul le manager principal peut modifier les rôles RH.',
+    'EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN' => 'Seul le super admin peut promouvoir un manager en principal.',
+    'PAYROLL_RUN_COUNTRY_MISMATCH' => 'Le pays du run doit correspondre au pays légal du tenant (:country).',
+    'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'L\'année doit correspondre à l\'année de la date.',
+    'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Le mois et le jour doivent correspondre au mois et au jour de la date.',
 ];

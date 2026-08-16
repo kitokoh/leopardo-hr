@@ -190,12 +190,12 @@ class ProfilePermissionErrorContractTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => $suffix,
             'email' => "manager-{$suffix}@company.test",
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -204,12 +204,12 @@ class ProfilePermissionErrorContractTest extends TestCase
         ])->save();
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Employee',
             'last_name' => $suffix,
             'email' => "employee-{$suffix}@company.test",
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

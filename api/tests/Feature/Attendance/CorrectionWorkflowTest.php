@@ -124,13 +124,13 @@ class CorrectionWorkflowTest extends TestCase
             'is_default' => true,
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Nadia',
             'last_name' => 'Manager',
             'email' => 'manager@'.$domain,
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -138,13 +138,13 @@ class CorrectionWorkflowTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Amina',
             'last_name' => 'Test',
             'email' => 'employee@'.$domain,
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

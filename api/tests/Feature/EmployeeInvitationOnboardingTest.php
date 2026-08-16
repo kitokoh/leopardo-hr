@@ -46,12 +46,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -134,12 +134,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -212,12 +212,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',

@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Bell, Mail, MessageSquareText, Smartphone, Save, ShieldCheck } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { useSyncExternalStore } from 'react';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 type NotificationPreferences = {
   app_enabled: boolean;
@@ -20,23 +23,30 @@ type NotificationPreferences = {
   } | null;
 };
 
-const CHANNELS = [
-  { key: 'app_enabled', label: 'Dans l app', description: 'Centre de notifications web et mobile.', icon: Bell },
-  { key: 'email_enabled', label: 'Email', description: 'Messages importants et confirmations.', icon: Mail },
-  { key: 'push_enabled', label: 'Push mobile/web', description: 'Alertes rapides sur les appareils enregistres.', icon: Smartphone },
-  { key: 'sms_enabled', label: 'SMS', description: 'Canal court pour urgences, active apres opt-in.', icon: MessageSquareText },
-  { key: 'whatsapp_enabled', label: 'WhatsApp', description: 'Canal conversationnel futur, avec opt-in explicite.', icon: MessageSquareText },
-] as const;
+function getChannels(locale: AppLocale) {
+  return [
+    { key: 'app_enabled', label: i18nT(locale, 'notifications.channel_inapp'), description: i18nT(locale, 'notifications.channel_inapp_desc'), icon: Bell },
+    { key: 'email_enabled', label: 'Email', description: i18nT(locale, 'notifications.channel_email_desc'), icon: Mail },
+    { key: 'push_enabled', label: 'Push mobile/web', description: i18nT(locale, 'notifications.channel_push_desc'), icon: Smartphone },
+    { key: 'sms_enabled', label: 'SMS', description: i18nT(locale, 'notifications.channel_sms_desc'), icon: MessageSquareText },
+    { key: 'whatsapp_enabled', label: 'WhatsApp', description: i18nT(locale, 'notifications.channel_whatsapp_desc'), icon: MessageSquareText },
+  ] as const;
+}
 
-const CATEGORIES = [
-  { key: 'hr', label: 'RH' },
-  { key: 'payroll', label: 'Paie' },
-  { key: 'security', label: 'Sécurité' },
-  { key: 'system', label: 'Système' },
-  { key: 'marketing', label: 'Conseils produit' },
-] as const;
+function getCategories(locale: AppLocale) {
+  return [
+    { key: 'hr', label: 'RH' },
+    { key: 'payroll', label: i18nT(locale, 'notifications.category_payroll') },
+    { key: 'security', label: i18nT(locale, 'notifications.category_security') },
+    { key: 'system', label: i18nT(locale, 'notifications.category_system') },
+    { key: 'marketing', label: i18nT(locale, 'notifications.category_product_tips') },
+  ] as const;
+}
 
 export default function NotificationSettingsPage() {
+  const locale = useSyncExternalStore<AppLocale>(() => () => {}, getPreferredLocale, () => 'fr');
+  const CHANNELS = getChannels(locale);
+  const CATEGORIES = getCategories(locale);
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -121,7 +131,7 @@ export default function NotificationSettingsPage() {
       setPreferences(normalizePreferences(payload.data));
       setMessage('Preferences enregistrees.');
     } catch {
-      setMessage('Impossible d enregistrer les preferences pour le moment.');
+      setMessage(i18nT(locale, 'notifications.save_error'));
     } finally {
       setSaving(false);
     }
@@ -197,7 +207,7 @@ export default function NotificationSettingsPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-xl font-black text-slate-950">Catégories</h2>
+          <h2 className="text-xl font-black text-slate-950">{i18nT(locale, 'notifications.categories_title')}</h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {CATEGORIES.map((category) => {
               const enabled = preferences.categories?.[category.key] ?? true;

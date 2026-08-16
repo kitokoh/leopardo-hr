@@ -163,14 +163,14 @@ class MeEndpointsTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Rita',
             'last_name' => 'M.',
             'email' => 'rita@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 120,
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -241,14 +241,14 @@ class MeEndpointsTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

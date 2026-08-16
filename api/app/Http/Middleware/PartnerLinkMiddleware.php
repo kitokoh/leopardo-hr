@@ -6,6 +6,7 @@ use App\Modules\Billing\Domain\Models\PartnerLink;
 use App\Modules\Billing\Domain\Models\PartnerClick;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class PartnerLinkMiddleware
@@ -37,11 +38,14 @@ class PartnerLinkMiddleware
 
             if ($link) {
                 // Record click
+                // #4606 : user_agent/referrer_url viennent de headers clients —
+                // colonnes VARCHAR(255) : troncature obligatoire (un Referer
+                // long provoquait un QueryException → 500 sur route publique).
                 PartnerClick::create([
                     'partner_link_id' => $link->id,
                     'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                    'referrer_url' => $request->header('referer'),
+                    'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
+                    'referrer_url' => Str::limit((string) $request->header('referer'), 255, ''),
                 ]);
 
                 // Store cookie for 30 days
