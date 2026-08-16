@@ -25,7 +25,7 @@ class QueueJobsFailedHandlerTest extends TestCase
 
     public function test_failed_handlers_log_without_rethrowing(): void
     {
-        Log::spy();
+        $log = Log::spy();
 
         $jobs = [
             new ProcessBulkPaymentJob(1, 1, null),
@@ -35,6 +35,7 @@ class QueueJobsFailedHandlerTest extends TestCase
         ];
 
         // SendTrialDripEmailJob nécessite une Company (SerializesModels) — testé à part.
+        /** @var \App\Core\Tenant\Domain\Models\Company $trialCompany */
         $trialCompany = \App\Core\Tenant\Domain\Models\Company::factory()->create(['country' => 'DZ']);
         $jobs[] = new SendTrialDripEmailJob($trialCompany, 3);
 
@@ -43,7 +44,7 @@ class QueueJobsFailedHandlerTest extends TestCase
             $job->failed(new RuntimeException('retries exhausted'));
         }
 
-        Log::shouldHaveReceived('error')
+        $log->shouldHaveReceived('error')
             ->withArgs(fn (string $channel, array $ctx) => str_contains($channel, 'failed'))
             ->atLeast()->times(4);
     }
