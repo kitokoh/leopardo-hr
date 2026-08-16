@@ -19,16 +19,10 @@ return new class extends Migration
             // `updated_at`) : réconcilier les colonnes modernes au lieu de
             // simplement retourner — sinon les inserts Eloquent échouent
             // (`column updated_at does not exist`). Migration additive.
-            if (! Schema::hasColumn('languages', 'updated_at')) {
-                Schema::table('languages', function (Blueprint $table): void {
-                    $table->timestampTz('updated_at')->useCurrent();
-                });
-            }
-            if (! Schema::hasColumn('languages', 'name_native')) {
-                Schema::table('languages', function (Blueprint $table): void {
-                    $table->string('name_native', 50)->default('');
-                });
-            }
+            // PostgreSQL's atomic guard prevents two Render processes from
+            // both passing a hasColumn() check and then racing on ALTER TABLE.
+            DB::statement('ALTER TABLE public."languages" ADD COLUMN IF NOT EXISTS "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP');
+            DB::statement('ALTER TABLE public."languages" ADD COLUMN IF NOT EXISTS "name_native" VARCHAR(50) NOT NULL DEFAULT \'\'');
 
             return;
         }

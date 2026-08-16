@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 /**
  * CI main rouge 2026-08-09 — `languages.updated_at` absent sur les env déjà
@@ -24,17 +23,13 @@ return new class extends Migration
             return; // Table absente dans ce contexte.
         }
 
-        if (! Schema::hasColumn('languages', 'updated_at')) {
-            Schema::table('languages', function (Blueprint $table): void {
-                $table->timestampTz('updated_at')->useCurrent();
-            });
-        }
-
-        if (! Schema::hasColumn('languages', 'name_native')) {
-            Schema::table('languages', function (Blueprint $table): void {
-                $table->string('name_native', 50)->default('');
-            });
-        }
+        // `hasColumn()` followed by `ALTER TABLE` is racy when Render starts
+        // more than one application process during a migration. PostgreSQL's
+        // atomic IF NOT EXISTS keeps the retry idempotent without swallowing
+        // unrelated schema errors.
+        $quotedSchema = '"' . str_replace('"', '""', $schema) . '"';
+        DB::statement("ALTER TABLE {$quotedSchema}.\"languages\" ADD COLUMN IF NOT EXISTS \"updated_at\" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP");
+        DB::statement("ALTER TABLE {$quotedSchema}.\"languages\" ADD COLUMN IF NOT EXISTS \"name_native\" VARCHAR(50) NOT NULL DEFAULT ''");
     }
 
     public function down(): void
