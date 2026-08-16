@@ -8,8 +8,8 @@
 use App\Core\Auth\Interfaces\Api\V1\SSOController;
 use Illuminate\Support\Facades\Route;
 
-// Public: supported providers list
-Route::get('/sso/providers', [SSOController::class, 'providers']);
+// Public: supported providers list (QA #3000 : throttle parité endpoints publics)
+Route::get('/sso/providers', [SSOController::class, 'providers'])->middleware('throttle:api');
 
 // Public: SSO callbacks (no auth required — these receive IdP responses)
 // QA #3000 : throttles sur les endpoints publics (anti abuse SAMLResponse/redirects)
