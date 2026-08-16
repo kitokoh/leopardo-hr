@@ -283,11 +283,21 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     ).showSnackBar(const SnackBar(content: Text('Envoi en cours...')));
 
     final repo = ref.read(cabinetRepositoryProvider);
-    await repo.uploadDocument(
-      filePath: picked.path,
-      fileName: picked.name,
-      folderId: widget.folderId,
-    );
+    try {
+      await repo.uploadDocument(
+        filePath: picked.path,
+        fileName: picked.name,
+        folderId: widget.folderId,
+      );
+    } catch (e) {
+      // #4407 : un échec d'upload (timeout/401/5xx) ne doit pas laisser une
+      // exception non gérée ni un snackbar « Envoi en cours... » bloqué.
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Echec de l'envoi du document : $e')),
+      );
+      return;
+    }
 
     ref.invalidate(cabinetDocumentsProvider(widget.folderId));
 
