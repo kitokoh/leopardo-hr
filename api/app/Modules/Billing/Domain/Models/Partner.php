@@ -12,6 +12,8 @@ use App\Core\Tenant\Domain\Models\Company;
 // The `commissions()` relation uses the FQCN string so that Eloquent can resolve the
 // model at runtime without introducing a compile-time cross-module dependency.
 // See: docs/architecture/adr/0005-billing-payroll-domain-boundary.md  — Issue #1395.
+use App\Modules\Payroll\Domain\Models\Commission;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,7 +29,8 @@ use Illuminate\Support\Carbon;
  * @property string $type
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Partner extends Model
 {
@@ -67,9 +70,22 @@ class Partner extends Model
         return $this->hasMany(Company::class, 'referrer_partner_id');
     }
 
-    /** @return HasMany<\App\Modules\Payroll\Domain\Models\Commission, $this> */
+    /** @return HasMany<Commission, $this> */
     public function commissions(): HasMany
     {
-        return $this->hasMany(\App\Modules\Payroll\Domain\Models\Commission::class);
+        return $this->hasMany(Commission::class);
+    }
+
+    /**
+     * Issue #4383 : la colonne decimal(6,4) revient « 0.1500 » — cast float pour
+     * un contrat API propre (0.15) et un assert exact côté tests.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'commission_rate' => 'float',
+        ];
     }
 }

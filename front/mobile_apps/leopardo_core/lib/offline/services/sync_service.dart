@@ -59,7 +59,15 @@ class SyncService {
         _edgeBaseUrl = edgeBaseUrl,
         _cloudBaseUrl = cloudBaseUrl,
         _edgeNodeId = edgeNodeId,
-        _edgeToken = edgeToken;
+        _edgeToken = edgeToken {
+    // Issue #4406 : les providers passent un `Dio()` nu (aucun BaseOptions) —
+    // une requête Edge/Cloud pendante (TCP accepté, réponse jamais reçue)
+    // bloquerait `syncNow()` pour toujours. Bornes par défaut : 10 s connect /
+    // 30 s receive. `_ping` garde son propre timeout court (3 s) qui prime
+    // sur ces défauts (Options par requête).
+    _dio.options.connectTimeout ??= const Duration(seconds: 10);
+    _dio.options.receiveTimeout ??= const Duration(seconds: 30);
+  }
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {

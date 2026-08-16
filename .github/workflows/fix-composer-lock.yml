@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   regen-lock:
+    timeout-minutes: 30
     name: composer update predis → commit lock
     runs-on: ubuntu-latest
     steps:
