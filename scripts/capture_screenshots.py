@@ -3,10 +3,11 @@ import argparse
 import os
 from playwright.async_api import async_playwright
 
-# Configuration
+# Configuration — #4416 : creds jamais en clair dans le dépôt (politique #1697).
+# Fournir via l'environnement : LEOPARDO_DEMO_EMAIL / LEOPARDO_DEMO_PASSWORD.
 CREDENTIALS = {
-    'email': 'admin@leopardo-rh.com',
-    'password': 'password123'
+    'email': os.environ.get('LEOPARDO_DEMO_EMAIL', ''),
+    'password': os.environ.get('LEOPARDO_DEMO_PASSWORD', ''),
 }
 
 ROUTES = {
