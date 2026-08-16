@@ -22,7 +22,16 @@
           <p class="truncate text-sm font-medium text-gray-900">{{ conv.title || t('adminChat.conversation', 'Conversation') }}</p>
           <p class="mt-0.5 truncate text-xs text-gray-400">{{ formatDate(conv.updated_at) }}</p>
         </div>
-        <div v-if="conversations.length === 0" class="p-4 text-center text-xs text-gray-400">
+        <div v-if="conversationsError" class="p-4 text-center" role="alert">
+          <p class="text-xs text-red-500">{{ t('adminChat.historyError', 'Impossible de charger les conversations.') }}</p>
+          <button
+            class="mt-2 rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700"
+            @click="fetchConversations"
+          >
+            {{ t('adminChat.retry', 'Réessayer') }}
+          </button>
+        </div>
+        <div v-else-if="conversations.length === 0" class="p-4 text-center text-xs text-gray-400">
           {{ t('adminChat.historyEmpty', 'Aucune conversation.') }}
         </div>
       </div>
@@ -46,6 +55,15 @@
             <ChatBubbleLeftRightIcon class="mx-auto h-12 w-12 text-gray-300" />
             <p class="mt-2 text-sm text-gray-500">{{ t('adminChat.start', "Commencez une conversation avec l'assistant IA.") }}</p>
           </div>
+        </div>
+        <div v-if="messagesError" class="mx-auto mt-4 max-w-2xl rounded-lg border border-red-200 bg-red-50 p-4 text-center text-sm text-red-700" role="alert">
+          <p>{{ t('adminChat.messagesError', 'Impossible de charger les messages.') }}</p>
+          <button
+            class="mt-2 rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700"
+            @click="retryMessages"
+          >
+            {{ t('adminChat.retry', 'Réessayer') }}
+          </button>
         </div>
         <div
           v-for="msg in messages"
@@ -141,23 +159,33 @@ function scrollToBottom() {
 }
 
 async function fetchConversations() {
+  conversationsError.value = false
   try {
     const res = await api.get('/v1/admin/ai/conversations')
     conversations.value = res.data.data || res.data || []
   } catch (err) {
+    // #4333 : état d'erreur visible + retry (l'intercepteur global toast déjà).
+    conversationsError.value = true
     console.warn('Failed to load AI conversations', err)
   }
 }
 
 async function selectConversation(conv) {
   activeConversation.value = conv
+  messagesError.value = false
   try {
     const res = await api.get(`/v1/admin/ai/conversations/${conv.id}/messages`)
     messages.value = res.data.data || res.data || []
     scrollToBottom()
   } catch (err) {
+    // #4333 : garder les messages déjà chargés + état d'erreur avec retry.
+    messagesError.value = true
     console.warn('Failed to load AI conversation messages', err)
   }
+}
+
+function retryMessages() {
+  if (activeConversation.value) selectConversation(activeConversation.value)
 }
 
 function newConversation() {

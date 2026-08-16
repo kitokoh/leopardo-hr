@@ -33,7 +33,7 @@ class DemoSuperAdminSyncTest extends TestCase
         // Aucune variable SUPER_ADMIN_EMAIL : le seeder et la config doivent
         // converger sur le MÊME défaut (admin@leopardo-rh.com).
         putenv('SUPER_ADMIN_EMAIL');
-        config(['demo.super_admin_email' => env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com')]);
+        config(['demo.super_admin_email' => 'admin@leopardo-rh.com']);
 
         $this->seed(SuperAdminSeeder::class);
 
@@ -72,6 +72,7 @@ class DemoSuperAdminSyncTest extends TestCase
         (new DemoCompanyOnceSeeder())->run();
 
         $row = DB::table('super_admins')->where('email', 'custom-admin@leopardo-rh.com')->first();
+        $this->assertNotNull($row);
         $this->assertTrue(Hash::check('password123', (string) $row->password_hash));
     }
 
@@ -86,6 +87,7 @@ class DemoSuperAdminSyncTest extends TestCase
         (new DemoCompanyOnceSeeder())->run();
 
         $row = DB::table('super_admins')->where('email', 'admin@leopardo-rh.com')->first();
+        $this->assertNotNull($row);
         $this->assertFalse(Hash::check('password123', (string) $row->password_hash));
     }
 }

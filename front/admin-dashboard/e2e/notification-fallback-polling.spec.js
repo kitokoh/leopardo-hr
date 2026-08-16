@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 
+// #4415 : creds de test via env — jamais de littéral prod dans le dépôt (politique #1697).
+const E2E_ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'e2e-fixture-password'
+
 // PA2-COMM-013 — Fallback polling robuste : si le canal push (Socket.IO)
 // n'est pas disponible (proxy/firewall, serveur down, ...), l'admin-dashboard
 // doit continuer a recevoir les notifications via un polling REST regulier
@@ -117,7 +120,7 @@ test('falls back to REST polling when the push (Socket.IO) channel is unavailabl
 
   await page.goto('/login')
   await page.getByLabel(/Adresse email/i).fill('admin@leopardo-rh.com')
-  await page.locator('#password').fill('password123')
+  await page.locator('#password').fill(E2E_ADMIN_PASSWORD)
   await page.getByRole('button', { name: /^Se connecter$/i }).click()
 
   await expect(page).toHaveURL(/\/$/)
