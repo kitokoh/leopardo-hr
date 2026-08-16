@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(api): UpdateEmployeeDTO::fromRequest — plus de fallback `$request->all()` (Closes #4609).** Le type de paramètre acceptait un `Request` brut et retombait sur `all()` sans validation → réactivation silencieuse du mass-assignment role/status/manager_role (contournement #3677/#4496). Signature restreinte à `UpdateEmployeeRequest|UpdateProfileRequest` + `validated()` uniquement (les 2 callers passent déjà des FormRequest). Tests : `UpdateEmployeeDtoGuardTest` (TypeError sur Request brut + garde structurelle).
 - **fix(web): /changelog réparé — `getChangelogReleases(locale)` ajouté au module de données + dédoublonnage des `id` du formulaire /demo (régression merge #4633×#4666).** Le merge #4673 (fix #4610) appelait `getChangelogReleases(locale)` jamais défini → tsc rouge sur main (TS2305). La fonction retourne les releases publiques (résiduel : localisation du contenu des releases — #4675). Par ailleurs, les implémentations parallèles #4633/#4666 du fix a11y #4613 ont fusionné en `id` dupliqués sur le formulaire /demo → dé-dupliqués (un seul id par champ, labels `htmlFor` cohérents).
 - **docs(qa): session swe-qa-360 2026-08-16 — bilan complet (audit 360°, merge drain, 3 doublons fermés, implémentation #4575).** Bilan : docs/qa/QA_SESSION_2026-08-16-swe-qa-360.md + leçon CI (événements synchronize non créés sous saturation → nudge commit vide + cancel des runs queued supersédés) ajoutée à AGENTS.md.
 
