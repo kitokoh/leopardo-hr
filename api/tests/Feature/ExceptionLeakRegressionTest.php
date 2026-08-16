@@ -115,4 +115,65 @@ class ExceptionLeakRegressionTest extends TestCase
         // le message brut du service.
         $this->assertSame('La publication de l\'annonce a échoué. Réessayez.', $response->json('errors.status.0'));
     }
+
+    /**
+     * #4310 — les DomainExceptions métier de paie (déjà validé / verrouillé /
+     * non verrouillé) ne doivent plus exposer `$e->getMessage()` en
+     * `localized_message` : la réponse passe par le catalogue `errors.*`
+     * (traduisible), même quand la locale demandée n'est pas le français.
+     */
+    public function test_payroll_domain_exception_uses_catalog_not_raw_message(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'DZ',
+            'status' => PayrollRun::STATUS_VALIDATED,
+        ]);
+
+        // Locale anglaise (préférence user, prioritaire sur Accept-Language) :
+        // si le message venait encore de l'exception (FR codé en dur), il
+        // resterait français — le catalogue prouve la localisation.
+        $manager->preferred_language = 'en';
+        $manager->save();
+
+        Sanctum::actingAs($manager);
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/validate");
+
+        $response->assertStatus(422)
+            ->assertJsonPath('error', 'PAYROLL_ALREADY_VALIDATED')
+            ->assertJsonPath('message', 'PAYROLL_ALREADY_VALIDATED')
+            ->assertJsonPath(
+                'localized_message',
+                'This payroll run is already validated and can no longer be modified.'
+            );
+        $this->assertStringNotContainsString('déjà validée', $response->getContent());
+    }
+
+    public function test_payroll_locked_exception_uses_catalog_not_raw_message(): void
+    {
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $run = PayrollRun::create([
+            'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'DZ',
+            'status' => PayrollRun::STATUS_LOCKED,
+        ]);
+
+        $manager->preferred_language = 'en';
+        $manager->save();
+
+        Sanctum::actingAs($manager);
+        $response = $this->postJson("/api/v1/payroll-runs/{$run->id}/validate");
+
+        $response->assertStatus(423)
+            ->assertJsonPath('error', 'PAYROLL_RUN_LOCKED')
+            ->assertJsonPath('localized_message', 'This payroll run is locked (accounting close) and can no longer be modified.');
+        $this->assertStringNotContainsString('verrouillé', $response->getContent());
+    }
 }
