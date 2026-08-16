@@ -94,7 +94,7 @@
       }
     },
     "page": {
-      "summary": ":count user(s) - :active active - :newToday new today",
+      "summary": ":count user(s)",
       "title": "User Management"
     },
     "toast": {
@@ -112,7 +112,7 @@
       "bulkDeactivated": ":count user(s) deactivated",
       "impersonating": "Signing in as :name",
       "exportInProgress": "Export in progress...",
-      "bulkDone": "Update completed"
+      "bulkDone": ":count user(s) updated"
     },
     "actions": {
       "new": "New",

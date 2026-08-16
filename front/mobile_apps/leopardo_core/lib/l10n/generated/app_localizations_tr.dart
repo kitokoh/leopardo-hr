@@ -135,40 +135,67 @@ class AppLocalizationsTr extends AppLocalizations {
   String get commonOr => 'veya';
 
   @override
-  String get commonCountriesDz => 'Cezayir';
+  String get commonCountriesBf => 'Burkina Faso';
 
   @override
-  String get commonCountriesCm => 'Kamerun';
+  String get commonCountriesBj => 'Benin';
 
   @override
-  String get commonCountriesCi => 'Fildişi Sahili';
+  String get commonCountriesCa => 'Kanada';
 
   @override
-  String get commonCountriesSn => 'Senegal';
-
-  @override
-  String get commonCountriesMa => 'Fas';
-
-  @override
-  String get commonCountriesTn => 'Tunus';
-
-  @override
-  String get commonCountriesFr => 'Fransa';
-
-  @override
-  String get commonCountriesTr => 'Türkiye';
+  String get commonCountriesCf => 'Orta Afrika Cumhuriyeti';
 
   @override
   String get commonCountriesCg => 'Kongo';
 
   @override
+  String get commonCountriesCi => 'Fildişi Sahili';
+
+  @override
+  String get commonCountriesCm => 'Kamerun';
+
+  @override
+  String get commonCountriesDz => 'Cezayir';
+
+  @override
+  String get commonCountriesFr => 'Fransa';
+
+  @override
   String get commonCountriesGa => 'Gabon';
 
   @override
-  String get commonCountriesBf => 'Burkina Faso';
+  String get commonCountriesGb => 'Birleşik Krallık';
+
+  @override
+  String get commonCountriesGq => 'Ekvator Ginesi';
+
+  @override
+  String get commonCountriesMa => 'Fas';
 
   @override
   String get commonCountriesMl => 'Mali';
+
+  @override
+  String get commonCountriesNe => 'Nijer';
+
+  @override
+  String get commonCountriesSn => 'Senegal';
+
+  @override
+  String get commonCountriesTd => 'Çad';
+
+  @override
+  String get commonCountriesTg => 'Togo';
+
+  @override
+  String get commonCountriesTn => 'Tunus';
+
+  @override
+  String get commonCountriesTr => 'Türkiye';
+
+  @override
+  String get commonCountriesUs => 'Amerika Birleşik Devletleri';
 
   @override
   String get modulesAttendance => 'Puantaj';
@@ -551,6 +578,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get usersToastSelectionexportdone => 'Secim disa aktarimi tamamlandi';
 
   @override
+  String get usersToastBulkdone => 'Güncelleme tamamlandı';
+
+  @override
   String get usersConfirmDelete =>
       ':name kullanicisini silmek istediginizden emin misiniz?';
 
@@ -562,6 +592,73 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get usersErrorsFixFields => 'Lütfen kırmızı alanları düzeltin';
+
+  @override
+  String get usersErrorsPasswordMin => 'Şifre en az 8 karakter olmalıdır';
+
+  @override
+  String get usersErrorsSearchNoMatch => 'Aramanızla eşleşen sayfa yok';
+
+  @override
+  String get usersErrorsUpdateFailed => 'Kullanıcı güncellenemedi';
+
+  @override
+  String get usersImpersonationTitle => 'Bir çalışanı taklit et';
+
+  @override
+  String get usersImpersonationSubtitle => ':name adına oturum aç';
+
+  @override
+  String get usersImpersonationReason => 'Gerekçe (zorunlu, en az 5 karakter)';
+
+  @override
+  String get usersImpersonationReasonmin =>
+      'Gerekçe zorunludur (en az 5 karakter).';
+
+  @override
+  String get usersImpersonationNolink =>
+      'Bu hesaba bağlı çalışan yok — taklit edilemiyor.';
+
+  @override
+  String get usersImpersonationStart => 'Oturum oluştur';
+
+  @override
+  String get usersImpersonationCancel => 'İptal';
+
+  @override
+  String get usersImpersonationTokentitle =>
+      'Taklit belirteci (tek kullanımlık)';
+
+  @override
+  String get usersImpersonationExpires => ':date tarihinde sona erer';
+
+  @override
+  String get usersImpersonationCopy => 'Belirteci kopyala';
+
+  @override
+  String get usersImpersonationCopied => 'Belirteç kopyalandı';
+
+  @override
+  String get usersImpersonationCreated => 'Taklit oturumu oluşturuldu';
+
+  @override
+  String get usersImpersonationError =>
+      'Taklit oturumu oluşturulurken hata oluştu';
+
+  @override
+  String get usersImpersonationDone => 'Tamam';
+
+  @override
+  String get usersImpersonationEmployee => 'Bağlı çalışan #:id';
+
+  @override
+  String get usersEditTitle => 'Kullanıcıyı düzenle';
+
+  @override
+  String get usersEditStatus => 'Durum';
+
+  @override
+  String get usersEditSave => 'Güncelle';
 
   @override
   String get dashboardTitle => 'Kontrol Paneli';
@@ -592,11 +689,153 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get dashboardLeoIaAnnouncementBody =>
-      'Tüm ekibe tebrikler: bu hafta gecikmeler %15 azaldı. Bu ivmeyi sürdürün!';
+      'Bu haftaki ozveriniz icin tum ekibe tebrikler. Bu ivmeyi surdurun!';
 
   @override
   String get dashboardLeoIaAnnouncementError =>
       'Mesaj gönderilemedi. Birkaç dakika sonra tekrar deneyin.';
+
+  @override
+  String dashboardLeoPresenceInsight(Object active, Object today) {
+    return 'Bugün $active aktif çalışandan $today giriş yaptı. Ekibe bir tebrik mesajı göndermek ister misiniz?';
+  }
+
+  @override
+  String get dashboardLeoPresenceEmpty =>
+      'Şu anda katılım verisi yok. Yine de ekibe bir tebrik mesajı göndermek ister misiniz?';
+
+  @override
+  String dashboardLeoAnnouncementsCount(Object count) {
+    return 'Şirketinizde $count duyuru yayınlandı.';
+  }
+
+  @override
+  String get dashboardPresenceTodayTitle => 'Bugünkü katılım';
+
+  @override
+  String dashboardPresenceTodaySummary(Object active, Object present) {
+    return 'Bugün $active aktif çalışandan $present giriş yaptı';
+  }
+
+  @override
+  String get dashboardPresenceTodayEmpty => 'Katılım verisi mevcut değil.';
+
+  @override
+  String get dashboardPortfoliopriorities => 'Portfoy oncelikleri';
+
+  @override
+  String get dashboardClient => 'Musteri';
+
+  @override
+  String get dashboardHealth => 'Saglik';
+
+  @override
+  String get dashboardRisk => 'Risk';
+
+  @override
+  String get dashboardActions => 'Islemler';
+
+  @override
+  String get dashboardSeeall => 'Tumunu gor';
+
+  @override
+  String get dashboardNoprioritycompanies => 'Su anda oncelikli sirket yok.';
+
+  @override
+  String get dashboardPendingregistrations => 'Bekleyen kayitlar';
+
+  @override
+  String get dashboardNopendingrequests => 'Bekleyen talep yok.';
+
+  @override
+  String get dashboardAdoption => 'Benimseme';
+
+  @override
+  String get dashboardCheckins30d => '30 gunluk yoklama';
+
+  @override
+  String get dashboardActiveemployees => 'Aktif calisanlar';
+
+  @override
+  String get dashboardClientsatrisk => 'Risk altindaki musteriler';
+
+  @override
+  String get dashboardRevenue => 'Gelir';
+
+  @override
+  String get dashboardCollected30d => '30 gunluk tahsilat';
+
+  @override
+  String get dashboardOverdue => 'Gecikmis';
+
+  @override
+  String get dashboardActivesubscriptions => 'Aktif abonelikler';
+
+  @override
+  String get dashboardShortcuts => 'Kisayollar';
+
+  @override
+  String get dashboardClientportfolio => 'Musteri portfoyu';
+
+  @override
+  String get dashboardSubscriptions => 'Abonelikler';
+
+  @override
+  String get dashboardClientrequests => 'Musteri talepleri';
+
+  @override
+  String get dashboardCreateactivateclient =>
+      'Musteri olustur veya etkinlestir';
+
+  @override
+  String get dashboardOpenclientportfolio => 'Musteri portfoyunu ac';
+
+  @override
+  String get dashboardProcessincomingrequests => 'Gelen talepleri isle';
+
+  @override
+  String get dashboardViewclientrequests => 'Musteri taleplerini gor';
+
+  @override
+  String get dashboardMonitoratriskclients => 'Risk altindaki musterileri izle';
+
+  @override
+  String get dashboardAnalyzepriorities => 'Oncelikleri analiz et';
+
+  @override
+  String get dashboardManagesubscriptionsrevenue =>
+      'Abonelikleri ve geliri yonet';
+
+  @override
+  String get dashboardOpensubscriptions => 'Abonelikleri ac';
+
+  @override
+  String get dashboardChecksystemsecurity => 'Sistemi ve guvenligi kontrol et';
+
+  @override
+  String get dashboardOpensystem => 'Sistemi ac';
+
+  @override
+  String get dashboardPreparepartnerintegrations =>
+      'Ortak entegrasyonlari hazirla';
+
+  @override
+  String get dashboardOpenwebhooks => 'Webhook\'lari ac';
+
+  @override
+  String get dashboardLoaderror => 'Platform kokpiti yuklenemedi.';
+
+  @override
+  String get dashboardRiskhigh => 'Yuksek risk';
+
+  @override
+  String get dashboardRiskmedium => 'Orta risk';
+
+  @override
+  String get dashboardRisklow => 'Dusuk risk';
+
+  @override
+  String get dashboardNotprovided => 'Belirtilmedi';
 
   @override
   String get marketingOauthNavTitle => 'Pazarlama OAuth';
@@ -1602,6 +1841,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signupTrialnote => 'Ücretsiz deneme:';
 
   @override
+  String get signupTrialdaysunit => 'gün';
+
+  @override
   String get signupTrialnotesuffix => 'kredi kartı gerekmez';
 
   @override
@@ -1641,4 +1883,575 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get signupValidationAgreeterms =>
       'Kullanım koşullarını kabul etmelisiniz';
+
+  @override
+  String get signupValidationCountryrequired => 'Ülke zorunludur.';
+
+  @override
+  String get signupLabelcountry => 'Ülke';
+
+  @override
+  String get signupCountryplaceholder => 'Ülkenizi seçin';
+
+  @override
+  String get companiesToastLoadFailed => 'Şirket detayları yüklenemedi.';
+
+  @override
+  String get companiesToastTicketsFailed => 'Destek talepleri yüklenemedi.';
+
+  @override
+  String get companiesToastSubscriptionFailed => 'Abonelik güncellenemedi.';
+
+  @override
+  String get companiesToastFeaturesFailed => 'Modül ayarları kaydedilemedi.';
+
+  @override
+  String get companiesPortfolio => 'Musteri Portfoyu';
+
+  @override
+  String get companiesDirectory => 'Sirket Rehberi';
+
+  @override
+  String get companiesDirectorysub =>
+      'Saglik puanina ve ticari oncelige gore listelenir.';
+
+  @override
+  String get companiesSyncing => 'Portfoy senkronize ediliyor...';
+
+  @override
+  String get companiesRetry => 'Tekrar dene';
+
+  @override
+  String get companiesCompany => 'Sirket';
+
+  @override
+  String get companiesPlanmrr => 'Plan ve MRR';
+
+  @override
+  String get companiesHealthop => 'Oper. Saglik';
+
+  @override
+  String get companiesCheckins30d => 'Yoklama (30 gun)';
+
+  @override
+  String get companiesRecommendedaction => 'Onerilen Eylem';
+
+  @override
+  String get companiesManagement => 'Yonetim';
+
+  @override
+  String get companiesSystem => 'Sistem';
+
+  @override
+  String get companiesCompanyname => 'Sirket adi *';
+
+  @override
+  String get companiesContactemail => 'Iletisim e-postasi *';
+
+  @override
+  String get companiesCountry => 'Ulke *';
+
+  @override
+  String get companiesCity => 'Kurulum sehri *';
+
+  @override
+  String get companiesCurrency => 'Para birimi';
+
+  @override
+  String get companiesTimezone => 'Saat dilimi';
+
+  @override
+  String get companiesDefaultlang => 'Varsayilan dil';
+
+  @override
+  String get companiesManagerfirst => 'Yonetici adi *';
+
+  @override
+  String get companiesManagerlast => 'Yonetici soyadi *';
+
+  @override
+  String get companiesManageremail => 'Ana yonetici e-postasi *';
+
+  @override
+  String get companiesActivatenow => 'Hemen etkinlestir';
+
+  @override
+  String get companiesActivateclientnow => 'Musteriyi hemen etkinlestir';
+
+  @override
+  String get companiesActivateclienthint =>
+      'Aksi halde musteri deneme modunda kalir.';
+
+  @override
+  String get seoPricingDescription =>
+      'Şeffaf fiyatlandirma: Free plani, Pilot aylik 29 EUR, Operations aylik 99 EUR, Enterprise teklif bazli. 14 gunluk ucretsiz deneme.';
+
+  @override
+  String get adminchatConversation => 'Konuşma';
+
+  @override
+  String get adminchatError =>
+      'Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.';
+
+  @override
+  String get adminchatHistoryempty => 'Konuşma yok.';
+
+  @override
+  String get adminchatNew => 'Yeni konuşma';
+
+  @override
+  String get adminchatPlaceholder => 'Mesajınızı yazın...';
+
+  @override
+  String get adminchatSend => 'Gönder';
+
+  @override
+  String get adminchatStart => 'Yapay zekâ asistanıyla bir konuşma başlatın.';
+
+  @override
+  String get adminchatSubtitle => 'İK, bordro ve işe alım hakkında sorun...';
+
+  @override
+  String get adminchatThinking => 'Düşünüyor...';
+
+  @override
+  String get adminchatTitle => 'Leopardo Yapay Zekâ Asistanı';
+
+  @override
+  String get adminchatUnavailablebadge => 'Kullanılamıyor';
+
+  @override
+  String get adminchatUnavailablebody =>
+      'Yapay zekâ sohbeti süper yönetici konsolunda etkin değil. Bu asistana erişmek için desteklenen bir şirket çalışma alanı kullanın.';
+
+  @override
+  String get adminchatUnavailabletitle =>
+      'Yapay zekâ asistanı platform düzeyinde kullanılamıyor';
+
+  @override
+  String get navigationAnalytics => 'Analitik';
+
+  @override
+  String get navigationAudit => 'Denetim Günlüğü';
+
+  @override
+  String get navigationChat => 'Yapay Zekâ Sohbeti';
+
+  @override
+  String get navigationCompanies => 'Şirketler';
+
+  @override
+  String get navigationContracts => 'Sözleşmeler';
+
+  @override
+  String get navigationCrm => 'CRM Hattı';
+
+  @override
+  String get navigationDashboard => 'Gösterge Paneli';
+
+  @override
+  String get navigationEdge => 'Edge Düğümleri';
+
+  @override
+  String get navigationExports => 'Dışa Aktarmalar ve Raporlar';
+
+  @override
+  String get navigationFleet => 'Araç Filosu';
+
+  @override
+  String get navigationGlobe => 'Gerçek Zamanlı Küre';
+
+  @override
+  String get navigationGrowth => 'Growth Yönetimi';
+
+  @override
+  String get navigationLeaves => 'İzin ve Devamsızlık';
+
+  @override
+  String get navigationMainmenu => 'Ana menü';
+
+  @override
+  String get navigationMarketing => 'Pazarlama';
+
+  @override
+  String get navigationPayroll => 'Bordro';
+
+  @override
+  String get navigationPredictions => 'Yapay Zekâ Tahmin Paneli';
+
+  @override
+  String get navigationRecruitment => 'İşe Alım';
+
+  @override
+  String get navigationReports => 'İK Raporları';
+
+  @override
+  String get navigationSubscriptions => 'Abonelikler';
+
+  @override
+  String get navigationSupport => 'Destek';
+
+  @override
+  String get navigationSupporttickets => 'Müşteri Destek Merkezi';
+
+  @override
+  String get navigationSystem => 'Sistem';
+
+  @override
+  String get navigationTraining => 'Eğitimler';
+
+  @override
+  String get navigationUsers => 'Kullanıcılar';
+
+  @override
+  String get navigationWebhooks => 'Webhooklar';
+
+  @override
+  String get navigationLogin => 'Giris';
+
+  @override
+  String get navigationLogout => 'Cikis';
+
+  @override
+  String get navigationCompanydetail => 'Sirket detayi';
+
+  @override
+  String get navigationContributions => 'Sosyal katkilar';
+
+  @override
+  String get navigationTaxbrackets => 'Vergi dilimleri';
+
+  @override
+  String get navigationLegalrates => 'Yasal oranlar';
+
+  @override
+  String get navigationAccount => 'Hesabim';
+
+  @override
+  String get navigationNotfound => 'Sayfa bulunamadi';
+
+  @override
+  String get webhooksConfirmDelete => 'Bu webhook silinsin mi?';
+
+  @override
+  String get a11ySkipToContent => 'Ana içeriğe geç';
+
+  @override
+  String get a11yClose => 'Kapat';
+
+  @override
+  String get a11yPreviousMonth => 'Önceki ay';
+
+  @override
+  String get a11yNextMonth => 'Sonraki ay';
+
+  @override
+  String get shellConnected => 'Bagli';
+
+  @override
+  String get shellFallbackpolling => 'Yedek mod (polling)';
+
+  @override
+  String get shellPushunconfigured => 'Push yapilandirilmadi';
+
+  @override
+  String get shellDisconnected => 'Baglanti kesildi';
+
+  @override
+  String get shellSearch => 'Ara';
+
+  @override
+  String get shellNotifications => 'Bildirimler';
+
+  @override
+  String get shellNonotifications => 'Bildirim yok';
+
+  @override
+  String get shellCriticalalerts => 'Kritik uyarilar';
+
+  @override
+  String get shellLevel => 'Seviye:';
+
+  @override
+  String get shellFallbackpollingtitle =>
+      'Yedek polling ile bildirimler (push kullanilamiyor)';
+
+  @override
+  String get shellTenantonly =>
+      'Kurumsal ozellik — musteri alanlarina ayrilmistir';
+
+  @override
+  String get exportsReportemployees => 'Calisanlar';
+
+  @override
+  String get exportsReportemployeesdesc =>
+      'Pozisyonlar, sozlesmeler ve departmanlarla tam liste.';
+
+  @override
+  String get exportsReportattendance => 'Yoklama';
+
+  @override
+  String get exportsReportattendancedesc =>
+      'Saatler ve anormalliklerle yoklama kaydi.';
+
+  @override
+  String get exportsReportpayslips => 'Bordrolar';
+
+  @override
+  String get exportsReportpayslipsdesc =>
+      'Maas detaylariyla aylik bordro ihracati.';
+
+  @override
+  String get exportsReportabsences => 'Izinler ve devamsizliklar';
+
+  @override
+  String get exportsReportabsencesdesc =>
+      'Calisan basina talep ve bakiye gecmisi.';
+
+  @override
+  String get exportsReporttraining => 'Egitim';
+
+  @override
+  String get exportsReporttrainingdesc =>
+      'Katalog, oturumlar, kayitlar ve ilerleme.';
+
+  @override
+  String get exportsReportvehicles => 'Araclar';
+
+  @override
+  String get exportsReportvehiclesdesc => 'Filo, kilometre, bakim.';
+
+  @override
+  String get exportsHrreportstitle => 'Ozel IK raporlari';
+
+  @override
+  String get exportsHrreportssub =>
+      'Donem ve departman filtreleriyle gelismis raporlar olusturun.';
+
+  @override
+  String get exportsReporttype => 'Rapor turu';
+
+  @override
+  String get exportsTypeheadcount => 'Personel sayisi';
+
+  @override
+  String get exportsTypeturnover => 'Calisan devri';
+
+  @override
+  String get exportsTypeabsenteeism => 'Devamsizlik';
+
+  @override
+  String get exportsTypepayrollsummary => 'Bordro ozeti';
+
+  @override
+  String get exportsTypetrainingprogress => 'Egitim ilerlemesi';
+
+  @override
+  String get exportsStartdate => 'Baslangic tarihi';
+
+  @override
+  String get exportsEnddate => 'Bitis tarihi';
+
+  @override
+  String get exportsGenerate => 'Olustur';
+
+  @override
+  String get exportsGenerating => 'Olusturuluyor...';
+
+  @override
+  String get exportsStatusdone => 'Tamamlandi';
+
+  @override
+  String get exportsStatusinprogress => 'Devam ediyor';
+
+  @override
+  String get exportsStatusfailed => 'Basarisiz';
+
+  @override
+  String get exportsDownload => 'Indir';
+
+  @override
+  String get exportsDownloading => 'Indiriliyor...';
+
+  @override
+  String get companydetailAnalyzing => 'Musteri verileri analiz ediliyor...';
+
+  @override
+  String get companydetailRetry => 'Tekrar dene';
+
+  @override
+  String get companydetailFieldadoption => 'Saha Benimsemesi';
+
+  @override
+  String get companydetailOnboarding => 'Onboarding';
+
+  @override
+  String get companydetailAnomalies30d => '30 gunluk anormallikler';
+
+  @override
+  String get companydetailPayrollready => 'Bordro Hazir';
+
+  @override
+  String get companydetailActiveemployees30d => 'Aktif Calisanlar (30 gun)';
+
+  @override
+  String get companydetailNopriorityblockers =>
+      'Oncelikli engel tespit edilmedi.';
+
+  @override
+  String get companydetailModulesconfig => 'Modul Yapilandirmasi';
+
+  @override
+  String get companydetailServiceplan => 'Hizmet plani';
+
+  @override
+  String get companydetailCommercialstatus => 'Ticari durum';
+
+  @override
+  String get companydetailStatustrial => 'Deneme';
+
+  @override
+  String get companydetailStatusactive => 'Aktif';
+
+  @override
+  String get companydetailStatussuspended => 'Askida';
+
+  @override
+  String get companydetailStatusexpired => 'Suresi dolmus';
+
+  @override
+  String get companydetailStartdate => 'Baslangic';
+
+  @override
+  String get companydetailInternalnotes => 'Dahili notlar';
+
+  @override
+  String get companydetailNosupporttickets =>
+      'Bu musteri icin destek talebi yok.';
+
+  @override
+  String get companydetailTechnicalidentity => 'Teknik kimlik';
+
+  @override
+  String get companydetailPlatformid => 'Platform kimligi';
+
+  @override
+  String get companydetailSlug => 'Slug';
+
+  @override
+  String get companydetailCountrycurrency => 'Ulke / Para birimi';
+
+  @override
+  String get companydetailRegisteredon => 'Kayit tarihi';
+
+  @override
+  String get companydetailLastactivity => 'Son aktivite';
+
+  @override
+  String get userAuthPersonalLogin => 'Kisisel giris';
+
+  @override
+  String get userAuthLoginSubtitle =>
+      'Alanınıza, belgelerinize ve taleplerinize erisin.';
+
+  @override
+  String get userAuthNoAccount => 'Henuz hesabınız yok mu? Kayit olun';
+
+  @override
+  String userAuthGoogleError(String error) {
+    return 'Google hatasi: $error';
+  }
+
+  @override
+  String get authTogglePasswordVisibility => 'Sifreyi goster veya gizle';
+
+  @override
+  String get authDemoAccess => 'Demo erisimi';
+
+  @override
+  String get userAuthRegisterTitle => 'Hesabimi olustur';
+
+  @override
+  String get userAuthRegisterSubtitle => 'Leopardo RH\'da ekibinize katilin.';
+
+  @override
+  String get userAuthFirstName => 'Ad';
+
+  @override
+  String get userAuthLastName => 'Soyad';
+
+  @override
+  String get userAuthFirstNameRequired => 'Ad gerekli';
+
+  @override
+  String get userAuthLastNameRequired => 'Soyad gerekli';
+
+  @override
+  String get userAuthRegisterButton => 'Hesabimi olustur';
+
+  @override
+  String get userAuthAlreadyAccount => 'Zaten hesabiniz var mi? Giris yapin';
+
+  @override
+  String get userAuthCompanyRequestTitle => 'Talep gonderildi!';
+
+  @override
+  String get userAuthCompanyRequestBody =>
+      'Bir yonetici talebinizi inceleyecek. Islendiginde bildirim alacaksiniz.';
+
+  @override
+  String get userAuthBackToHome => 'Ana sayfaya don';
+
+  @override
+  String get userAuthSubmitError => 'Gonderme hatasi';
+
+  @override
+  String get userAuthRegisterError => 'Kayit hatasi';
+
+  @override
+  String get userAuthLoginError => 'Gecersiz kimlik bilgileri';
+
+  @override
+  String get userAuthGoogleLoginError => 'Google giris hatasi';
+
+  @override
+  String get commonRequired => 'Gerekli';
+
+  @override
+  String get userAuthPhoneOptional => 'Telefon (opsiyonel)';
+
+  @override
+  String get userAuthPhone => 'Telefon';
+
+  @override
+  String get userAuthCreateCompany => 'Sirket olustur';
+
+  @override
+  String get userAuthCompanyRequestInfo =>
+      'Sirket bilgilerini doldurun. Bir yonetici talebinizi dogruladiginda bildirim alacaksiniz.';
+
+  @override
+  String get userAuthCompanyName => 'Sirket adi';
+
+  @override
+  String get userAuthCompanyEmail => 'Sirket e-postasi';
+
+  @override
+  String get userAuthSector => 'Is sektoru';
+
+  @override
+  String get userAuthCountry => 'Ulke';
+
+  @override
+  String get userAuthCity => 'Sehir';
+
+  @override
+  String get userAuthDescription => 'Aciklama';
+
+  @override
+  String get userAuthSubmitRequest => 'Talep gonder';
+
+  @override
+  String get userAuthRegisterSubtitleAlt =>
+      'Kisisel alanınıza erisin ve belgelerinizi duzenleyin.';
 }

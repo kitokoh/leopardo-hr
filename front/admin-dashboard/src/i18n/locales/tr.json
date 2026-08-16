@@ -348,14 +348,14 @@
       "deleteError": "Kullanici silinirken hata olustu",
       "exportError": "Disa aktarim basarisiz oldu",
       "bulkError": "Toplu islem basarisiz oldu",
-      "bulkDone": "Güncelleme tamamlandı"
+      "bulkDone": ":count kullanici güncellendi"
     },
     "confirm": {
       "delete": ":name kullanicisini silmek istediginizden emin misiniz?",
       "title": "Bu kullanıcı silinsin mi?"
     },
     "page": {
-      "summary": ":count kullanici - :active aktif - :newToday bugun yeni",
+      "summary": ":count kullanici",
       "title": "Kullanici Yonetimi"
     },
     "filters": {

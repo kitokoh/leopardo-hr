@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: 'App to distribute (employee|manager|platform_admin|all)'
+        description: 'App to distribute (employee|manager|platform_admin|hr|all)'
         required: false
         default: 'all'
         type: string
@@ -46,6 +46,11 @@ jobs:
     timeout-minutes: 120
     name: Distribute ${{ matrix.app.name }} to Firebase
     runs-on: ubuntu-latest
+    # #4622 : filtre workflow_dispatch réellement bloquant (l'ancien step
+    # « exit 0 » ne sautait rien : les 4 apps étaient buildées ET distribuées
+    # Firebase même avec app=employee).
+    env:
+      SHOULD_BUILD: ${{ github.event_name != 'workflow_dispatch' || inputs.app == 'all' || inputs.app == matrix.app.name }}
     permissions:
       contents: read
     strategy:
@@ -103,13 +108,6 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
 
-      - name: Skip if app not selected (workflow_dispatch filter)
-        if: github.event_name == 'workflow_dispatch' && inputs.app != 'all' && inputs.app != matrix.app.name
-        shell: bash
-        run: |
-          echo "Skipping ${{ matrix.app.name }} — only '${{ inputs.app }}' was requested."
-          exit 0
-
       - name: Resolve Firebase distribution readiness
         id: firebase_ready
         shell: bash
@@ -157,16 +155,16 @@ jobs:
           echo "MOBILE_DISTRIBUTE_READY=${READY}" >> "$GITHUB_ENV"
 
       - name: Setup Flutter + Java
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         uses: ./.github/actions/setup-flutter-android
 
       - name: Flutter pub get
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         working-directory: ${{ matrix.app.project_path }}
         run: flutter pub get
 
       - name: Build release APK for staging
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         working-directory: ${{ matrix.app.project_path }}
         shell: bash
         run: |
@@ -178,7 +176,7 @@ jobs:
             --build-number="${GITHUB_RUN_NUMBER}"
 
       - name: Upload mobile artifact
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ${{ matrix.app.artifact_name }}-${{ github.run_number }}
@@ -187,7 +185,7 @@ jobs:
           retention-days: 30
 
       - name: Firebase App Distribution (staging)
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1.7.1
         with:
           appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID }}
@@ -202,7 +200,7 @@ jobs:
             Backend: ${{ vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
 
       - name: Verify Firebase App Distribution release is visible
-        if: env.MOBILE_DISTRIBUTE_READY == 'true'
+        if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         shell: bash
         env:
           FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID }}

@@ -14,7 +14,13 @@ function resolveAdminLocale() {
   const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr'
   return normalizeLocale(nav)
 }
+import { translate } from '@/i18n/index.js'
 import { useToast } from 'vue-toastification'
+
+/** #4621 : messages d'erreur de la couche service localisés (4 catalogues admin). */
+function t(key, fallback = '') {
+  return translate(resolveAdminLocale(), key, fallback)
+}
 
 const ERROR_BREADCRUMBS = []
 const MAX_BREADCRUMBS = 50
@@ -169,6 +175,16 @@ api.interceptors.response.use(
       const requestUrl = originalRequest?.url || ''
 
       if (COLD_START_STATUSES.includes(status) && originalRequest) {
+        // #4620 : ne rejouer que les méthodes idempotentes (GET/HEAD) — un
+        // retry de POST/PUT peut exécuter deux fois une mutation (webhook
+        // dupliqué, session d'impersonation en double, désactivation rejouée)
+        // quand le serveur a traité la requête mais que la réponse s'est
+        // perdue (fenêtre cold-start Render).
+        const method = (originalRequest.method || 'get').toUpperCase()
+        if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+          console.warn(`api: cold-start ${status} sur ${method} ${requestUrl} — non rejoué (non idempotent)`)
+          return Promise.reject(error)
+        }
         const attempt = originalRequest._coldStartAttempt || 0
         if (attempt < COLD_START_MAX_RETRIES) {
           originalRequest._coldStartAttempt = attempt + 1
