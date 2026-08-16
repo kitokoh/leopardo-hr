@@ -1,4 +1,5 @@
 import 'package:leopardo_core/core/api/api_client.dart';
+import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/models/notification.dart';
 
 class NotificationRepository {
@@ -44,11 +45,7 @@ class NotificationRepository {
   }
 
   List<AppNotification> _decodeNotifications(dynamic payload) {
-    final rawItems =
-        payload is Map<String, dynamic> ? payload['data'] : payload;
-    if (rawItems is! List) {
-      return const <AppNotification>[];
-    }
+    final rawItems = extractDataList(payload);
 
     return rawItems
         .whereType<Map>()

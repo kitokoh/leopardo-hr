@@ -1,9 +1,9 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
+import { Navbar, Footer, useDarkMode, useScrollReveal } from '@/modules/vitrine';
 import { CTASection } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Building2, CheckCircle, TrendingUp } from 'lucide-react';
@@ -32,7 +32,7 @@ const accentByIndustry: Record<string, string> = {
 };
 
 export function CaseStudyClient({ params }: { params: Promise<{ slug: string }> }) {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { slug } = use(params);
 
@@ -47,7 +47,7 @@ export function CaseStudyClient({ params }: { params: Promise<{ slug: string }> 
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
-      <Navbar isDark={isDark} onToggleDark={() => setIsDark(!isDark)} />
+      <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* Hero */}
       <section className="relative pt-32 pb-16 overflow-hidden">

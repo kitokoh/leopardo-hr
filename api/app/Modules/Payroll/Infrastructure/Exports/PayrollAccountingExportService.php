@@ -6,6 +6,7 @@ namespace App\Modules\Payroll\Infrastructure\Exports;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Support\CsvCellSanitizer;
 use Closure;
 
 /**
@@ -54,10 +55,10 @@ class PayrollAccountingExportService
 
             foreach ($slips as $slip) {
                 fputcsv($file, [
-                    $this->neutralizeCsvCell((string) ($slip->employee->matricule ?? '')),
-                    $this->neutralizeCsvCell((string) ($slip->employee->last_name ?? '')),
-                    $this->neutralizeCsvCell((string) ($slip->employee->first_name ?? '')),
-                    $this->neutralizeCsvCell((string) ($slip->employee->salary_type ?? '')),
+                    CsvCellSanitizer::neutralize((string) ($slip->employee->matricule ?? '')),
+                    CsvCellSanitizer::neutralize((string) ($slip->employee->last_name ?? '')),
+                    CsvCellSanitizer::neutralize((string) ($slip->employee->first_name ?? '')),
+                    CsvCellSanitizer::neutralize((string) ($slip->employee->salary_type ?? '')),
                     $countryCode,
                     $currency,
                     $periodStart,
@@ -71,20 +72,6 @@ class PayrollAccountingExportService
 
             fclose($file);
         };
-    }
-
-    /**
-     * Issue #2223 — neutralisation des champs TEXTE contrôlés par l'employé
-     * contre l'injection de formule CSV (OWASP) : `=`, `+`, `-`, `@` en tête
-     * de cellule → préfixe apostrophe. Les montants ne passent jamais ici.
-     */
-    private function neutralizeCsvCell(string $cell): string
-    {
-        if ($cell !== '' && ! is_numeric($cell) && str_contains('=+-@'."\t".chr(13), $cell[0])) {
-            return "'".$cell;
-        }
-
-        return $cell;
     }
 
     /**

@@ -329,4 +329,25 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             Log::warning("ProcessBulkPaymentJob: Redis progress update failed: {$e->getMessage()}");
         }
     }
+
+    /**
+     * #4205 : épuisement des retries — état visible + libération du claim du
+     * run pour permettre un redispatch propre par le manager (le 503/abort
+     * fail-closed #3857 reste la protection anti-doublon).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('ProcessBulkPaymentJob.failed', [
+            'payroll_run_id' => $this->payrollRunId,
+            'triggered_by' => $this->triggeredById,
+            'exception' => $e->getMessage(),
+        ]);
+
+        try {
+            Redis::connection('default')->del("bulk_pay:run:{$this->payrollRunId}");
+        } catch (Throwable) {
+            // non bloquant
+        }
+    }
+
 }

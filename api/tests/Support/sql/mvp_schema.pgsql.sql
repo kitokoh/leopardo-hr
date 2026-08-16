@@ -116,6 +116,13 @@ CREATE TABLE public.partners (
     payout_threshold integer NOT NULL DEFAULT 5000,
     payout_cycle varchar(30) NOT NULL DEFAULT 'monthly',
     type varchar(30) NOT NULL DEFAULT 'individual',
+    name varchar(150) NULL,
+    email varchar(150) NULL,
+    phone varchar(40) NULL,
+    website varchar(255) NULL,
+    company_id uuid NULL,
+    employee_id bigint NULL,
+    commission_rate numeric(6,4) NULL,
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );

@@ -202,4 +202,16 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
 
         return is_string($key) && $key !== '' ? $key : null;
     }
+
+    /**
+     * #4205 : épuisement des retries — log d'alerte (archivage cabinet).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('ArchivePaySlipsToCabinetJob.failed', [
+            'payroll_run_id' => $this->payrollRunId,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
 }

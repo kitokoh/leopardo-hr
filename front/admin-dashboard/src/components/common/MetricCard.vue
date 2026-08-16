@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-xl border border-slate-200/50 dark:border-slate-700/50 glass-card p-5 shadow-sm">
+  <div class="glass-card p-5">
     <p class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
       {{ title }}
     </p>

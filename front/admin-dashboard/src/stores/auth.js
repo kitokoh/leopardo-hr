@@ -66,7 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
       api.defaults.headers.common.Authorization = `Bearer ${authToken}`
 
       // Synchronise la locale avec la préférence de l'utilisateur
-      try { useLocaleStore().initFromUser(userData) } catch { /* store non encore monté */ }
+      try { useLocaleStore().initFromUser(userData) } catch (e) { console.warn('[admin] locale store not mounted yet', e) }
 
       return { success: true }
     } catch (error) {

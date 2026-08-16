@@ -148,11 +148,11 @@ async function fetchDetail() {
   loading.value = true
   error.value = ''
   try {
-    const res = await api.get(`/v1/vehicles/${props.vehicleId}`)
+    const res = await api.get(`/v1/vehicles/${props.vehicleId}`, { _skipAuthRedirect: true })
     detail.value = res.data?.data || res.data
 
     try {
-      const alertsRes = await api.get(`/v1/vehicles/${props.vehicleId}/alerts`)
+      const alertsRes = await api.get(`/v1/vehicles/${props.vehicleId}/alerts`, { _skipAuthRedirect: true })
       alerts.value = alertsRes.data?.data || alertsRes.data || []
     } catch {
       alerts.value = []

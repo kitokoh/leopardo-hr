@@ -236,14 +236,14 @@ jobs:
             # les builds prod pointaient vers un backend mort. URL canonique
             # partagée (api_client.dart, deploy-main.yml, docs/DEMO_ACCOUNTS.md).
             # À basculer vers le domaine acheté une fois résolu (épic #3766).
-            echo "API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1" > .env.build
+            echo "API_BASE_URL=${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}" > .env.build
             flutter build appbundle --release \
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
               --build-number="${BUILD_NUMBER}"
             echo "BUILD_FILE=${{ matrix.app.project_path }}/build/app/outputs/bundle/release/app-release.aab" >> "$GITHUB_ENV"
           else
-            echo "API_BASE_URL=https://gestionemployerbackend.onrender.com/api/v1" > .env.build
+            echo "API_BASE_URL=${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}" > .env.build
             flutter build apk --release \
               --dart-define-from-file=.env.build \
               --build-name="${BUILD_NAME}" \
@@ -302,7 +302,7 @@ jobs:
             Leopardo ${{ matrix.app.name }} ${{ env.BUILD_NAME }}
             Ref: ${{ github.ref_name }}
             Notes: ${{ github.event.inputs.release_notes || 'Tag build' }}
-            Backend: https://gestionemployerbackend.onrender.com
+            Backend: ${{ vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
 
       - name: Verify Firebase App Distribution release is visible
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'

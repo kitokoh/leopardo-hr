@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
 {
@@ -94,4 +95,18 @@ class ProcessPayrollBatchJob implements ShouldQueue, TenantScopedJob
             "payroll_run:{$this->payrollRunId}",
         ];
     }
+
+    /**
+     * #4205 : épuisement des retries — log d'alerte, état failed_jobs visible
+     * dans l'observabilité (pas de re-lancement silencieux).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('ProcessPayrollBatchJob.failed', [
+            'payroll_run_id' => $this->payrollRunId,
+            'company_id' => $this->companyId,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
 }

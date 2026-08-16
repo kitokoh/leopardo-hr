@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -76,5 +76,32 @@ class ExportControllerTest extends TestCase
 
         $this->getJson('/api/v1/export/history')->assertOk();
     }
-}
 
+    public function test_csv_export_neutralizes_formula_injection_in_employee_names(): void
+    {
+        // #4169 — OWASP CSV Formula Injection : un nom commençant par `=`
+        // doit être exporté neutralisé ('=cmd|…) et jamais interprété comme
+        // formule par Excel/LibreOffice.
+        /** @var Company $company */
+        $company = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Employee::factory()->create([
+            'company_id' => $company->id,
+            'first_name' => '=cmd|',
+            'last_name' => 'Dangerous',
+            'email' => 'inject@example.com',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/export/employees?format=csv');
+        $response->assertOk();
+
+        $csv = $response->json('data.content');
+        $this->assertIsString($csv);
+        $this->assertStringContainsString("'=cmd|", $csv, 'La cellule doit être préfixée par une apostrophe.');
+        $this->assertStringNotContainsString("\n=cmd|", $csv, 'Aucune cellule brute ne doit commencer par =.');
+    }
+}

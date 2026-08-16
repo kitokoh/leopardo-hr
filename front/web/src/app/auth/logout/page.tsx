@@ -8,31 +8,28 @@ import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 
 export default function LogoutPage() {
   const router = useRouter();
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(100);
   const locale = getPreferredLocale() as AppLocale;
   const labels = getCopy(locale);
 
   useEffect(() => {
-    const performLogout = async () => {
-      // Start progress
-      setTimeout(() => setProgress(100), 100);
+    // Nettoyage local immédiat : la déconnexion ne doit JAMAIS dépendre du
+    // réseau (backend lent/indisponible = jusqu'à ~70 s de blocage sinon,
+    // cf. #4091 — apiFetch = 20 s × 3 retries + backoff).
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
 
-      try {
-        await apiFetch('/auth/logout', { method: 'POST' });
-      } catch (err) {
-        console.error('Logout error:', err);
-      } finally {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
-      }
+    // Appel API best-effort (invalide la session côté serveur), non bloquant.
+    void apiFetch('/auth/logout', { method: 'POST' }).catch((err) => {
+      console.error('Logout error:', err);
+    });
 
-      // Redirect after animation
-      setTimeout(() => {
-        router.replace('/auth/login');
-      }, 2500);
-    };
+    // Redirection sur timer fixe, indépendante de l'appel API.
+    const redirectTimer = setTimeout(() => {
+      router.replace('/auth/login');
+    }, 1500);
 
-    void performLogout();
+    return () => clearTimeout(redirectTimer);
   }, [router]);
 
   return (
