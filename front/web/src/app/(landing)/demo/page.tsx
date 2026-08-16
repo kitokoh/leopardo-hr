@@ -384,7 +384,6 @@ export default function DemoPage() {
                       </label>
                       <input id="name"
                         type="text"
-                        id="demo-name"
                     name="name"
                         required
                         value={formData.name}
@@ -400,7 +399,6 @@ export default function DemoPage() {
                       </label>
                       <input id="email"
                         type="email"
-                        id="demo-email"
                     name="email"
                         required
                         value={formData.email}
@@ -416,7 +414,6 @@ export default function DemoPage() {
                       </label>
                       <input id="company"
                         type="text"
-                        id="demo-company"
                     name="company"
                         required
                         value={formData.company}
@@ -432,7 +429,6 @@ export default function DemoPage() {
                       </label>
                       <input id="phone"
                         type="tel"
-                        id="demo-phone"
                     name="phone"
                         value={formData.phone}
                         onChange={handleChange}
@@ -467,7 +463,6 @@ export default function DemoPage() {
                       </label>
                       <input id="preferredDate"
                         type="date"
-                        id="demo-preferredDate"
                     name="preferredDate"
                         value={formData.preferredDate}
                         onChange={handleChange}
