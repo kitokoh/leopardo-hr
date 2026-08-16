@@ -597,7 +597,10 @@
     "placeholder": "اكتب رسالتك...",
     "thinking": "جارٍ التفكير...",
     "error": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.",
-    "conversation": "محادثة"
+    "conversation": "محادثة",
+    "historyError": "تعذر تحميل المحادثات.",
+    "messagesError": "تعذر تحميل الرسائل.",
+    "retry": "إعادة المحاولة"
   },
   "_updated_at": "2026-08-14T18:45:00Z",
   "attendance": {
