@@ -61,26 +61,26 @@ class ManagerValidationTest extends TestCase
             'is_default'               => true,
         ]);
 
-        $this->employee = Employee::query()->create([
+        $this->employee = new Employee([
             'schedule_id'   => $schedule->id,
             'email'         => 'emp@validation.test',
-            'password_hash' => Hash::make('password'),
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employee->forceFill([
             'company_id'    => $this->company->id,
             'role'          => 'employee',
             'status'        => 'active',
         ])->save();
 
-        $this->manager = Employee::query()->create([
+        $this->manager = new Employee([
             'schedule_id'   => $schedule->id,
             'email'         => 'manager@validation.test',
-            'password_hash' => Hash::make('password'),
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->manager->forceFill([
             'company_id'    => $this->company->id,
             'role'          => 'manager',
@@ -243,13 +243,13 @@ class ManagerValidationTest extends TestCase
             'is_default'               => true,
         ]);
 
-        $otherEmployee = Employee::query()->create([
+        $otherEmployee = new Employee([
             'schedule_id'   => $otherSchedule->id,
             'email'         => 'emp@other.test',
-            'password_hash' => Hash::make('password'),
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $otherEmployee->forceFill(['password_hash' => Hash::make('password')])->save();
         $otherEmployee->forceFill([
             'company_id'    => $otherCompany->id,
             'role'          => 'employee',

@@ -152,10 +152,19 @@ const hrReportResult = ref(null)
 const generatingReport = ref(false)
 const hrReportError = ref('')
 
+// #4619 : dates en composantes LOCALES (toISOString = UTC → pour UTC+1..+3,
+// le 1er janvier local tombait au 31 déc. N-1 et « aujourd'hui » = hier
+// avant minuit UTC). Le rapport headcount par défaut était décalé d'un jour.
+const toLocalDate = (d) => {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 const hrReport = reactive({
   type: 'headcount',
-  start_date: new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0],
-  end_date: new Date().toISOString().split('T')[0],
+  start_date: toLocalDate(new Date(new Date().getFullYear(), 0, 1)),
+  end_date: toLocalDate(new Date()),
 })
 
 const reportTypes = reactive([

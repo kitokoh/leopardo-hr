@@ -52,7 +52,12 @@ describe('module page content i18n (#4196)', () => {
           .filter(Boolean)
         expect(textValues.length).toBeGreaterThan(0)
         for (const t of textValues) {
-          expect(t.length).toBeGreaterThan(2)
+          // Le but du garde est de détecter les valeurs VIDES ou placeholders
+          // techniques, pas les chaînes courtes légitimes : valeurs métriques
+          // (`'0'` erreurs paie, `'50'` emplacements, content.ts caseStudies)
+          // ou abréviations (« İK » = RH en turc). Régression garde #4196
+          // constatée à l'audit 2026-08-16.
+          expect(t.trim().length).toBeGreaterThan(0)
           // Pas de placeholder technique résiduel type « TODO » ou clé brute
           expect(t).not.toMatch(/^(en|tr|ar)\./)
         }

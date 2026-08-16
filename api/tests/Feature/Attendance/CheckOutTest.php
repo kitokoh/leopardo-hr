@@ -36,12 +36,12 @@ class CheckOutTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -86,13 +86,13 @@ class CheckOutTest extends TestCase
             'is_default' => true,
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

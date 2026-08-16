@@ -20,8 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $biometric_mode
  * @property string|null $trusted_device_label
  * @property string|null $sync_token_hash
- * @property Carbon|null $last_seen_at
- * @property Carbon|null $last_sync_at
+ * @property \Carbon\Carbon|null $last_seen_at
+ * @property \Carbon\Carbon|null $last_sync_at
  *
  * @mixin Builder<static>
  */
