@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **refactor(admin): UsersView — dernier pattern de carte legacy remplacé par le token glass-bg (Closes #4575).** Le bloc `<code>` d'affichage du jeton d'impersonation utilisait `bg-white dark:bg-slate-900` (cartes legacy) alors que le design system v4.16.250+ impose les tokens `glass-*`. Migration vers `glass-bg` (bg-white/50 + dark:bg-slate-800/50 + backdrop-blur-sm) — dernier fichier de l'admin avec le pattern `rounded-lg bg-white`.
 - **fix(api): suite Unit verte sur main — 3 tests rouges réparés (Closes #4490).** (1) `TestRtspSsidGuardTest` : le data provider avait été régressé par le merge #3298 (TEST-NET-3 203.0.113.0/24 repassé en « public » et `camera.example.com` — NXDOMAIN en CI) ; restauration de l'intention #3147 (`www.example.com` RFC 2606 + TEST-NET-3 dans privateTargets). (2) `PolicyRegistrationTest` : doublon PA2-ARCH-008 — `AppServiceProvider::boot()` enregistrait encore `Gate::policy(WebhookEndpoint…)` déjà présent dans `AuthServiceProvider::boot()` ; retiré (point d'enregistrement unique restauré).
 
 - **fix(mobile): compatibilité Android marketing avec la matrice Flutter/AGP validée (Closes #4378).** L’application `leopardo_marketing` utilisait encore AGP 8.7.0 et Kotlin 1.8.22 alors que les quatre autres apps utilisaient AGP 8.9.2, Kotlin 2.1.20 et Gradle 8.14.3. La configuration plugin est alignée sur la matrice CI validée, sans modifier les identifiants, variantes, ressources ni URLs d’environnement.

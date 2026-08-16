@@ -185,7 +185,7 @@
             <p class="text-sm font-bold text-emerald-800 dark:text-emerald-300">
               {{ t('users.impersonation.tokenTitle', 'Jeton d’impersonation (usage unique)') }}
             </p>
-            <code class="mt-2 block break-all rounded-lg bg-white p-2 text-xs dark:bg-slate-900">{{ impersonationResult.token }}</code>
+            <code class="mt-2 block break-all rounded-lg glass-bg p-2 text-xs">{{ impersonationResult.token }}</code>
             <p class="mt-2 text-xs text-emerald-700 dark:text-emerald-400">
               {{ t('users.impersonation.expires', 'Expire le :date').replace(':date', new Date(impersonationResult.expires_at).toLocaleString()) }}
             </p>
