@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Auth;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -53,31 +53,31 @@ class SsoConfigureSsrfGuardTest extends TestCase
     public static function privateUrlPayloads(): iterable
     {
         yield 'metadata cloud AWS' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'token_url' => 'https://169.254.169.254/latest/meta-data/iam/security-credentials/'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'token_url' => 'https://169.254.169.254/latest/meta-data/iam/security-credentials/'],
         ];
         yield 'loopback IPv4' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'jwks_uri' => 'https://127.0.0.1:8443/jwks'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'jwks_uri' => 'https://127.0.0.1:8443/jwks'],
         ];
         yield 'RFC1918 10/8' => [
             ['provider' => 'saml', 'sso_url' => 'https://10.0.0.5/sso'],
         ];
         yield 'RFC1918 192.168/16' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'authorize_url' => 'https://192.168.1.10/authorize'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'authorize_url' => 'https://192.168.1.10/authorize'],
         ];
         yield 'localhost' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'token_url' => 'http://localhost:8080/token'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'token_url' => 'http://localhost:8080/token'],
         ];
         yield 'hostname .local' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'jwks_uri' => 'https://keycloak.local/jwks'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'jwks_uri' => 'https://keycloak.local/jwks'],
         ];
         yield 'hostname .internal' => [
             ['provider' => 'saml', 'slo_url' => 'https://idp.internal/slo'],
         ];
         yield 'scheme http' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'redirect_uri' => 'http://app.example.com/callback'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'redirect_uri' => 'http://app.example.com/callback'],
         ];
         yield 'IPv6 loopback' => [
-            ['provider' => 'oidc', 'issuer' => 'https://issuer.example.com', 'token_url' => 'https://[::1]:8443/token'],
+            ['provider' => 'oidc', 'issuer' => 'https://www.example.com', 'token_url' => 'https://[::1]:8443/token'],
         ];
     }
 
@@ -97,10 +97,10 @@ class SsoConfigureSsrfGuardTest extends TestCase
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'oidc',
-                'issuer' => 'https://issuer.example.com',
-                'authorize_url' => 'https://issuer.example.com/authorize',
-                'token_url' => 'https://issuer.example.com/token',
-                'jwks_uri' => 'https://issuer.example.com/jwks',
+                'issuer' => 'https://www.example.com',
+                'authorize_url' => 'https://www.example.com/authorize',
+                'token_url' => 'https://www.example.com/token',
+                'jwks_uri' => 'https://www.example.com/jwks',
                 'client_id' => 'client-1',
             ]);
 

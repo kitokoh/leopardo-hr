@@ -51,7 +51,7 @@ class StoreAbsenceRequest extends FormRequest
             }
 
             if ($endDate < $startDate) {
-                $validator->errors()->add('end_date', 'La date de fin doit être postérieure ou égale à la date de début.');
+                $validator->errors()->add('end_date', __('errors.ABSENCE_END_DATE_AFTER_START'));
             }
         });
     }

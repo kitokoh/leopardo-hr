@@ -74,7 +74,8 @@ return [
     'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
-
+=======
+>>>>>>> origin/main
     'PAYOUT_REQUEST_REFUSED' => 'Demande de paiement refusee.',
     'PAYOUT_REQUEST_FAILED' => 'Une erreur est survenue lors de la demande de paiement.',
     'COMPANY_MODE_FORCED' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
@@ -93,7 +94,7 @@ return [
     'CONTRACT_ACTIVATION_INVALID_STATE' => 'Seuls les contrats au statut brouillon peuvent être activés.',
     'CONTRACT_SUSPENSION_INVALID_STATE' => 'Seuls les contrats actifs peuvent être suspendus.',
     'CONTRACT_TERMINATION_INVALID_STATE' => 'Le contrat doit être actif ou suspendu pour être rompu.',
-
+<<<<<<< HEAD
     // Trial signup (audit #4395)
     'ALREADY_PROCESSED' => "Cette demande d'essai a déjà été traitée.",
     'INVALID_OR_EXPIRED_CODE' => 'Code de vérification invalide ou expiré.',
@@ -101,6 +102,33 @@ return [
     'INVALID_COUNTRY' => "Le pays du signup est invalide ou non supporté. Veuillez recommencer l'inscription.",
     'NO_PLAN_AVAILABLE' => "Le service d'essai est temporairement indisponible.",
     'PROVISIONING_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.',
+    'PARTNER_APPLICATION_ALREADY_SUBMITTED' => 'Cette candidature a déjà été soumise.',
+    'PAYOUT_REQUEST_REJECTED' => 'Demande de paiement refusée.',
+    'NOT_A_PARTNER' => 'Vous n\'êtes pas enregistré comme partenaire.',
+    'SSO_CONFIGURED' => 'SSO configuré avec succès.',
+    'SSO_DISABLED' => 'SSO désactivé.',
+    'OIDC_SIGNIN_SUCCESS' => 'Connexion OIDC réussie.',
+    'GOOGLE_AUTH_FAILED' => 'Authentification Google indisponible.',
+    'GOOGLE_TOKEN_INVALID' => 'Le jeton Google est invalide ou expiré.',
+    'GOOGLE_ACCOUNT_NOT_FOUND' => 'Aucun compte associé à ce compte Google.',
+    'GOOGLE_INVITATION_REQUIRED' => 'Aucun compte n\'existe pour cet email Google. Demandez une invitation à votre administrateur.',
+    'NO_ACTIVE_SUBSCRIPTION' => 'Aucun abonnement actif.',
+    'STRIPE_NOT_CONFIGURED' => 'Le paiement en ligne n\'est pas encore configuré.',
+    'BILLING_PORTAL_FAILED' => 'Impossible d\'accéder au portail de facturation.',
+    'CANNOT_DISABLE_OWN_ACCOUNT' => 'Impossible de désactiver votre propre compte.',
+    'CANNOT_SUSPEND_OWN_ACCOUNT' => 'Impossible de suspendre votre propre compte.',
+    'PAYROLL_COUNTRY_MISMATCH' => 'Le pays de la structure doit correspondre au pays légal du tenant (:country).',
+    'COUNTRY_NOT_SUPPORTED' => 'Le pays de la demande est invalide ou non supporté (:countries).',
+    'ABSENCE_END_DATE_AFTER_START' => 'La date de fin doit être postérieure ou égale à la date de début.',
+    'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Le départ manuel nécessite une heure d\'arrivée.',
+    'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
+    'TRIAL_STEP_LOGIN' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',
+    'TRIAL_STEP_CHANGE_PASSWORD' => 'Changez votre mot de passe dès la première connexion.',
+    'TRIAL_STEP_ADD_EMPLOYEES' => 'Ajoutez vos premiers employés via QR ou manuellement.',
+    'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Le run de paie ne peut pas être annulé dans son état actuel.',
+    'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Votre compte a été suspendu. Contactez votre administrateur.',
+    'VERIFICATION_CODE_INVALID' => 'Code de vérification invalide ou expiré.',
+    'TRIAL_SPACE_CREATION_FAILED' => 'Erreur lors de la création de votre espace. Veuillez réessayer.', origin/main
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
