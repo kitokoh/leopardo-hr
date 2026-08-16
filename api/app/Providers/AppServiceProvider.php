@@ -8,9 +8,11 @@ use App\AI\Providers\OpenAIClient;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\TenantManager;
 use App\Modules\Billing\Domain\Enums\PlanCode;
+use App\Modules\Billing\Domain\Models\WebhookEndpoint;
 use App\Modules\Payroll\Infrastructure\Services\IslamicCalendarService;
 use App\Modules\Payroll\Infrastructure\Services\PublicHolidayService;
 use App\Policies\ExportPolicy;
+use App\Policies\WebhookEndpointPolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -68,6 +70,8 @@ class AppServiceProvider extends ServiceProvider
         // PA2-ARCH-008 : point d'enregistrement unique. Tous les Gate::policy(...)
         // vivent desormais exclusivement dans AuthServiceProvider::boot() ; ce
         // provider ne garde que les Gate::define(...) qui n'y sont pas dupliques.
+        Gate::policy(WebhookEndpoint::class, WebhookEndpointPolicy::class);
+
         Gate::define('export', [ExportPolicy::class, 'export']);
         Gate::define('viewExportHistory', [ExportPolicy::class, 'viewHistory']);
         Gate::define('downloadExport', [ExportPolicy::class, 'download']);
