@@ -228,7 +228,7 @@ async function fetchHistory() {
   try {
     // Issue #2710 — un échec backend s'affiche comme une erreur explicite
     // (plus de catch silencieux qui ressemble à « aucun export »).
-    const res = await api.get('/export/history', { _skipAuthRedirect: true })
+    const res = await api.get('/export/history', { _skipAuthRedirect: true, _skipToast: true })
     exportHistory.value = res.data.data || res.data || []
   } catch (err) {
     // #3395 : état d'erreur visible + retry au lieu d'une liste vide trompeuse.

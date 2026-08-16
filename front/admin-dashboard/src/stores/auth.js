@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import api from '@/services/api'
 import { useLocaleStore } from '@/stores/locale.js'
+import { translate } from '@/i18n/index.js'
 
 const PLATFORM_AUTH_BASE = '/platform/auth'
 const PLATFORM_DEVICE_NAME = 'leo-admin-dashboard'
@@ -27,6 +28,16 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref(storage.getToken())
   const isLoading = ref(false)
 
+  /** Traduit une clé i18n dans la locale courante (#4712). */
+  function t(key, fallback = '') {
+    try {
+      const locale = useLocaleStore().current
+      return translate(locale, key, fallback)
+    } catch {
+      return fallback
+    }
+  }
+
   const isAuthenticated = computed(() => !!token.value && !!user.value)
   const userRole = computed(() => user.value?.role || null)
   const userName = computed(() => user.value?.name || '')
@@ -45,7 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
         return {
           success: false,
           requiresTwoFactor: true,
-          message: response.data?.message || 'Un code de verification est requis.',
+          message: response.data?.localized_message || response.data?.message || t('auth.two_fa_required_msg', 'Un code de vérification est requis.'),
         }
       }
 
@@ -56,7 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
         return {
           success: false,
           requiresTwoFactor: false,
-          message: 'La reponse de connexion est incomplete.',
+          message: t('auth.incomplete_response', 'La réponse de connexion est incomplète.'),
         }
       }
 
@@ -77,7 +88,7 @@ export const useAuthStore = defineStore('auth', () => {
         requiresTwoFactor: false,
         message: error.response?.data?.localized_message
           || error.response?.data?.message
-          || 'Erreur de connexion',
+          || t('auth.connection_error', 'Erreur de connexion.'),
       }
     } finally {
       isLoading.value = false
@@ -149,7 +160,7 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         error: error.response?.data?.error,
-        message: error.response?.data?.message || 'La mise a jour du profil a echoue.',
+        message: error.response?.data?.localized_message || error.response?.data?.message || t('auth.profile_update_failed', 'La mise à jour du profil a échoué.'),
       }
     }
   }
@@ -163,7 +174,7 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         error: error.response?.data?.error,
-        message: error.response?.data?.message || 'Le changement de mot de passe a echoue.',
+        message: error.response?.data?.localized_message || error.response?.data?.message || t('auth.password_change_failed', 'Le changement de mot de passe a échoué.'),
       }
     }
   }
@@ -177,7 +188,7 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         error: error.response?.data?.error,
-        message: error.response?.data?.message || 'La generation du secret 2FA a echoue.',
+        message: error.response?.data?.localized_message || error.response?.data?.message || t('auth.two_fa_setup_failed', 'La génération du secret 2FA a échoué.'),
       }
     }
   }
@@ -194,7 +205,7 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         error: error.response?.data?.error,
-        message: error.response?.data?.message || 'Le code 2FA fourni est invalide.',
+        message: error.response?.data?.localized_message || error.response?.data?.message || t('auth.two_fa_invalid', 'Le code 2FA fourni est invalide.'),
       }
     }
   }
@@ -211,7 +222,7 @@ export const useAuthStore = defineStore('auth', () => {
       return {
         success: false,
         error: error.response?.data?.error,
-        message: error.response?.data?.message || 'La desactivation du 2FA a echoue.',
+        message: error.response?.data?.localized_message || error.response?.data?.message || t('auth.disable_two_fa_failed', 'La désactivation du 2FA a échoué.'),
       }
     }
   }

@@ -250,6 +250,9 @@ api.interceptors.response.use(
           break
 
         default: {
+          // _skipToast opt-out (#4713) : permet aux vues qui gèrent
+          // l'erreur localement de ne pas afficher un second toast.
+          if (originalRequest?._skipToast) break
           const msg = contextualErrorMessage(status, data, requestUrl)
           if (msg) {
             toast.error(msg)

@@ -499,7 +499,15 @@
     "login": {
       "title": "Giris yap"
     },
-    "email_required": "E-posta zorunlu"
+    "email_required": "E-posta zorunlu",
+    "two_fa_required_msg": "Doğrulama kodu gerekli.",
+    "incomplete_response": "Giriş yanıtı eksik.",
+    "connection_error": "Bağlantı hatası.",
+    "profile_update_failed": "Profil güncellemesi başarısız.",
+    "password_change_failed": "Şifre değiştirme başarısız.",
+    "two_fa_setup_failed": "2FA sırrı oluşturma başarısız.",
+    "two_fa_invalid": "Sağlanan 2FA kodu geçersiz.",
+    "disable_two_fa_failed": "2FA devre dışı bırakma başarısız."
   },
   "social_contrib": {
     "ignore_caps": "Yasal tavan olmadan",

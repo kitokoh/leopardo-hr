@@ -60,7 +60,15 @@
     "manager_login_subtitle": "Connexion Manager / RH",
     "email_label": "Email",
     "password_too_short": "Mot de passe trop court",
-    "activate_manager_access": "Activer mon acces manager"
+    "activate_manager_access": "Activer mon acces manager",
+    "two_fa_required_msg": "Un code de vérification est requis.",
+    "incomplete_response": "La réponse de connexion est incomplète.",
+    "connection_error": "Erreur de connexion.",
+    "profile_update_failed": "La mise à jour du profil a échoué.",
+    "password_change_failed": "Le changement de mot de passe a échoué.",
+    "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
+    "two_fa_invalid": "Le code 2FA fourni est invalide.",
+    "disable_two_fa_failed": "La désactivation du 2FA a échoué."
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"

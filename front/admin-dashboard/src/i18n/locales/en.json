@@ -724,7 +724,15 @@
     "back_tooltip": "Back",
     "email_label": "Email",
     "password_required": "Password required",
-    "try_demo_account": "Try a demo account"
+    "try_demo_account": "Try a demo account",
+    "two_fa_required_msg": "A verification code is required.",
+    "incomplete_response": "The login response is incomplete.",
+    "connection_error": "Connection error.",
+    "profile_update_failed": "Profile update failed.",
+    "password_change_failed": "Password change failed.",
+    "two_fa_setup_failed": "2FA secret generation failed.",
+    "two_fa_invalid": "The 2FA code provided is invalid.",
+    "disable_two_fa_failed": "2FA deactivation failed."
   },
   "marketing": {
     "oauth": {

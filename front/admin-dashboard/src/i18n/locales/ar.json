@@ -789,7 +789,15 @@
     "email_label": "البريد الالكتروني",
     "continue_with_google": "الاستمرار مع Google",
     "email_invalid": "بريد الكتروني غير صالح",
-    "password_too_short": "كلمة المرور قصيرة جدا"
+    "password_too_short": "كلمة المرور قصيرة جدا",
+    "two_fa_required_msg": "مطلوب رمز التحقق.",
+    "incomplete_response": "استجابة تسجيل الدخول غير مكتملة.",
+    "connection_error": "خطأ في الاتصال.",
+    "profile_update_failed": "فشل تحديث الملف الشخصي.",
+    "password_change_failed": "فشل تغيير كلمة المرور.",
+    "two_fa_setup_failed": "فشل إنشاء مفتاح 2FA.",
+    "two_fa_invalid": "رمز 2FA المقدم غير صالح.",
+    "disable_two_fa_failed": "فشل تعطيل 2FA."
   },
   "app": {
     "title": "ليوباردو للموارد البشرية"
