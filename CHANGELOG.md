@@ -382,6 +382,7 @@
 ### Fixed
 - **Vitrine FAQ** (#4321) : accordéon inutilisable sur les pages modules (items sans `id`) — identifiant unifié + `aria-expanded`/`aria-controls` ; tests Jest ajoutés.
 ### Fixed
+- **Admin SystemView** (#4328) : `GET /admin/metrics/overview` (404) → `GET /platform/metrics/overview` — la carte Infrastructure remonte enfin les agrégats.
 - **API paie** (#4310) : `PayrollRunController` — `localized_message` passe par le catalogue `errors.*` (fini le message d'exception brut FR) ; code dédié `PAYROLL_RUN_NOT_VALIDATED` pour le lock avant validation ; 3 tests de contrat mis à jour (2 rouges pré-existants sur main réparés).
 ### Fixed
 - **Vitrine** : (#4322) ancre `/docs#intro` restaurée + aria-label search docs ; (#4323) a11y — newsletter email, docs search, OTP signup nommés ; (#4324) `aria-label` fermer localisé ×4 (dashboard social) ; (#4326) `useId()` Textarea (hydration SSR) + `Select.tsx` mort supprimé ; (#4327) /contact adresse/horaires localisés ×4.
