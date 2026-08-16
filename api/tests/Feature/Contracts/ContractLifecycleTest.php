@@ -60,7 +60,7 @@ class ContractLifecycleTest extends TestCase
         return Contract::create([
             'company_id' => $companyId ?? '11111111-1111-1111-1111-111111111111',
             'employee_id' => 1,
-            'contract_type' => 'CDI',
+            'contract_type' => 'cdi',
             'start_date' => now()->toDateString(),
             'base_salary' => 100000,
             'status' => $status,

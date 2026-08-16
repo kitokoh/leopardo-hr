@@ -291,7 +291,8 @@
       "created": "تم إنشاء جلسة انتحال الصفة",
       "error": "خطأ في إنشاء جلسة انتحال الصفة",
       "done": "تم",
-      "employee": "الموظف المرتبط #:id"
+      "employee": "الموظف المرتبط #:id",
+      "copyFailed": "تعذّر نسخ الرمز تلقائياً. انسخه يدوياً من الحقل أعلاه."
     },
     "actions": {
       "bulk": "إجراءات (:count)",
@@ -362,7 +363,8 @@
       }
     },
     "confirm": {
-      "delete": "هل انت متأكد من رغبتك في حذف :name؟"
+      "delete": "هل انت متأكد من رغبتك في حذف :name؟",
+      "title": "حذف هذا المستخدم؟"
     },
     "page": {
       "summary": ":count مستخدم - :active نشط - :newToday جديد اليوم",
@@ -439,7 +441,9 @@
     "th_min": "الحد الأدنى",
     "sim_slab_tax": "ضريبة الشريحة",
     "add": "إضافة شريحة",
-    "sim_gross": "الراتب الإجمالي"
+    "sim_gross": "الراتب الإجمالي",
+    "delete_confirm_title": "حذف هذا الشريحة الضريبية؟",
+    "reset_confirm_title": "إعادة تعيين الشرائح الضريبية؟"
   },
   "companies": {
     "toast": {
@@ -593,7 +597,10 @@
     "placeholder": "اكتب رسالتك...",
     "thinking": "جارٍ التفكير...",
     "error": "عذرًا، حدث خطأ. يرجى المحاولة مرة أخرى.",
-    "conversation": "محادثة"
+    "conversation": "محادثة",
+    "historyError": "تعذر تحميل المحادثات.",
+    "messagesError": "تعذر تحميل الرسائل.",
+    "retry": "إعادة المحاولة"
   },
   "_updated_at": "2026-08-14T18:45:00Z",
   "attendance": {
@@ -638,7 +645,8 @@
     "created": "تم إنشاء الاشتراك.",
     "delete_error": "تعذّر الحذف.",
     "sim_gross": "الراتب الإجمالي",
-    "add_title": "إضافة اشتراك"
+    "add_title": "إضافة اشتراك",
+    "delete_confirm_title": "حذف هذا الاشتراك؟"
   },
   "auth": {
     "manager_login_subtitle": "تسجيل دخول المدير / الموارد البشرية",
@@ -776,7 +784,9 @@
       "confirm": "تأكيد {year}",
       "edit": "تعديل",
       "saved": "تم حفظ العيد الإسلامي.",
-      "th_duration": "المدة"
+      "th_duration": "المدة",
+      "confirm_title": "تأكيد السنة؟",
+      "delete_confirm_title": "حذف هذه العطلة؟"
     },
     "page": {
       "subtitle": "تقويم العطل الرسمية الذي يستخدمه محرك الأجور لحساب أيام العمل الفعلية (issue #1811). العطل الوطنية مشتركة، أما عطل المؤسسة فتبقى خاصة بشركتك.",
@@ -855,7 +865,10 @@
     "confirm_delete": "حذف خطاف الويب هذا؟"
   },
   "a11y": {
-    "skip_to_content": "الانتقال إلى المحتوى الرئيسي"
+    "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
+    "close": "إغلاق",
+    "previous_month": "الشهر السابق",
+    "next_month": "الشهر التالي"
   },
   "shell": {
     "connected": "متصل",
@@ -899,7 +912,10 @@
     "statusInProgress": "قيد التنفيذ",
     "statusFailed": "فشل",
     "download": "تنزيل",
-    "downloading": "جاري التنزيل..."
+    "downloading": "جاري التنزيل...",
+    "historyClientOnly": "سجل التصدير متاح في مساحة العميل",
+    "clientSpaceNote": "متاح في مساحة العميل",
+    "historyError": "تعذّر تحميل سجل التصدير."
   },
   "companyDetail": {
     "analyzing": "جاري تحليل بيانات العميل...",
@@ -926,5 +942,45 @@
     "countryCurrency": "البلد / العملة",
     "registeredOn": "مسجل في",
     "lastActivity": "آخر نشاط"
+  },
+  "support": {
+    "title": "طلبات العملاء",
+    "subtitle": "استقبال تجاري، تأهيل والتحقق من الشركات الجديدة.",
+    "refresh": "تحديث",
+    "kpiTotal": "إجمالي الطلبات",
+    "kpiPending": "قيد الانتظار",
+    "kpiApproved": "تمت الموافقة",
+    "kpiRejected": "مرفوض",
+    "queueTitle": "قائمة التأهيل",
+    "queueSub": "أولوية العملاء المحتملين لتسريع النشر.",
+    "syncing": "جارٍ مزامنة الطلبات...",
+    "retry": "إعادة المحاولة",
+    "empty": "لا توجد طلبات",
+    "statusPending": "قيد الانتظار",
+    "statusApproved": "تمت الموافقة",
+    "statusRejected": "مرفوض",
+    "filterAll": "الكل",
+    "filterPending": "للمراجعة",
+    "filterApproved": "المقبولة",
+    "filterRejected": "المرفوضة",
+    "sectorUnknown": "القطاع غير محدد",
+    "cityUnknown": "مدينة غير معروفة",
+    "countryUnknown": "بلد غير معروف",
+    "noDescription": "لا يوجد وصف.",
+    "emailLabel": "بريد التواصل",
+    "phoneLabel": "الهاتف",
+    "notProvided": "غير محدد",
+    "reviewedBy": "تمت المراجعة بواسطة",
+    "systemAdmin": "مدير النظام",
+    "internalNotes": "ملاحظات داخلية",
+    "notesPlaceholder": "قيّم شرعية العميل المحتمل وحجم الشركة...",
+    "reject": "رفض",
+    "approve": "موافقة",
+    "finalDecision": "القرار النهائي: ",
+    "showingPrefix": "عرض",
+    "showingSuffix": "طلبات",
+    "loadError": "تعذرت مزامنة طلبات العملاء.",
+    "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
+    "toastRejected": "تم رفض الطلب."
   }
 }

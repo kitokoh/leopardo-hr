@@ -94,8 +94,12 @@ Assert-Contains `
     "Mobile Apps CI"
 
 # PR #1396 extracted mobile distribution from deploy-main.yml into the
-# dedicated mobile-distribute-main.yml workflow. The checks that were
-# previously on deploy-main.yml are now on mobile-distribute-main.yml.
+# dedicated mobile-distribute-main.yml workflow — the auto-trigger
+# (`push: [main]` + `front/mobile_apps/**`) lives THERE, not in
+# mobile-distribute.yml (qui ne garde que les tags staging/prod et le
+# workflow_dispatch manuel). Régression 2026-08-16 : l'assertion visait
+# encore mobile-distribute.yml → « Mobile apps split guard » rouge sur
+# chaque push main (#4388).
 $deployMain = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/deploy-main.yml") -Raw
 $mobileDistribute = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-distribute.yml") -Raw
 $mobileDistributeMain = Get-Content -LiteralPath (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") -Raw
@@ -104,8 +108,8 @@ Assert-Contains $mobileDistributeMain "leopardo_platform_admin" "Deploy main mob
 Assert-Contains $mobileDistributeMain "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Deploy main mobile distribution"
 Assert-Contains $mobileDistributeMain "leopardo-platform-admin-staging" "Deploy main mobile distribution"
 
-Assert-Contains $mobileDistribute "branches:" "Mobile distribute auto trigger"
-Assert-Contains $mobileDistribute "front/mobile_apps/**" "Mobile distribute auto trigger"
+Assert-Contains $mobileDistributeMain "branches:" "Mobile distribute auto trigger"
+Assert-Contains $mobileDistributeMain "front/mobile_apps/**" "Mobile distribute auto trigger"
 Assert-Contains $mobileDistribute "type: string" "Mobile distribute dispatch schema"
 Assert-Contains $mobileDistribute "platform_admin" "Mobile distribute app selector"
 Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute matrix"
