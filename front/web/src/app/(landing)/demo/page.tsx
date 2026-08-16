@@ -382,7 +382,7 @@ export default function DemoPage() {
                       <label htmlFor="demo-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.name}
                       </label>
-                      <input
+                      <input id="name"
                         type="text"
                         id="demo-name"
                     name="name"
@@ -398,7 +398,7 @@ export default function DemoPage() {
                       <label htmlFor="demo-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.email}
                       </label>
-                      <input
+                      <input id="email"
                         type="email"
                         id="demo-email"
                     name="email"
@@ -414,7 +414,7 @@ export default function DemoPage() {
                       <label htmlFor="demo-company" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.company}
                       </label>
-                      <input
+                      <input id="company"
                         type="text"
                         id="demo-company"
                     name="company"
@@ -430,7 +430,7 @@ export default function DemoPage() {
                       <label htmlFor="demo-phone" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.phone}
                       </label>
-                      <input
+                      <input id="phone"
                         type="tel"
                         id="demo-phone"
                     name="phone"
@@ -465,7 +465,7 @@ export default function DemoPage() {
                       <label htmlFor="demo-preferredDate" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.preferredDate}
                       </label>
-                      <input
+                      <input id="preferredDate"
                         type="date"
                         id="demo-preferredDate"
                     name="preferredDate"
@@ -479,7 +479,7 @@ export default function DemoPage() {
                       <label htmlFor="demo-message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                         {copy.fields.message}
                       </label>
-                      <textarea
+                      <textarea id="message"
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
