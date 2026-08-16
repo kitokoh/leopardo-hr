@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(web): /changelog réparé — `getChangelogReleases(locale)` ajouté au module de données + dédoublonnage des `id` du formulaire /demo (régression merge #4633×#4666).** Le merge #4673 (fix #4610) appelait `getChangelogReleases(locale)` jamais défini → tsc rouge sur main (TS2305). La fonction retourne les releases publiques (résiduel : localisation du contenu des releases — #4675). Par ailleurs, les implémentations parallèles #4633/#4666 du fix a11y #4613 ont fusionné en `id` dupliqués sur le formulaire /demo → dé-dupliqués (un seul id par champ, labels `htmlFor` cohérents).
 - **docs(qa): session swe-qa-360 2026-08-16 — bilan complet (audit 360°, merge drain, 3 doublons fermés, implémentation #4575).** Bilan : docs/qa/QA_SESSION_2026-08-16-swe-qa-360.md + leçon CI (événements synchronize non créés sous saturation → nudge commit vide + cancel des runs queued supersédés) ajoutée à AGENTS.md.
 
 - **fix(api): CorsAndTrustedProxyTest vert — assertion du pattern CORS Pages alignée sur la regex canonique (Closes #4667).** Le test assertait encore le glob `https://*.pages.dev` remplacé par la regex `#^https://([a-z0-9-]+\.)*pages\.dev$#i` le 2026-08-15 (44e88ccc8, #2333 — le glob crashait en 500 sur les previews). Nouvelle assertion structurelle : chaque pattern doit être une regex preg_match valide matchant `https://preview-123.pages.dev`, jamais `*`.
