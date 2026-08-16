@@ -16,11 +16,6 @@ function resolveAdminLocale() {
 }
 import { useToast } from 'vue-toastification'
 
-/** #4621 : messages d'erreur de la couche service localisés (4 catalogues admin). */
-function t(key, fallback = '') {
-  return translate(resolveAdminLocale(), key, fallback)
-}
-
 const ERROR_BREADCRUMBS = []
 const MAX_BREADCRUMBS = 50
 
