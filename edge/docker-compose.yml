@@ -9,7 +9,10 @@ services:
 
   # ── Edge API (Laravel slim) ──────────────────────────────
   edge-api:
-    image: leopardo/edge-api:latest
+    # Issue #3972 : tag versionné (publish.sh → leopardo/edge-api:1.0.0,
+    # Dockerfile.publish LABEL version=1.0.0) — jamais de :latest flottant qui
+    # upgrade/casse silencieusement chaque nœud client.
+    image: leopardo/edge-api:1.0.0
     container_name: leopardo-edge-api
     restart: unless-stopped
     environment:
@@ -42,7 +45,7 @@ services:
 
   # ── Edge Web UI (Next.js static export) ─────────────────
   edge-ui:
-    image: leopardo/edge-ui:latest
+    image: leopardo/edge-ui:1.0.0
     container_name: leopardo-edge-ui
     restart: unless-stopped
     environment:
@@ -57,7 +60,7 @@ services:
 
   # ── Sync Daemon ─────────────────────────────────────────
   edge-sync:
-    image: leopardo/edge-api:latest
+    image: leopardo/edge-api:1.0.0
     container_name: leopardo-edge-sync
     restart: unless-stopped
     command: ["php", "artisan", "edge:sync-daemon"]
@@ -79,7 +82,7 @@ services:
 
   # ── Caddy Reverse Proxy (http://leopardo.local) ──────────
   edge-proxy:
-    image: caddy:2-alpine
+    image: caddy:2.9-alpine
     container_name: leopardo-edge-proxy
     restart: unless-stopped
     ports:
