@@ -8,8 +8,14 @@ import type { AppLocale } from '@/lib/i18n';
 
 // Issue #3923 : les métadonnées suivent la locale SSR (Accept-Language) —
 // plus de titre/description FR pour les visiteurs en/tr/ar.
+// #4201 : ?lang= (x-vitrine-lang, normalisé par le middleware) prime sur
+// Accept-Language — parité avec les autres layouts de la vitrine.
 const getSsrLocale = cache(async (): Promise<AppLocale> => {
   const headerList = await headers();
+  const lang = headerList.get('x-vitrine-lang');
+  if (lang && (['fr', 'en', 'ar', 'tr'] as const).includes(lang as AppLocale)) {
+    return lang as AppLocale;
+  }
   const base = (headerList.get('accept-language') ?? '')
     .split(',')[0]
     .trim()
@@ -50,6 +56,8 @@ export async function generateMetadata({
     ogImage: post.image,
     ogType: 'article',
     canonical: `${SITE_URL}/blog/${post.slug}`,
+    // #4201 : og:locale + canonical ?lang= alignés sur la locale rendue.
+    locale,
     publishedTime: post.date.toISOString(),
     author: post.author.name,
   });
