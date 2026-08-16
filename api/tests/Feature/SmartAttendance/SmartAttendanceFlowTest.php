@@ -38,10 +38,9 @@ class SmartAttendanceFlowTest extends TestCase
     {
         parent::setUp();
 
-        // Le schéma MVP ne crée pas les tables SmartAttendance (elles sont
-        // seulement droppées par le trait) — on les crée ici, alignées sur
-        // les migrations tenant/2026_06_29_0002xx.
-        $this->createSmartAttendanceSchema();
+        // #4243 : les tables SmartAttendance sont créées par les migrations
+        // tenant (2026_06_29_000201..000205) via RefreshTenantDatabase —
+        // plus de DDL manuel (qui était en syntaxe MySQL, invalide sur pgsql).
 
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ']);
@@ -65,91 +64,9 @@ class SmartAttendanceFlowTest extends TestCase
 
     protected function tearDown(): void
     {
-        // RefreshTenantDatabase (migrate:fresh) nettoie la base entre tests ;
-        // on droppe quand même les tables SmartAttendance créées manuellement
-        // (le schéma MVP ne les porte pas) pour un état propre.
-        DB::statement('DROP TABLE IF EXISTS employee_location_events');
-        DB::statement('DROP TABLE IF EXISTS geo_attendance_sessions');
-        DB::statement('DROP TABLE IF EXISTS attendance_mode_settings');
+        // Les tables SmartAttendance sont gérées par RefreshTenantDatabase
+        // (migrations tenant) — aucun drop manuel nécessaire (#4243).
         parent::tearDown();
-    }
-
-    private function createSmartAttendanceSchema(): void
-    {
-        DB::statement('DROP TABLE IF EXISTS employee_location_events');
-        DB::statement('DROP TABLE IF EXISTS geo_attendance_sessions');
-        DB::statement('DROP TABLE IF EXISTS attendance_mode_settings');
-        DB::statement('DROP TABLE IF EXISTS employee_attendance_preferences');
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE geo_attendance_sessions (
-                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                employee_id INT UNSIGNED NOT NULL,
-                company_id CHAR(36) NOT NULL,
-                site_id INT UNSIGNED NULL,
-                started_at TIMESTAMP NULL,
-                ended_at TIMESTAMP NULL,
-                duration_seconds INT UNSIGNED NULL,
-                check_in_lat DECIMAL(10, 8) NOT NULL,
-                check_in_lng DECIMAL(11, 8) NOT NULL,
-                check_in_accuracy_meters SMALLINT UNSIGNED NULL,
-                check_out_lat DECIMAL(10, 8) NULL,
-                check_out_lng DECIMAL(11, 8) NULL,
-                check_out_accuracy_meters SMALLINT UNSIGNED NULL,
-                attendance_log_id BIGINT UNSIGNED NULL,
-                validated_by INT UNSIGNED NULL,
-                validated_at TIMESTAMP NULL,
-                validation_note TEXT NULL,
-                status VARCHAR(20) NOT NULL DEFAULT 'detected',
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE employee_location_events (
-                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                employee_id INT UNSIGNED NOT NULL,
-                company_id CHAR(36) NOT NULL,
-                geo_session_id BIGINT UNSIGNED NULL,
-                event_type VARCHAR(30) NOT NULL,
-                latitude DECIMAL(10, 8) NULL,
-                longitude DECIMAL(11, 8) NULL,
-                accuracy_meters SMALLINT UNSIGNED NULL,
-                device_timestamp TIMESTAMP NULL,
-                metadata JSON NULL,
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE attendance_mode_settings (
-                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                company_id CHAR(36) NOT NULL UNIQUE,
-                forced_mode VARCHAR(20) NULL,
-                gps_enabled TINYINT(1) NOT NULL DEFAULT 0,
-                latitude DECIMAL(10, 8) NULL,
-                longitude DECIMAL(11, 8) NULL,
-                radius_meters SMALLINT UNSIGNED NOT NULL DEFAULT 100,
-                allow_employee_override TINYINT(1) NOT NULL DEFAULT 1,
-                requires_punch_photo TINYINT(1) NOT NULL DEFAULT 0,
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
-
-        DB::statement(<<<'SQL'
-            CREATE TABLE employee_attendance_preferences (
-                id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                employee_id INT UNSIGNED NOT NULL,
-                preferred_mode VARCHAR(20) NOT NULL DEFAULT 'manual',
-                gps_consent_given TINYINT(1) NOT NULL DEFAULT 0,
-                gps_consent_at TIMESTAMP NULL,
-                created_at TIMESTAMP NULL,
-                updated_at TIMESTAMP NULL
-            )
-            SQL);
     }
 
     /** @param array<string, mixed> $overrides
@@ -203,8 +120,6 @@ class SmartAttendanceFlowTest extends TestCase
 
     public function test_zone_enter_outside_geofence_returns_422(): void
     {
-        Sanctum::actingAs($this->employee);
-
         // Géofence entreprise : centre Alger, rayon 100 m.
         $this->company->forceFill([
             'metadata' => [
@@ -215,6 +130,14 @@ class SmartAttendanceFlowTest extends TestCase
                 ],
             ],
         ])->save();
+
+        // #4243 : re-fetch l'employé APRÈS la sauvegarde metadata — le
+        // hook `saved` → syncUserLookup() a caché la relation `company`
+        // (avec metadata vide) sur l'instance en mémoire ; la production
+        // réhydrate l'employé par requête (findTenantEmployee), donc le
+        // test doit faire de même pour voir la géofence.
+        $this->employee = Employee::query()->findOrFail($this->employee->id);
+        Sanctum::actingAs($this->employee);
 
         // Position très loin (Oran) → hors zone.
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', $this->geoEvent([
