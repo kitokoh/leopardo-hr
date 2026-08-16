@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\Core\Tenant\Domain\Models\Company;
-use App\Core\Auth\Domain\Models\Employee;
-
 class RoleInvitationService
 {
     /**
@@ -15,35 +12,41 @@ class RoleInvitationService
      */
     public static function getAppDownloadLink(string $role, string $managerRole, string $platform = 'both'): array
     {
-        return match($managerRole) {
-            'rh'        => [
+        // #4180 : le lien iOS provient de la config (env LEOPARDO_IOS_APP_LINKS) ;
+        // null tant que l'app n'est pas publiée sur l'App Store. Ne jamais
+        // réintroduire d'identifiant placeholder id000000000*.
+        /** @var array<string, string|null> $iosLinks */
+        $iosLinks = config('services.mobile_app_links.ios', []);
+
+        return match ($managerRole) {
+            'rh' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.rh',
-                'ios'     => 'https://apps.apple.com/app/leopardo-rh/id0000000002',
-                'name'    => 'Leopardo RH',
+                'ios' => $iosLinks['rh'] ?? null,
+                'name' => 'Leopardo RH',
                 'deep_link_scheme' => 'leopardo-rh',
             ],
             'comptable' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.comptable',
-                'ios'     => 'https://apps.apple.com/app/leopardo-comptable/id0000000003',
-                'name'    => 'Leopardo Comptable',
+                'ios' => $iosLinks['comptable'] ?? null,
+                'name' => 'Leopardo Comptable',
                 'deep_link_scheme' => 'leopardo-comptable',
             ],
             'marketing' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.marketing',
-                'ios'     => 'https://apps.apple.com/app/leopardo-marketing/id0000000004',
-                'name'    => 'Leopardo Marketing',
+                'ios' => $iosLinks['marketing'] ?? null,
+                'name' => 'Leopardo Marketing',
                 'deep_link_scheme' => 'leopardo-marketing',
             ],
             'principal' => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.admin',
-                'ios'     => 'https://apps.apple.com/app/leopardo-admin/id0000000001',
-                'name'    => 'Leopardo Admin',
+                'ios' => $iosLinks['principal'] ?? null,
+                'name' => 'Leopardo Admin',
                 'deep_link_scheme' => 'leopardo-admin',
             ],
             default => [
                 'android' => 'https://play.google.com/store/apps/details?id=com.leopardo.employee',
-                'ios'     => 'https://apps.apple.com/app/leopardo-employee/id0000000000',
-                'name'    => 'Leopardo Employee',
+                'ios' => $iosLinks['employee'] ?? null,
+                'name' => 'Leopardo Employee',
                 'deep_link_scheme' => 'leopardo-employee',
             ],
         };
@@ -67,4 +70,3 @@ class RoleInvitationService
         return __("emails.{$key}");
     }
 }
-

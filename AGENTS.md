@@ -841,3 +841,6 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
 
 ### 2026-08-16 - Migrations PostgreSQL concurrentes
 - `Schema::hasColumn()` suivi de `Schema::table()` n'est pas atomique sous Render/Neon : plusieurs processus peuvent franchir le test puis provoquer `SQLSTATE[42701] Duplicate column`. Pour les réconciliations additives publiques, utiliser `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` avec un schéma explicitement résolu et ne pas avaler les autres erreurs (issue #4123).
+
+### 2026-08-16 - Défauts de config vs défauts de seeder (racine #2646)
+- Un défaut de config peut diverger silencieusement du défaut d'un seeder qui crée le même objet (`config/demo.php` fixait `super_admin_email` à `admin@example.com` alors que `SuperAdminSeeder` crée `admin@leopardo-rh.com` → `syncDemoSuperAdmin` ciblait un compte inexistant → no-op silencieux → INVALID_CREDENTIALS pour le parcours démo, issue #3775). Règle : dès qu'un seeder lit `env('X', default)`, la config correspondante DOIT porter le même défaut, et tout sync « démo » sur un compte absent DOIT émettre un warning (pas de no-op silencieux).
