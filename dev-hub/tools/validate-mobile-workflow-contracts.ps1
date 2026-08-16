@@ -16,13 +16,20 @@ function Get-Relative([string]$path) {
     return Resolve-Path -LiteralPath $path -Relative
 }
 
-function Get-DartContent([string]$root, [string[]]$excludeFiles = @()) {
+function Get-DartContent([string]$root, [string[]]$ExcludePatterns = @()) {
+    # Les mocks API (mock_interceptor.dart, leopardo_core) portent des chemins
+    # d'endpoints ('/attendance', '/attendance/check-in', ...) qui ne sont PAS
+    # des routes de navigation. Le garde forbidden-route ne doit matcher que les
+    # routes UI (app.dart / context.push) : on exclut les fichiers de mock de ce
+    # scan pour eviter les faux positifs permanents (Mobile Apps CI rouge sur
+    # main depuis #4102 — issues #4141/#4164).
     $libRoot = Join-Path $root "lib"
-    return (Get-ChildItem -LiteralPath $libRoot -Recurse -File -Filter *.dart |
-        Where-Object { $_.Name -notin $excludeFiles } |
-        ForEach-Object {
-            Get-Content -LiteralPath $_.FullName -Raw
-        }) -join "`n"
+    return (Get-ChildItem -LiteralPath $libRoot -Recurse -File -Filter *.dart | Where-Object {
+        $file = $_
+        -not ($ExcludePatterns | Where-Object { $file.Name -like $_ })
+    } | ForEach-Object {
+        Get-Content -LiteralPath $_.FullName -Raw
+    }) -join "`n"
 }
 
 function Get-AppRoutes([string]$appDart) {
@@ -82,14 +89,15 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
 
         $appDart = Get-Content -LiteralPath $appDartPath -Raw
         $routes = Get-AppRoutes $appDart
-        $libContent = Get-DartContent $root
+        # Issue #4141/#4164 : exclure les mocks API du scan (routes UI uniquement).
+        $libContent = Get-DartContent $root @('*mock*.dart')
         # Issue #4102 : les endpoints partagés (/device-tokens, push FCM)
         # vivent dans le package partagé leopardo_core (PushNotificationService)
         # consommé par toutes les apps — l'inclure dans la recherche pour que
         # la garde reflète l'implémentation réelle (sinon faux positifs).
         $coreRoot = Join-Path $repoRoot "front/mobile_apps/leopardo_core"
         if (Test-Path -LiteralPath (Join-Path $coreRoot "lib")) {
-            $libContent += "`n" + (Get-DartContent $coreRoot)
+            $libContent += "`n" + (Get-DartContent $coreRoot @('*mock*.dart'))
         }
 
         if ($null -ne $app.requiredBackendExperienceRoutes) {
@@ -107,24 +115,11 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
         }
 
         if ($null -ne $app.forbiddenRoutes) {
-            # La couche API mock dev-only (leopardo_core/core/api/mock_interceptor.dart)
-            # matche des CHEMINS HTTP (options.path.contains('/attendance')) pour
-            # renvoyer des données de démo — ce ne sont pas des routes de navigation
-            # exposées par l'app. Exclue du scan des routes interdites pour éviter
-            # les faux positifs (#4141), sans affaiblir le contrôle des vraies
-            # navigations (GoRouter path: + context.push/go dans les écrans).
-            # Scan dédié : contenu de l'app + leopardo_core SANS la couche API mock
-            # dev-only (mock_interceptor.dart) — cf. commentaire ci-dessus (#4141).
-            $forbiddenHaystack = Get-DartContent $root
-            $coreForbiddenRoot = Join-Path $repoRoot "front/mobile_apps/leopardo_core"
-            if (Test-Path -LiteralPath (Join-Path $coreForbiddenRoot "lib")) {
-                $forbiddenHaystack += "`n" + (Get-DartContent $coreForbiddenRoot -excludeFiles @('mock_interceptor.dart'))
-            }
             foreach ($route in @($app.forbiddenRoutes)) {
                 if ([string]::IsNullOrWhiteSpace($route)) {
                     continue
                 }
-                if ($routes.Contains($route) -or $forbiddenHaystack.Contains("('$route'") -or $forbiddenHaystack.Contains('"' + $route + '"')) {
+                if ($routes.Contains($route) -or $libContent.Contains("('$route'") -or $libContent.Contains('"' + $route + '"')) {
                     Add-Failure "$($app.name) app must not expose forbidden route $route"
                 }
             }

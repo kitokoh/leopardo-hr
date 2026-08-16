@@ -89,6 +89,15 @@ reste ouverte même une fois le correctif livré. Règles :
 
 ## Regles obligatoires
 
+- **Lecon 2026-08-16 (#4141/#4164)** : le garde `validate-mobile-workflow-contracts.ps1`
+  (scan forbidden-route) ne doit matcher que des ROUTES DE NAVIGATION, pas les
+  chemins d'endpoints portes par les mocks API (`leopardo_core/lib/core/api/mock_interceptor.dart`
+  contient `/attendance`, `/attendance/check-in`, ...). Depuis #4102 (leopardo_core
+  inclus dans le scan), ces chaines produisaient un faux positif permanent
+  (« platform_admin app must not expose forbidden route /attendance ») → Mobile
+  Apps CI rouge sur main. Garde : `Get-DartContent $root @('*mock*.dart')`.
+  Tout nouveau fichier de mock doit suivre le pattern `*mock*.dart`.
+
 - **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
 
 - Avant de travailler sur une branche existante, faire `git fetch origin main` puis comparer avec `origin/main`.
