@@ -104,8 +104,14 @@ Assert-Contains $mobileDistributeMain "leopardo_platform_admin" "Deploy main mob
 Assert-Contains $mobileDistributeMain "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Deploy main mobile distribution"
 Assert-Contains $mobileDistributeMain "leopardo-platform-admin-staging" "Deploy main mobile distribution"
 
-Assert-Contains $mobileDistribute "branches:" "Mobile distribute auto trigger"
-Assert-Contains $mobileDistribute "front/mobile_apps/**" "Mobile distribute auto trigger"
+# #4388 — dédup #3756 (734d0c3ba) : la distribution auto main est portée
+# EXCLUSIVEMENT par mobile-distribute-main.yml (design CodeQL #1396 :
+# `github.sha` vérifié sur main protégé, pas de workflow_run non fiable).
+# mobile-distribute.yml reste manuel (`workflow_dispatch`) + tags staging/prod.
+# Exiger `branches:` sur mobile-distribute.yml est un faux positif (main
+# rouge permanent depuis #3756).
+Assert-Contains $mobileDistributeMain "branches:" "Mobile distribute auto trigger"
+Assert-Contains $mobileDistributeMain "front/mobile_apps/**" "Mobile distribute auto trigger"
 Assert-Contains $mobileDistribute "type: string" "Mobile distribute dispatch schema"
 Assert-Contains $mobileDistribute "platform_admin" "Mobile distribute app selector"
 Assert-Contains $mobileDistribute "leopardo_platform_admin" "Mobile distribute matrix"
