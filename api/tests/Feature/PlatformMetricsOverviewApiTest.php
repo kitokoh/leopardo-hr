@@ -33,8 +33,8 @@ class PlatformMetricsOverviewApiTest extends TestCase
 
         try {
             DB::table('plans')->insert([
-                ['id' => 1, 'name' => 'Starter', 'price_monthly' => 29, 'price_yearly' => 290, 'trial_days' => 14, 'is_active' => true],
-                ['id' => 2, 'name' => 'Pro', 'price_monthly' => 99, 'price_yearly' => 990, 'trial_days' => 14, 'is_active' => true],
+                ['id' => 1, 'name' => 'Pilot', 'price_monthly' => 29, 'price_yearly' => 290, 'max_employees' => 30, 'trial_days' => 14, 'is_active' => true],
+                ['id' => 2, 'name' => 'Operations', 'price_monthly' => 99, 'price_yearly' => 948, 'max_employees' => 250, 'trial_days' => 14, 'is_active' => true],
             ]);
 
             $active = Company::factory()->create(['plan_id' => 2, 'status' => 'active', 'currency' => 'DZD']);

@@ -34,6 +34,7 @@ env:
 
 jobs:
   analyze-actions:
+    timeout-minutes: 120
     name: CodeQL (Actions)
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || vars.ENABLE_CODEQL_PR == 'true'
@@ -58,6 +59,7 @@ jobs:
         uses: github/codeql-action/analyze@5595ccaf912efad79be6eef63a5619ff05969be3 # v4
 
   analyze-backend:
+    timeout-minutes: 120
     name: CodeQL (Backend)
     runs-on: ubuntu-latest
     permissions:

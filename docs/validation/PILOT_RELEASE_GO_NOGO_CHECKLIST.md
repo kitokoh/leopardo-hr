@@ -132,7 +132,7 @@ This checklist complements `RELEASE_READINESS_GATE.md` (general, standing gate) 
 
 - `Deploy - Leopardo RH`: **success** across 8 consecutive runs on `main` on 2026-07-25 (09:08–11:18 UTC), each gated on the required upstream checks per `deploy-main.yml`'s job-conclusion gating logic.
 - `Launch Observability Smoke`: **success** on `main` twice on 2026-07-25 (09:17:53Z, 10:52:26Z).
-- `QueueObservabilityController` (`GET /api/v1/platform/observability/queues`) exposes queue depth, failed-job count/recents and scheduled-command last-run status, surfaced in the admin dashboard via `QueueObservabilityCard.vue` (delivered under PA2-QA-006, functionally covers PA2-JOB-006/#1000 per `docs/PLAN_ACTION2/17_AUDIT_STATUT_PA2_JOB_001_A_006.md`).
+- `QueueObservabilityController` (`GET /api/v1/platform/observability/queues`) exposes queue depth, failed-job count/recents and scheduled-command last-run status, surfaced in the admin dashboard via `QueueObservabilityCard.vue` (delivered under PA2-QA-006, functionally covers PA2-JOB-006/#1000 per `docs/archive/PLAN_ACTION2/ (historique)`).
 - `database-backup.yml` workflow exists for scheduled backups.
 
 **Decision: Go.**
