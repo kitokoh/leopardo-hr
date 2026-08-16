@@ -43,8 +43,9 @@ return [
     'controllers_base_namespace' => 'App\\Http\\Controllers',
 
     // Performance: trace critical endpoints with higher sample rate
+    // #4319 : repli env-driven (plus d'URL Render codée en dur).
     'trace_propagation_targets' => [
-        env('APP_URL', 'https://gestionemployerbackend.onrender.com'),
+        (string) env('APP_URL', ''),
     ],
 
     // Ignore health checks and favicon to reduce noise
