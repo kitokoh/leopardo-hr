@@ -759,8 +759,11 @@
       "roleRequired": "Rolünüzü seçin",
       "employeesRequired": "Bir ekip boyutu seçin",
       "phoneInvalid": "Geçersiz telefon numarası",
-      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz"
-    }
+      "agreeTerms": "Kullanım koşullarını kabul etmelisiniz",
+      "countryRequired": "Ülke zorunludur."
+    },
+    "labelCountry": "Ülke",
+    "countryPlaceholder": "Ülkenizi seçin"
   },
   "companies": {
     "toast": {

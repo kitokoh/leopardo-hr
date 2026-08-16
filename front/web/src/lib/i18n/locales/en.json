@@ -760,8 +760,11 @@
       "roleRequired": "Select your role",
       "employeesRequired": "Select a team size",
       "phoneInvalid": "Invalid phone number",
-      "agreeTerms": "You must accept the terms of use"
-    }
+      "agreeTerms": "You must accept the terms of use",
+      "countryRequired": "Country is required."
+    },
+    "labelCountry": "Country",
+    "countryPlaceholder": "Select your country"
   },
   "companies": {
     "toast": {
