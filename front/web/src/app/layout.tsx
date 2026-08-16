@@ -20,7 +20,11 @@ import type { AppLocale } from '@/lib/i18n';
 // entre generateMetadata et RootLayout.
 const getSsrLocale = cache(async (): Promise<AppLocale> => {
   const headerList = await headers();
-  return resolveSsrLang(headerList.get('accept-language')) as AppLocale;
+  // #4173 : `?lang=` (normalisé par le middleware en x-vitrine-lang, #4004)
+  // prime sur Accept-Language au SSR — les crawlers qui suivent les variantes
+  // hreflang `/?lang=en|tr|ar` reçoivent enfin du HTML lang/dir cohérent.
+  const urlLang = headerList.get('x-vitrine-lang');
+  return ((urlLang as AppLocale | null) ?? resolveSsrLang(headerList.get('accept-language'))) as AppLocale;
 });
 
 function ogLocale(locale: AppLocale): string {

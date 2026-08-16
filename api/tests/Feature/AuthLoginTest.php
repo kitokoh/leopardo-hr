@@ -38,13 +38,15 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee2 = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee2->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',
@@ -80,15 +82,17 @@ class AuthLoginTest extends TestCase
             'language' => 'ar',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => 'rh@company.test',
             'password_hash' => Hash::make('password123'),
+            'preferred_language' => 'fr',
+        ]);
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'rh',
             'status' => 'active',
-            'preferred_language' => 'fr',
-        ]);
+        ])->save();
 
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'rh@company.test',
@@ -150,13 +154,15 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',

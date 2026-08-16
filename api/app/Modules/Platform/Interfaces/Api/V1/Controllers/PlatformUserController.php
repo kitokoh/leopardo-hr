@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
 /**
@@ -111,7 +112,12 @@ class PlatformUserController extends Controller
             $validated['email'] = mb_strtolower($validated['email']);
         }
 
-        $user->update($validated);
+        // Issue #3597 : status non mass-assignable — assignation explicite.
+        $user->update(Arr::except($validated, ['status']));
+        if (array_key_exists('status', $validated)) {
+            $user->status = $validated['status'];
+            $user->save();
+        }
 
         $this->audit($request, $user, 'platform_user_updated');
 
@@ -127,7 +133,7 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'deactivated']);
+        $user->forceFill(['status' => 'deactivated'])->save();
         // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
         $user->tokens()->delete();
 
@@ -138,7 +144,7 @@ class PlatformUserController extends Controller
 
     public function activate(Request $request, SuperAdmin $user): JsonResponse
     {
-        $user->update(['status' => 'active']);
+        $user->forceFill(['status' => 'active'])->save();
         $this->audit($request, $user, 'platform_user_activated');
 
         return new JsonResponse(['data' => $this->serialize($user->fresh() ?? $user)]);
@@ -150,7 +156,7 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'deactivated']);
+        $user->forceFill(['status' => 'deactivated'])->save();
         // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
         $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_deactivated');
@@ -164,7 +170,7 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de suspendre votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'suspended']);
+        $user->forceFill(['status' => 'suspended'])->save();
         // Sécurité #2630 : suspendre un compte révoque ses tokens actifs.
         $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_suspended');

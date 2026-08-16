@@ -40,12 +40,14 @@ class AuthMeLogoutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $token = $employee->createToken('tests')->plainTextToken;
 
@@ -87,13 +89,15 @@ class AuthMeLogoutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'preferred_language' => 'ar',
         ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $employee->createToken('tests')->plainTextToken;
 
@@ -120,12 +124,14 @@ class AuthMeLogoutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $plain = $employee->createToken('tests')->plainTextToken;
         $this->assertSame(1, $employee->tokens()->count());
@@ -152,12 +158,14 @@ class AuthMeLogoutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'archived@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'archived',
-        ]);
+        ])->save();
 
         $plain = $employee->createToken('tests')->plainTextToken;
 
@@ -183,12 +191,14 @@ class AuthMeLogoutTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $employee->createToken('tests');
         $this->assertSame(1, $employee->tokens()->count());

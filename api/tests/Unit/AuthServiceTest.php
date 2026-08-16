@@ -46,12 +46,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $result = app(AuthService::class)->login('manager@a.test', 'password123', 'unit-tests');
 
@@ -86,12 +88,14 @@ class AuthServiceTest extends TestCase
         ]);
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'email' => 'shadow-manager@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
         DB::statement('CREATE TABLE IF NOT EXISTS shared_tenants.companies (LIKE public.companies INCLUDING ALL)');
         DB::statement('SET search_path TO public');
@@ -117,13 +121,15 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee2 = Employee::query()->create([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee2->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $this->expectException(InvalidCredentialsException::class);
 
@@ -164,13 +170,15 @@ class AuthServiceTest extends TestCase
             'status' => 'suspended',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $this->expectException(AccountSuspendedException::class);
 
@@ -191,13 +199,15 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'archived',
-        ]);
+        ])->save();
 
         $this->expectException(EmployeeNotActiveException::class);
 

@@ -56,22 +56,26 @@ class TenantIsolationTest extends TestCase
         ]);
 
         $managerA = Employee::query()->create([
-            'company_id' => $companyA->id,
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
             'role' => 'manager',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $employeeB = Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employeeB->forceFill([
+            'company_id' => $companyB->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         Sanctum::actingAs($managerA);
 
