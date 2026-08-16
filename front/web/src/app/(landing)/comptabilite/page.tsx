@@ -15,14 +15,16 @@ import {
   Footer,
   useScrollReveal,
 } from '@/modules/vitrine';
-import { modulePageContent } from '@/modules/vitrine/lib/content';
+import { getModulePageContent } from '@/modules/vitrine/lib/content';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { CreditCard, Calculator, TrendingUp, FileText } from 'lucide-react';
 
 export default function ComptabilitePage() {
   const { isDark, toggleDarkMode } = useDarkMode();
+  const { locale } = useVitrineLocale();
   useScrollReveal();
 
-  const content = modulePageContent.comptabilite;
+  const content = getModulePageContent(locale).comptabilite;
 
   // Transform problem items to include icons
   const problemItems = content.problem.items.map((item, index) => ({
