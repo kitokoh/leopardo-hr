@@ -16,6 +16,7 @@ on:
       - 'dev-hub/tools/validate-mobile-plan28.ps1'
       - 'dev-hub/tools/validate-mobile-plan29.ps1'
       - 'dev-hub/tools/validate-mobile-color-tokens.ps1'
+      - 'dev-hub/tools/check-mobile-number-locale.sh'
       - 'dev-hub/tools/check-mobile-manifest-routes.sh'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
@@ -34,6 +35,7 @@ on:
       - 'dev-hub/tools/validate-mobile-plan28.ps1'
       - 'dev-hub/tools/validate-mobile-plan29.ps1'
       - 'dev-hub/tools/validate-mobile-color-tokens.ps1'
+      - 'dev-hub/tools/check-mobile-number-locale.sh'
       - 'dev-hub/tools/check-mobile-manifest-routes.sh'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
@@ -152,7 +154,7 @@ jobs:
 
       - name: Check formatting
         working-directory: ${{ matrix.project.path }}
-        run: dart format .
+        run: dart format . --set-exit-if-changed
 
       - name: Run flutter analyze
         working-directory: ${{ matrix.project.path }}
@@ -192,9 +194,10 @@ jobs:
             artifact: leopardo-hr-debug-apk
           - name: leopardo_platform_admin
             path: front/mobile_apps/leopardo_platform_admin
+            artifact: leopardo-platform-admin-debug-apk
           - name: leopardo_marketing
             path: front/mobile_apps/leopardo_marketing
-            artifact: leopardo-platform-admin-debug-apk
+            artifact: leopardo-marketing-debug-apk
 
     steps:
       - name: Checkout code
