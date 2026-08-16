@@ -768,7 +768,32 @@
       "tickets_failed": "Unable to load the support tickets.",
       "subscription_failed": "Failed to update the subscription.",
       "features_failed": "Failed to save the module configuration."
-    }
+    },
+    "portfolio": "Client Portfolio",
+    "directory": "Companies Directory",
+    "directorySub": "Listed by health score and commercial priority.",
+    "syncing": "Syncing portfolio...",
+    "retry": "Retry",
+    "company": "Company",
+    "planMrr": "Plan & MRR",
+    "healthOp": "Op. Health",
+    "checkins30d": "Check-ins (30d)",
+    "recommendedAction": "Recommended Action",
+    "management": "Management",
+    "system": "System",
+    "companyName": "Company name *",
+    "contactEmail": "Contact email *",
+    "country": "Country *",
+    "city": "Deployment city *",
+    "currency": "Currency",
+    "timezone": "Time Zone",
+    "defaultLang": "Default Language",
+    "managerFirst": "Manager first name *",
+    "managerLast": "Manager last name *",
+    "managerEmail": "Primary manager email *",
+    "activateNow": "Activate immediately",
+    "activateClientNow": "Activate the client immediately",
+    "activateClientHint": "Otherwise the client stays on trial."
   },
   "seo": {
     "pricing": {
