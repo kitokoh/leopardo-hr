@@ -415,6 +415,7 @@
 ### Fixed
 - **Vitrine FAQ** (#4321) : accordéon inutilisable sur les pages modules (items sans `id`) — identifiant unifié + `aria-expanded`/`aria-controls` ; tests Jest ajoutés.
 ### Fixed
+- **Admin** (#4334) : popup Leaflet FleetView — champs véhicule échappés (XSS potentiel) ; (#4332) : `components/common/MetricCard.vue` mort supprimé.
 - **Admin SystemView** (#4328) : `GET /admin/metrics/overview` (404) → `GET /platform/metrics/overview` — la carte Infrastructure remonte enfin les agrégats.
 - **API paie** (#4310) : `PayrollRunController` — `localized_message` passe par le catalogue `errors.*` (fini le message d'exception brut FR) ; code dédié `PAYROLL_RUN_NOT_VALIDATED` pour le lock avant validation ; 3 tests de contrat mis à jour (2 rouges pré-existants sur main réparés).
 ### Fixed
