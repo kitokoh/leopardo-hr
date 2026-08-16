@@ -14,7 +14,13 @@ function resolveAdminLocale() {
   const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr'
   return normalizeLocale(nav)
 }
+import { translate } from '@/i18n/index.js'
 import { useToast } from 'vue-toastification'
+
+/** #4621 : messages d'erreur de la couche service localisés (4 catalogues admin). */
+function t(key, fallback = '') {
+  return translate(resolveAdminLocale(), key, fallback)
+}
 
 const ERROR_BREADCRUMBS = []
 const MAX_BREADCRUMBS = 50
@@ -51,21 +57,21 @@ function contextualErrorMessage(status, data, url) {
   const localized = data?.localized_message || ''
   switch (status) {
     case 401:
-      return localized || 'Session expirée. Reconnexion en cours...'
+      return localized || t('api.sessionExpired', 'Session expirée. Reconnexion en cours...')
     case 403:
-      return localized || `Accès refusé sur ${endpoint}. Permissions insuffisantes.`
+      return localized || t('api.accessDenied', `Accès refusé sur ${endpoint}. Permissions insuffisantes.`)
     case 404:
-      return `Ressource introuvable : ${endpoint}`
+      return t('api.notFound', `Ressource introuvable : ${endpoint}`)
     case 422:
       return null
     case 429:
-      return 'Trop de requêtes. Veuillez patienter quelques secondes.'
+      return t('api.tooManyRequests', 'Trop de requêtes. Veuillez patienter quelques secondes.')
     case 500:
-      return `Erreur serveur sur ${endpoint}. ${serverMsg ? '(' + serverMsg + ')' : 'Réessayez plus tard.'}`
+      return t('api.serverError', `Erreur serveur sur ${endpoint}. ${serverMsg ? '(' + serverMsg + ')' : 'Réessayez plus tard.'}`)
     case 502:
     case 503:
     case 504:
-      return `Le serveur est temporairement indisponible (${status}). Réessayez dans quelques instants.`
+      return t('api.serverUnavailable', `Le serveur est temporairement indisponible (${status}). Réessayez dans quelques instants.`)
     default:
       return serverMsg || `Erreur ${status} sur ${endpoint}.`
   }
@@ -156,6 +162,16 @@ api.interceptors.response.use(
       const requestUrl = originalRequest?.url || ''
 
       if (COLD_START_STATUSES.includes(status) && originalRequest) {
+        // #4620 : ne rejouer que les méthodes idempotentes (GET/HEAD) — un
+        // retry de POST/PUT peut exécuter deux fois une mutation (webhook
+        // dupliqué, session d'impersonation en double, désactivation rejouée)
+        // quand le serveur a traité la requête mais que la réponse s'est
+        // perdue (fenêtre cold-start Render).
+        const method = (originalRequest.method || 'get').toUpperCase()
+        if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+          console.warn(`api: cold-start ${status} sur ${method} ${requestUrl} — non rejoué (non idempotent)`)
+          return Promise.reject(error)
+        }
         const attempt = originalRequest._coldStartAttempt || 0
         if (attempt < COLD_START_MAX_RETRIES) {
           originalRequest._coldStartAttempt = attempt + 1
@@ -219,7 +235,7 @@ api.interceptors.response.use(
               .flat()
               .forEach((message) => toast.error(message))
           } else {
-            toast.error(data.message || 'Données invalides.')
+            toast.error(data.message || t('api.invalidData', 'Données invalides.'))
           }
           break
 
@@ -235,10 +251,10 @@ api.interceptors.response.use(
         url: originalRequest?.url,
         method: originalRequest?.method,
       })
-      toast.error('Erreur de connexion. Verifiez votre connexion internet.')
+      toast.error(t('api.connectionError', 'Erreur de connexion. Verifiez votre connexion internet.'))
     } else {
       addBreadcrumb('api.unexpected', error.message || 'Unknown error')
-      toast.error('Une erreur inattendue est survenue.')
+      toast.error(t('api.unexpectedError', 'Une erreur inattendue est survenue.'))
     }
 
     return Promise.reject(error)
