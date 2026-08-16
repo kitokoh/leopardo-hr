@@ -62,11 +62,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employeeA@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $company->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employeeB = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -75,11 +75,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employeeB@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeB->company_id = $company->id;
-            $employeeB->role = 'employee';
-            $employeeB->status = 'active';
-            $employeeB->save();
-
+        $employeeB->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         // Create absence for employee A
         Absence::query()->create([
@@ -161,12 +161,12 @@ class AbsenceIndexTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employee1 = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -175,11 +175,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee1@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee1->company_id = $company->id;
-            $employee1->role = 'employee';
-            $employee1->status = 'active';
-            $employee1->save();
-
+        $employee1->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employee2 = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -188,11 +188,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee2@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee2->company_id = $company->id;
-            $employee2->role = 'employee';
-            $employee2->status = 'active';
-            $employee2->save();
-
+        $employee2->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         // Create absences for both employees
         Absence::query()->create([
@@ -270,12 +270,12 @@ class AbsenceIndexTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employee1 = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -284,11 +284,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee1@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee1->company_id = $company->id;
-            $employee1->role = 'employee';
-            $employee1->status = 'active';
-            $employee1->save();
-
+        $employee1->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employee2 = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -297,11 +297,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee2@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee2->company_id = $company->id;
-            $employee2->role = 'employee';
-            $employee2->status = 'active';
-            $employee2->save();
-
+        $employee2->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         // Create absences for both employees
         Absence::query()->create([
@@ -394,12 +394,12 @@ class AbsenceIndexTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employee = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -408,11 +408,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         // Create absences with different statuses
         Absence::query()->create([
@@ -491,12 +491,12 @@ class AbsenceIndexTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employee = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -505,11 +505,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         // Create absence in April 2026
         Absence::query()->create([
@@ -588,11 +588,11 @@ class AbsenceIndexTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         // Create multiple absences
         for ($i = 1; $i <= 5; $i++) {

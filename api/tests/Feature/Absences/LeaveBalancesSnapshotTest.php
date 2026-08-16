@@ -90,12 +90,12 @@ class LeaveBalancesSnapshotTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $this->manager->company_id = $this->company->id;
-            $this->manager->role = 'manager';
-            $this->manager->manager_role = 'principal';
-            $this->manager->status = 'active';
-            $this->manager->save();
-
+        $this->manager->forceFill([
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $this->employee = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -104,11 +104,11 @@ class LeaveBalancesSnapshotTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $this->employee->company_id = $this->company->id;
-            $this->employee->role = 'employee';
-            $this->employee->status = 'active';
-            $this->employee->save();
-
+        $this->employee->forceFill([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
     }
 
     private function createAbsence(int $daysCount = 3, bool $deductible = true, string $status = 'pending'): Absence

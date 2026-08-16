@@ -189,11 +189,11 @@ class KioskSyncSkippedEventsTest extends TestCase
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => 'FP-001',
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $nonBiometric = Employee::query()->create([
             'first_name' => 'Sans',
@@ -204,11 +204,11 @@ class KioskSyncSkippedEventsTest extends TestCase
             'biometric_fingerprint_enabled' => false,
             'biometric_face_enabled' => false,
         ]);
-            $nonBiometric->company_id = $company->id;
-            $nonBiometric->role = 'employee';
-            $nonBiometric->status = 'active';
-            $nonBiometric->save();
-
+        $nonBiometric->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $manager = Employee::query()->create([
             'first_name' => 'Manager',
@@ -216,12 +216,12 @@ class KioskSyncSkippedEventsTest extends TestCase
             'email' => 'manager@kiosk-skip.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 

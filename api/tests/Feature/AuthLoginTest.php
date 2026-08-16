@@ -38,15 +38,15 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee2 = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = 'manager';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee2->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',
@@ -82,17 +82,17 @@ class AuthLoginTest extends TestCase
             'language' => 'ar',
         ]);
 
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => 'rh@company.test',
             'password_hash' => Hash::make('password123'),
             'preferred_language' => 'fr',
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = 'manager';
-            $createdEmployee->manager_role = 'rh';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
 
         $login = $this->postJson('/api/v1/auth/login', [
             'email' => 'rh@company.test',
@@ -154,15 +154,15 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = 'manager';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'manager@company.test',

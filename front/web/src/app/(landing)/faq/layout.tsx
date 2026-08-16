@@ -30,6 +30,12 @@ export async function generateMetadata(): Promise<Metadata> {
 // les visiteurs en/tr/ar (le contenu visible est déjà localisé).
 const getSsrLocale = cache(async (): Promise<AppLocale> => {
   const headerList = await headers();
+  // #4201 : ?lang= (x-vitrine-lang) prime sur Accept-Language — le schéma
+  // FAQPage doit suivre la langue RÉELLE rendue (parité avec generateMetadata).
+  const lang = headerList.get('x-vitrine-lang');
+  if (lang && (['fr', 'en', 'ar', 'tr'] as const).includes(lang as AppLocale)) {
+    return lang as AppLocale;
+  }
   const base = (headerList.get('accept-language') ?? '')
     .split(',')[0]
     .trim()

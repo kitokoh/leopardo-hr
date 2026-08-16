@@ -145,12 +145,12 @@ class WebManagerPagesTest extends TestCase
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'daily',
         ]);
-            $outsider->company_id = $otherCompany->id;
-            $outsider->role = 'employee';
-            $outsider->status = 'active';
-            $outsider->salary_base = 800;
-            $outsider->save();
-
+        $outsider->forceFill([
+            'company_id' => $otherCompany->id,
+            'role' => 'employee',
+            'status' => 'active',
+            'salary_base' => 800,
+        ])->save();
 
         $response = $this->actingAs($manager, 'web')->get("/employees/{$outsider->id}");
 
@@ -180,12 +180,12 @@ class WebManagerPagesTest extends TestCase
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'daily',
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->status = 'active';
-            $manager->salary_base = 800;
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+            'salary_base' => 800,
+        ])->save();
 
         $employee = Employee::query()->create([
             'first_name' => 'Ahmed',
@@ -194,12 +194,12 @@ class WebManagerPagesTest extends TestCase
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'daily',
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->salary_base = 800;
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+            'salary_base' => 800,
+        ])->save();
 
         return [$company, $manager, $employee];
     }

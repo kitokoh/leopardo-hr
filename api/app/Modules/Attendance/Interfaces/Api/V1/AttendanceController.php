@@ -364,7 +364,7 @@ class AttendanceController extends Controller
                 'requested_check_in' => $correction->requested_check_in->toIso8601String(),
                 'requested_check_out' => $correction->requested_check_out?->toIso8601String(),
             ],
-            'message' => 'Demande de modification transmise au RH.',
+            'message' => __('attendance.correction_transmitted'),
         ], 201);
     }
 
@@ -461,7 +461,7 @@ class AttendanceController extends Controller
         return response()->json([
             'data' => $this->correctionPayload($correction),
             'attendance_log' => (new AttendanceLogResource($log))->resolve($request),
-            'message' => 'Correction appliquee au pointage.',
+            'message' => __('attendance.correction_applied'),
         ]);
     }
 
@@ -489,7 +489,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'data' => $this->correctionPayload($correction),
-            'message' => 'Correction refusee.',
+            'message' => __('attendance.correction_rejected'),
         ]);
     }
 

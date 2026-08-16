@@ -41,11 +41,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         Sanctum::actingAs($employee);
 
@@ -88,11 +88,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $company->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employeeB = Employee::query()->create([
             'first_name' => 'Test',
@@ -100,11 +100,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeB->company_id = $company->id;
-            $employeeB->role = 'employee';
-            $employeeB->status = 'active';
-            $employeeB->save();
-
+        $employeeB->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         app()->instance('current_company', $company);
         AttendanceLog::query()->create([
@@ -165,11 +165,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ])->save();
 
         $employee = Employee::query()->create([
             'first_name' => 'Test',
@@ -177,11 +177,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         Sanctum::actingAs($employee);
 
@@ -244,11 +244,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'status' => 'active',
+        ])->save();
 
         $employeeB = Employee::withoutGlobalScopes()->create([
             'first_name' => 'Test',
@@ -256,11 +256,11 @@ class TodayAndHistoryTest extends TestCase
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeB->company_id = $companyB->id;
-            $employeeB->role = 'employee';
-            $employeeB->status = 'active';
-            $employeeB->save();
-
+        $employeeB->forceFill([
+            'company_id' => $companyB->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         app()->instance('current_company', $companyB);
         AttendanceLog::query()->create([

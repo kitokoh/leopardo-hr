@@ -96,12 +96,12 @@ class ContractWorkflowTest extends TestCase
             'email' => 'boss@contract-co.test',
             'password_hash' => Hash::make('password'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'rh';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
@@ -111,11 +111,11 @@ class ContractWorkflowTest extends TestCase
             'email' => 'yacine@contract-co.test',
             'password_hash' => Hash::make('password'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         return [$company, $manager, $employee];
     }
@@ -143,12 +143,12 @@ class ContractWorkflowTest extends TestCase
             'email' => "boss-{$suffix}@contract-co.test",
             'password_hash' => Hash::make('password'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'rh';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
 
         /** @var Employee $employee */
         $employee = Employee::query()->create([
@@ -158,11 +158,11 @@ class ContractWorkflowTest extends TestCase
             'email' => "employee-{$suffix}@contract-co.test",
             'password_hash' => Hash::make('password'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         return [$company, $manager, $employee];
     }
@@ -443,11 +443,11 @@ class ContractWorkflowTest extends TestCase
             'email' => 'coworker2@contract-co.test',
             'password_hash' => Hash::make('password'),
         ]);
-            $coworker->company_id = $company->id;
-            $coworker->role = 'employee';
-            $coworker->status = 'active';
-            $coworker->save();
-
+        $coworker->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         Contract::query()->create([
             'company_id' => $company->id,
             'employee_id' => $coworker->id,
@@ -508,11 +508,11 @@ class ContractWorkflowTest extends TestCase
             'email' => 'coworker@contract-co.test',
             'password_hash' => Hash::make('password'),
         ]);
-            $coworker->company_id = $company->id;
-            $coworker->role = 'employee';
-            $coworker->status = 'active';
-            $coworker->save();
-
+        $coworker->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         $contract = Contract::query()->create([
             'company_id' => $company->id,
             'employee_id' => $coworker->id,

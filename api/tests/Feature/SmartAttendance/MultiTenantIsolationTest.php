@@ -80,11 +80,11 @@ class MultiTenantIsolationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $this->employeeA->company_id = $this->companyA->id;
-            $this->employeeA->role = 'employee';
-            $this->employeeA->status = 'active';
-            $this->employeeA->save();
-
+        $this->employeeA->forceFill([
+            'company_id'    => $this->companyA->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         $this->managerA = Employee::query()->create([
             'schedule_id'   => $scheduleA->id,
@@ -93,12 +93,12 @@ class MultiTenantIsolationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $this->managerA->company_id = $this->companyA->id;
-            $this->managerA->role = 'manager';
-            $this->managerA->manager_role = 'rh';
-            $this->managerA->status = 'active';
-            $this->managerA->save();
-
+        $this->managerA->forceFill([
+            'company_id'    => $this->companyA->id,
+            'role'          => 'manager',
+            'manager_role'  => 'rh',
+            'status'        => 'active',
+        ])->save();
 
         // ── Company B ─────────────────────────────────────────────────────
         $this->companyB = Company::query()->create([
@@ -143,11 +143,11 @@ class MultiTenantIsolationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $this->employeeB->company_id = $this->companyB->id;
-            $this->employeeB->role = 'employee';
-            $this->employeeB->status = 'active';
-            $this->employeeB->save();
-
+        $this->employeeB->forceFill([
+            'company_id'    => $this->companyB->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         $this->managerB = Employee::query()->create([
             'schedule_id'   => $scheduleB->id,
@@ -156,12 +156,12 @@ class MultiTenantIsolationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $this->managerB->company_id = $this->companyB->id;
-            $this->managerB->role = 'manager';
-            $this->managerB->manager_role = 'rh';
-            $this->managerB->status = 'active';
-            $this->managerB->save();
-
+        $this->managerB->forceFill([
+            'company_id'    => $this->companyB->id,
+            'role'          => 'manager',
+            'manager_role'  => 'rh',
+            'status'        => 'active',
+        ])->save();
     }
 
 

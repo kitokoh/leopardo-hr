@@ -52,12 +52,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
@@ -140,12 +140,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
@@ -218,12 +218,12 @@ class EmployeeInvitationOnboardingTest extends TestCase
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 

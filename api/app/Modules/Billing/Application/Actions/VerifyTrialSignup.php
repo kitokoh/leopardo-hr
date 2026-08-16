@@ -296,13 +296,13 @@ class VerifyTrialSignup
                                 'self_service_trial' => true,
                             ],
                         ]);
-                        // Sensitive fields set explicitly (not mass-assignable, #3677).
-                        $manager->company_id = $company->id;
-                        $manager->role = 'manager';
-                        $manager->manager_role = 'principal';
-                        $manager->status = 'active';
-                        $manager->salary_base = 0;
-                        $manager->save();
+                        $manager->forceFill([
+                            'company_id' => $company->id,
+                            'role' => 'manager',
+                            'manager_role' => 'principal',
+                            'status' => 'active',
+                            'salary_base' => 0,
+                        ])->save();
                     } finally {
                         $this->tenantManager->resetToPrevious();
                     }

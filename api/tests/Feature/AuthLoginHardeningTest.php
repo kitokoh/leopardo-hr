@@ -57,15 +57,15 @@ class AuthLoginHardeningTest extends TestCase
         // l'état legacy équivalent : un hash corrompu/absent sémantiquement
         // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
         // (TypeError → 500) mais renvoyer 401.
-        $createdEmployee = Employee::query()->create([
+                $sensitiveEmployee2 = Employee::query()->create([
             'email' => 'broken-hash@company.test',
             'password_hash' => 'legacy-broken-hash',
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee2->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'broken-hash@company.test',
@@ -81,15 +81,15 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => 'empty-hash@company.test',
             'password_hash' => '',
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'empty-hash@company.test',
@@ -104,15 +104,15 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => 'good-hash@company.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'good-hash@company.test',

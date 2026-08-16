@@ -108,12 +108,12 @@ class LeavePolicyApiTest extends TestCase
             'email' => 'mgr@leave-test.com',
             'password_hash' => Hash::make('password'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         return [$company, $manager];
     }

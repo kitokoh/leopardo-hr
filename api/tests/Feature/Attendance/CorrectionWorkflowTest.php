@@ -131,12 +131,12 @@ class CorrectionWorkflowTest extends TestCase
             'email' => 'manager@'.$domain,
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employee = Employee::query()->create([
             'schedule_id' => $schedule->id,
@@ -145,11 +145,11 @@ class CorrectionWorkflowTest extends TestCase
             'email' => 'employee@'.$domain,
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,

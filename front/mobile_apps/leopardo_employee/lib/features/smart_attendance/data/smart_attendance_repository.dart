@@ -20,7 +20,7 @@ class SmartAttendanceRepository {
       '/smart-attendance/config',
       timeoutOverride: _readTimeout,
     );
-    final data = _extractData(response.data);
+    final data = extractDataMap(response.data);
     return SmartAttendanceConfig.fromJson(data);
   }
 
@@ -85,7 +85,7 @@ class SmartAttendanceRepository {
   }
 
   /// Extrait le sous-objet 'data' d'une réponse API.
-  static Map<String, dynamic> _extractData(dynamic responseData) {
+  static Map<String, dynamic> extractDataMap(dynamic responseData) {
     if (responseData is Map) {
       final map = responseData.cast<String, dynamic>();
       final payload = map['data'];

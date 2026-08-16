@@ -124,22 +124,22 @@ class ProfileFunctionalReadinessTest extends TestCase
 
     private function employee(Company $company, string $email, string $role, ?string $managerRole): Employee
     {
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee0 = Employee::query()->create([
             'first_name' => ucfirst(strtok($email, '@') ?: 'Demo'),
             'last_name' => 'Profile',
             'email' => $email,
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'fixed',
+            'leave_balance' => 12,
         ]);
-            $createdEmployee->company_id = $company->id;
-            $createdEmployee->role = $role;
-            $createdEmployee->manager_role = $managerRole;
-            $createdEmployee->status = 'active';
-            $createdEmployee->salary_base = 100000;
-            $createdEmployee->leave_balance = 12;
-            $createdEmployee->save();
-        return $createdEmployee;
-
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
+            'role' => $role,
+            'manager_role' => $managerRole,
+            'status' => 'active',
+            'salary_base' => 100000,
+        ])->save();
+        return $sensitiveEmployee0;
     }
 
     /**

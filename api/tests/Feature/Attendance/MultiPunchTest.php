@@ -134,11 +134,11 @@ class MultiPunchTest extends TestCase
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         return [$employee, $company];
     }

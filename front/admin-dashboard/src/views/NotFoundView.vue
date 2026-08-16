@@ -36,7 +36,7 @@
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <router-link
             to="/users"
-            class="group relative rounded-lg border border-gray-300 px-6 py-5 shadow-sm hover:border-gray-400"
+            class="group relative glass-effect rounded-2xl px-6 py-5 hover:shadow-glass"
           >
             <div>
               <span class="absolute inset-0" aria-hidden="true"></span>

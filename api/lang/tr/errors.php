@@ -48,4 +48,14 @@ return [
     'SERVICE_UNAVAILABLE' => 'Hizmet gecici olarak kullanilamiyor.',
     'HTTP_ERROR' => 'Bir hata olustu. Lutfen tekrar deneyin.',
     'UNSUPPORTED_API_VERSION' => 'Desteklenmeyen API surumu.',
-];
+
+    'PAYMENT_SESSION_FAILED' => 'Ödeme oturumu oluşturulamadı.',
+    'NO_PAYMENT_ACCOUNT' => 'İlişkili ödeme hesabı yok. Önce bir plana abone olun.',
+    'VERIFICATION_CODE_SENT' => 'Doğrulama kodu gönderildi.',
+    'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'İsteğinizin doğrulaması geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
+    'TRIAL_SPACE_READY' => 'Leopardo çalışma alanınız hazır!',
+    'SESSION_ALREADY_OPEN' => 'Bu çalışan için zaten açık bir oturum var.',
+    'OUTSIDE_GEOFENCE' => 'Konum, yoklama bölgesinin dışında.',
+    'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'Yoklama modu kişiselleştirmesi devre dışı.',
+    'PREFERENCE_UPDATED' => 'Tercih güncellendi.',
+    'CONFIG_UPDATED' => 'Yapılandırma güncellendi.',

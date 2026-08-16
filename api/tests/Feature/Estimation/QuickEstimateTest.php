@@ -48,12 +48,12 @@ class QuickEstimateTest extends TestCase
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'fixed',
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->status = 'active';
-            $manager->salary_base = 0;
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+            'salary_base' => 0,
+        ])->save();
 
         $employee = Employee::query()->create([
             'first_name' => 'Ahmed',
@@ -63,11 +63,11 @@ class QuickEstimateTest extends TestCase
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,
@@ -129,11 +129,11 @@ class QuickEstimateTest extends TestCase
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         Sanctum::actingAs($employee);
 
@@ -162,12 +162,12 @@ class QuickEstimateTest extends TestCase
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'fixed',
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->status = 'active';
-            $manager->salary_base = 0;
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'status' => 'active',
+            'salary_base' => 0,
+        ])->save();
 
         $employee = Employee::query()->create([
             'email' => 'employee@company.test',
@@ -175,11 +175,11 @@ class QuickEstimateTest extends TestCase
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         Sanctum::actingAs($manager);
 

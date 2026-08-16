@@ -11,6 +11,7 @@ import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_hr/features/payrolls/providers/payroll_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 
 class PayrollListScreen extends ConsumerStatefulWidget {
@@ -194,7 +195,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${NumberFormat.decimalPattern('fr').format(payroll.netSalary)}${currencySuffix(payroll.currency)} net',
+                                '${NumberFormat.decimalPattern(deviceIntlNumberLocale).format(payroll.netSalary)}${currencySuffix(payroll.currency)} net',
                                 style: AppTypography.caption.copyWith(
                                   color: MobileSurface.secondary,
                                 ),
@@ -546,7 +547,7 @@ class _SummaryCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${NumberFormat.decimalPattern('fr').format(item.remaining)}${currencySuffix(item.currency)}',
+                          '${NumberFormat.decimalPattern(deviceIntlNumberLocale).format(item.remaining)}${currencySuffix(item.currency)}',
                           style: AppTypography.caption.copyWith(
                             color: MobileSurface.text,
                             fontWeight: FontWeight.w700,

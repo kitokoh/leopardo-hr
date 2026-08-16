@@ -47,4 +47,7 @@ return [
         'placeholder' => ['message' => "Maquette sans valeurs pour :country : les montants d'impôt et de cotisations sociales ne sont pas encore documentés et ne doivent pas être utilisés pour de vrais cycles de paie tant qu'ils n'ont pas été remplacés."],
         'unknown' => ['message' => "Aucune règle de paie n'est disponible pour :country : le calcul de paie n'est pas disponible pour ce pays."],
     ],
+
+    'run_must_be_validated' => 'Le run de paie doit être validé avant envoi.',
+    'bulletins_sent' => '{sent} bulletin(s) envoyé(s), {notified} notification(s) push déclenchée(s).',
 ];

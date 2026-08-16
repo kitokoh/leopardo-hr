@@ -264,9 +264,9 @@ class PlatformAuthTest extends TestCase
             'email' => 'suspended@leopardo.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $suspended->status = 'suspended';
-            $suspended->save();
-
+        $suspended->forceFill([
+            'status' => 'suspended',
+        ])->save();
 
         $this->assertSame('suspended', $suspended->status);
 
@@ -279,14 +279,14 @@ class PlatformAuthTest extends TestCase
 
     public function test_deactivated_super_admin_cannot_login(): void
     {
-        $createdSuperAdmin = SuperAdmin::query()->create([
+        $sensitiveSuperAdmin0 = SuperAdmin::query()->create([
             'name' => 'Deactivated Admin',
             'email' => 'deactivated@leopardo.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdSuperAdmin->status = 'deactivated';
-            $createdSuperAdmin->save();
-
+        $sensitiveSuperAdmin0->forceFill([
+            'status' => 'deactivated',
+        ])->save();
 
         $this->postJson('/api/v1/platform/auth/login', [
             'email' => 'deactivated@leopardo.test',
@@ -314,7 +314,9 @@ class PlatformAuthTest extends TestCase
 
         // Désactivation via l'endpoint admin (simule l'action plateforme)
         $admin = SuperAdmin::query()->where('email', 'admin@leopardo.test')->firstOrFail();
-        $admin->update(['status' => 'deactivated']);
+        // Issue #3677 : status non mass-assignable — assignation explicite.
+        $admin->status = 'deactivated';
+        $admin->save();
         $admin->tokens()->delete();
 
         $this->assertSame(0, $admin->tokens()->count(), 'Les tokens doivent être révoqués à la désactivation');

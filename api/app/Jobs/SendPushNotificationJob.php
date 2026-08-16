@@ -11,6 +11,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SendPushNotificationJob implements ShouldQueue, TenantScopedJob
 {
@@ -57,4 +59,17 @@ class SendPushNotificationJob implements ShouldQueue, TenantScopedJob
             $pushService->sendToEmployee($employee, $this->title, $this->body, $this->metadata);
         }
     }
+
+    /**
+     * #4205 : épuisement des retries — log d'alerte (push individuel).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('SendPushNotificationJob.failed', [
+            'employee_id' => $this->employeeId,
+            'title' => $this->title,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
 }

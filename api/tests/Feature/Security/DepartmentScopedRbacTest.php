@@ -61,76 +61,72 @@ class DepartmentScopedRbacTest extends TestCase
         ]);
 
         $deptA = Department::query()->create([
+            'company_id' => $company->id,
             'name' => 'Department A',
         ]);
-            $deptA->company_id = $company->id;
-            $deptA->save();
-
 
         $deptB = Department::query()->create([
+            'company_id' => $company->id,
             'name' => 'Department B',
         ]);
-            $deptB->company_id = $company->id;
-            $deptB->save();
-
 
         $managerA = Employee::query()->create([
             'department_id' => $deptA->id,
             'email' => 'manager-a@scoped.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $company->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'dept';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'dept',
+            'status' => 'active',
+        ])->save();
 
         $managerB = Employee::query()->create([
             'department_id' => $deptB->id,
             'email' => 'manager-b@scoped.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerB->company_id = $company->id;
-            $managerB->role = 'manager';
-            $managerB->manager_role = 'dept';
-            $managerB->status = 'active';
-            $managerB->save();
-
+        $managerB->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'dept',
+            'status' => 'active',
+        ])->save();
 
         $managerNoDept = Employee::query()->create([
             'department_id' => null,
             'email' => 'manager-nodept@scoped.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerNoDept->company_id = $company->id;
-            $managerNoDept->role = 'manager';
-            $managerNoDept->manager_role = 'dept';
-            $managerNoDept->status = 'active';
-            $managerNoDept->save();
-
+        $managerNoDept->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'dept',
+            'status' => 'active',
+        ])->save();
 
         $employeeA = Employee::query()->create([
             'department_id' => $deptA->id,
             'email' => 'employee-a@scoped.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $company->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employeeB = Employee::query()->create([
             'department_id' => $deptB->id,
             'email' => 'employee-b@scoped.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeB->company_id = $company->id;
-            $employeeB->role = 'employee';
-            $employeeB->status = 'active';
-            $employeeB->save();
-
+        $employeeB->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         return [
             'company' => $company,

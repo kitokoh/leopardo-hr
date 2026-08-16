@@ -63,4 +63,14 @@ return [
     'RATE_REJECTION_FAILED' => 'Le rejet du taux a échoué. Vérifiez l\'état de la ligne puis réessayez.',
     'SOCIAL_CONTRIBUTION_SUBMIT_FAILED' => 'La soumission de la cotisation a échoué. Vérifiez l\'état de la ligne puis réessayez.',
     'TAX_SLAB_SUBMIT_FAILED' => 'La soumission de la tranche fiscale a échoué. Vérifiez l\'état de la ligne puis réessayez.',
-];
+
+    'PAYMENT_SESSION_FAILED' => 'Impossible de créer la session de paiement.',
+    'NO_PAYMENT_ACCOUNT' => 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
+    'VERIFICATION_CODE_SENT' => 'Code de vérification envoyé.',
+    'VERIFICATION_TEMPORARILY_UNAVAILABLE' => 'La vérification de votre demande est temporairement indisponible. Réessayez dans quelques instants.',
+    'TRIAL_SPACE_READY' => 'Votre espace Leopardo est prêt !',
+    'SESSION_ALREADY_OPEN' => 'Une session est déjà ouverte pour cet employé.',
+    'OUTSIDE_GEOFENCE' => 'Position hors zone de présence.',
+    'ATTENDANCE_MODE_PERSONALIZATION_DISABLED' => 'La personnalisation du mode de pointage est désactivée.',
+    'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
+    'CONFIG_UPDATED' => 'Configuration mise à jour.',

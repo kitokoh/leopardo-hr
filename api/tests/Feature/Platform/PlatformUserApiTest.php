@@ -60,9 +60,9 @@ class PlatformUserApiTest extends TestCase
             'email' => $email,
             'password_hash' => bcrypt('secret123'),
         ]);
-            $user->status = $status;
-            $user->save();
-
+        $user->forceFill([
+            'status' => $status,
+        ])->save();
 
         return $user;
     }

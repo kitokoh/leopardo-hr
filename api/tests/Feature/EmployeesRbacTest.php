@@ -57,32 +57,32 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employeeA = Employee::query()->create([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $companyA->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
+        $employeeA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
-
-        $createdEmployee = Employee::withoutGlobalScopes()->create([
+        $sensitiveEmployee3 = Employee::withoutGlobalScopes()->create([
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $companyB->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee3->forceFill([
+            'company_id' => $companyB->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -120,58 +120,58 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $present = Employee::query()->create([
             'email' => 'present@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $present->company_id = $company->id;
-            $present->role = 'employee';
-            $present->status = 'active';
-            $present->save();
-
+        $present->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         $mission = Employee::query()->create([
             'email' => 'mission@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $mission->company_id = $company->id;
-            $mission->role = 'employee';
-            $mission->status = 'active';
-            $mission->save();
-
+        $mission->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         $break = Employee::query()->create([
             'email' => 'break@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $break->company_id = $company->id;
-            $break->role = 'employee';
-            $break->status = 'active';
-            $break->save();
-
+        $break->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         $leave = Employee::query()->create([
             'email' => 'leave@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $leave->company_id = $company->id;
-            $leave->role = 'employee';
-            $leave->status = 'active';
-            $leave->save();
-
+        $leave->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         $absent = Employee::query()->create([
             'email' => 'absent@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $absent->company_id = $company->id;
-            $absent->role = 'employee';
-            $absent->status = 'active';
-            $absent->save();
-
+        $absent->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $today = now()->toDateString();
         AttendanceLog::query()->create([
@@ -263,11 +263,11 @@ class EmployeesRbacTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $companyA->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $employeeA->createToken('tests')->plainTextToken;
 
@@ -295,22 +295,22 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employeeA = Employee::query()->create([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $companyA->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $employeeA->createToken('tests')->plainTextToken;
 
@@ -348,22 +348,22 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employeeA = Employee::query()->create([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $companyA->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
         $employeeA->createToken('tests');
         $this->assertSame(1, $employeeA->tokens()->count());
 
@@ -398,12 +398,12 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -457,22 +457,22 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
-
-        $createdEmployee = Employee::withoutGlobalScopes()->create([
+        $sensitiveEmployee2 = Employee::withoutGlobalScopes()->create([
             'email' => 'shared@tenant.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $companyB->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee2->forceFill([
+            'company_id' => $companyB->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -519,23 +519,23 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
-
-        $createdEmployee = Employee::withoutGlobalScopes()->create([
+        $sensitiveEmployee1 = Employee::withoutGlobalScopes()->create([
             'matricule' => 'EMP-001',
             'email' => 'other@tenant.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $companyB->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $companyB->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -574,12 +574,12 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -623,32 +623,32 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
-
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         $employeeA = Employee::query()->create([
             'email' => 'employee.one@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $companyA->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employeeB = Employee::query()->create([
             'email' => 'employee.two@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeB->company_id = $companyA->id;
-            $employeeB->role = 'employee';
-            $employeeB->status = 'active';
-            $employeeB->save();
-
+        $employeeB->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -679,34 +679,34 @@ class EmployeesRbacTest extends TestCase
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $managerA->company_id = $companyA->id;
-            $managerA->role = 'manager';
-            $managerA->manager_role = 'principal';
-            $managerA->status = 'active';
-            $managerA->save();
+        $managerA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
-
-        $createdEmployee = Employee::query()->create([
+        $sensitiveEmployee0 = Employee::query()->create([
             'matricule' => 'EMP-001',
             'email' => 'employee.one@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $createdEmployee->company_id = $companyA->id;
-            $createdEmployee->role = 'employee';
-            $createdEmployee->status = 'active';
-            $createdEmployee->save();
-
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $employeeB = Employee::query()->create([
             'matricule' => 'EMP-002',
             'email' => 'employee.two@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeB->company_id = $companyA->id;
-            $employeeB->role = 'employee';
-            $employeeB->status = 'active';
-            $employeeB->save();
-
+        $employeeB->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -737,22 +737,22 @@ class EmployeesRbacTest extends TestCase
             'email' => 'rh@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $rh->company_id = $company->id;
-            $rh->role = 'manager';
-            $rh->manager_role = 'rh';
-            $rh->status = 'active';
-            $rh->save();
-
+        $rh->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
         $targetRh = Employee::query()->create([
             'email' => 'target-rh@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $targetRh->company_id = $company->id;
-            $targetRh->role = 'manager';
-            $targetRh->manager_role = 'rh';
-            $targetRh->status = 'active';
-            $targetRh->save();
-
+        $targetRh->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
 
         $rhToken = $rh->createToken('tests')->plainTextToken;
 
@@ -782,22 +782,22 @@ class EmployeesRbacTest extends TestCase
             'email' => 'principal@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $principal->company_id = $company->id;
-            $principal->role = 'manager';
-            $principal->manager_role = 'principal';
-            $principal->status = 'active';
-            $principal->save();
-
+        $principal->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
         $targetRh = Employee::query()->create([
             'email' => 'target-rh@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $targetRh->company_id = $company->id;
-            $targetRh->role = 'manager';
-            $targetRh->manager_role = 'rh';
-            $targetRh->status = 'active';
-            $targetRh->save();
-
+        $targetRh->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
+        ])->save();
 
         $principalToken = $principal->createToken('tests')->plainTextToken;
 
@@ -828,11 +828,11 @@ class EmployeesRbacTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employeeA->company_id = $companyA->id;
-            $employeeA->role = 'employee';
-            $employeeA->status = 'active';
-            $employeeA->save();
-
+        $employeeA->forceFill([
+            'company_id' => $companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $token = $employeeA->createToken('tests')->plainTextToken;
 

@@ -166,7 +166,7 @@ class SelfServiceTrialController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Code de vérification envoyé.',
+            'message' => __('errors.VERIFICATION_CODE_SENT'),
             'data' => [
                 'email' => $email,
                 'status' => 'pending_verification',
@@ -256,7 +256,7 @@ class SelfServiceTrialController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'error' => 'TRIAL_VERIFY_UNAVAILABLE',
-                'message' => 'La vérification de votre demande est temporairement indisponible. Réessayez dans quelques instants.',
+                'message' => __('errors.VERIFICATION_TEMPORARILY_UNAVAILABLE'),
             ], 503);
         }
 
@@ -270,7 +270,7 @@ class SelfServiceTrialController extends Controller
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Votre espace Leopardo est prêt !',
+            'message' => __('errors.TRIAL_SPACE_READY'),
             'data' => [
                 'company' => [
                     'id' => $result['company']->id,

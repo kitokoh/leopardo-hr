@@ -62,11 +62,11 @@ class AutoCloseAttendanceCommandTest extends TestCase
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $checkIn = Carbon::parse('2026-05-31 06:00:00', 'UTC');
         AttendanceLog::query()->create([
@@ -129,11 +129,11 @@ class AutoCloseAttendanceCommandTest extends TestCase
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $checkIn = Carbon::parse('2026-05-31 06:00:00', 'UTC');
         $log = AttendanceLog::query()->create([

@@ -71,11 +71,11 @@ class PunchPhotoTest extends TestCase
             'email' => 'employee@photo.test',
             'password_hash' => Hash::make('password123'),
         ]);
-            $this->employee->company_id = $this->company->id;
-            $this->employee->role = 'employee';
-            $this->employee->status = 'active';
-            $this->employee->save();
-
+        $this->employee->forceFill([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
     }
 
 

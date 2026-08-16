@@ -27,14 +27,14 @@
     <div v-if="isLoading && !health" class="flex h-64 items-center justify-center rounded-3xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-xl">
       <div class="flex flex-col items-center gap-4">
         <div class="h-12 w-12 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"></div>
-        <p class="text-sm font-bold text-slate-500">Analyse des données client...</p>
+        <p class="text-sm font-bold text-slate-500">{{ t('companyDetail.analyzing') }}</p>
       </div>
     </div>
 
     <div v-else-if="errorMessage" class="rounded-3xl border border-red-200 bg-red-50 p-8 text-center dark:border-red-900/30 dark:bg-red-950/20">
       <ExclamationCircleIcon class="mx-auto h-12 w-12 text-red-500" />
       <h3 class="mt-4 text-lg font-bold text-red-800 dark:text-red-400">{{ errorMessage }}</h3>
-      <button class="btn-primary mt-6" @click="loadCompany">Réessayer</button>
+      <button class="btn-primary mt-6" @click="loadCompany">{{ t('companyDetail.retry') }}</button>
     </div>
 
     <template v-else-if="health">
@@ -53,7 +53,7 @@
           <section class="card">
             <div class="border-b border-slate-200/50 px-6 py-5 dark:border-slate-800/50">
               <div class="flex items-center justify-between">
-                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Adoption Terrain</h2>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('companyDetail.fieldAdoption') }}</h2>
                 <span :class="riskClass(health.adoption.risk_level)">
                   Niveau de risque : {{ health.adoption.risk_level }}
                 </span>
@@ -63,19 +63,19 @@
             <div class="p-6">
               <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
-                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Onboarding</dt>
+                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('companyDetail.onboarding') }}</dt>
                   <dd class="mt-2 text-2xl font-black text-slate-900 dark:text-white">{{ health.adoption.onboarding.progress_percent }}%</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
-                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Anomalies 30j</dt>
+                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('companyDetail.anomalies30d') }}</dt>
                   <dd class="mt-2 text-2xl font-black text-red-600 dark:text-red-400">{{ health.adoption.anomalies.critical_30d }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
-                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Paie Prête</dt>
+                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('companyDetail.payrollReady') }}</dt>
                   <dd class="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ health.adoption.employees.payroll_ready }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-transform hover:scale-[1.02]">
-                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Employés Actifs (30j)</dt>
+                  <dt class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">{{ t('companyDetail.activeEmployees30d') }}</dt>
                   <dd class="mt-2 text-2xl font-black text-slate-900 dark:text-white">{{ health.adoption.attendance.active_employees_30d ?? 0 }}</dd>
                 </div>
               </div>
@@ -102,7 +102,7 @@
                 </div>
                 <div v-else class="mt-4 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 py-8 dark:border-slate-800">
                   <CheckBadgeIcon class="h-10 w-10 text-emerald-500/50" />
-                  <p class="mt-2 text-sm font-medium text-slate-500">Aucun blocage prioritaire détecté.</p>
+                  <p class="mt-2 text-sm font-medium text-slate-500">{{ t('companyDetail.noPriorityBlockers') }}</p>
                 </div>
               </div>
             </div>
@@ -111,7 +111,7 @@
           <!-- Module Features Configuration -->
           <section class="card overflow-hidden">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
-              <h2 class="text-xl font-bold text-slate-900 dark:text-white">Configuration des Modules</h2>
+              <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('companyDetail.modulesConfig') }}</h2>
               <p class="mt-1 text-sm font-medium text-slate-500">Activez ou désactivez les fonctionnalités spécifiques pour ce client.</p>
             </div>
 
@@ -182,7 +182,7 @@
 
             <form class="p-6 space-y-5" @submit.prevent="saveSubscription">
               <div class="space-y-1.5">
-                <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="plan">Plan de services</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="plan">{{ t('companyDetail.servicePlan') }}</label>
                 <select id="plan" v-model.number="subscriptionForm.plan_id" class="form-input">
                   <option v-for="plan in plans" :key="plan.id" :value="plan.id">
                     {{ plan.name }} — {{ formatCurrency(plan.price_monthly, health.company.currency) }}/m
@@ -191,18 +191,18 @@
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="status">Statut Commercial</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="status">{{ t('companyDetail.commercialStatus') }}</label>
                 <select id="status" v-model="subscriptionForm.status" class="form-input">
-                  <option value="trial">Essai (Trial)</option>
-                  <option value="active">Actif</option>
-                  <option value="suspended">Suspendu</option>
-                  <option value="expired">Expiré</option>
+                  <option value="trial">{{ t('companyDetail.statusTrial') }}</option>
+                  <option value="active">{{ t('companyDetail.statusActive') }}</option>
+                  <option value="suspended">{{ t('companyDetail.statusSuspended') }}</option>
+                  <option value="expired">{{ t('companyDetail.statusExpired') }}</option>
                 </select>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1.5">
-                  <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="subscription_start">Début</label>
+                  <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="subscription_start">{{ t('companyDetail.startDate') }}</label>
                   <input id="subscription_start" v-model="subscriptionForm.subscription_start" type="date" class="form-input" />
                 </div>
                 <div class="space-y-1.5">
@@ -212,7 +212,7 @@
               </div>
 
               <div class="space-y-1.5">
-                <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="notes">Notes Internes</label>
+                <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="notes">{{ t('companyDetail.internalNotes') }}</label>
                 <textarea id="notes" v-model="subscriptionForm.notes" rows="3" class="form-input" placeholder="Détails sur la négociation, remises, etc."></textarea>
               </div>
 
@@ -258,7 +258,7 @@
               </div>
               <div v-else-if="supportTickets.length === 0" class="flex flex-col items-center justify-center gap-2 py-6 text-center">
                 <CheckBadgeIcon class="h-8 w-8 text-emerald-500/50" />
-                <p class="text-sm font-medium text-slate-500">Aucun ticket de support pour ce client.</p>
+                <p class="text-sm font-medium text-slate-500">{{ t('companyDetail.noSupportTickets') }}</p>
               </div>
               <ul v-else class="space-y-3">
                 <li
@@ -287,26 +287,26 @@
           <section class="card bg-slate-900 text-white border-none shadow-premium overflow-hidden relative">
             <div class="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-brand-500/10 blur-3xl"></div>
             <div class="p-6 relative z-10">
-              <h2 class="text-lg font-bold">Identité Technique</h2>
+              <h2 class="text-lg font-bold">{{ t('companyDetail.technicalIdentity') }}</h2>
               <dl class="mt-6 space-y-4">
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
-                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">ID Plateforme</dt>
+                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('companyDetail.platformId') }}</dt>
                   <dd class="text-xs font-mono font-bold">{{ health.company.id.substring(0, 8) }}...</dd>
                 </div>
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
-                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Slug</dt>
+                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('companyDetail.slug') }}</dt>
                   <dd class="text-xs font-bold">{{ health.company.slug }}</dd>
                 </div>
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
-                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Pays / Devise</dt>
+                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('companyDetail.countryCurrency') }}</dt>
                   <dd class="text-xs font-bold">{{ health.company.country }} / {{ health.company.currency }}</dd>
                 </div>
                 <div class="flex justify-between items-center border-b border-white/5 pb-3">
-                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Inscrit le</dt>
+                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('companyDetail.registeredOn') }}</dt>
                   <dd class="text-xs font-bold">{{ formatDate(health.company.created_at) }}</dd>
                 </div>
                 <div class="flex justify-between items-center">
-                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">Dernière Activité</dt>
+                  <dt class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ t('companyDetail.lastActivity') }}</dt>
                   <dd class="text-xs font-bold text-brand-400">{{ formatDateTime(health.adoption.attendance.last_punch_at) }}</dd>
                 </div>
               </dl>
@@ -352,6 +352,11 @@ import { toIntlLocale } from '@/i18n/index.js'
 const route = useRoute()
 const toast = useToast()
 const localeStore = useLocaleStore()
+
+// #4206 : traduction via le catalogue admin.
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
 
 const isLoading = ref(false)
 const errorMessage = ref('')

@@ -50,7 +50,7 @@ class AttendanceRepository {
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
       );
-      return AttendanceLog.fromJson(_dataMap(response.data));
+      return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
       if (_isOfflineNetworkError(e)) {
         final box =
@@ -104,7 +104,7 @@ class AttendanceRepository {
         maxRetriesOverride: 0,
         timeoutOverride: _actionTimeout,
       );
-      return AttendanceLog.fromJson(_dataMap(response.data));
+      return AttendanceLog.fromJson(extractDataMap(response.data));
     } catch (e) {
       if (_isOfflineNetworkError(e)) {
         final box =
@@ -152,7 +152,7 @@ class AttendanceRepository {
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
-    return AttendanceLog.fromJson(_dataMap(response.data));
+    return AttendanceLog.fromJson(extractDataMap(response.data));
   }
 
   Future<void> requestCorrection({
@@ -231,7 +231,7 @@ class AttendanceRepository {
           'per_page': 100,
         },
       );
-      final data = _dataMap(response.data);
+      final data = extractDataMap(response.data);
       return AttendanceAnomalyReport.fromJson(data);
     } catch (_) {
       // Anomalies are a non-blocking enrichment of the day-detail view; a
@@ -296,6 +296,9 @@ class AttendanceRepository {
   static Map<String, dynamic> decodeTodayResponse(
     Map<String, dynamic> responseData,
   ) {
+    // #4199 : accès structuré volontaire (et non déballage d'enveloppe) —
+    // la distinction null/absent est nécessaire ici (fallback summary/context
+    // au niveau racine), ce qu'extractDataMap() ne peut pas exprimer.
     final payload = responseData['data'];
 
     if (payload == null) {
@@ -394,7 +397,7 @@ class AttendanceRepository {
     return DateTime(now.year, now.month, now.day, hour, minute);
   }
 
-  static Map<String, dynamic> _dataMap(dynamic responseData) {
+  static Map<String, dynamic> extractDataMap(dynamic responseData) {
     final response = responseData is Map
         ? responseData.cast<String, dynamic>()
         : const <String, dynamic>{};

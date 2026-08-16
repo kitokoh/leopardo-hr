@@ -47,4 +47,10 @@ return [
     'gender' => 'Gender',
     'hire_date' => 'Hire date',
     'emergency_contact' => 'Emergency contact',
+
+    'evaluation_exists' => 'An evaluation already exists for this employee for this period.',
+    'evaluation_acknowledged_locked' => 'An acknowledged evaluation can no longer be modified.',
+    'evaluation_not_draft_submit' => 'Only a draft evaluation can be submitted.',
+    'evaluation_not_draft_delete' => 'Only a draft evaluation can be deleted.',
+    'evaluation_not_submitted' => 'Only a submitted evaluation can be acknowledged.',
 ];

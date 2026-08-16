@@ -55,12 +55,12 @@ class EmployeeEncryptionTest extends TestCase
             'bank_account' => $bankAccount,
             'national_id' => $nationalId,
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->salary_base = 1000;
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+            'salary_base' => 1000,
+        ])->save();
 
         $this->assertSame($iban, $employee->iban);
         $this->assertSame($bankAccount, $employee->bank_account);

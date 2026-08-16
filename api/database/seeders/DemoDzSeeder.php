@@ -183,9 +183,10 @@ class DemoDzSeeder extends Seeder
                     'payment_method' => 'bank_transfer',
                 ]
             );
-            // Issue #3677 : role/manager_role/status/salary_base non mass-assignables
-            // — assignation explicite (uniquement à la création : re-seed idempotent).
+            // Sensitive fields set explicitly (not mass-assignable, #3677) —
+            // uniquement à la création (un compte existant garde son rôle/statut).
             if ($employee->wasRecentlyCreated) {
+                $employee->company_id = $company->id;
                 $employee->role = $account['role'];
                 $employee->manager_role = $account['manager_role'];
                 $employee->status = 'active';

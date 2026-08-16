@@ -35,8 +35,7 @@ class PartnerDashboardController extends Controller
                     'last_name'  => $authUser->last_name,
                 ]
             );
-            // Issue #3677 : status non mass-assignable — assignation explicite
-            // (uniquement à la création, pour ne pas réactiver un compte existant).
+            // Issue #3597/#4151 : status non mass-assignable — assignation explicite.
             if ($user->wasRecentlyCreated) {
                 $user->status = 'active';
                 $user->save();

@@ -47,4 +47,10 @@ return [
     'gender' => 'Genre',
     'hire_date' => 'Date d\'embauche',
     'emergency_contact' => 'Contact d\'urgence',
+
+    'evaluation_exists' => 'Une évaluation existe déjà pour cet employé sur cette période.',
+    'evaluation_acknowledged_locked' => 'Une évaluation accusée de réception ne peut plus être modifiée.',
+    'evaluation_not_draft_submit' => 'Seule une évaluation en brouillon peut être soumise.',
+    'evaluation_not_draft_delete' => 'Seule une évaluation en brouillon peut être supprimée.',
+    'evaluation_not_submitted' => 'Seule une évaluation soumise peut être accusée de réception.',
 ];

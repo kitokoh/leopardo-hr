@@ -44,7 +44,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  API_BASE_URL: https://gestionemployerbackend.onrender.com/api/v1
+  API_BASE_URL: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com/api/v1' }}
 
 concurrency:
   group: mobile-apps-ci-${{ github.ref }}
@@ -109,6 +109,12 @@ jobs:
         # dans le routeur GoRouter de l'app cible, sinon context.push() crashe.
         shell: bash
         run: 'bash ./dev-hub/tools/check-mobile-manifest-routes.sh'
+
+      - name: Validate no hardcoded FR number formats (locale-aware)
+        # #4197 : NumberFormat.decimalPattern('fr') / deviceIntlDateLocale
+        # sur des montants = locale forcée FR pour les utilisateurs AR/TR/EN.
+        shell: bash
+        run: 'bash ./dev-hub/tools/check-mobile-number-locale.sh'
 
   flutter-analyze:
     name: Analyze ${{ matrix.project.name }}

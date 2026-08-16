@@ -151,12 +151,12 @@ class KioskCrossTenantIsolationTest extends TestCase
             'email' => $managerEmail,
             'password_hash' => Hash::make('password123'),
         ]);
-            $manager->company_id = $company->id;
-            $manager->role = 'manager';
-            $manager->manager_role = 'principal';
-            $manager->status = 'active';
-            $manager->save();
-
+        $manager->forceFill([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 
@@ -177,11 +177,11 @@ class KioskCrossTenantIsolationTest extends TestCase
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => $matricule,
         ]);
-            $employee->company_id = $company->id;
-            $employee->role = 'employee';
-            $employee->status = 'active';
-            $employee->save();
-
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         DB::statement('SET search_path TO public');
 

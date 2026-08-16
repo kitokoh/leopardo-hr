@@ -200,7 +200,9 @@ test.describe('Navigation and Links E2E Tests', () => {
       await expect(hamburger).toBeVisible();
       await hamburger.click();
 
-      const mobileMenu = page.locator('[aria-label="Menu mobile"]').first();
+      // #3732 : le panneau porte désormais un id stable (aria-label localisé
+      // « Menu »/« القائمة ») — on cible #mobile-menu-panel, indépendant de la langue.
+      const mobileMenu = page.locator('#mobile-menu-panel').first();
       await expect(mobileMenu).toBeVisible({ timeout: 5000 });
     });
 
@@ -213,7 +215,7 @@ test.describe('Navigation and Links E2E Tests', () => {
       await expect(hamburger).toBeVisible();
       await hamburger.click();
 
-      const mobileMenu = page.locator('[aria-label="Menu mobile"]').first();
+      const mobileMenu = page.locator('#mobile-menu-panel').first();
       await expect(mobileMenu).toBeVisible({ timeout: 5000 });
 
       const link = mobileMenu.locator('a[href="/pricing"]').first();

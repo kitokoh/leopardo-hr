@@ -171,4 +171,17 @@ class GeneratePaySlipPdfJob implements ShouldQueue, TenantScopedJob
             Log::warning("GeneratePaySlipPdfJob: Push notification failed for employee #{$employee->id}: {$e->getMessage()}");
         }
     }
+
+    /**
+     * #4205 : épuisement des retries — log d'alerte (bulletin PDF).
+     */
+    public function failed(Throwable $e): void
+    {
+        Log::error('GeneratePaySlipPdfJob.failed', [
+            'payroll_run_id' => $this->payrollRunId,
+            'employee_id' => $this->employeeId,
+            'exception' => $e->getMessage(),
+        ]);
+    }
+
 }

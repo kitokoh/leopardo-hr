@@ -68,11 +68,11 @@ class ManagerValidationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $this->employee->company_id = $this->company->id;
-            $this->employee->role = 'employee';
-            $this->employee->status = 'active';
-            $this->employee->save();
-
+        $this->employee->forceFill([
+            'company_id'    => $this->company->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         $this->manager = Employee::query()->create([
             'schedule_id'   => $schedule->id,
@@ -81,12 +81,12 @@ class ManagerValidationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $this->manager->company_id = $this->company->id;
-            $this->manager->role = 'manager';
-            $this->manager->manager_role = 'rh';
-            $this->manager->status = 'active';
-            $this->manager->save();
-
+        $this->manager->forceFill([
+            'company_id'    => $this->company->id,
+            'role'          => 'manager',
+            'manager_role'  => 'rh',
+            'status'        => 'active',
+        ])->save();
     }
 
 
@@ -250,11 +250,11 @@ class ManagerValidationTest extends TestCase
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-            $otherEmployee->company_id = $otherCompany->id;
-            $otherEmployee->role = 'employee';
-            $otherEmployee->status = 'active';
-            $otherEmployee->save();
-
+        $otherEmployee->forceFill([
+            'company_id'    => $otherCompany->id,
+            'role'          => 'employee',
+            'status'        => 'active',
+        ])->save();
 
         // Session appartenant à l'autre company
         $foreignSession = GeoAttendanceSession::query()->create([

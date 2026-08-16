@@ -49,16 +49,16 @@ class UserAuthServiceTest extends TestCase
 
     public function test_suspended_user_cannot_login(): void
     {
-        $createdUser = User::query()->create([
+        $sensitiveUser3 = User::query()->create([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
             'password_hash' => Hash::make('secret123'),
             'provider' => 'email',
         ]);
-            $createdUser->status = 'suspended';
-            $createdUser->save();
-
+        $sensitiveUser3->forceFill([
+            'status' => 'suspended',
+        ])->save();
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'secret123', 'test');
@@ -66,16 +66,16 @@ class UserAuthServiceTest extends TestCase
 
     public function test_deactivated_user_cannot_login(): void
     {
-        $createdUser = User::query()->create([
+        $sensitiveUser2 = User::query()->create([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
             'password_hash' => Hash::make('secret123'),
             'provider' => 'email',
         ]);
-            $createdUser->status = 'deactivated';
-            $createdUser->save();
-
+        $sensitiveUser2->forceFill([
+            'status' => 'deactivated',
+        ])->save();
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'secret123', 'test');
@@ -85,16 +85,16 @@ class UserAuthServiceTest extends TestCase
     {
         // Fail-closed (#2618, main) : le statut est vérifié AVANT le mot de
         // passe — un compte suspendu ne révèle jamais la validité du mot de passe.
-        $createdUser = User::query()->create([
+                $sensitiveUser1 = User::query()->create([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
             'password_hash' => Hash::make('secret123'),
             'provider' => 'email',
         ]);
-            $createdUser->status = 'suspended';
-            $createdUser->save();
-
+        $sensitiveUser1->forceFill([
+            'status' => 'suspended',
+        ])->save();
 
         $this->expectException(AccountSuspendedException::class);
         $this->service->login('jean.dupont@example.com', 'wrong-password', 'test');
@@ -105,16 +105,16 @@ class UserAuthServiceTest extends TestCase
         [$privateKey, $jwks] = $this->googleKeyPair();
         $this->fakeGoogleJwks([$jwks]);
 
-        $createdUser = User::query()->create([
+        $sensitiveUser0 = User::query()->create([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
             'google_id' => 'google-sub-123',
             'provider' => 'google',
         ]);
-            $createdUser->status = 'suspended';
-            $createdUser->save();
-
+        $sensitiveUser0->forceFill([
+            'status' => 'suspended',
+        ])->save();
 
         $idToken = $this->googleIdToken($privateKey, ['email' => 'jean.dupont@example.com']);
 
