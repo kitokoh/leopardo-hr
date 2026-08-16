@@ -322,10 +322,10 @@ class AttendanceController extends Controller
 
         $errors = [];
         if ($requestedCheckIn->isFuture()) {
-            $errors['requested_check_in'] = ['Impossible de demander une correction avec une heure future.'];
+            $errors['requested_check_in'] = [__('attendance.correction_future_check_in')];
         }
         if ($requestedCheckOut !== null && $requestedCheckOut->isFuture()) {
-            $errors['requested_check_out'] = ['Impossible de demander une correction avec une heure future.'];
+            $errors['requested_check_out'] = [__('attendance.correction_future_check_out')];
         }
         if ($errors !== []) {
             throw ValidationException::withMessages($errors);
@@ -413,7 +413,7 @@ class AttendanceController extends Controller
 
         if ($correction->status !== 'pending') {
             throw ValidationException::withMessages([
-                'status' => ['Cette demande de correction a deja ete traitee.'],
+                'status' => [__('attendance.correction_already_processed')],
             ]);
         }
 
@@ -475,7 +475,7 @@ class AttendanceController extends Controller
 
         if ($correction->status !== 'pending') {
             throw ValidationException::withMessages([
-                'status' => ['Cette demande de correction a deja ete traitee.'],
+                'status' => [__('attendance.correction_already_processed')],
             ]);
         }
 
@@ -513,13 +513,13 @@ class AttendanceController extends Controller
 
         if ($effectiveCheckOut !== null && $effectiveCheckIn === null) {
             throw ValidationException::withMessages([
-                'check_out' => [__('errors.ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN')],
+                'check_out' => [__('attendance.manual_checkout_requires_check_in')],
             ]);
         }
 
         if ($effectiveCheckIn !== null && $effectiveCheckOut !== null && $effectiveCheckOut <= $effectiveCheckIn) {
             throw ValidationException::withMessages([
-                'check_out' => [__('errors.ATTENDANCE_CHECKOUT_AFTER_CHECKIN')],
+                'check_out' => [__('attendance.checkout_after_checkin')],
             ]);
         }
 

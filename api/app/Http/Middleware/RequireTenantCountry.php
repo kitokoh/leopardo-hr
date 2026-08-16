@@ -32,7 +32,7 @@ final class RequireTenantCountry
             if ($company instanceof Company && ! CountryDefaults::isSupported($company->country)) {
                 return response()->json([
                     'message' => __('errors.TENANT_COUNTRY_REQUIRED'),
-                    'errors' => ['country' => [__('errors.TENANT_COUNTRY_REQUIRED')]],
+                    'errors' => ['country' => [__('errors.TENANT_COUNTRY_INVALID', ['country' => $company->country ?: '—'])]],
                 ], 422);
             }
         }
