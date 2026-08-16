@@ -882,3 +882,10 @@ git diff origin/main:<fichier> origin/<branche>:<fichier>   # vide = duplique
 
 ### 2026-08-16 — Tests Payroll déterministes et précision overtime (#4266)
 Les tests Golden ne doivent jamais dépendre des dates aléatoires d’`EmployeeFactory` : lorsqu’une période complète est attendue, fixer explicitement `contract_start` avant `period_start` et `contract_end` à `null`. Pour `computeOvertimePay`, la précision complète est conservée jusqu’à l’arrondi final; les attentes doivent donc refléter `4327.01` et `6923.21` pour la formule de référence 60 000 / 173.33, et non des valeurs obtenues après arrondi prématuré.
+
+
+## Leçon 2026-08-16 — Déduplication des déploiements post-merge (#4359)
+
+Le workflow `deploy-main.yml` doit utiliser le `push` sur `main` comme source automatique unique. Ajouter également `workflow_run` pour les mêmes parents crée plusieurs runs pour un même SHA, empile E2E/ZAP et peut affamer le déploiement Render. Le groupe de concurrence doit rester indexé directement sur `github.sha`, avec une garde anti-stale et un résumé explicite en cas d’annulation.
+
+Référence : issue Spec Kit #4359.
