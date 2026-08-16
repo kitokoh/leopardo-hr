@@ -342,53 +342,29 @@ abstract class AppLocalizations {
   /// **'ou'**
   String get commonOr;
 
-  /// No description provided for @commonCountriesDz.
+  /// No description provided for @commonCountriesBf.
   ///
   /// In fr, this message translates to:
-  /// **'Algérie'**
-  String get commonCountriesDz;
+  /// **'Burkina Faso'**
+  String get commonCountriesBf;
 
-  /// No description provided for @commonCountriesCm.
+  /// No description provided for @commonCountriesBj.
   ///
   /// In fr, this message translates to:
-  /// **'Cameroun'**
-  String get commonCountriesCm;
+  /// **'Bénin'**
+  String get commonCountriesBj;
 
-  /// No description provided for @commonCountriesCi.
+  /// No description provided for @commonCountriesCa.
   ///
   /// In fr, this message translates to:
-  /// **'Côte d\'Ivoire'**
-  String get commonCountriesCi;
+  /// **'Canada'**
+  String get commonCountriesCa;
 
-  /// No description provided for @commonCountriesSn.
+  /// No description provided for @commonCountriesCf.
   ///
   /// In fr, this message translates to:
-  /// **'Sénégal'**
-  String get commonCountriesSn;
-
-  /// No description provided for @commonCountriesMa.
-  ///
-  /// In fr, this message translates to:
-  /// **'Maroc'**
-  String get commonCountriesMa;
-
-  /// No description provided for @commonCountriesTn.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tunisie'**
-  String get commonCountriesTn;
-
-  /// No description provided for @commonCountriesFr.
-  ///
-  /// In fr, this message translates to:
-  /// **'France'**
-  String get commonCountriesFr;
-
-  /// No description provided for @commonCountriesTr.
-  ///
-  /// In fr, this message translates to:
-  /// **'Turquie'**
-  String get commonCountriesTr;
+  /// **'République centrafricaine'**
+  String get commonCountriesCf;
 
   /// No description provided for @commonCountriesCg.
   ///
@@ -396,23 +372,101 @@ abstract class AppLocalizations {
   /// **'Congo'**
   String get commonCountriesCg;
 
+  /// No description provided for @commonCountriesCi.
+  ///
+  /// In fr, this message translates to:
+  /// **'Côte d\'Ivoire'**
+  String get commonCountriesCi;
+
+  /// No description provided for @commonCountriesCm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cameroun'**
+  String get commonCountriesCm;
+
+  /// No description provided for @commonCountriesDz.
+  ///
+  /// In fr, this message translates to:
+  /// **'Algérie'**
+  String get commonCountriesDz;
+
+  /// No description provided for @commonCountriesFr.
+  ///
+  /// In fr, this message translates to:
+  /// **'France'**
+  String get commonCountriesFr;
+
   /// No description provided for @commonCountriesGa.
   ///
   /// In fr, this message translates to:
   /// **'Gabon'**
   String get commonCountriesGa;
 
-  /// No description provided for @commonCountriesBf.
+  /// No description provided for @commonCountriesGb.
   ///
   /// In fr, this message translates to:
-  /// **'Burkina Faso'**
-  String get commonCountriesBf;
+  /// **'Royaume-Uni'**
+  String get commonCountriesGb;
+
+  /// No description provided for @commonCountriesGq.
+  ///
+  /// In fr, this message translates to:
+  /// **'Guinée équatoriale'**
+  String get commonCountriesGq;
+
+  /// No description provided for @commonCountriesMa.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maroc'**
+  String get commonCountriesMa;
 
   /// No description provided for @commonCountriesMl.
   ///
   /// In fr, this message translates to:
   /// **'Mali'**
   String get commonCountriesMl;
+
+  /// No description provided for @commonCountriesNe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niger'**
+  String get commonCountriesNe;
+
+  /// No description provided for @commonCountriesSn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sénégal'**
+  String get commonCountriesSn;
+
+  /// No description provided for @commonCountriesTd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tchad'**
+  String get commonCountriesTd;
+
+  /// No description provided for @commonCountriesTg.
+  ///
+  /// In fr, this message translates to:
+  /// **'Togo'**
+  String get commonCountriesTg;
+
+  /// No description provided for @commonCountriesTn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tunisie'**
+  String get commonCountriesTn;
+
+  /// No description provided for @commonCountriesTr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Turquie'**
+  String get commonCountriesTr;
+
+  /// No description provided for @commonCountriesUs.
+  ///
+  /// In fr, this message translates to:
+  /// **'États-Unis'**
+  String get commonCountriesUs;
 
   /// No description provided for @modulesAttendance.
   ///
@@ -1146,6 +1200,12 @@ abstract class AppLocalizations {
   /// **'Export de la selection termine'**
   String get usersToastSelectionexportdone;
 
+  /// No description provided for @usersToastBulkdone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mise à jour effectuée'**
+  String get usersToastBulkdone;
+
   /// No description provided for @usersConfirmDelete.
   ///
   /// In fr, this message translates to:
@@ -1169,6 +1229,132 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Veuillez corriger les champs en rouge'**
   String get usersErrorsFixFields;
+
+  /// No description provided for @usersErrorsPasswordMin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le mot de passe doit contenir au moins 8 caractères'**
+  String get usersErrorsPasswordMin;
+
+  /// No description provided for @usersErrorsSearchNoMatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune page ne correspond à votre recherche'**
+  String get usersErrorsSearchNoMatch;
+
+  /// No description provided for @usersErrorsUpdateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la mise à jour de l\'utilisateur'**
+  String get usersErrorsUpdateFailed;
+
+  /// No description provided for @usersImpersonationTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impersonner un employé'**
+  String get usersImpersonationTitle;
+
+  /// No description provided for @usersImpersonationSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir une session au nom de :name'**
+  String get usersImpersonationSubtitle;
+
+  /// No description provided for @usersImpersonationReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif (obligatoire, 5 caractères minimum)'**
+  String get usersImpersonationReason;
+
+  /// No description provided for @usersImpersonationReasonmin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif obligatoire (5 caractères minimum).'**
+  String get usersImpersonationReasonmin;
+
+  /// No description provided for @usersImpersonationNolink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun employé lié à ce compte — impersonation impossible.'**
+  String get usersImpersonationNolink;
+
+  /// No description provided for @usersImpersonationStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer la session'**
+  String get usersImpersonationStart;
+
+  /// No description provided for @usersImpersonationCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get usersImpersonationCancel;
+
+  /// No description provided for @usersImpersonationTokentitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton d\'impersonation (usage unique)'**
+  String get usersImpersonationTokentitle;
+
+  /// No description provided for @usersImpersonationExpires.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire le :date'**
+  String get usersImpersonationExpires;
+
+  /// No description provided for @usersImpersonationCopy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le jeton'**
+  String get usersImpersonationCopy;
+
+  /// No description provided for @usersImpersonationCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Jeton copié'**
+  String get usersImpersonationCopied;
+
+  /// No description provided for @usersImpersonationCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session d\'impersonation créée'**
+  String get usersImpersonationCreated;
+
+  /// No description provided for @usersImpersonationError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la création de la session d\'impersonation'**
+  String get usersImpersonationError;
+
+  /// No description provided for @usersImpersonationDone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminé'**
+  String get usersImpersonationDone;
+
+  /// No description provided for @usersImpersonationEmployee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employé #:id'**
+  String get usersImpersonationEmployee;
+
+  /// No description provided for @usersEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Modifier l\'utilisateur'**
+  String get usersEditTitle;
+
+  /// No description provided for @usersEditStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get usersEditStatus;
+
+  /// No description provided for @usersEditSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour'**
+  String get usersEditSave;
 
   /// No description provided for @dashboardTitle.
   ///
@@ -1227,7 +1413,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardLeoIaAnnouncementBody.
   ///
   /// In fr, this message translates to:
-  /// **'Felicitations a toute l\'equipe : les retards sont en baisse de 15% cette semaine. Continuez sur cette dynamique !'**
+  /// **'Felicitations a toute l\'equipe pour votre engagement de cette semaine. Continuez sur cette dynamique !'**
   String get dashboardLeoIaAnnouncementBody;
 
   /// No description provided for @dashboardLeoIaAnnouncementError.
@@ -1235,6 +1421,270 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Impossible d\'envoyer le message. Reessayez dans quelques instants.'**
   String get dashboardLeoIaAnnouncementError;
+
+  /// No description provided for @dashboardLeoPresenceInsight.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui, {today} presence(s) sur {active} employe(s) actif(s). Souhaitez-vous envoyer un message de felicitations a l\'equipe ?'**
+  String dashboardLeoPresenceInsight(Object active, Object today);
+
+  /// No description provided for @dashboardLeoPresenceEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnee de presence disponible pour le moment. Souhaitez-vous quand meme envoyer un message de felicitations a l\'equipe ?'**
+  String get dashboardLeoPresenceEmpty;
+
+  /// No description provided for @dashboardLeoAnnouncementsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} annonce(s) publiee(s) dans votre entreprise.'**
+  String dashboardLeoAnnouncementsCount(Object count);
+
+  /// No description provided for @dashboardPresenceTodayTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Presence aujourd hui'**
+  String get dashboardPresenceTodayTitle;
+
+  /// No description provided for @dashboardPresenceTodaySummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{present} presence(s) sur {active} employe(s) actif(s) aujourd hui'**
+  String dashboardPresenceTodaySummary(Object active, Object present);
+
+  /// No description provided for @dashboardPresenceTodayEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune donnee de presence disponible.'**
+  String get dashboardPresenceTodayEmpty;
+
+  /// No description provided for @dashboardPortfoliopriorities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Priorites Portefeuille'**
+  String get dashboardPortfoliopriorities;
+
+  /// No description provided for @dashboardClient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Client'**
+  String get dashboardClient;
+
+  /// No description provided for @dashboardHealth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sante'**
+  String get dashboardHealth;
+
+  /// No description provided for @dashboardRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Risque'**
+  String get dashboardRisk;
+
+  /// No description provided for @dashboardActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions'**
+  String get dashboardActions;
+
+  /// No description provided for @dashboardSeeall.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir tout'**
+  String get dashboardSeeall;
+
+  /// No description provided for @dashboardNoprioritycompanies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune entreprise prioritaire pour le moment.'**
+  String get dashboardNoprioritycompanies;
+
+  /// No description provided for @dashboardPendingregistrations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inscriptions en attente'**
+  String get dashboardPendingregistrations;
+
+  /// No description provided for @dashboardNopendingrequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande en attente.'**
+  String get dashboardNopendingrequests;
+
+  /// No description provided for @dashboardAdoption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adoption'**
+  String get dashboardAdoption;
+
+  /// No description provided for @dashboardCheckins30d.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointages 30j'**
+  String get dashboardCheckins30d;
+
+  /// No description provided for @dashboardActiveemployees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employes actifs'**
+  String get dashboardActiveemployees;
+
+  /// No description provided for @dashboardClientsatrisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Clients a risque'**
+  String get dashboardClientsatrisk;
+
+  /// No description provided for @dashboardRevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Revenus'**
+  String get dashboardRevenue;
+
+  /// No description provided for @dashboardCollected30d.
+  ///
+  /// In fr, this message translates to:
+  /// **'Encaisse 30j'**
+  String get dashboardCollected30d;
+
+  /// No description provided for @dashboardOverdue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impayes'**
+  String get dashboardOverdue;
+
+  /// No description provided for @dashboardActivesubscriptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnements actifs'**
+  String get dashboardActivesubscriptions;
+
+  /// No description provided for @dashboardShortcuts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Raccourcis'**
+  String get dashboardShortcuts;
+
+  /// No description provided for @dashboardClientportfolio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portefeuille clients'**
+  String get dashboardClientportfolio;
+
+  /// No description provided for @dashboardSubscriptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnements'**
+  String get dashboardSubscriptions;
+
+  /// No description provided for @dashboardClientrequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes clients'**
+  String get dashboardClientrequests;
+
+  /// No description provided for @dashboardCreateactivateclient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Creer ou activer un client'**
+  String get dashboardCreateactivateclient;
+
+  /// No description provided for @dashboardOpenclientportfolio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir le portefeuille clients'**
+  String get dashboardOpenclientportfolio;
+
+  /// No description provided for @dashboardProcessincomingrequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Traiter les demandes entrantes'**
+  String get dashboardProcessincomingrequests;
+
+  /// No description provided for @dashboardViewclientrequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir les demandes clients'**
+  String get dashboardViewclientrequests;
+
+  /// No description provided for @dashboardMonitoratriskclients.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surveiller les clients a risque'**
+  String get dashboardMonitoratriskclients;
+
+  /// No description provided for @dashboardAnalyzepriorities.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyser les priorites'**
+  String get dashboardAnalyzepriorities;
+
+  /// No description provided for @dashboardManagesubscriptionsrevenue.
+  ///
+  /// In fr, this message translates to:
+  /// **'Piloter abonnements et revenus'**
+  String get dashboardManagesubscriptionsrevenue;
+
+  /// No description provided for @dashboardOpensubscriptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir abonnements'**
+  String get dashboardOpensubscriptions;
+
+  /// No description provided for @dashboardChecksystemsecurity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Verifier systeme et securite'**
+  String get dashboardChecksystemsecurity;
+
+  /// No description provided for @dashboardOpensystem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir systeme'**
+  String get dashboardOpensystem;
+
+  /// No description provided for @dashboardPreparepartnerintegrations.
+  ///
+  /// In fr, this message translates to:
+  /// **'Preparer integrations partenaires'**
+  String get dashboardPreparepartnerintegrations;
+
+  /// No description provided for @dashboardOpenwebhooks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les webhooks'**
+  String get dashboardOpenwebhooks;
+
+  /// No description provided for @dashboardLoaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger le cockpit plateforme.'**
+  String get dashboardLoaderror;
+
+  /// No description provided for @dashboardRiskhigh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Risque eleve'**
+  String get dashboardRiskhigh;
+
+  /// No description provided for @dashboardRiskmedium.
+  ///
+  /// In fr, this message translates to:
+  /// **'Risque moyen'**
+  String get dashboardRiskmedium;
+
+  /// No description provided for @dashboardRisklow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Risque faible'**
+  String get dashboardRisklow;
+
+  /// No description provided for @dashboardNotprovided.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non renseigne'**
+  String get dashboardNotprovided;
 
   /// No description provided for @marketingOauthNavTitle.
   ///
@@ -3102,6 +3552,12 @@ abstract class AppLocalizations {
   /// **'Essai gratuit de'**
   String get signupTrialnote;
 
+  /// No description provided for @signupTrialdaysunit.
+  ///
+  /// In fr, this message translates to:
+  /// **'jours'**
+  String get signupTrialdaysunit;
+
   /// No description provided for @signupTrialnotesuffix.
   ///
   /// In fr, this message translates to:
@@ -3179,6 +3635,1104 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Vous devez accepter les conditions d\'utilisation'**
   String get signupValidationAgreeterms;
+
+  /// No description provided for @signupValidationCountryrequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pays est requis.'**
+  String get signupValidationCountryrequired;
+
+  /// No description provided for @signupLabelcountry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays'**
+  String get signupLabelcountry;
+
+  /// No description provided for @signupCountryplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sélectionnez votre pays'**
+  String get signupCountryplaceholder;
+
+  /// No description provided for @companiesToastLoadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger la fiche entreprise.'**
+  String get companiesToastLoadFailed;
+
+  /// No description provided for @companiesToastTicketsFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les tickets support.'**
+  String get companiesToastTicketsFailed;
+
+  /// No description provided for @companiesToastSubscriptionFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la mise à jour de l\'abonnement.'**
+  String get companiesToastSubscriptionFailed;
+
+  /// No description provided for @companiesToastFeaturesFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de la configuration des modules.'**
+  String get companiesToastFeaturesFailed;
+
+  /// No description provided for @companiesPortfolio.
+  ///
+  /// In fr, this message translates to:
+  /// **'Portefeuille Clients'**
+  String get companiesPortfolio;
+
+  /// No description provided for @companiesDirectory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Repertoire des Entreprises'**
+  String get companiesDirectory;
+
+  /// No description provided for @companiesDirectorysub.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste classee par score de sante et priorite commerciale.'**
+  String get companiesDirectorysub;
+
+  /// No description provided for @companiesSyncing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Synchronisation du portefeuille...'**
+  String get companiesSyncing;
+
+  /// No description provided for @companiesRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reessayer'**
+  String get companiesRetry;
+
+  /// No description provided for @companiesCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise'**
+  String get companiesCompany;
+
+  /// No description provided for @companiesPlanmrr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan & MRR'**
+  String get companiesPlanmrr;
+
+  /// No description provided for @companiesHealthop.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sante Oper.'**
+  String get companiesHealthop;
+
+  /// No description provided for @companiesCheckins30d.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage (30j)'**
+  String get companiesCheckins30d;
+
+  /// No description provided for @companiesRecommendedaction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Action Recommandee'**
+  String get companiesRecommendedaction;
+
+  /// No description provided for @companiesManagement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gestion'**
+  String get companiesManagement;
+
+  /// No description provided for @companiesSystem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Systeme'**
+  String get companiesSystem;
+
+  /// No description provided for @companiesCompanyname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom entreprise *'**
+  String get companiesCompanyname;
+
+  /// No description provided for @companiesContactemail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email contact *'**
+  String get companiesContactemail;
+
+  /// No description provided for @companiesCountry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays *'**
+  String get companiesCountry;
+
+  /// No description provided for @companiesCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville de deploiement *'**
+  String get companiesCity;
+
+  /// No description provided for @companiesCurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devise'**
+  String get companiesCurrency;
+
+  /// No description provided for @companiesTimezone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fuseau Horaire'**
+  String get companiesTimezone;
+
+  /// No description provided for @companiesDefaultlang.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue Defaut'**
+  String get companiesDefaultlang;
+
+  /// No description provided for @companiesManagerfirst.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenom Manager *'**
+  String get companiesManagerfirst;
+
+  /// No description provided for @companiesManagerlast.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom Manager *'**
+  String get companiesManagerlast;
+
+  /// No description provided for @companiesManageremail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email Manager Principal *'**
+  String get companiesManageremail;
+
+  /// No description provided for @companiesActivatenow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer immediatement'**
+  String get companiesActivatenow;
+
+  /// No description provided for @companiesActivateclientnow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer le client immediatement'**
+  String get companiesActivateclientnow;
+
+  /// No description provided for @companiesActivateclienthint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sinon le client reste en essai (trial).'**
+  String get companiesActivateclienthint;
+
+  /// No description provided for @seoPricingDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tarification transparente : plan Free, Pilot 29 €/mois, Operations 99 €/mois, Enterprise sur devis. Essai gratuit 14 jours.'**
+  String get seoPricingDescription;
+
+  /// No description provided for @adminchatConversation.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conversation'**
+  String get adminchatConversation;
+
+  /// No description provided for @adminchatError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désolé, une erreur est survenue. Veuillez réessayer.'**
+  String get adminchatError;
+
+  /// No description provided for @adminchatHistoryempty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune conversation.'**
+  String get adminchatHistoryempty;
+
+  /// No description provided for @adminchatNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle conversation'**
+  String get adminchatNew;
+
+  /// No description provided for @adminchatPlaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tapez votre message...'**
+  String get adminchatPlaceholder;
+
+  /// No description provided for @adminchatSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get adminchatSend;
+
+  /// No description provided for @adminchatStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commencez une conversation avec l’assistant IA.'**
+  String get adminchatStart;
+
+  /// No description provided for @adminchatSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Posez vos questions RH, paie, recrutement...'**
+  String get adminchatSubtitle;
+
+  /// No description provided for @adminchatThinking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réflexion en cours...'**
+  String get adminchatThinking;
+
+  /// No description provided for @adminchatTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assistant IA Leopardo'**
+  String get adminchatTitle;
+
+  /// No description provided for @adminchatUnavailablebadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indisponible'**
+  String get adminchatUnavailablebadge;
+
+  /// No description provided for @adminchatUnavailablebody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le chat IA n’est pas activé pour la console super-admin. Utilisez un espace entreprise pris en charge pour accéder à cet assistant.'**
+  String get adminchatUnavailablebody;
+
+  /// No description provided for @adminchatUnavailabletitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assistant IA indisponible au niveau plateforme'**
+  String get adminchatUnavailabletitle;
+
+  /// No description provided for @navigationAnalytics.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analytique'**
+  String get navigationAnalytics;
+
+  /// No description provided for @navigationAudit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal d\'audit'**
+  String get navigationAudit;
+
+  /// No description provided for @navigationChat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chat IA'**
+  String get navigationChat;
+
+  /// No description provided for @navigationCompanies.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprises'**
+  String get navigationCompanies;
+
+  /// No description provided for @navigationContracts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contrats'**
+  String get navigationContracts;
+
+  /// No description provided for @navigationCrm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pipeline CRM'**
+  String get navigationCrm;
+
+  /// No description provided for @navigationDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tableau de bord'**
+  String get navigationDashboard;
+
+  /// No description provided for @navigationEdge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nœuds Edge'**
+  String get navigationEdge;
+
+  /// No description provided for @navigationExports.
+  ///
+  /// In fr, this message translates to:
+  /// **'Exports & Rapports'**
+  String get navigationExports;
+
+  /// No description provided for @navigationFleet.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flotte véhicules'**
+  String get navigationFleet;
+
+  /// No description provided for @navigationGlobe.
+  ///
+  /// In fr, this message translates to:
+  /// **'Globe Temps Réel'**
+  String get navigationGlobe;
+
+  /// No description provided for @navigationGrowth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administration Growth'**
+  String get navigationGrowth;
+
+  /// No description provided for @navigationLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congés & Absences'**
+  String get navigationLeaves;
+
+  /// No description provided for @navigationMainmenu.
+  ///
+  /// In fr, this message translates to:
+  /// **'Menu principal'**
+  String get navigationMainmenu;
+
+  /// No description provided for @navigationMarketing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Marketing'**
+  String get navigationMarketing;
+
+  /// No description provided for @navigationPayroll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paie'**
+  String get navigationPayroll;
+
+  /// No description provided for @navigationPredictions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dashboard Prédictif IA'**
+  String get navigationPredictions;
+
+  /// No description provided for @navigationRecruitment.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recrutement'**
+  String get navigationRecruitment;
+
+  /// No description provided for @navigationReports.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports RH'**
+  String get navigationReports;
+
+  /// No description provided for @navigationSubscriptions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abonnements'**
+  String get navigationSubscriptions;
+
+  /// No description provided for @navigationSupport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Support'**
+  String get navigationSupport;
+
+  /// No description provided for @navigationSupporttickets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Centre support client'**
+  String get navigationSupporttickets;
+
+  /// No description provided for @navigationSystem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Système'**
+  String get navigationSystem;
+
+  /// No description provided for @navigationTraining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Formations'**
+  String get navigationTraining;
+
+  /// No description provided for @navigationUsers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Utilisateurs'**
+  String get navigationUsers;
+
+  /// No description provided for @navigationWebhooks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Webhooks'**
+  String get navigationWebhooks;
+
+  /// No description provided for @navigationLogin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion'**
+  String get navigationLogin;
+
+  /// No description provided for @navigationLogout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deconnexion'**
+  String get navigationLogout;
+
+  /// No description provided for @navigationCompanydetail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Detail Entreprise'**
+  String get navigationCompanydetail;
+
+  /// No description provided for @navigationContributions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cotisations sociales'**
+  String get navigationContributions;
+
+  /// No description provided for @navigationTaxbrackets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Baremes fiscaux'**
+  String get navigationTaxbrackets;
+
+  /// No description provided for @navigationLegalrates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Taux legaux'**
+  String get navigationLegalrates;
+
+  /// No description provided for @navigationAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon compte'**
+  String get navigationAccount;
+
+  /// No description provided for @navigationNotfound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Page non trouvee'**
+  String get navigationNotfound;
+
+  /// No description provided for @webhooksConfirmDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer ce webhook ?'**
+  String get webhooksConfirmDelete;
+
+  /// No description provided for @a11ySkipToContent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aller au contenu principal'**
+  String get a11ySkipToContent;
+
+  /// No description provided for @a11yClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get a11yClose;
+
+  /// No description provided for @a11yPreviousMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois précédent'**
+  String get a11yPreviousMonth;
+
+  /// No description provided for @a11yNextMonth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mois suivant'**
+  String get a11yNextMonth;
+
+  /// No description provided for @shellConnected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecte'**
+  String get shellConnected;
+
+  /// No description provided for @shellFallbackpolling.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode secours (polling)'**
+  String get shellFallbackpolling;
+
+  /// No description provided for @shellPushunconfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'Push non configure'**
+  String get shellPushunconfigured;
+
+  /// No description provided for @shellDisconnected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deconnecte'**
+  String get shellDisconnected;
+
+  /// No description provided for @shellSearch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher'**
+  String get shellSearch;
+
+  /// No description provided for @shellNotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications'**
+  String get shellNotifications;
+
+  /// No description provided for @shellNonotifications.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune notification'**
+  String get shellNonotifications;
+
+  /// No description provided for @shellCriticalalerts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alertes critiques'**
+  String get shellCriticalalerts;
+
+  /// No description provided for @shellLevel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Niveau :'**
+  String get shellLevel;
+
+  /// No description provided for @shellFallbackpollingtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notifications via polling de secours (push indisponible)'**
+  String get shellFallbackpollingtitle;
+
+  /// No description provided for @shellTenantonly.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fonctionnalite entreprise — reservee aux espaces client'**
+  String get shellTenantonly;
+
+  /// No description provided for @exportsReportemployees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employes'**
+  String get exportsReportemployees;
+
+  /// No description provided for @exportsReportemployeesdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liste complete avec postes, contrats, departements.'**
+  String get exportsReportemployeesdesc;
+
+  /// No description provided for @exportsReportattendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage'**
+  String get exportsReportattendance;
+
+  /// No description provided for @exportsReportattendancedesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Registre de presence avec heures et anomalies.'**
+  String get exportsReportattendancedesc;
+
+  /// No description provided for @exportsReportpayslips.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins de paie'**
+  String get exportsReportpayslips;
+
+  /// No description provided for @exportsReportpayslipsdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export mensuel bulletins avec details salaire.'**
+  String get exportsReportpayslipsdesc;
+
+  /// No description provided for @exportsReportabsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences & conges'**
+  String get exportsReportabsences;
+
+  /// No description provided for @exportsReportabsencesdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique demandes et soldes par employe.'**
+  String get exportsReportabsencesdesc;
+
+  /// No description provided for @exportsReporttraining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Formations'**
+  String get exportsReporttraining;
+
+  /// No description provided for @exportsReporttrainingdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Catalogue, sessions, inscriptions et progression.'**
+  String get exportsReporttrainingdesc;
+
+  /// No description provided for @exportsReportvehicles.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vehicules'**
+  String get exportsReportvehicles;
+
+  /// No description provided for @exportsReportvehiclesdesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flotte, kilometrage, maintenances.'**
+  String get exportsReportvehiclesdesc;
+
+  /// No description provided for @exportsHrreportstitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports RH personnalises'**
+  String get exportsHrreportstitle;
+
+  /// No description provided for @exportsHrreportssub.
+  ///
+  /// In fr, this message translates to:
+  /// **'Generez des rapports avances avec filtres de periode et departement.'**
+  String get exportsHrreportssub;
+
+  /// No description provided for @exportsReporttype.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type de rapport'**
+  String get exportsReporttype;
+
+  /// No description provided for @exportsTypeheadcount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Effectifs'**
+  String get exportsTypeheadcount;
+
+  /// No description provided for @exportsTypeturnover.
+  ///
+  /// In fr, this message translates to:
+  /// **'Turnover'**
+  String get exportsTypeturnover;
+
+  /// No description provided for @exportsTypeabsenteeism.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absenteisme'**
+  String get exportsTypeabsenteeism;
+
+  /// No description provided for @exportsTypepayrollsummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Resume paie'**
+  String get exportsTypepayrollsummary;
+
+  /// No description provided for @exportsTypetrainingprogress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Formations'**
+  String get exportsTypetrainingprogress;
+
+  /// No description provided for @exportsStartdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date debut'**
+  String get exportsStartdate;
+
+  /// No description provided for @exportsEnddate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date fin'**
+  String get exportsEnddate;
+
+  /// No description provided for @exportsGenerate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Generer'**
+  String get exportsGenerate;
+
+  /// No description provided for @exportsGenerating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Generation...'**
+  String get exportsGenerating;
+
+  /// No description provided for @exportsStatusdone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Termine'**
+  String get exportsStatusdone;
+
+  /// No description provided for @exportsStatusinprogress.
+  ///
+  /// In fr, this message translates to:
+  /// **'En cours'**
+  String get exportsStatusinprogress;
+
+  /// No description provided for @exportsStatusfailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Echec'**
+  String get exportsStatusfailed;
+
+  /// No description provided for @exportsDownload.
+  ///
+  /// In fr, this message translates to:
+  /// **'Telecharger'**
+  String get exportsDownload;
+
+  /// No description provided for @exportsDownloading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Telechargement...'**
+  String get exportsDownloading;
+
+  /// No description provided for @companydetailAnalyzing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse des donnees client...'**
+  String get companydetailAnalyzing;
+
+  /// No description provided for @companydetailRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reessayer'**
+  String get companydetailRetry;
+
+  /// No description provided for @companydetailFieldadoption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adoption Terrain'**
+  String get companydetailFieldadoption;
+
+  /// No description provided for @companydetailOnboarding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Onboarding'**
+  String get companydetailOnboarding;
+
+  /// No description provided for @companydetailAnomalies30d.
+  ///
+  /// In fr, this message translates to:
+  /// **'Anomalies 30j'**
+  String get companydetailAnomalies30d;
+
+  /// No description provided for @companydetailPayrollready.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paie Prete'**
+  String get companydetailPayrollready;
+
+  /// No description provided for @companydetailActiveemployees30d.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employes Actifs (30j)'**
+  String get companydetailActiveemployees30d;
+
+  /// No description provided for @companydetailNopriorityblockers.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun blocage prioritaire detecte.'**
+  String get companydetailNopriorityblockers;
+
+  /// No description provided for @companydetailModulesconfig.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configuration des Modules'**
+  String get companydetailModulesconfig;
+
+  /// No description provided for @companydetailServiceplan.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plan de services'**
+  String get companydetailServiceplan;
+
+  /// No description provided for @companydetailCommercialstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut Commercial'**
+  String get companydetailCommercialstatus;
+
+  /// No description provided for @companydetailStatustrial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Essai (Trial)'**
+  String get companydetailStatustrial;
+
+  /// No description provided for @companydetailStatusactive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actif'**
+  String get companydetailStatusactive;
+
+  /// No description provided for @companydetailStatussuspended.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suspendu'**
+  String get companydetailStatussuspended;
+
+  /// No description provided for @companydetailStatusexpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Expire'**
+  String get companydetailStatusexpired;
+
+  /// No description provided for @companydetailStartdate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Debut'**
+  String get companydetailStartdate;
+
+  /// No description provided for @companydetailInternalnotes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notes Internes'**
+  String get companydetailInternalnotes;
+
+  /// No description provided for @companydetailNosupporttickets.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun ticket de support pour ce client.'**
+  String get companydetailNosupporttickets;
+
+  /// No description provided for @companydetailTechnicalidentity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identite Technique'**
+  String get companydetailTechnicalidentity;
+
+  /// No description provided for @companydetailPlatformid.
+  ///
+  /// In fr, this message translates to:
+  /// **'ID Plateforme'**
+  String get companydetailPlatformid;
+
+  /// No description provided for @companydetailSlug.
+  ///
+  /// In fr, this message translates to:
+  /// **'Slug'**
+  String get companydetailSlug;
+
+  /// No description provided for @companydetailCountrycurrency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays / Devise'**
+  String get companydetailCountrycurrency;
+
+  /// No description provided for @companydetailRegisteredon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Inscrit le'**
+  String get companydetailRegisteredon;
+
+  /// No description provided for @companydetailLastactivity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Derniere Activite'**
+  String get companydetailLastactivity;
+
+  /// No description provided for @userAuthPersonalLogin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion personnelle'**
+  String get userAuthPersonalLogin;
+
+  /// No description provided for @userAuthLoginSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retrouvez votre espace, vos documents et vos demandes.'**
+  String get userAuthLoginSubtitle;
+
+  /// No description provided for @userAuthNoAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore de compte ? S\'inscrire'**
+  String get userAuthNoAccount;
+
+  /// No description provided for @userAuthGoogleError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur Google : {error}'**
+  String userAuthGoogleError(String error);
+
+  /// No description provided for @authTogglePasswordVisibility.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher ou masquer le mot de passe'**
+  String get authTogglePasswordVisibility;
+
+  /// No description provided for @authDemoAccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acces Demo'**
+  String get authDemoAccess;
+
+  /// No description provided for @userAuthRegisterTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Creer mon compte'**
+  String get userAuthRegisterTitle;
+
+  /// No description provided for @userAuthRegisterSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoignez votre equipe sur Leopardo RH.'**
+  String get userAuthRegisterSubtitle;
+
+  /// No description provided for @userAuthFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenom'**
+  String get userAuthFirstName;
+
+  /// No description provided for @userAuthLastName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get userAuthLastName;
+
+  /// No description provided for @userAuthFirstNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenom requis'**
+  String get userAuthFirstNameRequired;
+
+  /// No description provided for @userAuthLastNameRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom requis'**
+  String get userAuthLastNameRequired;
+
+  /// No description provided for @userAuthRegisterButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Creer mon compte'**
+  String get userAuthRegisterButton;
+
+  /// No description provided for @userAuthAlreadyAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deja un compte ? Se connecter'**
+  String get userAuthAlreadyAccount;
+
+  /// No description provided for @userAuthCompanyRequestTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande soumise !'**
+  String get userAuthCompanyRequestTitle;
+
+  /// No description provided for @userAuthCompanyRequestBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un administrateur examinera votre demande. Vous recevrez une notification des qu\'elle sera traitee.'**
+  String get userAuthCompanyRequestBody;
+
+  /// No description provided for @userAuthBackToHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour a l\'accueil'**
+  String get userAuthBackToHome;
+
+  /// No description provided for @userAuthSubmitError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la soumission'**
+  String get userAuthSubmitError;
+
+  /// No description provided for @userAuthRegisterError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de l\'inscription'**
+  String get userAuthRegisterError;
+
+  /// No description provided for @userAuthLoginError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Identifiants invalides'**
+  String get userAuthLoginError;
+
+  /// No description provided for @userAuthGoogleLoginError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur connexion Google'**
+  String get userAuthGoogleLoginError;
+
+  /// No description provided for @commonRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Requis'**
+  String get commonRequired;
+
+  /// No description provided for @userAuthPhoneOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Telephone (optionnel)'**
+  String get userAuthPhoneOptional;
+
+  /// No description provided for @userAuthPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Telephone'**
+  String get userAuthPhone;
+
+  /// No description provided for @userAuthCreateCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Creer une entreprise'**
+  String get userAuthCreateCompany;
+
+  /// No description provided for @userAuthCompanyRequestInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplissez les informations de votre entreprise. Un administrateur validera votre demande.'**
+  String get userAuthCompanyRequestInfo;
+
+  /// No description provided for @userAuthCompanyName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'entreprise'**
+  String get userAuthCompanyName;
+
+  /// No description provided for @userAuthCompanyEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email entreprise'**
+  String get userAuthCompanyEmail;
+
+  /// No description provided for @userAuthSector.
+  ///
+  /// In fr, this message translates to:
+  /// **'Secteur d\'activite'**
+  String get userAuthSector;
+
+  /// No description provided for @userAuthCountry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays'**
+  String get userAuthCountry;
+
+  /// No description provided for @userAuthCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get userAuthCity;
+
+  /// No description provided for @userAuthDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description'**
+  String get userAuthDescription;
+
+  /// No description provided for @userAuthSubmitRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre la demande'**
+  String get userAuthSubmitRequest;
+
+  /// No description provided for @userAuthRegisterSubtitleAlt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accedez a votre espace personnel et organisez vos documents.'**
+  String get userAuthRegisterSubtitleAlt;
 }
 
 class _AppLocalizationsDelegate

@@ -9,6 +9,11 @@ class FeaturePlanMatrixSeeder extends Seeder
 {
     public function run(): void
     {
+        // The feature_plan_matrix table lives in the shared_tenants schema.
+        // DatabaseSeeder sets search_path to 'public' for its public-schema
+        // seeders; we must restore the full path before querying this table.
+        DB::statement('SET search_path TO shared_tenants,public');
+
         $matrix = [
             ['feature_key' => 'employees', 'free' => [true, 5], 'pilot' => [true, 30], 'operations' => [true, 250], 'enterprise' => [true, null]],
             ['feature_key' => 'attendance', 'free' => [true, null], 'pilot' => [true, null], 'operations' => [true, null], 'enterprise' => [true, null]],
