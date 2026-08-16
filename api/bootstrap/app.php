@@ -53,16 +53,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // silent/offline Edge node at a client site (or an expiring/expired
         // offline license) went completely unnoticed in production.
         //
-        // NOTE: two competing monitoring commands exist for historical
-        // reasons — edge:monitor (Eloquent EdgeNode model, matches the
-        // canonical UUID schema actually created in production) and
-        // edge:detect-silent-nodes (raw DB::table('edge_nodes') query on
-        // legacy bigint columns like node_id/alert_muted that do not exist
-        // in the canonical schema). Only edge:monitor is schedule-safe here;
-        // scheduling edge:detect-silent-nodes as-is would fail every run
-        // with a "column does not exist" SQL error. See issue #1291 for the
-        // schema unification work and docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md
-        // sections 1.3 and 1.4.
+        // NOTE: edge:detect-silent-nodes was REMOVED (#4317) — it queried
+        // legacy bigint columns (node_id/alert_muted) absent du schéma
+        // canonique UUID ; seul edge:monitor (modèle Eloquent EdgeNode) est
+        // planifiable. Voir issue #1291 et
+        // docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md sections 1.3/1.4.
         $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
     })
     ->withRouting(

@@ -14,8 +14,8 @@ use Illuminate\Support\Carbon;
  * Alerte envoyee aux managers d'un tenant quand un node Edge (kiosque)
  * n'a pas envoye de heartbeat depuis plus de `thresholdMins` minutes.
  *
- * Utilisee par la commande Artisan `edge:detect-silent-nodes`
- * (App\Console\Commands\DetectSilentEdgeNodes).
+ * Historiquement utilisee par la commande `edge:detect-silent-nodes`
+ * (supprimee — #4317).
  */
 class EdgeNodeSilentAlert extends Notification implements ShouldQueue
 {
