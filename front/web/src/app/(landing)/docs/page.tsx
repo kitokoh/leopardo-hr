@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
@@ -22,110 +22,24 @@ import {
   Terminal,
   Webhook,
   Zap,
+  Plug,
 } from 'lucide-react';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { docsCategoriesCopy, docsPageCopy, type DocsCategory } from '@/modules/vitrine/data/docs-page';
 
-const docCategories = [
-  {
-    title: 'Demarrage rapide',
-    icon: Zap,
-    color: 'emerald',
-    items: [
-      { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
-      { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
-      { title: 'Inviter votre équipe', desc: 'Ajouter des managers et des employés', href: '/docs#api-quickstart' },
-      { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
-    ],
-  },
-  {
-    title: 'Espace Manager',
-    icon: LayoutDashboard,
-    color: 'blue',
-    items: [
-      { title: 'Tableau de bord', desc: 'KPIs, alertes, activité recente', href: '/docs#api-quickstart' },
-      { title: 'Gestion des absences', desc: 'Demandes, approbations, soldes', href: '/docs#webhooks-overview' },
-      { title: 'Paie & bulletins', desc: 'Lancer une paie, generer les bulletins PDF', href: '/docs#webhooks-overview' },
-      { title: 'Contrats & documents', desc: 'Gestion documentaire securisee', href: '/docs#api-quickstart' },
-    ],
-  },
-  {
-    title: 'Applications Mobiles',
-    icon: Smartphone,
-    color: 'violet',
-    items: [
-      { title: 'Leopardo Employee', desc: 'Pointage, demandes, bulletin, notifications push', href: '/docs#sdk-overview' },
-      { title: 'Leopardo Manager', desc: 'Équipe, horaires, taches, approbations', href: '/docs#sdk-overview' },
-      { title: 'Platform Admin', desc: 'Super-admin : creation tenant, supervision', href: '/docs#sdk-overview' },
-      { title: 'Installer les applications', desc: 'Android / iOS, distribution, versions', href: '/docs#mobile-install' },
-      { title: 'Notifications push (FCM)', desc: 'Configurer Firebase Cloud Messaging', href: '/docs#sdk-overview' },
-    ],
-  },
-  {
-    title: 'API REST — Reference',
-    icon: Code2,
-    color: 'amber',
-    items: [
-      { title: 'Authentification', desc: 'Bearer token, /auth/login, /auth/me, Google OAuth', href: '/docs#api-quickstart' },
-      { title: 'Employés & RH', desc: 'CRUD employés, absences, pointages, paie', href: '/docs#api-quickstart' },
-      { title: 'Platform Admin', desc: 'Tenants, creation entreprise, super-admin', href: '/docs#api-quickstart' },
-      { title: 'Erreurs & pagination', desc: 'Codes erreur standards, throttling, curseur', href: '/docs#api-quickstart' },
-    ],
-  },
-  {
-    title: 'Webhooks & Events',
-    icon: Webhook,
-    color: 'pink',
-    items: [
-      { title: 'Introduction aux webhooks', desc: 'Signature HMAC-SHA256, retry, idempotence', href: '/docs#webhooks-overview' },
-      { title: 'Événements disponibles', desc: 'attendance.*, leave.*, salary_advance.*, payroll.*', href: '/docs#webhooks-events' },
-      { title: 'Securite & verification', desc: 'Valider la signature X-Leopardo-Signature', href: '/docs#webhooks-security' },
-      { title: 'Tester en local', desc: 'ngrok, cli-test, replay d\'evenements', href: '/docs#webhooks-overview' },
-    ],
-  },
-  {
-    title: 'SDK Mobiles',
-    icon: Package,
-    color: 'orange',
-    items: [
-      { title: 'leopardo_core (Flutter)', desc: 'Package partagé — ApiClient, SecureStorage, modeles', href: '/docs#sdk-overview' },
-      { title: 'Auth & Google Sign-In', desc: 'GoogleSignIn v7+ initialize(), idToken, backend JWT', href: '/docs#sdk-overview' },
-      { title: 'Notifications (FCM)', desc: 'FirebaseMessaging, foreground/background, deep links', href: '/docs#sdk-overview' },
-      { title: 'Publication & CI', desc: 'GitHub Actions flutter-ci.yml, build, tests', href: '/docs#sdk-overview' },
-    ],
-  },
-  {
-    title: 'API Playground',
-    icon: Play,
-    color: 'teal',
-    items: [
-      { title: 'Environnement sandbox', desc: 'URL demo Render, comptes de test, token Bearer demo', href: '/docs#api-quickstart' },
-      { title: 'Explorer les endpoints', desc: 'Interface Swagger / Redoc interactive', href: '/docs#api-quickstart' },
-      { title: 'Exemples cURL', desc: "Collection d'appels prets a l'emploi pour tous les modules", href: '/docs#api-quickstart' },
-      { title: 'Tokens développeur', desc: 'Creer un token scope-reduit pour tests partenaires', href: '/docs#api-quickstart' },
-    ],
-  },
-  {
-    title: 'Administration',
-    icon: Shield,
-    color: 'red',
-    items: [
-      { title: 'Roles & permissions', desc: 'Principal, RH, Employé, Super Admin, RBAC', href: '/docs#api-quickstart' },
-      { title: 'Multi-tenant', desc: 'Architecture par schema PostgreSQL', href: '/docs#api-quickstart' },
-      { title: 'Securite & RGPD', desc: 'Chiffrement, audit trail, conformite', href: '/docs#security' },
-      { title: 'Déploiement', desc: 'Docker, Render, Vercel, variables env', href: '/docs#api-quickstart' },
-    ],
-  },
-  {
-    title: 'Integrations',
-    icon: Webhook,
-    color: 'cyan',
-    items: [
-      { title: 'ZKTeco', desc: 'Configuration des bornes biometriques', href: '/docs#kiosk' },
-      { title: 'Calendrier (CalDAV)', desc: 'Synchronisation agenda', href: '/docs#api-quickstart' },
-      { title: 'Exports bancaires', desc: 'SEPA, CCP, CSV', href: '/docs#api-quickstart' },
-      { title: 'Guide partenaire API', desc: "Guide d'integration pour ISV et partenaires", href: '/docs#api-quickstart' },
-    ],
-  },
-];
+// Icônes résolues depuis les `iconKey` du fichier de données (les composants
+// React ne vivent pas dans les données).
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  zap: Zap,
+  layout: LayoutDashboard,
+  smartphone: Smartphone,
+  code: Code2,
+  webhook: Webhook,
+  package: Package,
+  play: Play,
+  shield: Shield,
+  plug: Plug,
+};
 
 const colorMap: Record<string, { bg: string; icon: string; border: string }> = {
   emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', icon: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' },
@@ -138,6 +52,8 @@ const colorMap: Record<string, { bg: string; icon: string; border: string }> = {
   orange: { bg: 'bg-orange-50 dark:bg-orange-900/20', icon: 'text-orange-600 dark:text-orange-400', border: 'border-orange-200 dark:border-orange-800' },
   teal: { bg: 'bg-teal-50 dark:bg-teal-900/20', icon: 'text-teal-600 dark:text-teal-400', border: 'border-teal-200 dark:border-teal-800' },
 };
+
+const appColor = ['bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300', 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300', 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'];
 
 /** Minimal code-block sample for the REST API section */
 const apiSamples = [
@@ -173,27 +89,41 @@ Authorization: Bearer <token>`,
   },
 ];
 
+const quickLinkIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  terminal: Terminal,
+  key: Key,
+  server: Server,
+};
+
 export default function DocsPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
+  const { locale } = useVitrineLocale();
   const [search, setSearch] = useState('');
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   useScrollReveal();
 
-  const filtered = search.trim()
-    ? docCategories.map(cat => ({
+  const copy = docsPageCopy[locale];
+  const categories: DocsCategory[] = docsCategoriesCopy[locale];
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return categories;
+    return categories
+      .map((cat) => ({
         ...cat,
         items: cat.items.filter(
-          item =>
-            item.title.toLowerCase().includes(search.toLowerCase()) ||
-            item.desc.toLowerCase().includes(search.toLowerCase()),
+          (item) =>
+            item.title.toLowerCase().includes(q) ||
+            item.desc.toLowerCase().includes(q)
         ),
-      })).filter(cat => cat.items.length > 0)
-    : docCategories;
+      }))
+      .filter((cat) => cat.items.length > 0);
+  }, [categories, search]);
 
   function copyCode(idx: number, code: string) {
-    navigator.clipboard.writeText(code).then(() => {
+    navigator.clipboard?.writeText(code).then(() => {
       setCopiedIdx(idx);
-      setTimeout(() => setCopiedIdx(null), 1500);
+      setTimeout(() => setCopiedIdx(null), 1600);
     });
   }
 
@@ -202,42 +132,37 @@ export default function DocsPage() {
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* Hero */}
-      <section id="intro" className="pt-32 pb-16 px-4">
+      <section className="pt-32 pb-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/[0.08] border border-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-sm font-semibold mb-6">
             <BookOpen className="w-3.5 h-3.5" />
-            Documentation — Developer Ecosystem
+            {copy.hero.badge}
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-6">
-            Tout savoir sur{' '}
-            <span className="bg-gradient-to-r from-emerald-500 to-cyan-500 bg-clip-text text-transparent">
-              Leopardo RH
+            {copy.hero.headlineTop}{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
+              {copy.hero.headlineHighlight}
             </span>
           </h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-8">
-            Guides, references API REST, webhooks, SDK mobiles, playground interactif et bonnes pratiques pour
-            integrer et etendre votre Mobile-First Company OS.
+            {copy.hero.subheadline}
           </p>
-
-          {/* Search */}
-          <div className="relative max-w-lg mx-auto mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <div className="relative max-w-xl mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
-              type="text"
+              type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher dans la documentation..."
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+              placeholder={copy.hero.searchPlaceholder}
+              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
             />
           </div>
-
-          {/* Quick access pills */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {['API REST', 'Webhooks', 'SDK Flutter', 'Playground', 'Authentification', 'Multi-tenant'].map((tag) => (
+          <div className="flex flex-wrap justify-center gap-2 mt-6">
+            {copy.hero.tags.map((tag) => (
               <button
                 key={tag}
                 onClick={() => setSearch(tag)}
-                className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-emerald-100 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
+                className="px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
               >
                 {tag}
               </button>
@@ -246,29 +171,35 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* API Quick Start — code samples */}
-      <section id="api-quickstart" className="py-12 px-4 bg-transparent dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800">
+      {/* API Quick Start */}
+      <section id="api-quickstart" className="py-12 px-4 bg-slate-50 dark:bg-slate-900/60 border-y border-slate-200 dark:border-slate-800">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+              <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">API Quick Start</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Exemples prets a copier-coller</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.apiSection.title}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{copy.apiSection.subtitle}</p>
             </div>
           </div>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="space-y-4">
             {apiSamples.map((sample, idx) => (
-              <div key={idx} className="relative rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-900 dark:bg-slate-950 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 bg-slate-800 dark:bg-slate-800 border-b border-slate-700">
+              <div key={sample.label} className="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-900">
+                <div className="flex items-center justify-between px-4 py-2 bg-slate-800/80">
                   <span className="text-xs font-mono text-slate-300">{sample.label}</span>
                   <button
                     onClick={() => copyCode(idx, sample.code)}
-                    className="flex items-center gap-1 text-xs text-slate-400 hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-white transition-colors"
                   >
-                    <Copy className="w-3 h-3" />
-                    {copiedIdx === idx ? 'Copié!' : 'Copier'}
+                    {copiedIdx === idx ? (
+                      <span className="text-emerald-400">{copy.apiSection.copiedLabel}</span>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        {copy.apiSection.copyLabel}
+                      </>
+                    )}
                   </button>
                 </div>
                 <pre className="p-4 text-xs text-emerald-300 dark:text-emerald-300 overflow-x-auto whitespace-pre-wrap leading-relaxed">
@@ -280,25 +211,20 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* Webhooks overview */}
-      <section id="webhooks-overview" className="py-12 px-4">
+      {/* Webhooks */}
+      <section id="webhooks-overview" className="py-12 px-4 bg-pink-50 dark:bg-pink-900/10 border-b border-pink-100 dark:border-pink-900/30">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-900/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
               <Webhook className="w-5 h-5 text-pink-600 dark:text-pink-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Webhooks en temps reel</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Recevez les événements RH directement dans vos systèmes</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.webhooksSection.title}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{copy.webhooksSection.subtitle}</p>
             </div>
           </div>
-          <div id="webhooks-events" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
-              { group: 'Pointage', events: ['attendance.checked_in', 'attendance.checked_out', 'attendance.auto_closed'] },
-              { group: 'Absences', events: ['leave.requested', 'leave.approved', 'leave.rejected'] },
-              { group: 'Paie & avances', events: ['salary_advance.requested', 'salary_advance.paid', 'payroll.run_completed'] },
-              { group: 'Notifications', events: ['notification.sent', 'notification.failed'] },
-            ].map((grp) => (
+          <div id="webhooks-events" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {copy.webhooksSection.eventGroups.map((grp) => (
               <div key={grp.group} className="p-4 rounded-xl border border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-900/20">
                 <p className="text-xs font-bold text-pink-700 dark:text-pink-300 mb-2 uppercase tracking-wide">{grp.group}</p>
                 {grp.events.map((e) => (
@@ -308,8 +234,8 @@ export default function DocsPage() {
             ))}
           </div>
           <p id="webhooks-security" className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-            Chaque payload est signe avec <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">X-Leopardo-Signature</code> (HMAC-SHA256).{' '}
-            <Link href="/docs#webhooks-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la doc →</Link>
+            {copy.webhooksSection.securityNote} <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">X-Leopardo-Signature</code> (HMAC-SHA256).{' '}
+            <Link href="/docs#webhooks-overview" className="text-emerald-600 dark:text-emerald-400 hover:underline">{copy.webhooksSection.docLink}</Link>
           </p>
         </div>
       </section>
@@ -322,33 +248,17 @@ export default function DocsPage() {
               <Package className="w-5 h-5 text-violet-600 dark:text-violet-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">SDK Mobiles Flutter</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">leopardo_core — le package partage entre les 3 apps</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.sdkSection.title}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{copy.sdkSection.subtitle}</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                name: 'leopardo_employee',
-                desc: "App employé : pointage, bulletin, demandes d'absence, notifications",
-                color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-              },
-              {
-                name: 'leopardo_manager',
-                desc: "App manager : équipe, horaires, taches, validation avances, paie",
-                color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-              },
-              {
-                name: 'leopardo_platform_admin',
-                desc: "Super-admin : creation tenants, provisioning, 2FA, monitoring",
-                color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-              },
-            ].map((app) => (
+            {copy.sdkSection.apps.map((app, i) => (
               <div key={app.name} className="p-4 rounded-xl border border-violet-200 dark:border-violet-800 bg-white dark:bg-slate-900">
-                <span className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-bold mb-2 ${app.color}`}>{app.name}</span>
+                <span className={`inline-block px-2 py-0.5 rounded text-xs font-mono font-bold mb-2 ${appColor[i % appColor.length]}`}>{app.name}</span>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{app.desc}</p>
                 <Link href="/mobile" className="inline-flex items-center gap-1 text-xs text-violet-600 dark:text-violet-400 hover:underline mt-3">
-                  En savoir plus <ExternalLink className="w-3 h-3" />
+                  {copy.sdkSection.learnMore} <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
             ))}
@@ -364,33 +274,31 @@ export default function DocsPage() {
               <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Pointage depuis le kiosque (ZKTeco)</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Borne d&apos;entree biometrie/QR + bridge desktop local offline-first</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.kioskSection.title}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{copy.kioskSection.subtitle}</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="p-5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
-              <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">Installation</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">{copy.kioskSection.installTitle}</h3>
               <ol className="list-decimal list-inside space-y-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                <li>Copier <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">config.example.json</code> en <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">config.json</code></li>
-                <li>Renseigner <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">apiBaseUrl</code>, <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">deviceCode</code> et <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">kioskToken</code> (generes depuis l&apos;app manager)</li>
-                <li>Lancer <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">python desktop-bridge/bridge.py</code> sur le PC/mini-PC local</li>
-                <li>Ouvrir la borne sur <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">http://127.0.0.1:8037/index.html</code></li>
+                {copy.kioskSection.installSteps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
               </ol>
             </div>
             <div className="p-5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
-              <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">Fonctionnement</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-2">{copy.kioskSection.howItWorksTitle}</h3>
               <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                <li>Empreinte, visage ou QR/matricule en fallback clavier HID</li>
-                <li>Mode hors-ligne : file locale SQLite, synchronisation automatique au retour reseau</li>
-                <li>Admin local (<code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">admin.html</code>) pour forcer une synchronisation manuelle</li>
-                <li>Le matching biometrique brut reste gere par le terminal/SDK ZKTeco</li>
+                {copy.kioskSection.howItWorksItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-            Code source complet du bridge et de l&apos;UI kiosque : <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">front/zkteco-kiosk/</code>.{' '}
-            <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">Voir la page téléchargement →</Link>
+            {copy.kioskSection.sourceNote} <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-xs">front/zkteco-kiosk/</code>.{' '}
+            <Link href="/download#kiosk" className="text-emerald-600 dark:text-emerald-400 hover:underline">{copy.kioskSection.downloadLink}</Link>
           </p>
         </div>
       </section>
@@ -403,17 +311,12 @@ export default function DocsPage() {
               <Shield className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Sécurité & RGPD</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Chiffrement, isolation multi-tenant et conformité réglementaire</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.securitySection.title}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{copy.securitySection.subtitle}</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {[
-              { title: 'Chiffrement en transit', desc: 'Toutes les communications passent par TLS 1.3. Aucun échange en clair entre les clients, l\'API et les bornes.' },
-              { title: 'Chiffrement au repos', desc: 'Les données sensibles sont chiffrées en AES-256. Les données biométriques restent sur le terminal, seuls des hash transitent.' },
-              { title: 'Isolation multi-tenant', desc: 'Un schéma PostgreSQL isolé par entreprise. Les accès sont contrôlés par RBAC (Principal, RH, Employé, Super Admin).' },
-              { title: 'Conformité RGPD', desc: 'Hébergement européen, audit trail complet, exports et suppression des données personnelles conformes au RGPD.' },
-            ].map((item) => (
+            {copy.securitySection.items.map((item) => (
               <div key={item.title} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                 <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{item.title}</h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{item.desc}</p>
@@ -431,30 +334,26 @@ export default function DocsPage() {
               <Smartphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Installer les applications mobiles</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Employee, Manager et Platform Admin — iOS & Android</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{copy.mobileInstallSection.title}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{copy.mobileInstallSection.subtitle}</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              { name: 'Leopardo Employee', desc: "Pointage mobile, géolocalisation, bulletins, demandes d'absence et notifications push.", href: '/signup?source=download_employee_android' },
-              { name: 'Leopardo Manager', desc: 'Équipe, horaires, tâches, approbations des demandes et paie simplifiée depuis le terrain.', href: '/signup?source=download_manager_android' },
-              { name: 'Leopardo Platform Admin', desc: 'Création de tenants, supervision des entreprises clientes et provisioning 2FA.', href: '/signup?source=download_platform-admin_android' },
-            ].map((app) => (
+            {copy.mobileInstallSection.apps.map((app) => (
               <div key={app.name} className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
                 <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1.5">{app.name}</h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-3">{app.desc}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                  Google Play et App Store : <span className="font-semibold text-emerald-600 dark:text-emerald-400">bientôt disponibles</span>.
+                  {copy.mobileInstallSection.storesNote} <span className="font-semibold text-emerald-600 dark:text-emerald-400">{copy.mobileInstallSection.soonLabel}</span>.
                 </p>
                 <Link href={app.href} className="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
-                  Rejoindre les testeurs <ExternalLink className="w-3 h-3" />
+                  {copy.mobileInstallSection.testerCta} <ExternalLink className="w-3 h-3" />
                 </Link>
               </div>
             ))}
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-            Plus de détails sur les trois apps : <Link href="/mobile" className="text-emerald-600 dark:text-emerald-400 hover:underline">page Applications mobiles →</Link>.
+            {copy.mobileInstallSection.detailsNote} <Link href="/mobile" className="text-emerald-600 dark:text-emerald-400 hover:underline">{copy.mobileInstallSection.mobilePageLink}</Link>.
           </p>
         </div>
       </section>
@@ -465,14 +364,15 @@ export default function DocsPage() {
           {filtered.length === 0 && (
             <div className="text-center py-16 text-slate-400">
               <FileText className="w-12 h-12 mx-auto mb-3 opacity-30" />
-              <p className="text-lg">Aucun resultat pour « {search} »</p>
+              <p className="text-lg">{copy.categoriesSection.emptyTitle.replace('{query}', search)}</p>
               <button onClick={() => setSearch('')} className="mt-3 text-sm text-emerald-600 hover:underline">
-                Effacer la recherche
+                {copy.categoriesSection.emptyCta}
               </button>
             </div>
           )}
           {filtered.map((cat, i) => {
             const colors = colorMap[cat.color] || colorMap.emerald;
+            const Icon = iconMap[cat.iconKey] || BookOpen;
             return (
               <motion.div
                 key={cat.title}
@@ -483,7 +383,7 @@ export default function DocsPage() {
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-10 h-10 rounded-xl ${colors.bg} flex items-center justify-center`}>
-                    <cat.icon className={`w-5 h-5 ${colors.icon}`} />
+                    <Icon className={`w-5 h-5 ${colors.icon}`} />
                   </div>
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">{cat.title}</h2>
                 </div>
@@ -510,23 +410,22 @@ export default function DocsPage() {
       {/* Quick links */}
       <section className="py-16 bg-transparent dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">Liens rapides</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-8">{copy.quickLinks.title}</h2>
           <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              { icon: Terminal, label: 'API Explorer', desc: 'Tester les endpoints en direct', href: '/integrations#api' },
-              { icon: Key, label: "Guide d'authentification", desc: 'Bearer tokens, Google OAuth, scopes', href: '/docs#api-quickstart' },
-              { icon: Server, label: 'Guide de déploiement', desc: 'Docker, Render, Vercel', href: '/docs#api-quickstart' },
-            ].map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors group"
-              >
-                <link.icon className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mb-3" />
-                <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{link.label}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{link.desc}</p>
-              </Link>
-            ))}
+            {copy.quickLinks.items.map((link) => {
+              const Icon = quickLinkIcons[link.icon] || Terminal;
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="p-6 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors group"
+                >
+                  <Icon className="w-6 h-6 text-emerald-600 dark:text-emerald-400 mb-3" />
+                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{link.label}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{link.desc}</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -535,4 +434,3 @@ export default function DocsPage() {
     </div>
   );
 }
-

@@ -57,13 +57,15 @@ class AuthLoginHardeningTest extends TestCase
         // l'état legacy équivalent : un hash corrompu/absent sémantiquement
         // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
         // (TypeError → 500) mais renvoyer 401.
-        Employee::query()->create([
-            'company_id' => $company->id,
+                $sensitiveEmployee2 = Employee::query()->create([
             'email' => 'broken-hash@company.test',
             'password_hash' => 'legacy-broken-hash',
+        ]);
+        $sensitiveEmployee2->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'broken-hash@company.test',
@@ -79,13 +81,15 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee1 = Employee::query()->create([
             'email' => 'empty-hash@company.test',
             'password_hash' => '',
+        ]);
+        $sensitiveEmployee1->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'empty-hash@company.test',
@@ -100,13 +104,15 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        Employee::query()->create([
-            'company_id' => $company->id,
+        $sensitiveEmployee0 = Employee::query()->create([
             'email' => 'good-hash@company.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $sensitiveEmployee0->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-        ]);
+        ])->save();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'good-hash@company.test',

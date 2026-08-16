@@ -180,42 +180,48 @@ class KioskSyncSkippedEventsTest extends TestCase
         DB::statement('SET search_path TO shared_tenants,public');
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@kiosk-skip.test',
             'matricule' => 'EMP-001',
             'zkteco_id' => 'FP-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => 'FP-001',
         ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $nonBiometric = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Sans',
             'last_name' => 'Biometrie',
             'email' => 'nobio@kiosk-skip.test',
             'matricule' => 'NB-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => false,
             'biometric_face_enabled' => false,
         ]);
+        $nonBiometric->forceFill([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'status' => 'active',
+        ])->save();
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@kiosk-skip.test',
             'password_hash' => Hash::make('password123'),
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
             'status' => 'active',
-        ]);
+        ])->save();
 
         DB::statement('SET search_path TO public');
 

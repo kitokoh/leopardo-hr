@@ -51,7 +51,10 @@ jobs:
     # Issue #4111 : timeout déterministe — un job bloqué (infra, saturation CI,
     # test bloquant) doit échouer explicitement au lieu de rester pending
     # indéfiniment et de masquer le verdict de couverture.
-    timeout-minutes: 45
+    # Issue #4251 : 45 min < duree reelle (~62 min, run 31907534549) -> le check
+    # requis Backend Coverage etait impossible a passer (0 success depuis #4111).
+    # 75 min = marge sur la duree mesuree (le job inclut la suite complete pcov).
+    timeout-minutes: 75
 
     services:
       postgres:
