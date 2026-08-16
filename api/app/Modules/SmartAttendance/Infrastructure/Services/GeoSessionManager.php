@@ -36,12 +36,33 @@ class GeoSessionManager
      */
     public function openSession(GeoEventDTO $dto): GeoAttendanceSession
     {
+        $employee = Employee::findOrFail($dto->employeeId);
+        $company  = currentCompany();
+
+        // ── 1. Re-vérifier la zone côté serveur (anti-spoofing) ──────────────
+        // #4255 : cette vérification est HORS transaction. Avant, logEvent()
+        // (TYPE_OUTSIDE_ZONE) écrivait dans la même transaction que la session,
+        // puis OutsideGeofenceException déclenchait un ROLLBACK total → l'événement
+        // suspect (spec #3887 « hors géofence → 422 + event outside_zone loggé »)
+        // n'était JAMAIS persisté. Loggé avant la transaction, il est committé
+        // indépendamment du 422.
+        $geo = $this->geofenceService->evaluate($company, $employee, $dto->latitude, $dto->longitude);
+
+        if ($geo['configured'] && $geo['inside'] === false) {
+            $this->logEvent($dto, null, EmployeeLocationEvent::TYPE_OUTSIDE_ZONE);
+
+            throw new OutsideGeofenceException(
+                (float) $geo['distance_meters'],
+                (float) $geo['radius_meters']
+            );
+        }
+
         return DB::transaction(function () use ($dto): GeoAttendanceSession {
 
             $employee = Employee::findOrFail($dto->employeeId);
             $company  = currentCompany();
 
-            // ── 1. Vérifier qu'aucune session n'est déjà ouverte ─────────────
+            // ── 2. Vérifier qu'aucune session n'est déjà ouverte ─────────────
             $existing = GeoAttendanceSession::query()
                 ->where('employee_id', $dto->employeeId)
                 ->where('company_id', $dto->companyId)
@@ -59,19 +80,6 @@ class GeoSessionManager
                     'session_id'  => $existing->id,
                 ]);
                 throw new SessionAlreadyOpenException($dto->employeeId, $existing->id);
-            }
-
-            // ── 2. Re-vérifier la zone côté serveur (anti-spoofing) ──────────
-            $geo = $this->geofenceService->evaluate($company, $employee, $dto->latitude, $dto->longitude);
-
-            if ($geo['configured'] && $geo['inside'] === false) {
-                // Loguer l'événement suspect
-                $this->logEvent($dto, null, EmployeeLocationEvent::TYPE_OUTSIDE_ZONE);
-
-                throw new OutsideGeofenceException(
-                    (float) $geo['distance_meters'],
-                    (float) $geo['radius_meters']
-                );
             }
 
             // ── 3. Identifier le site (si l'employé est rattaché à un site) ──
