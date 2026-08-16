@@ -32,9 +32,16 @@ login() {
 }
 
 note "== AUTH =="
-MT=$(login "fatima.meziane@techcorp-algerie.dz" "password123")
-ET=$(login "karim.aouad@techcorp-algerie.dz" "password123")
-PT=$(login "admin@leopardo-rh.com" "password123")
+# Creds via env (audit #4416/#1697 — jamais de mot de passe en clair dans le repo).
+: "${LEOPARDO_SMOKE_MANAGER_EMAIL:=fatima.meziane@techcorp-algerie.dz}"
+: "${LEOPARDO_SMOKE_EMPLOYEE_EMAIL:=karim.aouad@techcorp-algerie.dz}"
+: "${LEOPARDO_SMOKE_PLATFORM_EMAIL:=admin@leopardo-rh.com}"
+: "${LEOPARDO_SMOKE_MANAGER_PASSWORD:=}"
+: "${LEOPARDO_SMOKE_EMPLOYEE_PASSWORD:=}"
+: "${LEOPARDO_SMOKE_PLATFORM_PASSWORD:=}"
+MT=$(login "$LEOPARDO_SMOKE_MANAGER_EMAIL" "$LEOPARDO_SMOKE_MANAGER_PASSWORD")
+ET=$(login "$LEOPARDO_SMOKE_EMPLOYEE_EMAIL" "$LEOPARDO_SMOKE_EMPLOYEE_PASSWORD")
+PT=$(login "$LEOPARDO_SMOKE_PLATFORM_EMAIL" "$LEOPARDO_SMOKE_PLATFORM_PASSWORD")
 [ -n "$MT" ] && ok "login manager" || ko "login manager"
 [ -n "$ET" ] && ok "login employee" || ko "login employee"
 [ -n "$PT" ] && ok "login platform" || ko "login platform"

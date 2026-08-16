@@ -3,10 +3,12 @@ import argparse
 import os
 from playwright.async_api import async_playwright
 
-# Configuration
+# Configuration — creds via env (audit #1697 : jamais de mot de passe en clair).
+import os
+
 CREDENTIALS = {
-    'email': 'admin@leopardo-rh.com',
-    'password': 'password123'
+    'email': os.environ.get('LEOPARDO_DEMO_EMAIL', 'admin@leopardo-rh.com'),
+    'password': os.environ.get('LEOPARDO_DEMO_PASSWORD', ''),
 }
 
 ROUTES = {
