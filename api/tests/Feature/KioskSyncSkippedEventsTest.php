@@ -179,43 +179,46 @@ class KioskSyncSkippedEventsTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@kiosk-skip.test',
             'matricule' => 'EMP-001',
             'zkteco_id' => 'FP-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => 'FP-001',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
-        $nonBiometric = Employee::query()->create([
-            'company_id' => $company->id,
+        $nonBiometric = Employee::query()->make([
             'first_name' => 'Sans',
             'last_name' => 'Biometrie',
             'email' => 'nobio@kiosk-skip.test',
             'matricule' => 'NB-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => false,
             'biometric_face_enabled' => false,
         ]);
+        $nonBiometric->company_id = $company->id;
+        $nonBiometric->role = 'employee';
+        $nonBiometric->status = 'active';
+        $nonBiometric->save();
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@kiosk-skip.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         DB::statement('SET search_path TO public');
 

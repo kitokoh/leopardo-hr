@@ -190,27 +190,29 @@ class ProfilePermissionErrorContractTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => $suffix,
             'email' => "manager-{$suffix}@company.test",
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Employee',
             'last_name' => $suffix,
             'email' => "employee-{$suffix}@company.test",
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         return [$company, $manager, $employee];
     }

@@ -43,15 +43,16 @@ class DailySummaryTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($employee);
 
@@ -79,17 +80,18 @@ class DailySummaryTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         AttendanceLog::query()->create([
             'company_id' => $company->id,
@@ -132,25 +134,27 @@ class DailySummaryTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $employeeA = Employee::query()->create([
-            'company_id' => $company->id,
+        $employeeA = Employee::query()->make([
             'email' => 'a@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employeeA->company_id = $company->id;
+        $employeeA->role = 'employee';
+        $employeeA->status = 'active';
+        $employeeA->save();
 
-        $employeeB = Employee::query()->create([
-            'company_id' => $company->id,
+        $employeeB = Employee::query()->make([
             'email' => 'b@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employeeB->company_id = $company->id;
+        $employeeB->role = 'employee';
+        $employeeB->status = 'active';
+        $employeeB->save();
 
         Sanctum::actingAs($employeeA);
 
@@ -174,25 +178,27 @@ class DailySummaryTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
             'salary_type' => 'fixed',
-            'salary_base' => 0,
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->status = 'active';
+        $manager->salary_base = 0;
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($manager);
 

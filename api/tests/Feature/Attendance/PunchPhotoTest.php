@@ -64,16 +64,17 @@ class PunchPhotoTest extends TestCase
             'is_default' => true,
         ]);
 
-        $this->employee = Employee::query()->create([
-            'company_id' => $this->company->id,
+        $this->employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@photo.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $this->employee->company_id = $this->company->id;
+        $this->employee->role = 'employee';
+        $this->employee->status = 'active';
+        $this->employee->save();
     }
 
 

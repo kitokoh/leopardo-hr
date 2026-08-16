@@ -55,27 +55,29 @@ class AbsenceIndexTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $employeeA = Employee::query()->create([
-            'company_id' => $company->id,
+        $employeeA = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employeeA@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employeeA->company_id = $company->id;
+        $employeeA->role = 'employee';
+        $employeeA->status = 'active';
+        $employeeA->save();
 
-        $employeeB = Employee::query()->create([
-            'company_id' => $company->id,
+        $employeeB = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employeeB@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employeeB->company_id = $company->id;
+        $employeeB->role = 'employee';
+        $employeeB->status = 'active';
+        $employeeB->save();
 
         // Create absence for employee A
         Absence::query()->create([
@@ -150,39 +152,42 @@ class AbsenceIndexTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee1 = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee1 = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee1@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee1->company_id = $company->id;
+        $employee1->role = 'employee';
+        $employee1->status = 'active';
+        $employee1->save();
 
-        $employee2 = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee2 = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee2@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
 
         // Create absences for both employees
         Absence::query()->create([
@@ -253,39 +258,42 @@ class AbsenceIndexTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee1 = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee1 = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee1@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee1->company_id = $company->id;
+        $employee1->role = 'employee';
+        $employee1->status = 'active';
+        $employee1->save();
 
-        $employee2 = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee2 = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee2@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee2->company_id = $company->id;
+        $employee2->role = 'employee';
+        $employee2->status = 'active';
+        $employee2->save();
 
         // Create absences for both employees
         Absence::query()->create([
@@ -371,28 +379,30 @@ class AbsenceIndexTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         // Create absences with different statuses
         Absence::query()->create([
@@ -464,28 +474,30 @@ class AbsenceIndexTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         // Create absence in April 2026
         Absence::query()->create([
@@ -557,16 +569,17 @@ class AbsenceIndexTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         // Create multiple absences
         for ($i = 1; $i <= 5; $i++) {

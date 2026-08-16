@@ -77,16 +77,17 @@ class GeoEntryExitTest extends TestCase
             'is_default'                => true,
         ]);
 
-        $this->employee = Employee::query()->create([
-            'company_id'    => $this->company->id,
+        $this->employee = Employee::query()->make([
             'schedule_id'   => $schedule->id,
             'email'         => 'emp@testcorp.test',
             'password_hash' => Hash::make('password'),
-            'role'          => 'employee',
-            'status'        => 'active',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $this->employee->company_id = $this->company->id;
+        $this->employee->role = 'employee';
+        $this->employee->status = 'active';
+        $this->employee->save();
     }
 
 

@@ -47,28 +47,30 @@ class ManualUpdateTest extends TestCase
             'is_default' => true,
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         $log = AttendanceLog::query()->create([
             'company_id' => $company->id,

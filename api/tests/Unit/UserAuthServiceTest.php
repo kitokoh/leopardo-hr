@@ -49,7 +49,7 @@ class UserAuthServiceTest extends TestCase
 
     public function test_suspended_user_cannot_login(): void
     {
-        User::query()->create([
+        User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -64,7 +64,7 @@ class UserAuthServiceTest extends TestCase
 
     public function test_deactivated_user_cannot_login(): void
     {
-        User::query()->create([
+        User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -81,7 +81,7 @@ class UserAuthServiceTest extends TestCase
     {
         // Fail-closed (#2618, main) : le statut est vérifié AVANT le mot de
         // passe — un compte suspendu ne révèle jamais la validité du mot de passe.
-        User::query()->create([
+        User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -99,7 +99,7 @@ class UserAuthServiceTest extends TestCase
         [$privateKey, $jwks] = $this->googleKeyPair();
         $this->fakeGoogleJwks([$jwks]);
 
-        User::query()->create([
+        User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',

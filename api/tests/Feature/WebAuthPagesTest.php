@@ -45,7 +45,7 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
@@ -81,7 +81,7 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
@@ -116,7 +116,7 @@ class WebAuthPagesTest extends TestCase
             'status' => 'suspended',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),

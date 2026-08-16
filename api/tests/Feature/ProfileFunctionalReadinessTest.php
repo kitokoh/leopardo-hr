@@ -124,7 +124,7 @@ class ProfileFunctionalReadinessTest extends TestCase
 
     private function employee(Company $company, string $email, string $role, ?string $managerRole): Employee
     {
-        return Employee::query()->create([
+        return Employee::query()->forceCreate([
             'company_id' => $company->id,
             'first_name' => ucfirst(strtok($email, '@') ?: 'Demo'),
             'last_name' => 'Profile',

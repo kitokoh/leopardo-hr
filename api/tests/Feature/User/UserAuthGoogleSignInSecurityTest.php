@@ -178,7 +178,7 @@ class UserAuthGoogleSignInSecurityTest extends TestCase
         [$privateKey, $jwks] = $this->googleKeyPair();
         $this->fakeGoogleJwks([$jwks]);
 
-        User::query()->create([
+        User::query()->forceCreate([
             'first_name' => 'Suspended',
             'last_name' => 'User',
             'email' => 'suspended.user@example.com',

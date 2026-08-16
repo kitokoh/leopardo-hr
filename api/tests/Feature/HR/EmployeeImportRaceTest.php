@@ -45,7 +45,7 @@ class EmployeeImportRaceTest extends TestCase
 
     private function makeManager(Company $company): Employee
     {
-        return Employee::query()->create([
+        return Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'manager-'.uniqid().'@test.local',
             'password_hash' => Hash::make('password123'),
@@ -136,7 +136,7 @@ class EmployeeImportRaceTest extends TestCase
         Sanctum::actingAs($this->makeManager($company));
 
         $conflictEmail = 'existing-'.uniqid().'@example.com';
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => $conflictEmail,
             'password_hash' => Hash::make('x'),

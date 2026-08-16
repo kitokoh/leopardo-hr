@@ -43,27 +43,29 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
             'manager_id' => $manager->id,
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         $this->actingAs($employee, 'sanctum')
             ->postJson('/api/v1/auth/biometric-enrollment', [
@@ -110,30 +112,32 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'matricule' => 'EMP-001',
             'zkteco_id' => 'FP-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => 'FP-001',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         DB::statement('SET search_path TO public');
 
@@ -173,29 +177,31 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'matricule' => 'EMP-001',
             'zkteco_id' => 'FP-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => true,
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         DB::statement('SET search_path TO public');
 
@@ -269,40 +275,43 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
-        $enrolledEmployee = Employee::query()->create([
-            'company_id' => $company->id,
+        $enrolledEmployee = Employee::query()->make([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'matricule' => 'EMP-001',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'biometric_fingerprint_enabled' => true,
             'biometric_consent_at' => now(),
         ]);
+        $enrolledEmployee->company_id = $company->id;
+        $enrolledEmployee->role = 'employee';
+        $enrolledEmployee->status = 'active';
+        $enrolledEmployee->save();
 
-        $pendingEmployee = Employee::query()->create([
-            'company_id' => $company->id,
+        $pendingEmployee = Employee::query()->make([
             'first_name' => 'Sara',
             'last_name' => 'Nouvelle',
             'email' => 'sara@company.test',
             'matricule' => 'EMP-002',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $pendingEmployee->company_id = $company->id;
+        $pendingEmployee->role = 'employee';
+        $pendingEmployee->status = 'active';
+        $pendingEmployee->save();
 
         BiometricEnrollmentRequest::query()->create([
             'company_id' => $company->id,
@@ -314,16 +323,17 @@ class BiometricWorkflowTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $unenrolledEmployee = Employee::query()->create([
-            'company_id' => $company->id,
+        $unenrolledEmployee = Employee::query()->make([
             'first_name' => 'Yacine',
             'last_name' => 'SansBiometrie',
             'email' => 'yacine@company.test',
             'matricule' => 'EMP-003',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $unenrolledEmployee->company_id = $company->id;
+        $unenrolledEmployee->role = 'employee';
+        $unenrolledEmployee->status = 'active';
+        $unenrolledEmployee->save();
 
         if (! \Illuminate\Support\Facades\Schema::hasTable('leave_balances')) {
             \Illuminate\Support\Facades\Schema::create('leave_balances', function (\Illuminate\Database\Schema\Blueprint $table): void {

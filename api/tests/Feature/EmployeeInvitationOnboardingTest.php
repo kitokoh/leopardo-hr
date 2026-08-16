@@ -46,16 +46,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         DB::statement('SET search_path TO public');
 
@@ -132,16 +133,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         DB::statement('SET search_path TO public');
 
@@ -208,16 +210,17 @@ class EmployeeInvitationOnboardingTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         DB::statement('SET search_path TO public');
 

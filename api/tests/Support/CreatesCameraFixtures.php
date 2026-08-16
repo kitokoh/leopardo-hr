@@ -36,7 +36,7 @@ trait CreatesCameraFixtures
         string $managerRole = 'principal',
         string $email = 'manager@company.test'
     ): Employee {
-        return Employee::query()->create([
+        return Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => $email,
             'password_hash' => Hash::make('password123'),
@@ -48,7 +48,7 @@ trait CreatesCameraFixtures
 
     protected function createEmployee(Company $company, string $email = 'employee@company.test'): Employee
     {
-        return Employee::query()->create([
+        return Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => $email,
             'password_hash' => Hash::make('password123'),

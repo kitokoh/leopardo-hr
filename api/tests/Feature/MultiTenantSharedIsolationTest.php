@@ -109,7 +109,7 @@ class MultiTenantSharedIsolationTest extends TestCase
     {
         foreach ($this->companies as $company) {
             app()->instance('current_company', $company);
-            Employee::query()->create([
+            Employee::query()->forceCreate([
                 'email' => "rh@{$company->slug}.test",
                 'password_hash' => Hash::make('secret'),
                 'role' => 'manager',

@@ -60,7 +60,7 @@ class EmployeeTenantIsolationTest extends TestCase
 
     private function makeManager(Company $company, string $email, string $managerRole): Employee
     {
-        return Employee::query()->create([
+        return Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => $email,
             'password_hash' => Hash::make('password123'),
@@ -72,7 +72,7 @@ class EmployeeTenantIsolationTest extends TestCase
 
     private function makeEmployee(Company $company, string $email): Employee
     {
-        return Employee::query()->create([
+        return Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => $email,
             'password_hash' => Hash::make('password123'),

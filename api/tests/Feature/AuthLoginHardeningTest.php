@@ -57,7 +57,7 @@ class AuthLoginHardeningTest extends TestCase
         // l'état legacy équivalent : un hash corrompu/absent sémantiquement
         // (invité SSO, seed incomplet) → Hash::check ne doit pas lever
         // (TypeError → 500) mais renvoyer 401.
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'broken-hash@company.test',
             'password_hash' => 'legacy-broken-hash',
@@ -79,7 +79,7 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'empty-hash@company.test',
             'password_hash' => '',
@@ -100,7 +100,7 @@ class AuthLoginHardeningTest extends TestCase
     {
         $company = $this->makeCompany();
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'good-hash@company.test',
             'password_hash' => Hash::make('password123'),

@@ -31,12 +31,12 @@ class IslamicCalendarControllerTest extends TestCase
         $company = Company::factory()->create();
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = SuperAdmin::query()->make([
             'name' => 'Super Admin Test',
             'email' => 'sa-islamic-test@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
+        $superAdmin->save();
         $this->superAdmin = $superAdmin;
 
         /** @var Employee $principal */

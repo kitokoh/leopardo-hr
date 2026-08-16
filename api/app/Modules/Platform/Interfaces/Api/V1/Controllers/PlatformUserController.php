@@ -111,7 +111,17 @@ class PlatformUserController extends Controller
             $validated['email'] = mb_strtolower($validated['email']);
         }
 
-        $user->update($validated);
+        // Issue #3677 : status non mass-assignable — assignation explicite.
+        $status = $validated['status'] ?? null;
+        unset($validated['status']);
+
+        if ($validated !== []) {
+            $user->update($validated);
+        }
+        if ($status !== null) {
+            $user->status = $status;
+            $user->save();
+        }
 
         $this->audit($request, $user, 'platform_user_updated');
 
@@ -127,7 +137,9 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'deactivated']);
+        
+        $user->status = 'deactivated';
+        $user->save();
         // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
         $user->tokens()->delete();
 
@@ -138,7 +150,9 @@ class PlatformUserController extends Controller
 
     public function activate(Request $request, SuperAdmin $user): JsonResponse
     {
-        $user->update(['status' => 'active']);
+        
+        $user->status = 'active';
+        $user->save();
         $this->audit($request, $user, 'platform_user_activated');
 
         return new JsonResponse(['data' => $this->serialize($user->fresh() ?? $user)]);
@@ -150,7 +164,9 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de désactiver votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'deactivated']);
+        
+        $user->status = 'deactivated';
+        $user->save();
         // Sécurité #2630 : désactiver un compte révoque ses tokens actifs.
         $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_deactivated');
@@ -164,7 +180,9 @@ class PlatformUserController extends Controller
             return new JsonResponse(['message' => 'Impossible de suspendre votre propre compte.'], 422);
         }
 
-        $user->update(['status' => 'suspended']);
+        
+        $user->status = 'suspended';
+        $user->save();
         // Sécurité #2630 : suspendre un compte révoque ses tokens actifs.
         $user->tokens()->delete();
         $this->audit($request, $user, 'platform_user_suspended');

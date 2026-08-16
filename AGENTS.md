@@ -6,6 +6,10 @@ Ce fichier doit etre lu au debut de chaque nouvelle session agent. Il doit aussi
 
 > **NOUVEL AGENT ? Commence par lire `dev-hub/prompts/00_AGENT_QUICK_CARD.md` (2 min) pour une carte de reference rapide. Ce fichier AGENTS.md est le guide complet.**
 
+### 2026-08-16 - Fillable durci (#3677) : create()/update() abandonnent silencieusement les clés non-fillable
+- `Employee::query()->create(['role' => ...])` (idem User/SuperAdmin, `company_id`, `status`, `manager_role`, `salary_base`, `two_fa_secret`) **ne pose rien** : Eloquent ignore les clés hors `$fillable` sans erreur. Ne jamais compter sur la CI seule pour détecter ces drops (suite Feature entièrement rouge depuis #3677, masquée par la famine CI #3545).
+- Pattern imposé : `make([fillable])` / `fill([fillable])` + assignations explicites + `save()`. `forceCreate` réservé aux tests (précédent repo). Vérifier après coup par scan statique des clés retirées (zéro site restant).
+- `SuperAdmin` n'a pas de colonne `role` : ne pas poser `$admin->role` (save() échouerait sur colonne inconnue).
 ## ⚡ Spec-Driven Development — Spec Kit (NOUVEAU 2026-08-14)
 
 Leopardo HR utilise desormais **GitHub Spec Kit** pour structurer tout travail significatif.

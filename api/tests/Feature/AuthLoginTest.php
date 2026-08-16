@@ -38,7 +38,7 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
@@ -80,7 +80,7 @@ class AuthLoginTest extends TestCase
             'language' => 'ar',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'rh@company.test',
             'password_hash' => Hash::make('password123'),
@@ -150,7 +150,7 @@ class AuthLoginTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),

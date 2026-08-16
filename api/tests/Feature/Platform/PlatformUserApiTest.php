@@ -55,12 +55,13 @@ class PlatformUserApiTest extends TestCase
     private function makeUser(string $email = 'other-sa@leopardo-rh.com', string $status = 'active'): SuperAdmin
     {
         /** @var SuperAdmin $user */
-        $user = SuperAdmin::query()->create([
+        $user = SuperAdmin::query()->make([
             'name' => 'Other Admin',
             'email' => $email,
             'password_hash' => bcrypt('secret123'),
-            'status' => $status,
         ]);
+        $user->status = $status;
+        $user->save();
 
         return $user;
     }

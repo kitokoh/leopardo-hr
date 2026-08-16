@@ -70,28 +70,30 @@ class AttendanceGeofenceAlertTest extends TestCase
         $company = $this->makeCompanyWithGeofence();
         $schedule = $this->makeSchedule($company);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'dept',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'dept';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($employee);
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));
@@ -120,28 +122,30 @@ class AttendanceGeofenceAlertTest extends TestCase
         $company = $this->makeCompanyWithGeofence();
         $schedule = $this->makeSchedule($company);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'dept',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'dept';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($employee);
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));
@@ -160,28 +164,30 @@ class AttendanceGeofenceAlertTest extends TestCase
         $company = $this->makeCompanyWithGeofence();
         $schedule = $this->makeSchedule($company);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'dept',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'dept';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($employee);
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));
@@ -204,30 +210,32 @@ class AttendanceGeofenceAlertTest extends TestCase
         $company = $this->makeCompanyWithGeofence();
         $schedule = $this->makeSchedule($company);
 
-        $principal = Employee::query()->create([
-            'company_id' => $company->id,
+        $principal = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'principal@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $principal->company_id = $company->id;
+        $principal->role = 'manager';
+        $principal->manager_role = 'principal';
+        $principal->status = 'active';
+        $principal->save();
 
-        $rh = Employee::query()->create([
-            'company_id' => $company->id,
+        $rh = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'rh@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'rh',
-            'status' => 'active',
         ]);
+        $rh->company_id = $company->id;
+        $rh->role = 'manager';
+        $rh->manager_role = 'rh';
+        $rh->status = 'active';
+        $rh->save();
 
         // A non-eligible manager role (comptable) that must not receive this alert.
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'first_name' => 'Test',
             'last_name' => 'User',
@@ -238,17 +246,18 @@ class AttendanceGeofenceAlertTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             // No manager_id assigned.
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($employee);
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));
@@ -268,28 +277,30 @@ class AttendanceGeofenceAlertTest extends TestCase
         $company = $this->makeCompanyWithGeofence();
         $schedule = $this->makeSchedule($company);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'dept',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'dept';
+        $manager->status = 'active';
+        $manager->save();
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'manager_id' => $manager->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         Sanctum::actingAs($employee);
         $this->travelTo(Carbon::parse('2026-04-04 08:00:00', 'UTC'));

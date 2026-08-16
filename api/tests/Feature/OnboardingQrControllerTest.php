@@ -53,16 +53,17 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $companyA->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Meriem',
             'last_name' => 'RH',
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'rh',
-            'status' => 'active',
         ]);
+        $manager->company_id = $companyA->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'rh';
+        $manager->status = 'active';
+        $manager->save();
 
         $externalEmployee = Employee::withoutGlobalScopes()->create([
             'company_id' => $companyB->id,
@@ -133,14 +134,15 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'rh',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'rh';
+        $manager->status = 'active';
+        $manager->save();
 
         $this
             ->actingAs($manager, 'sanctum')
@@ -165,16 +167,17 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $manager = Employee::query()->create([
-            'company_id' => $company->id,
+        $manager = Employee::query()->make([
             'first_name' => 'Karim',
             'last_name' => 'Principal',
             'email' => 'principal@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'manager_role' => 'principal',
-            'status' => 'active',
         ]);
+        $manager->company_id = $company->id;
+        $manager->role = 'manager';
+        $manager->manager_role = 'principal';
+        $manager->status = 'active';
+        $manager->save();
 
         $this
             ->actingAs($manager, 'sanctum')
@@ -201,15 +204,16 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'first_name' => 'Sami',
             'last_name' => 'Employe',
             'email' => 'employe@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'employee';
+        $employee->status = 'active';
+        $employee->save();
 
         $this
             ->actingAs($employee, 'sanctum')

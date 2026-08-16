@@ -45,13 +45,14 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
 
         $result = app(AuthService::class)->login('manager@a.test', 'password123', 'unit-tests');
 
@@ -85,13 +86,14 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        $employee = Employee::query()->create([
-            'company_id' => $company->id,
+        $employee = Employee::query()->make([
             'email' => 'shadow-manager@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $employee->company_id = $company->id;
+        $employee->role = 'manager';
+        $employee->status = 'active';
+        $employee->save();
 
         DB::statement('CREATE TABLE IF NOT EXISTS shared_tenants.companies (LIKE public.companies INCLUDING ALL)');
         DB::statement('SET search_path TO public');
@@ -117,7 +119,7 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -164,7 +166,7 @@ class AuthServiceTest extends TestCase
             'status' => 'suspended',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),
@@ -191,7 +193,7 @@ class AuthServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'company_id' => $company->id,
             'email' => 'employee@a.test',
             'password_hash' => Hash::make('password123'),

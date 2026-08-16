@@ -55,13 +55,14 @@ class TenantIsolationTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $managerA = Employee::query()->create([
-            'company_id' => $companyA->id,
+        $managerA = Employee::query()->make([
             'email' => 'manager@a.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'manager',
-            'status' => 'active',
         ]);
+        $managerA->company_id = $companyA->id;
+        $managerA->role = 'manager';
+        $managerA->status = 'active';
+        $managerA->save();
 
         $employeeB = Employee::withoutGlobalScopes()->create([
             'company_id' => $companyB->id,

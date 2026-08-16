@@ -27,11 +27,12 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
         $manager = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
         $employeeB = Employee::factory()->create(['company_id' => $companyB->id]);
 
-        $user = User::query()->create([
+        $user = User::query()->make([
             'email' => 'john.doe@example.com',
             'password_hash' => Hash::make('password123'),
-            'status' => 'active',
         ]);
+        $user->status = 'active';
+        $user->save();
 
         Sanctum::actingAs($manager);
 
@@ -58,11 +59,12 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
-        $user = User::query()->create([
+        $user = User::query()->make([
             'email' => 'jane.doe@example.com',
             'password_hash' => Hash::make('password123'),
-            'status' => 'active',
         ]);
+        $user->status = 'active';
+        $user->save();
 
         Sanctum::actingAs($manager);
 
