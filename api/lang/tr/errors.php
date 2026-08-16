@@ -126,7 +126,7 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Maaş çalışması mevcut durumunda iptal edilemez.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Hesabınız askıya alındı. Yöneticinizle iletişime geçin.',
     'VERIFICATION_CODE_INVALID' => 'Doğrulama kodu geçersiz veya süresi dolmuş.',
-    'TRIAL_SPACE_CREATION_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.', origin/main
+    'TRIAL_SPACE_CREATION_FAILED' => 'Çalışma alanınız oluşturulurken hata oluştu. Lütfen tekrar deneyin.',
     'CANNOT_DISABLE_SELF' => 'Kendi hesabınızı devre dışı bırakamazsınız.',
     'CANNOT_SUSPEND_SELF' => 'Kendi hesabınızı askıya alamazsınız.',
     'MANAGER_ONLY_LINK' => 'Bir kullanıcıyı yalnızca yönetici bağlayabilir.',
