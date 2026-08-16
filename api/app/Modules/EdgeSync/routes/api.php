@@ -31,6 +31,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('api/v1/edge')->group(function (): void {
     Route::get('/health', [EdgeController::class, 'health'])
         ->middleware('throttle:300,1');
+    // #4411 : readiness avec probe schéma SQLite (healthcheck des conteneurs Edge).
+    Route::get('/readiness', [EdgeController::class, 'readiness'])
+        ->middleware('throttle:300,1');
     Route::get('/install.sh', [EdgeDownloadController::class, 'installScript'])
         ->middleware('throttle:60,1');
     Route::get('/download/docker-compose.yml', [EdgeDownloadController::class, 'dockerCompose'])
