@@ -1517,6 +1517,23 @@ export function normalizeLocale(value: unknown): AppLocale {
   return isSupportedLocale(normalized) ? normalized : 'fr';
 }
 
+/**
+ * Locale SSR de la vitrine (issue #4393) : `?lang=` (liens hreflang, #4173)
+ * prime sur Accept-Language ; sinon le header est normalisé comme le root
+ * layout (#2657). Source unique pour le middleware → les ~20 layouts landing
+ * servent enfin des metadata (title/description) dans la langue réelle du
+ * visiteur au lieu de retomber sur le FR codé en dur.
+ */
+export function resolveSsrVitrineLang(
+  urlLang: string | null | undefined,
+  acceptLanguage: string | null | undefined,
+): AppLocale {
+  if (urlLang && isSupportedLocale(urlLang)) {
+    return urlLang;
+  }
+  return normalizeLocale(acceptLanguage);
+}
+
 export function getLocaleDirection(locale: AppLocale, isRtl?: boolean): 'ltr' | 'rtl' {
   return isRtl === true || locale === 'ar' ? 'rtl' : 'ltr';
 }

@@ -184,7 +184,8 @@
       "companyTooShort": "Le nom de l'entreprise doit contenir au moins 2 caractères",
       "emailInvalid": "Email invalide",
       "roleRequired": "Sélectionnez votre rôle",
-      "employeesRequired": "Sélectionnez une taille d'équipe"
+      "employeesRequired": "Sélectionnez une taille d'équipe",
+      "countryRequired": "Le pays est requis."
     },
     "timeoutTitle": "Création toujours en cours",
     "copyPasswordTitle": "Copier le mot de passe",
@@ -205,7 +206,9 @@
     "rolePlaceholder": "Choisir",
     "otpInvalidLength": "Veuillez entrer les 6 chiffres du code.",
     "labelEmail": "Email professionnel",
-    "pendingNote": "Notre système de création d'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte."
+    "pendingNote": "Notre système de création d'espace instantané est momentanément indisponible (redémarrage serveur). Votre demande est bien enregistrée : une personne de l'équipe Leopardo vous contactera par email sous 24h ouvrables avec un accès adapté à votre contexte.",
+    "labelCountry": "Pays",
+    "countryPlaceholder": "Sélectionnez votre pays"
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
