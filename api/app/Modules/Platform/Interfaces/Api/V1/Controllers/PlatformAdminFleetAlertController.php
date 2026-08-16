@@ -69,7 +69,7 @@ class PlatformAdminFleetAlertController extends Controller
 
             return response()->json([
                 'error' => 'FLEET_ALERTS_UNAVAILABLE',
-                'message' => 'Impossible de charger les alertes de flotte.',
+                'message' => __('errors.FLEET_ALERTS_LOAD_FAILED'),
             ], 500);
         }
     }

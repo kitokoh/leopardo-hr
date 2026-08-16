@@ -5,6 +5,8 @@ import { CheckCircle, AlertCircle, Upload, FileText } from 'lucide-react';
 import { Input } from '@/modules/vitrine/components/common/Input';
 import { Textarea } from '@/modules/vitrine/components/common/Textarea';
 import { Button } from '@/modules/vitrine/components/common/Button';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import { getTenantCareersCopy } from '@/modules/vitrine/data/tenant-careers';
 import { submitPublicApplication } from '@/lib/careers-api';
 
 interface ApplyFormProps {
@@ -15,6 +17,10 @@ interface ApplyFormProps {
 const MAX_RESUME_BYTES = 5 * 1024 * 1024; // 5 MB, matches the backend `resume` upload rule.
 
 export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
+  // #4448 : copy localisée (même mécanisme que le reste de la vitrine — le
+  // hook s'initialise sur la locale SSR puis suit `?lang=`/préférence).
+  const { locale } = useVitrineLocale();
+  const copy = getTenantCareersCopy(locale);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -30,7 +36,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
     const file = event.target.files?.[0] ?? null;
 
     if (file && file.size > MAX_RESUME_BYTES) {
-      setFieldErrors((prev) => ({ ...prev, resume: ['Le fichier ne doit pas depasser 5 Mo.'] }));
+      setFieldErrors((prev) => ({ ...prev, resume: [copy.form.resumeTooBig] }));
       setResume(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
@@ -76,7 +82,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
     if (result.errors) {
       setFieldErrors(result.errors);
     }
-    setErrorMessage(result.message ?? 'Une erreur est survenue. Merci de reessayer.');
+    setErrorMessage(result.message ?? copy.form.genericError);
   };
 
   if (status === 'success') {
@@ -84,9 +90,9 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       <div className="p-6 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl flex items-start gap-3">
         <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="font-semibold text-emerald-900 dark:text-emerald-100">Candidature envoyee !</p>
+          <p className="font-semibold text-emerald-900 dark:text-emerald-100">{copy.form.successTitle}</p>
           <p className="text-sm text-emerald-800 dark:text-emerald-200 mt-1">
-            Merci pour votre interet. Notre equipe recrutement va etudier votre profil et vous recontactera rapidement.
+            {copy.form.successBody}
           </p>
         </div>
       </div>
@@ -104,14 +110,14 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
 
       <div className="grid sm:grid-cols-2 gap-4">
         <Input
-          label="Prenom"
+          label={copy.form.firstName}
           required
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           error={fieldErrors.first_name?.[0]}
         />
         <Input
-          label="Nom"
+          label={copy.form.lastName}
           required
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
@@ -120,7 +126,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       </div>
 
       <Input
-        label="Email"
+        label={copy.form.email}
         type="email"
         required
         value={email}
@@ -129,7 +135,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       />
 
       <Input
-        label="Telephone (optionnel)"
+        label={copy.form.phoneOptional}
         type="tel"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
@@ -137,7 +143,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       />
 
       <Textarea
-        label="Lettre de motivation (optionnel)"
+        label={copy.form.coverLetterOptional}
         value={coverLetter}
         onChange={(e) => setCoverLetter(e.target.value)}
         error={fieldErrors.cover_letter?.[0]}
@@ -145,7 +151,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
 
       <div>
         <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">
-          CV (PDF, optionnel)
+          {copy.form.resumeLabel}
         </label>
         <label className="flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 cursor-pointer hover:border-emerald-500/50 transition-colors">
           {resume ? (
@@ -154,7 +160,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
             <Upload className="w-4 h-4 text-slate-400 flex-shrink-0" />
           )}
           <span className="text-sm text-slate-600 dark:text-slate-400 truncate">
-            {resume ? resume.name : 'Choisir un fichier (max 5 Mo)'}
+            {resume ? resume.name : copy.form.resumeChoose}
           </span>
           <input
             ref={fileInputRef}
@@ -170,7 +176,7 @@ export function ApplyForm({ companySlug, jobId }: ApplyFormProps) {
       </div>
 
       <Button type="submit" variant="primary" size="lg" fullWidth loading={status === 'submitting'} disabled={status === 'submitting'}>
-        {status === 'submitting' ? 'Envoi en cours...' : 'Envoyer ma candidature'}
+        {status === 'submitting' ? copy.form.submitting : copy.form.submit}
       </Button>
     </form>
   );

@@ -466,7 +466,7 @@ class SocialDeclarationController extends Controller
         }
 
         if ($payrollRun->country_code !== $countryCode) {
-            return response()->json(['message' => 'Ce run ne concerne pas '.$countryLabel.'.'], 422)->throwResponse();
+            return response()->json(['message' => __('errors.PAYROLL_RUN_NOT_FOR_COUNTRY', ['country' => $countryLabel])], 422)->throwResponse();
         }
 
         $this->auditLogger->recordSensitive($request, $actor, $auditKey);
