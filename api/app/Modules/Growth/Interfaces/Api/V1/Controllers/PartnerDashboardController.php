@@ -4,35 +4,39 @@ declare(strict_types=1);
 
 namespace App\Modules\Growth\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
+use App\Exceptions\DomainException;
 use App\Http\Controllers\Controller;
 use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Modules\Payroll\Domain\Models\Commission;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PartnerDashboardController extends Controller
 {
-    public function __construct(private \App\Modules\Billing\Infrastructure\Services\PartnerService $partnerService)
-    {}
+    public function __construct(private PartnerService $partnerService) {}
 
     /**
      * Résout l'utilisateur global (User) depuis un Employee Sanctum ou un User direct.
      * Nécessaire car le module Growth stocke les partenaires dans public.partners
      * liés à public.users, alors que l'auth Sanctum identifie un Employee tenant.
      */
-    private function resolveGlobalUser($authUser): \App\Core\Auth\Domain\Models\User
+    private function resolveGlobalUser($authUser): User
     {
-        if ($authUser instanceof \App\Core\Auth\Domain\Models\User) {
+        if ($authUser instanceof User) {
             return $authUser;
         }
 
-        if ($authUser instanceof \App\Core\Auth\Domain\Models\Employee) {
-            $user = \App\Core\Auth\Domain\Models\User::firstOrCreate(
+        if ($authUser instanceof Employee) {
+            $user = User::firstOrCreate(
                 ['email' => $authUser->email],
                 [
                     'first_name' => $authUser->first_name,
-                    'last_name'  => $authUser->last_name,
+                    'last_name' => $authUser->last_name,
                 ]
             );
             // Issue #3597/#4151 : status non mass-assignable — assignation explicite.
@@ -58,13 +62,21 @@ class PartnerDashboardController extends Controller
         }
 
         $validated = $request->validate([
-            'type'            => 'required|in:individual,agency,accountant',
+            'type' => 'required|in:individual,agency,accountant',
+            // Issue #4383 : coordonnées de candidature (fix #4186 incomplet —
+            // la validation écrasait silencieusement les champs avant
+            // PartnerService::apply → ligne partners créée avec coordonnées NULL).
+            'name' => 'nullable|string|max:150',
+            'email' => 'nullable|email|max:150',
+            'phone' => 'nullable|string|max:40',
+            'website' => 'nullable|url|max:255',
+            'commission_rate' => 'nullable|numeric|min:0|max:1',
             'payment_details' => 'nullable|string',
         ]);
 
         try {
             $partner = $this->partnerService->apply($globalUser->id, $validated);
-        } catch (\App\Exceptions\DomainException $e) {
+        } catch (DomainException $e) {
             return new JsonResponse([
                 'error' => $e->errorCode(),
                 'message' => 'Candidature deja soumise.',
@@ -83,19 +95,20 @@ class PartnerDashboardController extends Controller
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
-        if (!$partner) {
+        if (! $partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
         }
 
         $validated = $request->validate([
-            'amount'   => 'required|integer|min:100',
+            'amount' => 'required|integer|min:100',
             'currency' => 'required|string|size:3',
         ]);
 
         try {
             $payout = $this->partnerService->requestPayout($partner, $validated['amount'], $validated['currency']);
+
             return new JsonResponse(['data' => $payout], 201);
-        } catch (\App\Exceptions\DomainException $e) {
+        } catch (DomainException $e) {
             // Erreur métier propre : code d'erreur générique, jamais de message brut.
             return new JsonResponse([
                 'error' => $e->errorCode(),
@@ -103,7 +116,7 @@ class PartnerDashboardController extends Controller
                 'localized_message' => 'Demande de paiement refusee.',
             ], $e->statusCode());
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('partner.payout.request_failed', [
+            Log::error('partner.payout.request_failed', [
                 'partner_id' => $partner->id,
                 'error' => $e->getMessage(),
             ]);
@@ -124,7 +137,7 @@ class PartnerDashboardController extends Controller
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
-        if (!$partner) {
+        if (! $partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 404);
         }
 
@@ -139,7 +152,7 @@ class PartnerDashboardController extends Controller
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
-        if (!$partner) {
+        if (! $partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER', 'message' => 'Vous n\'êtes pas enregistré comme partenaire.'], 403);
         }
 
@@ -161,8 +174,8 @@ class PartnerDashboardController extends Controller
             'referral_code' => $partner->referral_code,
             'stats' => [
                 'total_conversions' => $partner->referredCompanies()->count(),
-                'total_earned'      => (int) ($stats->total_earned ?? 0),
-                'pending_approval'  => (int) ($stats->pending_approval ?? 0),
+                'total_earned' => (int) ($stats->total_earned ?? 0),
+                'pending_approval' => (int) ($stats->pending_approval ?? 0),
                 'approved_upcoming' => (int) ($stats->approved_upcoming ?? 0),
             ],
             'recent_commissions' => $recentCommissions,
@@ -177,7 +190,7 @@ class PartnerDashboardController extends Controller
         $globalUser = $this->resolveGlobalUser(Auth::user());
         $partner = Partner::where('user_id', $globalUser->id)->first();
 
-        if (!$partner) {
+        if (! $partner) {
             return new JsonResponse(['error' => 'NOT_A_PARTNER'], 403);
         }
 
@@ -188,4 +201,3 @@ class PartnerDashboardController extends Controller
         return new JsonResponse(['data' => $companies]);
     }
 }
-
