@@ -7,8 +7,9 @@ function resolveAdminLocale() {
   try {
     const stored = localStorage.getItem('admin_locale')
     if (stored) return normalizeLocale(stored)
-  } catch {
-    // localStorage indisponible (SSR ou sandboxé)
+  } catch (e) {
+    // localStorage indisponible (SSR ou sandboxé) — fallback navigator.
+    console.warn('[admin] locale storage unavailable', e)
   }
   const nav = (typeof navigator !== 'undefined' && navigator.language) || 'fr'
   return normalizeLocale(nav)

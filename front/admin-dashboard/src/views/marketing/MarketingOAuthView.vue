@@ -119,8 +119,9 @@ async function saveProvider(provider) {
     await api.put('/v1/admin/platform/marketing/oauth-config', payload)
     toast.success(t('marketing.oauth.saved_ok', { provider }))
     forms[provider].clientSecret = ''
-  } catch {
+  } catch (e) {
     // errors handled by global api.js interceptor
+    console.warn('[admin] marketing oauth config save failed', e)
   } finally {
     saving[provider] = false
   }
@@ -137,8 +138,9 @@ async function loadConfig() {
         forms[provider].redirectUri = cfg.redirect_uri || ''
       }
     }
-  } catch {
+  } catch (e) {
     // errors handled by global api.js interceptor — écran reste éditable
+    console.warn('[admin] marketing oauth load failed', e)
   }
 }
 
