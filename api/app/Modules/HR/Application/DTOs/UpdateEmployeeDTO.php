@@ -6,7 +6,6 @@ namespace App\Modules\HR\Application\DTOs;
 
 use App\Core\Auth\Interfaces\Requests\UpdateProfileRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
-use Illuminate\Http\Request;
 
 final readonly class UpdateEmployeeDTO
 {
@@ -52,11 +51,13 @@ final readonly class UpdateEmployeeDTO
         public ?array $extra_data = null,
     ) {}
 
-    public static function fromRequest(UpdateEmployeeRequest|UpdateProfileRequest|Request $request): self
+    public static function fromRequest(UpdateEmployeeRequest|UpdateProfileRequest $request): self
     {
-        $validated = method_exists($request, 'validated') ? $request->validated() : $request->all();
-
-        return new self(...$validated);
+        // #4609 : plus de fallback `$request->all()` — seul le payload validé
+        // par le FormRequest traverse le DTO. Un `Request` brut passerait
+        // role/status/manager_role sans validation ni policy (réactivation
+        // silencieuse du mass-assignment #3677/#4496).
+        return new self(...$request->validated());
     }
 
     /** @return array<string, mixed> */
