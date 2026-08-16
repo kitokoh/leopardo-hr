@@ -33,11 +33,11 @@ class PayrollSimulationControllerTest extends TestCase
         $company = Company::factory()->create();
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Super Admin Test',
             'email' => 'sa-simulate@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
         $this->superAdmin = $superAdmin;
 

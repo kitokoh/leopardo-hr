@@ -29,11 +29,12 @@ class GrowthAdminControllerTest extends TestCase
 
     private function makeSuperAdmin(): SuperAdmin
     {
-        return SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
+        return $superAdmin;
     }
 
     public function test_super_admin_can_list_partners(): void

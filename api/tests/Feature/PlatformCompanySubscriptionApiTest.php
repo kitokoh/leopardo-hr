@@ -99,11 +99,12 @@ class PlatformCompanySubscriptionApiTest extends TestCase
 
     private function superAdmin(): SuperAdmin
     {
-        return SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => fake()->unique()->safeEmail(),
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+        return $superAdmin;
     }
 }
 

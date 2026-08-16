@@ -77,8 +77,9 @@ class PlatformUserController extends Controller
         $user = SuperAdmin::query()->create([
             'name' => $validated['name'],
             'email' => mb_strtolower($validated['email']),
-            'password_hash' => Hash::make($validated['password']),
         ]);
+        // #4695 : password_hash hors $fillable — assignation explicite.
+        $user->forceFill(['password_hash' => Hash::make($validated['password'])])->save();
         // Issue #3597 : status non mass-assignable — assignation explicite.
         $user->status = 'active';
         $user->save();

@@ -40,11 +40,11 @@ class PlatformCrmPipelineApiTest extends TestCase
 
     public function test_pipeline_exposes_status_source_note_and_conversion_summary(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         // Pending lead captured via the self-service trial signup form,
         // with a structured source in signup_payload (new format).

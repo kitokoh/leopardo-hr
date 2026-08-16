@@ -39,11 +39,11 @@ class PlatformCompanyProvisioningTest extends TestCase
             'is_active' => true,
         ]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $response = $this
             ->actingAs($superAdmin, 'super_admin_api')
@@ -109,11 +109,11 @@ class PlatformCompanyProvisioningTest extends TestCase
             'is_active' => true,
         ]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin-mobile@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $response = $this
             ->actingAs($superAdmin, 'super_admin_api')
@@ -153,11 +153,11 @@ class PlatformCompanyProvisioningTest extends TestCase
 
     public function test_super_admin_can_read_country_defaults_for_mobile_forms(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'country-admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $response = $this
             ->actingAs($superAdmin, 'super_admin_api')
@@ -202,11 +202,11 @@ class PlatformCompanyProvisioningTest extends TestCase
             'is_active' => true,
         ]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin-schedule@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $response = $this
             ->actingAs($superAdmin, 'super_admin_api')
@@ -242,11 +242,11 @@ class PlatformCompanyProvisioningTest extends TestCase
 
     public function test_super_admin_api_login_returns_token(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $response = $this->postJson('/api/v1/platform/auth/login', [
             'email' => $superAdmin->email,

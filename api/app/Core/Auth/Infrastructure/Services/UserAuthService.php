@@ -27,9 +27,10 @@ readonly class UserAuthService
             'last_name' => $lastName,
             'email' => $email,
             'phone' => $phone,
-            'password_hash' => Hash::make($password),
             'provider' => 'email',
         ]);
+        // #4695 : password_hash hors $fillable — assignation explicite.
+        $user->forceFill(['password_hash' => Hash::make($password)])->save();
 
         return $this->issueToken($user, 'Mobile App');
     }
