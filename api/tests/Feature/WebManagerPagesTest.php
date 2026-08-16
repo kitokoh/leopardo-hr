@@ -139,16 +139,18 @@ class WebManagerPagesTest extends TestCase
         ]);
 
         $outsider = Employee::withoutGlobalScopes()->create([
-            'company_id' => $otherCompany->id,
             'first_name' => 'Other',
             'last_name' => 'User',
             'email' => 'other@company.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
             'salary_type' => 'daily',
-            'salary_base' => 800,
         ]);
+            $outsider->company_id = $otherCompany->id;
+            $outsider->role = 'employee';
+            $outsider->status = 'active';
+            $outsider->salary_base = 800;
+            $outsider->save();
+
 
         $response = $this->actingAs($manager, 'web')->get("/employees/{$outsider->id}");
 

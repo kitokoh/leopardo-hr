@@ -10,7 +10,7 @@
 
 ## Problème
 
-1. **Tests** : `Employee::query()->create(['company_id' => …, 'role' => 'manager', …])` — les champs sensibles ne sont pas fillable → silencieusement abandonnés. 287 sites transformables (279 assign / 36 bare / 15 return / 5 nested array_merge), plus `firstOrCreate` (values array) dans les seeders.
+1. **Tests** : `Employee::query()->create(['company_id' => …, 'role' => 'manager', …])` — les champs sensibles ne sont pas fillable → silencieusement abandonnés. 294 sites transformables (287 create/firstOrCreate classiques + 7 `::withoutGlobalScopes()->create`), plus `firstOrCreate` (values array) dans les seeders.
 2. **Code applicatif — 3 sites réels** :
    - `VerifyTrialSignup::verify()` (ligne 283) : le manager de trial créé avec `company_id`/`role`/`manager_role`/`status`/`salary_base` dans `create()` → **tous abandonnés** → le manager de trial n'appartient à aucune compagnie et n'a aucun rôle (régression #3677 jamais corrigée sur ce chemin — cause racine probable des 500 trial #3879/#3259).
    - `PartnerDashboardController::userFromAuth()` : `User::firstOrCreate(…, ['status' => 'active'])` → status abandonné à la création.
@@ -37,6 +37,6 @@
 ## Validation locale
 
 - `php -l` : 83 fichiers modifiés — 0 erreur de syntaxe.
-- Scan de régression : 0 site `create([...])` restant avec clés sensibles dans `api/tests` (287 sites transformés + 5 `forceCreate`).
+- Scan de régression (fillable-aware) : 0 site restant avec clés sensibles dans `api/tests` (294 sites transformés + 5 `forceCreate`).
 - `SensitiveFillableGuardTest` : aucun `$fillable` modifié (garde intacte).
 - CI : Tests + Coverage + PHPStan strict requis pour le merge (branch protection main).

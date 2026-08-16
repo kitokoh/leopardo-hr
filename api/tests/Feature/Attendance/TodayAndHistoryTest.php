@@ -251,14 +251,16 @@ class TodayAndHistoryTest extends TestCase
 
 
         $employeeB = Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $employeeB->company_id = $companyB->id;
+            $employeeB->role = 'employee';
+            $employeeB->status = 'active';
+            $employeeB->save();
+
 
         app()->instance('current_company', $companyB);
         AttendanceLog::query()->create([

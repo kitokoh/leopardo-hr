@@ -74,13 +74,15 @@ class EmployeesRbacTest extends TestCase
             $employeeA->save();
 
 
-        Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
+        $createdEmployee = Employee::withoutGlobalScopes()->create([
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $companyB->id;
+            $createdEmployee->role = 'employee';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -462,13 +464,15 @@ class EmployeesRbacTest extends TestCase
             $managerA->save();
 
 
-        Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
+        $createdEmployee = Employee::withoutGlobalScopes()->create([
             'email' => 'shared@tenant.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $companyB->id;
+            $createdEmployee->role = 'employee';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $token = $managerA->createToken('tests')->plainTextToken;
 
@@ -522,14 +526,16 @@ class EmployeesRbacTest extends TestCase
             $managerA->save();
 
 
-        Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
+        $createdEmployee = Employee::withoutGlobalScopes()->create([
             'matricule' => 'EMP-001',
             'email' => 'other@tenant.test',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $createdEmployee->company_id = $companyB->id;
+            $createdEmployee->role = 'employee';
+            $createdEmployee->status = 'active';
+            $createdEmployee->save();
+
 
         $token = $managerA->createToken('tests')->plainTextToken;
 

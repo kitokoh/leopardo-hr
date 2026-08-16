@@ -67,16 +67,18 @@ class OnboardingQrControllerTest extends TestCase
 
 
         $externalEmployee = Employee::withoutGlobalScopes()->create([
-            'company_id' => $companyB->id,
             'first_name' => 'Amina',
             'last_name' => 'Belaid',
             'email' => 'amina.personal@example.test',
             'personal_email' => 'amina.personal@example.test',
             'personal_phone' => '+213600000111',
             'password_hash' => Hash::make('password123'),
-            'role' => 'employee',
-            'status' => 'active',
         ]);
+            $externalEmployee->company_id = $companyB->id;
+            $externalEmployee->role = 'employee';
+            $externalEmployee->status = 'active';
+            $externalEmployee->save();
+
 
         $qr = $this
             ->actingAs($externalEmployee, 'sanctum')
