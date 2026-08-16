@@ -11,8 +11,8 @@
             <component :is="report.icon" class="h-5 w-5 text-indigo-600" />
           </div>
           <div class="flex-1">
-            <h3 class="text-sm font-semibold text-gray-900">{{ report.title }}</h3>
-            <p class="mt-1 text-xs text-gray-500">{{ report.description }}</p>
+            <h3 class="text-sm font-semibold text-gray-900">{{ $t(report.title) }}</h3>
+            <p class="mt-1 text-xs text-gray-500">{{ $t(report.description) }}</p>
           </div>
         </div>
         <div class="mt-4">
@@ -33,7 +33,7 @@
               :disabled="report.downloading"
               @click="downloadReport(report)"
             >
-              {{ report.downloading ? 'Téléchargement…' : 'Télécharger' }}
+              {{ report.downloading ? $t('exports.downloading') : $t('exports.download') }}
             </button>
           </div>
         </div>
@@ -42,27 +42,27 @@
 
     <div class="card">
       <div class="border-b border-gray-200 px-6 py-4">
-        <h2 class="text-lg font-semibold text-gray-900">Rapports RH personnalises</h2>
-        <p class="text-sm text-gray-500">Generez des rapports avances avec filtres de periode et departement.</p>
+        <h2 class="text-lg font-semibold text-gray-900">{{ $t('exports.hrReportsTitle') }}</h2>
+        <p class="text-sm text-gray-500">{{ $t('exports.hrReportsSub') }}</p>
       </div>
       <div class="p-6">
         <form class="grid grid-cols-1 gap-4 md:grid-cols-4" @submit.prevent="generateHrReport">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Type de rapport</label>
+            <label class="block text-sm font-medium text-gray-700">{{ $t('exports.reportType') }}</label>
             <select v-model="hrReport.type" class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500">
-              <option value="headcount">Effectifs</option>
-              <option value="turnover">Turnover</option>
-              <option value="absenteeism">Absenteisme</option>
-              <option value="payroll_summary">Resume paie</option>
-              <option value="training_progress">Formations</option>
+              <option value="headcount">{{ $t('exports.typeHeadcount') }}</option>
+              <option value="turnover">{{ $t('exports.typeTurnover') }}</option>
+              <option value="absenteeism">{{ $t('exports.typeAbsenteeism') }}</option>
+              <option value="payroll_summary">{{ $t('exports.typePayrollSummary') }}</option>
+              <option value="training_progress">{{ $t('exports.typeTrainingProgress') }}</option>
             </select>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Date debut</label>
+            <label class="block text-sm font-medium text-gray-700">{{ $t('exports.startDate') }}</label>
             <input v-model="hrReport.start_date" type="date" class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Date fin</label>
+            <label class="block text-sm font-medium text-gray-700">{{ $t('exports.endDate') }}</label>
             <input v-model="hrReport.end_date" type="date" class="mt-1 block w-full rounded-md border-gray-300 text-sm focus:border-indigo-500 focus:ring-indigo-500" />
           </div>
           <div class="flex items-end">
@@ -71,7 +71,7 @@
               class="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
               :disabled="generatingReport"
             >
-              {{ generatingReport ? 'Generation...' : 'Generer' }}
+              {{ generatingReport ? $t('exports.generating') : $t('exports.generate') }}
             </button>
           </div>
         </form>
@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import {
   UsersIcon, DocumentTextIcon, CurrencyEuroIcon,
   AcademicCapIcon, TruckIcon, ClipboardDocumentListIcon
@@ -163,12 +163,12 @@ const reportTypes = reactive([
   // employee/manager) — le super-admin n'a pas de contrat equivalent dans le
   // cockpit (/admin/*). Marques `clientSpace` : la carte affiche un etat
   // honnete au lieu d'un bouton qui echoue en 401.
-  { key: 'employees', title: 'Employes', description: 'Liste complete avec postes, contrats, departements.', icon: UsersIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/employees', clientSpace: true },
-  { key: 'attendance', title: 'Pointage', description: 'Registre de presence avec heures et anomalies.', icon: ClipboardDocumentListIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/attendance', clientSpace: true },
-  { key: 'payslips', title: 'Bulletins de paie', description: 'Export mensuel bulletins avec details salaire.', icon: CurrencyEuroIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/pay-slips', clientSpace: true },
-  { key: 'absences', title: 'Absences & conges', description: 'Historique demandes et soldes par employe.', icon: DocumentTextIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/absences', clientSpace: true },
-  { key: 'training', title: 'Formations', description: 'Catalogue, sessions, inscriptions et progression.', icon: AcademicCapIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/training', clientSpace: true },
-  { key: 'vehicles', title: 'Vehicules', description: 'Flotte, kilometrage, maintenances.', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/vehicles', clientSpace: true },
+  { key: 'employees', title: 'exports.reportEmployees', description: 'exports.reportEmployeesDesc', icon: UsersIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/employees', clientSpace: true },
+  { key: 'attendance', title: 'exports.reportAttendance', description: 'exports.reportAttendanceDesc', icon: ClipboardDocumentListIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/attendance', clientSpace: true },
+  { key: 'payslips', title: 'exports.reportPayslips', description: 'exports.reportPayslipsDesc', icon: CurrencyEuroIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/pay-slips', clientSpace: true },
+  { key: 'absences', title: 'exports.reportAbsences', description: 'exports.reportAbsencesDesc', icon: DocumentTextIcon, format: 'csv', supportsXlsx: true, downloading: false, endpoint: '/v1/export/absences', clientSpace: true },
+  { key: 'training', title: 'exports.reportTraining', description: 'exports.reportTrainingDesc', icon: AcademicCapIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/training', clientSpace: true },
+  { key: 'vehicles', title: 'exports.reportVehicles', description: 'exports.reportVehiclesDesc', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/v1/export/vehicles', clientSpace: true },
 ])
 
 const historyColumns = [
@@ -179,11 +179,12 @@ const historyColumns = [
   { key: 'status', label: 'Statut', sortable: true },
 ]
 
-const exportStatusMap = {
-  completed: { label: 'Terminé', color: 'green' },
-  processing: { label: 'En cours', color: 'yellow' },
-  failed: { label: 'Échec', color: 'red' },
-}
+// #4206 : libellés localisés — computed pour rester réactif à la locale.
+const exportStatusMap = computed(() => ({
+  completed: { label: t('exports.statusDone'), color: 'green' },
+  processing: { label: t('exports.statusInProgress'), color: 'yellow' },
+  failed: { label: t('exports.statusFailed'), color: 'red' },
+}))
 
 async function downloadReport(report) {
   report.downloading = true
