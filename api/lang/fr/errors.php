@@ -75,11 +75,26 @@ return [
     'PREFERENCE_UPDATED' => 'Préférence mise à jour.',
     'CONFIG_UPDATED' => 'Configuration mise à jour.',
 
-    // Payroll — codes stables (#4310)
+    'PAYOUT_REQUEST_REFUSED' => 'Demande de paiement refusee.',
+    'PAYOUT_REQUEST_FAILED' => 'Une erreur est survenue lors de la demande de paiement.',
+    'COMPANY_MODE_FORCED' => 'Votre entreprise impose un mode de pointage. Vous ne pouvez pas le modifier.',
+    'GPS_CONSENT_REQUIRED' => 'Le consentement GPS est obligatoire pour activer le pointage automatique.',
+    'PAYMENT_BATCH_RUN_INVALID' => 'Le cycle de paie doit etre calcule ou valide avant de creer un lot de paiement.',
+    'PAYMENT_BATCH_CREATED' => 'Paiement en masse declare. Les confirmations employes et documents sont traites en arriere-plan.',
+    'ARCHIVED_DOCUMENT_NOT_FOUND' => 'Document archivé introuvable.',
+    'TOO_MANY_PENDING_REQUESTS' => 'Vous avez deja 3 demandes en attente.',
+    'SAML_RESPONSE_MISSING' => 'SAMLResponse manquant.',
+    'SAML_ASSERTION_RECEIVED' => 'SAML assertion recue.',
+    'OIDC_CODE_MISSING' => 'Code ou id_token manquant.',
+    'OIDC_LOGIN_SUCCESS' => 'Connexion OIDC réussie.',
+    'TENANT_COUNTRY_REQUIRED' => 'Le pays légal du tenant est obligatoire et doit être supporté avant cette opération.',
+    'TENANT_COUNTRY_INVALID' => 'Pays du tenant absent ou non supporté (:country).',
+    'FILE_TOO_LARGE' => 'Le fichier envoyé dépasse la taille maximale autorisée.',
+    'CONTRACT_ACTIVATION_INVALID_STATE' => 'Seuls les contrats au statut brouillon peuvent être activés.',
+    'CONTRACT_SUSPENSION_INVALID_STATE' => 'Seuls les contrats actifs peuvent être suspendus.',
+    'CONTRACT_TERMINATION_INVALID_STATE' => 'Le contrat doit être actif ou suspendu pour être rompu.',
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
-
-    // Payroll — code dédié lock avant validation (#4310)
     'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.',
 ];

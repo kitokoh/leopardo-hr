@@ -60,11 +60,26 @@ return [
     'PREFERENCE_UPDATED' => 'تم تحديث التفضيل.',
     'CONFIG_UPDATED' => 'تم تحديث الإعدادات.',
 
-    // Payroll — codes stables (#4310)
+    'PAYOUT_REQUEST_REFUSED' => 'تم رفض طلب الدفع.',
+    'PAYOUT_REQUEST_FAILED' => 'حدث خطأ أثناء طلب الدفع.',
+    'COMPANY_MODE_FORCED' => 'تفرض شركتك وضع تسجيل حضور ولا يمكنك تغييره.',
+    'GPS_CONSENT_REQUIRED' => 'موافقة GPS إلزامية لتفعيل تسجيل الحضور التلقائي.',
+    'PAYMENT_BATCH_RUN_INVALID' => 'يجب حساب دورة الرواتب أو التحقق منها قبل إنشاء دفعة.',
+    'PAYMENT_BATCH_CREATED' => 'تم الإعلان عن الدفعة. تتم معالجة تأكيدات الموظفين والمستندات في الخلفية.',
+    'ARCHIVED_DOCUMENT_NOT_FOUND' => 'المستند المؤرشف غير موجود.',
+    'TOO_MANY_PENDING_REQUESTS' => 'لديك بالفعل 3 طلبات معلقة.',
+    'SAML_RESPONSE_MISSING' => 'SAMLResponse مفقود.',
+    'SAML_ASSERTION_RECEIVED' => 'تم استلام تأكيد SAML.',
+    'OIDC_CODE_MISSING' => 'الرمز أو id_token مفقود.',
+    'OIDC_LOGIN_SUCCESS' => 'تم تسجيل الدخول عبر OIDC بنجاح.',
+    'TENANT_COUNTRY_REQUIRED' => 'البلد القانوني للمستأجر إلزامي ويجب أن يكون مدعوماً قبل هذه العملية.',
+    'TENANT_COUNTRY_INVALID' => 'بلد المستأجر مفقود أو غير مدعوم (:country).',
+    'FILE_TOO_LARGE' => 'يتجاوز الملف المرفوع الحد الأقصى المسموح به.',
+    'CONTRACT_ACTIVATION_INVALID_STATE' => 'يمكن تفعيل العقود المسودة فقط.',
+    'CONTRACT_SUSPENSION_INVALID_STATE' => 'يمكن تعليق العقود النشطة فقط.',
+    'CONTRACT_TERMINATION_INVALID_STATE' => 'يجب أن يكون العقد نشطاً أو معلقاً لإنهائه.',
     'PAYROLL_ALREADY_VALIDATED' => 'تم التحقق من هذه دفعة الأجور بالفعل ولا يمكن تعديلها.',
     'PAYROLL_RUN_LOCKED' => 'دفعة الأجور هذه مقفلة (إقفال محاسبي) ولا يمكن تعديلها.',
     'PAYROLL_RUN_NOT_LOCKED' => 'يمكن تسوية دفعة أجور مقفلة فقط.',
-
-    // Payroll — code dédié lock avant validation (#4310)
     'PAYROLL_RUN_NOT_VALIDATED' => 'يجب التحقق من دفعة الأجور (خطوة الموارد البشرية) قبل الإقفال المحاسبي.',
 ];

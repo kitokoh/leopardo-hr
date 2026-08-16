@@ -583,7 +583,9 @@ class _SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFmt = DateFormat('dd/MM/yyyy', deviceIntlDateLocale);
+    // #4337 : pattern locale-aware (yMd suit la locale active) — le
+    // dd/MM/yyyy en dur ignorait la préférence utilisateur (résiduel #4197).
+    final dateFmt = DateFormat.yMd(deviceIntlDateLocale);
     final timeFmt = DateFormat('HH:mm');
 
     return Container(
