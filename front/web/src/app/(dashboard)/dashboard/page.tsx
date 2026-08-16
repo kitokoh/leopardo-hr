@@ -647,7 +647,7 @@ export default function DashboardPage() {
                   liens doublons/disablés feature-gated — sélecteur scopé). */}
               <div data-testid="quick-actions" className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Users, label: 'Nouvel employé', color: 'bg-security', href: '/employees' },
+                  { icon: Users, label: 'Employés', color: 'bg-security', href: '/employees' },
                   { icon: Calendar, label: 'Congés', color: 'bg-rh', href: '/absences' },
                   { icon: TrendingUp, label: 'Rapports', color: 'bg-ia', href: '/reports' },
                   { icon: Download, label: 'Export', color: 'bg-finance', href: '/reports' },
