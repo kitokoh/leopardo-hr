@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(admin): UsersView — placeholders `:active`/`:newToday` interpellés (Closes #4618).** La clé `users.page.summary` promettait `:count utilisateur(s) - :active actif(s) - :newToday nouveau(x)` mais l'API `/platform/users` ne fournit que la pagination → le sous-titre affichait les tokens bruts. Clé simplifiée ×4 locales (`:count utilisateur(s)`…) ; `users.toast.bulkDone` n'avait pas de `:count` dans le catalogue alors que le code le remplaçait → décompte ajouté ×4.
 - **fix(web): formulaire /demo — labels associés aux champs (Closes #4613).** 7 champs (name/email/company/phone/employees/preferredDate/message) sans `id` ni `htmlFor` → lecteurs d'écran et axe/lighthouse « form elements must have labels ». `id` + `htmlFor` ajoutés (pattern du formulaire /contact).
 - **fix(web): Navbar — aria-haspopup/aria-controls sur le dropdown desktop (Closes #4614).** Le bouton sous-menu desktop n'avait qu'`aria-expanded` (#4510 ne couvrait que le toggle mobile) → lecteur d'écran ne signalait pas le menu. `aria-haspopup="true"` + `aria-controls` vers le panneau (`id` passé à DropdownMenu).
 - **fix(web): /changelog — contenu des releases localisé ×4 (getChangelogReleases(locale), fallback FR) (Closes #4610).** Les 4 locales recevaient les titres/bullets FR alors que le sitemap/hreflang annoncent des variantes en/tr/ar.
