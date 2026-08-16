@@ -15,7 +15,7 @@ import { planNameToCheckoutKey } from '../PricingSection'
 const CHECKOUT_PLANS = {
   free: { label: 'Free', monthly: 0, annual: 0 },
   pilot: { label: 'Pilot', monthly: 29, annual: 24 },
-  operations: { label: 'Operations', monthly: 99, annual: 79 },
+  operations: { label: 'Operations', monthly: 79, annual: 66 },
   enterprise: { label: 'Enterprise', monthly: null, annual: null },
 } as const
 
