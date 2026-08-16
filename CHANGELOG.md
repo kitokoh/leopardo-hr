@@ -365,6 +365,8 @@
 - **fix(web): plan Enterprise harmonisé « Sur devis » — checkout quote-only (Closes #3328).** Le checkout affichait 299/239 € et 250+ employés alors que le pricing annonce « Sur devis » / 500+ employés. Enterprise devient quote-only : accès direct au checkout → redirection `/contact?topic=enterprise` (conforme AGENTS.md « Enterprise sur devis »), limites alignées 500+.
 - **fix(api): exists: rules tenant-scopes dans HrController/ContractController (Closes #3599).** `exists:departments,id` etc. acceptaient des IDs d'autres tenants (IDOR cross-tenant). Remplacés par `Rule::exists('table','id')->where('company_id', \$actor->company_id)` sur department_id, position_id, site_id, schedule_id (HrController store+update) + employee_id, department_id, position_id (ContractController store+update).
 
+### Changed
+- **CI** (#4343) : distribution mobile `hr` — `FIREBASE_APP_ID_HR` préféré (fallback générique conservé) ; (#4345) : chemins i18n-enterprise non redondants.
 ### Added
 - **Tests** (#4320) : `ApiTokenControllerTest` (×4 : create/list/delete RBAC 403/unauthenticated) + `GrowthAdminControllerTest` (×5 : super-admin list/rate/validation/RBAC).
 ### Fixed
