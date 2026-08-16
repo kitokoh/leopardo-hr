@@ -1043,5 +1043,18 @@
     "loadError": "Unable to sync client requests.",
     "toastApproved": "Request approved. Provisioning started.",
     "toastRejected": "Request rejected."
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection.",
+    "unexpectedError": "An unexpected error occurred.",
+    "serverErrorRetry": "Try again later."
   }
 }

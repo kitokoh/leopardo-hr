@@ -1043,5 +1043,18 @@
     "loadError": "Impossible de synchroniser les demandes clients.",
     "toastApproved": "Demande approuvée. Provisionnement lancé.",
     "toastRejected": "Demande rejetée."
+  },
+  "api": {
+    "sessionExpired": "Session expirée. Reconnexion en cours...",
+    "accessDenied": "Accès refusé sur :endpoint. Permissions insuffisantes.",
+    "notFound": "Ressource introuvable : :endpoint",
+    "tooManyRequests": "Trop de requêtes. Veuillez patienter quelques secondes.",
+    "serverError": "Erreur serveur sur :endpoint. :detail",
+    "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
+    "genericError": "Erreur :status sur :endpoint.",
+    "invalidData": "Données invalides.",
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet.",
+    "unexpectedError": "Une erreur inattendue est survenue.",
+    "serverErrorRetry": "Réessayez plus tard."
   }
 }
