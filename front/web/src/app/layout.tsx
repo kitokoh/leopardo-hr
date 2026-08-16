@@ -38,8 +38,33 @@ function ogLocale(locale: AppLocale): string {
   return map[locale];
 }
 
+// #4300 : metadata racine localisées selon la locale SSR (?lang= / Accept-Language).
+const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> = {
+  fr: {
+    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
+    description:
+      'Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.',
+  },
+  en: {
+    title: 'Leopardo RH - Multilingual HR SaaS for field teams',
+    description:
+      'Leopardo RH centralizes attendance, payroll, leave, onboarding, notifications and field operations across web, mobile and kiosk.',
+  },
+  tr: {
+    title: 'Leopardo RH - Saha ekipleri icin cok dilli IK SaaS',
+    description:
+      'Leopardo RH; yoklama, maaş, izin, onboarding, bildirim ve saha operasyonlarını web, mobil ve kiosk üzerinden merkezileştirir.',
+  },
+  ar: {
+    title: 'Leopardo RH - نظام موارد بشرية سحابي متعدد اللغات للفرق الميدانية',
+    description:
+      'يجمع Leopardo RH الحضور والرواتب والإجازات والتأهيل والإشعارات والعمليات الميدانية عبر الويب والجوال وجهاز الحضور.',
+  },
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
+  const rootMeta = ROOT_METADATA[ssrLocale] ?? ROOT_METADATA.fr;
 
   // #4405 : title/description localisés (en/tr/ar) — avant : FR en dur pour
   // toutes les locales (catalogue pageMetadataI18n jamais appliqué à /).
@@ -214,7 +239,7 @@ export default async function RootLayout({
         >
           {t(ssrLang, 'a11y.skip_to_content', 'Aller au contenu principal')}
         </a>
-        <OrganizationJsonLd />
+        <OrganizationJsonLd locale={ssrLang} />
         <DarkModeProvider>
           <PWAProvider>
             <LocaleSync />

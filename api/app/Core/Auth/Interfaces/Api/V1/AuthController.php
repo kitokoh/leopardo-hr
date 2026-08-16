@@ -194,7 +194,7 @@ class AuthController extends Controller
 
             return new JsonResponse([
                 'error' => 'GOOGLE_AUTH_FAILED',
-                'message' => 'Authentification Google indisponible.',
+                'message' => __('errors.GOOGLE_AUTH_FAILED'),
             ], 422);
         }
 
@@ -266,7 +266,7 @@ class AuthController extends Controller
 
             return new JsonResponse([
                 'error' => 'GOOGLE_TOKEN_INVALID',
-                'message' => 'Le jeton Google est invalide ou expiré.',
+                'message' => __('errors.GOOGLE_TOKEN_INVALID'),
             ], 422);
         }
 
@@ -274,7 +274,7 @@ class AuthController extends Controller
         $employee = Employee::withoutGlobalScopes()->where('email', $googleUser->getEmail())->first();
 
         if (! $employee) {
-            return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => 'No account found for this Google account.'], 401);
+            return new JsonResponse(['error' => 'EMPLOYEE_NOT_FOUND', 'message' => __('errors.GOOGLE_ACCOUNT_NOT_FOUND')], 401);
         }
 
         // Sécurité #2630 : statut employé + société (mêmes gardes que le login classique).

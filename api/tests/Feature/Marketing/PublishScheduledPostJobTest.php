@@ -139,4 +139,29 @@ class PublishScheduledPostJobTest extends TestCase
 
         Http::assertNothingSent();
     }
+
+    public function test_failed_handler_marks_post_as_failed(): void
+    {
+        // #4399 — un échec définitif ne doit pas laisser le post « scheduled ».
+        $company = Company::factory()->create();
+        $account = $this->makeAccount($company->id);
+
+        $post = SocialPost::withoutGlobalScopes()->create([
+            'company_id' => $company->id,
+            'social_account_id' => $account->id,
+            'content' => 'Post qui echoue',
+            'target_platforms' => ['linkedin'],
+            'status' => SocialPost::STATUS_SCHEDULED,
+            'scheduled_at' => Carbon::now()->subMinutes(5),
+        ]);
+
+        $job = new PublishScheduledPostJob($post->id);
+        $job->failed(new \RuntimeException('Ayrshare down'));
+
+        $this->assertSame(
+            SocialPost::STATUS_FAILED,
+            SocialPost::withoutGlobalScopes()->find($post->id)->status,
+            'Le post doit passer au statut failed (jamais bloqué en scheduled).'
+        );
+    }
 }

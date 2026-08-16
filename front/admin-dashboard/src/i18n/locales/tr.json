@@ -158,6 +158,64 @@
     "activateClientNow": "Musteriyi hemen etkinlestir",
     "activateClientHint": "Aksi halde musteri deneme modunda kalir."
   },
+  "subscriptions": {
+    "title": "Abonelikler",
+    "subtitle": "Süper admin kokpiti için paketler, MRR ve müşteri sözleşmeleri.",
+    "refresh": "Yenile",
+    "retry": "Tekrar Dene",
+    "unlimited": "Sınırsız",
+    "employees": "çalışan",
+    "trialDays": "deneme",
+    "public": "Herkese Açık",
+    "archived": "Arşiv",
+    "perMonth": "/ ay",
+    "billedAnnually": "yıllık faturalanır",
+    "loadError": "Abonelikler yüklenirken hata oluştu.",
+    "noPlan": "Plansız",
+    "manage": "Yönet",
+    "noRisk": "Acil risk tespit edilmedi",
+    "catalogTitle": "Teklif Kataloğu",
+    "catalogSub": "Kotalar ve özellikler için API kaynağı.",
+    "healthTitle": "Ticari Sağlık",
+    "retentionTitle": "Tutma Öncelikleri",
+    "kpi": {
+      "portfolioMrr": "Portföy MRR",
+      "activeSubscriptions": "Aktif Abonelikler",
+      "pastDue": "Gecikmiş Ödemeler",
+      "totalOverdue": "Toplam Gecikmiş",
+      "arr": "Tahmini ARR",
+      "collected30d": "30g Tahsilat",
+      "totalSubscribers": "Toplam Abone",
+      "trials": "Denemeler"
+    },
+    "risk": {
+      "high": "yüksek risk",
+      "medium": "orta risk",
+      "low": "düşük risk"
+    },
+    "features": {
+      "rh": "İK",
+      "finance": "Finans",
+      "ai": "Leo IA",
+      "cameras": "Video",
+      "tracking": "Takip",
+      "planning": "Planlama",
+      "training": "Eğitimler",
+      "cabinet": "Belgeler",
+      "biometric": "Biyometri",
+      "tasks": "Görevler",
+      "advanced_reports": "Gelişmiş raporlar",
+      "excel_export": "Excel dışa aktarma",
+      "bank_export": "Banka dışa aktarma",
+      "billing_auto": "Otomatik faturalama",
+      "multi_managers": "Çoklu yönetici",
+      "photo_attendance": "Fotoğraflı yoklama",
+      "api_public": "Genel API",
+      "evaluations": "Değerlendirmeler",
+      "schema_isolation": "Şema izolasyonu"
+    },
+    "trialUnit": "g"
+  },
   "platform_login": {
     "submitting": "Giris yapiliyor...",
     "subtitle": "Platform yonetimine ayrilmis mobil kokpit.",
@@ -608,7 +666,8 @@
       "companyTooLong": "Şirket adı çok uzun",
       "employeesRequired": "Bir ekip boyutu seçin",
       "emailInvalid": "Geçersiz e-posta",
-      "emailTooLong": "E-posta çok uzun"
+      "emailTooLong": "E-posta çok uzun",
+      "countryRequired": "Ülke zorunludur."
     },
     "pendingTitle": "Deneme talebi alındı",
     "preparingTitle": "Alanınız hazırlanıyor",
@@ -669,7 +728,9 @@
     "labelPhone": "Telefon (isteğe bağlı)",
     "copied": "Kopyalandı!",
     "labelCompany": "Şirket",
-    "copyLink": "Bağlantıyı kopyala"
+    "copyLink": "Bağlantıyı kopyala",
+    "labelCountry": "Ülke",
+    "countryPlaceholder": "Ülkenizi seçin"
   },
   "holidays": {
     "scope_national": "Ulusal",

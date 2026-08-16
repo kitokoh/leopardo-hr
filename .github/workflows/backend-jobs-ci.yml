@@ -37,6 +37,7 @@ concurrency:
 
 jobs:
   jobs-and-queues:
+    timeout-minutes: 45
     name: Jobs & Queues Contracts
     runs-on: ubuntu-latest
 
