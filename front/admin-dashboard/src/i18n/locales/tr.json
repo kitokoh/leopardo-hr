@@ -228,7 +228,9 @@
     "sim_tax": "Vergi",
     "deleted": "Dilim silindi.",
     "national_note": "ulusal kapsam — şirket istisnaları kiracı tarafında kalır",
-    "sim_social": "Katkılar (çalışan)"
+    "sim_social": "Katkılar (çalışan)",
+    "delete_confirm_title": "Bu vergi dilimi silinsin mi?",
+    "reset_confirm_title": "Vergi dilimleri sıfırlansın mı?"
   },
   "app": {
     "title": "Leopardo IK"
@@ -262,7 +264,8 @@
       "created": "Taklit oturumu oluşturuldu",
       "error": "Taklit oturumu oluşturulurken hata oluştu",
       "done": "Tamam",
-      "employee": "Bağlı çalışan #:id"
+      "employee": "Bağlı çalışan #:id",
+      "copyFailed": "Jeton otomatik kopyalanamadı. Yukarıdaki alandan manuel kopyalayın."
     },
     "bulkPanel": {
       "selectedCount": ":count secildi",
@@ -290,7 +293,8 @@
       "bulkDone": "Güncelleme tamamlandı"
     },
     "confirm": {
-      "delete": ":name kullanicisini silmek istediginizden emin misiniz?"
+      "delete": ":name kullanicisini silmek istediginizden emin misiniz?",
+      "title": "Bu kullanıcı silinsin mi?"
     },
     "page": {
       "summary": ":count kullanici - :active aktif - :newToday bugun yeni",
@@ -425,7 +429,8 @@
     "deleted": "Katkı silindi.",
     "save_error": "Katkı kaydedilemedi.",
     "title": "Ülkeye göre sosyal katkılar",
-    "delete": "Sil"
+    "delete": "Sil",
+    "delete_confirm_title": "Bu katkı silinsin mi?"
   },
   "tax_rates": {
     "history_empty": "Geçmiş kaydı yok.",
@@ -765,7 +770,9 @@
       "save_error": "Kaydederken hata oluştu.",
       "confirm_dialog": "{year} için tüm İslami tarihler onaylansın mı?",
       "title": "İslami bayramlar",
-      "label_date": "Miladi tarih"
+      "label_date": "Miladi tarih",
+      "confirm_title": "Yıl onaylansın mı?",
+      "delete_confirm_title": "Bu resmi tatil silinsin mi?"
     },
     "edit": "Düzenle",
     "saved": "Resmî tatil kaydedildi.",
@@ -813,7 +820,10 @@
     "placeholder": "Mesajınızı yazın...",
     "thinking": "Düşünüyor...",
     "error": "Üzgünüz, bir hata oluştu. Lütfen tekrar deneyin.",
-    "conversation": "Konuşma"
+    "conversation": "Konuşma",
+    "historyError": "Sohbetler yüklenemedi.",
+    "messagesError": "Mesajlar yüklenemedi.",
+    "retry": "Tekrar dene"
   },
   "navigation": {
     "dashboard": "Gösterge Paneli",
@@ -899,7 +909,10 @@
     "statusInProgress": "Devam ediyor",
     "statusFailed": "Basarisiz",
     "download": "Indir",
-    "downloading": "Indiriliyor..."
+    "downloading": "Indiriliyor...",
+    "historyClientOnly": "Dışa aktarma geçmişi müşteri alanında mevcuttur",
+    "clientSpaceNote": "Müşteri alanında mevcuttur",
+    "historyError": "Dışa aktarma geçmişi yüklenemedi."
   },
   "companyDetail": {
     "analyzing": "Musteri verileri analiz ediliyor...",
