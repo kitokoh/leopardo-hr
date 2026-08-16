@@ -99,16 +99,16 @@ class EdgeController extends Controller
         // → nœuds frais verts en surface, sync morte en silence. Hors Edge
         // (cloud/tests, PostgreSQL) le probe est inactif : pas de fichier
         // SQLite créé par effet de bord et contrat existant inchangé.
-         = true;
+        $sqliteReady = true;
         if (config('database.default') === 'sqlite') {
             try {
-                 = DB::connection('sqlite')->selectOne('SELECT 1 AS ok') !== null;
+                $sqliteReady = DB::connection('sqlite')->selectOne('SELECT 1 AS ok') !== null;
             } catch (\Throwable) {
-                 = false;
+                $sqliteReady = false;
             }
         }
 
-        if (! ) {
+        if (! $sqliteReady) {
             return response()->json([
                 'edge' => true,
                 'status' => 'degraded',

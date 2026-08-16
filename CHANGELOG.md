@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+- **fix(api): EdgeController::health — variable `$sqliteReady` restaurée (ParseError #4577).** Le merge #4577 a livré ` = true;` / `if (! )` (nom de variable avalé par une résolution de conflit) → ParseError PHP sur main. Correctif : `$sqliteReady` reconstruit, lint OK.
+
 - **fix(api): erreurs PHP sur main — littéral  retiré des 4 errors.php (#4565) +  dédupliqué sur SendTrialDripEmailJob/PublishScheduledPostJob (doublon #4296/#4399).** Le merge storm avait (1) injecté un littéral  cassant le parse PHP des 4 catalogues (régression de ma résolution de conflit sur #4441/#4444) et (2) doublé la méthode  via le merge commit 7795d9ec7 + le squash #4443. Correctif : catalogues réparés (comma rétabli), version enrichie conservée dans les 2 jobs. Validation : No syntax errors detected in Standard input code ×4 + ×2 OK.
 - **fix(web): docs/page.tsx — aria-label dupliqué retiré, tsc vert sur main (Closes #4563).** #4367 et #4480 ont corrigé indépendamment le même input (recherche docs) → merge avec double `aria-label` → TS17001 sur main (check Frontend requis rouge). Attribut dé-dupliqué ; `npx tsc --noEmit` re-vert.
 - **fix(web): canonical des guides localisé — suppression de la metadata de page statique (Closes #4509).** Les 3 pages `/guides/*` (rh-startup, checklist-paie, planning-employes) déclaraient `alternates.canonical` sans `?lang`, fusionnée par-dessus la `generateMetadata` du layout (#4201) → les variantes en/tr/ar émettaient un canonical FR alors que hreflang pointe vers `?lang=`. La metadata statique (et ses imports `SITE_URL`/`Metadata`) est retirée : les layouts par guide (`generateSEOMetadata` + `localizedCanonical`) possèdent désormais canonical + languages localisés.
