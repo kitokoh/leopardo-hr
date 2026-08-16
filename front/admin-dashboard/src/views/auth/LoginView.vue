@@ -23,7 +23,7 @@
           Platform Administration • v4.16
         </p>
         <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
-          Connectez-vous a votre espace
+          {{ t('auth.login_subtitle', 'Connectez-vous à votre espace') }}
         </p>
       </div>
 
@@ -33,7 +33,7 @@
             <div class="space-y-5">
               <FormField
                 id="email"
-                label="Adresse email"
+                :label="t('auth.email_label', 'Adresse email')"
                 required
                 :error="fieldErrors.email"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -53,14 +53,14 @@
                     :aria-invalid="ariaInvalid"
                     :aria-describedby="describedBy"
                     class="block w-full rounded-2xl border-0 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl py-4 pl-12 pr-4 text-white ring-1 ring-inset ring-white/10 placeholder:text-slate-600 focus:ring-2 focus:ring-inset focus:ring-brand-500 text-sm font-bold transition-all duration-300 outline-none"
-                    placeholder="admin@leopardo-rh.com"
+                    :placeholder="t('auth.login_placeholder_email', 'admin@leopardo-rh.com')"
                   />
                 </div>
               </FormField>
 
               <FormField
                 id="password"
-                label="Clé d'Accès"
+                :label="t('auth.access_key_label', 'Clé d\'Accès')"
                 required
                 :error="fieldErrors.password"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -96,7 +96,7 @@
               <FormField
                 v-if="requiresTwoFactor"
                 id="two-factor-code"
-                label="Code 2FA"
+                :label="t('auth.two_fa_label', 'Code 2FA')"
                 required
                 :error="fieldErrors.twoFactorCode"
                 v-slot="{ ariaInvalid, describedBy }"
@@ -126,7 +126,7 @@
                   class="h-4 w-4 rounded border-white/10 bg-white/5 dark:bg-slate-900/5 backdrop-blur-xl text-brand-600 focus:ring-brand-500 transition-all duration-300"
                 />
                 <label for="remember-me" class="ml-2 block text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  Se souvenir de moi
+                  {{ t('auth.remember_me', 'Se souvenir de moi') }}
                 </label>
               </div>
 

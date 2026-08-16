@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(admin): LoginView localisée ×4 + opt-out _skipToast anti double-toast (Closes #4711, #4713).** LoginView (super-admin) : labels/placeholders via clés auth.* (access_key_label, two_fa_label, login_submit, remember_me, login_subtitle, login_placeholder_email) ajoutées ×4 locales ; intercepteur api.js : opt-out `_skipToast` pour les vues avec état d'erreur + retry (AnalyticsView, GrowthDashboardView, ExportsView) — une seule notification par erreur.
 - **fix(ci): gardes CI — branches mortes retirées, analyze mobile strict, gate pint réel, PROD_API_URL unifié sur PROD_API_BASE_URL (Closes #4719, #4724, #4722, #4721).**
 
 - **fix(mobile/ios): leopardo_employee — UIBackgroundModes + location (Closes #4717).** La géofence iOS (Smart Attendance) promettait la position en arrière-plan (NSLocationAlwaysUsageDescription) et le code existe (geofence_service), mais UIBackgroundModes ne listait pas `location` → iOS ne délivrait pas les événements en arrière-plan. Ajout de `<string>location</string>` (flux Always).

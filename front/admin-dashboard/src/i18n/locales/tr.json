@@ -499,7 +499,13 @@
     "login": {
       "title": "Giris yap"
     },
-    "email_required": "E-posta zorunlu"
+    "email_required": "E-posta zorunlu",
+    "access_key_label": "Erişim Anahtarı",
+    "two_fa_label": "2FA Kodu",
+    "login_placeholder_email": "admin@leopardo-rh.com",
+    "login_submit": "Giriş yap",
+    "remember_me": "Beni hatırla",
+    "login_subtitle": "Çalışma alanınıza giriş yapın"
   },
   "social_contrib": {
     "ignore_caps": "Yasal tavan olmadan",
