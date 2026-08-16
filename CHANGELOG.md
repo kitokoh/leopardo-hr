@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **docs(qa): session expert SWE/QA 2026-08-16 — merge drain (~55 PRs), 11 implémentations (i18n/SEO/admin/mobile/CI), audit runtime prod, leçons.** Rapport complet : `docs/qa/QA_SESSION_2026-08-16-swe-qa-merge-drain.md`.
 - **docs(ci): CI_CD_SECRETS.md — table des secrets re-synchronisée (Closes #4627).** `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`/`VITE_WEBSOCKET_URL` étaient attribués à `deploy-web-vitrine.yml`, workflow inexistant (déploiement vitrine via intégration Cloudflare Pages ; CI = web-marketing-ci.yml). Usage réel corrigé (deploy-admin-dashboard.yml seul) + note sur le mode de déploiement vitrine.
 - **fix(ci): tests.yml — vestiges mobile morts retirés (Closes #4626).** `DEFAULT_MOBILE_COVERAGE_MIN` défini mais référencé nulle part (la couverture mobile vit dans mobile-apps-ci.yml) et le rapport CI du job notify annonçait des artefacts mobiles jamais produits. Supprimés.
 - **fix(admin): messages d'erreur de l'intercepteur API localisés ×4 (Closes #4621).** `services/api.js` affichait « Session expirée », « Accès refusé », « Trop de requêtes », « Erreur serveur », « Données invalides », « Erreur de connexion »… en FR dans toutes les locales. Namespace `api.*` ajouté aux 4 catalogues (10 clés + serverErrorRetry) ; `contextualErrorMessage` + toasts 422/réseau/inattendu passent par `translate(resolveAdminLocale(), …)` avec placeholders `:endpoint`/`:status`/`:detail`. `localized_message` backend toujours prioritaire.
