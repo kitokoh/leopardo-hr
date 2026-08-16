@@ -79,7 +79,7 @@ export default function BlogArticlePage({ params }: BlogArticlePageProps) {
 
       {post.archived && (
         <div className="mx-auto max-w-3xl px-4 pt-6">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
             ⚠️ {copy.archived}{' '}
             {{ 'fr': "Les chiffres et recommandations peuvent ne plus refléter l'état actuel du produit.", 'en': 'Figures and recommendations may no longer reflect the current state of the product.', 'tr': 'Rakamlar ve oneriler urunun guncel durumunu yansitmayabilir.', 'ar': 'قد لا تعكس الأرقام والتوصيات الحالة الحالية للمنتج.' }[locale]}
           </div>
