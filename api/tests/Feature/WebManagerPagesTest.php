@@ -139,16 +139,18 @@ class WebManagerPagesTest extends TestCase
         ]);
 
         $outsider = Employee::withoutGlobalScopes()->create([
-            'company_id' => $otherCompany->id,
             'first_name' => 'Other',
             'last_name' => 'User',
             'email' => 'other@company.test',
             'password_hash' => Hash::make('password123'),
+            'salary_type' => 'daily',
+        ]);
+        $outsider->forceFill([
+            'company_id' => $otherCompany->id,
             'role' => 'employee',
             'status' => 'active',
-            'salary_type' => 'daily',
             'salary_base' => 800,
-        ]);
+        ])->save();
 
         $response = $this->actingAs($manager, 'web')->get("/employees/{$outsider->id}");
 
@@ -172,28 +174,32 @@ class WebManagerPagesTest extends TestCase
         ]);
 
         $manager = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Manager',
             'last_name' => 'One',
             'email' => 'manager@company.test',
             'password_hash' => Hash::make('password123'),
+            'salary_type' => 'daily',
+        ]);
+        $manager->forceFill([
+            'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
-            'salary_type' => 'daily',
             'salary_base' => 800,
-        ]);
+        ])->save();
 
         $employee = Employee::query()->create([
-            'company_id' => $company->id,
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@company.test',
             'password_hash' => Hash::make('password123'),
+            'salary_type' => 'daily',
+        ]);
+        $employee->forceFill([
+            'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
-            'salary_type' => 'daily',
             'salary_base' => 800,
-        ]);
+        ])->save();
 
         return [$company, $manager, $employee];
     }

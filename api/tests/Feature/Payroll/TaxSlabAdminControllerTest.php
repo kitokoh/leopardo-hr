@@ -31,7 +31,6 @@ class TaxSlabAdminControllerTest extends TestCase
             'name' => 'Super Admin Tax Slabs',
             'email' => 'sa-tax-slabs-admin@leopardo-rh.com',
             'password_hash' => bcrypt('secret123'),
-            'role' => 'super_admin',
         ]);
         $this->superAdmin = $superAdmin;
 

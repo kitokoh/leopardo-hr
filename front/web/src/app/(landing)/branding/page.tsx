@@ -1,6 +1,7 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
+import type { AppLocale } from '@/lib/i18n';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
@@ -19,7 +20,7 @@ import {
   Type,
 } from 'lucide-react';
 
-type Lang = 'fr' | 'en' | 'tr' | 'ar';
+type Lang = AppLocale;
 const langs: Lang[] = ['fr', 'en', 'tr', 'ar'];
 
 type FeatureCopy = { title: string; desc: string; color: string };
@@ -195,48 +196,31 @@ const copy: Record<Lang, BrandingPageCopy> = {
 
 export default function BrandingPage() {
   const { isDark, toggleDarkMode } = useDarkMode();
-  const [lang, setLang] = useState<Lang>('fr');
+  // #4174 : locale globale de la vitrine (?lang= / localStorage / Navbar) —
+  // plus d'état local déconnecté du mécanisme unifié.
+  const { locale } = useVitrineLocale();
   useScrollReveal();
 
-  const t = copy[lang];
-  const features = featuresByLocale[lang];
-  const plans = plansByLocale[lang];
-  const isRtl = lang === 'ar';
+  const t = copy[locale];
+  const features = featuresByLocale[locale];
+  const plans = plansByLocale[locale];
 
   return (
     <div
       className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}
-      dir={isRtl ? 'rtl' : 'ltr'}
     >
       <Navbar isDark={isDark} onToggleDark={toggleDarkMode} />
 
       {/* Hero */}
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Lang switcher */}
-          <div className="flex justify-center gap-2 mb-8">
-            {langs.map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
-                  lang === l
-                    ? 'bg-violet-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30'
-                }`}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/[0.08] border border-violet-500/15 text-violet-700 dark:text-violet-400 text-sm font-semibold mb-6">
             <Brush className="w-3.5 h-3.5" />
             {t.badge}
           </div>
 
           <motion.h1
-            key={lang + '-hero'}
+            key={locale + '-hero'}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-6"
@@ -247,7 +231,7 @@ export default function BrandingPage() {
           </motion.h1>
 
           <motion.p
-            key={lang + '-sub'}
+            key={locale + '-sub'}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
