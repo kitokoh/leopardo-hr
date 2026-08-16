@@ -791,9 +791,6 @@
     "account": "Mon compte",
     "notFound": "Page non trouvee"
   },
-  "webhooks": {
-    "confirm_delete": "Supprimer ce webhook ?"
-  },
   "a11y": {
     "skip_to_content": "Aller au contenu principal"
   },
