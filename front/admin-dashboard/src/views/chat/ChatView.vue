@@ -128,6 +128,9 @@ import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+// #4564 : refs d'état d'erreur manquants (utilisés par le template + fetch, #4333).
+const conversationsError = ref(false)
+const messagesError = ref(false)
 const conversations = ref([])
 const activeConversation = ref(null)
 const messages = ref([])
@@ -161,7 +164,7 @@ function scrollToBottom() {
 async function fetchConversations() {
   conversationsError.value = false
   try {
-    const res = await api.get('/v1/admin/ai/conversations')
+    const res = await api.get('/admin/ai/conversations')
     conversations.value = res.data.data || res.data || []
   } catch (err) {
     // #4333 : état d'erreur visible + retry (l'intercepteur global toast déjà).
@@ -174,7 +177,7 @@ async function selectConversation(conv) {
   activeConversation.value = conv
   messagesError.value = false
   try {
-    const res = await api.get(`/v1/admin/ai/conversations/${conv.id}/messages`)
+    const res = await api.get(`/admin/ai/conversations/${conv.id}/messages`)
     messages.value = res.data.data || res.data || []
     scrollToBottom()
   } catch (err) {

@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/branding/tenant_theme.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 
 import 'features/auth/providers/auth_provider.dart';
@@ -130,6 +133,10 @@ class LeopardoMarketingApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(_routerProvider);
 
+    // Issue #4521 : locale appareil propagée aux widgets Material (les
+    // chaînes Framework/backdrop retombaient en anglais faute de delegates).
+    final locale = PlatformDispatcher.instance.locale;
+
     return MaterialApp.router(
       title: 'Leopardo Marketing',
       theme: TenantTheme.apply(ThemeData.light(), null),
@@ -138,6 +145,14 @@ class LeopardoMarketingApp extends ConsumerWidget {
       themeMode: ThemeMode.system,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

@@ -304,6 +304,43 @@ class PayrollCycleIntegrationTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_manager_employee_balance_uses_standard_data_envelope(): void
+    {
+        // Issue #4500 : employeeBalance aplatissait le payload au niveau racine
+        // ({data: {...}} + clés plates) — contrat incohérent avec /me/balance
+        // et tous les autres endpoints payroll. Forme canonique : {data: {...}}.
+        /** @var \App\Core\Tenant\Domain\Models\Company $company */
+        $company = Company::factory()->create([
+            'country' => 'DZ',
+            'currency' => 'DZD',
+            'metadata' => ['payroll' => ['pay_cycle' => 'monthly']],
+        ]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $manager */
+        $manager = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+            'salary_base' => 200000,
+        ]);
+        /** @var \App\Core\Auth\Domain\Models\Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'role' => 'employee',
+            'salary_base' => 120000,
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson("/api/v1/employees/{$employee->id}/balance");
+
+        $response->assertOk();
+        $this->assertSame(
+            ['data'],
+            array_keys($response->json()),
+            'Contrat employeeBalance : {data: {...}} uniquement, aucune clé plate au niveau racine (#4500).'
+        );
+    }
+
     public function test_balance_exposes_compliance_block(): void
     {
         // Issue #2144 — le bloc compliance (niveau de confiance paie) doit

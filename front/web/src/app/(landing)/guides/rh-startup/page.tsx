@@ -1,10 +1,4 @@
-import { SITE_URL } from '@/lib/site-url';
-import type { Metadata } from 'next';
 import { GuidePageContent } from '@/modules/vitrine/components/guides/GuidePageContent';
-
-export const metadata: Metadata = {
-  alternates: { canonical: `${SITE_URL}/guides/rh-startup` },
-};
 
 export default function GuidesPage() {
   return (

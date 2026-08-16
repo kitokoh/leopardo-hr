@@ -127,7 +127,7 @@ return [
     'PAYROLL_RUN_CANCEL_NOT_ALLOWED' => 'Payroll run cannot be cancelled in its current status.',
     'ACCOUNT_SUSPENDED_CONTACT_ADMIN' => 'Your account has been suspended. Contact your administrator.',
     'VERIFICATION_CODE_INVALID' => 'Invalid or expired verification code.',
-    'TRIAL_SPACE_CREATION_FAILED' => 'Error while creating your workspace. Please try again.', origin/main
+    'TRIAL_SPACE_CREATION_FAILED' => 'Error while creating your workspace. Please try again.',
     'CANNOT_DISABLE_SELF' => 'You cannot disable your own account.',
     'CANNOT_SUSPEND_SELF' => 'You cannot suspend your own account.',
     'MANAGER_ONLY_LINK' => 'Only a manager can link a user.',
@@ -151,5 +151,13 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
     'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Only a locked payroll run can be regularized.',
-    'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.'
+    'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.',
+    'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'A password or an email invitation is required.',
+    'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'The manager type is required.',
+    'EMPLOYEE_PRINCIPAL_MANAGER_CREATION_FORBIDDEN' => 'Only a super admin can create a principal manager.',
+    'EMPLOYEE_ROLE_CHANGE_MANAGER_ONLY' => 'Only the principal manager can change HR roles.',
+    'EMPLOYEE_PROMOTE_PRINCIPAL_FORBIDDEN' => 'Only a super admin can promote a manager to principal.',
+    'PAYROLL_RUN_COUNTRY_MISMATCH' => 'The run country must match the tenant\'s legal country (:country).',
+    'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'The year must match the year of the date.',
+    'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'The month_day must match the month and day of the date.',
 ];
