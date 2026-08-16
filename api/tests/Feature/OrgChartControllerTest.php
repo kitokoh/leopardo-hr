@@ -111,9 +111,8 @@ class OrgChartControllerTest extends TestCase
     public function test_manager_chain_returns_404_for_nonexistent_employee(): void
     {
         $company = Company::factory()->create();
-        $actor = Employee::factory()->create([
+        $actor = Employee::factory()->manager()->create([
             'company_id' => $company->id,
-            'role' => 'employee',
             'status' => 'active',
         ]);
         Sanctum::actingAs($actor);

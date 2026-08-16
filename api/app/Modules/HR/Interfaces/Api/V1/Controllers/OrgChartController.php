@@ -35,11 +35,21 @@ class OrgChartController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
+        // Issue #4497 — autorisation : un employé non-manager ne peut lister
+        // les subordonnés que de lui-même (résultat vide). Les identités +
+        // emails des collègues sont réservés aux managers, parité
+        // EmployeePolicy::view. Pour les managers à périmètre réduit
+        // (dept/superviseur), visibleToManager() borne le résultat.
+        if ($actor->id !== $employeeId && ! $actor->isManager()) {
+            abort(403);
+        }
+
         $directReports = Employee::query()
             ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id', 'email', 'status'])
             ->where('company_id', $actor->company_id)
             ->where('manager_id', $employeeId)
             ->where('status', 'active')
+            ->visibleToManager($actor)
             ->get();
 
         return response()->json(['data' => $directReports]);
@@ -49,10 +59,19 @@ class OrgChartController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
+
+        // Issue #4497 — autorisation : un employé ne peut remonter sa propre
+        // chaîne de management ; la chaîne d'autrui est réservée aux managers
+        // (et bornée à leur périmètre visibleToManager).
+        if ($actor->id !== $employeeId && ! $actor->isManager()) {
+            abort(403);
+        }
+
         $chain = [];
         $current = Employee::query()
             ->select(['id', 'company_id', 'first_name', 'last_name', 'role', 'manager_role', 'manager_id'])
             ->where('company_id', $actor->company_id)
+            ->visibleToManager($actor)
             ->find($employeeId);
 
         if (! $current) {
