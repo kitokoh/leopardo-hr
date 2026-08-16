@@ -55,13 +55,15 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
-        // Issue #4307 : role/manager_role/status/company_id/salary_base sont
-        // non mass-assignables (durcissement #3677) — les passer dans create()
+        // Issue #4496 : password_hash n'est plus mass-assignable (retiré du
+        // $fillable). Issue #4307 : role/manager_role/status/company_id/salary_base
+        // non mass-assignables (durcissement #3677). Les passer dans create()
         // les ferait silencieusement perdre (role null → TypeError
         // EmployeeResource, company_id null → hors tenant, salary_base → 0).
-        // On crée avec les clés fillable puis on pose les clés sensibles
-        // explicitement (pattern #3677/#4151) : l'acteur est déjà autorisé
-        // (policy + FormRequest).
+        // On pose explicitement après création (pattern #3677/#4151) : l'acteur
+        // est déjà autorisé (policy + FormRequest).
+        $passwordHash = (string) Arr::pull($payload, 'password_hash');
+
         $employee = Employee::query()->create(Arr::except($payload, [
             'role', 'manager_role', 'status', 'company_id', 'salary_base',
         ]));
@@ -72,6 +74,14 @@ class EmployeeService
             'status' => $payload['status'],
             'salary_base' => $payload['salary_base'] ?? 0.0,
         ])->save();
+
+        if ($passwordHash !== '') {
+            $employee->forceFill(['password_hash' => $passwordHash])->save();
+        }
+
+        if ($passwordHash !== '') {
+            $employee->forceFill(['password_hash' => $passwordHash])->save();
+        }
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
