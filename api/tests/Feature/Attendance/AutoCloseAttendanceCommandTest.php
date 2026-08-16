@@ -55,13 +55,13 @@ class AutoCloseAttendanceCommandTest extends TestCase
             'is_default' => true,
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -123,12 +123,12 @@ class AutoCloseAttendanceCommandTest extends TestCase
             ],
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@b.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

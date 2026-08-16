@@ -15,13 +15,15 @@
 
 | Secret | Used by | Purpose | Required? |
 |---|---|---|---|
-| `CLOUDFLARE_API_TOKEN` | `deploy-admin-dashboard.yml`, `deploy-web-vitrine.yml` | Déploiement Cloudflare Pages/Workers de l'admin et de la vitrine | Required for Cloudflare deploys |
-| `CLOUDFLARE_ACCOUNT_ID` | `deploy-admin-dashboard.yml`, `deploy-web-vitrine.yml` | Compte Cloudflare cible | Required for Cloudflare deploys |
+| `CLOUDFLARE_API_TOKEN` | `deploy-admin-dashboard.yml` | Déploiement Cloudflare Pages/Workers de l'admin (la vitrine est déployée via l'intégration Cloudflare Pages, pas un workflow — voir note ci-dessous) | Required for Cloudflare deploys |
+| `CLOUDFLARE_ACCOUNT_ID` | `deploy-admin-dashboard.yml` | Compte Cloudflare cible | Required for Cloudflare deploys |
 | `GOOGLE_SERVICES_JSON` | `mobile-distribute*.yml` | `google-services.json` injecté dans les builds Android (employee/manager/hr/platform_admin) | Required for mobile distribution |
-| `VITE_WEBSOCKET_URL` | `deploy-web-vitrine.yml`, `e2e-staging.yml` | URL WebSocket vitrine (probes/observabilité) | Optional (fallback) |
+| `VITE_WEBSOCKET_URL` | `deploy-admin-dashboard.yml` | URL WebSocket de l'admin (sans elle, le socket retombe sur `ws://localhost:6001` — #3392) | Optional (fallback) |
 | `FIREBASE_APP_ID` | `mobile-distribute*.yml` | Fallback générique App ID (légacy) — l'app `hr` préfère `FIREBASE_APP_ID_HR` (#4343) | Deprecated, gardé pour compat |
 | `K6_EMPLOYEE_TOKENS` / `K6_MANAGER_TOKENS` / `K6_PAYROLL_RUN_IDS` | `k6-load-smoke.yml` | Tokens/scénarios k6 des parcours authentifiés | Optional (health-only sans) |
 | `BRANCH_PROTECTION_TOKEN` | `branch-protection-guard.yml` | Lecture de la protection de branche (check cron) | Required for the guard |
+
+> **Déploiement de la vitrine** : la vitrine `front/web` est déployée via l'intégration Cloudflare Pages — aucun workflow de déploiement vitrine dédié n'existe (le workflow CI vitrine s'appelle `web-marketing-ci.yml`), donc aucun secret GitHub n'est requis pour ce déploiement.
 
 ## Secrets
 

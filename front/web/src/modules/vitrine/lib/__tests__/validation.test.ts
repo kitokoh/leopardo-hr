@@ -89,6 +89,7 @@ describe('Form Validation Schemas', () => {
         email: 'test@example.com',
         company: 'Acme Corp',
         phone: '',
+        country: 'DZ', // requis depuis #4476 (pays obligatoire côté API)
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
@@ -115,6 +116,7 @@ describe('Form Validation Schemas', () => {
         const data = {
           email,
           company: 'Acme Corp',
+          country: 'DZ', // requis depuis #4476
           agreeToTerms: true,
         };
         expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
