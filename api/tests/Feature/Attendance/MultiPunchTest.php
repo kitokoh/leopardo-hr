@@ -125,15 +125,15 @@ class MultiPunchTest extends TestCase
             'is_default' => true,
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Test',
             'last_name' => 'User',
             'schedule_id' => $schedule->id,
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

@@ -20,8 +20,8 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.leopardo.leopardo_marketing"
+        // Convention des apps Leopardo (miroir com.leopardo.rh / .employee / .manager / .platformadmin) — #4520.
+        applicationId = "com.leopardo.marketing"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -32,8 +32,8 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Parité avec les 4 autres apps : signature debug tant qu'aucun
+            // keystore release n'est provisionné (résiduel #4520).
             signingConfig = signingConfigs.getByName("debug")
         }
     }

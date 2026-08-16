@@ -42,7 +42,7 @@ class StripeWebhookController extends Controller
             $this->stripeService->handleEvent($event);
         } catch (\Throwable $e) {
             Log::error('Stripe Webhook: Error handling event', [
-                'type' => $event['type'] ?? 'unknown',
+                'type' => $event['type'],
                 'error' => $e->getMessage(),
             ]);
 

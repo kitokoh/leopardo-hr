@@ -39,13 +39,13 @@ class MobilePayloadContractTest extends TestCase
         ]);
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'matricule' => 'EMP-NORA',
             'first_name' => 'Nora',
             'last_name' => 'Ait',
             'email' => 'nora@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -140,15 +140,15 @@ class MobilePayloadContractTest extends TestCase
         ]);
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'matricule' => 'EMP-ME',
             'first_name' => 'Ahmed',
             'last_name' => 'B.',
             'email' => 'ahmed@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -214,12 +214,12 @@ class MobilePayloadContractTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Leila',
             'last_name' => 'Manager',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -227,12 +227,12 @@ class MobilePayloadContractTest extends TestCase
         ])->save();
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Sami',
             'last_name' => 'Employee',
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -308,24 +308,24 @@ class MobilePayloadContractTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Leila',
             'last_name' => 'Manager',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
             'status' => 'active',
         ])->save();
 
-        $sensitiveEmployee0 = Employee::query()->create([
+        $sensitiveEmployee0 = new Employee([
             'first_name' => 'Sami',
             'last_name' => 'Employee',
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('password123')])->save();
         $sensitiveEmployee0->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -395,13 +395,13 @@ class MobilePayloadContractTest extends TestCase
         ]);
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'matricule' => 'EMP-H',
             'first_name' => 'Hassen',
             'last_name' => 'B.',
             'email' => 'hassen@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

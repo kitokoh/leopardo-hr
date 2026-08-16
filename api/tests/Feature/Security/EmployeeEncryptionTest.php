@@ -45,9 +45,8 @@ class EmployeeEncryptionTest extends TestCase
         $bankAccount = '1234567890';
         $nationalId = '9876543210';
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'encrypted@company.test',
-            'password_hash' => Hash::make('password123'),
             'contract_type' => 'CDI',
             'contract_start' => now()->toDateString(),
             'salary_type' => 'fixed',
@@ -55,6 +54,7 @@ class EmployeeEncryptionTest extends TestCase
             'bank_account' => $bankAccount,
             'national_id' => $nationalId,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

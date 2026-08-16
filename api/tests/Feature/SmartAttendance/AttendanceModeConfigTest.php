@@ -62,26 +62,26 @@ class AttendanceModeConfigTest extends TestCase
             'is_default'               => true,
         ]);
 
-        $this->employee = Employee::query()->create([
+        $this->employee = new Employee([
             'schedule_id'   => $schedule->id,
             'email'         => 'emp@mode.test',
-            'password_hash' => Hash::make('password'),
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employee->forceFill([
             'company_id'    => $this->company->id,
             'role'          => 'employee',
             'status'        => 'active',
         ])->save();
 
-        $this->manager = Employee::query()->create([
+        $this->manager = new Employee([
             'schedule_id'   => $schedule->id,
             'email'         => 'manager@mode.test',
-            'password_hash' => Hash::make('password'),
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->manager->forceFill([
             'company_id'    => $this->company->id,
             'role'          => 'manager',
@@ -89,13 +89,13 @@ class AttendanceModeConfigTest extends TestCase
             'status'        => 'active',
         ])->save();
 
-        $this->principal = Employee::query()->create([
+        $this->principal = new Employee([
             'schedule_id'   => $schedule->id,
             'email'         => 'principal@mode.test',
-            'password_hash' => Hash::make('password'),
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
+        $principal->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->principal->forceFill([
             'company_id'    => $this->company->id,
             'role'          => 'manager',

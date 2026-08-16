@@ -45,10 +45,10 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $sensitiveEmployee2 = Employee::query()->create([
+        $sensitiveEmployee2 = new Employee([
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $sensitiveEmployee2->forceFill(['password_hash' => Hash::make('password123')])->save();
         $sensitiveEmployee2->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -83,10 +83,10 @@ class WebAuthPagesTest extends TestCase
             'status' => 'active',
         ]);
 
-        $sensitiveEmployee1 = Employee::query()->create([
+        $sensitiveEmployee1 = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $sensitiveEmployee1->forceFill(['password_hash' => Hash::make('password123')])->save();
         $sensitiveEmployee1->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -120,10 +120,10 @@ class WebAuthPagesTest extends TestCase
             'status' => 'suspended',
         ]);
 
-        $sensitiveEmployee0 = Employee::query()->create([
+        $sensitiveEmployee0 = new Employee([
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('password123')])->save();
         $sensitiveEmployee0->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
