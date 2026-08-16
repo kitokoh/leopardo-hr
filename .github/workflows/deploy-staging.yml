@@ -17,6 +17,12 @@ name: Deploy Staging - Leopardo RH
 # waiting on full CI (e.g. hotfix), workflow_dispatch still allows that
 # explicitly, same as before.
 on:
+  # #3545 (famine du pipeline) : le déclencheur push direct rend le déploiement
+  # staging indépendant du workflow_run famine-prone (runs annulés en pending
+  # sous rafale de merges → conclusion 'cancelled' → skip silencieux à 100 %).
+  # Le gate poll désormais les runs du SHA (même pattern que deploy-main.yml).
+  push:
+    branches: [main]
   workflow_run:
     workflows: ["Tests - Leopardo RH"]
     types: [completed]
@@ -48,6 +54,8 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
+            const baseRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
+
             if (context.eventName === 'workflow_dispatch') {
               core.setOutput('should_deploy', 'true');
               core.setOutput('sha', context.sha);
@@ -55,15 +63,69 @@ jobs:
               return;
             }
 
+            // #3545 : mode push — poll borné des runs « Tests - Leopardo RH »
+            // pour le SHA poussé (le workflow_run parent peut être annulé en
+            // pending sous rafale de merges). Même pattern que deploy-main.
+            if (context.eventName === 'push') {
+              const sha = context.sha;
+              core.info(`Push-triggered deploy: polling 'Tests - Leopardo RH' runs for ${sha}.`);
+              const { owner, repo } = context.repo;
+              const deadline = Date.now() + 30 * 60 * 1000;
+              const intervalMs = 60 * 1000;
+              let lastConclusion = 'unknown';
+
+              while (Date.now() < deadline) {
+                const resp = await github.rest.actions.listWorkflowRunsForRepo({
+                  owner,
+                  repo,
+                  head_sha: sha,
+                  per_page: 100,
+                });
+                const runs = resp.data.workflow_runs.filter(
+                  (r) => r.name === 'Tests - Leopardo RH' && r.head_sha === sha
+                );
+                const completed = runs.filter((r) => r.status === 'completed');
+                const running = runs.filter((r) => r.status !== 'completed');
+
+                if (completed.length > 0) {
+                  const conclusions = [...new Set(completed.map((r) => r.conclusion))];
+                  lastConclusion = conclusions.join(',');
+                  if (conclusions.every((c) => c === 'success' || c === 'skipped')) {
+                    core.setOutput('should_deploy', 'true');
+                    core.setOutput('sha', sha);
+                    core.info(`Tests - Leopardo RH succeeded for ${sha}.`);
+                    return;
+                  }
+                  if (conclusions.some((c) => c === 'failure' || c === 'timed_out')) {
+                    core.setOutput('should_deploy', 'false');
+                    core.setOutput('sha', sha);
+                    core.setOutput('skip_reason', `Tests - Leopardo RH failed (${lastConclusion})`);
+                    core.warning(`Tests - Leopardo RH failed for ${sha} (${lastConclusion}). Skipping staging deploy.`);
+                    return;
+                  }
+                }
+                if (running.length === 0 && completed.length === 0) {
+                  core.info(`No 'Tests - Leopardo RH' run for ${sha} yet — waiting (${Math.round((deadline - Date.now()) / 1000)}s left).`);
+                } else {
+                  core.info(`Waiting for 'Tests - Leopardo RH' on ${sha}: ${running.length} running, ${completed.length} completed (${lastConclusion}).`);
+                }
+                await new Promise((resolve) => setTimeout(resolve, intervalMs));
+              }
+
+              core.setOutput('should_deploy', 'false');
+              core.setOutput('sha', sha);
+              core.setOutput('skip_reason', `Timeout waiting for 'Tests - Leopardo RH' on ${sha} (last: ${lastConclusion})`);
+              core.warning(`Timeout (30 min) waiting for 'Tests - Leopardo RH' on ${sha}. Skipping staging deploy.`);
+              return;
+            }
+
+            // workflow_run : conclusion du parent directement (défense en
+            // profondeur identique à deploy-main).
             const conclusion = context.payload.workflow_run?.conclusion;
             const headBranch = context.payload.workflow_run?.head_branch;
             const headSha = context.payload.workflow_run?.head_sha;
             const headRepoFullName = context.payload.workflow_run?.head_repository?.full_name;
-            const baseRepoFullName = `${context.repo.owner}/${context.repo.repo}`;
 
-            // Same defense-in-depth as deploy-main.yml: only ever deploy for a
-            // workflow_run that (a) succeeded, (b) targeted main, and (c) ran
-            // in this base repository (never a fork).
             if (conclusion === 'success' && headBranch === 'main' && headRepoFullName === baseRepoFullName) {
               core.setOutput('should_deploy', 'true');
               core.setOutput('sha', headSha);
@@ -71,8 +133,26 @@ jobs:
             } else {
               core.setOutput('should_deploy', 'false');
               core.setOutput('sha', headSha ?? '');
+              core.setOutput('skip_reason', `Tests - Leopardo RH conclusion=${conclusion} branch=${headBranch} repo=${headRepoFullName}`);
               core.warning(`Tests - Leopardo RH conclusion=${conclusion} branch=${headBranch} repo=${headRepoFullName}. Skipping staging deploy.`);
             }
+
+  report-skip:
+    name: Report skipped deploy (non-silent)
+    runs-on: ubuntu-latest
+    needs: gate
+    if: needs.gate.outputs.should_deploy == 'false' && needs.gate.outputs.skip_reason != ''
+    steps:
+      - name: Explain the skip
+        run: |
+          echo "::warning::Staging deploy skipped: ${{ needs.gate.outputs.skip_reason }}"
+          {
+            echo "## Deploy staging — skip explicite"
+            echo ""
+            echo "Raison : \`${{ needs.gate.outputs.skip_reason }}\`"
+            echo ""
+            echo "SHA : \`${{ needs.gate.outputs.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   deploy-staging-api:
     name: Deploy API to Staging (Render)
