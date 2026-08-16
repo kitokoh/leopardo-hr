@@ -48,6 +48,10 @@ jobs:
   backend-coverage:
     name: Backend Coverage (PHP 8.4 + PostgreSQL 16)
     runs-on: ubuntu-latest
+    # Issue #4111 : timeout déterministe — un job bloqué (infra, saturation CI,
+    # test bloquant) doit échouer explicitement au lieu de rester pending
+    # indéfiniment et de masquer le verdict de couverture.
+    timeout-minutes: 45
 
     services:
       postgres:
