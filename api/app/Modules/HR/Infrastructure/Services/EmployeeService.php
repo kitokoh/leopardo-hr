@@ -55,7 +55,17 @@ class EmployeeService
         /** @var array<string, mixed> $payload */
         $this->applyBiometricConsent($payload);
 
+        // Issue #4496 : password_hash n'est plus mass-assignable (retiré du
+        // $fillable). On le pose explicitement après création — l'acteur a
+        // déjà été autorisé (policy + FormRequest). Même pattern que #4307
+        // pour role/status/company_id.
+        $passwordHash = (string) Arr::pull($payload, 'password_hash');
+
         $employee = Employee::query()->create($payload);
+
+        if ($passwordHash !== '') {
+            $employee->forceFill(['password_hash' => $passwordHash])->save();
+        }
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
