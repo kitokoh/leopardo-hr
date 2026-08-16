@@ -174,6 +174,13 @@ function PlanSummaryCard({
   const planCopy = copy.plans[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
   const priceLabel = price === null ? copy.quote : String(price);
+  // #4380 : rabais annuel calculé depuis le tarif (Pilot 29→24 = 17 %, Operations
+  // 99→79 = 20 %) — le badge statique « -17 % » était faux pour Operations et
+  // contredisait la source unique « jusqu'à 20 % » (#4202).
+  const annualDiscountPct =
+    billing === 'annual' && cfg.priceMonthly && cfg.priceAnnual
+      ? Math.round((1 - cfg.priceAnnual / cfg.priceMonthly) * 100)
+      : null;
 
   return (
     <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-xl shadow-slate-100/50 dark:shadow-slate-950/50">
@@ -224,7 +231,9 @@ function PlanSummaryCard({
               }`}
             >
               {copy.annual}
-              <span className="ml-1.5 text-[10px] font-black">{copy.annualDiscount}</span>
+              {annualDiscountPct !== null && (
+                <span className="ml-1.5 text-[10px] font-black">-{annualDiscountPct}%</span>
+              )}
             </button>
           </div>
       </div>
