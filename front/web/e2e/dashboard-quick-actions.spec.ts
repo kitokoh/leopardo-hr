@@ -196,7 +196,9 @@ test.describe('Dashboard client — actions rapides et carte Leo IA', () => {
     // le contenu de la page cible pour ne pas figer une URL morte.
 
     // Nouvel employe -> /employees
-    await page.locator('a[href="/employees"]').click();
+    // #4095 : 2 liens légitimes (sidebar + action rapide) — strict mode
+    // exige un sélecteur unique ; .first() (même pattern que /reports).
+    await page.locator('a[href="/employees"]').first().click();
     await expect(page).toHaveURL(/\/employees$/);
     await expect(page.locator('body')).toContainText('Collaborateurs recents');
     await page.goto('/dashboard');
