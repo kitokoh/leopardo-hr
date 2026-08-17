@@ -128,6 +128,13 @@ jobs:
         shell: bash
         run: 'bash ./dev-hub/tools/check-mobile-number-locale.sh'
 
+      - name: Validate ARB keys exist in generated localizations
+        # #4762 (récurrence) : toute clé ARB absente des générés casse la
+        # compile des apps qui la référencent. Garde = `flutter gen-l10n`
+        # doit être exécuté dans leopardo_core à chaque ajout de clé.
+        shell: bash
+        run: 'bash ./dev-hub/tools/check-mobile-l10n-sync.sh'
+
   flutter-analyze:
     timeout-minutes: 90
     name: Analyze ${{ matrix.project.name }}

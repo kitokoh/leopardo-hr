@@ -65,7 +65,7 @@ import 'app_localizations_tr.dart';
 /// property.
 abstract class AppLocalizations {
   AppLocalizations(String locale)
-      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -88,18 +88,18 @@ abstract class AppLocalizations {
   /// of delegates is preferred or required.
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ar'),
     Locale('en'),
     Locale('fr'),
-    Locale('tr')
+    Locale('tr'),
   ];
 
   /// No description provided for @appTitle.
@@ -5126,7 +5126,12 @@ abstract class AppLocalizations {
   String attendanceTimeRange(String from, String to);
   String get attendanceHourWorked;
   String get attendanceHoursWorked;
-  String attendanceDaySummary(String date, String status, String range, String hours);
+  String attendanceDaySummary(
+    String date,
+    String status,
+    String range,
+    String hours,
+  );
   String get sessionApproved;
   String get sessionRejected;
   String get pendingSessionsToValidate;
@@ -5179,6 +5184,143 @@ abstract class AppLocalizations {
   String get orgChartCollapse;
   String get orgChartExpand;
   String get errorUnexpected;
+  String get apiAccessdenied;
+  String get apiConnectionerror;
+  String get apiGenericerror;
+  String get apiInvaliddata;
+  String get apiNotfound;
+  String get apiServererror;
+  String get apiServererrorretry;
+  String get apiServerunavailable;
+  String get apiSessionexpired;
+  String get apiToomanyrequests;
+  String get authDemoAccess;
+  String get authTogglePasswordVisibility;
+  String get commonRequired;
+  String get partnerpageApplyerrorprefix;
+  String get partnerpageCommissionsEmpty;
+  String get partnerpageCommissionsTitle;
+  String get partnerpageDashboardSubtitle;
+  String get partnerpageDashboardTitle;
+  String get partnerpageLoading;
+  String get partnerpageMetricsConversions;
+  String get partnerpageMetricsPending;
+  String get partnerpageMetricsTotalearned;
+  String get partnerpageMetricsWithdrawable;
+  String get partnerpageNotappliedAgency;
+  String get partnerpageNotappliedIndividual;
+  String get partnerpageNotappliedSubtitle;
+  String get partnerpageNotappliedTitle;
+  String get partnerpagePayoutBody;
+  String get partnerpagePayoutErrorprefix;
+  String get partnerpagePayoutInsufficient;
+  String get partnerpagePayoutRequest;
+  String get partnerpagePayoutSending;
+  String get partnerpagePayoutSuccess;
+  String get partnerpagePayoutTitle;
+  String get partnerpagePendingBody;
+  String get partnerpagePendingTitle;
+  String get partnerpageReferralCopied;
+  String get partnerpageReferralCopy;
+  String get partnerpageReferralCopyerror;
+  String get partnerpageReferralTitle;
+  String get partnerpageReferralUnavailable;
+  String get partnerpageTableAmount;
+  String get partnerpageTableDate;
+  String get partnerpageTableStatus;
+  String get partnerpageTableStatuspaid;
+  String get partnerpageTableStatuspending;
+  String get partnerpageTableTenantid;
+  String get settingspageCancel;
+  String get settingspageConfirmpassword;
+  String get settingspageCurrentpassword;
+  String get settingspageDisable2fa;
+  String get settingspageDisabled;
+  String get settingspageEmail;
+  String get settingspageEnable2fa;
+  String get settingspageEnabled;
+  String get settingspageEntercodestep;
+  String get settingspageFullname;
+  String get settingspageGeneratesecret;
+  String get settingspageGeneratesecrethint;
+  String get settingspageManualsecret;
+  String get settingspageMinlengthhint;
+  String get settingspageNewpassword;
+  String get settingspagePassword;
+  String get settingspagePasswordsmismatch;
+  String get settingspagePasswordsubtitle;
+  String get settingspagePasswordtitle;
+  String get settingspagePasswordupdated;
+  String get settingspageProfilesubtitle;
+  String get settingspageProfiletitle;
+  String get settingspageProfileupdated;
+  String get settingspageSavechanges;
+  String get settingspageScanstep;
+  String get settingspageSubtitle;
+  String get settingspageTitle;
+  String get settingspageTwofactoractivehint;
+  String get settingspageTwofactordisabled;
+  String get settingspageTwofactorenabled;
+  String get settingspageTwofactorsubtitle;
+  String get settingspageTwofactortitle;
+  String get settingspageUpdatepassword;
+  String get systempageApierror;
+  String get systempageApioperational;
+  String get systempageApioperationaldb;
+  String get systempageApiservices;
+  String get systempageApiunavailable;
+  String get systempageDatabase;
+  String get systempageDberror;
+  String get systempageDblatency;
+  String get systempageDbunavailable;
+  String get systempageDbunreachable;
+  String get systempageGlobalerror;
+  String get systempageGlobalhealthy;
+  String get systempageGlobalstatus;
+  String get systempageGlobalunavailable;
+  String get systempageGlobalwarning;
+  String get systempageHealthcheck;
+  String get systempageHealthcheckrunning;
+  String get systempageHealtherror;
+  String get systempageHealthliveunreachable;
+  String get systempageHealthok;
+  String get systempageHealthunreachable;
+  String get systempageInfradetails;
+  String get systempageInfrastructure;
+  String get systempageInfraunavailable;
+  String get systempageMetricsloaderror;
+  String get systempageNotifobsloaderror;
+  String get systempageQueueobsloaderror;
+  String get systempageRetry;
+  String get systempageServiceunreachable;
+  String get systempageStatsloaderror;
+  String get systempageSubtitle;
+  String get systempageTitle;
+  String get userAuthAlreadyAccount;
+  String get userAuthBackToHome;
+  String get userAuthCity;
+  String get userAuthCompanyEmail;
+  String get userAuthCompanyName;
+  String get userAuthCompanyRequestBody;
+  String get userAuthCompanyRequestInfo;
+  String get userAuthCompanyRequestTitle;
+  String get userAuthCountry;
+  String get userAuthCreateCompany;
+  String get userAuthDescription;
+  String get userAuthFirstName;
+  String userAuthGoogleError(Object error);
+  String get userAuthLastName;
+  String get userAuthLoginSubtitle;
+  String get userAuthNoAccount;
+  String get userAuthPersonalLogin;
+  String get userAuthPhone;
+  String get userAuthPhoneOptional;
+  String get userAuthRegisterButton;
+  String get userAuthRegisterSubtitleAlt;
+  String get userAuthRegisterTitle;
+  String get userAuthSector;
+  String get userAuthSubmitError;
+  String get userAuthSubmitRequest;
 }
 
 class _AppLocalizationsDelegate
@@ -5212,8 +5354,9 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   }
 
   throw FlutterError(
-      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-      'an issue with the localizations generation tool. Please file an issue '
-      'on GitHub with a reproducible sample app and the gen-l10n configuration '
-      'that was used.');
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2715,7 +2716,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String evaluationPeriod(String period) {
-    return 'Period: \$period';
+    return 'Period: $period';
   }
 
   @override
@@ -2735,7 +2736,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String attendanceTimeRange(String from, String to) {
-    return 'from \$from to \$to';
+    return 'from $from to $to';
   }
 
   @override
@@ -2745,8 +2746,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attendanceHoursWorked => 'hours worked';
 
   @override
-  String attendanceDaySummary(String date, String status, String range, String hours) {
-    return 'Day of \$date, status \$status, \$range, \$hours.';
+  String attendanceDaySummary(
+    String date,
+    String status,
+    String range,
+    String hours,
+  ) {
+    return 'Day of $date, status $status, $range, $hours.';
   }
 
   @override
@@ -2766,12 +2772,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String employeeNumber(String id) {
-    return 'Employee #\$id';
+    return 'Employee #$id';
   }
 
   @override
   String sessionEntryAt(String time) {
-    return 'Entry: \$time';
+    return 'Entry: $time';
   }
 
   @override
@@ -2779,7 +2785,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String errorPrefix(String message) {
-    return 'Error: \$message';
+    return 'Error: $message';
   }
 
   @override
@@ -2802,7 +2808,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String saPresenceInProgress(String time) {
-    return 'Presence in progress since \$time';
+    return 'Presence in progress since $time';
   }
 
   @override
@@ -2841,7 +2847,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String saConfigLoadError(String error) {
-    return 'Unable to load the configuration.\n\$error';
+    return 'Unable to load the configuration.\n$error';
   }
 
   @override
@@ -2922,4 +2928,314 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgChartExpand => 'Expand';
   @override
   String get errorUnexpected => 'An error occurred';
+  @override
+  String get apiAccessdenied =>
+      'Access denied on :endpoint. Insufficient permissions.';
+  @override
+  String get apiConnectionerror =>
+      'Connection error. Check your internet connection.';
+  @override
+  String get apiGenericerror => 'Error :status on :endpoint.';
+  @override
+  String get apiInvaliddata => 'Invalid data.';
+  @override
+  String get apiNotfound => 'Resource not found: :endpoint';
+  @override
+  String get apiServererror => 'Server error on :endpoint. :detail';
+  @override
+  String get apiServererrorretry => 'Try again later.';
+  @override
+  String get apiServerunavailable =>
+      'The server is temporarily unavailable (:status). Please try again shortly.';
+  @override
+  String get apiSessionexpired => 'Session expired. Reconnecting...';
+  @override
+  String get apiToomanyrequests =>
+      'Too many requests. Please wait a few seconds.';
+  @override
+  String get authDemoAccess => 'Demo access';
+  @override
+  String get authTogglePasswordVisibility => 'Show or hide password';
+  @override
+  String get commonRequired => 'Required';
+  @override
+  String get partnerpageApplyerrorprefix => 'Error while applying: ';
+  @override
+  String get partnerpageCommissionsEmpty => 'No commission recorded.';
+  @override
+  String get partnerpageCommissionsTitle => 'Latest commissions';
+  @override
+  String get partnerpageDashboardSubtitle =>
+      'Track your Leopardo RH conversions and commissions — active partner status.';
+  @override
+  String get partnerpageDashboardTitle => 'Partner Dashboard';
+  @override
+  String get partnerpageLoading => 'Loading your workspace...';
+  @override
+  String get partnerpageMetricsConversions => 'Conversions';
+  @override
+  String get partnerpageMetricsPending => 'Pending';
+  @override
+  String get partnerpageMetricsTotalearned => 'Total earned';
+  @override
+  String get partnerpageMetricsWithdrawable => 'Withdrawable balance';
+  @override
+  String get partnerpageNotappliedAgency => 'Apply as an Agency';
+  @override
+  String get partnerpageNotappliedIndividual => 'Apply as an Individual';
+  @override
+  String get partnerpageNotappliedSubtitle =>
+      'Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.';
+  @override
+  String get partnerpageNotappliedTitle => 'Become a Partner';
+  @override
+  String get partnerpagePayoutBody =>
+      'Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.';
+  @override
+  String get partnerpagePayoutErrorprefix =>
+      'Error while requesting the transfer: ';
+  @override
+  String get partnerpagePayoutInsufficient =>
+      'Insufficient balance to request a transfer (minimum €100.00).';
+  @override
+  String get partnerpagePayoutRequest => 'Request a transfer';
+  @override
+  String get partnerpagePayoutSending => 'Sending...';
+  @override
+  String get partnerpagePayoutSuccess => 'Transfer request sent successfully.';
+  @override
+  String get partnerpagePayoutTitle => 'Payout';
+  @override
+  String get partnerpagePendingBody =>
+      'Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated.';
+  @override
+  String get partnerpagePendingTitle => 'Application in progress';
+  @override
+  String get partnerpageReferralCopied => 'Copied!';
+  @override
+  String get partnerpageReferralCopy => 'Copy my link';
+  @override
+  String get partnerpageReferralCopyerror =>
+      'Unable to copy the link. Copy it manually.';
+  @override
+  String get partnerpageReferralTitle => 'Referral link';
+  @override
+  String get partnerpageReferralUnavailable => 'Link unavailable';
+  @override
+  String get partnerpageTableAmount => 'Amount';
+  @override
+  String get partnerpageTableDate => 'Date';
+  @override
+  String get partnerpageTableStatus => 'Status';
+  @override
+  String get partnerpageTableStatuspaid => 'Paid';
+  @override
+  String get partnerpageTableStatuspending => 'Pending';
+  @override
+  String get partnerpageTableTenantid => 'Tenant ID';
+  @override
+  String get settingspageCancel => 'Cancel';
+  @override
+  String get settingspageConfirmpassword => 'Confirm password';
+  @override
+  String get settingspageCurrentpassword => 'Current password';
+  @override
+  String get settingspageDisable2fa => 'Disable 2FA';
+  @override
+  String get settingspageDisabled => 'Disabled';
+  @override
+  String get settingspageEmail => 'Email address';
+  @override
+  String get settingspageEnable2fa => 'Enable 2FA';
+  @override
+  String get settingspageEnabled => 'Enabled';
+  @override
+  String get settingspageEntercodestep => '2. Enter the generated 6-digit code';
+  @override
+  String get settingspageFullname => 'Full name';
+  @override
+  String get settingspageGeneratesecret => 'Generate 2FA secret';
+  @override
+  String get settingspageGeneratesecrethint =>
+      'Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).';
+  @override
+  String get settingspageManualsecret => 'Manual secret:';
+  @override
+  String get settingspageMinlengthhint => 'Minimum 8 characters.';
+  @override
+  String get settingspageNewpassword => 'New password';
+  @override
+  String get settingspagePassword => 'Password';
+  @override
+  String get settingspagePasswordsmismatch => 'Passwords do not match.';
+  @override
+  String get settingspagePasswordsubtitle =>
+      'Changing your password will automatically sign out all your other active sessions.';
+  @override
+  String get settingspagePasswordtitle => 'Password';
+  @override
+  String get settingspagePasswordupdated => 'Password updated successfully.';
+  @override
+  String get settingspageProfilesubtitle =>
+      'Name and email address used to sign in.';
+  @override
+  String get settingspageProfiletitle => 'Profile information';
+  @override
+  String get settingspageProfileupdated => 'Profile updated successfully.';
+  @override
+  String get settingspageSavechanges => 'Save changes';
+  @override
+  String get settingspageScanstep =>
+      '1. Scan this link / secret in your 2FA app:';
+  @override
+  String get settingspageSubtitle =>
+      'Manage your information, password and the security of your super-admin account.';
+  @override
+  String get settingspageTitle => 'My account';
+  @override
+  String get settingspageTwofactoractivehint =>
+      '2FA is active. To disable it, confirm your password.';
+  @override
+  String get settingspageTwofactordisabled => '2FA disabled.';
+  @override
+  String get settingspageTwofactorenabled => '2FA enabled successfully.';
+  @override
+  String get settingspageTwofactorsubtitle =>
+      'Add an extra layer of security to your super-admin account.';
+  @override
+  String get settingspageTwofactortitle => 'Two-factor authentication (2FA)';
+  @override
+  String get settingspageUpdatepassword => 'Update password';
+  @override
+  String get systempageApierror => 'Error: :error';
+  @override
+  String get systempageApioperational => 'API operational';
+  @override
+  String get systempageApioperationaldb => 'API operational — DB :ms ms';
+  @override
+  String get systempageApiservices => 'API Services';
+  @override
+  String get systempageApiunavailable => 'Unavailable — GET /health/live';
+  @override
+  String get systempageDatabase => 'Database';
+  @override
+  String get systempageDberror => 'Error: :error';
+  @override
+  String get systempageDblatency => 'Latency: :ms ms';
+  @override
+  String get systempageDbunavailable => 'Unavailable — run a Health Check.';
+  @override
+  String get systempageDbunreachable => 'database unreachable';
+  @override
+  String get systempageGlobalerror => 'Aggregated probe: database unreachable.';
+  @override
+  String get systempageGlobalhealthy =>
+      'Aggregated DB + Redis probe operational.';
+  @override
+  String get systempageGlobalstatus => 'Global Status';
+  @override
+  String get systempageGlobalunavailable =>
+      'Unavailable — GET /admin/dashboard/stats';
+  @override
+  String get systempageGlobalwarning =>
+      'Aggregated probe: degradation detected.';
+  @override
+  String get systempageHealthcheck => 'Health Check';
+  @override
+  String get systempageHealthcheckrunning => 'Checking...';
+  @override
+  String get systempageHealtherror =>
+      'Health check completed — database in error';
+  @override
+  String get systempageHealthliveunreachable =>
+      '/health/live probe unreachable.';
+  @override
+  String get systempageHealthok =>
+      'Health check completed — database operational';
+  @override
+  String get systempageHealthunreachable =>
+      'Health check completed — database unreachable';
+  @override
+  String get systempageInfradetails =>
+      ':active active companies · PHP :php · queue :queue';
+  @override
+  String get systempageInfrastructure => 'Infrastructure';
+  @override
+  String get systempageInfraunavailable =>
+      'Unavailable — GET /platform/metrics/overview';
+  @override
+  String get systempageMetricsloaderror => 'Error loading platform metrics';
+  @override
+  String get systempageNotifobsloaderror =>
+      'Error loading notifications observability';
+  @override
+  String get systempageQueueobsloaderror => 'Error loading jobs observability';
+  @override
+  String get systempageRetry => 'Retry';
+  @override
+  String get systempageServiceunreachable => 'service unreachable';
+  @override
+  String get systempageStatsloaderror => 'Error loading system stats';
+  @override
+  String get systempageSubtitle =>
+      'Monitoring, configuration and automation of the Leopardo RH platform.';
+  @override
+  String get systempageTitle => 'System Administration';
+  @override
+  String get userAuthAlreadyAccount => 'Already have an account? Sign in';
+  @override
+  String get userAuthBackToHome => 'Back to home';
+  @override
+  String get userAuthCity => 'City';
+  @override
+  String get userAuthCompanyEmail => 'Company email';
+  @override
+  String get userAuthCompanyName => 'Company name';
+  @override
+  String get userAuthCompanyRequestBody =>
+      'An administrator will review your request. You will receive a notification once it is processed.';
+  @override
+  String get userAuthCompanyRequestInfo =>
+      'Fill in your company information. An administrator will validate your request.';
+  @override
+  String get userAuthCompanyRequestTitle => 'Request submitted!';
+  @override
+  String get userAuthCountry => 'Country';
+  @override
+  String get userAuthCreateCompany => 'Create a company';
+  @override
+  String get userAuthDescription => 'Description';
+  @override
+  String get userAuthFirstName => 'First name';
+  @override
+  String userAuthGoogleError(Object error) {
+    return 'Google error: $error';
+  }
+
+  @override
+  String get userAuthLastName => 'Last name';
+  @override
+  String get userAuthLoginSubtitle =>
+      'Access your workspace, documents and requests.';
+  @override
+  String get userAuthNoAccount => 'No account yet? Sign up';
+  @override
+  String get userAuthPersonalLogin => 'Personal login';
+  @override
+  String get userAuthPhone => 'Phone';
+  @override
+  String get userAuthPhoneOptional => 'Phone (optional)';
+  @override
+  String get userAuthRegisterButton => 'Create my account';
+  @override
+  String get userAuthRegisterSubtitleAlt =>
+      'Access your personal workspace and organise your documents.';
+  @override
+  String get userAuthRegisterTitle => 'Create my account';
+  @override
+  String get userAuthSector => 'Business sector';
+  @override
+  String get userAuthSubmitError => 'Error submitting request';
+  @override
+  String get userAuthSubmitRequest => 'Submit request';
 }

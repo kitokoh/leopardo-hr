@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -2693,7 +2694,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String evaluationPeriod(String period) {
-    return 'الفترة: \$period';
+    return 'الفترة: $period';
   }
 
   @override
@@ -2713,7 +2714,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String attendanceTimeRange(String from, String to) {
-    return 'من \$from إلى \$to';
+    return 'من $from إلى $to';
   }
 
   @override
@@ -2723,8 +2724,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get attendanceHoursWorked => 'ساعات عمل';
 
   @override
-  String attendanceDaySummary(String date, String status, String range, String hours) {
-    return 'يوم \$date، الحالة \$status، \$range، \$hours.';
+  String attendanceDaySummary(
+    String date,
+    String status,
+    String range,
+    String hours,
+  ) {
+    return 'يوم $date، الحالة $status، $range، $hours.';
   }
 
   @override
@@ -2744,12 +2750,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String employeeNumber(String id) {
-    return 'الموظف #\$id';
+    return 'الموظف #$id';
   }
 
   @override
   String sessionEntryAt(String time) {
-    return 'الدخول: \$time';
+    return 'الدخول: $time';
   }
 
   @override
@@ -2757,7 +2763,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String errorPrefix(String message) {
-    return 'خطأ: \$message';
+    return 'خطأ: $message';
   }
 
   @override
@@ -2780,7 +2786,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String saPresenceInProgress(String time) {
-    return 'حضور قيد التقدم منذ \$time';
+    return 'حضور قيد التقدم منذ $time';
   }
 
   @override
@@ -2818,7 +2824,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String saConfigLoadError(String error) {
-    return 'تعذر تحميل الإعدادات.\n\$error';
+    return 'تعذر تحميل الإعدادات.\n$error';
   }
 
   @override
@@ -2895,4 +2901,309 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orgChartExpand => 'توسيع';
   @override
   String get errorUnexpected => 'حدث خطأ';
+  @override
+  String get apiAccessdenied =>
+      'تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.';
+  @override
+  String get apiConnectionerror => 'خطأ في الاتصال. تحقق من اتصالك بالإنترنت.';
+  @override
+  String get apiGenericerror => 'خطأ :status على :endpoint.';
+  @override
+  String get apiInvaliddata => 'بيانات غير صالحة.';
+  @override
+  String get apiNotfound => 'الموارد غير موجودة: :endpoint';
+  @override
+  String get apiServererror => 'خطأ في الخادم على :endpoint. :detail';
+  @override
+  String get apiServererrorretry => 'حاول مرة أخرى لاحقًا.';
+  @override
+  String get apiServerunavailable =>
+      'الخادم غير متاح مؤقتًا (:status). يرجى المحاولة مرة أخرى بعد قليل.';
+  @override
+  String get apiSessionexpired => 'انتهت الجلسة. إعادة الاتصال...';
+  @override
+  String get apiToomanyrequests => 'طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.';
+  @override
+  String get authDemoAccess => 'وصول تجريبي';
+  @override
+  String get authTogglePasswordVisibility => 'إظهار أو إخفاء كلمة المرور';
+  @override
+  String get commonRequired => 'مطلوب';
+  @override
+  String get partnerpageApplyerrorprefix => 'خطأ أثناء التقديم: ';
+  @override
+  String get partnerpageCommissionsEmpty => 'لا توجد عمولات مسجلة.';
+  @override
+  String get partnerpageCommissionsTitle => 'أحدث العمولات';
+  @override
+  String get partnerpageDashboardSubtitle =>
+      'تابع تحويلاتك وعمولاتك في Leopardo RH — حالة شريك نشط.';
+  @override
+  String get partnerpageDashboardTitle => 'لوحة تحكم الشريك';
+  @override
+  String get partnerpageLoading => 'جارٍ تحميل مساحتك...';
+  @override
+  String get partnerpageMetricsConversions => 'التحويلات';
+  @override
+  String get partnerpageMetricsPending => 'قيد الانتظار';
+  @override
+  String get partnerpageMetricsTotalearned => 'إجمالي الأرباح';
+  @override
+  String get partnerpageMetricsWithdrawable => 'الرصيد القابل للسحب';
+  @override
+  String get partnerpageNotappliedAgency => 'التقديم كوكالة';
+  @override
+  String get partnerpageNotappliedIndividual => 'التقديم كفرد';
+  @override
+  String get partnerpageNotappliedSubtitle =>
+      'انضم إلى منظومة Leopardo RH واربح عمولات عن كل شركة تحيلها. عمولة متكررة تصل إلى 20%.';
+  @override
+  String get partnerpageNotappliedTitle => 'كن شريكاً';
+  @override
+  String get partnerpagePayoutBody =>
+      'تُدفع عمولاتك بمجرد بلوغ الحد الأدنى. تأكد من أن بياناتك البنكية محدّثة.';
+  @override
+  String get partnerpagePayoutErrorprefix => 'خطأ أثناء طلب التحويل: ';
+  @override
+  String get partnerpagePayoutInsufficient =>
+      'الرصيد غير كافٍ لطلب تحويل (الحد الأدنى 100,00 €).';
+  @override
+  String get partnerpagePayoutRequest => 'طلب تحويل';
+  @override
+  String get partnerpagePayoutSending => 'جارٍ الإرسال...';
+  @override
+  String get partnerpagePayoutSuccess => 'تم إرسال طلب التحويل بنجاح.';
+  @override
+  String get partnerpagePayoutTitle => 'الدفع';
+  @override
+  String get partnerpagePendingBody =>
+      'يتم حالياً مراجعة طلبك من قبل فريق المبيعات. ستتلقى بريداً إلكترونياً فور تفعيل وصولك.';
+  @override
+  String get partnerpagePendingTitle => 'الطلب قيد المراجعة';
+  @override
+  String get partnerpageReferralCopied => 'تم النسخ!';
+  @override
+  String get partnerpageReferralCopy => 'نسخ رابطه';
+  @override
+  String get partnerpageReferralCopyerror => 'تعذر نسخ الرابط. انسخه يدوياً.';
+  @override
+  String get partnerpageReferralTitle => 'رابط الإحالة';
+  @override
+  String get partnerpageReferralUnavailable => 'الرابط غير متاح';
+  @override
+  String get partnerpageTableAmount => 'المبلغ';
+  @override
+  String get partnerpageTableDate => 'التاريخ';
+  @override
+  String get partnerpageTableStatus => 'الحالة';
+  @override
+  String get partnerpageTableStatuspaid => 'مدفوعة';
+  @override
+  String get partnerpageTableStatuspending => 'قيد الانتظار';
+  @override
+  String get partnerpageTableTenantid => 'معرّف المستأجر';
+  @override
+  String get settingspageCancel => 'إلغاء';
+  @override
+  String get settingspageConfirmpassword => 'تأكيد كلمة المرور';
+  @override
+  String get settingspageCurrentpassword => 'كلمة المرور الحالية';
+  @override
+  String get settingspageDisable2fa => 'إيقاف المصادقة الثنائية';
+  @override
+  String get settingspageDisabled => 'معطّل';
+  @override
+  String get settingspageEmail => 'عنوان البريد الإلكتروني';
+  @override
+  String get settingspageEnable2fa => 'تفعيل المصادقة الثنائية';
+  @override
+  String get settingspageEnabled => 'مفعّل';
+  @override
+  String get settingspageEntercodestep => '2. أدخل الرمز المكوّن من 6 أرقام';
+  @override
+  String get settingspageFullname => 'الاسم الكامل';
+  @override
+  String get settingspageGeneratesecret => 'إنشاء رمز 2FA السري';
+  @override
+  String get settingspageGeneratesecrethint =>
+      'أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).';
+  @override
+  String get settingspageManualsecret => 'الرمز اليدوي:';
+  @override
+  String get settingspageMinlengthhint => '8 أحرف على الأقل.';
+  @override
+  String get settingspageNewpassword => 'كلمة المرور الجديدة';
+  @override
+  String get settingspagePassword => 'كلمة المرور';
+  @override
+  String get settingspagePasswordsmismatch => 'كلمتا المرور غير متطابقتين.';
+  @override
+  String get settingspagePasswordsubtitle =>
+      'سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.';
+  @override
+  String get settingspagePasswordtitle => 'كلمة المرور';
+  @override
+  String get settingspagePasswordupdated => 'تم تحديث كلمة المرور بنجاح.';
+  @override
+  String get settingspageProfilesubtitle =>
+      'الاسم وعنوان البريد الإلكتروني المستخدمان لتسجيل الدخول.';
+  @override
+  String get settingspageProfiletitle => 'معلومات الملف الشخصي';
+  @override
+  String get settingspageProfileupdated => 'تم تحديث الملف الشخصي بنجاح.';
+  @override
+  String get settingspageSavechanges => 'حفظ التغييرات';
+  @override
+  String get settingspageScanstep =>
+      '1. امسح هذا الرابط / الرمز في تطبيق المصادقة الثنائية:';
+  @override
+  String get settingspageSubtitle =>
+      'إدارة معلوماتك وكلمة المرور وأمان حساب المسؤول الأعلى.';
+  @override
+  String get settingspageTitle => 'حسابي';
+  @override
+  String get settingspageTwofactoractivehint =>
+      'المصادقة الثنائية مفعّلة. لإيقافها، أكّد كلمة المرور.';
+  @override
+  String get settingspageTwofactordisabled => 'تم إيقاف المصادقة الثنائية.';
+  @override
+  String get settingspageTwofactorenabled =>
+      'تم تفعيل المصادقة الثنائية بنجاح.';
+  @override
+  String get settingspageTwofactorsubtitle =>
+      'أضف طبقة أمان إضافية إلى حساب المسؤول الأعلى.';
+  @override
+  String get settingspageTwofactortitle => 'المصادقة الثنائية (2FA)';
+  @override
+  String get settingspageUpdatepassword => 'تحديث كلمة المرور';
+  @override
+  String get systempageApierror => 'خطأ: :error';
+  @override
+  String get systempageApioperational => 'API يعمل';
+  @override
+  String get systempageApioperationaldb =>
+      'API يعمل — قاعدة البيانات :ms مللي ثانية';
+  @override
+  String get systempageApiservices => 'خدمات API';
+  @override
+  String get systempageApiunavailable => 'غير متاح — GET /health/live';
+  @override
+  String get systempageDatabase => 'قاعدة البيانات';
+  @override
+  String get systempageDberror => 'خطأ: :error';
+  @override
+  String get systempageDblatency => 'زمن الاستجابة: :ms مللي ثانية';
+  @override
+  String get systempageDbunavailable => 'غير متاح — قم بتشغيل فحص الصحة.';
+  @override
+  String get systempageDbunreachable => 'تعذر الوصول إلى قاعدة البيانات';
+  @override
+  String get systempageGlobalerror =>
+      'الفحص المجمّع: تعذر الوصول إلى قاعدة البيانات.';
+  @override
+  String get systempageGlobalhealthy =>
+      'فحص قاعدة البيانات وRedis المجمّع يعمل.';
+  @override
+  String get systempageGlobalstatus => 'الحالة العامة';
+  @override
+  String get systempageGlobalunavailable =>
+      'غير متاح — GET /admin/dashboard/stats';
+  @override
+  String get systempageGlobalwarning =>
+      'الفحص المجمّع: تم اكتشاف تدهور في الأداء.';
+  @override
+  String get systempageHealthcheck => 'فحص الصحة';
+  @override
+  String get systempageHealthcheckrunning => 'جارٍ الفحص...';
+  @override
+  String get systempageHealtherror =>
+      'اكتمل فحص الصحة — قاعدة البيانات في حالة خطأ';
+  @override
+  String get systempageHealthliveunreachable =>
+      'تعذر الوصول إلى فحص /health/live.';
+  @override
+  String get systempageHealthok => 'اكتمل فحص الصحة — قاعدة البيانات تعمل';
+  @override
+  String get systempageHealthunreachable =>
+      'اكتمل فحص الصحة — تعذر الوصول إلى قاعدة البيانات';
+  @override
+  String get systempageInfradetails =>
+      ':active شركة نشطة · PHP :php · قائمة الانتظار :queue';
+  @override
+  String get systempageInfrastructure => 'البنية التحتية';
+  @override
+  String get systempageInfraunavailable =>
+      'غير متاح — GET /platform/metrics/overview';
+  @override
+  String get systempageMetricsloaderror => 'خطأ أثناء تحميل مقاييس المنصة';
+  @override
+  String get systempageNotifobsloaderror => 'خطأ أثناء تحميل مراقبة الإشعارات';
+  @override
+  String get systempageQueueobsloaderror => 'خطأ أثناء تحميل مراقبة الوظائف';
+  @override
+  String get systempageRetry => 'إعادة المحاولة';
+  @override
+  String get systempageServiceunreachable => 'تعذر الوصول إلى الخدمة';
+  @override
+  String get systempageStatsloaderror => 'خطأ أثناء تحميل إحصائيات النظام';
+  @override
+  String get systempageSubtitle => 'مراقبة منصة Leopardo RH وتكوينها وأتمتتها.';
+  @override
+  String get systempageTitle => 'إدارة النظام';
+  @override
+  String get userAuthAlreadyAccount => 'لديك حساب بالفعل؟ تسجيل الدخول';
+  @override
+  String get userAuthBackToHome => 'العودة إلى الرئيسية';
+  @override
+  String get userAuthCity => 'المدينة';
+  @override
+  String get userAuthCompanyEmail => 'بريد الشركة الإلكتروني';
+  @override
+  String get userAuthCompanyName => 'اسم الشركة';
+  @override
+  String get userAuthCompanyRequestBody =>
+      'سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.';
+  @override
+  String get userAuthCompanyRequestInfo =>
+      'أدخل معلومات شركتك. سيتحقق مسؤول من طلبك.';
+  @override
+  String get userAuthCompanyRequestTitle => 'تم إرسال الطلب!';
+  @override
+  String get userAuthCountry => 'البلد';
+  @override
+  String get userAuthCreateCompany => 'إنشاء شركة';
+  @override
+  String get userAuthDescription => 'الوصف';
+  @override
+  String get userAuthFirstName => 'الاسم الأول';
+  @override
+  String userAuthGoogleError(Object error) {
+    return 'خطأ Google: $error';
+  }
+
+  @override
+  String get userAuthLastName => 'اسم العائلة';
+  @override
+  String get userAuthLoginSubtitle => 'اعثر على مساحتك ومستنداتك وطلباتك.';
+  @override
+  String get userAuthNoAccount => 'لا حساب بعد؟ إنشاء حساب';
+  @override
+  String get userAuthPersonalLogin => 'تسجيل الدخول الشخصي';
+  @override
+  String get userAuthPhone => 'الهاتف';
+  @override
+  String get userAuthPhoneOptional => 'الهاتف (اختياري)';
+  @override
+  String get userAuthRegisterButton => 'إنشاء حسابي';
+  @override
+  String get userAuthRegisterSubtitleAlt =>
+      'اعثر على مساحتك الشخصية ونظم مستنداتك.';
+  @override
+  String get userAuthRegisterTitle => 'إنشاء حسابي';
+  @override
+  String get userAuthSector => 'قطاع الأعمال';
+  @override
+  String get userAuthSubmitError => 'خطأ في إرسال الطلب';
+  @override
+  String get userAuthSubmitRequest => 'إرسال الطلب';
 }
