@@ -162,7 +162,7 @@
 import { computed } from 'vue'
 import { ArrowPathIcon, ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/vue/24/outline'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
 
@@ -185,15 +185,20 @@ const hasAnyAlert = computed(() => {
 })
 
 function formatTime(value) {
-  if (!value) return 'Jamais'
+  // #4716 : libellés temps relatif localisés (avant : FR codé en dur).
+  if (!value) return translate(localeStore.current, 'time.never', 'Jamais')
 
   const date = new Date(value)
   const now = new Date()
   const diff = now - date
 
-  if (diff < 60000) return "À l'instant"
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
+  if (diff < 60000) return translate(localeStore.current, 'time.justNow', "À l'instant")
+  if (diff < 3600000) {
+    return translate(localeStore.current, 'time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
+  }
+  if (diff < 86400000) {
+    return translate(localeStore.current, 'time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
+  }
   return date.toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
     month: '2-digit',

@@ -505,6 +505,25 @@
     },
     "trialUnit": "d"
   },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count} h ago",
+    "minutesShort": "{count}m",
+    "hoursShort": "{count}h",
+    "never": "never",
+    "loadingData": "Loading data...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "inProgress": "In progress…",
+    "valid": "Valid",
+    "invalid": "Invalid",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "statusSuspended": "Suspended",
+    "statusPending": "Pending",
+    "exportCsv": "Export CSV"
+  },
   "_version": "1.0.0",
   "_updated_at": "2026-08-14T18:45:00Z",
   "holidays": {
