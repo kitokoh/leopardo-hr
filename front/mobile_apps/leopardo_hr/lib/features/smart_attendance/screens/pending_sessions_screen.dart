@@ -9,6 +9,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_hr/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran liste des sessions GPS en attente de validation — Manager
 class PendingGeoSessionsScreen extends ConsumerStatefulWidget {
@@ -37,8 +38,8 @@ class _PendingGeoSessionsScreenState
       ref.invalidate(pendingGeoSessionsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Session approuvée ✓'),
+          SnackBar(
+            content: Text(context.l10n.sessionApproved),
             backgroundColor: Colors.green,
           ),
         );
@@ -47,7 +48,9 @@ class _PendingGeoSessionsScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Erreur : $e'), backgroundColor: AppColors.danger),
+            content: Text('Erreur : $e'),
+            backgroundColor: AppColors.danger,
+          ),
         );
       }
     }
@@ -82,10 +85,7 @@ class _PendingGeoSessionsScreenState
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              'Rejeter',
-              style: TextStyle(color: AppColors.danger),
-            ),
+            child: Text('Rejeter', style: TextStyle(color: AppColors.danger)),
           ),
         ],
       ),
@@ -98,15 +98,15 @@ class _PendingGeoSessionsScreenState
             .rejectSession(session.id, note: _noteController.text.trim());
         ref.invalidate(pendingGeoSessionsProvider);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session rejetée')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.sessionRejected)));
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erreur : $e'),
+              content: Text(context.l10n.errorPrefix(e.toString())),
               backgroundColor: AppColors.danger,
             ),
           );
@@ -122,16 +122,16 @@ class _PendingGeoSessionsScreenState
     return Scaffold(
       backgroundColor: AppColors.mobileDarkBg,
       appBar: MobileTopBar(
-        title: 'Sessions à valider',
+        title: context.l10n.sessionsToValidate,
         subtitle: 'Smart Attendance — GPS',
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            tooltip: 'Actualiser',
+            tooltip: context.l10n.refresh,
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(pendingGeoSessionsProvider),
           ),
@@ -140,10 +140,10 @@ class _PendingGeoSessionsScreenState
       body: sessionsAsync.when(
         data: (sessions) {
           if (sessions.isEmpty) {
-            return const EmptyState(
+            return EmptyState(
               icon: Icons.check_circle_outline,
-              title: 'Tout est à jour',
-              description: 'Aucune session GPS en attente de validation.',
+              title: context.l10n.pendingSessionsUpToDate,
+              description: context.l10n.pendingSessionsEmpty,
             );
           }
           return RefreshIndicator(
@@ -165,10 +165,7 @@ class _PendingGeoSessionsScreenState
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text(
-            'Erreur : $e',
-            style: TextStyle(color: AppColors.danger),
-          ),
+          child: Text('Erreur : $e', style: TextStyle(color: AppColors.danger)),
         ),
       ),
     );
@@ -202,16 +199,22 @@ class _SessionCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.person_outline_rounded,
-                  size: 18, color: AppColors.textMutedDark),
+              const Icon(
+                Icons.person_outline_rounded,
+                size: 18,
+                color: AppColors.textMutedDark,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   session.employeeName.isNotEmpty
                       ? session.employeeName
-                      : 'Employé #${session.employeeId}',
-                  style: AppTypography.subtitle
-                      .copyWith(color: AppColors.textDark),
+                      : context.l10n.employeeNumber(
+                          session.employeeId.toString(),
+                        ),
+                  style: AppTypography.subtitle.copyWith(
+                    color: AppColors.textDark,
+                  ),
                 ),
               ),
             ],
@@ -219,13 +222,19 @@ class _SessionCard extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.login_rounded,
-                  size: 14, color: AppColors.textMutedDark),
+              const Icon(
+                Icons.login_rounded,
+                size: 14,
+                color: AppColors.textMutedDark,
+              ),
               const SizedBox(width: 4),
               Text(
-                'Entrée : ${fmt.format(session.startedAt.toLocal())}',
-                style: AppTypography.bodySmall
-                    .copyWith(color: AppColors.textMutedDark),
+                context.l10n.sessionEntryAt(
+                  fmt.format(session.startedAt.toLocal()),
+                ),
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textMutedDark,
+                ),
               ),
             ],
           ),
@@ -233,13 +242,17 @@ class _SessionCard extends StatelessWidget {
             const SizedBox(height: 2),
             Row(
               children: [
-                const Icon(Icons.logout_rounded,
-                    size: 14, color: AppColors.textMutedDark),
+                const Icon(
+                  Icons.logout_rounded,
+                  size: 14,
+                  color: AppColors.textMutedDark,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   'Sortie : ${fmt.format(session.endedAt!.toLocal())} · ${session.durationLabel}',
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.textMutedDark),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textMutedDark,
+                  ),
                 ),
               ],
             ),
@@ -254,7 +267,9 @@ class _SessionCard extends StatelessWidget {
                   label: const Text('Rejeter'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.danger,
-                    side: BorderSide(color: AppColors.danger.withValues(alpha: 0.5)),
+                    side: BorderSide(
+                      color: AppColors.danger.withValues(alpha: 0.5),
+                    ),
                   ),
                 ),
               ),

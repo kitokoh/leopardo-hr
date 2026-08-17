@@ -120,6 +120,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'Bitiş tarihi başlangıç tarihinden sonra veya ona eşit olmalıdır.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manuel çıkış için giriş saati gereklidir.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'Araç silindi.',
+    'SCHEDULE_DELETED' => 'Program başarıyla silindi.',
+    'KIOSK_SESSION_REQUIRED' => 'Kiosk oturumu gerekli.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'Yapay zeka geçerli bir şirket bağlamı gerektirir.',
+    'EXPORT_FILE_NOT_FOUND' => 'Dışa aktarma dosyası bulunamadı.',
+    'PAYMENT_DOCUMENT_MISSING' => 'Ödeme belgesi eksik.',
     'TRIAL_STEP_LOGIN' => 'E-postanız ve yukarıdaki şifreyle giriş yapın.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'İlk girişte şifrenizi değiştirin.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'İlk çalışanlarınızı QR ile veya manuel olarak ekleyin.',
@@ -165,14 +172,13 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'Yalnızca yöneticiler erişebilir.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'Yetersiz yönetici rolü.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'AI analizlerine erişim Principal veya İK yöneticisi rolü gerektirir.',
     'MANAGER_REQUIRED' => 'Yönetici erişimi gereklidir.',
     'INSUFFICIENT_ROLE' => 'Bu işlem için yetersiz rol.',
-    'EMPLOYEE_NOT_FOUND' => 'Çalışan bulunamadı.',
-    'INVALID_TOKEN' => 'Geçersiz veya süresi dolmuş jeton.',
-    'CAMERA_NOT_FOUND' => 'Kamera bulunamadı.',
-    'SELF_DISABLE_FORBIDDEN' => 'Kendi hesabınızı devre dışı bırakamazsınız.',
-    'MANAGER_REQUIRED' => 'Yönetici erişimi gereklidir.',
-    'INSUFFICIENT_ROLE' => 'Bu işlem için yetkiniz yetersiz.',
     'EMPLOYEE_NOT_FOUND' => 'Çalışan bulunamadı.',
     'INVALID_TOKEN' => 'Geçersiz veya süresi dolmuş jeton.',
     'CAMERA_NOT_FOUND' => 'Kamera bulunamadı.',
@@ -184,6 +190,10 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Geçersiz veya süresi dolmuş cihaz tokeni.',
     'INVALID_KIOSK_TOKEN' => 'Geçersiz veya süresi dolmuş kiosk tokeni.',
     'BIOMETRIC_NOT_APPROVED' => 'Bu çalışan için biyometrik erişim onaylanmamış.',
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'Hesap etkin değil.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'Şirket askıya alındı veya süresi doldu.',
     'COMPANY_SUSPENDED' => 'Şirketiniz askıya alınmıştır. Destek ile iletişime geçin.',
     'ADVANCE_CONFIRM_FORBIDDEN' => 'Teslim alımı yalnızca avans sahibi onaylayabilir.',
     'ADVANCE_DISPUTE_FORBIDDEN' => 'Avansa yalnızca avans sahibi itiraz edebilir.',
@@ -202,4 +212,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Yalnızca taslak durumundaki ilanlar silinebilir.',
     'JOB_POSTING_DELETED' => 'İlan silindi.',
     'TASK_DELETED' => 'Görev silindi.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => 'Deneme kayıt hizmeti geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
 ];

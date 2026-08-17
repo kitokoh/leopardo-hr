@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
 import { z } from 'zod';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { normalizeLocale } from '@/lib/i18n';
 
 const checkoutSchema = z.object({
   plan: z.enum(['free', 'pilot', 'operations', 'enterprise']),
@@ -51,6 +53,7 @@ const PLAN_LABELS: Record<string, string> = {
  *      (redirects to /checkout/success?sandbox=1&session_id=sandbox_xxx)
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const locale = normalizeLocale(request.headers.get('Accept-Language'));
   try {
     const body = await request.json();
     const data = checkoutSchema.parse(body);
@@ -65,8 +68,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         {
           success: false,
           error: 'CHECKOUT_UNAVAILABLE',
-          message:
-            'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.',
+          message: i18nT(locale, 'billing.checkout_unavailable', 'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.'),
         },
         { status: 503 }
       );
@@ -122,7 +124,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         amount: priceAmount,
         provisioned: !!provisionResult,
         provisioning: provisionResult,
-        message: 'Paiement simulé (mode sandbox). Aucune carte débitée.',
+        message: i18nT(locale, 'billing.checkout_sandbox_message', 'Paiement simulé (mode sandbox). Aucune carte débitée.'),
       });
     }
 
@@ -153,7 +155,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     if (!response.ok || !json.data?.checkout_url) {
       return NextResponse.json(
-        { success: false, error: json.error || 'CHECKOUT_FAILED', message: json.message || 'Impossible de créer la session de paiement.' },
+        { success: false, error: json.error || 'CHECKOUT_FAILED', message: json.message || i18nT(locale, 'billing.checkout_failed', 'Impossible de créer la session de paiement.') },
         { status: response.status || 500 }
       );
     }

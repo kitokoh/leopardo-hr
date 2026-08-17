@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/approvals/providers/approval_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class ApprovalScreen extends ConsumerStatefulWidget {
   const ApprovalScreen({super.key});
@@ -33,7 +34,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur : $e'),
+            content: Text(context.l10n.errorPrefix(e.toString())),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -107,7 +108,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erreur : $e'),
+              content: Text(context.l10n.errorPrefix(e.toString())),
               backgroundColor: AppColors.danger,
             ),
           );
@@ -135,19 +136,22 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                 ? ListView(
                     shrinkWrap: true,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    children: const [
-                      SizedBox(height: 80),
+                    children: [
+                      const SizedBox(height: 80),
                       EmptyState(
                         icon: Icons.check_circle_outline,
-                        title: 'Tout est à jour',
-                        description: 'Aucune approbation en attente.',
+                        title: context.l10n.approvalsUpToDate,
+                        description: context.l10n.approvalsEmpty,
                       ),
                     ],
                   )
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
                     itemCount: approvals.length,
                     itemBuilder: (context, index) {
                       final a = approvals[index];
@@ -159,7 +163,8 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
@@ -195,7 +200,9 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                     width: 40,
                                     height: 40,
                                     decoration: BoxDecoration(
-                                      color: MobileSurface.border.withValues(alpha: 0.5),
+                                      color: MobileSurface.border.withValues(
+                                        alpha: 0.5,
+                                      ),
                                       shape: BoxShape.circle,
                                     ),
                                     child: const Icon(
@@ -206,21 +213,24 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           a.requesterName,
-                                          style: AppTypography.subtitle.copyWith(
-                                            color: MobileSurface.text,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: AppTypography.subtitle
+                                              .copyWith(
+                                                color: MobileSurface.text,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           a.summary,
-                                          style: AppTypography.bodySmall.copyWith(
-                                            color: MobileSurface.muted,
-                                          ),
+                                          style: AppTypography.bodySmall
+                                              .copyWith(
+                                                color: MobileSurface.muted,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -236,12 +246,18 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                       style: OutlinedButton.styleFrom(
                                         foregroundColor: AppColors.danger,
                                         side: BorderSide(
-                                          color: AppColors.danger.withValues(alpha: 0.5),
+                                          color: AppColors.danger.withValues(
+                                            alpha: 0.5,
+                                          ),
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
                                       ),
                                       child: const Text('Refuser'),
                                     ),
@@ -255,9 +271,13 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                         foregroundColor: Colors.white,
                                         elevation: 0,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.symmetric(vertical: 14),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 14,
+                                        ),
                                       ),
                                       child: const Text('Approuver'),
                                     ),
