@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+
+- **fix(api): Task.status réintégré au fillable — PATCH statut persisté + score régularité exact (Closes #4861).** `status` manquait au `$fillable` de `Task` : `update()` l'écartait silencieusement (un employé marquant sa tâche « done » ne changeait rien) et `AttendanceRegularityService::taskCompletion()` comptait 0 tâche terminée → `task_completion.score` toujours 0 → test `AttendanceRegularityTest` rouge.
 ## [Unreleased]
 - **fix(admin): résiduel i18n FR — Support/CRM/Edge/NotFound localisés ×4 (Closes #4840).** SupportTicketsView (« Aucun ticket », sélection, erreur de chargement), CrmPipelineView (10 libellés pipeline), EdgeNodesView (table + stats + sync), NotFoundView (liens utiles, système) passent aux catalogues fr/en/ar/tr (clés support.*, crm.*, edge.*, notFound.*). Toast script via le helper `translate` (pattern #4781), plus de chaînes FR/EN en dur dans ces 4 vues.
 - **fix(api/i18n): messages contrôleurs localisés (Closes #4841).** JobPostingActionController (publish/close/destroy) et TaskController (delete) renvoyaient des messages EN en dur. 5 clés ajoutées au catalogue errors.* ×4 locales (fr/en/ar/tr) : JOB_POSTING_DRAFT_ONLY_PUBLISH, JOB_POSTING_PUBLISHED_ONLY_CLOSE, JOB_POSTING_DRAFT_ONLY_DELETE, JOB_POSTING_DELETED, TASK_DELETED — référencées via `__('errors.…')`.
