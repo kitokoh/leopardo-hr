@@ -13,7 +13,7 @@ leopardo-hr/
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
 │   ├── web/                # Vitrine (Next.js)
-│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin
+│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_platform_admin
 ├── docs/                   # Documentation technique
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── docker-compose.yml      # Dev environment
