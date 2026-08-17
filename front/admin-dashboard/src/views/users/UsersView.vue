@@ -525,8 +525,10 @@ async function exportUsers(rows = null) {
     const formatDate = (d) => (d instanceof Date && !Number.isNaN(d.getTime()))
       ? d.toLocaleDateString(toIntlLocale(localeStore.current))
       : ''
+    // #4716 : en-têtes CSV localisés (clés users.csv.*).
+    const tCsv = (key, fallback) => translate(localeStore.current, key, fallback)
     const csvContent = "data:text/csv;charset=utf-8," +
-      "Nom,Email,Statut,Entreprise,Inscription,Dernière connexion\n" +
+      [tCsv('users.csv.name', 'Nom'), tCsv('users.csv.email', 'Email'), tCsv('users.csv.status', 'Statut'), tCsv('users.csv.company', 'Entreprise'), tCsv('users.csv.signup', 'Inscription'), tCsv('users.csv.lastLogin', 'Dernière connexion')].join(',') + '\n' +
       exportRows.map(user =>
         [user.name, user.email, user.status, user.company?.name || '', formatDate(user.createdAt), formatDate(user.lastLoginAt)]
           .map(escapeCell).join(',')

@@ -11,11 +11,10 @@
 # headers front/web already has via next.config.ts/vercel.json, plus a
 # Content-Security-Policy.
 #
-# The CSP starts in Report-Only mode: violations get logged to the browser
-# console without breaking anything while we watch a report. Once a
-# production report is clean, switch the header key below from
-# `Content-Security-Policy-Report-Only` to `Content-Security-Policy` to
-# enforce it.
+# #4804 : la CSP est désormais ENFORCÉE (plus de report-only). La politique
+# liste explicitement toutes les origines chargées par le dashboard (API
+# Render, WebSocket, Google Fonts, ui-avatars, tuiles OpenStreetMap) et reste
+# permissive sur inline (script/style 'unsafe-inline', bundle Vite).
 #
 # `upgrade-insecure-requests` was removed from the policy: Chrome logs
 # « The Content Security Policy directive 'upgrade-insecure-requests' is
@@ -41,4 +40,4 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://ui-avatars.com https://*.tile.openstreetmap.org; connect-src 'self' https: wss:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
