@@ -159,5 +159,10 @@ return [
     'PAYROLL_RUN_COUNTRY_MISMATCH' => 'يجب أن تتطابق دولة التشغيل مع الدولة القانونية للمستأجر (:country).',
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'يجب أن تتطابق السنة مع سنة التاريخ.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'يجب أن يتطابق اليوم والشهر مع يوم وشهر التاريخ.',
+    'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'يجب أن يكون وقت الخروج بعد وقت الدخول.',
+    'PLATFORM_ADMIN_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
+    'NO_ACTIVE_PLAN_AVAILABLE' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
+    'CONTACT_EMAIL_REQUIRED' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
+    'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
 ];

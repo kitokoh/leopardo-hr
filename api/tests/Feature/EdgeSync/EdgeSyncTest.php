@@ -58,6 +58,12 @@ class EdgeSyncTest extends TestCase
     /** @test */
     public function it_registers_a_new_edge_node(): void
     {
+        // #1291 : l'API tenant /api/v1/edge (register) a été démontée — le
+        // schéma bigint legacy n'est jamais créé ; l'enrôlement passe par le
+        // flux EdgeNodeController UUID (edge/nodes) côté plateforme et par le
+        // daemon EdgeSync côté appareil. Ce test cible une surface inexistante.
+        $this->markTestSkipped('API /edge (register) démontée — voir #1291.');
+
         $admin = $this->actingAsCompanyAdmin($this->company);
 
         $response = $this->postJson('/api/v1/edge', [
@@ -79,6 +85,9 @@ class EdgeSyncTest extends TestCase
     /** @test */
     public function it_cannot_see_other_company_nodes(): void
     {
+        // #1291 : liste tenant /api/v1/edge démontée (voir test précédent).
+        $this->markTestSkipped('API /edge (list) démontée — voir #1291.');
+
         $other = Company::factory()->create(['slug' => 'other-co', 'status' => 'active']);
         EdgeNode::create([
             'company_id' => $other->id,

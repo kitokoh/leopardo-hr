@@ -159,5 +159,10 @@ return [
     'PAYROLL_RUN_COUNTRY_MISMATCH' => 'Çalıştırma ülkesi, kiracının yasal ülkesiyle eşleşmelidir (:country).',
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'Yıl, tarihin yılıyla eşleşmelidir.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Ay_gün, tarihin ayı ve günüyle eşleşmelidir.',
+    'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'Çıkış saati, giriş saatinden sonra olmalıdır.',
+    'PLATFORM_ADMIN_ONLY' => 'İslami takvimi yalnızca platform yöneticisi değiştirebilir.',
+    'NO_ACTIVE_PLAN_AVAILABLE' => 'Bu talebi onaylamak için uygun aktif bir plan yok.',
+    'CONTACT_EMAIL_REQUIRED' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
+    'ENTERPRISE_SCHEMA_FROZEN' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
 ];
