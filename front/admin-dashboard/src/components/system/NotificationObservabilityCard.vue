@@ -124,6 +124,8 @@ import { useLocaleStore } from '@/stores/locale'
 import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
+// Convention repo : alias `t` pour la garde check-i18n-diff (PA2-I18N-014).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 defineProps({
   data: {
@@ -157,18 +159,18 @@ function formatRate(value) {
 
 function formatTime(value) {
   // #4716 : libellés temps relatif localisés (avant : FR codé en dur).
-  if (!value) return translate(localeStore.current, 'time.never', 'Jamais')
+  if (!value) return t('time.never', 'Jamais')
 
   const date = new Date(value)
   const now = new Date()
   const diff = now - date
 
-  if (diff < 60000) return translate(localeStore.current, 'time.justNow', "À l'instant")
+  if (diff < 60000) return t('time.justNow', "À l'instant")
   if (diff < 3600000) {
-    return translate(localeStore.current, 'time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
+    return t('time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
   }
   if (diff < 86400000) {
-    return translate(localeStore.current, 'time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
+    return t('time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
   }
   return date.toLocaleDateString(toIntlLocale(localeStore.current), {
     day: '2-digit',
