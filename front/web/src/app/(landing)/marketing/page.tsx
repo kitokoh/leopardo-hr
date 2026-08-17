@@ -70,7 +70,7 @@ export default function MarketingPage() {
         ctaPrimary={content.hero.ctaPrimary}
         ctaSecondary={content.hero.ctaSecondary}
         badge={{
-          text: 'Marketing Complet',
+          text: content.sections.heroBadge,
           icon: <Mail className="w-3 h-3" />,
         }}
       />
@@ -81,7 +81,7 @@ export default function MarketingPage() {
         subtitle={content.problem.subtitle}
         items={problemItems}
         badge={{
-          text: 'Les Défis',
+          text: content.sections.problemBadge,
           icon: <BarChart3 className="w-3 h-3" />,
         }}
       />
@@ -93,19 +93,19 @@ export default function MarketingPage() {
         description={content.solution.description}
         features={solutionFeatures}
         badge={{
-          text: 'Notre Solution',
+          text: content.sections.solutionBadge,
           icon: <Mail className="w-3 h-3" />,
         }}
       />
 
       {/* Features Section */}
       <FeaturesSection
-        title="Fonctionnalités Détaillées"
-        subtitle="Tout ce dont vous avez besoin"
+        title={content.sections.featuresTitle}
+        subtitle={content.sections.featuresSubtitle}
         features={features}
         columns={4}
         badge={{
-          text: 'Puissant & Flexible',
+          text: content.sections.featuresBadge,
           icon: <Mail className="w-3 h-3" />,
         }}
       />
