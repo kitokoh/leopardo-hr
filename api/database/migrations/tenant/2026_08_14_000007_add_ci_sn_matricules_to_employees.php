@@ -19,23 +19,23 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('employees')) {
+        if (! schemaTableExists('employees')) {
             return;
         }
 
-        if (! Schema::hasColumn('employees', 'cnss_ci_matricule')) {
+        if (! schemaHasColumn('employees', 'cnss_ci_matricule')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->string('cnss_ci_matricule', 50)->nullable();
             });
         }
 
-        if (! Schema::hasColumn('employees', 'ipres_matricule')) {
+        if (! schemaHasColumn('employees', 'ipres_matricule')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->string('ipres_matricule', 50)->nullable();
             });
         }
 
-        if (! Schema::hasColumn('employees', 'ipres_category')) {
+        if (! schemaHasColumn('employees', 'ipres_category')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->string('ipres_category', 20)->default('general'); // general | cadre
             });
@@ -44,7 +44,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('employees')) {
+        if (! schemaTableExists('employees')) {
             return;
         }
 

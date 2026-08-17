@@ -17,17 +17,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('employees')) {
+        if (! schemaTableExists('employees')) {
             return;
         }
 
-        if (! Schema::hasColumn('employees', 'cnss_bf_matricule')) {
+        if (! schemaHasColumn('employees', 'cnss_bf_matricule')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->string('cnss_bf_matricule', 50)->nullable();
             });
         }
 
-        if (! Schema::hasColumn('employees', 'inps_ml_matricule')) {
+        if (! schemaHasColumn('employees', 'inps_ml_matricule')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->string('inps_ml_matricule', 50)->nullable();
             });
@@ -36,7 +36,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('employees')) {
+        if (! schemaTableExists('employees')) {
             return;
         }
 

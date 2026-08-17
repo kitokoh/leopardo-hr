@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('job_postings')) {
+        if (! schemaTableExists('job_postings')) {
             Schema::create('job_postings', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -37,7 +37,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('applicants')) {
+        if (! schemaTableExists('applicants')) {
             Schema::create('applicants', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -60,7 +60,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('interviews')) {
+        if (! schemaTableExists('interviews')) {
             Schema::create('interviews', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('applicant_id');

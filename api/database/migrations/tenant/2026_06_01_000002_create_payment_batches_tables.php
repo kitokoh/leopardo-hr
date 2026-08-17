@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('payment_batches')) {
+        if (! schemaTableExists('payment_batches')) {
             Schema::create('payment_batches', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -30,7 +30,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('payment_items')) {
+        if (! schemaTableExists('payment_items')) {
             Schema::create('payment_items', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -51,7 +51,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('payment_confirmations')) {
+        if (! schemaTableExists('payment_confirmations')) {
             Schema::create('payment_confirmations', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();

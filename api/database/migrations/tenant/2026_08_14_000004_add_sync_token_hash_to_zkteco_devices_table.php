@@ -23,7 +23,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('zkteco_devices') && ! Schema::hasColumn('zkteco_devices', 'sync_token_hash')) {
+        if (schemaTableExists('zkteco_devices') && ! schemaHasColumn('zkteco_devices', 'sync_token_hash')) {
             Schema::table('zkteco_devices', function (Blueprint $table): void {
                 $table->string('sync_token_hash', 255)->nullable()->after('serial_number');
             });
@@ -32,7 +32,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (Schema::hasTable('zkteco_devices') && Schema::hasColumn('zkteco_devices', 'sync_token_hash')) {
+        if (schemaTableExists('zkteco_devices') && schemaHasColumn('zkteco_devices', 'sync_token_hash')) {
             Schema::table('zkteco_devices', function (Blueprint $table): void {
                 $table->dropColumn('sync_token_hash');
             });
