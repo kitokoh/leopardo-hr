@@ -56,7 +56,15 @@
     "personal_account_link": "Kisisel hesap",
     "activate_manager_access": "Yonetici erisimimi etkinlestir",
     "try_demo_account": "Demo hesabini dene",
-    "two_factor_required": "2FA kodu gereklidir."
+    "two_factor_required": "2FA kodu gereklidir.",
+    "demo": {
+      "access": "Demo erisimi"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Sifreyi goster veya gizle"
+      }
+    }
   },
   "common": {
     "language": {
@@ -1051,7 +1059,18 @@
     "phone": "Telefon",
     "description": "Açıklama",
     "submit_request": "Talep gönder",
-    "submit_error": "Talep gönderme hatası"
+    "submit_error": "Talep gönderme hatası",
+    "already_account": "Zaten hesabiniz var mi? Giris yapin",
+    "first_name": "Ad",
+    "google_error": "Google hatasi: {error}",
+    "last_name": "Soyad",
+    "login_subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
+    "no_account": "Henuz hesabınız yok mu? Kayit olun",
+    "personal_login": "Kisisel giris",
+    "phone_optional": "Telefon (opsiyonel)",
+    "register_button": "Hesabimi olustur",
+    "register_subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
+    "register_title": "Hesabimi olustur"
   },
   "partnerPage": {
     "loading": "Alanınız yükleniyor...",

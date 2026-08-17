@@ -56,7 +56,15 @@
     "personal_account_link": "حساب شخصي",
     "activate_manager_access": "تفعيل صلاحية المدير",
     "try_demo_account": "تجربة حساب تجريبي",
-    "two_factor_required": "رمز التحقق الثنائي مطلوب."
+    "two_factor_required": "رمز التحقق الثنائي مطلوب.",
+    "demo": {
+      "access": "وصول تجريبي"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "إظهار أو إخفاء كلمة المرور"
+      }
+    }
   },
   "common": {
     "language": {
@@ -1051,7 +1059,18 @@
     "phone": "الهاتف",
     "description": "الوصف",
     "submit_request": "إرسال الطلب",
-    "submit_error": "خطأ في إرسال الطلب"
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
   },
   "partnerPage": {
     "loading": "جارٍ تحميل مساحتك...",
