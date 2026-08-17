@@ -73,9 +73,7 @@ jobs:
           echo "Web changed: ${{ steps.changes.outputs.web }}"
 
   backend-tests:
-    # Issue #4976 : conserver l’isolation par worker tout en demandant à
-    # Laravel/ParaTest de recréer proprement les bases `_test_N` avant usage.
-    timeout-minutes: 75
+    timeout-minutes: 45
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
     needs: detect-changes
@@ -116,20 +114,6 @@ jobs:
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db
 
-      - name: Seed isolated PostgreSQL databases for parallel workers
-        working-directory: ./api
-        env:
-          PGPASSWORD: leopardo_pass_test
-        run: |
-          set -euo pipefail
-          for token in 1 2 3 4; do
-            database="leopardo_test_test_${token}"
-            psql -h 127.0.0.1 -U leopardo_user -d postgres -v ON_ERROR_STOP=1 \
-              -c "DROP DATABASE IF EXISTS ${database} WITH (FORCE);"
-            psql -h 127.0.0.1 -U leopardo_user -d postgres -v ON_ERROR_STOP=1 \
-              -c "CREATE DATABASE ${database} TEMPLATE leopardo_test;"
-          done
-
       - name: Validate composer.json
         working-directory: ./api
         run: composer validate --no-check-publish --strict
@@ -154,8 +138,10 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
-        # Issue #4976 : chaque worker garde sa base clonée depuis le bootstrap
-        # CI, afin d’éviter les migrations incomplètes et collisions stale.
+        # Issue #4695 : suite Feature en parallèle (paratest, 1 base par worker
+        # `leopardo_test_test_{token}`, créée automatiquement — voir
+        # tests/TestCase::configureTestingDatabaseConnection). La suite sérielle
+        # dépassait les 45 min (timeout du job) et bloquait main.
         run: php artisan test --testsuite=Feature --parallel --processes=4 --log-junit=storage/test-results/feature.xml
 
       - name: Upload backend test reports
@@ -491,20 +477,6 @@ jobs:
         with:
           coverage: pcov
 
-      - name: Seed isolated PostgreSQL databases for parallel workers
-        working-directory: ./api
-        env:
-          PGPASSWORD: leopardo_pass_test
-        run: |
-          set -euo pipefail
-          for token in 1 2 3 4; do
-            database="leopardo_test_test_${token}"
-            psql -h 127.0.0.1 -U leopardo_user -d postgres -v ON_ERROR_STOP=1 \
-              -c "DROP DATABASE IF EXISTS ${database} WITH (FORCE);"
-            psql -h 127.0.0.1 -U leopardo_user -d postgres -v ON_ERROR_STOP=1 \
-              -c "CREATE DATABASE ${database} TEMPLATE leopardo_test;"
-          done
-
       - name: Run backend test suite with coverage
         id: backend_coverage_tests
         continue-on-error: true
@@ -516,8 +488,8 @@ jobs:
           DB_SEARCH_PATH: public,shared_tenants
         run: |
           mkdir -p storage/test-results storage/coverage-html
-          # Issue #4976 : les workers utilisent les bases clonées depuis le
-          # bootstrap CI, ce qui évite les migrations incomplètes/collisions.
+          # Issue #4695 : parallélisé comme le job backend-tests (paratest
+          # fusionne les rapports de couverture des workers).
           php artisan test --parallel --processes=4 \
             --coverage-clover=storage/test-results/clover.xml \
             --coverage-html=storage/coverage-html
