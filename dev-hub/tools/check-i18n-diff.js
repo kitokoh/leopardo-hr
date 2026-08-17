@@ -71,7 +71,7 @@ const ignorePathFragments = [
 // Lines that already route text through a translation mechanism — never
 // flagged even if they also contain a literal (e.g. the French fallback
 // key text of a translation catalog entry itself).
-const translationCallPattern = /(context\.l10n\.|AppLocalizations\.of|\bl10n\.|__\(|\$t\(|\bt\(['"]|i18n\.t\(|data-i18n|useTranslation|\bt`|Lang::get\(|trans\(|@lang\()/;
+const translationCallPattern = /(context\.l10n\.|AppLocalizations\.of|\bl10n\.|__\(|\$t\(|\bt\(['"]|i18n\.t\(|data-i18n|useTranslation|\bt`|Lang::get\(|trans\(|@lang\(|translate\()/;
 
 const devLogLinePattern = /\b(console\.(log|warn|error|info|debug)|debugPrint|print(?:ln)?|Log\.[dewiv]|logger\.(debug|info|warn|error)|dev\.log)\s*\(/i;
 const todoLinePattern = /\/\/\s*TODO|#\s*TODO/i;
@@ -109,7 +109,7 @@ function isTechnicalToken(value) {
   if (/^#[a-zA-Z][\w-]*$/.test(trimmed)) return true;
   if (trimmed === 'use client' || trimmed === 'use server' || trimmed === 'use strict') return true;
   if (/^@?[a-zA-Z0-9_.-]+(?:\/[a-zA-Z0-9_.-]+)+$/.test(trimmed)) return true;
-  return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
+  return /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|Bearer\s|https?:\/\/|wss?:\/\/|https?:|wss?:|api\/|\/api|[A-Z_]{2,})$/.test(trimmed);
 }
 
 function isCodeExpression(value) {
