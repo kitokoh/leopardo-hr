@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -417,7 +417,10 @@
     "platform_health": "Platform sağlığı",
     "client_requests": "Müşteri talepleri",
     "tenants_at_risk": "Risk altındaki kiracılar",
-    "platform_dashboard_hint": "Platform panelinde mevcuttur."
+    "platform_dashboard_hint": "Platform panelinde mevcuttur.",
+    "searchPlaceholder": "Ara...",
+    "modulesActiveSentence": "{active} aktif modül, planınıza göre {locked} etkinleştirilecek.",
+    "yourCompany": "Şirketiniz"
   },
   "marketing": {
     "oauth": {
@@ -450,7 +453,9 @@
         "placeholder_secret": "Yeni sır (isteğe bağlı)",
         "placeholder_uri": "https://example.com/oauth/callback"
       }
-    }
+    },
+    "socialExamplePlaceholder": "Örn: Leopardo RH — Sosyal medya",
+    "postContentPlaceholder": "Gönderi içeriği..."
   },
   "attendance": {
     "sending_to_server": "{label} sunucuya gönderiliyor...",
@@ -1219,6 +1224,14 @@
     "checkout_failed": "Ödeme oturumu oluşturulamadı."
   },
   "contracts": {
-    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı."
+    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
+    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
+    "allStatuses": "Tüm durumlar"
+  },
+  "training": {
+    "titlePlaceholder": "Başlık *",
+    "durationPlaceholder": "Süre (saat)",
+    "maxParticipantsPlaceholder": "Maks. katılımcı",
+    "online": "Çevrimiçi"
   }
 }

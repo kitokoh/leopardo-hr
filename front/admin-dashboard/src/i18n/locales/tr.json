@@ -106,7 +106,10 @@
     "platform_health": "Platform sağlığı",
     "client_requests": "Müşteri talepleri",
     "tenants_at_risk": "Risk altındaki kiracılar",
-    "platform_dashboard_hint": "Platform panelinde mevcuttur."
+    "platform_dashboard_hint": "Platform panelinde mevcuttur.",
+    "searchPlaceholder": "Ara...",
+    "modulesActiveSentence": "{active} aktif modül, planınıza göre {locked} etkinleştirilecek.",
+    "yourCompany": "Şirketiniz"
   },
   "marketing": {
     "oauth": {
@@ -139,7 +142,9 @@
       "ayrshare_info": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır.",
       "title": "Pazarlama OAuth Ayarları",
       "nav_title": "Pazarlama OAuth"
-    }
+    },
+    "socialExamplePlaceholder": "Örn: Leopardo RH — Sosyal medya",
+    "postContentPlaceholder": "Gönderi içeriği..."
   },
   "ai_chat": {
     "error_message": "Hata: asistana ulasilamadi.",
@@ -941,7 +946,7 @@
     }
   },
   "_locale": "tr",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "profile": {
     "subtitle": "Kisisel bilgiler ve dil",
     "department_label": "Departman",
@@ -1084,7 +1089,11 @@
     "statusCancelled": "İptal edildi",
     "statusEnrolled": "Kayıtlı",
     "statusDropped": "Bırakıldı",
-    "loadError": "Eğitim verileri yüklenemedi."
+    "loadError": "Eğitim verileri yüklenemedi.",
+    "titlePlaceholder": "Başlık *",
+    "durationPlaceholder": "Süre (saat)",
+    "maxParticipantsPlaceholder": "Maks. katılımcı",
+    "online": "Çevrimiçi"
   },
   "analytics": {
     "title": "Platform Analitiği",
@@ -1506,6 +1515,8 @@
     "checkout_failed": "Ödeme oturumu oluşturulamadı."
   },
   "contracts": {
-    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı."
+    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
+    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
+    "allStatuses": "Tüm durumlar"
   }
 }
