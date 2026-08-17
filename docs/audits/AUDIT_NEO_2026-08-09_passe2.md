@@ -1,5 +1,9 @@
 # 🔍 Audit Neo — Leopardo RH — 2026-08-09 (2ᵉ passe, session de mise au vert)
 
+> ⚠️ **MAJ 2026-08-17 (revue PM)** : les points « #1472/#1601 action humaine » cités dans ce
+> rapport ont été **résolus depuis** — rotation Redis attestée 10/08/2026, purge historique
+> exécutée (commit `70ca415c` absent), secret Neon traité (#1601). Issues closes.
+
 > Périmètre : suite de l'audit NEO 2026-08-09 (#1585). Vérification de la PR consolidée #1598
 > (9 checks rouges → verts), contrôle des points des audits précédents encore en suspens,
 > et nouveau rapport avec recommandations + specs.

@@ -1,5 +1,9 @@
 # Audit Agent — 2026-08-10 (session : implémentation S-1→S-7 + vérification audits antérieurs)
 
+> ⚠️ **MAJ 2026-08-17 (revue PM)** : le point « #1472 toujours ouverte » cité dans ce rapport
+> a été **résolu depuis** — rotation Redis attestée le 10/08/2026, purge historique git
+> exécutée (le commit `70ca415c` n'existe plus dans l'historique). Issue #1472 close.
+
 > Agent autonome, session du 2026-08-10. Méthode : chaque point vérifié contre le
 > code réel et/ou les tests exécutés localement (PHP 8.4 + PostgreSQL 16 + pcov),
 > jamais contre les dires des rapports précédents. Contexte : le dépôt est public,
