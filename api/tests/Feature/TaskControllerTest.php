@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Planning\Domain\Models\Task;
 use App\Modules\Planning\Domain\Models\TaskComment;
@@ -77,6 +77,37 @@ class TaskControllerTest extends TestCase
             ->assertJsonPath('data.completed_minutes', 45)
             ->assertJsonPath('data.completion_note', 'Termine sans anomalie.')
             ->assertJsonPath('data.performance_score', '66.67');
+    }
+
+    public function test_patch_task_status_is_persisted(): void
+    {
+        // #4861 (audit 2026-08-17) : `status` était absent du $fillable →
+        // PATCH /tasks/{id} l'écartait silencieusement (mass-assignment).
+        $company = Company::factory()->create(['timezone' => 'UTC']);
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+        $task = Task::query()->create([
+            'company_id' => $company->id,
+            'title' => 'Marquer terminee',
+            'created_by' => $employee->id,
+            'assigned_to' => [$employee->id],
+            'due_date' => now('UTC')->toDateString(),
+            'priority' => 'normal',
+            'estimated_minutes' => 30,
+            'status' => 'todo',
+        ]);
+
+        Sanctum::actingAs($employee);
+
+        $this->patchJson("/api/v1/tasks/{$task->id}", [
+            'status' => 'done',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'done');
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'status' => 'done',
+        ]);
     }
 
     public function test_assigned_employee_cannot_reassign_task_when_completing_it(): void
@@ -175,4 +206,3 @@ class TaskControllerTest extends TestCase
         $this->assertSame(0, TaskComment::query()->count());
     }
 }
-

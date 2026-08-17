@@ -1,6 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -62,21 +65,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: Colors.redAccent,
+              ),
               const SizedBox(height: 12),
-              const Text(
-                'Une erreur est survenue',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              Text(
+                context.l10n.errorUnexpected,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'La page demandée est introuvable ou la navigation a échoué.',
-                textAlign: TextAlign.center,
-              ),
+              Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () => context.go('/'),
-                child: const Text('Retour à l\'accueil'),
+                child: Text(context.l10n.backToHome),
               ),
             ],
           ),
@@ -156,94 +160,100 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/modules',
             builder: (context, state) => const ModulesHubScreen(),
           ),
-      GoRoute(
-        path: '/absences',
-        builder: (context, state) => const AbsenceListScreen(),
-      ),
-      GoRoute(
-        path: '/salary-advances',
-        builder: (context, state) => const SalaryAdvanceListScreen(),
-      ),
-      GoRoute(
-        path: '/payrolls',
-        builder: (context, state) => const PayrollListScreen(),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationListScreen(),
-      ),
-      GoRoute(
-        path: '/evaluations',
-        builder: (context, state) => const EvaluationListScreen(),
-      ),
-      GoRoute(
-        path: '/attendance',
-        builder: (context, state) => const AttendanceScreen(),
-      ),
-      GoRoute(
-        path: '/history',
-        builder: (context, state) => const HistoryScreen(),
-      ),
-      GoRoute(
-        path: '/me/monthly',
-        builder: (context, state) => const MonthlySummaryScreen(),
-      ),
-      GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
-      GoRoute(
-        path: '/tasks',
-        builder: (context, state) => const TaskListScreen(),
-      ),
-      GoRoute(
-        path: '/cabinet',
-        builder: (context, state) => const CabinetScreen(),
-      ),
-      GoRoute(
-        path: '/cabinet/folder/:folderId',
-        builder: (context, state) {
-          final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
-            if (folderId == null) {
-              // T121 : deep-link avec folderId non numérique → écran vide
-              // plutôt qu'un crash int.parse.
-              return const Scaffold(body: SizedBox.shrink());
-            }
-          final folderName = state.extra as String?;
-          return CabinetScreen(folderId: folderId, folderName: folderName);
-        },
-      ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
-      GoRoute(
-        path: '/contracts',
-        builder: (context, state) => const ContractScreen(),
-      ),
+          GoRoute(
+            path: '/absences',
+            builder: (context, state) => const AbsenceListScreen(),
+          ),
+          GoRoute(
+            path: '/salary-advances',
+            builder: (context, state) => const SalaryAdvanceListScreen(),
+          ),
+          GoRoute(
+            path: '/payrolls',
+            builder: (context, state) => const PayrollListScreen(),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) => const NotificationListScreen(),
+          ),
+          GoRoute(
+            path: '/evaluations',
+            builder: (context, state) => const EvaluationListScreen(),
+          ),
+          GoRoute(
+            path: '/attendance',
+            builder: (context, state) => const AttendanceScreen(),
+          ),
+          GoRoute(
+            path: '/history',
+            builder: (context, state) => const HistoryScreen(),
+          ),
+          GoRoute(
+            path: '/me/monthly',
+            builder: (context, state) => const MonthlySummaryScreen(),
+          ),
+          GoRoute(
+            path: '/team',
+            builder: (context, state) => const TeamScreen(),
+          ),
+          GoRoute(
+            path: '/tasks',
+            builder: (context, state) => const TaskListScreen(),
+          ),
+          GoRoute(
+            path: '/cabinet',
+            builder: (context, state) => const CabinetScreen(),
+          ),
+          GoRoute(
+            path: '/cabinet/folder/:folderId',
+            builder: (context, state) {
+              final folderId = int.tryParse(
+                state.pathParameters['folderId'] ?? '',
+              );
+              if (folderId == null) {
+                // T121 : deep-link avec folderId non numérique → écran vide
+                // plutôt qu'un crash int.parse.
+                return const Scaffold(body: SizedBox.shrink());
+              }
+              final folderName = state.extra as String?;
+              return CabinetScreen(folderId: folderId, folderName: folderName);
+            },
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/contracts',
+            builder: (context, state) => const ContractScreen(),
+          ),
 
-      GoRoute(
-        path: '/organigramme',
-        builder: (context, state) => const OrganigrammeScreen(),
-      ),
-      GoRoute(
-        path: '/schedules',
-        builder: (context, state) => const ScheduleListScreen(),
-      ),
-      GoRoute(
-        path: '/company/branding',
-        builder: (context, state) => const CompanyBrandingScreen(),
-      ),
-      GoRoute(
-        path: '/manager/attendance',
-        builder: (context, state) => const ManagerAttendanceMonitoringScreen(),
-      ),
-      // ── Smart Attendance ──────────────────────────────────────────
-      GoRoute(
-        path: '/smart-attendance',
-        builder: (context, state) => const SmartAttendanceDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/smart-attendance/pending',
-        builder: (context, state) => const PendingGeoSessionsScreen(),
-      ),
+          GoRoute(
+            path: '/organigramme',
+            builder: (context, state) => const OrganigrammeScreen(),
+          ),
+          GoRoute(
+            path: '/schedules',
+            builder: (context, state) => const ScheduleListScreen(),
+          ),
+          GoRoute(
+            path: '/company/branding',
+            builder: (context, state) => const CompanyBrandingScreen(),
+          ),
+          GoRoute(
+            path: '/manager/attendance',
+            builder: (context, state) =>
+                const ManagerAttendanceMonitoringScreen(),
+          ),
+          // ── Smart Attendance ──────────────────────────────────────────
+          GoRoute(
+            path: '/smart-attendance',
+            builder: (context, state) => const SmartAttendanceDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/smart-attendance/pending',
+            builder: (context, state) => const PendingGeoSessionsScreen(),
+          ),
         ],
       ),
     ],
@@ -255,8 +265,10 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts =
-        normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -297,9 +309,11 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final deviceLanguage = PlatformDispatcher.instance.locale
+        .toLanguageTag()
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
