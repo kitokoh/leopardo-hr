@@ -505,7 +505,19 @@
     "login_placeholder_email": "admin@leopardo-rh.com",
     "login_submit": "Giriş yap",
     "remember_me": "Beni hatırla",
-    "login_subtitle": "Çalışma alanınıza giriş yapın"
+    "login_subtitle": "Çalışma alanınıza giriş yapın",
+    "connection_error": "Bağlantı hatası.",
+    "disable_two_fa_failed": "2FA devre dışı bırakılamadı.",
+    "hide_password": "Şifreyi Gizle",
+    "incomplete_response": "Giriş yanıtı eksik.",
+    "loading": "Kimlik doğrulanıyor…",
+    "password_change_failed": "Şifre değiştirme başarısız oldu.",
+    "profile_update_failed": "Profil güncelleme başarısız oldu.",
+    "show_password": "Şifreyi Göster",
+    "two_fa_invalid": "Sağlanan 2FA kodu geçersiz.",
+    "two_fa_required_msg": "Doğrulama kodu gereklidir.",
+    "two_fa_setup_failed": "2FA sırrı oluşturulamadı.",
+    "unexpected_error": "Beklenmeyen bir hata oluştu."
   },
   "social_contrib": {
     "ignore_caps": "Yasal tavan olmadan",

@@ -179,8 +179,9 @@ const routes = [
         component: () => import('@/views/fleet/FleetView.vue'),
         meta: {
           title: 'navigation.fleet',
-          icon: 'TruckIcon',
-          requiresTenant: true
+          icon: 'TruckIcon'
+          // requiresTenant retiré (#4710) : FleetView gère le 401 super-admin
+          // via _skipAuthRedirect (#4170) et affiche un état d'erreur honnête.
         }
       },
       {
@@ -207,8 +208,9 @@ const routes = [
         component: () => import('@/views/exports/ExportsView.vue'),
         meta: {
           title: 'navigation.exports',
-          icon: 'ArrowDownTrayIcon',
-          requiresTenant: true
+          icon: 'ArrowDownTrayIcon'
+          // requiresTenant retiré (#4710) : ExportsView gère le 401 super-admin
+          // avec état d'erreur visible + retry (#3395).
         }
       },
       {
