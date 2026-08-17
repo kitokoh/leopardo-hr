@@ -74,7 +74,7 @@ class EmployeesRbacTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $sensitiveEmployee3 = Employee::withoutGlobalScopes()->create([
+        $sensitiveEmployee3 = Employee::withoutGlobalScopes()->forceCreate([
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
         ]);
@@ -464,7 +464,7 @@ class EmployeesRbacTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $sensitiveEmployee2 = Employee::withoutGlobalScopes()->create([
+        $sensitiveEmployee2 = Employee::withoutGlobalScopes()->forceCreate([
             'email' => 'shared@tenant.test',
             'password_hash' => Hash::make('password123'),
         ]);
@@ -526,7 +526,7 @@ class EmployeesRbacTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $sensitiveEmployee1 = Employee::withoutGlobalScopes()->create([
+        $sensitiveEmployee1 = Employee::withoutGlobalScopes()->forceCreate([
             'matricule' => 'EMP-001',
             'email' => 'other@tenant.test',
             'password_hash' => Hash::make('password123'),
