@@ -4,8 +4,6 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
-import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import {
   FileText,
   Search,
@@ -29,8 +27,6 @@ interface Contract {
 }
 
 export default function ContractsPage() {
-  const locale = getPreferredLocale();
-
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -105,8 +101,8 @@ export default function ContractsPage() {
 
   return (
     <ModulePageShell
-      title={i18nT(locale, 'navigation.contracts', 'Contrats')}
-      subtitle={i18nT(locale, 'contracts.list_subtitle', "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.")}
+      title="Contrats"
+      subtitle="Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH."
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {downloadError && (
