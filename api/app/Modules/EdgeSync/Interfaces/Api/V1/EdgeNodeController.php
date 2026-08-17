@@ -67,9 +67,14 @@ class EdgeNodeController extends Controller
 
         $result = $this->registerEdgeNode->execute((string) $request->user()->company_id, $validated);
 
+        // #4687 : les champs sensibles sont masqués par défaut ($hidden) ;
+        // l'enrôlement est le seul flux où le nœud reçoit sa licence offline
+        // (signed_payload JWT + license_key) — exposés explicitement ici.
+        $license = $result['license']->makeVisible(['license_key', 'signed_payload']);
+
         return response()->json([
             'data' => $result['node'],
-            'license' => $result['license'],
+            'license' => $license,
             'edge_token' => $result['edge_token'], // shown only once at registration
             'install_command' => sprintf(
                 'sudo bash <(curl -fsSL %s/edge/install.sh) --node-id %s --token %s',
@@ -105,7 +110,9 @@ class EdgeNodeController extends Controller
         $days = $request->integer('valid_days', (int) config('edge.license_validity_days', 30));
         $license = $this->licenseService->issueLicense($node, $days);
 
-        return response()->json(['data' => $license]);
+        // #4687 : renouvellement orienté nœud — la nouvelle licence offline
+        // (signed_payload) est le seul champ masqué qui doit être rendu.
+        return response()->json(['data' => $license->makeVisible(['license_key', 'signed_payload'])]);
     }
 
     /**

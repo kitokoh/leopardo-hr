@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,8 +21,8 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $slug
  * @property string $site_address
- * @property string $status  active|inactive|suspended
- * @property string $mode    cloud|offline|hybrid
+ * @property string $status active|inactive|suspended
+ * @property string $mode cloud|offline|hybrid
  * @property string $license_key
  * @property Carbon $license_expires_at
  * @property Carbon|null $last_sync_at
@@ -33,9 +34,9 @@ use Illuminate\Support\Carbon;
  * @property array<string,mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Company|null $company
  *
- * @property-read \App\Core\Tenant\Domain\Models\Company|null $company
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class EdgeNode extends Model
 {
@@ -55,12 +56,24 @@ class EdgeNode extends Model
         'edge_version', 'capabilities', 'metadata',
     ];
 
+    /**
+     * Champs sensibles jamais sérialisés (#4687) :
+     * - license_key : identifiant d'appareil (credential)
+     * - metadata : contient le hash SHA-256 de l'edge_token — le design
+     *   « edge_token montré une seule fois » (RegisterEdgeNode) serait
+     *   contourné si le hash était exposé en clair.
+     */
+    protected $hidden = [
+        'license_key',
+        'metadata',
+    ];
+
     protected $casts = [
         'license_expires_at' => 'datetime',
-        'last_sync_at'       => 'datetime',
-        'last_seen_at'       => 'datetime',
-        'capabilities'       => 'array',
-        'metadata'           => 'array',
+        'last_sync_at' => 'datetime',
+        'last_seen_at' => 'datetime',
+        'capabilities' => 'array',
+        'metadata' => 'array',
     ];
 
     public function company(): BelongsTo
@@ -103,4 +116,3 @@ class EdgeNode extends Model
         return $this->license_expires_at->diffInDays(now()) <= config('edge.license_renewal_warning_days', 7);
     }
 }
-
