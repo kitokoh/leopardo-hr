@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -418,15 +418,9 @@
     "client_requests": "Demandes clients",
     "tenants_at_risk": "Tenants à risque",
     "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
-    "activeemployees": "Employes actifs",
-    "presence": {
-      "today": {
-        "title": "Presence aujourd hui"
-      }
-    },
-    "recent": {
-      "activity": "Activite recente"
-    }
+    "searchPlaceholder": "Rechercher...",
+    "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
+    "yourCompany": "Votre entreprise"
   },
   "marketing": {
     "oauth": {
@@ -459,7 +453,9 @@
         "placeholder_secret": "Nouveau secret (optionnel)",
         "placeholder_uri": "https://example.com/oauth/callback"
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "postContentPlaceholder": "Contenu de la publication..."
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
@@ -1052,72 +1048,6 @@
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
   },
-<<<<<<< HEAD
-  "user": {
-    "auth": {
-      "already": {
-        "account": "Deja un compte ? Se connecter"
-      },
-      "back": {
-        "to": {
-          "home": "Retour a l'accueil"
-        }
-      },
-      "city": "Ville",
-      "company": {
-        "email": "Email entreprise",
-        "name": "Nom de l'entreprise",
-        "request": {
-          "body": "Un administrateur examinera votre demande. Vous recevrez une notification des qu'elle sera traitee.",
-          "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande.",
-          "title": "Demande soumise !"
-        }
-      },
-      "country": "Pays",
-      "create": {
-        "company": "Creer une entreprise"
-      },
-      "description": "Description",
-      "first": {
-        "name": "Prenom",
-        "name_required": "Prenom requis"
-      },
-      "google": {
-        "error": "Erreur Google : {error}",
-        "login": {
-          "error": "Erreur connexion Google"
-        }
-      },
-      "last": {
-        "name": "Nom",
-        "name_required": "Nom requis"
-      },
-      "login": {
-        "error": "Identifiants invalides",
-        "subtitle": "Retrouvez votre espace, vos documents et vos demandes."
-      },
-      "no": {
-        "account": "Pas encore de compte ? S'inscrire"
-      },
-      "personal": {
-        "login": "Connexion personnelle"
-      },
-      "phone": "Telephone",
-      "register": {
-        "button": "Creer mon compte",
-        "error": "Erreur lors de l'inscription",
-        "subtitle": "Rejoignez votre equipe sur Leopardo RH.",
-        "title": "Creer mon compte",
-        "subtitle_alt": "Accedez a votre espace personnel et organisez vos documents."
-      },
-      "sector": "Secteur d'activite",
-      "submit": {
-        "error": "Erreur lors de la soumission",
-        "request": "Soumettre la demande"
-      },
-      "phone_optional": "Telephone (optionnel)"
-    }
-=======
   "user_auth": {
     "company_request": {
       "title": "Demande soumise !",
@@ -1209,7 +1139,11 @@
     "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
     "genericError": "Erreur :status sur :endpoint.",
     "invalidData": "Données invalides.",
-    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet."
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet.",
+    "login_invalid_json": "Corps de requête invalide.",
+    "login_timeout": "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+    "login_network_error": "Impossible de contacter le serveur.",
+    "login_backend_error": "Réponse serveur inattendue."
   },
   "settingsPage": {
     "cancel": "Annuler",
@@ -1279,6 +1213,25 @@
     "statsLoadError": "Erreur lors du chargement des stats système",
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
     "title": "Administration Système"
->>>>>>> origin/main
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
+    "no_active_period": "Aucune période active",
+    "no_active_subscription": "Aucun abonnement active",
+    "period_label": "Période",
+    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
+    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+    "checkout_failed": "Impossible de créer la session de paiement."
+  },
+  "contracts": {
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts"
+  },
+  "training": {
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne"
   }
 }

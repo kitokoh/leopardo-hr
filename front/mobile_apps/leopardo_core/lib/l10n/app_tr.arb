@@ -836,39 +836,6 @@
   "employeesRecentCollaborators": "Son iş arkadaşları",
   "employeesListLoading": "Ekip listesi yükleniyor...",
   "employeesEmptyList": "Bu hesap için görünür çalışan yok.",
-<<<<<<< HEAD
-  "userAuthAlreadyAccount": "Zaten hesabiniz var mi? Giris yapin",
-  "userAuthBackToHome": "Ana sayfaya don",
-  "userAuthCity": "Sehir",
-  "userAuthCompanyEmail": "Sirket e-postasi",
-  "userAuthCompanyName": "Sirket adi",
-  "userAuthCompanyRequestBody": "Bir yonetici talebinizi inceleyecek. Islendiginde bildirim alacaksiniz.",
-  "userAuthCompanyRequestInfo": "Sirket bilgilerini doldurun. Bir yonetici talebinizi dogruladiginda bildirim alacaksiniz.",
-  "userAuthCompanyRequestTitle": "Talep gonderildi!",
-  "userAuthCountry": "Ulke",
-  "userAuthCreateCompany": "Sirket olustur",
-  "userAuthDescription": "Aciklama",
-  "userAuthFirstName": "Ad",
-  "userAuthFirstNameRequired": "Ad gerekli",
-  "userAuthGoogleError": "Google hatasi: {error}",
-  "userAuthGoogleLoginError": "Google giris hatasi",
-  "userAuthLastName": "Soyad",
-  "userAuthLastNameRequired": "Soyad gerekli",
-  "userAuthLoginError": "Gecersiz kimlik bilgileri",
-  "userAuthLoginSubtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
-  "userAuthNoAccount": "Henuz hesabınız yok mu? Kayit olun",
-  "userAuthPersonalLogin": "Kisisel giris",
-  "userAuthPhone": "Telefon",
-  "userAuthRegisterButton": "Hesabimi olustur",
-  "userAuthRegisterError": "Kayit hatasi",
-  "userAuthRegisterSubtitle": "Leopardo RH'da ekibinize katilin.",
-  "userAuthRegisterTitle": "Hesabimi olustur",
-  "userAuthRegisterSubtitleAlt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
-  "userAuthSector": "Is sektoru",
-  "userAuthSubmitError": "Gonderme hatasi",
-  "userAuthSubmitRequest": "Talep gonder",
-  "userAuthPhoneOptional": "Telefon (opsiyonel)"
-=======
   "userAuthCompanyRequestTitle": "Talep gönderildi!",
   "userAuthCompanyRequestBody": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
   "userAuthCompanyRequestInfo": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak.",
@@ -1002,6 +969,153 @@
   "systempageServiceunreachable": "hizmete ulaşılamıyor",
   "systempageStatsloaderror": "Sistem istatistikleri yüklenirken hata oluştu",
   "systempageSubtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
-  "systempageTitle": "Sistem Yönetimi"
->>>>>>> origin/main
+  "systempageTitle": "Sistem Yönetimi",
+  "retry": "Yeniden dene",
+  "featureComingSoon": "Özellik yakında",
+  "backToHome": "Ana sayfaya dön",
+  "pageNotFound": "İstenen sayfa bulunamadı veya gezinme başarısız oldu.",
+  "registerCreateAccount": "Hesabınızı oluşturun",
+  "registerFirstName": "Ad",
+  "registerRequired": "Zorunlu",
+  "registerPassword": "Şifre",
+  "registerMinChars": "En az 8 karakter",
+  "registerCreating": "Hesap oluşturuluyor...",
+  "registerSubmit": "Hesabımı oluştur",
+  "accessDeniedTitle": "Erişim reddedildi",
+  "accessDeniedBody": "Hesabınız bu uygulama için gerekli Yönetici rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, İK…) veya yöneticinizle iletişime geçin.",
+  "accessDeniedLogout": "Çıkış yap",
+  "accessDeniedBodyHr": "Hesabınız bu uygulama için gerekli İK rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, Yönetici…) veya yöneticinizle iletişime geçin.",
+  "evaluationsTitle": "Değerlendirmelerim",
+  "evaluationsEmpty": "Değerlendirme yok",
+  "evaluationsEmptyHint": "Henüz kayıtlı bir değerlendirmeniz yok.",
+  "evaluationPeriod": "Dönem: {period}",
+  "@evaluationPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "attendanceOnTime": "zamanında",
+  "attendanceLate": "geç",
+  "attendanceAbsent": "yok",
+  "attendanceInProgress": "devam ediyor",
+  "attendanceNoClock": "kayıt yok",
+  "attendanceTimeRange": "{from} - {to}",
+  "@attendanceTimeRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "attendanceHourWorked": "çalışılan saat",
+  "attendanceHoursWorked": "çalışılan saatler",
+  "attendanceDaySummary": "{date} günü, durum {status}, {range}, {hours}.",
+  "@attendanceDaySummary": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionApproved": "Oturum onaylandı ✓",
+  "sessionRejected": "Oturum reddedildi",
+  "pendingSessionsToValidate": "Onaylanacak",
+  "pendingSessionsUpToDate": "Her şey güncel",
+  "pendingSessionsEmpty": "Onay bekleyen GPS oturumu yok.",
+  "employeeNumber": "Çalışan #{id}",
+  "@employeeNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionEntryAt": "Giriş: {time}",
+  "@sessionEntryAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsToValidate": "Onaylanacak oturumlar",
+  "errorPrefix": "Hata: {message}",
+  "@errorPrefix": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "saDashboardTitle": "GPS yoklama — ekip paneli",
+  "saDetected": "Algılanan",
+  "saApproved": "Onaylanan",
+  "saRejected": "Reddedilen",
+  "saRecentSessions": "Son oturumlar",
+  "saForced": "Zorunlu",
+  "saPresenceInProgress": "{time} itibarıyla devam eden katılım",
+  "@saPresenceInProgress": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "saGpsZoneNotConfigured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı.",
+  "saDisableAutoGps": "Otomatik GPS'i kapat",
+  "saStatusApproved": "Onaylandı",
+  "saStatusDetected": "Algılandı",
+  "saStatusRejected": "Reddedildi",
+  "saStatusCancelled": "İptal edildi",
+  "saStatusPending": "Onay bekleniyor",
+  "saEnableAutoGps": "Otomatik GPS'i aç",
+  "attendanceOvertime": "Fazla mesai",
+  "approvalsUpToDate": "Her şey güncel",
+  "approvalsEmpty": "Bekleyen onay yok.",
+  "saConfigLoadError": "Yapılandırma yüklenemedi.\n{error}",
+  "@saConfigLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "ampAutoDetectDesc": "Şirket bölgesine girdiğinizde varlığınız otomatik algılanır. Sizden hiçbir işlem gerekmez.",
+  "ampRecommended": "Önerilen",
+  "ampQrScanDesc": "Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın.",
+  "ampManualDesc": "Yoklama ekranındaki Giriş ve Çıkış butonlarına basarak manuel kayıt yapın.",
+  "ampSaveError": "Tercihiniz kaydedilemedi. Bağlantınızı kontrol edin.",
+  "ampTitle": "Her gün katılımınızı nasıl kaydetmek istediğinizi seçin.",
+  "ampModeTitle": "Kayıt modu",
+  "back": "Geri",
+  "refresh": "Yenile",
+  "saSessionsLoadError": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin.",
+  "saStartMonitoringError": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin.",
+  "shellTeam": "Ekip",
+  "shellSettings": "Ayarlar",
+  "homeCompleteOnboarding": "İşe alıştırmamı tamamla",
+  "homeOnboardingHint": "Çalışma alanınızı birkaç adımda kurun.",
+  "welcomeMyTeam": "Ekibim",
+  "welcomePresences": "Yoklamalar",
+  "welcomeTasks": "Görevler",
+  "welcomeLeaves": "İzinler",
+  "monthlySummaryLoading": "Aylık özet yükleniyor...",
+  "orgChartEmpty": "Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.",
+  "orgChartCollapse": "Daralt",
+  "orgChartExpand": "Genişlet",
+  "errorUnexpected": "Bir hata oluştu"
 }

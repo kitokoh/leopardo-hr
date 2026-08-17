@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -418,15 +418,9 @@
     "client_requests": "Müşteri talepleri",
     "tenants_at_risk": "Risk altındaki kiracılar",
     "platform_dashboard_hint": "Platform panelinde mevcuttur.",
-    "activeemployees": "Aktif calisanlar",
-    "presence": {
-      "today": {
-        "title": "Bugünkü katılım"
-      }
-    },
-    "recent": {
-      "activity": "Son Etkinlik"
-    }
+    "searchPlaceholder": "Ara...",
+    "modulesActiveSentence": "{active} aktif modül, planınıza göre {locked} etkinleştirilecek.",
+    "yourCompany": "Şirketiniz"
   },
   "marketing": {
     "oauth": {
@@ -459,7 +453,9 @@
         "placeholder_secret": "Yeni sır (isteğe bağlı)",
         "placeholder_uri": "https://example.com/oauth/callback"
       }
-    }
+    },
+    "socialExamplePlaceholder": "Örn: Leopardo RH — Sosyal medya",
+    "postContentPlaceholder": "Gönderi içeriği..."
   },
   "attendance": {
     "sending_to_server": "{label} sunucuya gönderiliyor...",
@@ -1052,72 +1048,6 @@
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
   },
-<<<<<<< HEAD
-  "user": {
-    "auth": {
-      "already": {
-        "account": "Zaten hesabiniz var mi? Giris yapin"
-      },
-      "back": {
-        "to": {
-          "home": "Ana sayfaya don"
-        }
-      },
-      "city": "Sehir",
-      "company": {
-        "email": "Sirket e-postasi",
-        "name": "Sirket adi",
-        "request": {
-          "body": "Bir yonetici talebinizi inceleyecek. Islendiginde bildirim alacaksiniz.",
-          "info": "Sirket bilgilerini doldurun. Bir yonetici talebinizi dogruladiginda bildirim alacaksiniz.",
-          "title": "Talep gonderildi!"
-        }
-      },
-      "country": "Ulke",
-      "create": {
-        "company": "Sirket olustur"
-      },
-      "description": "Aciklama",
-      "first": {
-        "name": "Ad",
-        "name_required": "Ad gerekli"
-      },
-      "google": {
-        "error": "Google hatasi: {error}",
-        "login": {
-          "error": "Google giris hatasi"
-        }
-      },
-      "last": {
-        "name": "Soyad",
-        "name_required": "Soyad gerekli"
-      },
-      "login": {
-        "error": "Gecersiz kimlik bilgileri",
-        "subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin."
-      },
-      "no": {
-        "account": "Henuz hesabınız yok mu? Kayit olun"
-      },
-      "personal": {
-        "login": "Kisisel giris"
-      },
-      "phone": "Telefon",
-      "register": {
-        "button": "Hesabimi olustur",
-        "error": "Kayit hatasi",
-        "subtitle": "Leopardo RH'da ekibinize katilin.",
-        "title": "Hesabimi olustur",
-        "subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin."
-      },
-      "sector": "Is sektoru",
-      "submit": {
-        "error": "Gonderme hatasi",
-        "request": "Talep gonder"
-      },
-      "phone_optional": "Telefon (opsiyonel)"
-    }
-=======
   "user_auth": {
     "company_request": {
       "title": "Talep gönderildi!",
@@ -1209,7 +1139,11 @@
     "serverUnavailable": "Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.",
     "genericError": ":endpoint üzerinde :status hatası.",
     "invalidData": "Geçersiz veri.",
-    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
+    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
+    "login_invalid_json": "Geçersiz istek gövdesi.",
+    "login_timeout": "Sunucu yanıt vermekte çok yavaş. Lütfen kısa süre sonra tekrar deneyin.",
+    "login_network_error": "Sunucuya ulaşılamıyor.",
+    "login_backend_error": "Beklenmeyen sunucu yanıtı."
   },
   "settingsPage": {
     "cancel": "İptal",
@@ -1279,6 +1213,25 @@
     "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
     "subtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
     "title": "Sistem Yönetimi"
->>>>>>> origin/main
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
+    "no_active_period": "Aktif dönem yok",
+    "no_active_subscription": "Aktif abonelik yok",
+    "period_label": "Dönem",
+    "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
+    "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
+    "checkout_failed": "Ödeme oturumu oluşturulamadı."
+  },
+  "contracts": {
+    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
+    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
+    "allStatuses": "Tüm durumlar"
+  },
+  "training": {
+    "titlePlaceholder": "Başlık *",
+    "durationPlaceholder": "Süre (saat)",
+    "maxParticipantsPlaceholder": "Maks. katılımcı",
+    "online": "Çevrimiçi"
   }
 }

@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Ecran "Mon mois" — l'employe voit :
 ///  - ses heures travaillees du mois
@@ -60,11 +61,11 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
             _buildMonthSelector(context, monthLabel),
             const SizedBox(height: 20),
             async.when(
-              loading: () => const Center(
+              loading: () => Center(
                 child: Padding(
-                  padding: EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
                   child: CircularProgressIndicator(
-                    semanticsLabel: 'Chargement du résumé mensuel...',
+                    semanticsLabel: context.l10n.monthlySummaryLoading,
                   ),
                 ),
               ),

@@ -121,6 +121,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'La date de fin doit être postérieure ou égale à la date de début.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Le départ manuel nécessite une heure d\'arrivée.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'Véhicule supprimé.',
+    'SCHEDULE_DELETED' => 'Planning supprimé avec succès.',
+    'KIOSK_SESSION_REQUIRED' => 'Session kiosque requise.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'L\'IA requiert un contexte entreprise valide.',
+    'EXPORT_FILE_NOT_FOUND' => 'Fichier d\'export introuvable.',
+    'PAYMENT_DOCUMENT_MISSING' => 'Document manquant.',
     'TRIAL_STEP_LOGIN' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'Changez votre mot de passe dès la première connexion.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'Ajoutez vos premiers employés via QR ou manuellement.',
@@ -166,12 +173,11 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'Un email de contact est requis pour approuver cette demande.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Mode schema Enterprise gelé. Contactez le support.',
     'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
-    'MANAGER_REQUIRED' => 'Un accès manager est requis.',
-    'INSUFFICIENT_ROLE' => 'Rôle insuffisant pour cette action.',
-    'EMPLOYEE_NOT_FOUND' => 'Employé introuvable.',
-    'INVALID_TOKEN' => 'Jeton invalide ou expiré.',
-    'CAMERA_NOT_FOUND' => 'Caméra introuvable.',
-    'SELF_DISABLE_FORBIDDEN' => 'Vous ne pouvez pas désactiver votre propre compte.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'Accès réservé aux managers.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'Sous-rôle manager insuffisant.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'L\'accès aux analyses IA requiert un rôle Principal ou RH.',
     'MANAGER_REQUIRED' => 'Un accès manager est requis.',
     'INSUFFICIENT_ROLE' => 'Rôle insuffisant pour cette action.',
     'EMPLOYEE_NOT_FOUND' => 'Employé introuvable.',
@@ -185,6 +191,10 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Token d\'appareil invalide ou expiré.',
     'INVALID_KIOSK_TOKEN' => 'Token kiosk invalide ou expiré.',
     'BIOMETRIC_NOT_APPROVED' => 'L\'accès biométrique n\'est pas approuvé pour cet employé.',
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'Compte inactif.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'Societe suspendue ou expiree.',
     'COMPANY_SUSPENDED' => 'Votre société a été suspendue. Contactez le support.',
     'ADVANCE_CONFIRM_FORBIDDEN' => 'Seul le bénéficiaire de l\'avance peut confirmer la réception.',
     'ADVANCE_DISPUTE_FORBIDDEN' => 'Seul le bénéficiaire de l\'avance peut la contester.',
@@ -203,4 +213,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Seules les offres au statut brouillon peuvent être supprimées.',
     'JOB_POSTING_DELETED' => 'Offre supprimée.',
     'TASK_DELETED' => 'Tâche supprimée.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => "Le service d'essai est temporairement indisponible. Veuillez réessayer dans quelques instants.",
 ];

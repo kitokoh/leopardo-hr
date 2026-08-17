@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 import {
   Link2,
   Unlink,
@@ -35,6 +37,7 @@ function statusBadge(status: string) {
 }
 
 export default function MarketingPage() {
+  const locale = getPreferredLocale();
   const [account, setAccount] = useState<SocialAccount | null>(null);
   const [accountLoading, setAccountLoading] = useState(true);
   const [accountError, setAccountError] = useState<string | null>(null);
@@ -266,7 +269,7 @@ export default function MarketingPage() {
                 <input
                   id="marketing-display-name"
                   type="text"
-                  placeholder="Ex: Leopardo RH — Reseaux sociaux"
+                  placeholder={t(locale, 'marketing.socialExamplePlaceholder')}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -313,7 +316,7 @@ export default function MarketingPage() {
                 <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{actionError}</div>
               ) : null}
               <textarea
-                placeholder="Contenu de la publication..."
+                placeholder={t(locale, 'marketing.postContentPlaceholder')}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={3}
