@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use Tests\Support\CreatesMvpSchema;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ZktecoControllerTest extends TestCase
@@ -154,6 +155,41 @@ class ZktecoControllerTest extends TestCase
             'serial_number' => 'SN-AUTH-003',
             'status' => 'online',
         ]);
+    }
+
+    public function test_heartbeat_does_not_inherit_foreign_search_path(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-CONTAMINATION-01',
+            'name' => 'Porte Contamination',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        // #4787 : simule un worker dont la connexion pointe vers un contexte
+        // étranger (search_path hérité d'une requête précédente, classe #3368).
+        // La résolution doit FORCER shared_tenants,public au lieu d'hériter.
+        DB::statement('SET search_path TO public');
+
+        try {
+            $this->withHeader('X-Device-Token', 'valid-device-token')
+                ->postJson('/api/v1/zkteco/heartbeat/SN-CONTAMINATION-01')
+                ->assertOk()
+                ->assertJsonPath('data.status', 'online');
+        } finally {
+            // Restaure pour ne pas polluer les tests suivants (même contrat
+            // que le middleware kiosk.search_path).
+            DB::statement('SET search_path TO shared_tenants,public');
+        }
+
+        // Le heartbeat a écrit sur le device du bon tenant (contexte partagé).
+        $this->assertDatabaseHas('zkteco_devices', [
+            'serial_number' => 'SN-CONTAMINATION-01',
+            'status' => 'online',
+        ]);
+
+        // Le contexte tenant du device est établi (current_company).
+        $this->assertSame($this->company->id, app('current_company')->id);
     }
 
     public function test_sync_attendance_rejects_unauthenticated_device_and_writes_nothing(): void

@@ -8,8 +8,10 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
+use App\Support\PlatformCompanyLookup;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -203,9 +205,31 @@ class ZktecoController extends Controller
      * X-Device-Token (hashé au repos). Fail-closed : un device sans token
      * configuré est rejeté (DEVICE_TOKEN_NOT_SET) jusqu'à rotation par le
      * manager. Les échecs sont journalisés sur le canal 'audit'.
+     *
+     * #4787 — la résolution ne doit JAMAIS hériter du search_path courant de
+     * la connexion : un worker peut pointer vers le schéma d'un autre tenant
+     * (contamination cross-tenant, classe de bug #3368). On force le contexte
+     * partagé pour le lookup, puis on bascule explicitement sur le schéma du
+     * tenant du device une fois authentifié (pattern resolveAuthorizedKiosk,
+     * #2689/#2973). La restauration du search_path est assurée par le
+     * middleware 'kiosk.search_path' posé sur les routes publiques.
      */
     private function resolveAuthorizedDevice(Request $request, string $serialNumber): ZktecoDevice
     {
+        // #3368 : lecture du search_path — larastan type selectOne() non-null,
+        // les variantes nullsafe/?? sont refusées par PHPStan strict. Garde
+        // is_object + property_exists, défaut explicite si indisponible.
+        $previous = 'shared_tenants,public';
+        try {
+            $searchPathRow = DB::selectOne('SHOW search_path');
+            if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
+                $previous = (string) $searchPathRow->search_path;
+            }
+        } catch (\Throwable) {
+            // défaut conservé
+        }
+        DB::statement('SET search_path TO shared_tenants,public');
+
         $device = ZktecoDevice::query()
             ->where('serial_number', $serialNumber)
             ->firstOrFail();
@@ -230,6 +254,17 @@ class ZktecoController extends Controller
             ]);
 
             abort(401, 'INVALID_DEVICE_TOKEN');
+        }
+
+        // #4787 : device authentifié → établir le contexte tenant pour les
+        // écritures (heartbeat, sync logs) : current_company + bascule du
+        // search_path vers le schéma du tenant en mode schema-per-tenant.
+        // En mode MVP (shared_tenants), le contexte reste partagé et le
+        // device résolu porte déjà son company_id.
+        $company = PlatformCompanyLookup::findOrFail((string) $device->company_id);
+        app()->instance('current_company', $company);
+        if ($company->tenancy_type === 'schema' && $company->schema_name) {
+            DB::statement('SET search_path TO '.$company->getSafeSearchPath());
         }
 
         return $device;

@@ -50,7 +50,11 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
     Route::post('/kiosks/{deviceCode}/qr-punch', [KioskController::class, 'qrPunch']);
 });
 
-Route::middleware(['throttle:api'])->group(function (): void {
+// #4787 : kiosk.search_path restaure le search_path après la requête — la
+// résolution de device force le contexte partagé puis bascule sur le schéma
+// du tenant (pattern kiosque #3368/#2689). Sans restauration, un worker
+// hériterait du schéma du dernier tenant traité.
+Route::middleware(['throttle:api', 'kiosk.search_path'])->group(function (): void {
     Route::post('/zkteco/heartbeat/{serialNumber}', [ZktecoController::class, 'heartbeat']);
     Route::post('/zkteco/sync-attendance/{serialNumber}', [ZktecoController::class, 'syncAttendance']);
 });
