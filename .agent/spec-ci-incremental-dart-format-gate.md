@@ -21,6 +21,10 @@ Le workflow calcule les fichiers `*.dart` modifiés entre le SHA de base et le S
 - Un commit sans fichier Dart affiche une décision explicite et poursuit `flutter analyze`.
 - Aucun code métier mobile n’est modifié.
 
+## Alignement du validateur mobile
+
+Le même run CI a révélé un faux rouge Plan 28 : le validateur cherchait littéralement `appdistribution:releases:list` dans chaque workflow alors que la logique a été extraite dans `dev-hub/tools/verify-firebase-readback.sh` par #4723. Le validateur accepte désormais soit la commande directe, soit l’appel au helper partagé, et vérifie dans ce dernier cas que le helper contient bien la commande Firebase réelle. La preuve read-after-write n’est donc pas affaiblie.
+
 ## Validation locale
 
-La logique Bash a été relue avec `set -euo pipefail`; le diff utilise `git diff -z` et `xargs -0` pour préserver les chemins. La validation distante actionlint et le run matrix Flutter restent requis.
+La logique Bash a été relue avec `set -euo pipefail`; le diff utilise `git diff -z` et `xargs -0` pour préserver les chemins. Le validateur PowerShell conserve les contrôles de secrets, de packages Firebase et de documentation. La validation distante actionlint et le run matrix Flutter restent requis.
