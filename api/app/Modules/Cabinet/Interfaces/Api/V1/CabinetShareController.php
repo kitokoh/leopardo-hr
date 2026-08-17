@@ -13,6 +13,7 @@ use App\Modules\Cabinet\Infrastructure\Services\CabinetService;
 use App\Modules\Cabinet\Interfaces\Api\V1\Requests\ShareRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -94,57 +95,77 @@ class CabinetShareController extends Controller
 
     /**
      * Public endpoint: access a shared resource via token (no auth required).
+     *
+     * #4798 — résolution tenant-aware : le search_path est réinitialisé avant
+     * le lookup (pattern KioskController #2689 / ZktecoController #4787), sinon
+     * un worker persistant hérite du schéma du tenant précédent → 500 en mode
+     * schema-par-tenant ou résolution cross-tenant. Restauration en finally.
      */
     public function accessByToken(string $token): JsonResponse|StreamedResponse
     {
-        $share = CabinetShare::where('share_token', $token)->firstOrFail();
-
-        if ($share->isExpired()) {
-            return response()->json(['error' => 'SHARE_EXPIRED'], 410);
+        $previous = 'public,shared_tenants';
+        try {
+            $searchPathRow = DB::selectOne('SHOW search_path');
+            if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
+                $previous = (string) $searchPathRow->search_path;
+            }
+        } catch (\Throwable) {
+            // défaut conservé
         }
+        DB::statement('SET search_path TO shared_tenants,public');
 
-        $shareable = $share->shareable;
+        try {
+            $share = CabinetShare::where('share_token', $token)->firstOrFail();
 
-        if ($shareable instanceof CabinetDocument) {
-            $disk = Storage::disk($shareable->disk);
-
-            if (! $disk->exists($shareable->path)) {
-                abort(404);
+            if ($share->isExpired()) {
+                return response()->json(['error' => 'SHARE_EXPIRED'], 410);
             }
 
-            return $disk->download($shareable->path, $shareable->original_name);
-        }
+            $shareable = $share->shareable;
 
-        if ($shareable instanceof CabinetFolder) {
-            $folder = $shareable;
-            $folder->loadCount(['documents', 'children']);
+            if ($shareable instanceof CabinetDocument) {
+                $disk = Storage::disk($shareable->disk);
 
-            $documents = CabinetDocument::where('folder_id', $folder->id)
-                ->orderBy('name')
-                ->get()
-                ->map(fn (CabinetDocument $d) => [
-                    'id' => $d->id,
-                    'name' => $d->name,
-                    'original_name' => $d->original_name,
-                    'mime_type' => $d->mime_type,
-                    'size' => $d->size,
-                ]);
+                if (! $disk->exists($shareable->path)) {
+                    abort(404);
+                }
 
-            return response()->json([
-                'data' => [
-                    'type' => 'folder',
-                    'folder' => [
-                        'id' => $folder->id,
-                        'name' => $folder->name,
-                        'documents_count' => $folder->documents_count,
-                        'children_count' => $folder->children_count,
+                return $disk->download($shareable->path, $shareable->original_name);
+            }
+
+            if ($shareable instanceof CabinetFolder) {
+                $folder = $shareable;
+                $folder->loadCount(['documents', 'children']);
+
+                $documents = CabinetDocument::where('folder_id', $folder->id)
+                    ->orderBy('name')
+                    ->get()
+                    ->map(fn (CabinetDocument $d) => [
+                        'id' => $d->id,
+                        'name' => $d->name,
+                        'original_name' => $d->original_name,
+                        'mime_type' => $d->mime_type,
+                        'size' => $d->size,
+                    ]);
+
+                return response()->json([
+                    'data' => [
+                        'type' => 'folder',
+                        'folder' => [
+                            'id' => $folder->id,
+                            'name' => $folder->name,
+                            'documents_count' => $folder->documents_count,
+                            'children_count' => $folder->children_count,
+                        ],
+                        'documents' => $documents,
                     ],
-                    'documents' => $documents,
-                ],
-            ]);
-        }
+                ]);
+            }
 
-        abort(404);
+            abort(404);
+        } finally {
+            DB::statement('SET search_path TO '.$previous);
+        }
     }
 
     public function stats(Request $request): JsonResponse
