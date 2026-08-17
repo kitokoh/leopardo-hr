@@ -27,12 +27,13 @@ class OnboardingStep {
       key: (json['step_key'] ?? json['key'] ?? '') as String,
       title: json['title'] as String? ?? '',
       description: json['description'] as String?,
-      status: json['status'] as String? ??
+      status:
+          json['status'] as String? ??
           (json['completed'] == true
               ? 'completed'
               : json['skipped'] == true
-                  ? 'skipped'
-                  : 'pending'),
+              ? 'skipped'
+              : 'pending'),
       order: (json['order'] ?? 0) as int,
       required: json['required'] as bool? ?? false,
     );

@@ -87,10 +87,7 @@ void main() {
     final expectedHost = defaultTargetPlatform == TargetPlatform.android
         ? '10.0.2.2'
         : '127.0.0.1';
-    expect(
-      ApiClient.resolveBaseUrl(),
-      'http://$expectedHost:8000/api/v1',
-    );
+    expect(ApiClient.resolveBaseUrl(), 'http://$expectedHost:8000/api/v1');
   });
 
   test('extracts token from root API payload', () {

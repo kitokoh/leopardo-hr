@@ -42,9 +42,7 @@ void main() {
     });
 
     test('fromJson defaults missing fields', () {
-      final claim = ExpenseClaim.fromJson({
-        'id': 3,
-      });
+      final claim = ExpenseClaim.fromJson({'id': 3});
 
       expect(claim.reference, '');
       expect(claim.category, '');
