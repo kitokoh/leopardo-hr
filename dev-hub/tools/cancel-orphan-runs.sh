@@ -42,18 +42,25 @@ if [[ -z "${GH_TOKEN:-}" ]]; then
   exit 1
 fi
 
+# GitHub CLI peut colorer les réponses JSON même lorsqu’elles sont redirigées
+# dans certains runners/agents. jq refuse alors les octets ANSI. Centraliser le
+# nettoyage protège toutes les lectures API du script sans toucher aux payloads.
+strip_ansi() {
+  sed $'s/\033\[[0-9;]*m//g'
+}
+
 # Branche par défaut (main) : ses runs sont les checks de la branche protégée,
 # jamais annulés ici.
-DEFAULT_BRANCH=$(gh api "repos/${REPO}" | jq -r '.default_branch')
+DEFAULT_BRANCH=$(gh api "repos/${REPO}" | strip_ansi | jq -r '.default_branch')
 
 # 1. Branches vivantes : existent encore sur le remote.
 mapfile -t LIVE_BRANCHES < <(
-  gh api "repos/${REPO}/branches?per_page=100" --paginate | jq -r '.[].name'
+    gh api "repos/${REPO}/branches?per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].name'
 )
 # 2. Têtes de branches des PRs ouvertes (une PR ouverte = travail en cours,
 # ses runs doivent tourner même si la branche a été supprimée par erreur).
 mapfile -t OPEN_PR_HEADS < <(
-  gh api "repos/${REPO}/pulls?state=open&per_page=100" --paginate | jq -r '.[].head.ref'
+    gh api "repos/${REPO}/pulls?state=open&per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].head.ref'
 )
 
 PROTECTED_BRANCHES=$(printf '%s\n%s\n%s\n' "${DEFAULT_BRANCH}" "${LIVE_BRANCHES[@]}" "${OPEN_PR_HEADS[@]}" | sort -u)
@@ -85,8 +92,9 @@ for STATUS in queued pending in_progress; do
       echo "orphan run ${run_id} (branch '${branch}', ${STATUS})"
     fi
   done < <(
-    gh api "repos/${REPO}/actions/runs?status=${STATUS}&per_page=100" --paginate \
-      | jq -r '.workflow_runs[] | [.id, .head_branch] | @tsv'
+      gh api "repos/${REPO}/actions/runs?status=${STATUS}&per_page=100" --paginate \
+      | strip_ansi \
+      | jq -s -r 'map(.workflow_runs[])[] | [.id, .head_branch] | @tsv'
   )
 done
 
@@ -109,7 +117,8 @@ if [[ "${SUPERSEDED}" -eq 1 ]]; then
     fi
   done < <(
     gh api "repos/${REPO}/actions/runs?status=queued&per_page=100" --paginate \
-      | jq -r '.workflow_runs[] | select(.head_branch != "main") | [.id, .head_branch, .name, .created_at] | @tsv'
+      | strip_ansi \
+      | jq -s -r 'map(.workflow_runs[])[] | select(.head_branch != "main") | [.id, .head_branch, .name, .created_at] | @tsv'
   )
   for run_id in "${!RUN_BRANCH[@]}"; do
     branch="${RUN_BRANCH["${run_id}"]}"

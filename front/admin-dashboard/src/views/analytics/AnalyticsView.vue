@@ -6,9 +6,9 @@
 
       <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div>
-          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">Analytics Plateforme</h1>
+          <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">{{ $t('analytics.title') }}</h1>
           <p class="text-slate-500 dark:text-slate-400 font-medium">
-            Indicateurs reels du cockpit super-admin (issue #2185)
+            {{ $t('analytics.subtitle') }}
           </p>
         </div>
 
@@ -19,14 +19,14 @@
             class="btn-secondary py-2.5"
           >
             <ArrowPathIcon :class="['h-5 w-5 mr-2', isLoading ? 'animate-spin' : '']" />
-            Actualiser
+            {{ $t('analytics.refresh') }}
           </button>
           <button
             @click="exportReport"
             class="btn-secondary py-2.5"
           >
             <DocumentArrowDownIcon class="h-5 w-5 mr-2" />
-            Exporter
+            {{ $t('analytics.export') }}
           </button>
         </div>
       </div>
@@ -41,29 +41,29 @@
       role="alert"
     >
       {{ errorMessage }}
-      <button class="ml-3 underline font-bold" @click="loadAll">Réessayer</button>
+      <button class="ml-3 underline font-bold" @click="loadAll">{{ $t('analytics.retry') }}</button>
     </div>
 
     <!-- Key Metrics Overview (donnees reelles /admin/dashboard/stats) -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <MetricCard
-        title="Utilisateurs"
+        :title="$t('analytics.metricUsers')"
         :value="String(stats.totalUsers ?? 0)"
         :trend="(stats.newUsersToday ?? 0) > 0 ? 'up' : ((stats.newUsersToday ?? 0) < 0 ? 'down' : 'stable')"
-        :trend-label="`+${stats.newUsersToday ?? 0} aujourd'hui`"
+        :trend-label="`+${stats.newUsersToday ?? 0} ${$t('analytics.today')}`"
         icon="UsersIcon"
         color="blue"
       />
       <MetricCard
-        title="Entreprises"
+        :title="$t('analytics.metricCompanies')"
         :value="String(stats.totalCompanies ?? 0)"
         :trend="(stats.newCompaniesToday ?? 0) > 0 ? 'up' : ((stats.newCompaniesToday ?? 0) < 0 ? 'down' : 'stable')"
-        :trend-label="`+${stats.newCompaniesToday ?? 0} aujourd'hui`"
+        :trend-label="`+${stats.newCompaniesToday ?? 0} ${$t('analytics.today')}`"
         icon="BuildingOfficeIcon"
         color="green"
       />
       <MetricCard
-        title="Abonnements actifs"
+        :title="$t('analytics.metricActiveSubscriptions')"
         :value="String(stats.activeSubscriptions ?? 0)"
         :trend="(stats.monthlyRevenue ?? 0) > 0 ? 'up' : null"
         :trend-label="monthlyRevenueLabel || undefined"
@@ -71,7 +71,7 @@
         color="purple"
       />
       <MetricCard
-        title="Tickets support ouverts"
+        :title="$t('analytics.metricOpenSupportTickets')"
         :value="String(stats.supportTickets ?? 0)"
         :trend-label="systemHealthLabel || undefined"
         icon="LifebuoyIcon"
@@ -83,16 +83,16 @@
     <div class="card p-8 animate-slide-up" style="animation-delay: 0.1s">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Activité récente</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">25 derniers événements plateforme</p>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('analytics.recentActivity') }}</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ $t('analytics.recentActivityHint') }}</p>
         </div>
       </div>
       <div v-if="isLoading" class="py-12 text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
-        Chargement...
+        {{ $t('analytics.loading') }}
       </div>
       <div v-else-if="activities.length === 0" class="py-12 text-center">
         <InformationCircleIcon class="mx-auto h-10 w-10 text-slate-300" />
-        <p class="mt-3 text-sm font-medium text-slate-500">Aucune activité récente</p>
+        <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('analytics.noRecentActivity') }}</p>
       </div>
       <ul v-else class="divide-y divide-slate-200/50 dark:divide-slate-800/50">
         <li v-for="activity in activities" :key="activity.id" class="py-4 flex items-start justify-between gap-4">
@@ -112,13 +112,13 @@
     <div class="card p-8 animate-slide-up" style="animation-delay: 0.2s">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white">Alertes plateforme</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Problèmes d'infrastructure et risques abonnements</p>
+          <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ $t('analytics.platformAlerts') }}</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ $t('analytics.platformAlertsHint') }}</p>
         </div>
       </div>
       <div v-if="alerts.length === 0" class="py-8 text-center">
         <CheckCircleIcon class="mx-auto h-10 w-10 text-emerald-400" />
-        <p class="mt-3 text-sm font-medium text-slate-500">Aucune alerte active</p>
+        <p class="mt-3 text-sm font-medium text-slate-500">{{ $t('analytics.noActiveAlerts') }}</p>
       </div>
       <div v-else class="space-y-3">
         <div
@@ -144,7 +144,7 @@
             @click="dismissAlert(alert.id)"
             class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           >
-            Ignorer
+            {{ $t('analytics.dismiss') }}
           </button>
         </div>
       </div>
@@ -152,9 +152,9 @@
 
     <!-- Sections non disponibles (etat honnete — pas de backend) -->
     <div class="card p-8 border-dashed border-2 border-slate-200 dark:border-slate-800">
-      <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-2">Analyses avancées (cohortes, funnels, prédictions, segmentation, benchmarks)</h3>
+      <h3 class="text-sm font-black uppercase tracking-widest text-slate-400 mb-2">{{ $t('analytics.advancedTitle') }}</h3>
       <p class="text-sm text-slate-500 dark:text-slate-400">
-        Les cohortes, entonnoirs, prédictions de churn et benchmarks ne sont pas encore servis par un endpoint backend. Les données affichées ici sont limitées aux agrégats réels du cockpit (stats, activités, alertes). Vague QA 2026-08-14 — suppression des données fabriquées.
+        {{ $t('analytics.advancedHint') }}
       </p>
     </div>
   </div>
@@ -172,12 +172,16 @@ import {
 import { useToast } from 'vue-toastification'
 import api from '@/services/api.js'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
 
 import MetricCard from '@/components/analytics/MetricCard.vue'
 
 const localeStore = useLocaleStore()
 const toast = useToast()
+
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
 
 const isLoading = ref(false)
 // #4518 : état d'erreur visible + retry (pattern #4333) — avant, un échec de
@@ -197,7 +201,7 @@ const activities = ref([])
 const alerts = ref([])
 
 const monthlyRevenueLabel = ref('')
-const systemHealthLabel = computed(() => (stats.systemHealth ? `Health: ${stats.systemHealth}` : ''))
+const systemHealthLabel = computed(() => (stats.systemHealth ? t('analytics.healthPrefix') + stats.systemHealth : ''))
 
 onMounted(loadAll)
 
@@ -220,7 +224,7 @@ async function loadAll() {
     }
   } catch (error) {
     console.error('Failed to load analytics:', error)
-    errorMessage.value = "Erreur lors du chargement des analytics. Réessayez."
+    errorMessage.value = t('analytics.loadError')
   } finally {
     isLoading.value = false
   }
@@ -230,10 +234,10 @@ async function dismissAlert(alertKey) {
   try {
     await api.post(`/admin/dashboard/alerts/${alertKey}/dismiss`)
     alerts.value = alerts.value.filter(a => a.id !== alertKey)
-    toast.success('Alerte ignorée')
+    toast.success(t('analytics.alertDismissed'))
   } catch (error) {
     console.error('Dismiss alert failed:', error)
-    toast.error("Erreur lors de l'ignorance de l'alerte")
+    toast.error(t('analytics.alertDismissError'))
   }
 }
 
@@ -258,7 +262,7 @@ async function exportReport() {
       return `"${str.replace(/"/g, '""')}"`
     }
     const csvContent = "data:text/csv;charset=utf-8," +
-      "Type,Message,Date\n" +
+      t('analytics.csvHeader') + "\n" +
       activities.value.map(a => [a.type || '', a.message || '', a.created_at || ''].map(escapeCell).join(',')).join('\n')
     const link = document.createElement("a")
     link.setAttribute("href", encodeURI(csvContent))
@@ -266,10 +270,10 @@ async function exportReport() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    toast.success('Export terminé')
+    toast.success(t('analytics.exportDone'))
   } catch (error) {
     console.error('Export failed:', error)
-    toast.error("Erreur lors de l'export")
+    toast.error(t('analytics.exportError'))
   }
 }
 </script>

@@ -36,7 +36,7 @@ jobs:
     name: Check deployment status
     runs-on: ubuntu-latest
     outputs:
-      run_scan: ${{ steps.check.outputs.run_scan }}
+      run_scan: ${{ steps.gate.outputs.result }}
     steps:
       # Issue #4720 : plus de fallback silencieux vers un hôte legacy — le scan
       # échoue explicitement si la base API prod n'est pas positionnée.
@@ -52,49 +52,18 @@ jobs:
       # when the API deploy itself succeeded. This now checks the specific
       # `deploy-api` job's conclusion via the Checks API, matching the level
       # of specificity deploy-main.yml already uses for its own gating.
-      - name: Determine if ZAP should run
-        id: check
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      # Local actions are unavailable until the repository is checked out.
+      - name: Checkout repository for local deploy gate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          script: |
-            if (context.eventName === 'workflow_dispatch') {
-              core.setOutput('run_scan', 'true');
-              return;
-            }
+          fetch-depth: 1
+          lfs: false
 
-            if (context.payload.workflow_run?.conclusion !== 'success' &&
-                context.payload.workflow_run?.conclusion !== 'failure') {
-              // cancelled/skipped/timed_out parent run: nothing useful to check.
-              core.setOutput('run_scan', 'false');
-              return;
-            }
-
-            const { owner, repo } = context.repo;
-            const runId = context.payload.workflow_run.id;
-
-            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
-              owner,
-              repo,
-              run_id: runId,
-              per_page: 100,
-            });
-
-            const deployApiJob = jobs.find((job) => job.name === 'Deploy API + Web to Render');
-
-            // Issue #1833 (même mécanique que e2e-staging.yml) : un deploy-api
-            // en échec ne doit jamais produire un scan « vert » à 0 requête.
-            if (deployApiJob && deployApiJob.conclusion === 'failure') {
-              core.setFailed(`deploy-api a échoué (conclusion=${deployApiJob.conclusion}) — scan ZAP marqué en échec explicite, aucun faux vert.`);
-              return;
-            }
-
-            const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
-
-            core.info(`deploy-api job conclusion: ${deployApiConclusion}`);
-            if (deployApiConclusion !== 'success') {
-              core.warning('Scan ZAP non exécuté : aucune étape de déploiement n\'a abouti (deploy-api absent ou skippé). Rien à scanner — run volontairement vide, voir issue #1833.');
-            }
-            core.setOutput('run_scan', deployApiConclusion === 'success' ? 'true' : 'false');
+      - name: Determine if ZAP should run
+        id: gate
+        uses: ./.github/actions/deploy-gate
+        with:
+          output_name: run_scan
 
   zap-baseline:
     timeout-minutes: 30

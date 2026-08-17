@@ -116,7 +116,7 @@ class PlatformUsersApiTest extends TestCase
             ->assertJsonStructure([
                 'data' => [[
                     'id', 'first_name', 'last_name', 'email', 'status', 'is_active',
-                    'company' => ['id', 'name', 'link_status'],
+                    'company',
                 ]],
                 'meta' => ['current_page', 'last_page', 'per_page', 'total'],
             ]);
@@ -125,8 +125,16 @@ class PlatformUsersApiTest extends TestCase
         $usersData = $response->json('data') ?? [];
         $alice = collect($usersData)->firstWhere('first_name', 'Alice');
         $this->assertIsArray($alice);
-        $this->assertSame('Tenant Test', $alice['company']['name']);
+        /** @var array<string, mixed> $aliceCompany */
+        $aliceCompany = $alice['company'] ?? [];
+        $this->assertSame('Tenant Test', $aliceCompany['name']);
+        $this->assertSame('active', $aliceCompany['link_status']);
         $this->assertTrue($alice['is_active']);
+
+        // Bob n'est lié à aucune entreprise → company null (contrat contrôleur).
+        $bob = collect($usersData)->firstWhere('first_name', 'Bob');
+        $this->assertIsArray($bob);
+        $this->assertNull($bob['company']);
     }
 
     public function test_index_search_filters_by_name_and_email(): void

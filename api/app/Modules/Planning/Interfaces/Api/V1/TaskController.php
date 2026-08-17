@@ -165,7 +165,7 @@ class TaskController extends Controller
 
         $task->delete();
 
-        return response()->json(['message' => 'Task deleted successfully']);
+        return response()->json(['message' => __('errors.TASK_DELETED')]);
     }
 
     public function listComments(Request $request, Task $task): JsonResponse

@@ -4,11 +4,9 @@ import { ImageResponse } from 'next/og'
 import type { AppLocale } from '@/lib/i18n'
 import { getLocaleDirection, normalizeLocale } from '@/lib/i18n'
 
-// #4707 : alt statique de la route par défaut /opengraph-image — neutre
-// (marque), plus de phrase FR. Les alt localisés sont portés par
-// generateImageMetadata (variantes /opengraph-image/{fr|en|tr|ar}), et le
-// layout racine référence désormais la variante de la locale courante.
-export const alt = 'Leopardo RH'
+// #4707 : alt par défaut neutre (la variante localisée est émise par
+// generateMetadata → openGraph.images[].alt, rootMeta.ogImageAlt ×4 locales).
+export const alt = 'Leopardo RH - HR platform for web, mobile and kiosk'
 export const size = {
   width: 1200,
   height: 630,
