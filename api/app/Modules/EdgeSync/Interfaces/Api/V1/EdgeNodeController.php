@@ -69,7 +69,9 @@ class EdgeNodeController extends Controller
 
         return response()->json([
             'data' => $result['node'],
-            'license' => $result['license'],
+            // #4687 : le modèle masque license_key/signed_payload par défaut —
+            // l'enregistrement est LE moment légitime d'exposition unique.
+            'license' => $result['license']->makeVisible(['license_key', 'signed_payload']),
             'edge_token' => $result['edge_token'], // shown only once at registration
             'install_command' => sprintf(
                 'sudo bash <(curl -fsSL %s/edge/install.sh) --node-id %s --token %s',
@@ -105,7 +107,9 @@ class EdgeNodeController extends Controller
         $days = $request->integer('valid_days', (int) config('edge.license_validity_days', 30));
         $license = $this->licenseService->issueLicense($node, $days);
 
-        return response()->json(['data' => $license]);
+        // #4687 : l'admin consulte la licence fraîchement émise — exposition
+        // explicite unique (les listes/show restent masquées).
+        return response()->json(['data' => $license->makeVisible(['license_key', 'signed_payload'])]);
     }
 
     /**

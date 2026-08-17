@@ -58,7 +58,6 @@ parameters:
         - '#Match expression does not handle remaining value: mixed#'
         - '#Parameter \#1 \$companyId of method App\\AI\\Workflows\\(PreparePayrollWorkflow|WeeklyReportWorkflow)::execute\(\) expects string, int\|null given#'
         - '#Unable to resolve the template type T(Value|Key) in call to function collect#'
-        - '#Parameter \$dto of method App\\Modules\\Attendance\\Application\\Actions\\ProcessCheckIn::handle\(\) has invalid type#'
         - '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection.*map\(\) contains unresolvable type#'
         - '#Method App\\Modules\\.*::.+\(\) has invalid return type App\\Modules\\#'
         - '#Method App\\Modules\\.*::.+\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsTo.*but returns#'

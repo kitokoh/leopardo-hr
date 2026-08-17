@@ -233,9 +233,11 @@ export const caseStudyUiCopy: Record<AppLocale, {
   seeAll: string;
   ctaTitle: string;
   demoCta: string;
+  usageBadge: string;
   moduleIllustrates: string;
   moduleExplore: string;
   discoverModule: string;
+  useCase: string;
 }> = {
   fr: {
     backLink: 'Toutes les études de cas',
@@ -243,9 +245,11 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'Voir toutes les études de cas',
     ctaTitle: 'Votre entreprise pourrait être la prochaine',
     demoCta: 'Demander une démo',
+    usageBadge: 'Cas d\'usage — {module}',
     moduleIllustrates: 'Ce cas illustre le module {module}',
     moduleExplore: 'Découvrez comment Leopardo RH couvre ce besoin au quotidien, ou explorez les autres études de cas.',
     discoverModule: 'Découvrir {module}',
+    useCase: "Cas d'usage — {module}",
   },
   en: {
     backLink: 'All case studies',
@@ -253,9 +257,11 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'See all case studies',
     ctaTitle: 'Your company could be next',
     demoCta: 'Request a demo',
+    usageBadge: 'Use case — {module}',
     moduleIllustrates: 'This case illustrates the {module} module',
     moduleExplore: 'Discover how Leopardo RH covers this need day to day, or explore other case studies.',
     discoverModule: 'Discover {module}',
+    useCase: 'Use case — {module}',
   },
   tr: {
     backLink: 'Tüm vaka çalışmaları',
@@ -263,9 +269,11 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'Tüm vaka çalışmalarını gör',
     ctaTitle: 'Sıradaki şirket siz olabilirsiniz',
     demoCta: 'Demo iste',
+    usageBadge: 'Kullanım alanı — {module}',
     moduleIllustrates: 'Bu vaka {module} modülünü gösterir',
     moduleExplore: 'Leopardo RH’nin bu ihtiyacı günlük olarak nasıl karşıladığını keşfedin veya diğer vaka çalışmalarına göz atın.',
     discoverModule: '{module} modülünü keşfedin',
+    useCase: 'Kullanım senaryosu — {module}',
   },
   ar: {
     backLink: 'كل دراسات الحالة',
@@ -273,8 +281,10 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'عرض كل دراسات الحالة',
     ctaTitle: 'يمكن أن تكون شركتك التالية',
     demoCta: 'اطلب عرضاً توضيحياً',
+    usageBadge: 'حالة استخدام — {module}',
     moduleIllustrates: 'توضح هذه الحالة وحدة {module}',
     moduleExplore: 'اكتشف كيف تغطي Leopardo RH هذه الحاجة يومياً، أو استكشف دراسات الحالة الأخرى.',
     discoverModule: 'اكتشف {module}',
+    useCase: 'حالة استخدام — {module}',
   },
 };

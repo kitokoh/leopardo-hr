@@ -29,11 +29,8 @@ void main() {
       findsOneWidget,
     );
 
-    // First feature slide is visible.
-    expect(
-      find.text('Une home qui vous parle avant de vous noyer'),
-      findsOneWidget,
-    );
+    // The first current capability is visible.
+    expect(find.text('Mon équipe'), findsOneWidget);
 
     // Both CTAs are present.
     expect(find.widgetWithText(ElevatedButton, 'Se connecter'), findsOneWidget);

@@ -141,7 +141,7 @@ class EmployeeLoanController extends Controller
             abort(403);
         }
         if (! in_array($employeeLoan->status, ['draft', 'pending_approval'], true)) {
-            abort(422, 'Loan is not in approvable state.');
+            abort(422, 'LOAN_NOT_APPROVABLE');
         }
 
         $employeeLoan->update([
@@ -163,7 +163,7 @@ class EmployeeLoanController extends Controller
             abort(403);
         }
         if ($employeeLoan->status !== 'approved') {
-            abort(422, 'Loan must be approved first.');
+            abort(422, 'LOAN_NOT_APPROVED');
         }
 
         $employeeLoan->update([

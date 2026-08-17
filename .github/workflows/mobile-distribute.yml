@@ -4,9 +4,11 @@ on:
   # Main pushes are handled exclusively by mobile-distribute-main.yml.
   # Keep tag releases here so staging/prod tag distribution remains available.
   push:
+    # #4724 (audit 360°) : release.yml ne crée que des tags vX.Y.Z (semver,
+    # sans suffixe) — le pattern v*-prod ne matchait jamais → chemin prod mort.
+    # v* couvre désormais vX.Y.Z (release → prod), vX.Y.Z-staging et vX.Y.Z-prod.
     tags:
-      - "v*-staging"
-      - "v*-prod"
+      - "v*"
   workflow_dispatch:
     inputs:
       environment:
@@ -124,6 +126,10 @@ jobs:
           if [[ "$TAG" == *"-prod" ]]; then
             TARGET="prod"
             BUILD_NAME="${APP_VERSION_PREFIX}-${TAG%-prod}"
+          elif [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            # #4724 : tag de release semver nu (créé par release.yml) → prod.
+            TARGET="prod"
+            BUILD_NAME="${APP_VERSION_PREFIX}-${TAG}"
           elif [[ "$TAG" == *"-staging" ]]; then
             TARGET="staging"
             BUILD_NAME="${APP_VERSION_PREFIX}-${TAG%-staging}"
@@ -131,7 +137,7 @@ jobs:
             TARGET="prod"
             BUILD_NAME="${APP_VERSION_PREFIX}-manual-$(date +%Y%m%d)"
           # #4526 : la branche push→main était morte (on: ne déclenche que des
-          # tags v*-staging/v*-prod + workflow_dispatch depuis la scission vers
+          # tags v* + workflow_dispatch depuis la scission vers
           # mobile-distribute-main.yml) — le fallback else couvre déjà ce cas.
           else
             TARGET="staging"
