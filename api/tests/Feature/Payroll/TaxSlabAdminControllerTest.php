@@ -27,11 +27,11 @@ class TaxSlabAdminControllerTest extends TestCase
         parent::setUp();
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Super Admin Tax Slabs',
             'email' => 'sa-tax-slabs-admin@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
         $this->superAdmin = $superAdmin;
 

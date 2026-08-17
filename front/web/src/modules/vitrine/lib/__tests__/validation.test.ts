@@ -29,7 +29,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'invalid-email',
         company: 'Acme Corp',
-        country: 'DZ',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
@@ -39,7 +38,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: '',
-        country: 'DZ',
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
@@ -49,7 +47,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: 'not-a-phone',
         agreeToTerms: true,
       };
@@ -91,8 +88,8 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '',
+        country: 'DZ', // requis depuis #4476 (pays obligatoire côté API)
         agreeToTerms: true,
       };
       expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
@@ -102,7 +99,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'test@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         agreeToTerms: false,
       };
       expect(() => signupFormSchema('fr').parse(data)).toThrow();
@@ -120,7 +116,7 @@ describe('Form Validation Schemas', () => {
         const data = {
           email,
           company: 'Acme Corp',
-        country: 'DZ',
+          country: 'DZ', // requis depuis #4476
           agreeToTerms: true,
         };
         expect(() => signupFormSchema('fr').parse(data)).not.toThrow();
@@ -134,7 +130,6 @@ describe('Form Validation Schemas', () => {
         name: 'John Doe',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).not.toThrow();
@@ -145,7 +140,6 @@ describe('Form Validation Schemas', () => {
         name: 'John Doe',
         email: 'invalid-email',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).toThrow();
@@ -156,7 +150,6 @@ describe('Form Validation Schemas', () => {
         name: '',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).toThrow();
@@ -167,7 +160,6 @@ describe('Form Validation Schemas', () => {
         name: 'J',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
         phone: '+33612345678',
       };
       expect(() => demoFormSchema.parse(data)).toThrow();
@@ -178,7 +170,6 @@ describe('Form Validation Schemas', () => {
         name: 'John Doe',
         email: 'john@example.com',
         company: 'Acme Corp',
-        country: 'DZ',
       };
       expect(() => demoFormSchema.parse(data)).not.toThrow();
     });
@@ -388,7 +379,6 @@ describe('Form Validation Schemas', () => {
       const data = {
         email: 'invalid',
         company: '',
-        country: 'DZ',
         agreeToTerms: false,
       };
 

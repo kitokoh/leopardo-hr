@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\SalaryAdvanceResource;
@@ -189,6 +190,11 @@ class SalaryAdvanceController extends Controller
         // ledger + document de paiement en double. L'update est désormais
         // conditionnel ATOMIQUE : seule la première requête matche
         // `validation_status = 'manager_approved'`, la seconde voit 0 ligne.
+        $oldValues = $salaryAdvance->only([
+            'payment_declared_at', 'payment_declared_by', 'payment_reference',
+            'payment_note', 'validation_status', 'status',
+        ]);
+
         $updated = SalaryAdvance::query()
             ->where('id', $salaryAdvance->id)
             ->where('company_id', $actor->company_id)
@@ -220,6 +226,30 @@ class SalaryAdvanceController extends Controller
         }
 
         $salaryAdvance->refresh();
+
+        // PA2-PAY-001 — l'update conditionnel ci-dessus passe par le query
+        // builder (atomique) mais BYPASSE les événements modèle : le trait
+        // Auditable n'écrit rien pour cette transition. Audit explicite,
+        // même forme que le trait (issue #4677).
+        AuditLog::create([
+            'company_id' => $actor->company_id,
+            'user_id' => $actor->id,
+            'action' => 'updated',
+            'auditable_type' => $salaryAdvance->getMorphClass(),
+            'auditable_id' => $salaryAdvance->id,
+            // PHPStan strict : `only()` renvoie une entrée par clé demandée → toujours truthy.
+            'old_values' => $oldValues,
+            'new_values' => [
+                'payment_declared_at' => $salaryAdvance->payment_declared_at,
+                'payment_declared_by' => $salaryAdvance->payment_declared_by,
+                'payment_reference' => $salaryAdvance->payment_reference,
+                'payment_note' => $salaryAdvance->payment_note,
+                'validation_status' => $salaryAdvance->validation_status,
+                'status' => $salaryAdvance->status,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent() ? mb_substr($request->userAgent(), 0, 500) : null,
+        ]);
 
         $document = GeneratePaymentDocumentJob::dispatchForSalaryAdvance($salaryAdvance, $actor->id);
 
@@ -371,12 +401,16 @@ class SalaryAdvanceController extends Controller
             return response()->json(['message' => 'Only pending advances can be manager-approved.'], 422);
         }
 
-        $salaryAdvance->update([
+        // Issue #4677 / #3597 : `status` n'est pas mass-assignable — un
+        // `update()` (fill) l'écarterait silencieusement et le workflow
+        // double validation ne passerait jamais à `approved`. Assignation
+        // explicite (pattern SalaryAdvanceService::create).
+        $salaryAdvance->forceFill([
             'manager_approved_at' => now(),
             'manager_approved_by' => $actor->id,
             'validation_status' => 'manager_approved',
             'status' => 'approved',
-        ]);
+        ])->save();
         $salaryAdvance = $salaryAdvance->fresh();
 
         $this->salaryAdvanceService->notify($salaryAdvance, 'salary_advance_manager_approved');

@@ -43,11 +43,11 @@ class MetricsAccessTest extends TestCase
     /** @test */
     public function metrics_requires_super_admin(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => fake()->unique()->safeEmail(),
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
@@ -59,5 +59,25 @@ class MetricsAccessTest extends TestCase
     {
         // Render deploy hooks consume /api/v1/health — never protect it.
         $this->getJson('/api/v1/health')->assertOk();
+    }
+
+    /** @test */
+    public function metrics_is_rate_limited_per_super_admin(): void
+    {
+        // #4694 : même authentifié, GET /metrics est borné (anti-scraping /
+        // anti-fingerprinting des versions internes).
+        config(['security.rate_limits.metrics_per_minute' => 2]);
+
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin 2',
+            'email' => fake()->unique()->safeEmail(),
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+
+        $this->getJson('/api/v1/metrics')->assertOk();
+        $this->getJson('/api/v1/metrics')->assertOk();
+        $this->getJson('/api/v1/metrics')->assertStatus(429);
     }
 }

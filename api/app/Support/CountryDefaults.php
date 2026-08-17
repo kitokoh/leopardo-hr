@@ -46,9 +46,14 @@ final class CountryDefaults
             $code = 'DZ';
         }
 
+        $defaults = self::DEFAULTS[$code];
+
         return [
             'country' => $code,
-            ...self::DEFAULTS[$code],
+            'label' => $defaults['label'],
+            'language' => $defaults['language'],
+            'currency' => $defaults['currency'],
+            'timezone' => $defaults['timezone'],
         ];
     }
 
@@ -58,9 +63,15 @@ final class CountryDefaults
     public static function all(): array
     {
         return array_map(
-            fn (string $code, array $defaults): array => ['country' => $code, ...$defaults],
+            fn (string $code, array $defaults): array => [
+                'country' => $code,
+                'label' => $defaults['label'],
+                'language' => $defaults['language'],
+                'currency' => $defaults['currency'],
+                'timezone' => $defaults['timezone'],
+            ],
             array_keys(self::DEFAULTS),
-            self::DEFAULTS,
+            array_values(self::DEFAULTS),
         );
     }
 

@@ -178,7 +178,7 @@ class ProactiveNotificationService
                 'type' => 'pending_approvals',
                 'severity' => $pendingCount > 5 ? 'warning' : 'info',
                 'title' => $pendingCount.' demande(s) en attente depuis 3+ jours',
-                'message' => __('errors.LEAVE_REQUESTS_PENDING_VALIDATION'),
+                'message' => (string) __('errors.LEAVE_REQUESTS_PENDING_VALIDATION'),
                 'action_url' => '/leaves',
                 'entity_id' => null,
             ];
@@ -203,7 +203,7 @@ class ProactiveNotificationService
                 'type' => 'overdue_training',
                 'severity' => 'warning',
                 'title' => $overdueCount.' inscription(s) formation non completee(s)',
-                'message' => __('errors.TRAININGS_PENDING_CLOSURE'),
+                'message' => (string) __('errors.TRAININGS_PENDING_CLOSURE'),
                 'action_url' => '/training',
                 'entity_id' => null,
             ];
@@ -238,7 +238,7 @@ class ProactiveNotificationService
                 'type' => 'low_leave_balance',
                 'severity' => 'info',
                 'title' => $lowBalanceCount.' employe(s) avec solde conges faible',
-                'message' => __('errors.LOW_LEAVE_DAYS'),
+                'message' => (string) __('errors.LOW_LEAVE_DAYS'),
                 'action_url' => '/leaves',
                 'entity_id' => null,
             ];

@@ -180,11 +180,24 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
   }
 
   /// Démarre la surveillance GPS en background.
+  ///
+  /// #4625 : toute exception (permission refusée, service indisponible,
+  /// plateforme non supportée…) est capturée et traduite en état d'erreur
+  /// visible — l'appelant (bouton UI) ne reçoit jamais d'exception non
+  /// gérée et peut afficher un retour utilisateur.
   Future<void> startMonitoring(SmartAttendanceConfig config) async {
     if (state.isMonitoring) return;
 
-    await _backgroundService.startMonitoring(config);
-    state = state.copyWith(isMonitoring: true);
+    try {
+      await _backgroundService.startMonitoring(config);
+      state = state.copyWith(isMonitoring: true, clearError: true);
+    } catch (_) {
+      state = state.copyWith(
+        isMonitoring: false,
+        error:
+            'Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.',
+      );
+    }
   }
 
   /// Arrête la surveillance GPS.

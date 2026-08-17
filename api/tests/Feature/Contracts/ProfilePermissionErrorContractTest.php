@@ -122,11 +122,11 @@ class ProfilePermissionErrorContractTest extends TestCase
 
     public function test_superadmin_can_reach_platform_only_surface(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Ops Super Admin',
             'email' => 'ops-admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 
@@ -190,12 +190,12 @@ class ProfilePermissionErrorContractTest extends TestCase
         ]);
 
         /** @var Employee $manager */
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => $suffix,
             'email' => "manager-{$suffix}@company.test",
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -204,12 +204,12 @@ class ProfilePermissionErrorContractTest extends TestCase
         ])->save();
 
         /** @var Employee $employee */
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Employee',
             'last_name' => $suffix,
             'email' => "employee-{$suffix}@company.test",
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

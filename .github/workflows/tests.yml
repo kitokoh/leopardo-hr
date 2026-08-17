@@ -287,6 +287,13 @@ jobs:
             pint_targets+=("${file#api/}")
           done < storage/test-results/pint-targets.txt
 
+          # #4722 (audit 360°) : garde réelle — pint --test échoue sur les
+          # fichiers modifiés non formatés (avant : || true + auto-fix rendaient
+          # le gate toujours vert).
+          if [[ -s storage/test-results/pint-targets.txt ]]; then
+            ./vendor/bin/pint --test "${pint_targets[@]}"
+          fi
+
           ./vendor/bin/pint "${pint_targets[@]}" || true
 
           # Audit #1708 : le push auto-fix ne doit JAMAIS cibler main (les
@@ -711,6 +718,7 @@ jobs:
           - Backend quality summary artifact: backend-quality-summary
           - Backend coverage artifacts: backend-coverage-reports
           - Backend coverage summary artifact: backend-coverage-summary
+
           ## Backend Coverage Intent
           - Unit: services et logique metier pure
           - Feature: auth, auth guardrails, RBAC, multitenant, attendance, estimation, health, contrats JSON mobile, SmartAttendance (GPS geofencing, validation manager, multi-tenant isolation)

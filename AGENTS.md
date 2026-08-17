@@ -113,6 +113,21 @@ reste ouverte même une fois le correctif livré. Règles :
   Apps CI rouge sur main. Garde : `Get-DartContent $root @('*mock*.dart')`.
   Tout nouveau fichier de mock doit suivre le pattern `*mock*.dart`.
 
+- **Lecon 2026-08-16 (swe-qa-360)** : sous rafale de pushes concurrents (300+
+  runs queued), GitHub Actions peut ne PAS creer de runs pour certains
+  evenements `synchronize` — zero check suite `github-actions` sur le nouveau
+  head alors que les integrations tierces (Vercel/Render/...) reçoivent bien
+  l'evenement. Observe : certains pushs declenchent, d'autres non, sans
+  explication par les path filters (actionlint/architecture-check/coverage-gate
+  n'ont pas de filtre). Correctifs partiels : annuler les runs queued
+  supersedes de la meme (branche, workflow) pour liberer les groupes de
+  concurrency (#3545) ; `git commit --allow-empty -m "ci: nudge"` + push aide
+  parfois (fonctionnait en debut de session, plus du tout en fin). Fermer/
+  rouvrir la PR ne force rien. Si une PR reste sans runs apres 15 min, la
+  laisser ouverte avec un commentaire (un autre agent a la file qui fonctionne
+  pourra merger) — ne pas merger sans checks. Le check « Workers Builds:
+  gestionemploye » echoue sur TOUTES les PR (deploy Cloudflare hors PR) — ce
+  n'est pas un check requis, ne pas le traiter comme rouge.
 - **REGLE D'OR POUR LES NOUVEAUX MODULES** : Avant de commencer a coder un nouveau module ou de generer des tickets (GitHub Issues) pour celui-ci, un agent DOIT OBLIGATOIREMENT creer un fichier Markdown de specification dans le dossier `docs/specifications/` (ex: `docs/specifications/MODULE_RECRUTEMENT.md`). Ce n'est qu'apres validation explicite de ce document par le proprietaire que les issues GitHub peuvent etre creees.
 
 - Avant de travailler sur une branche existante, faire `git fetch origin main` puis comparer avec `origin/main`.
@@ -895,3 +910,12 @@ Référence : issue Spec Kit #4359.
 - Les cinq apps sous `front/mobile_apps/` partagent la même chaîne Flutter/Android CI : Gradle 8.14.3, AGP 8.9.2 et Kotlin 2.1.20. Une app restée sur une version antérieure peut échouer sur les builds release même si les autres apps passent.
 - Toute mise à niveau doit comparer les cinq fichiers `android/settings.gradle.kts`, les wrappers Gradle et les variantes Firebase avant de modifier un seul projet. Ne pas migrer vers AGP 9 sans validation explicite de la version Flutter utilisée en CI et du nouveau DSL supporté.
 - Le workflow `Mobile Distribute - Main` doit rester atomique : aucun artefact Firebase ne doit être publié si le build de l’app correspondante échoue.
+
+
+## Leçon 2026-08-16 — PHPStan Strict #4642 : factories et setups de tests
+
+- Dans les setups PHPUnit, une propriété déclarée (`private Employee $employee`) doit être utilisée dès sa création avec `$this->employee`; une référence locale `$employee` inexistante est une erreur statique réelle et ferait également échouer le test à l’exécution.
+- Les appels `Employee::factory()->create()` et `Company::factory()->create()` peuvent être inférés comme `Illuminate\Database\Eloquent\Model` par PHPStan. Ajouter une annotation locale `/** @var Employee $employee */` ou `/** @var Company $company */` au point d’assignation permet de conserver le contrôle strict sur `id`, `company_id` et `Sanctum::actingAs()` sans augmenter la baseline.
+- Un test qui vérifie volontairement le rejet runtime d’un type interdit peut garder son appel invalide avec un commentaire explicite `// @phpstan-ignore argument.type` immédiatement avant l’appel. Cette suppression doit rester locale et ne doit jamais devenir une règle globale.
+- Avant toute mise à jour de `phpstan-strict-baseline.neon`, corriger les types et réexécuter PHPStan. Pour #4642, la baseline n’a pas eu besoin d’un nouveau pattern : la commande termine avec `[OK] No errors`.
+- La suite PHPUnit locale de cette session a été tentée avec `php artisan test --parallel`, mais le sandbox ne possède pas le pilote `pdo_pgsql` et échoue sur `could not find driver`; l’exécution complète doit être reprise par un runner CI équipé de PostgreSQL.

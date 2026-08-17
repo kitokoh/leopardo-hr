@@ -53,11 +53,11 @@ class OnboardingE2ETest extends TestCase
         ]);
 
         // 1. Super admin cree la societe + manager principal.
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $createResponse = $this
             ->actingAs($superAdmin, 'super_admin_api')
@@ -218,11 +218,11 @@ class OnboardingE2ETest extends TestCase
             'trial_days' => 14, 'is_active' => true,
         ]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $this->actingAs($superAdmin, 'super_admin_api')
             ->postJson('/api/v1/platform/companies', [
@@ -337,11 +337,11 @@ class OnboardingE2ETest extends TestCase
             'is_active' => true,
         ]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         foreach (['Alpha', 'Beta', 'Gamma'] as $i => $name) {
             $response = $this->actingAs($superAdmin, 'super_admin_api')

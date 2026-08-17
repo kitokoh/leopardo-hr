@@ -197,7 +197,7 @@ jobs:
             Build: ${{ matrix.app.version_prefix }}-main-${{ github.run_number }}
             Commit: ${{ github.sha }}
             Workflow: ${{ github.workflow }}
-            Backend: ${{ vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+            Backend: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com' }}
 
       - name: Verify Firebase App Distribution release is visible
         if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'

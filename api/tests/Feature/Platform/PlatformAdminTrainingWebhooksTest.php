@@ -30,11 +30,11 @@ class PlatformAdminTrainingWebhooksTest extends TestCase
         parent::setUp();
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin-training-webhooks@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
         $this->superAdmin = $superAdmin;
 
         Sanctum::actingAs($this->superAdmin, ['*'], 'super_admin_api');

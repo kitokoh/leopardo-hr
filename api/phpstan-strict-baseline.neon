@@ -6501,7 +6501,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 7
+			count: 9
 			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
 
 		-
@@ -6513,7 +6513,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$status on App\\Modules\\Marketing\\Domain\\Models\\SocialPost\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 3
 			path: tests/Feature/Marketing/PublishScheduledPostJobTest.php
 
 		-
@@ -6771,13 +6771,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 13
+			count: 33
 			path: tests/Feature/OrgChartControllerTest.php
 
 		-
 			message: '#^Parameter \#1 \$user of static method Laravel\\Sanctum\\Sanctum\<Laravel\\Sanctum\\PersonalAccessToken\>\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable\|Laravel\\Sanctum\\HasApiTokens, Illuminate\\Database\\Eloquent\\Model given\.$#'
 			identifier: argument.type
-			count: 5
+			count: 10
 			path: tests/Feature/OrgChartControllerTest.php
 
 		-

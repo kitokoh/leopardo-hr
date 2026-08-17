@@ -103,7 +103,7 @@ class RegisterLoginFlowTest extends TestCase
 
     public function test_login_requires_active_status_for_pending_company_account(): void
     {
-        $employee = Employee::create([
+        $employee = Employee::forceCreate([
             'first_name' => 'Suspended',
             'last_name' => 'User',
             'email' => 'suspended.ordinary@example.com',

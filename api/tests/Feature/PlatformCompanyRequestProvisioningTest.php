@@ -45,11 +45,11 @@ class PlatformCompanyRequestProvisioningTest extends TestCase
             'is_active' => true,
         ]);
 
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Platform Admin',
             'email' => 'admin@leopardo-rh.com',
-            'password_hash' => Hash::make('admin'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('admin')])->save();
 
         $user = User::query()->create([
             'first_name' => 'Nadia',

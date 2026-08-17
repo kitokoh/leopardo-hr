@@ -43,11 +43,11 @@ class QuickEstimateTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'fixed',
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -55,14 +55,14 @@ class QuickEstimateTest extends TestCase
             'salary_base' => 0,
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Ahmed',
             'last_name' => 'Benali',
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 100,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -123,12 +123,12 @@ class QuickEstimateTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -157,11 +157,11 @@ class QuickEstimateTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'fixed',
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -169,12 +169,12 @@ class QuickEstimateTest extends TestCase
             'salary_base' => 0,
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@company.test',
-            'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',
             'hourly_rate' => 50,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

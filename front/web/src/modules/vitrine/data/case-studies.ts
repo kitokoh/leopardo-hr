@@ -230,41 +230,51 @@ export const caseStudiesByLocale: Record<AppLocale, CaseStudyItem[]> = {
 export const caseStudyUiCopy: Record<AppLocale, {
   backLink: string;
   resultsTitle: string;
-  useCasePrefix: string;
   seeAll: string;
   ctaTitle: string;
   demoCta: string;
+  moduleIllustrates: string;
+  moduleExplore: string;
+  discoverModule: string;
 }> = {
   fr: {
     backLink: 'Toutes les études de cas',
     resultsTitle: 'Résultats clés',
-    useCasePrefix: "Cas d'usage —",
     seeAll: 'Voir toutes les études de cas',
     ctaTitle: 'Votre entreprise pourrait être la prochaine',
     demoCta: 'Demander une démo',
+    moduleIllustrates: 'Ce cas illustre le module {module}',
+    moduleExplore: 'Découvrez comment Leopardo RH couvre ce besoin au quotidien, ou explorez les autres études de cas.',
+    discoverModule: 'Découvrir {module}',
   },
   en: {
     backLink: 'All case studies',
     resultsTitle: 'Key results',
-    useCasePrefix: 'Use case —',
     seeAll: 'See all case studies',
     ctaTitle: 'Your company could be next',
     demoCta: 'Request a demo',
+    moduleIllustrates: 'This case illustrates the {module} module',
+    moduleExplore: 'Discover how Leopardo RH covers this need day to day, or explore other case studies.',
+    discoverModule: 'Discover {module}',
   },
   tr: {
     backLink: 'Tüm vaka çalışmaları',
     resultsTitle: 'Ana sonuçlar',
-    useCasePrefix: 'Kullanım senaryosu —',
     seeAll: 'Tüm vaka çalışmalarını gör',
     ctaTitle: 'Sıradaki şirket siz olabilirsiniz',
     demoCta: 'Demo iste',
+    moduleIllustrates: 'Bu vaka {module} modülünü gösterir',
+    moduleExplore: 'Leopardo RH’nin bu ihtiyacı günlük olarak nasıl karşıladığını keşfedin veya diğer vaka çalışmalarına göz atın.',
+    discoverModule: '{module} modülünü keşfedin',
   },
   ar: {
     backLink: 'كل دراسات الحالة',
     resultsTitle: 'النتائج الرئيسية',
-    useCasePrefix: 'حالة استخدام —',
     seeAll: 'عرض كل دراسات الحالة',
     ctaTitle: 'يمكن أن تكون شركتك التالية',
     demoCta: 'اطلب عرضاً توضيحياً',
+    moduleIllustrates: 'توضح هذه الحالة وحدة {module}',
+    moduleExplore: 'اكتشف كيف تغطي Leopardo RH هذه الحاجة يومياً، أو استكشف دراسات الحالة الأخرى.',
+    discoverModule: 'اكتشف {module}',
   },
 };

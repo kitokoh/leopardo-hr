@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -109,15 +109,15 @@ class MultiTenantSharedIsolationTest extends TestCase
     {
         foreach ($this->companies as $company) {
             app()->instance('current_company', $company);
-            $sensitiveEmployee0 = Employee::query()->create([
+            $sensitiveEmployee0 = new Employee([
                 'email' => "rh@{$company->slug}.test",
-                'password_hash' => Hash::make('secret'),
             ]);
+            $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('secret')])->save();
             $sensitiveEmployee0->forceFill([
                 'role' => 'manager',
                 'manager_role' => 'rh',
             ])->save();
-            Employee::query()->create([
+            Employee::query()->forceCreate([
                 'email' => "emp@{$company->slug}.test",
                 'password_hash' => Hash::make('secret'),
             ]);
@@ -151,14 +151,14 @@ class MultiTenantSharedIsolationTest extends TestCase
         $companyB = $this->companies[1];
 
         app()->instance('current_company', $companyA);
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'email' => 'rh@leak-a.test',
             'password_hash' => Hash::make('secret'),
         ]);
 
         // Bascule de contexte : les creations suivantes appartiennent a B.
         app()->instance('current_company', $companyB);
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'email' => 'rh@leak-b.test',
             'password_hash' => Hash::make('secret'),
         ]);
@@ -185,7 +185,7 @@ class MultiTenantSharedIsolationTest extends TestCase
         $companyA->update(['status' => 'suspended']);
 
         app()->instance('current_company', $companyA);
-        Employee::query()->create([
+        Employee::query()->forceCreate([
             'email' => 'suspended@a.test',
             'password_hash' => Hash::make('secret'),
         ]);
@@ -196,4 +196,3 @@ class MultiTenantSharedIsolationTest extends TestCase
         );
     }
 }
-

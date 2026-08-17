@@ -43,12 +43,12 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -56,13 +56,13 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
-            'password_hash' => Hash::make('password123'),
             'manager_id' => $manager->id,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -114,28 +114,28 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'matricule' => 'EMP-001',
             'zkteco_id' => 'FP-001',
-            'password_hash' => Hash::make('password123'),
             'biometric_fingerprint_enabled' => true,
             'biometric_fingerprint_reference_path' => 'FP-001',
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -181,12 +181,12 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -194,15 +194,15 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'matricule' => 'EMP-001',
             'zkteco_id' => 'FP-001',
-            'password_hash' => Hash::make('password123'),
             'biometric_fingerprint_enabled' => true,
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -281,12 +281,12 @@ class BiometricWorkflowTest extends TestCase
 
         DB::statement('SET search_path TO shared_tenants,public');
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'first_name' => 'Manager',
             'last_name' => 'Principal',
             'email' => 'manager@company.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -294,28 +294,28 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $enrolledEmployee = Employee::query()->create([
+        $enrolledEmployee = new Employee([
             'first_name' => 'Karim',
             'last_name' => 'Employe',
             'email' => 'karim@company.test',
             'matricule' => 'EMP-001',
-            'password_hash' => Hash::make('password123'),
             'biometric_fingerprint_enabled' => true,
             'biometric_consent_at' => now(),
         ]);
+        $enrolledEmployee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $enrolledEmployee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
 
-        $pendingEmployee = Employee::query()->create([
+        $pendingEmployee = new Employee([
             'first_name' => 'Sara',
             'last_name' => 'Nouvelle',
             'email' => 'sara@company.test',
             'matricule' => 'EMP-002',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $pendingEmployee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $pendingEmployee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -332,13 +332,13 @@ class BiometricWorkflowTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $unenrolledEmployee = Employee::query()->create([
+        $unenrolledEmployee = new Employee([
             'first_name' => 'Yacine',
             'last_name' => 'SansBiometrie',
             'email' => 'yacine@company.test',
             'matricule' => 'EMP-003',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $unenrolledEmployee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $unenrolledEmployee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

@@ -9,10 +9,10 @@ use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
 /**
@@ -77,8 +77,9 @@ class PlatformUserController extends Controller
         $user = SuperAdmin::query()->create([
             'name' => $validated['name'],
             'email' => mb_strtolower($validated['email']),
-            'password_hash' => Hash::make($validated['password']),
         ]);
+        // #4695 : password_hash hors $fillable — assignation explicite.
+        $user->forceFill(['password_hash' => Hash::make($validated['password'])])->save();
         // Issue #3597 : status non mass-assignable — assignation explicite.
         $user->status = 'active';
         $user->save();
@@ -113,11 +114,15 @@ class PlatformUserController extends Controller
         }
 
         // Issue #3597 : status non mass-assignable — assignation explicite.
-        $user->update(Arr::except($validated, ['status']));
+        // Issue #4695 : password_hash non mass-assignable — assignation directe.
+        $user->update(Arr::except($validated, ['status', 'password_hash']));
+        if (isset($validated['password_hash'])) {
+            $user->password_hash = $validated['password_hash'];
+        }
         if (array_key_exists('status', $validated)) {
             $user->status = $validated['status'];
-            $user->save();
         }
+        $user->save();
 
         $this->audit($request, $user, 'platform_user_updated');
 

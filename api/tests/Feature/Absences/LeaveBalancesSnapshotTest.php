@@ -83,13 +83,13 @@ class LeaveBalancesSnapshotTest extends TestCase
             'requires_proof' => false,
         ]);
 
-        $this->manager = Employee::query()->create([
+        $this->manager = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'Manager',
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $this->manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $this->manager->forceFill([
             'company_id' => $this->company->id,
             'role' => 'manager',
@@ -97,13 +97,13 @@ class LeaveBalancesSnapshotTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $this->employee = Employee::query()->create([
+        $this->employee = new Employee([
             'schedule_id' => $schedule->id,
             'first_name' => 'Test',
             'last_name' => 'Employee',
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $this->employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $this->employee->forceFill([
             'company_id' => $this->company->id,
             'role' => 'employee',

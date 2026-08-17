@@ -81,10 +81,10 @@ class EvaluationWorkflowTest extends TestCase
     {
         [$company, $manager, $employee] = $this->createCompanyActors();
 
-        $otherEmployee = Employee::query()->create([
+        $otherEmployee = new Employee([
             'email' => 'other.employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $otherEmployee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $otherEmployee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',
@@ -190,10 +190,10 @@ class EvaluationWorkflowTest extends TestCase
             'timezone' => 'UTC',
         ]);
 
-        $manager = Employee::query()->create([
+        $manager = new Employee([
             'email' => 'manager@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $manager->forceFill(['password_hash' => Hash::make('password123')])->save();
         $manager->forceFill([
             'company_id' => $company->id,
             'role' => 'manager',
@@ -201,10 +201,10 @@ class EvaluationWorkflowTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employee = Employee::query()->create([
+        $employee = new Employee([
             'email' => 'employee@a.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $employee->forceFill([
             'company_id' => $company->id,
             'role' => 'employee',

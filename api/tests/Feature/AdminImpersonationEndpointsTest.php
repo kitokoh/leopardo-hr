@@ -53,11 +53,11 @@ class AdminImpersonationEndpointsTest extends TestCase
         // Super-admin authentifié mais payload invalide → 422 (la route est
         // bien câblée : la validation du contrôleur répond).
         /** @var SuperAdmin $admin */
-        $admin = SuperAdmin::query()->create([
+        $admin = new SuperAdmin([
             'name' => 'Super Admin Impersonation Test',
             'email' => 'sa-impersonation@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $admin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
         Sanctum::actingAs($admin, ['*'], 'super_admin_api');
 
