@@ -381,12 +381,15 @@ class ZktecoControllerTest extends TestCase
      * avec « , » (espace) après un SET alors que le défaut de connexion
      * (option DSN) s'affiche sans espace — comparer les chaînes brutes
      * casse la suite selon l'historique de SET de la session.
+     *
+     * @param array<int, string> $expectedSchemas
      */
     private function assertSearchPathRestored(array $expectedSchemas): void
     {
         $row = DB::selectOne('SHOW search_path');
         $this->assertNotNull($row);
 
+        /** @var \Closure(string): array<int, string> $normalize */
         $normalize = static fn (string $path): array => array_values(array_filter(array_map(
             'trim',
             explode(',', str_replace('"', '', $path)),
