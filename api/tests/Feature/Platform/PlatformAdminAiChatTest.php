@@ -44,12 +44,15 @@ class PlatformAdminAiChatTest extends TestCase
 
     public function test_chat_without_conversation_returns_structured_reply(): void
     {
+        // Issue #2311 : la console plateforme est cross-tenant en lecture
+        // seule — pas d'assistant IA plateforme. Le contrôleur renvoie un 501
+        // explicite (ADMIN_CHAT_UNAVAILABLE), jamais un 200 factice.
         $response = $this->postJson('/api/v1/admin/ai/chat', [
             'message' => 'Bonjour, qui sont mes employés ?',
-        ])->assertOk();
+        ])->assertStatus(501);
 
-        $response->assertJsonPath('conversation_id', null);
-        $response->assertJsonPath('response', __('platform.admin_chat_unavailable'));
+        $response->assertJsonPath('error', 'ADMIN_CHAT_UNAVAILABLE');
+        $response->assertJsonPath('message', __('platform.admin_chat_unavailable'));
     }
 
     public function test_chat_unknown_conversation_returns_404(): void
@@ -84,7 +87,7 @@ class PlatformAdminAiChatTest extends TestCase
         $this->postJson('/api/v1/admin/ai/chat', [
             'message' => 'Réponse de la console',
             'conversation_id' => $conversationId,
-        ])->assertOk();
+        ])->assertStatus(501);
 
         // Aucune écriture dans la conversation du tenant (isolation).
         $after = DB::table('shared_tenants.ai_conversations')->where('id', $conversationId)->value('messages');
