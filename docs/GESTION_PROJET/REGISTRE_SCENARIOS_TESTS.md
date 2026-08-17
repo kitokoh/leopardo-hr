@@ -1,5 +1,9 @@
 # REGISTRE DES SCENARIOS DE TESTS
 
+> ⚠️ **MAJ 2026-08-17** : les références à `front/mobile/` ci-dessous sont obsolètes
+> (chemin supprimé par la PR #754 du 2026-06-13). Le chemin actuel est `front/mobile_apps/`
+> (`leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing`).
+
 ## Objectif 
   
 Fournir une source de verite unique  pour savoir:

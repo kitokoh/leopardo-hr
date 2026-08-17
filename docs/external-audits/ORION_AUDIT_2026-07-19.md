@@ -73,8 +73,9 @@ demo (dont un `super_admin`) sans authentification ni rate limiting dedie.
 ```
 GET https://gestionemployerbackend.onrender.com/api/v1/demo-users
 -> HTTP 200
--> corps JSON contenant admin@leopardo-rh.com / password123 (role super_admin, /platform)
+-> corps JSON contenant admin@leopardo-rh.com / <REDACTED> (role super_admin, /platform)
    + 14 comptes manager/employe sur 3 entreprises demo
+   (mot de passe redige : convention #1614 — ne jamais citer un secret reel, meme partiel)
 ```
 
 **Confirmation : la faille est toujours active en production au moment de cette redaction.**
