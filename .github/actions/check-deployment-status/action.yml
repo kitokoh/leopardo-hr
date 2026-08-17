@@ -1,0 +1,102 @@
+# #4723 — extraction composite : logique « should-run » partagée par
+# e2e-staging.yml et owasp-zap.yml (auparavant copiée-collée, cf. audit 360°).
+#
+# Détermine si un smoke déclenché par workflow_run/workflow_dispatch doit
+# s'exécuter, en se basant sur la conclusion du job `deploy-api` du run parent
+# (issue #1833 — un deploy-api skippé/échoué ne doit jamais produire un
+# « vert » à 0 requête).
+name: 'Check deployment status'
+
+description: >-
+  Determine whether a workflow_run-triggered smoke should run based on the
+  parent run deploy-api job conclusion (#1833), with a fail-closed guard on
+  required production URLs (#4720). Shared by e2e-staging.yml and owasp-zap.yml.
+
+inputs:
+  required_url_vars:
+    description: >-
+      Space-separated names of repository variables that must be set
+      (fail-closed guard, issue #4720). Pass '' to skip the guard.
+    required: false
+    default: ''
+  smoke_label:
+    description: 'Label used in failure/warning messages (e.g. "E2E" or "ZAP").'
+    required: true
+
+outputs:
+  should_run:
+    description: '"true" when the smoke workflow must run, "false" otherwise.'
+    value: ${{ steps.check.outputs.should_run }}
+
+runs:
+  using: composite
+  steps:
+    - name: Guard production URLs (fail-closed, #4720)
+      if: ${{ inputs.required_url_vars != '' }}
+      shell: bash
+      env:
+        PROD_API_BASE_URL: ${{ vars.PROD_API_BASE_URL }}
+        PROD_ADMIN_URL: ${{ vars.PROD_ADMIN_URL }}
+        PROD_WEB_URL: ${{ vars.PROD_WEB_URL }}
+      run: |
+        set -euo pipefail
+        for var in ${{ inputs.required_url_vars }}; do
+          value="$(printenv "$var" || true)"
+          if [[ -z "$value" ]]; then
+            echo "::error::$var must be set (silent fallback removed, issue #4720)."
+            exit 1
+          fi
+        done
+
+    - name: Determine if the smoke should run
+      id: check
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+      env:
+        SMOKE_LABEL: ${{ inputs.smoke_label }}
+      with:
+        script: |
+          const label = process.env.SMOKE_LABEL;
+
+          if (context.eventName === 'workflow_dispatch') {
+            core.setOutput('should_run', 'true');
+            return;
+          }
+
+          if (context.payload.workflow_run?.conclusion !== 'success' &&
+              context.payload.workflow_run?.conclusion !== 'failure') {
+            // cancelled/skipped/timed_out parent run: nothing useful to check.
+            core.setOutput('should_run', 'false');
+            return;
+          }
+
+          const { owner, repo } = context.repo;
+          const runId = context.payload.workflow_run.id;
+
+          const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRun, {
+            owner,
+            repo,
+            run_id: runId,
+            per_page: 100,
+          });
+
+          const deployApiJob = jobs.find((job) => job.name === 'Deploy API + Web to Render');
+
+          // Issue #1833 — faux verts : quand `deploy-api` était skippé (gate
+          // should_deploy=false, SHA stale), tous les jobs smoke étaient skippés
+          // et le run concluait en « success » à 0 requête. Trois cas :
+          //   1. deploy-api SUCCESS  → on exécute le smoke (comportement nominal) ;
+          //   2. deploy-api FAILURE  → un déploiement a été tenté et a échoué :
+          //      le smoke conclut en échec explicite (jamais de faux vert) ;
+          //   3. deploy-api absent/skippé → rien n'a été déployé, rien à
+          //      tester : warning explicite + skip (vert assumé et annoté).
+          if (deployApiJob && deployApiJob.conclusion === 'failure') {
+            core.setFailed(`deploy-api a échoué (conclusion=${deployApiJob.conclusion}) — ${label} marqué en échec explicite, aucun faux vert.`);
+            return;
+          }
+
+          const deployApiConclusion = deployApiJob ? deployApiJob.conclusion : null;
+          core.info(`deploy-api job conclusion: ${deployApiConclusion}`);
+          if (deployApiConclusion !== 'success') {
+            core.warning(`${label} non exécuté : aucune étape de déploiement n'a abouti (deploy-api absent ou skippé). Rien à tester — run volontairement vide, voir issue #1833.`);
+          }
+          core.setOutput('should_run', deployApiConclusion === 'success' ? 'true' : 'false');
