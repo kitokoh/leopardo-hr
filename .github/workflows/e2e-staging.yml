@@ -87,7 +87,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          BASE="${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}/api/v1"
+          BASE="${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}"
+          BASE="${BASE%/}"
+          [[ "${BASE}" == */api/v1 ]] || BASE="${BASE}/api/v1"
           FAILED=0
 
           test_endpoint() {
