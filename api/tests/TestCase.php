@@ -2,15 +2,37 @@
 
 namespace Tests;
 
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\QueryException;
 
 abstract class TestCase extends BaseTestCase
 {
     protected function setUp(): void
     {
-        parent::setUp();
+        // La configuration de la connexion doit être appliquée AVANT que les
+        // traits ne s'exécutent (RefreshDatabase → migrate:fresh +
+        // beginDatabaseTransaction). L'ordre d'origine (`parent::setUp()` en
+        // premier) laissait `configureTestingDatabaseConnection()` purger et
+        // RECONNECTER la connexion APRÈS l'ouverture de la transaction du
+        // trait : la transaction était silencieusement perdue (nouveau PDO
+        // sans BEGIN) → chaque test re-migrait la base (~87 fichiers × ~1 min)
+        // et les écritures fuyaient d'un test à l'autre (violations
+        // d'unicité en cascade, ex. employees_email_unique — observé
+        // 2026-08-17 sur main).
+        // $this->app est typé non-nullable par Larastan — la garde reste utile à
+        // l'exécution (premier setUp avant tout refresh), on neutralise le faux positif.
+        // @phpstan-ignore-next-line booleanNot.alwaysFalse
+        if (! $this->app) {
+            $this->refreshApplication();
+            ParallelTesting::callSetUpTestCaseCallbacks($this);
+        }
+
         $this->configureTestingDatabaseConnection();
+
+        parent::setUp();
         $this->resetTestSearchPath();
     }
 
@@ -52,6 +74,23 @@ abstract class TestCase extends BaseTestCase
             $this->configString("database.connections.{$connection}.host", '127.0.0.1')
         );
 
+        $database = $this->envValueForTesting(
+            'DB_DATABASE',
+            $this->configString("database.connections.{$connection}.database", 'leopardo_test')
+        );
+
+        if (ParallelTesting::token() !== false) {
+            // CI (tests.yml, issue #4695) : en `--parallel`, chaque worker
+            // paratest utilise SA propre base `{db}_test_{token}`. Laravel ne
+            // bascule que pour les tests avec traits DB (RefreshDatabase & co) ;
+            // les tests CreatesMvpSchema (schéma créé/détruit à chaque test)
+            // resteraient sinon sur la base commune → collisions inter-processus
+            // (relation already exists / does not exist). On bascule donc ici
+            // pour TOUS les tests, en créant la base du worker si absente.
+            $database = $database.'_test_'.ParallelTesting::token();
+            $this->ensureParallelDatabaseExists($database);
+        }
+
         if ($this->isRunningInsideDocker() && in_array($host, ['127.0.0.1', 'localhost'], true)) {
             // Check for CI environment variables explicitly using getenv for robustness
             $isCI = getenv('GITHUB_ACTIONS') === 'true' || getenv('CI') === 'true';
@@ -64,7 +103,7 @@ abstract class TestCase extends BaseTestCase
         config([
             "database.connections.{$connection}.host" => $host,
             "database.connections.{$connection}.port" => $this->envValueForTesting('DB_PORT', $this->configString("database.connections.{$connection}.port", '5432')),
-            "database.connections.{$connection}.database" => $this->envValueForTesting('DB_DATABASE', $this->configString("database.connections.{$connection}.database", 'leopardo_test')),
+            "database.connections.{$connection}.database" => $database,
             "database.connections.{$connection}.username" => $this->envValueForTesting('DB_USERNAME', $this->configString("database.connections.{$connection}.username", 'leopardo_user')),
             "database.connections.{$connection}.password" => $this->envValueForTesting('DB_PASSWORD', $this->configString("database.connections.{$connection}.password", 'leopardo_pass_test')),
             "database.connections.{$connection}.search_path" => $this->envValueForTesting('DB_SEARCH_PATH', $this->configString("database.connections.{$connection}.search_path", 'shared_tenants,public')),
@@ -72,6 +111,31 @@ abstract class TestCase extends BaseTestCase
 
         DB::purge($connection);
         DB::reconnect($connection);
+    }
+
+    /**
+     * Crée la base du worker parallèle si elle n'existe pas encore.
+     *
+     * `CREATE DATABASE` ne peut pas s'exécuter dans une transaction ; à ce
+     * stade du setUp, seuls les tests RefreshDatabase ont ouvert une
+     * transaction (et pour eux Laravel a DÉJÀ créé la base via le hook
+     * TestDatabases avant le beginDatabaseTransaction) → on ne crée que si
+     * aucune transaction n'est active.
+     */
+    private function ensureParallelDatabaseExists(string $database): void
+    {
+        if (DB::transactionLevel() > 0) {
+            return;
+        }
+
+        try {
+            Schema::createDatabase($database);
+        } catch (QueryException $exception) {
+            // 42P04 duplicate_database → base déjà créée par un test précédent.
+            if (! str_contains($exception->getMessage(), '42P04')) {
+                throw $exception;
+            }
+        }
     }
 
     private function envValueForTesting(string $key, string $fallback): string

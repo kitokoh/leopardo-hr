@@ -65,7 +65,7 @@ class TenantIsolationTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employeeB = Employee::withoutGlobalScopes()->create([
+        $employeeB = Employee::withoutGlobalScopes()->forceCreate([
             'email' => 'employee@b.test',
             'password_hash' => Hash::make('password123'),
             'salary_type' => 'hourly',

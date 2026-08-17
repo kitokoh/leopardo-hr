@@ -138,7 +138,7 @@ class WebManagerPagesTest extends TestCase
             'currency' => 'DZD',
         ]);
 
-        $outsider = Employee::withoutGlobalScopes()->create([
+        $outsider = Employee::withoutGlobalScopes()->forceCreate([
             'first_name' => 'Other',
             'last_name' => 'User',
             'email' => 'other@company.test',

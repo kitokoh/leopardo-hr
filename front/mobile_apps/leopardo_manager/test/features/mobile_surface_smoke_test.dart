@@ -16,6 +16,7 @@ import 'package:leopardo_manager/features/team/screens/team_screen.dart';
 import 'package:leopardo_manager/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
+import 'package:leopardo_manager/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 
 import '../helpers/mobile_test_harness.dart';
@@ -24,6 +25,9 @@ void main() {
   final employee = testEmployee(role: 'manager', managerRole: 'rh');
   final baseOverrides = [
     authOverride(employee),
+    tenantBrandingProvider.overrideWith((ref) async => null),
+    managerDigestProvider
+        .overrideWith((ref) async => const ManagerDigest.empty()),
     absencesProvider.overrideWith((ref) async => []),
     payrollsProvider.overrideWith((ref) async => []),
     notificationsProvider.overrideWith((ref) async => []),
@@ -77,6 +81,7 @@ void main() {
         overrides: baseOverrides,
         surfaceSize: const Size(430, 1200),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(entry.key), findsOneWidget);
     }

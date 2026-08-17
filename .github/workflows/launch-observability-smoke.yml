@@ -13,9 +13,9 @@ on:
         description: "Admin dashboard base URL (défaut : vars.PROD_ADMIN_URL)"
         required: false
       max_latency_ms:
-        description: "Maximum accepted latency per probe"
+        description: "Maximum accepted latency per probe, including Render cold start"
         required: false
-        default: "2500"
+        default: "10000"
   schedule:
     - cron: "*/30 * * * *"
 
@@ -52,7 +52,9 @@ jobs:
 
       - name: Run launch probes
         env:
-          LAUNCH_MAX_P95_MS: ${{ github.event.inputs.max_latency_ms || '2500' }}
+          # Render free-tier cold starts can exceed 2.5 s while still serving
+          # healthy HTTP 200 responses; keep the budget explicit and observable.
+          LAUNCH_MAX_P95_MS: ${{ github.event.inputs.max_latency_ms || '10000' }}
           LAUNCH_SMOKE_RETRIES: "5"
           LAUNCH_SMOKE_RETRY_DELAY_SECONDS: "15"
         run: |

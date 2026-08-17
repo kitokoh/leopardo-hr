@@ -178,7 +178,7 @@ class ScheduleController extends Controller
             abort(403);
         }
         if ($schedule->is_default) {
-            abort(422, 'Cannot delete the default schedule.');
+            abort(422, 'SCHEDULE_DEFAULT_DELETE_FORBIDDEN');
         }
 
         $schedule->delete();
