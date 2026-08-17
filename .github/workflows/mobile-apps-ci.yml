@@ -163,6 +163,16 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter pub get --offline || flutter pub get
 
+      - name: Fetch diff base for incremental Dart gate
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${BASE_SHA}" && "${BASE_SHA}" != "0000000000000000000000000000000000000000" ]] && ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "${BASE_SHA}"
+          fi
+
       - name: Identify changed Dart files
         id: changed-dart
         shell: bash
