@@ -43,6 +43,17 @@ jobs:
       web_changed: ${{ steps.final.outputs.web_changed }}
       app_version: ${{ steps.final.outputs.app_version }}
     steps:
+      # The gate runs before the full deployment checkout. This sparse,
+      # credential-free checkout contains only the trusted local action so
+      # GitHub can resolve it without exposing the deployment tree first.
+      - name: Checkout trusted deploy gate action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github/actions/verify-deploy-workflows
+          sparse-checkout-cone-mode: false
+          fetch-depth: 1
+          persist-credentials: false
+
       - name: Guard PROD_API_BASE_URL (#4524)
         shell: bash
         run: |
