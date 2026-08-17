@@ -17,6 +17,12 @@ function Assert-Contains([string]$content, [string]$needle, [string]$label) {
     }
 }
 
+function Assert-ContainsAny([string]$content, [string[]]$needles, [string]$label) {
+    if (-not ($needles | Where-Object { $content.Contains($_) })) {
+        Add-Failure "$label must contain one of: $($needles -join ', ')"
+    }
+}
+
 $appRoot = Join-Path $repoRoot "front/mobile_apps/leopardo_platform_admin"
 $coreRoot = Join-Path $repoRoot "front/mobile_apps/leopardo_core"
 
@@ -117,9 +123,15 @@ Assert-Contains $mobileDistribute "FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID" "Mobi
 Assert-Contains $mobileDistribute "FIREBASE_READBACK_REQUIRED" "Mobile distribute Firebase readback strict toggle"
 Assert-Contains $mobileDistributeMain "FIREBASE_READBACK_REQUIRED" "Deploy main Firebase readback strict toggle"
 Assert-Contains $mobileDistribute "mobilesdk_app_id" "Mobile distribute Firebase app id/native config guard"
-Assert-Contains $mobileDistribute "retrying readback with FIREBASE_TOKEN" "Mobile distribute Firebase token readback fallback"
+Assert-ContainsAny $mobileDistribute @(
+    "dev-hub/tools/verify-firebase-readback.sh",
+    "retrying readback with FIREBASE_TOKEN"
+) "Mobile distribute Firebase readback implementation"
 Assert-Contains $mobileDistributeMain "mobilesdk_app_id" "Deploy main Firebase app id/native config guard"
-Assert-Contains $mobileDistributeMain "retrying readback with FIREBASE_TOKEN" "Deploy main Firebase token readback fallback"
+Assert-ContainsAny $mobileDistributeMain @(
+    "dev-hub/tools/verify-firebase-readback.sh",
+    "retrying readback with FIREBASE_TOKEN"
+) "Deploy main Firebase readback implementation"
 
 Assert-Contains `
     (Get-Content -LiteralPath (Join-Path $repoRoot "dev-hub/tools/install-mobile-firebase-configs.ps1") -Raw) `

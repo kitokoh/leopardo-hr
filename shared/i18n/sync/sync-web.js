@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { localeCatalogs, repoRoot, updateVersions, writeJson } = require('./utils');
+const { localeCatalogs, repoRoot, updateVersions, updateSurfaceVersions, writeJson } = require('./utils');
 
 /**
  * sync-web.js — Sync shared i18n catalogs to all web front-end targets.
@@ -56,5 +56,10 @@ for (const { locale, data } of localeCatalogs()) {
   // Web vitrine/portail : catalogue partagé pur (aucune clé app-specific)
   writeJson(path.join(webDir, `${locale}.json`), { ...data });
 }
+
+// #4805 : checksums des catalogues générés (web + admin) tracés dans
+// versions.json — toute modification manuelle sans sync est détectée par
+// validate.js (validate-and-sync).
+updateSurfaceVersions({ web: webDir, admin: adminDir });
 
 console.log('I18N_SYNC_WEB_OK');

@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: "API staging base URL"
+        description: "API base URL (défaut : vars.PROD_API_BASE_URL)"
         required: false
-        default: "https://gestionemployerbackend.onrender.com"
       health_vus:
         description: "Health virtual users"
         required: false
@@ -71,7 +70,7 @@ jobs:
 
       - name: Run k6 API core smoke
         env:
-          BASE_URL: ${{ github.event.inputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           MANAGER_TOKEN: ${{ secrets.K6_MANAGER_TOKEN }}
           EMPLOYEE_TOKEN: ${{ secrets.K6_EMPLOYEE_TOKEN }}
           HEALTH_VUS: ${{ github.event.inputs.health_vus }}
@@ -130,7 +129,7 @@ jobs:
 
       - name: Run k6 attendance punch scale
         env:
-          BASE_URL: ${{ github.event.inputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           EMPLOYEE_TOKENS: ${{ secrets.K6_EMPLOYEE_TOKENS }}
           PUNCH_MODE: manual  # was github.event.inputs.attendance_punch_mode; hardcoded to reduce inputs to ≤10 (#3612)
           STAGE_DURATION: ${{ github.event.inputs.attendance_stage_duration }}
@@ -176,7 +175,7 @@ jobs:
 
       - name: Run k6 payroll progressive scale
         env:
-          BASE_URL: ${{ github.event.inputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           MANAGER_TOKENS: ${{ secrets.K6_MANAGER_TOKENS }}
           PAYROLL_RUN_IDS: ${{ secrets.K6_PAYROLL_RUN_IDS }}
           ALLOW_PAYROLL_MUTATIONS: ${{ github.event.inputs.payroll_allow_mutations }}

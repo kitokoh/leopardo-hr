@@ -21,6 +21,7 @@ import { BookOpen } from 'lucide-react';
 const blogCopy: Record<AppLocale, {
   dateLocale: string;
   readingTime: string;
+  archived: string;
   hero: { headline: string; subheadline: string; cta: string; badge: string };
   grid: { title: string; subtitle: string; badge: string; all: string; previous: string; next: string };
   newsletter: { badge: string; title: string; description: string; note: string; placeholder: string; submit: string; submitting: string; success: string; error: string };
@@ -29,6 +30,7 @@ const blogCopy: Record<AppLocale, {
   fr: {
     dateLocale: 'fr-FR',
     readingTime: 'min de lecture',
+    archived: 'Archivé',
     hero: {
       headline: 'Blog et ressources RH',
       subheadline: 'Guides, articles et conseils pour structurer vos RH, votre paie et votre croissance.',
@@ -64,6 +66,7 @@ const blogCopy: Record<AppLocale, {
   en: {
     dateLocale: 'en-US',
     readingTime: 'min read',
+    archived: 'Archived',
     hero: {
       headline: 'HR blog and resources',
       subheadline: 'Guides, articles and practical advice to structure HR, payroll and growth.',
@@ -99,6 +102,7 @@ const blogCopy: Record<AppLocale, {
   tr: {
     dateLocale: 'tr-TR',
     readingTime: 'dk okuma',
+    archived: 'Arşivlendi',
     hero: {
       headline: 'IK blogu ve kaynaklar',
       subheadline: 'IK, bordro ve buyumeyi daha sistemli hale getirmek icin rehberler ve pratik oneriler.',
@@ -134,6 +138,7 @@ const blogCopy: Record<AppLocale, {
   ar: {
     dateLocale: 'ar',
     readingTime: 'دقيقة قراءة',
+    archived: 'مؤرشف',
     hero: {
       headline: 'مدونة وموارد الموارد البشرية',
       subheadline: 'أدلة ومقالات ونصائح عملية لتنظيم الموارد البشرية والرواتب والنمو.',
@@ -219,6 +224,7 @@ export default function BlogPage() {
         nextLabel={copy.grid.next}
         dateLocale={copy.dateLocale}
         readingTimeLabel={copy.readingTime}
+        archivedLabel={copy.archived}
         badge={{ text: copy.grid.badge, icon: <BookOpen className="w-3 h-3" /> }}
       />
 

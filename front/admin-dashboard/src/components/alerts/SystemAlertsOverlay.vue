@@ -12,9 +12,9 @@
               <ExclamationTriangleIcon class="h-6 w-6 text-white" />
             </span>
             <p class="ml-3 truncate font-medium text-white">
-              <span class="md:hidden">Alerte critique système</span>
+              <span class="md:hidden">{{ $t('systemAlerts.criticalShort') }}</span>
               <span class="hidden md:inline">
-                {{ currentCriticalAlert?.message || 'Alerte critique système détectée' }}
+                {{ currentCriticalAlert?.message || $t('systemAlerts.criticalFallback') }}
               </span>
             </p>
           </div>
@@ -23,14 +23,14 @@
               @click="viewSystemAlerts"
               class="flex items-center justify-center rounded-md border border-transparent bg-white/70 px-4 py-2 text-sm font-medium text-red-600 shadow-sm hover:bg-red-50 backdrop-blur-md dark:bg-slate-800/70"
             >
-              Voir les détails
+              {{ $t('systemAlerts.viewDetails') }}
             </button>
           </div>
           <div class="order-2 flex-shrink-0 sm:order-3 sm:ml-3">
             <button
               @click="dismissCriticalAlert"
               class="-mr-1 flex rounded-md p-2 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-white sm:-mr-2"
-              aria-label="Fermer les alertes système"
+              :aria-label="$t('systemAlerts.closeLabel')"
             >
               <XMarkIcon class="h-6 w-6 text-white" />
             </button>
@@ -57,13 +57,13 @@
               <WifiIcon class="h-5 w-5 text-white" />
             </span>
             <p class="ml-3 font-medium text-white">
-              <span class="md:hidden">{{ realtimeStore.isPolling ? 'Mode secours' : 'Connexion perdue' }}</span>
+              <span class="md:hidden">{{ realtimeStore.isPolling ? $t('systemAlerts.fallbackMode') : $t('systemAlerts.connectionLost') }}</span>
               <span class="hidden md:inline">
                 <template v-if="realtimeStore.isPolling">
-                  Connexion temps réel indisponible. Les notifications continuent d'arriver via actualisation périodique.
+                  {{ $t('systemAlerts.pollingMessage') }}
                 </template>
                 <template v-else>
-                  Connexion temps réel perdue. Tentative de reconnexion...
+                  {{ $t('systemAlerts.reconnectMessage') }}
                 </template>
               </span>
             </p>
@@ -73,7 +73,7 @@
               @click="realtimeStore.connect()"
               class="flex items-center justify-center rounded-md border border-transparent bg-white/70 px-4 py-1 text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50 backdrop-blur-md dark:bg-slate-800/70"
             >
-              Reconnecter
+              {{ $t('systemAlerts.reconnect') }}
             </button>
           </div>
         </div>

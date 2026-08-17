@@ -234,6 +234,20 @@ return Application::configure(basePath: dirname(__DIR__))
             // restent exposés ; tout message à signature interne est remplacé
             // par un code stable + message générique localisé, et le détail
             // est conservé côté serveur (logs).
+            // #4689 (audit 360° 2026-08-16) : code stable mappé par statut —
+            // utilisé par les deux branches (leak → remplacement complet,
+            // message statique → localized_message systématique).
+            $code = match ($statusCode) {
+                400 => 'BAD_REQUEST',
+                401 => 'UNAUTHENTICATED',
+                403 => 'FORBIDDEN',
+                409 => 'CONFLICT',
+                422 => 'VALIDATION_FAILED',
+                429 => 'TOO_MANY_REQUESTS',
+                500 => 'SERVER_ERROR',
+                503 => 'SERVICE_UNAVAILABLE',
+                default => 'HTTP_ERROR',
+            };
             $rawMessage = (string) $exception->getMessage();
             $leakSignature = preg_match(
                 '/SQLSTATE|PDOException|QueryException|RuntimeException|ErrorException|TypeError|'
@@ -243,17 +257,6 @@ return Application::configure(basePath: dirname(__DIR__))
             );
 
             if ($leakSignature === 1 || trim($rawMessage) === '') {
-                $code = match ($statusCode) {
-                    400 => 'BAD_REQUEST',
-                    401 => 'UNAUTHENTICATED',
-                    403 => 'FORBIDDEN',
-                    409 => 'CONFLICT',
-                    422 => 'VALIDATION_FAILED',
-                    429 => 'TOO_MANY_REQUESTS',
-                    500 => 'SERVER_ERROR',
-                    503 => 'SERVICE_UNAVAILABLE',
-                    default => 'HTTP_ERROR',
-                };
 
                 Log::warning('HTTP exception rendered with sanitized message (issue #3810)', [
                     'status' => $statusCode,
@@ -283,6 +286,11 @@ return Application::configure(basePath: dirname(__DIR__))
             $response = new JsonResponse([
                 'error' => $rawMessage ?: 'HTTP_ERROR',
                 'message' => $rawMessage ?: 'HTTP_ERROR',
+                // #4689 (audit 360° 2026-08-16) : toute réponse d'erreur HTTP
+                // porte désormais localized_message (forme standard API) —
+                // error/message gardent le contrat existant (messages
+                // statiques volontaires exposés, cf. #3810).
+                'localized_message' => __("errors.{$code}", [], $request->getLocale()),
             ], $statusCode);
 
             // Issue #1774 : préserver les headers du throttling

@@ -4,7 +4,9 @@ import { ImageResponse } from 'next/og'
 import type { AppLocale } from '@/lib/i18n'
 import { getLocaleDirection, normalizeLocale } from '@/lib/i18n'
 
-export const alt = 'Leopardo RH - plateforme RH web, mobile et kiosque'
+// #4707 : alt par défaut neutre (la variante localisée est émise par
+// generateMetadata → openGraph.images[].alt, rootMeta.ogImageAlt ×4 locales).
+export const alt = 'Leopardo RH - HR platform for web, mobile and kiosk'
 export const size = {
   width: 1200,
   height: 630,
