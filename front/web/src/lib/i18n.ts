@@ -316,6 +316,58 @@ export type CopyTree = {
     creating: string;
     create: string;
   };
+  partnerPage: {
+    loading: string;
+    applyErrorPrefix: string;
+    notApplied: {
+      title: string;
+      subtitle: string;
+      individual: string;
+      agency: string;
+    };
+    pending: {
+      title: string;
+      body: string;
+    };
+    dashboard: {
+      title: string;
+      subtitle: string;
+    };
+    metrics: {
+      conversions: string;
+      totalEarned: string;
+      pending: string;
+      withdrawable: string;
+    };
+    commissions: {
+      title: string;
+      empty: string;
+    };
+    table: {
+      tenantId: string;
+      date: string;
+      status: string;
+      amount: string;
+      statusPaid: string;
+      statusPending: string;
+    };
+    payout: {
+      title: string;
+      body: string;
+      request: string;
+      sending: string;
+      insufficient: string;
+      success: string;
+      errorPrefix: string;
+    };
+    referral: {
+      title: string;
+      unavailable: string;
+      copy: string;
+      copied: string;
+      copyError: string;
+    };
+  };
   offlinePage: {
     title: string;
     body: string;
@@ -612,6 +664,58 @@ const copy: Record<AppLocale, CopyTree> = {
       creating: 'Creation...',
       create: 'Creer',
     },
+    partnerPage: {
+      loading: 'Chargement de votre espace...',
+      applyErrorPrefix: 'Erreur lors de la candidature : ',
+      notApplied: {
+        title: 'Devenir Partenaire',
+        subtitle: "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+        individual: "Postuler en tant qu'Individuel",
+        agency: "Postuler en tant qu'Agence",
+      },
+      pending: {
+        title: 'Candidature en cours',
+        body: "Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé.",
+      },
+      dashboard: {
+        title: 'Dashboard Partenaire',
+        subtitle: 'Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif.',
+      },
+      metrics: {
+        conversions: 'Conversions',
+        totalEarned: 'Gains totaux',
+        pending: 'En attente',
+        withdrawable: 'Solde retirable',
+      },
+      commissions: {
+        title: 'Dernières commissions',
+        empty: 'Aucune commission enregistrée.',
+      },
+      table: {
+        tenantId: 'Tenant ID',
+        date: 'Date',
+        status: 'Statut',
+        amount: 'Montant',
+        statusPaid: 'Payée',
+        statusPending: 'En attente',
+      },
+      payout: {
+        title: 'Paiement',
+        body: 'Vos commissions sont payées une fois le seuil atteint. Vérifiez que vos coordonnées bancaires sont à jour.',
+        request: 'Demander un virement',
+        sending: 'Envoi...',
+        insufficient: 'Solde insuffisant pour demander un virement (minimum 100,00 €).',
+        success: 'Demande de virement envoyée avec succès.',
+        errorPrefix: 'Erreur lors de la demande de virement : ',
+      },
+      referral: {
+        title: 'Lien de parrainage',
+        unavailable: 'Lien indisponible',
+        copy: 'Copier mon lien',
+        copied: 'Copié !',
+        copyError: 'Impossible de copier le lien. Copiez-le manuellement.',
+      },
+    },
     offlinePage: {
       title: 'Pas de connexion Internet',
       body: "Vous etes actuellement hors ligne. Si un Edge node Leopardo est disponible sur votre reseau local, l'application continue de fonctionner normalement.",
@@ -905,6 +1009,58 @@ const copy: Record<AppLocale, CopyTree> = {
       cancel: 'إلغاء',
       creating: 'الإنشاء...',
       create: 'إنشاء',
+    },
+    partnerPage: {
+      loading: 'جارٍ تحميل مساحتك...',
+      applyErrorPrefix: 'خطأ أثناء التقديم: ',
+      notApplied: {
+        title: 'كن شريكاً',
+        subtitle: 'انضم إلى منظومة Leopardo RH واربح عمولات عن كل شركة تحيلها. عمولة متكررة تصل إلى 20%.',
+        individual: 'التقديم كفرد',
+        agency: 'التقديم كوكالة',
+      },
+      pending: {
+        title: 'الطلب قيد المراجعة',
+        body: 'يتم حالياً مراجعة طلبك من قبل فريق المبيعات. ستتلقى بريداً إلكترونياً فور تفعيل وصولك.',
+      },
+      dashboard: {
+        title: 'لوحة تحكم الشريك',
+        subtitle: 'تابع تحويلاتك وعمولاتك في Leopardo RH — حالة شريك نشط.',
+      },
+      metrics: {
+        conversions: 'التحويلات',
+        totalEarned: 'إجمالي الأرباح',
+        pending: 'قيد الانتظار',
+        withdrawable: 'الرصيد القابل للسحب',
+      },
+      commissions: {
+        title: 'أحدث العمولات',
+        empty: 'لا توجد عمولات مسجلة.',
+      },
+      table: {
+        tenantId: 'معرّف المستأجر',
+        date: 'التاريخ',
+        status: 'الحالة',
+        amount: 'المبلغ',
+        statusPaid: 'مدفوعة',
+        statusPending: 'قيد الانتظار',
+      },
+      payout: {
+        title: 'الدفع',
+        body: 'تُدفع عمولاتك بمجرد بلوغ الحد الأدنى. تأكد من أن بياناتك البنكية محدّثة.',
+        request: 'طلب تحويل',
+        sending: 'جارٍ الإرسال...',
+        insufficient: 'الرصيد غير كافٍ لطلب تحويل (الحد الأدنى 100,00 €).',
+        success: 'تم إرسال طلب التحويل بنجاح.',
+        errorPrefix: 'خطأ أثناء طلب التحويل: ',
+      },
+      referral: {
+        title: 'رابط الإحالة',
+        unavailable: 'الرابط غير متاح',
+        copy: 'نسخ رابطه',
+        copied: 'تم النسخ!',
+        copyError: 'تعذر نسخ الرابط. انسخه يدوياً.',
+      },
     },
     offlinePage: {
       title: 'لا يوجد اتصال بالإنترنت',
@@ -1200,6 +1356,58 @@ const copy: Record<AppLocale, CopyTree> = {
       creating: 'Olusturuluyor...',
       create: 'Olustur',
     },
+    partnerPage: {
+      loading: 'Alanınız yükleniyor...',
+      applyErrorPrefix: 'Başvuru sırasında hata: ',
+      notApplied: {
+        title: 'Partner Olun',
+        subtitle: "Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
+        individual: 'Bireysel olarak başvurun',
+        agency: 'Ajans olarak başvurun',
+      },
+      pending: {
+        title: 'Başvuru inceleniyor',
+        body: 'Başvurunuz satış ekibimiz tarafından doğrulanıyor. Erişiminiz etkinleştirilir etkinleştirilmez bir e-posta alacaksınız.',
+      },
+      dashboard: {
+        title: 'Partner Paneli',
+        subtitle: 'Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu.',
+      },
+      metrics: {
+        conversions: 'Dönüşümler',
+        totalEarned: 'Toplam kazanç',
+        pending: 'Beklemede',
+        withdrawable: 'Çekilebilir bakiye',
+      },
+      commissions: {
+        title: 'Son komisyonlar',
+        empty: 'Kayıtlı komisyon yok.',
+      },
+      table: {
+        tenantId: 'Tenant Kimliği',
+        date: 'Tarih',
+        status: 'Durum',
+        amount: 'Tutar',
+        statusPaid: 'Ödendi',
+        statusPending: 'Beklemede',
+      },
+      payout: {
+        title: 'Ödeme',
+        body: 'Komisyonlarınız eşiğe ulaşıldığında ödenir. Banka bilgilerinizin güncel olduğundan emin olun.',
+        request: 'Havale talep et',
+        sending: 'Gönderiliyor...',
+        insufficient: 'Havale talep etmek için bakiye yetersiz (minimum 100,00 €).',
+        success: 'Havale talebi başarıyla gönderildi.',
+        errorPrefix: 'Havale talebi sırasında hata: ',
+      },
+      referral: {
+        title: 'Referans bağlantısı',
+        unavailable: 'Bağlantı kullanılamıyor',
+        copy: 'Bağlantımı kopyala',
+        copied: 'Kopyalandı!',
+        copyError: 'Bağlantı kopyalanamadı. Lütfen elle kopyalayın.',
+      },
+    },
     offlinePage: {
       title: 'Internet baglantisi yok',
       body: 'Su anda cevrimdisisiniz. Yerel agnizda bir Leopardo Edge node mevcutsa, uygulama normal sekilde calismaya devam eder.',
@@ -1493,6 +1701,58 @@ const copy: Record<AppLocale, CopyTree> = {
       cancel: 'Cancel',
       creating: 'Creating...',
       create: 'Create',
+    },
+    partnerPage: {
+      loading: 'Loading your workspace...',
+      applyErrorPrefix: 'Error while applying: ',
+      notApplied: {
+        title: 'Become a Partner',
+        subtitle: 'Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.',
+        individual: 'Apply as an Individual',
+        agency: 'Apply as an Agency',
+      },
+      pending: {
+        title: 'Application in progress',
+        body: 'Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated.',
+      },
+      dashboard: {
+        title: 'Partner Dashboard',
+        subtitle: 'Track your Leopardo RH conversions and commissions — active partner status.',
+      },
+      metrics: {
+        conversions: 'Conversions',
+        totalEarned: 'Total earned',
+        pending: 'Pending',
+        withdrawable: 'Withdrawable balance',
+      },
+      commissions: {
+        title: 'Latest commissions',
+        empty: 'No commission recorded.',
+      },
+      table: {
+        tenantId: 'Tenant ID',
+        date: 'Date',
+        status: 'Status',
+        amount: 'Amount',
+        statusPaid: 'Paid',
+        statusPending: 'Pending',
+      },
+      payout: {
+        title: 'Payout',
+        body: 'Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.',
+        request: 'Request a transfer',
+        sending: 'Sending...',
+        insufficient: 'Insufficient balance to request a transfer (minimum €100.00).',
+        success: 'Transfer request sent successfully.',
+        errorPrefix: 'Error while requesting the transfer: ',
+      },
+      referral: {
+        title: 'Referral link',
+        unavailable: 'Link unavailable',
+        copy: 'Copy my link',
+        copied: 'Copied!',
+        copyError: 'Unable to copy the link. Copy it manually.',
+      },
     },
     offlinePage: {
       title: 'No internet connection',

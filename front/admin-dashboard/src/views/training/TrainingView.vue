@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-      <StatsCard title="Formations actives" :value="stats.active_courses" icon="ChartBarIcon" color="blue" />
-      <StatsCard title="Sessions planifiees" :value="stats.upcoming_sessions" icon="ChartBarIcon" color="purple" />
-      <StatsCard title="Inscrits" :value="stats.total_enrollments" icon="UsersIcon" color="green" />
-      <StatsCard title="Taux completion" :value="stats.completion_rate + '%'" icon="ChartBarIcon" color="green" />
+      <StatsCard :title="$t('training.activeCourses')" :value="stats.active_courses" icon="ChartBarIcon" color="blue" />
+      <StatsCard :title="$t('training.upcomingSessions')" :value="stats.upcoming_sessions" icon="ChartBarIcon" color="purple" />
+      <StatsCard :title="$t('training.enrollments')" :value="stats.total_enrollments" icon="UsersIcon" color="green" />
+      <StatsCard :title="$t('training.completionRate')" :value="stats.completion_rate + '%'" icon="ChartBarIcon" color="green" />
     </div>
 
     <div class="flex gap-2">
@@ -22,8 +22,8 @@
     </div>
 
     <div v-if="activeTab === 'catalogue'" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <div v-if="loading" class="col-span-full py-8 text-center text-sm text-gray-500">Chargement...</div>
-      <div v-else-if="courses.length === 0" class="col-span-full py-8 text-center text-sm text-gray-400">Aucune formation.</div>
+      <div v-if="loading" class="col-span-full py-8 text-center text-sm text-gray-500">{{ $t('training.loading') }}</div>
+      <div v-else-if="courses.length === 0" class="col-span-full py-8 text-center text-sm text-gray-400">{{ $t('training.noCourses') }}</div>
       <div
         v-for="course in courses"
         :key="course.id"
@@ -33,17 +33,17 @@
         <div class="flex items-start justify-between">
           <div>
             <h3 class="text-sm font-semibold text-gray-900">{{ course.title }}</h3>
-            <p class="mt-1 text-xs text-gray-500">{{ course.category || 'Sans categorie' }}</p>
+            <p class="mt-1 text-xs text-gray-500">{{ course.category || $t('training.uncategorized') }}</p>
           </div>
           <StatusBadge :status="course.is_active ? 'active' : 'draft'" />
         </div>
-        <p class="mt-2 line-clamp-2 text-sm text-gray-600">{{ course.description || 'Pas de description.' }}</p>
+        <p class="mt-2 line-clamp-2 text-sm text-gray-600">{{ course.description || $t('training.noDescription') }}</p>
         <div class="mt-3 flex items-center justify-between text-xs text-gray-400">
           <span>{{ course.duration_hours || '-' }}h</span>
-          <span>{{ course.sessions_count || 0 }} sessions</span>
+          <span>{{ course.sessions_count || 0 }} {{ $t('training.sessionsUnit') }}</span>
         </div>
         <div v-if="course.cost_per_participant" class="mt-1 text-xs text-gray-400">
-          {{ formatCurrency(course.cost_per_participant, course.currency) }} / participant
+          {{ formatCurrency(course.cost_per_participant, course.currency) }} {{ $t('training.perParticipant') }}
         </div>
       </div>
     </div>
@@ -55,7 +55,7 @@
       :loading="loading"
       :error="error"
       :search-keys="['course_title', 'instructor', 'location']"
-      search-placeholder="Rechercher une session..."
+      :search-placeholder="$t('training.searchSessionPlaceholder')"
       default-sort="start_date"
       default-sort-dir="desc"
     >
@@ -71,7 +71,7 @@
       :loading="loading"
       :error="error"
       :search-keys="['employee_name', 'course_title']"
-      search-placeholder="Rechercher une inscription..."
+      :search-placeholder="$t('training.searchEnrollmentPlaceholder')"
       default-sort="enrolled_at"
       default-sort-dir="desc"
     >
@@ -105,11 +105,11 @@
             <div class="flex-1 px-6 py-4">
               <dl class="space-y-4">
                 <div class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Categorie</dt>
+                  <dt class="text-sm text-gray-500">{{ $t('training.category') }}</dt>
                   <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.category || '-' }}</dd>
                 </div>
                 <div class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Type</dt>
+                  <dt class="text-sm text-gray-500">{{ $t('training.type') }}</dt>
                   <dd>
                     <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800">
                       {{ (selectedCourse.type || '').toUpperCase() }}
@@ -117,33 +117,33 @@
                   </dd>
                 </div>
                 <div class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Statut</dt>
+                  <dt class="text-sm text-gray-500">{{ $t('training.status') }}</dt>
                   <dd><StatusBadge :status="selectedCourse.is_active ? 'active' : 'draft'" /></dd>
                 </div>
                 <div class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Duree</dt>
-                  <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.duration_hours || '-' }} heures</dd>
+                  <dt class="text-sm text-gray-500">{{ $t('training.duration') }}</dt>
+                  <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.duration_hours || '-' }} {{ $t('training.hoursUnit') }}</dd>
                 </div>
                 <div v-if="selectedCourse.provider" class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Prestataire</dt>
+                  <dt class="text-sm text-gray-500">{{ $t('training.provider') }}</dt>
                   <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.provider }}</dd>
                 </div>
                 <div v-if="selectedCourse.max_participants" class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Places max</dt>
+                  <dt class="text-sm text-gray-500">{{ $t('training.maxPlaces') }}</dt>
                   <dd class="text-sm font-medium text-gray-900">{{ selectedCourse.max_participants }}</dd>
                 </div>
                 <div v-if="selectedCourse.cost_per_participant" class="flex justify-between">
-                  <dt class="text-sm text-gray-500">Cout / participant</dt>
+                  <dt class="text-sm text-gray-500">{{ $t('training.costPerParticipant') }}</dt>
                   <dd class="text-sm font-medium text-gray-900">{{ formatCurrency(selectedCourse.cost_per_participant, selectedCourse.currency) }}</dd>
                 </div>
                 <div v-if="selectedCourse.description" class="border-t pt-4">
-                  <dt class="mb-1 text-sm text-gray-500">Description</dt>
+                  <dt class="mb-1 text-sm text-gray-500">{{ $t('training.description') }}</dt>
                   <dd class="text-sm text-gray-700">{{ selectedCourse.description }}</dd>
                 </div>
               </dl>
 
               <div v-if="courseSessions.length > 0" class="mt-6">
-                <h3 class="mb-3 text-sm font-semibold text-gray-900">Sessions ({{ courseSessions.length }})</h3>
+                <h3 class="mb-3 text-sm font-semibold text-gray-900">{{ $t('training.sessions') }} ({{ courseSessions.length }})</h3>
                 <div class="space-y-2">
                   <div v-for="s in courseSessions" :key="s.id" class="rounded-md border border-gray-100 p-3">
                     <div class="flex items-center justify-between">
@@ -151,7 +151,7 @@
                       <StatusBadge :status="s.status" :map="sessionStatusMap" />
                     </div>
                     <p v-if="s.location" class="mt-1 text-xs text-gray-500">{{ s.location }}</p>
-                    <p v-if="s.instructor" class="text-xs text-gray-400">Formateur: {{ s.instructor }}</p>
+                    <p v-if="s.instructor" class="text-xs text-gray-400">{{ $t('training.instructor') }}: {{ s.instructor }}</p>
                   </div>
                 </div>
               </div>
@@ -170,9 +170,14 @@ import StatsCard from '@/components/dashboard/StatsCard.vue'
 import DataTable from '@/components/common/DataTable.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
 
 const localeStore = useLocaleStore()
+
+function t(key, fallback = '') {
+  return translate(localeStore.current, key, fallback)
+}
+
 const loading = ref(false)
 const error = ref('')
 const courses = ref([])
@@ -183,43 +188,43 @@ const selectedCourse = ref(null)
 
 const stats = ref({ active_courses: 0, upcoming_sessions: 0, total_enrollments: 0, completion_rate: 0 })
 
-const tabs = [
-  { key: 'catalogue', label: 'Catalogue' },
-  { key: 'sessions', label: 'Sessions' },
-  { key: 'enrollments', label: 'Inscriptions' },
-]
+const tabs = computed(() => [
+  { key: 'catalogue', label: t('training.tabCatalog') },
+  { key: 'sessions', label: t('training.sessions') },
+  { key: 'enrollments', label: t('training.tabEnrollments') },
+])
 
-const sessionColumns = [
-  { key: 'course_title', label: 'Formation', sortable: true },
-  { key: 'instructor', label: 'Formateur', sortable: true },
-  { key: 'start_date', label: 'Debut', sortable: true },
-  { key: 'end_date', label: 'Fin', sortable: true },
-  { key: 'location', label: 'Lieu', sortable: true },
-  { key: 'enrolled_count', label: 'Inscrits', sortable: true },
-  { key: 'status', label: 'Statut', sortable: true },
-]
+const sessionColumns = computed(() => [
+  { key: 'course_title', label: t('training.course'), sortable: true },
+  { key: 'instructor', label: t('training.instructor'), sortable: true },
+  { key: 'start_date', label: t('training.startDate'), sortable: true },
+  { key: 'end_date', label: t('training.endDate'), sortable: true },
+  { key: 'location', label: t('training.location'), sortable: true },
+  { key: 'enrolled_count', label: t('training.enrollments'), sortable: true },
+  { key: 'status', label: t('training.status'), sortable: true },
+])
 
-const enrollmentColumns = [
-  { key: 'employee_name', label: 'Employe', sortable: true },
-  { key: 'course_title', label: 'Formation', sortable: true },
-  { key: 'session_date', label: 'Session', sortable: true },
-  { key: 'progress', label: 'Progression' },
-  { key: 'status', label: 'Statut', sortable: true },
-]
+const enrollmentColumns = computed(() => [
+  { key: 'employee_name', label: t('training.employee'), sortable: true },
+  { key: 'course_title', label: t('training.course'), sortable: true },
+  { key: 'session_date', label: t('training.session'), sortable: true },
+  { key: 'progress', label: t('training.progress') },
+  { key: 'status', label: t('training.status'), sortable: true },
+])
 
-const sessionStatusMap = {
-  planned: { label: 'Planifiee', color: 'blue' },
-  in_progress: { label: 'En cours', color: 'yellow' },
-  completed: { label: 'Terminee', color: 'green' },
-  cancelled: { label: 'Annulee', color: 'red' },
-}
+const sessionStatusMap = computed(() => ({
+  planned: { label: t('training.statusPlanned'), color: 'blue' },
+  in_progress: { label: t('training.statusInProgress'), color: 'yellow' },
+  completed: { label: t('training.statusCompleted'), color: 'green' },
+  cancelled: { label: t('training.statusCancelled'), color: 'red' },
+}))
 
-const enrollmentStatusMap = {
-  enrolled: { label: 'Inscrit', color: 'blue' },
-  in_progress: { label: 'En cours', color: 'yellow' },
-  completed: { label: 'Terminé', color: 'green' },
-  dropped: { label: 'Abandonne', color: 'red' },
-}
+const enrollmentStatusMap = computed(() => ({
+  enrolled: { label: t('training.statusEnrolled'), color: 'blue' },
+  in_progress: { label: t('training.statusInProgress'), color: 'yellow' },
+  completed: { label: t('training.statusCompleted'), color: 'green' },
+  dropped: { label: t('training.statusDropped'), color: 'red' },
+}))
 
 const courseSessions = computed(() => {
   if (!selectedCourse.value) return []
@@ -261,7 +266,7 @@ async function fetchData() {
       completion_rate: enrollments.value.length > 0 ? Math.round(completed.length / enrollments.value.length * 100) : 0,
     }
   } catch {
-    error.value = 'Impossible de charger les donnees de formation.'
+    error.value = t('training.loadError')
   } finally {
     loading.value = false
   }
@@ -269,4 +274,3 @@ async function fetchData() {
 
 onMounted(fetchData)
 </script>
-

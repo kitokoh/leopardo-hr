@@ -82,6 +82,9 @@ jobs:
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
+          # #4600/#3452 : le build production échoue sans URL de marque réelle
+          # (leopardo-rh.com NXDOMAIN) — la var pointe la vitrine live.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
         run: npm run build
 
   web-marketing-funnel-e2e:
@@ -115,6 +118,9 @@ jobs:
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
+          # #4600/#3452 : le build production échoue sans URL de marque réelle
+          # (leopardo-rh.com NXDOMAIN) — la var pointe la vitrine live.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
         run: npx playwright test e2e/marketing-funnel.spec.ts --project=chromium --workers=1
 
@@ -122,6 +128,9 @@ jobs:
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
+          # #4600/#3452 : le build production échoue sans URL de marque réelle
+          # (leopardo-rh.com NXDOMAIN) — la var pointe la vitrine live.
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
         run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts --project=chromium --workers=1
 

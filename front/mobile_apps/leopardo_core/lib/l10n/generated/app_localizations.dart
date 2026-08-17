@@ -1395,7 +1395,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardRecentActivity.
   ///
   /// In fr, this message translates to:
-  /// **'Activite recente'**
+  /// **'Activité récente'**
   String get dashboardRecentActivity;
 
   /// No description provided for @dashboardRecentActivityHint.
@@ -1443,7 +1443,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardPresenceTodayTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Presence aujourd hui'**
+  /// **'Présence aujourd\'hui'**
   String get dashboardPresenceTodayTitle;
 
   /// No description provided for @dashboardPresenceTodaySummary.
@@ -1527,7 +1527,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardActiveemployees.
   ///
   /// In fr, this message translates to:
-  /// **'Employes actifs'**
+  /// **'Employés actifs'**
   String get dashboardActiveemployees;
 
   /// No description provided for @dashboardClientsatrisk.
@@ -1685,6 +1685,318 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Non renseigne'**
   String get dashboardNotprovided;
+
+  /// No description provided for @dashboardPendingAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences en attente'**
+  String get dashboardPendingAbsences;
+
+  /// No description provided for @dashboardDepartments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Départements'**
+  String get dashboardDepartments;
+
+  /// No description provided for @dashboardKpiTotal.
+  ///
+  /// In fr, this message translates to:
+  /// **'total'**
+  String get dashboardKpiTotal;
+
+  /// No description provided for @dashboardKpiToProcess.
+  ///
+  /// In fr, this message translates to:
+  /// **'à traiter'**
+  String get dashboardKpiToProcess;
+
+  /// No description provided for @dashboardKpiActive.
+  ///
+  /// In fr, this message translates to:
+  /// **'actifs'**
+  String get dashboardKpiActive;
+
+  /// No description provided for @dashboardPriorityProcessAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Traiter les absences en attente'**
+  String get dashboardPriorityProcessAbsences;
+
+  /// No description provided for @dashboardPriorityCheckPresences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vérifier les présences du jour'**
+  String get dashboardPriorityCheckPresences;
+
+  /// No description provided for @dashboardRecentActivityEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune activité récente à afficher pour ce tenant.'**
+  String get dashboardRecentActivityEmpty;
+
+  /// No description provided for @dashboardDashboardLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les données du dashboard.'**
+  String get dashboardDashboardLoadError;
+
+  /// No description provided for @dashboardTenantLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des données tenant...'**
+  String get dashboardTenantLoading;
+
+  /// No description provided for @dashboardWelcomeToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bienvenue ! Voici ce qui se passe aujourd\'hui.'**
+  String get dashboardWelcomeToday;
+
+  /// No description provided for @dashboardGoLiveReady.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre espace est prêt pour le go-live'**
+  String get dashboardGoLiveReady;
+
+  /// No description provided for @dashboardGoLiveRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions requises avant le go-live'**
+  String get dashboardGoLiveRequired;
+
+  /// No description provided for @dashboardGoLiveScore.
+  ///
+  /// In fr, this message translates to:
+  /// **'Score {score}/100 basé sur les données tenant, la communication, la paie, le pointage et l\'instrumentation client.'**
+  String dashboardGoLiveScore(Object score);
+
+  /// No description provided for @dashboardTabToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get dashboardTabToday;
+
+  /// No description provided for @dashboardTabWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette semaine'**
+  String get dashboardTabWeek;
+
+  /// No description provided for @dashboardSystemFallback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Système'**
+  String get dashboardSystemFallback;
+
+  /// No description provided for @dashboardShortcutEmployees.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employés'**
+  String get dashboardShortcutEmployees;
+
+  /// No description provided for @dashboardShortcutLeave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congés'**
+  String get dashboardShortcutLeave;
+
+  /// No description provided for @dashboardShortcutAttendance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage'**
+  String get dashboardShortcutAttendance;
+
+  /// No description provided for @dashboardShortcutAttendanceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir votre état du jour.'**
+  String get dashboardShortcutAttendanceHint;
+
+  /// No description provided for @dashboardShortcutAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences'**
+  String get dashboardShortcutAbsences;
+
+  /// No description provided for @dashboardShortcutPayrollHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consulter vos documents de paie.'**
+  String get dashboardShortcutPayrollHint;
+
+  /// No description provided for @dashboardShortcutPreferencesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre interface suit vos préférences.'**
+  String get dashboardShortcutPreferencesHint;
+
+  /// No description provided for @dashboardJournal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journal'**
+  String get dashboardJournal;
+
+  /// No description provided for @dashboardSeeAllActivity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir toute l\'activité'**
+  String get dashboardSeeAllActivity;
+
+  /// No description provided for @dashboardAiAssistant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Assistant intelligent'**
+  String get dashboardAiAssistant;
+
+  /// No description provided for @dashboardMessageSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Message envoyé à l\'équipe'**
+  String get dashboardMessageSent;
+
+  /// No description provided for @dashboardSending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi...'**
+  String get dashboardSending;
+
+  /// No description provided for @dashboardSendYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Oui, envoyer'**
+  String get dashboardSendYes;
+
+  /// No description provided for @dashboardLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get dashboardLater;
+
+  /// No description provided for @dashboardQuickActions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actions rapides'**
+  String get dashboardQuickActions;
+
+  /// No description provided for @dashboardQuickReports.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rapports'**
+  String get dashboardQuickReports;
+
+  /// No description provided for @dashboardQuickExport.
+  ///
+  /// In fr, this message translates to:
+  /// **'Export'**
+  String get dashboardQuickExport;
+
+  /// No description provided for @dashboardEmpCheckin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage'**
+  String get dashboardEmpCheckin;
+
+  /// No description provided for @dashboardEmpCheckinHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir votre état du jour.'**
+  String get dashboardEmpCheckinHint;
+
+  /// No description provided for @dashboardEmpAbsences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absences'**
+  String get dashboardEmpAbsences;
+
+  /// No description provided for @dashboardEmpAbsencesHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivre vos demandes et soldes.'**
+  String get dashboardEmpAbsencesHint;
+
+  /// No description provided for @dashboardEmpPaystubs.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bulletins'**
+  String get dashboardEmpPaystubs;
+
+  /// No description provided for @dashboardEmpPaystubsHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Consulter vos documents de paie.'**
+  String get dashboardEmpPaystubsHint;
+
+  /// No description provided for @dashboardEmpLanguage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Langue'**
+  String get dashboardEmpLanguage;
+
+  /// No description provided for @dashboardEmpLanguageHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre interface suit vos préférences.'**
+  String get dashboardEmpLanguageHint;
+
+  /// No description provided for @dashboardEmployeeSpace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Espace employé'**
+  String get dashboardEmployeeSpace;
+
+  /// No description provided for @dashboardHello.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bonjour {name}'**
+  String dashboardHello(Object name);
+
+  /// No description provided for @dashboardEmployeeIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retrouvez vos actions utiles sans passer par les vues manager : pointage, absences, bulletins et langue.'**
+  String get dashboardEmployeeIntro;
+
+  /// No description provided for @dashboardSuperadminIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette surface est optimisée pour les espaces clients. L\'administration plateforme se fait depuis le dashboard admin dédié.'**
+  String get dashboardSuperadminIntro;
+
+  /// No description provided for @dashboardOpenAdminDashboard.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir le dashboard admin'**
+  String get dashboardOpenAdminDashboard;
+
+  /// No description provided for @dashboardAdminUrlHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurez NEXT_PUBLIC_ADMIN_URL pour ajouter le lien direct vers l\'administration plateforme.'**
+  String get dashboardAdminUrlHint;
+
+  /// No description provided for @dashboardPlatformHealth.
+  ///
+  /// In fr, this message translates to:
+  /// **'Santé plateforme'**
+  String get dashboardPlatformHealth;
+
+  /// No description provided for @dashboardClientRequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes clients'**
+  String get dashboardClientRequests;
+
+  /// No description provided for @dashboardTenantsAtRisk.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tenants à risque'**
+  String get dashboardTenantsAtRisk;
+
+  /// No description provided for @dashboardPlatformDashboardHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Disponible dans le dashboard plateforme.'**
+  String get dashboardPlatformDashboardHint;
 
   /// No description provided for @marketingOauthNavTitle.
   ///
@@ -4530,209 +4842,263 @@ abstract class AppLocalizations {
   /// **'Derniere Activite'**
   String get companydetailLastactivity;
 
-  /// No description provided for @userAuthPersonalLogin.
+  /// No description provided for @reportsAttendanceTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Connexion personnelle'**
-  String get userAuthPersonalLogin;
+  /// **'Résumé Présences'**
+  String get reportsAttendanceTitle;
 
-  /// No description provided for @userAuthLoginSubtitle.
+  /// No description provided for @reportsAttendanceDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Retrouvez votre espace, vos documents et vos demandes.'**
-  String get userAuthLoginSubtitle;
+  /// **'Rapport mensuel des présences, retards et absences par employé.'**
+  String get reportsAttendanceDesc;
 
-  /// No description provided for @userAuthNoAccount.
+  /// No description provided for @reportsMonthLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Pas encore de compte ? S\'inscrire'**
-  String get userAuthNoAccount;
+  /// **'Mois'**
+  String get reportsMonthLabel;
 
-  /// No description provided for @userAuthGoogleError.
+  /// No description provided for @reportsPayrollTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Erreur Google : {error}'**
-  String userAuthGoogleError(String error);
+  /// **'Résumé Paie'**
+  String get reportsPayrollTitle;
 
-  /// No description provided for @authTogglePasswordVisibility.
+  /// No description provided for @reportsPayrollDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Afficher ou masquer le mot de passe'**
-  String get authTogglePasswordVisibility;
+  /// **'Total brut/net, cotisations et charges par période de paie.'**
+  String get reportsPayrollDesc;
 
-  /// No description provided for @authDemoAccess.
+  /// No description provided for @reportsPeriodLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Acces Demo'**
-  String get authDemoAccess;
+  /// **'Période'**
+  String get reportsPeriodLabel;
 
-  /// No description provided for @userAuthRegisterTitle.
+  /// No description provided for @reportsLeaveTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Creer mon compte'**
-  String get userAuthRegisterTitle;
+  /// **'Soldes Congés'**
+  String get reportsLeaveTitle;
 
-  /// No description provided for @userAuthRegisterSubtitle.
+  /// No description provided for @reportsLeaveDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Rejoignez votre equipe sur Leopardo RH.'**
-  String get userAuthRegisterSubtitle;
+  /// **'État des soldes de congés pour tous les employés.'**
+  String get reportsLeaveDesc;
 
-  /// No description provided for @userAuthFirstName.
+  /// No description provided for @reportsYearLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Prenom'**
-  String get userAuthFirstName;
+  /// **'Année'**
+  String get reportsYearLabel;
 
-  /// No description provided for @userAuthLastName.
+  /// No description provided for @reportsHeadcountTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Nom'**
-  String get userAuthLastName;
+  /// **'Effectifs'**
+  String get reportsHeadcountTitle;
 
-  /// No description provided for @userAuthFirstNameRequired.
+  /// No description provided for @reportsHeadcountDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Prenom requis'**
-  String get userAuthFirstNameRequired;
+  /// **'Répartition des effectifs actifs par département, type de contrat et genre.'**
+  String get reportsHeadcountDesc;
 
-  /// No description provided for @userAuthLastNameRequired.
+  /// No description provided for @reportsTrainingTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Nom requis'**
-  String get userAuthLastNameRequired;
+  /// **'Suivi Formations'**
+  String get reportsTrainingTitle;
 
-  /// No description provided for @userAuthRegisterButton.
+  /// No description provided for @reportsTrainingDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Creer mon compte'**
-  String get userAuthRegisterButton;
+  /// **'Taux de participation et complétion des formations.'**
+  String get reportsTrainingDesc;
 
-  /// No description provided for @userAuthAlreadyAccount.
+  /// No description provided for @reportsContractTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Deja un compte ? Se connecter'**
-  String get userAuthAlreadyAccount;
+  /// **'Échéances Contrats'**
+  String get reportsContractTitle;
 
-  /// No description provided for @userAuthCompanyRequestTitle.
+  /// No description provided for @reportsContractDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Demande soumise !'**
-  String get userAuthCompanyRequestTitle;
+  /// **'Contrats arrivant à échéance dans les 30, 60, 90 prochains jours.'**
+  String get reportsContractDesc;
 
-  /// No description provided for @userAuthCompanyRequestBody.
+  /// No description provided for @reportsDaysLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Un administrateur examinera votre demande. Vous recevrez une notification des qu\'elle sera traitee.'**
-  String get userAuthCompanyRequestBody;
+  /// **'Jours'**
+  String get reportsDaysLabel;
 
-  /// No description provided for @userAuthBackToHome.
+  /// No description provided for @reportsGenerate.
   ///
   /// In fr, this message translates to:
-  /// **'Retour a l\'accueil'**
-  String get userAuthBackToHome;
+  /// **'Générer'**
+  String get reportsGenerate;
 
-  /// No description provided for @userAuthSubmitError.
+  /// No description provided for @reportsSuccess.
   ///
   /// In fr, this message translates to:
-  /// **'Erreur lors de la soumission'**
-  String get userAuthSubmitError;
+  /// **'Rapport téléchargé avec succès.'**
+  String get reportsSuccess;
 
-  /// No description provided for @userAuthRegisterError.
+  /// No description provided for @reportsError.
   ///
   /// In fr, this message translates to:
-  /// **'Erreur lors de l\'inscription'**
-  String get userAuthRegisterError;
+  /// **'Erreur lors de la génération du rapport.'**
+  String get reportsError;
 
-  /// No description provided for @userAuthLoginError.
+  /// No description provided for @reportsSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Identifiants invalides'**
-  String get userAuthLoginError;
+  /// **'Générez et téléchargez vos rapports RH : présences, paie, congés, effectifs, formations et contrats.'**
+  String get reportsSubtitle;
 
-  /// No description provided for @userAuthGoogleLoginError.
+  /// No description provided for @notificationsChannelInapp.
   ///
   /// In fr, this message translates to:
-  /// **'Erreur connexion Google'**
-  String get userAuthGoogleLoginError;
+  /// **'Dans l\'app'**
+  String get notificationsChannelInapp;
 
-  /// No description provided for @commonRequired.
+  /// No description provided for @notificationsChannelEmailDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Requis'**
-  String get commonRequired;
+  /// **'Messages importants et confirmations.'**
+  String get notificationsChannelEmailDesc;
 
-  /// No description provided for @userAuthPhoneOptional.
+  /// No description provided for @notificationsChannelPushDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Telephone (optionnel)'**
-  String get userAuthPhoneOptional;
+  /// **'Alertes rapides sur les appareils enregistrés.'**
+  String get notificationsChannelPushDesc;
 
-  /// No description provided for @userAuthPhone.
+  /// No description provided for @notificationsChannelSmsDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Telephone'**
-  String get userAuthPhone;
+  /// **'Canal court pour urgences, activé après opt-in.'**
+  String get notificationsChannelSmsDesc;
 
-  /// No description provided for @userAuthCreateCompany.
+  /// No description provided for @notificationsChannelWhatsappDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Creer une entreprise'**
-  String get userAuthCreateCompany;
+  /// **'Canal conversationnel futur, avec opt-in explicite.'**
+  String get notificationsChannelWhatsappDesc;
 
-  /// No description provided for @userAuthCompanyRequestInfo.
+  /// No description provided for @notificationsCategoryPayroll.
   ///
   /// In fr, this message translates to:
-  /// **'Remplissez les informations de votre entreprise. Un administrateur validera votre demande.'**
-  String get userAuthCompanyRequestInfo;
+  /// **'Paie'**
+  String get notificationsCategoryPayroll;
 
-  /// No description provided for @userAuthCompanyName.
+  /// No description provided for @notificationsCategorySecurity.
   ///
   /// In fr, this message translates to:
-  /// **'Nom de l\'entreprise'**
-  String get userAuthCompanyName;
+  /// **'Sécurité'**
+  String get notificationsCategorySecurity;
 
-  /// No description provided for @userAuthCompanyEmail.
+  /// No description provided for @notificationsCategorySystem.
   ///
   /// In fr, this message translates to:
-  /// **'Email entreprise'**
-  String get userAuthCompanyEmail;
+  /// **'Système'**
+  String get notificationsCategorySystem;
 
-  /// No description provided for @userAuthSector.
+  /// No description provided for @notificationsCategoryProductTips.
   ///
   /// In fr, this message translates to:
-  /// **'Secteur d\'activite'**
-  String get userAuthSector;
+  /// **'Conseils produit'**
+  String get notificationsCategoryProductTips;
 
-  /// No description provided for @userAuthCountry.
+  /// No description provided for @notificationsCategoriesTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Pays'**
-  String get userAuthCountry;
+  /// **'Catégories'**
+  String get notificationsCategoriesTitle;
 
-  /// No description provided for @userAuthCity.
+  /// No description provided for @notificationsSaveError.
   ///
   /// In fr, this message translates to:
-  /// **'Ville'**
-  String get userAuthCity;
+  /// **'Impossible d\'enregistrer les préférences pour le moment.'**
+  String get notificationsSaveError;
 
-  /// No description provided for @userAuthDescription.
+  /// No description provided for @notificationsChannelInappDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Description'**
-  String get userAuthDescription;
+  /// **'Centre de notifications web et mobile.'**
+  String get notificationsChannelInappDesc;
 
-  /// No description provided for @userAuthSubmitRequest.
+  /// No description provided for @employeesLoadError.
   ///
   /// In fr, this message translates to:
-  /// **'Soumettre la demande'**
-  String get userAuthSubmitRequest;
+  /// **'Impossible de charger les employés.'**
+  String get employeesLoadError;
 
-  /// No description provided for @userAuthRegisterSubtitleAlt.
+  /// No description provided for @employeesTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Accedez a votre espace personnel et organisez vos documents.'**
-  String get userAuthRegisterSubtitleAlt;
+  /// **'Équipe'**
+  String get employeesTitle;
+
+  /// No description provided for @employeesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vue manager branchée à l\'API RH : liste des collaborateurs, statut et points d\'entrée essentiels.'**
+  String get employeesSubtitle;
+
+  /// No description provided for @employeesTotalTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Total équipe'**
+  String get employeesTotalTeam;
+
+  /// No description provided for @employeesSource.
+  ///
+  /// In fr, this message translates to:
+  /// **'Source'**
+  String get employeesSource;
+
+  /// No description provided for @employeesState.
+  ///
+  /// In fr, this message translates to:
+  /// **'État'**
+  String get employeesState;
+
+  /// No description provided for @employeesLoadingShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement'**
+  String get employeesLoadingShort;
+
+  /// No description provided for @employeesConnectedApi.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecté à l\'API'**
+  String get employeesConnectedApi;
+
+  /// No description provided for @employeesRecentCollaborators.
+  ///
+  /// In fr, this message translates to:
+  /// **'Collaborateurs récents'**
+  String get employeesRecentCollaborators;
+
+  /// No description provided for @employeesListLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement de la liste équipe...'**
+  String get employeesListLoading;
+
+  /// No description provided for @employeesEmptyList.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun employé visible pour ce compte.'**
+  String get employeesEmptyList;
 }
 
 class _AppLocalizationsDelegate

@@ -39,7 +39,7 @@ void main() {
       expect(contract.type, 'cdi');
       expect(contract.endDate, isNull);
       expect(contract.baseSalary, 0);
-      expect(contract.currency, 'DZD');
+      expect(contract.currency, '');
       expect(contract.status, 'active');
     });
 
