@@ -120,6 +120,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء أو مساوياً له.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'يتطلب تسجيل الخروج اليدوي وقت تسجيل دخول.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'يجب أن يكون وقت الخروج بعد وقت الدخول.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'تم حذف المركبة.',
+    'SCHEDULE_DELETED' => 'تم حذف الجدول بنجاح.',
+    'KIOSK_SESSION_REQUIRED' => 'جلسة الكشك مطلوبة.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'يتطلب الذكاء الاصطناعي سياق شركة صالحًا.',
+    'EXPORT_FILE_NOT_FOUND' => 'ملف التصدير غير موجود.',
+    'PAYMENT_DOCUMENT_MISSING' => 'مستند الدفع مفقود.',
     'TRIAL_STEP_LOGIN' => 'سجّل الدخول باستخدام بريدك الإلكتروني وكلمة المرور أعلاه.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'غيّر كلمة المرور عند أول تسجيل دخول.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'أضف موظفيك الأوائل عبر رمز QR أو يدوياً.',
