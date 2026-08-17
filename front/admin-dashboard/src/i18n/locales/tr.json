@@ -469,6 +469,14 @@
       "title": "Kullanıcıyı düzenle",
       "status": "Durum",
       "save": "Güncelle"
+    },
+    "csv": {
+      "name": "Ad",
+      "email": "E-posta",
+      "status": "Durum",
+      "company": "Şirket",
+      "signup": "Kayıt",
+      "lastLogin": "Son giriş"
     }
   },
   "auth": {
@@ -692,7 +700,11 @@
         "ar-MA": "Arapca (Fas)"
       },
       "label": "Dil"
-    }
+    },
+    "noResults": "Sonuç bulunamadı.",
+    "confirm": "Onayla",
+    "cancel": "İptal",
+    "busy": "Sürüyor…"
   },
   "payroll": {
     "confidence": {
@@ -1122,7 +1134,8 @@
     "criticalAlerts": "Kritik uyarilar",
     "level": "Seviye:",
     "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
-    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir"
+    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
+    "noCriticalAlerts": "Kritik uyarı yok"
   },
   "exports": {
     "reportEmployees": "Calisanlar",

@@ -482,7 +482,11 @@
       "BJ": "Bénin",
       "TR": "Turquie"
     },
-    "or": "ou"
+    "or": "ou",
+    "noResults": "Aucun résultat trouvé.",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "busy": "En cours…"
   },
   "seo": {
     "pricing": {
@@ -1049,6 +1053,14 @@
       "title": "Modifier l'utilisateur",
       "status": "Statut",
       "save": "Mettre à jour"
+    },
+    "csv": {
+      "name": "Nom",
+      "email": "Email",
+      "status": "Statut",
+      "company": "Entreprise",
+      "signup": "Inscription",
+      "lastLogin": "Dernière connexion"
     }
   },
   "adminChat": {
@@ -1122,7 +1134,8 @@
     "criticalAlerts": "Alertes critiques",
     "level": "Niveau :",
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
-    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
+    "noCriticalAlerts": "Aucune alerte critique"
   },
   "exports": {
     "reportEmployees": "Employes",
