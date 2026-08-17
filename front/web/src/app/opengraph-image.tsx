@@ -4,7 +4,9 @@ import { ImageResponse } from 'next/og'
 import type { AppLocale } from '@/lib/i18n'
 import { getLocaleDirection, normalizeLocale } from '@/lib/i18n'
 
-export const alt = 'Leopardo RH - plateforme RH web, mobile et kiosque'
+// #4707 : alt de repli neutre (les alts réels sont générés par locale dans
+// generateImageMetadata ci-dessous — plus de littéral FR pour toutes les locales).
+export const alt = 'Leopardo — HR platform on web, mobile and kiosk'
 export const size = {
   width: 1200,
   height: 630,

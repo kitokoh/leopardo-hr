@@ -6,6 +6,16 @@ import type { AppLocale } from '@/lib/i18n'
 
 export const modulePageContent = {
   employes: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Gestion RH Complète",
+      problemBadge: "Les Défis",
+      solutionBadge: "Notre Solution",
+      featuresTitle: "Fonctionnalités Détaillées",
+      featuresSubtitle: "Tout ce dont vous avez besoin",
+      featuresBadge: "Puissant & Flexible",
+    },
     hero: {
       headline: "Gestion RH Simplifiée pour les PME",
       subheadline: "Pointage, absences, schedules et évaluations en un seul endroit",
@@ -185,6 +195,16 @@ export const modulePageContent = {
   },
 
   documents: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Cabinet Numérique",
+      problemBadge: "Les Défis",
+      solutionBadge: "Notre Solution",
+      featuresTitle: "Fonctionnalités Détaillées",
+      featuresSubtitle: "Tout ce dont vous avez besoin",
+      featuresBadge: "Sécurisé & Conforme",
+    },
     hero: {
       headline: "Cabinet Numérique Sécurisé pour vos Documents",
       subheadline: "Stockage, partage et archivage conformes",
@@ -364,6 +384,16 @@ export const modulePageContent = {
   },
 
   comptabilite: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Paie Automatisée",
+      problemBadge: "Les Défis",
+      solutionBadge: "Notre Solution",
+      featuresTitle: "Fonctionnalités Détaillées",
+      featuresSubtitle: "Tout ce dont vous avez besoin",
+      featuresBadge: "Complet & Fiable",
+    },
     hero: {
       headline: "Paie Automatisée et Conformité Garantie",
       subheadline: "Calculs exacts, bulletins générés, exports comptables",
@@ -543,6 +573,16 @@ export const modulePageContent = {
   },
 
   marketing: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Marketing Complet",
+      problemBadge: "Les Défis",
+      solutionBadge: "Notre Solution",
+      featuresTitle: "Fonctionnalités Détaillées",
+      featuresSubtitle: "Tout ce dont vous avez besoin",
+      featuresBadge: "Puissant & Flexible",
+    },
     hero: {
       headline: "Outils Marketing Intégrés pour PME",
       subheadline: "Email, SMS, réseaux sociaux en un seul endroit",
@@ -736,6 +776,16 @@ type ModulePageContent = typeof modulePageContent
 
 const modulePageContentEn: Partial<ModulePageContent> = {
   employes: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Complete HR Management",
+      problemBadge: "The Challenges",
+      solutionBadge: "Our Solution",
+      featuresTitle: "Detailed Features",
+      featuresSubtitle: "Everything you need",
+      featuresBadge: "Powerful & Flexible",
+    },
     hero: {
       headline: 'Simplified HR Management for SMEs',
       subheadline: 'Time tracking, absences, schedules and reviews in one place',
@@ -878,6 +928,16 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     },
   },
   documents: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Secure Digital Cabinet",
+      problemBadge: "The Challenges",
+      solutionBadge: "Our Solution",
+      featuresTitle: "Detailed Features",
+      featuresSubtitle: "Everything you need",
+      featuresBadge: "Secure & Compliant",
+    },
     hero: {
       headline: "Secure Digital Cabinet for Your Documents",
       subheadline: "Compliant storage, sharing and archiving",
@@ -1083,6 +1143,16 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     },
   },
   comptabilite: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Automated Payroll",
+      problemBadge: "The Challenges",
+      solutionBadge: "Our Solution",
+      featuresTitle: "Detailed Features",
+      featuresSubtitle: "Everything you need",
+      featuresBadge: "Complete & Reliable",
+    },
     hero: {
       headline: "Automated Payroll with Guaranteed Compliance",
       subheadline: "Accurate calculations, generated payslips, accounting exports",
@@ -1288,6 +1358,16 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     },
   },
   marketing: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Complete Marketing",
+      problemBadge: "The Challenges",
+      solutionBadge: "Our Solution",
+      featuresTitle: "Detailed Features",
+      featuresSubtitle: "Everything you need",
+      featuresBadge: "Powerful & Flexible",
+    },
     hero: {
       headline: "Integrated Marketing Tools for SMEs",
       subheadline: "Email, SMS, social networks in one place",
@@ -1497,6 +1577,16 @@ const modulePageContentEn: Partial<ModulePageContent> = {
 
 const modulePageContentTr: Partial<ModulePageContent> = {
   employes: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Eksiksiz İK Yönetimi",
+      problemBadge: "Zorluklar",
+      solutionBadge: "Çözümümüz",
+      featuresTitle: "Detaylı Özellikler",
+      featuresSubtitle: "İhtiyacınız olan her şey",
+      featuresBadge: "Güçlü ve Esnek",
+    },
     hero: {
       headline: "KOBİ'ler için Basitleştirilmiş İK Yönetimi",
       subheadline: 'Yoklama, izinler, planlamalar ve değerlendirmeler tek yerde',
@@ -1639,6 +1729,16 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     },
   },
   documents: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Güvenli Dijital Arşiv",
+      problemBadge: "Zorluklar",
+      solutionBadge: "Çözümümüz",
+      featuresTitle: "Detaylı Özellikler",
+      featuresSubtitle: "İhtiyacınız olan her şey",
+      featuresBadge: "Güvenli ve Uyumlu",
+    },
     hero: {
       headline: "Belgeleriniz için Güvenli Dijital Kasa",
       subheadline: "Uyumlu depolama, paylaşım ve arşivleme",
@@ -1844,6 +1944,16 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     },
   },
   comptabilite: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Otomatik Bordro",
+      problemBadge: "Zorluklar",
+      solutionBadge: "Çözümümüz",
+      featuresTitle: "Detaylı Özellikler",
+      featuresSubtitle: "İhtiyacınız olan her şey",
+      featuresBadge: "Eksiksiz ve Güvenilir",
+    },
     hero: {
       headline: "Garantili Uyumla Otomatik Maaş Bordrosu",
       subheadline: "Doğru hesaplamalar, oluşturulan bordrolar, muhasebe dışa aktarımları",
@@ -2049,6 +2159,16 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     },
   },
   marketing: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "Eksiksiz Pazarlama",
+      problemBadge: "Zorluklar",
+      solutionBadge: "Çözümümüz",
+      featuresTitle: "Detaylı Özellikler",
+      featuresSubtitle: "İhtiyacınız olan her şey",
+      featuresBadge: "Güçlü ve Esnek",
+    },
     hero: {
       headline: "KOBİ'ler için Entegre Pazarlama Araçları",
       subheadline: "E-posta, SMS, sosyal ağlar tek yerde",
@@ -2258,6 +2378,16 @@ const modulePageContentTr: Partial<ModulePageContent> = {
 
 const modulePageContentAr: Partial<ModulePageContent> = {
   employes: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "إدارة موارد بشرية شاملة",
+      problemBadge: "التحديات",
+      solutionBadge: "حلّنا",
+      featuresTitle: "ميزات مفصّلة",
+      featuresSubtitle: "كل ما تحتاجه",
+      featuresBadge: "قوي ومرن",
+    },
     hero: {
       headline: 'إدارة موارد بشرية مبسّطة للشركات الصغيرة والمتوسطة',
       subheadline: 'تسجيل الحضور والإجازات والجداول والتقييمات في مكان واحد',
@@ -2400,6 +2530,16 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     },
   },
   documents: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "أرشيف رقمي آمن",
+      problemBadge: "التحديات",
+      solutionBadge: "حلّنا",
+      featuresTitle: "ميزات مفصّلة",
+      featuresSubtitle: "كل ما تحتاجه",
+      featuresBadge: "آمن ومتوافق",
+    },
     hero: {
       headline: "خزانة رقمية آمنة لمستنداتك",
       subheadline: "تخزين ومشاركة وأرشفة متوافقة",
@@ -2605,6 +2745,16 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     },
   },
   comptabilite: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "رواتب آلية",
+      problemBadge: "التحديات",
+      solutionBadge: "حلّنا",
+      featuresTitle: "ميزات مفصّلة",
+      featuresSubtitle: "كل ما تحتاجه",
+      featuresBadge: "متكامل وموثوق",
+    },
     hero: {
       headline: "رواتب آلية مع امتثال مضمون",
       subheadline: "حسابات دقيقة، قسائم رواتب مولّدة، تصديرات محاسبية",
@@ -2810,6 +2960,16 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     },
   },
   marketing: {
+    // #4702 : habillage de section localisé (badges + titres Features) —
+    // plus de littéraux FR codés en dur dans les pages modules.
+    sections: {
+      heroBadge: "تسويق متكامل",
+      problemBadge: "التحديات",
+      solutionBadge: "حلّنا",
+      featuresTitle: "ميزات مفصّلة",
+      featuresSubtitle: "كل ما تحتاجه",
+      featuresBadge: "قوي ومرن",
+    },
     hero: {
       headline: "أدوات تسويق متكاملة للشركات الصغيرة",
       subheadline: "البريد، الرسائل القصيرة، شبكات التواصل في مكان واحد",

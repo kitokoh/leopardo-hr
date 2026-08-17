@@ -1,4 +1,5 @@
 import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+import type { AppLocale } from '@/lib/i18n';
 
 interface JsonLdProps {
   data: Record<string, unknown>;
@@ -71,6 +72,19 @@ export function ArticleJsonLd({
 // une offre sans prix est invalide (Google Rich Results). On n'émet donc
 // que les plans à prix machine (Free/Pilot/Operations). Le prix 0 du plan
 // Free est conservé (offre gratuite réelle).
+//
+// #4707 : description Organisation par locale (plus de FR sur en/tr/ar) et
+// devise pilotée par le module vitrine `data/currency.ts` (les tarifs sont
+// rédigés en EUR — la devise source du module, jamais un littéral épars).
+import { DEFAULT_CURRENCY_OPTION } from '@/modules/vitrine/data/currency';
+
+const ORG_DESCRIPTION: Record<AppLocale, string> = {
+  fr: 'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+  en: 'HR management SaaS platform for SMBs: multi-country payroll, time tracking, leave, training, recruiting.',
+  tr: "KOBİ'ler için İK yönetimi SaaS platformu: çok ülkeli bordro, yoklama, izinler, eğitimler, işe alım.",
+  ar: 'منصة سحابية لإدارة الموارد البشرية للشركات الصغيرة والمتوسطة: رواتب متعددة الدول، حضور، إجازات، تدريب، توظيف.',
+};
+
 export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
   const offers = getPricingPlans(locale as Parameters<typeof getPricingPlans>[0])
     .filter((plan) => Number.isFinite(Number(plan.price)))
@@ -79,7 +93,7 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
       name: plan.name,
       description: plan.description,
       price: Number(plan.price),
-      priceCurrency: 'EUR',
+      priceCurrency: DEFAULT_CURRENCY_OPTION.currency,
       url: `${SITE_URL}/pricing`,
     }));
 
@@ -91,8 +105,7 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
         name: 'Leopardo RH',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web, Android',
-        description:
-          'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+        description: ORG_DESCRIPTION[(locale ?? 'fr') as AppLocale] ?? ORG_DESCRIPTION.fr,
         availableLanguage: ['fr', 'en', 'ar', 'tr'],
         offers,
         creator: {

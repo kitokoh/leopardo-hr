@@ -12,7 +12,7 @@ import { OrganizationJsonLd } from "@/components/JsonLd";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
-import { pageMetadataI18n } from '@/modules/vitrine/lib/seo';
+import { pageMetadataI18n, ROOT_METADATA } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
@@ -39,28 +39,7 @@ function ogLocale(locale: AppLocale): string {
 }
 
 // #4300 : metadata racine localisées selon la locale SSR (?lang= / Accept-Language).
-const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> = {
-  fr: {
-    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
-    description:
-      'Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.',
-  },
-  en: {
-    title: 'Leopardo RH - Multilingual HR SaaS for field teams',
-    description:
-      'Leopardo RH centralizes attendance, payroll, leave, onboarding, notifications and field operations across web, mobile and kiosk.',
-  },
-  tr: {
-    title: 'Leopardo RH - Saha ekipleri icin cok dilli IK SaaS',
-    description:
-      'Leopardo RH; yoklama, maaş, izin, onboarding, bildirim ve saha operasyonlarını web, mobil ve kiosk üzerinden merkezileştirir.',
-  },
-  ar: {
-    title: 'Leopardo RH - نظام موارد بشرية سحابي متعدد اللغات للفرق الميدانية',
-    description:
-      'يجمع Leopardo RH الحضور والرواتب والإجازات والتأهيل والإشعارات والعمليات الميدانية عبر الويب والجوال وجهاز الحضور.',
-  },
-};
+// #4707 : keywords + alt og:image par locale (plus de FR pour en/tr/ar).
 
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
@@ -74,32 +53,13 @@ export async function generateMetadata(): Promise<Metadata> {
     ?? "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.";
 
   return {
-    title: {
-      default: title,
-      // #4612 : template localisé — les titres de page n'embarquent plus la
-      // marque (retirée des catalogues) ; le template la pose dans la langue
-      // de la page pour éviter doublon + mix FR/autre.
-      template: `%s | ${
-        ssrLocale === 'en'
-          ? 'Leopardo HR'
-          : ssrLocale === 'tr'
-            ? 'Leopardo İK'
-            : ssrLocale === 'ar'
-              ? 'ليوباردو'
-              : 'Leopardo RH'
-      }`,
-    },
+    // #4612 : titre racine simple, PAS de template — les titres de page sont
+    // complets et portent leur marque locale (seo.ts `localizedTitle`,
+    // `title.absolute`) ; un template global dupliquerait la marque
+    // (« ... | Leopardo HR | Leopardo RH ») ou mélangerait les langues.
+    title,
     description,
-    keywords: [
-      "SaaS RH",
-      "logiciel RH",
-      "paie",
-      "pointage mobile",
-      "absences",
-      "kiosque RH",
-      "multi-tenant",
-      "RH multilingue",
-    ],
+    keywords: rootMeta.keywords,
     manifest: "/manifest",
     metadataBase: new URL(siteUrl),
     icons: {
@@ -122,7 +82,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: '/opengraph-image',
           width: 1200,
           height: 630,
-          alt: 'Leopardo RH - dashboard RH multilingue',
+          alt: rootMeta.ogImageAlt,
         },
       ],
     },

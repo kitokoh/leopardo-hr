@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
+import type { AppLocale } from '@/lib/i18n';
 const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Leopardo";
 const supportedLocales = ["fr", "en", "tr", "ar"] as const;
 
@@ -29,6 +30,31 @@ export function ogLocaleFor(locale: string): string {
     ar: 'ar_AR',
   };
   return map[locale] ?? 'fr_FR';
+}
+
+/**
+ * #4612 : titres complets par locale, marque locale propre.
+ *
+ * Le layout racine ne porte plus de `title.template` global (il dupliquait
+ * la marque : « Changelog | Leopardo HR | Leopardo RH ») ; chaque page doit
+ * donc produire un titre complet. Cette fonction retire une éventuelle
+ * marque déjà embarquée (toute orthographe) puis appose la marque de la
+ * locale courante — jamais de mix FR/autre ni de doublon.
+ */
+const TITLE_BRANDS: Record<AppLocale, string> = {
+  fr: 'Leopardo RH',
+  en: 'Leopardo HR',
+  tr: 'Leopardo İK',
+  ar: 'ليوباردو',
+};
+
+function stripTrailingBrand(title: string): string {
+  return title.replace(/\s*\|\s*(?:Leopardo\s*(?:RH|HR|İK|IK)|ليوباردو)\s*$/i, '').trim();
+}
+
+export function localizedTitle(title: string, locale?: string): string {
+  const brand = TITLE_BRANDS[(locale ?? 'fr') as AppLocale] ?? TITLE_BRANDS.fr;
+  return `${stripTrailingBrand(title)} | ${brand}`;
 }
 
 /**
@@ -78,14 +104,18 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
     ])
   );
 
+  // #4612 : titre complet par locale (marque locale propre, pas de template
+  // racine FR). `absolute` court-circuite tout template hérité.
+  const fullTitle = localizedTitle(seo.title, seo.locale);
+
   return {
-    title: seo.title,
+    title: { absolute: fullTitle },
     description: seo.description,
     keywords: seo.keywords,
     authors: seo.author ? [{ name: seo.author }] : undefined,
     robots: seo.robots || "index, follow",
     openGraph: {
-      title: seo.title,
+      title: fullTitle,
       description: seo.description,
       url: url,
       siteName: siteName,
@@ -95,7 +125,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
           url: image,
           width: 1200,
           height: 630,
-          alt: seo.title,
+          alt: fullTitle,
         },
       ],
       type: seo.ogType || "website",
@@ -104,7 +134,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
     },
     twitter: {
       card: "summary_large_image",
-      title: seo.title,
+      title: fullTitle,
       description: seo.description,
       images: [image],
     },
@@ -581,7 +611,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     branding: { title: "Marka & Özelleştirme | Leopardo İK Çok Kiracılı", description: "Leopardo İK'yı şirketiniz için logonuz, renkleriniz ve görünen adınızla özelleştirin." },
     careers: { title: "Kariyer | Leopardo İK Ekibine Katılın", description: "Açık pozisyonlarımızı keşfedin ve saha KOBİ'leri için İK platformu kuran ekibe katılın." },
     mobile: { title: "Mobil Uygulamalar | Android ve iOS'ta Leopardo İK", description: "Çalışan, yönetici ve admin uygulamaları: giriş-çıkış, izinler, maaş bordroları ve bildirimler." },
-    signup: { title: "Ücretsiz Rehberli Deneme'yı Keşfedin", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
+    signup: { title: "Ücretsiz Rehberli Deneme", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
     checkout: { title: "Planınızı Seçin | Leopardo İK Aboneliği", description: "Şirketinize uygun Leopardo İK planını seçin ve abone olun: Free, Pilot, Operations veya Enterprise." },
     checkoutSuccess: { title: "Leopardo Alanınız Hazır | Abonelik Onayı", description: "Leopardo İK denemeniz onaylandı: alanınız hazır, 14 gün ücretsiz, bugün kartınızdan ücret alınmaz." },
   },
@@ -633,3 +663,73 @@ export function getPageMetadata(page: string, lang?: string): SEOMetadata {
   return { ...base, title: override.title, description: override.description };
 }
 
+
+/**
+ * #4707 : metadata racine (title/description/keywords/og:image alt) par
+ * locale SSR — vivaient dans app/layout.tsx ; centralisés ici (catalogue
+ * i18n de la vitrine, PA2-I18N-014).
+ */
+export const ROOT_METADATA: Record<AppLocale, { title: string; description: string; keywords: string[]; ogImageAlt: string }> = {
+  fr: {
+    title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
+    description:
+      'Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.',
+    keywords: [
+      'SaaS RH',
+      'logiciel RH',
+      'paie',
+      'pointage mobile',
+      'absences',
+      'kiosque RH',
+      'multi-tenant',
+      'RH multilingue',
+    ],
+    ogImageAlt: 'Leopardo RH - dashboard RH multilingue',
+  },
+  en: {
+    title: 'Leopardo RH - Multilingual HR SaaS for field teams',
+    description:
+      'Leopardo RH centralizes attendance, payroll, leave, onboarding, notifications and field operations across web, mobile and kiosk.',
+    keywords: [
+      'HR SaaS',
+      'HR software',
+      'payroll',
+      'mobile time tracking',
+      'leave management',
+      'HR kiosk',
+      'multi-tenant',
+      'multilingual HR',
+    ],
+    ogImageAlt: 'Leopardo RH - multilingual HR dashboard',
+  },
+  tr: {
+    title: 'Leopardo RH - Saha ekipleri icin cok dilli IK SaaS',
+    description:
+      'Leopardo RH; yoklama, maaş, izin, onboarding, bildirim ve saha operasyonlarını web, mobil ve kiosk üzerinden merkezileştirir.',
+    keywords: [
+      'IK SaaS',
+      'IK yazılımı',
+      'bordro',
+      'mobil yoklama',
+      'izin yönetimi',
+      'IK kiosk',
+      'çok kiracılı',
+      'çok dilli IK',
+    ],
+    ogImageAlt: 'Leopardo RH - çok dilli IK paneli',
+  },
+  ar: {
+    title: 'Leopardo RH - نظام موارد بشرية سحابي متعدد اللغات للفرق الميدانية',
+    description:
+      'يجمع Leopardo RH الحضور والرواتب والإجازات والتأهيل والإشعارات والعمليات الميدانية عبر الويب والجوال وجهاز الحضور.',
+    keywords: [
+      'برمجيات الموارد البشرية',
+      'الرواتب',
+      'تسجيل الحضور عبر الجوال',
+      'إدارة الإجازات',
+      'كشك الموارد البشرية',
+      'متعدد اللغات',
+    ],
+    ogImageAlt: 'Leopardo RH - لوحة موارد بشرية متعددة اللغات',
+  },
+};
