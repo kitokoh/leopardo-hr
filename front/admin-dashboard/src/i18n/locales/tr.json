@@ -932,7 +932,7 @@
     }
   },
   "_locale": "tr",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "profile": {
     "subtitle": "Kisisel bilgiler ve dil",
     "department_label": "Departman",
@@ -1285,6 +1285,18 @@
     "recent_collaborators": "Son iş arkadaşları",
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
+  },
+  "api": {
+    "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
+    "accessDenied": ":endpoint üzerinde erişim reddedildi. Yetersiz izinler.",
+    "notFound": "Kaynak bulunamadı: :endpoint",
+    "tooManyRequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
+    "serverError": ":endpoint üzerinde sunucu hatası. :detail",
+    "serverErrorRetry": "Daha sonra tekrar deneyin.",
+    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.",
+    "genericError": ":endpoint üzerinde :status hatası.",
+    "invalidData": "Geçersiz veri.",
+    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
   },
   "settingsPage": {
     "cancel": "İptal",

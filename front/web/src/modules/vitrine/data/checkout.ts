@@ -31,6 +31,10 @@ export interface CheckoutCopy {
   planChosen: string
   quote: string
   perMonth: string
+  /** Unité du nombre de jours d'essai, localisée (jours/gün/أيام/days). */
+  trialDaysUnit: string
+  /** Libellé de la devise d'affichage des prix (EUR — devise canonique ADR-0014). */
+  currencyLabel: string
   trialBadge: string // « {days} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai »
   billedAnnually: string // « Facturé annuellement — économisez EUR {savings}/an »
   monthly: string
@@ -159,6 +163,8 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'Plan choisi',
     quote: 'Sur devis',
     perMonth: '/mois',
+    trialDaysUnit: 'jours',
+    currencyLabel: 'EUR',
     trialBadge:
       "{days} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai",
     billedAnnually: 'Facturé annuellement — économisez EUR {savings}/an',
@@ -356,6 +362,8 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'Selected plan',
     quote: 'Custom quote',
     perMonth: '/month',
+    trialDaysUnit: 'days',
+    currencyLabel: 'EUR',
     trialBadge: '{days} free days included · No card is charged before the trial ends',
     billedAnnually: 'Billed annually — save EUR {savings}/year',
     monthly: 'Monthly',
@@ -551,6 +559,8 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'Seçilen plan',
     quote: 'Özel teklif',
     perMonth: '/ay',
+    trialDaysUnit: 'gün',
+    currencyLabel: 'EUR',
     trialBadge: '{days} gün ücretsiz dahil · Deneme bitmeden karttan ücret alınmaz',
     billedAnnually: 'Yıllık faturalandırılır — yılda EUR {savings} tasarruf',
     monthly: 'Aylık',
@@ -744,6 +754,8 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'الباقة المختارة',
     quote: 'عرض مخصص',
     perMonth: '/شهر',
+    trialDaysUnit: 'أيام',
+    currencyLabel: 'EUR',
     trialBadge: '{days} أيام مجانية مشمولة · لن يُخصم من بطاقتك قبل نهاية التجربة',
     billedAnnually: 'فوترة سنوية — وفّر EUR {savings} سنوياً',
     monthly: 'شهري',

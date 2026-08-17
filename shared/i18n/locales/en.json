@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -1033,6 +1033,18 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverErrorRetry": "Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection."
   },
   "settingsPage": {
     "cancel": "Cancel",

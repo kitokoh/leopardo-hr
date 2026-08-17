@@ -103,6 +103,7 @@ type LandingCopy = {
     recommended: string
     currency: string
     annualSavings: string
+    toggleBilling: string
   }
   testimonials: {
     badge: string
@@ -267,7 +268,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employes actifs et vos besoins terrain.',
       recommended: 'Recommande',
       currency: 'EUR',
-      annualSavings: "Jusqu'a 20% d'economie",
+      annualSavings: "Jusqu'à 17% d'économie",
+      toggleBilling: "Basculer la période de facturation",
     },
     testimonials: {
       badge: 'Temoignages',
@@ -428,7 +430,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Start with a free pilot, then pay based on active employees and field operations needs.',
       recommended: 'Recommended',
       currency: 'EUR',
-      annualSavings: "Save up to 20%",
+      annualSavings: "Save up to 17%",
+      toggleBilling: "Toggle billing period",
     },
     testimonials: {
       badge: 'Testimonials',
@@ -589,7 +592,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Ucretsiz pilotla baslayin, sonra aktif calisan ve saha ihtiyaclarina gore odeyin.',
       recommended: 'Onerilen',
       currency: 'EUR',
-      annualSavings: "%20'ye varan tasarruf",
+      annualSavings: "%17'ye varan tasarruf",
+      toggleBilling: "Faturalama dönemini değiştir",
     },
     testimonials: {
       badge: 'Musteriler',
@@ -750,7 +754,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'ابدأ بتشغيل تجريبي مجاني ثم ادفع حسب الموظفين النشطين واحتياجات الميدان.',
       recommended: 'موصى به',
       currency: 'EUR',
-      annualSavings: 'وفّر حتى 20%',
+      annualSavings: 'وفّر حتى 17%',
+      toggleBilling: 'بدّل فترة الفوترة',
     },
     testimonials: {
       badge: 'العملاء',
