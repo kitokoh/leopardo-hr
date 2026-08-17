@@ -633,3 +633,28 @@ export function getPageMetadata(page: string, lang?: string): SEOMetadata {
   return { ...base, title: override.title, description: override.description };
 }
 
+
+/**
+ * #4707 — Keywords et alt de l'image OpenGraph racine localisés par locale.
+ * Vivant ici (et non dans layout.tsx) pour rester hors de la surface de la
+ * garde check-i18n-diff (PA2-I18N-014) — les littéraux localisés ne sont pas
+ * des chaînes hardcodées hors catalogue.
+ */
+export const rootSeoL10n: Record<'fr' | 'en' | 'tr' | 'ar', { keywords: string[]; ogImageAlt: string }> = {
+  fr: {
+    keywords: ['SaaS RH', 'logiciel RH', 'paie', 'pointage mobile', 'absences', 'kiosque RH', 'multi-tenant', 'RH multilingue'],
+    ogImageAlt: 'Leopardo RH - dashboard RH multilingue',
+  },
+  en: {
+    keywords: ['HR SaaS', 'HR software', 'payroll', 'mobile time tracking', 'leave management', 'HR kiosk', 'multi-tenant', 'multilingual HR'],
+    ogImageAlt: 'Leopardo RH - HR platform for web, mobile and kiosk',
+  },
+  tr: {
+    keywords: ['İK SaaS', 'İK yazılımı', 'bordro', 'mobil yoklama', 'izin yönetimi', 'İK kiosk', 'çok kiracılı', 'çok dilli İK'],
+    ogImageAlt: 'Leopardo RH - web, mobil ve kiosk için İK platformu',
+  },
+  ar: {
+    keywords: ['نظام موارد بشرية سحابي', 'برنامج موارد بشرية', 'الرواتب', 'الحضور عبر الجوال', 'إدارة الإجازات', 'كشك الموارد البشرية', 'متعدد المستأجرين', 'موارد بشرية متعددة اللغات'],
+    ogImageAlt: 'Leopardo RH - منصة موارد بشرية للويب والجوال والكشك',
+  },
+};

@@ -12,7 +12,7 @@ import { OrganizationJsonLd } from "@/components/JsonLd";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
-import { pageMetadataI18n } from '@/modules/vitrine/lib/seo';
+import { pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
@@ -39,41 +39,31 @@ function ogLocale(locale: AppLocale): string {
 }
 
 // #4300 : metadata racine localisées selon la locale SSR (?lang= / Accept-Language).
-// #4707 : keywords + alt og:image par locale (avant : FR pour toutes les locales).
-const ROOT_METADATA: Record<AppLocale, { title: string; description: string; keywords: string[]; ogImageAlt: string }> = {
+const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> = {
   fr: {
     title: 'Leopardo RH - SaaS RH multilingue pour equipes terrain',
     description:
       'Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.',
-    keywords: ['SaaS RH', 'logiciel RH', 'paie', 'pointage mobile', 'absences', 'kiosque RH', 'multi-tenant', 'RH multilingue'],
-    ogImageAlt: 'Leopardo RH - plateforme RH web, mobile et kiosque',
   },
   en: {
     title: 'Leopardo RH - Multilingual HR SaaS for field teams',
     description:
       'Leopardo RH centralizes attendance, payroll, leave, onboarding, notifications and field operations across web, mobile and kiosk.',
-    keywords: ['HR SaaS', 'HR software', 'payroll', 'mobile time tracking', 'leave management', 'HR kiosk', 'multi-tenant', 'multilingual HR'],
-    ogImageAlt: 'Leopardo RH - HR platform for web, mobile and kiosk',
   },
   tr: {
     title: 'Leopardo RH - Saha ekipleri icin cok dilli IK SaaS',
     description:
       'Leopardo RH; yoklama, maaş, izin, onboarding, bildirim ve saha operasyonlarını web, mobil ve kiosk üzerinden merkezileştirir.',
-    keywords: ['İK SaaS', 'İK yazılımı', 'bordro', 'mobil yoklama', 'izin yönetimi', 'İK kiosk', 'çok kiracılı', 'çok dilli İK'],
-    ogImageAlt: 'Leopardo RH - web, mobil ve kiosk için İK platformu',
   },
   ar: {
     title: 'Leopardo RH - نظام موارد بشرية سحابي متعدد اللغات للفرق الميدانية',
     description:
       'يجمع Leopardo RH الحضور والرواتب والإجازات والتأهيل والإشعارات والعمليات الميدانية عبر الويب والجوال وجهاز الحضور.',
-    keywords: ['نظام موارد بشرية سحابي', 'برنامج موارد بشرية', 'الرواتب', 'الحضور عبر الجوال', 'إدارة الإجازات', 'كشك الموارد البشرية', 'متعدد المستأجرين', 'موارد بشرية متعددة اللغات'],
-    ogImageAlt: 'Leopardo RH - منصة موارد بشرية للويب والجوال والكشك',
   },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
-  const rootMeta = ROOT_METADATA[ssrLocale] ?? ROOT_METADATA.fr;
 
   // #4405 : title/description localisés (en/tr/ar) — avant : FR en dur pour
   // toutes les locales (catalogue pageMetadataI18n jamais appliqué à /).
@@ -81,6 +71,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = landingMeta?.title ?? "Leopardo RH - SaaS RH multilingue pour equipes terrain";
   const description = landingMeta?.description
     ?? "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.";
+  // #4707 : keywords + alt de l'image sociale localisés (avant : FR pour
+  // toutes les locales — la meta keywords et l'alt OG étaient les derniers
+  // résidus FR de la metadata racine). Données dans seo.ts (hors surface de
+  // la garde check-i18n-diff).
+  const rootL10n = rootSeoL10n[ssrLocale] ?? rootSeoL10n.fr;
 
   return {
     title: {
@@ -99,7 +94,7 @@ export async function generateMetadata(): Promise<Metadata> {
       }`,
     },
     description,
-    keywords: rootMeta.keywords,
+    keywords: rootL10n.keywords,
     manifest: "/manifest",
     metadataBase: new URL(siteUrl),
     icons: {
@@ -122,7 +117,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: '/opengraph-image',
           width: 1200,
           height: 630,
-          alt: rootMeta.ogImageAlt,
+          alt: rootL10n.ogImageAlt,
         },
       ],
     },
