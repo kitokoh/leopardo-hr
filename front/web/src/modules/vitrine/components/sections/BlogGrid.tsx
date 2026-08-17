@@ -22,6 +22,7 @@ export interface BlogGridProps {
   nextLabel?: string;
   dateLocale?: string;
   readingTimeLabel?: string;
+  archivedLabel?: string;
 }
 
 export function BlogGrid({
@@ -36,8 +37,9 @@ export function BlogGrid({
   allLabel = 'Tous',
   previousLabel = 'Precedent',
   nextLabel = 'Suivant',
-  dateLocale = 'fr-FR',
-  readingTimeLabel = 'min de lecture',
+  dateLocale,
+  readingTimeLabel,
+  archivedLabel,
   initialCategory = null,
 }: BlogGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -144,6 +146,7 @@ export function BlogGrid({
               index={index}
               dateLocale={dateLocale}
               readingTimeLabel={readingTimeLabel}
+              archivedLabel={archivedLabel}
             />
           ))}
         </div>

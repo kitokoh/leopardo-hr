@@ -37,7 +37,7 @@ class BulkPaymentController extends Controller
             abort(404);
         }
         if (! $actor->isManager()) {
-            abort(403, 'Manager role required for bulk payment.');
+            abort(403, 'MANAGER_REQUIRED');
         }
         if (! in_array($payrollRun->status, ['validated', 'locked'], true)) {
             return response()->json([

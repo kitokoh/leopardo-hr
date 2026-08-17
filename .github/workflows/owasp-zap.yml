@@ -52,6 +52,13 @@ jobs:
       # when the API deploy itself succeeded. This now checks the specific
       # `deploy-api` job's conclusion via the Checks API, matching the level
       # of specificity deploy-main.yml already uses for its own gating.
+      # Local actions are unavailable until the repository is checked out.
+      - name: Checkout repository for local deploy gate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+
       - name: Determine if ZAP should run
         id: gate
         uses: ./.github/actions/deploy-gate
