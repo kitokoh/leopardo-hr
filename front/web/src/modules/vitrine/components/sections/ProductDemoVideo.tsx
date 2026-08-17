@@ -19,8 +19,6 @@ type Copy = {
   title: string;
   subtitle: string;
   playLabel: string;
-  /** Label displayed in native browser video-track selector (#4799). */
-  captionLabelFr: string;
 };
 
 const copyByLocale: Record<AppLocale, Copy> = {
@@ -28,25 +26,21 @@ const copyByLocale: Record<AppLocale, Copy> = {
     title: 'Voyez Leopardo RH en action',
     subtitle: 'Vitrine, dashboard admin et application mobile employee, captures reelles du produit.',
     playLabel: 'Lire la video de demonstration',
-    captionLabelFr: 'Fran\u00e7ais',
   },
   en: {
     title: 'See Leopardo RH in action',
     subtitle: 'Marketing site, admin dashboard and employee mobile app, real product captures.',
     playLabel: 'Play the product demo video',
-    captionLabelFr: 'French',
   },
   tr: {
     title: "Leopardo RH'yi is basinda gorun",
     subtitle: 'Vitrin, admin paneli ve calisan mobil uygulamasi, gercek urun kayitlari.',
     playLabel: 'Urun demo videosunu oynat',
-    captionLabelFr: 'Frans\u0131zca',
   },
   ar: {
-    title: '\u0634\u0627\u0647\u062f Leopardo RH \u0641\u064a \u0627\u0644\u0639\u0645\u0644',
-    subtitle: '\u0627\u0644\u0645\u0648\u0642\u0639 \u0627\u0644\u062a\u0633\u0648\u064a\u0642\u064a \u0648\u0644\u0648\u062d\u0629 \u062a\u062d\u0643\u0645 \u0627\u0644\u0625\u062f\u0627\u0631\u0629 \u0648\u062a\u0637\u0628\u064a\u0642 \u0627\u0644\u0645\u0648\u0638\u0641\u060c \u0644\u0642\u0637\u0627\u062a \u062d\u0642\u064a\u0642\u064a\u0629 \u0645\u0646 \u0627\u0644\u0645\u0646\u062a\u062c.',
-    playLabel: '\u062a\u0634\u063a\u064a\u0644 \u0641\u064a\u062f\u064a\u0648 \u0627\u0644\u0639\u0631\u0636 \u0627\u0644\u062a\u0648\u0636\u064a\u062d\u064a',
-    captionLabelFr: '\u0627\u0644\u0641\u0631\u0646\u0633\u064a\u0629',
+    title: 'شاهد Leopardo RH في العمل',
+    subtitle: 'الموقع التسويقي ولوحة تحكم الإدارة وتطبيق الموظف، لقطات حقيقية من المنتج.',
+    playLabel: 'تشغيل فيديو العرض التوضيحي',
   },
 };
 
@@ -105,7 +99,7 @@ export function ProductDemoVideo({ locale = 'fr' }: ProductDemoVideoProps) {
               <track
                 kind="captions"
                 srcLang="fr"
-                label={copy.captionLabelFr}
+                label="Français"
                 src="/videos/product-demo.fr.vtt"
                 default={captionLang === 'fr'}
               />
