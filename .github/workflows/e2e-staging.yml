@@ -41,8 +41,10 @@ concurrency:
   # merge précédent (cascade de cancels à chaque push). Par SHA : un seul run
   # par déploiement ; les runs de commits différents ne se marchent pas dessus.
   # cancel-in-progress:true conserve la dédup d'un même déploiement (rerun).
-  group: e2e-staging-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # Le workflow est déclenché par workflow_run/dispatch, pas par pull_request :
+  # tester github.event_name == pull_request laissait donc les doublons s'empiler.
+  group: e2e-staging-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   should-run:
