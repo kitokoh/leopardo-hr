@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran de sélection du mode de pointage préféré pour l'employé.
 ///
@@ -12,10 +13,7 @@ class AttendanceModePickerScreen extends ConsumerStatefulWidget {
   /// Mode actuellement actif (pour pré-sélectionner)
   final String currentMode;
 
-  const AttendanceModePickerScreen({
-    super.key,
-    required this.currentMode,
-  });
+  const AttendanceModePickerScreen({super.key, required this.currentMode});
 
   @override
   ConsumerState<AttendanceModePickerScreen> createState() =>
@@ -43,37 +41,31 @@ class _AttendanceModePickerScreenState
 
   /// Liste des modes disponibles avec leur libellé, icône et description.
   List<Map<String, dynamic>> get _modes => [
-        {
-          'id': 'gps_auto',
-          'label': 'GPS Automatique',
-          'icon': Icons.location_on_rounded,
-          'color': AppColors.mobileAccentGreen,
-          'description':
-              'Votre présence est détectée automatiquement dès que vous entrez '
-                  'dans la zone de l\'entreprise. Aucune action requise de votre part.',
-          'badge': 'Recommandé',
-        },
-        {
-          'id': 'qr_code',
-          'label': 'QR Code',
-          'icon': Icons.qr_code_scanner_rounded,
-          'color': AppColors.mobileAccentPurple,
-          'description':
-              'Scannez le QR Code affiché à l\'entrée de l\'entreprise pour '
-                  'pointer votre arrivée et votre départ.',
-          'badge': null,
-        },
-        {
-          'id': 'manual',
-          'label': 'Manuel',
-          'icon': Icons.touch_app_rounded,
-          'color': _muted,
-          'description':
-              'Pointez manuellement en appuyant sur les boutons Arrivée et '
-                  'Départ dans l\'écran de présence.',
-          'badge': null,
-        },
-      ];
+    {
+      'id': 'gps_auto',
+      'label': 'GPS Automatique',
+      'icon': Icons.location_on_rounded,
+      'color': AppColors.mobileAccentGreen,
+      'description': context.l10n.ampAutoDetectDesc,
+      'badge': context.l10n.ampRecommended,
+    },
+    {
+      'id': 'qr_code',
+      'label': 'QR Code',
+      'icon': Icons.qr_code_scanner_rounded,
+      'color': AppColors.mobileAccentPurple,
+      'description': context.l10n.ampQrScanDesc,
+      'badge': null,
+    },
+    {
+      'id': 'manual',
+      'label': 'Manuel',
+      'icon': Icons.touch_app_rounded,
+      'color': _muted,
+      'description': context.l10n.ampManualDesc,
+      'badge': null,
+    },
+  ];
 
   Future<void> _confirmSelection() async {
     if (_isSaving) return;
@@ -96,8 +88,7 @@ class _AttendanceModePickerScreenState
       if (mounted) {
         setState(() {
           _isSaving = false;
-          _error =
-              'Impossible de sauvegarder votre préférence. Vérifiez votre connexion.';
+          _error = context.l10n.ampSaveError;
         });
       }
     }
@@ -111,12 +102,12 @@ class _AttendanceModePickerScreenState
         backgroundColor: _bg,
         elevation: 0,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: _text),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Mode de pointage',
+        title: Text(
+          context.l10n.ampModeTitle,
           style: TextStyle(color: _text, fontWeight: FontWeight.w600),
         ),
       ),
@@ -128,12 +119,8 @@ class _AttendanceModePickerScreenState
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               child: Text(
-                'Choisissez comment vous souhaitez pointer votre présence chaque jour.',
-                style: TextStyle(
-                  color: _muted,
-                  fontSize: 14,
-                  height: 1.5,
-                ),
+                context.l10n.ampTitle,
+                style: TextStyle(color: _muted, fontSize: 14, height: 1.5),
               ),
             ),
 
@@ -171,12 +158,15 @@ class _AttendanceModePickerScreenState
                     color: AppColors.mobileAccentRed.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: AppColors.mobileAccentRed.withValues(alpha: 0.4)),
+                      color: AppColors.mobileAccentRed.withValues(alpha: 0.4),
+                    ),
                   ),
                   child: Text(
                     _error!,
-                    style:
-                        const TextStyle(color: AppColors.mobileAccentRedSoft, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.mobileAccentRedSoft,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),
@@ -300,7 +290,9 @@ class _ModeCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
@@ -345,4 +337,3 @@ class _ModeCard extends StatelessWidget {
     );
   }
 }
-
