@@ -71,8 +71,25 @@ for issue in issues:
         ev.get("event") == "closed" and ev.get("commit_id")
         for ev in events
     )
+    # Commentaires d'arbitrage mentionnant un correctif mergé (ex. « Fixé par
+    # #NNN (mergé) ») — la PR ne référence pas toujours le numéro d'issue dans
+    # son titre/body, le commentaire de clôture le trace.
+    fix_evidence = False
+    try:
+        comments = subprocess.run(
+            ["gh", "api", f"repos/{REPO}/issues/{num}/comments"],
+            capture_output=True, text=True, check=True,
+        )
+        for c in json.loads(comments.stdout):
+            body = c.get("body") or ""
+            if re.search(r"(?i)merg[ée]|merged|fix[ée] par|fixed by|clos(ed|e) par", body) \
+               and re.search(r"#\d{3,5}", body):
+                fix_evidence = True
+                break
+    except (subprocess.CalledProcessError, json.JSONDecodeError):
+        pass
     # Fermeture via PR mergée référencée = correctif tracé (même sans commit_id).
-    if closed_with_commit or num in merged_refs:
+    if closed_with_commit or num in merged_refs or fix_evidence:
         continue
     ghost.append((num, issue.get("closed_at", "")[:10], (issue.get("title") or "")[:80]))
 
