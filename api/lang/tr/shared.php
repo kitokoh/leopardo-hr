@@ -66,7 +66,7 @@ return [
                 'fr-CA' => 'Fransizca (Kanada)',
                 'ar-SA' => 'Arapca (Suudi Arabistan)',
                 'ar-MA' => 'Arapca (Fas)',
-                'tr-TR' => 'Türkçe (Türkiye)',
+                'tr-TR' => 'Turkce (Turkiye)',
                 'en-US' => 'Ingilizce (Amerika Birlesik Devletleri)',
                 'en-GB' => 'Ingilizce (Birlesik Krallik)',
             ],
