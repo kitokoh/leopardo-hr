@@ -99,7 +99,7 @@ export function ProductDemoVideo({ locale = 'fr' }: ProductDemoVideoProps) {
               <track
                 kind="captions"
                 srcLang="fr"
-                label="Francais"
+                label="Français"
                 src="/videos/product-demo.fr.vtt"
                 default={captionLang === 'fr'}
               />

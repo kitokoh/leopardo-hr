@@ -449,13 +449,13 @@
     "language": {
       "label": "Langue",
       "variants": {
-        "fr-FR": "Francais (France)",
+        "fr-FR": "Français (France)",
         "en-US": "Anglais (Etats-Unis)",
         "en-GB": "Anglais (Royaume-Uni)",
-        "fr-CA": "Francais (Canada)",
+        "fr-CA": "Français (Canada)",
         "tr-TR": "Turc (Turquie)",
         "ar-SA": "Arabe (Arabie saoudite)",
-        "fr-BE": "Francais (Belgique)",
+        "fr-BE": "Français (Belgique)",
         "ar-MA": "Arabe (Maroc)"
       }
     },
@@ -570,7 +570,7 @@
       "description": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible."
     }
   },
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "companies": {
     "toast": {
       "subscription_failed": "Échec de la mise à jour de l'abonnement.",
@@ -1272,5 +1272,57 @@
     "recent_collaborators": "Collaborateurs récents",
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
+  },
+  "partnerPage": {
+    "loading": "Chargement de votre espace...",
+    "applyErrorPrefix": "Erreur lors de la candidature : ",
+    "notApplied": {
+      "title": "Devenir Partenaire",
+      "subtitle": "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+      "individual": "Postuler en tant qu'Individuel",
+      "agency": "Postuler en tant qu'Agence"
+    },
+    "pending": {
+      "title": "Candidature en cours",
+      "body": "Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé."
+    },
+    "dashboard": {
+      "title": "Dashboard Partenaire",
+      "subtitle": "Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Gains totaux",
+      "pending": "En attente",
+      "withdrawable": "Solde retirable"
+    },
+    "commissions": {
+      "title": "Dernières commissions",
+      "empty": "Aucune commission enregistrée."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Statut",
+      "amount": "Montant",
+      "statusPaid": "Payée",
+      "statusPending": "En attente"
+    },
+    "payout": {
+      "title": "Paiement",
+      "body": "Vos commissions sont payées une fois le seuil atteint. Vérifiez que vos coordonnées bancaires sont à jour.",
+      "request": "Demander un virement",
+      "sending": "Envoi...",
+      "insufficient": "Solde insuffisant pour demander un virement (minimum 100,00 €).",
+      "success": "Demande de virement envoyée avec succès.",
+      "errorPrefix": "Erreur lors de la demande de virement : "
+    },
+    "referral": {
+      "title": "Lien de parrainage",
+      "unavailable": "Lien indisponible",
+      "copy": "Copier mon lien",
+      "copied": "Copié !",
+      "copyError": "Impossible de copier le lien. Copiez-le manuellement."
+    }
   }
 }

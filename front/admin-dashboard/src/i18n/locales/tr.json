@@ -686,7 +686,7 @@
         "fr-BE": "Fransizca (Belcika)",
         "fr-CA": "Fransizca (Kanada)",
         "ar-SA": "Arapca (Suudi Arabistan)",
-        "tr-TR": "Turkce (Turkiye)",
+        "tr-TR": "Türkçe (Türkiye)",
         "en-GB": "Ingilizce (Birlesik Krallik)",
         "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
         "ar-MA": "Arapca (Fas)"
@@ -920,7 +920,7 @@
     }
   },
   "_locale": "tr",
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "profile": {
     "subtitle": "Kisisel bilgiler ve dil",
     "department_label": "Departman",
@@ -1272,5 +1272,57 @@
     "recent_collaborators": "Son iş arkadaşları",
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
+  },
+  "partnerPage": {
+    "loading": "Alanınız yükleniyor...",
+    "applyErrorPrefix": "Başvuru sırasında hata: ",
+    "notApplied": {
+      "title": "Partner Olun",
+      "subtitle": "Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20'ye varan düzenli komisyon.",
+      "individual": "Bireysel olarak başvurun",
+      "agency": "Ajans olarak başvurun"
+    },
+    "pending": {
+      "title": "Başvuru inceleniyor",
+      "body": "Başvurunuz satış ekibimiz tarafından doğrulanıyor. Erişiminiz etkinleştirilir etkinleştirilmez bir e-posta alacaksınız."
+    },
+    "dashboard": {
+      "title": "Partner Paneli",
+      "subtitle": "Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu."
+    },
+    "metrics": {
+      "conversions": "Dönüşümler",
+      "totalEarned": "Toplam kazanç",
+      "pending": "Beklemede",
+      "withdrawable": "Çekilebilir bakiye"
+    },
+    "commissions": {
+      "title": "Son komisyonlar",
+      "empty": "Kayıtlı komisyon yok."
+    },
+    "table": {
+      "tenantId": "Tenant Kimliği",
+      "date": "Tarih",
+      "status": "Durum",
+      "amount": "Tutar",
+      "statusPaid": "Ödendi",
+      "statusPending": "Beklemede"
+    },
+    "payout": {
+      "title": "Ödeme",
+      "body": "Komisyonlarınız eşiğe ulaşıldığında ödenir. Banka bilgilerinizin güncel olduğundan emin olun.",
+      "request": "Havale talep et",
+      "sending": "Gönderiliyor...",
+      "insufficient": "Havale talep etmek için bakiye yetersiz (minimum 100,00 €).",
+      "success": "Havale talebi başarıyla gönderildi.",
+      "errorPrefix": "Havale talebi sırasında hata: "
+    },
+    "referral": {
+      "title": "Referans bağlantısı",
+      "unavailable": "Bağlantı kullanılamıyor",
+      "copy": "Bağlantımı kopyala",
+      "copied": "Kopyalandı!",
+      "copyError": "Bağlantı kopyalanamadı. Lütfen elle kopyalayın."
+    }
   }
 }
