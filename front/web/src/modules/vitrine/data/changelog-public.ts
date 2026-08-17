@@ -6,6 +6,9 @@
  * titres/bullets FR (le chrome de la page et le sitemap etaient deja i18n).
  * `publicChangelogReleases` reste exporte (alias FR) pour compatibilite.
  */
+import type { AppLocale } from '@/lib/i18n';
+import { changelogLocalized } from './changelog-localized';
+
 export type PublicChangelogRelease = {
   version: string
   isoDate: string
@@ -183,11 +186,24 @@ export const publicChangelogReleases: PublicChangelogRelease[] = [
 
 /**
  * #4610 — sélecteur de releases consommé par la page /changelog.
- * Résiduel : les bulletins sont FR uniques (localisation du contenu des
- * releases en cours — PR #4675) ; la fonction garde la signature locale
- * pour que la page puisse basculer vers des données localisées sans
- * changement d'appel.
+ * Contenu réellement localisé ×4 (données dans changelog-localized.ts) :
+ * en/tr/ar traduits pour chaque release, fallback FR automatique pour
+ * toute release non encore traduite.
  */
-export function getChangelogReleases(_locale: string): PublicChangelogRelease[] {
-  return publicChangelogReleases;
+export function getChangelogReleases(locale: string): PublicChangelogRelease[] {
+  if (locale === 'fr') {
+    return publicChangelogReleases;
+  }
+
+  return publicChangelogReleases.map((release) => {
+    const localized = changelogLocalized[release.version]?.[locale as AppLocale];
+    if (!localized) {
+      return release;
+    }
+    return {
+      ...release,
+      title: localized.title || release.title,
+      bullets: localized.bullets?.length ? localized.bullets : release.bullets,
+    };
+  });
 }
