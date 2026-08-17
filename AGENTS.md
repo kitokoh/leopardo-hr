@@ -113,6 +113,7 @@ reste ouverte même une fois le correctif livré. Règles :
   Apps CI rouge sur main. Garde : `Get-DartContent $root @('*mock*.dart')`.
   Tout nouveau fichier de mock doit suivre le pattern `*mock*.dart`.
 
+- **Lecon 2026-08-17 (audit #4868)** : le check externe « Vercel » echoue sur TOUTES les PRs web quand le quota gratuit de deploiements est epuise (`api-deployments-free-per-day`, ~100/jour, famille #3765/#3766). C'est un echec de QUOTA, pas de build — et le check n'est PAS requis (protection de branche : 5 checks requis ; aucun workflow du repo n'attend le status Vercel). Ne pas traiter le rouge Vercel comme bloquant : merger sur la base des checks requis (meme regle que « Workers Builds: gestionemploye », #4216).
 - **Lecon 2026-08-16 (swe-qa-360)** : sous rafale de pushes concurrents (300+
   runs queued), GitHub Actions peut ne PAS creer de runs pour certains
   evenements `synchronize` — zero check suite `github-actions` sur le nouveau
