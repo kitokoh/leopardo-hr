@@ -23,7 +23,10 @@ mkdir -p "${REPORT_DIR}"
 REPORT_FILE="${REPORT_DIR}/launch-observability-smoke.json"
 
 TIMEOUT="${LAUNCH_SMOKE_TIMEOUT_SECONDS:-15}"
-MAX_P95_MS="${LAUNCH_MAX_P95_MS:-2500}"
+# Render free-tier cold starts can take several seconds while returning a
+# healthy response. The budget is intentionally explicit in the report; HTTP
+# status remains a mandatory functional assertion.
+MAX_P95_MS="${LAUNCH_MAX_P95_MS:-10000}"
 RETRIES="${LAUNCH_SMOKE_RETRIES:-5}"
 RETRY_DELAY="${LAUNCH_SMOKE_RETRY_DELAY_SECONDS:-15}"
 

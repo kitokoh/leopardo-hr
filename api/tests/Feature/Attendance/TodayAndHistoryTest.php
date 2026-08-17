@@ -250,7 +250,7 @@ class TodayAndHistoryTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $employeeB = Employee::withoutGlobalScopes()->create([
+        $employeeB = Employee::withoutGlobalScopes()->forceCreate([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'employee@b.test',
