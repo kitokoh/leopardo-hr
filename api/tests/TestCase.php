@@ -2,9 +2,9 @@
 
 namespace Tests;
 
+use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
 
@@ -12,8 +12,27 @@ abstract class TestCase extends BaseTestCase
 {
     protected function setUp(): void
     {
-        parent::setUp();
+        // La configuration de la connexion doit être appliquée AVANT que les
+        // traits ne s'exécutent (RefreshDatabase → migrate:fresh +
+        // beginDatabaseTransaction). L'ordre d'origine (`parent::setUp()` en
+        // premier) laissait `configureTestingDatabaseConnection()` purger et
+        // RECONNECTER la connexion APRÈS l'ouverture de la transaction du
+        // trait : la transaction était silencieusement perdue (nouveau PDO
+        // sans BEGIN) → chaque test re-migrait la base (~87 fichiers × ~1 min)
+        // et les écritures fuyaient d'un test à l'autre (violations
+        // d'unicité en cascade, ex. employees_email_unique — observé
+        // 2026-08-17 sur main).
+        // $this->app est typé non-nullable par Larastan — la garde reste utile à
+        // l'exécution (premier setUp avant tout refresh), on neutralise le faux positif.
+        // @phpstan-ignore-next-line booleanNot.alwaysFalse
+        if (! $this->app) {
+            $this->refreshApplication();
+            ParallelTesting::callSetUpTestCaseCallbacks($this);
+        }
+
         $this->configureTestingDatabaseConnection();
+
+        parent::setUp();
         $this->resetTestSearchPath();
     }
 
