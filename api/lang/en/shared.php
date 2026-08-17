@@ -56,6 +56,14 @@ return [
         'activate_manager_access' => 'Activate my manager access',
         'try_demo_account' => 'Try a demo account',
         'two_factor_required' => 'The 2FA code is required.',
+        'demo' => [
+            'access' => 'Demo access',
+        ],
+        'toggle' => [
+            'password' => [
+                'visibility' => 'Show or hide password',
+            ],
+        ],
     ],
     'common' => [
         'language' => [
