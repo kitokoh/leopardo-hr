@@ -219,4 +219,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Only draft postings can be deleted.',
     'JOB_POSTING_DELETED' => 'Job posting deleted.',
     'TASK_DELETED' => 'Task deleted.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => 'The trial signup service is temporarily unavailable. Please try again shortly.',
 ];
