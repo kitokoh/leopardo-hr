@@ -163,9 +163,49 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter pub get --offline || flutter pub get
 
-      - name: Check formatting
+      - name: Fetch diff base for incremental Dart gate
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${BASE_SHA}" && "${BASE_SHA}" != "0000000000000000000000000000000000000000" ]] && ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            git fetch --no-tags --depth=1 origin "${BASE_SHA}"
+          fi
+
+      - name: Identify changed Dart files
+        id: changed-dart
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${BASE_SHA}" && "${BASE_SHA}" != "0000000000000000000000000000000000000000" ]]; then
+            git diff -z --name-only "${BASE_SHA}" HEAD -- '*.dart' > /tmp/changed-dart-files
+          else
+            git diff -z --name-only HEAD^ HEAD -- '*.dart' > /tmp/changed-dart-files
+          fi
+          project_prefix="${{ matrix.project.path }}/"
+          : > /tmp/changed-dart-files-relative
+          while IFS= read -r -d '' file; do
+            if [[ "${file}" == "${project_prefix}"* ]]; then
+              printf '%s\0' "${file#"$project_prefix"}" >> /tmp/changed-dart-files-relative
+            fi
+          done < /tmp/changed-dart-files
+          if [[ -s /tmp/changed-dart-files-relative ]]; then
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+            echo "Dart files changed in this project:"
+            tr '\0' '\n' < /tmp/changed-dart-files-relative
+          else
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            echo "No Dart files changed in this project."
+          fi
+
+      - name: Check formatting of changed Dart files
+        if: steps.changed-dart.outputs.changed == 'true'
         working-directory: ${{ matrix.project.path }}
-        run: dart format . --set-exit-if-changed
+        shell: bash
+        run: xargs -r -0 dart format --set-exit-if-changed < /tmp/changed-dart-files-relative
 
       - name: Run flutter analyze
         working-directory: ${{ matrix.project.path }}

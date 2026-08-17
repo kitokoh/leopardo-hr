@@ -28,11 +28,16 @@ describe('getPageMetadata (#4004 — SEO localisé)', () => {
   it('covers all 27 pages in EN/TR/AR with non-empty title and description', () => {
     const pages = Object.keys(pageMetadata).filter((k) => k !== 'landing')
     expect(pages.length).toBeGreaterThanOrEqual(26)
+    // #4612 : le titre catalogue peut être court (« Changelog ») — la marque
+    // locale est apposée par le template du layout racine (PR #4755). Le garde
+    // porte sur le titre FINAL (catalogue + marque), comme rendu en production.
+    const brandFor: Record<string, string> = { en: 'Leopardo HR', tr: 'Leopardo İK', ar: 'ليوباردو' }
     for (const locale of ['en', 'tr', 'ar'] as const) {
       for (const page of [...pages, 'landing']) {
         const seo = getPageMetadata(page, locale)
-        expect(seo.title.length).toBeGreaterThan(10)
-        expect(seo.title.length).toBeLessThanOrEqual(80)
+        const finalTitle = `${seo.title} | ${brandFor[locale]}`
+        expect(finalTitle.length).toBeGreaterThan(10)
+        expect(finalTitle.length).toBeLessThanOrEqual(80)
         expect(seo.description.length).toBeGreaterThan(30)
       }
     }
