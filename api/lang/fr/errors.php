@@ -184,12 +184,6 @@ return [
     'INVALID_TOKEN' => 'Jeton invalide ou expiré.',
     'CAMERA_NOT_FOUND' => 'Caméra introuvable.',
     'SELF_DISABLE_FORBIDDEN' => 'Vous ne pouvez pas désactiver votre propre compte.',
-    'MANAGER_REQUIRED' => 'Un accès manager est requis.',
-    'INSUFFICIENT_ROLE' => 'Rôle insuffisant pour cette action.',
-    'EMPLOYEE_NOT_FOUND' => 'Employé introuvable.',
-    'INVALID_TOKEN' => 'Jeton invalide ou expiré.',
-    'CAMERA_NOT_FOUND' => 'Caméra introuvable.',
-    'SELF_DISABLE_FORBIDDEN' => 'Vous ne pouvez pas désactiver votre propre compte.',
     // #4793 — codes stables utilisés dans abort() sans entrée catalogue
     'NO_PROOF_ATTACHED' => 'Aucun justificatif n\'est joint à cette demande.',
     'PROOF_FILE_MISSING' => 'Le fichier justificatif est manquant.',
