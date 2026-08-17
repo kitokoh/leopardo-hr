@@ -30,7 +30,9 @@
           "description": "Connexion à l'API Facebook Graph"
         }
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "postContentPlaceholder": "Contenu de la publication..."
   },
   "auth": {
     "password_required": "Mot de passe obligatoire",
@@ -159,7 +161,11 @@
     "statusCancelled": "Annulée",
     "statusEnrolled": "Inscrit",
     "statusDropped": "Abandonné",
-    "loadError": "Impossible de charger les données de formation."
+    "loadError": "Impossible de charger les données de formation.",
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne"
   },
   "analytics": {
     "title": "Analytics Plateforme",
@@ -308,7 +314,10 @@
     "platform_health": "Santé plateforme",
     "client_requests": "Demandes clients",
     "tenants_at_risk": "Tenants à risque",
-    "platform_dashboard_hint": "Disponible dans le dashboard plateforme."
+    "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
+    "searchPlaceholder": "Rechercher...",
+    "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
+    "yourCompany": "Votre entreprise"
   },
   "_version": "1.0.0",
   "signup": {
@@ -583,7 +592,7 @@
       "description": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible."
     }
   },
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "companies": {
     "toast": {
       "subscription_failed": "Échec de la mise à jour de l'abonnement.",
@@ -1506,6 +1515,8 @@
     "checkout_failed": "Impossible de créer la session de paiement."
   },
   "contracts": {
-    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH."
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts"
   }
 }

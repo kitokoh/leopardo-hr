@@ -37,7 +37,9 @@
         "redirect_uri": "رابط إعادة التوجيه"
       },
       "saved_ok": "تم حفظ إعدادات {provider}"
-    }
+    },
+    "socialExamplePlaceholder": "مثال: Leopardo RH — وسائل التواصل الاجتماعي",
+    "postContentPlaceholder": "محتوى المنشور..."
   },
   "emails": {
     "payroll_ready": {
@@ -183,7 +185,10 @@
     "platform_health": "صحة المنصة",
     "client_requests": "طلبات العملاء",
     "tenants_at_risk": "مستأجرون معرضون للخطر",
-    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة."
+    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة.",
+    "searchPlaceholder": "بحث...",
+    "modulesActiveSentence": "{active} وحدة نشطة، و{locked} لتفعيلها حسب خطتك.",
+    "yourCompany": "شركتك"
   },
   "common": {
     "language": {
@@ -728,7 +733,7 @@
     "messagesError": "تعذر تحميل الرسائل.",
     "retry": "إعادة المحاولة"
   },
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "attendance": {
     "sending_to_server": "جار إرسال {label} إلى الخادم...",
     "retry_after_failure": "{label}. حاول مرة أخرى."
@@ -1084,7 +1089,11 @@
     "statusCancelled": "ملغاة",
     "statusEnrolled": "مسجّل",
     "statusDropped": "منسحب",
-    "loadError": "تعذّر تحميل بيانات التدريب."
+    "loadError": "تعذّر تحميل بيانات التدريب.",
+    "titlePlaceholder": "العنوان *",
+    "durationPlaceholder": "المدة (ساعة)",
+    "maxParticipantsPlaceholder": "الحد الأقصى للمشاركين",
+    "online": "عبر الإنترنت"
   },
   "analytics": {
     "title": "تحليلات المنصة",
@@ -1506,6 +1515,8 @@
     "checkout_failed": "تعذر إنشاء جلسة الدفع."
   },
   "contracts": {
-    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية."
+    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
+    "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
+    "allStatuses": "كل الحالات"
   }
 }

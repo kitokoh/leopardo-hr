@@ -488,7 +488,7 @@
     "trialUnit": "d"
   },
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "holidays": {
     "saving": "Saving…",
     "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
@@ -796,7 +796,9 @@
       },
       "title": "Marketing OAuth Settings",
       "subtitle": "Connect your social media accounts via Ayrshare"
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Social media",
+    "postContentPlaceholder": "Post content..."
   },
   "platform_login": {
     "email_required": "Email required",
@@ -916,7 +918,10 @@
     "platform_health": "Platform health",
     "client_requests": "Client requests",
     "tenants_at_risk": "Tenants at risk",
-    "platform_dashboard_hint": "Available in the platform dashboard."
+    "platform_dashboard_hint": "Available in the platform dashboard.",
+    "searchPlaceholder": "Search...",
+    "modulesActiveSentence": "{active} modules active, {locked} to activate based on your plan.",
+    "yourCompany": "Your company"
   },
   "payroll": {
     "confidence": {
@@ -1084,7 +1089,11 @@
     "statusCancelled": "Cancelled",
     "statusEnrolled": "Enrolled",
     "statusDropped": "Dropped",
-    "loadError": "Unable to load training data."
+    "loadError": "Unable to load training data.",
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online"
   },
   "analytics": {
     "title": "Platform Analytics",
@@ -1506,6 +1515,8 @@
     "checkout_failed": "Unable to create the payment session."
   },
   "contracts": {
-    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API."
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses"
   }
 }

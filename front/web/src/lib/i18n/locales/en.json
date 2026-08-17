@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -417,7 +417,10 @@
     "platform_health": "Platform health",
     "client_requests": "Client requests",
     "tenants_at_risk": "Tenants at risk",
-    "platform_dashboard_hint": "Available in the platform dashboard."
+    "platform_dashboard_hint": "Available in the platform dashboard.",
+    "searchPlaceholder": "Search...",
+    "modulesActiveSentence": "{active} modules active, {locked} to activate based on your plan.",
+    "yourCompany": "Your company"
   },
   "marketing": {
     "oauth": {
@@ -450,7 +453,9 @@
         "placeholder_secret": "New secret (optional)",
         "placeholder_uri": "https://example.com/oauth/callback"
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Social media",
+    "postContentPlaceholder": "Post content..."
   },
   "attendance": {
     "sending_to_server": "Sending {label} to the server...",
@@ -1219,6 +1224,14 @@
     "checkout_failed": "Unable to create the payment session."
   },
   "contracts": {
-    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API."
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses"
+  },
+  "training": {
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online"
   }
 }

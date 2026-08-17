@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -417,7 +417,10 @@
     "platform_health": "Santé plateforme",
     "client_requests": "Demandes clients",
     "tenants_at_risk": "Tenants à risque",
-    "platform_dashboard_hint": "Disponible dans le dashboard plateforme."
+    "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
+    "searchPlaceholder": "Rechercher...",
+    "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
+    "yourCompany": "Votre entreprise"
   },
   "marketing": {
     "oauth": {
@@ -450,7 +453,9 @@
         "placeholder_secret": "Nouveau secret (optionnel)",
         "placeholder_uri": "https://example.com/oauth/callback"
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "postContentPlaceholder": "Contenu de la publication..."
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
@@ -1219,6 +1224,14 @@
     "checkout_failed": "Impossible de créer la session de paiement."
   },
   "contracts": {
-    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH."
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts"
+  },
+  "training": {
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne"
   }
 }
