@@ -189,7 +189,7 @@ jobs:
           : > /tmp/changed-dart-files-relative
           while IFS= read -r -d '' file; do
             if [[ "${file}" == "${project_prefix}"* ]]; then
-              printf '%s\0' "${file#${project_prefix}}" >> /tmp/changed-dart-files-relative
+              printf '%s\0' "${file#"$project_prefix"}" >> /tmp/changed-dart-files-relative
             fi
           done < /tmp/changed-dart-files
           if [[ -s /tmp/changed-dart-files-relative ]]; then
