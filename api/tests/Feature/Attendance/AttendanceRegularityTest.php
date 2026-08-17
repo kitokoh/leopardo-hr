@@ -152,24 +152,26 @@ class AttendanceRegularityTest extends TestCase
             ]);
         }
 
-        Task::query()->create([
+        $task1 = new Task([
             'company_id' => $company->id,
             'title' => 'Task 1',
             'description' => 'Done on time',
             'created_by' => $creator->id,
             'assigned_to' => [$employee->id],
             'due_date' => '2026-05-06 12:00:00',
-            'status' => 'done',
         ]);
-        Task::query()->create([
+        $task1->status = 'done';
+        $task1->save();
+        $task2 = new Task([
             'company_id' => $company->id,
             'title' => 'Task 2',
             'description' => 'Never finished',
             'created_by' => $creator->id,
             'assigned_to' => [$employee->id],
             'due_date' => '2026-05-06 12:00:00',
-            'status' => 'todo',
         ]);
+        $task2->status = 'todo';
+        $task2->save();
 
         app()->forgetInstance('current_company');
 

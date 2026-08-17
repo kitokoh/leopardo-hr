@@ -186,6 +186,7 @@ class ScheduleController extends Controller
         $this->tenantCache->invalidateSchedules($user->company_id);
         $this->tenantCache->invalidateEmployees($user->company_id);
 
-        return response()->json(['message' => 'Schedule deleted successfully']);
+        // #4812 : littéral EN déplacé au catalogue errors.*
+        return response()->json(['message' => __('errors.SCHEDULE_DELETED')]);
     }
 }

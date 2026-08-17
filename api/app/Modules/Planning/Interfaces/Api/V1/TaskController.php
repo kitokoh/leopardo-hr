@@ -147,7 +147,16 @@ class TaskController extends Controller
         }
         $data = $this->filterWritableTaskColumns($data);
         $this->applyCompletionMetrics($task, $data);
-        $task->update($data);
+
+        // `status` est volontairement EXCLU du $fillable (garde
+        // SensitiveFillableGuardTest — transitions de statut par code
+        // explicite, pas de mass-assignment). On l'assigne donc directement
+        // après le fill des colonnes autorisées.
+        $task->fill(Arr::except($data, ['status']));
+        if (array_key_exists('status', $data)) {
+            $task->status = $data['status'];
+        }
+        $task->save();
 
         return (new TaskResource($task->fresh()))->response();
     }
@@ -286,13 +295,19 @@ class TaskController extends Controller
             return;
         }
 
-        $data['completed_at'] = $task->completed_at ?? now('UTC');
+        // Métriques CALCULÉES serveur → assignation explicite, jamais de
+        // mass-assignment : `completed_at` et `performance_score` restent
+        // hors $fillable (garde SensitiveFillableGuardTest — l'ancien code
+        // les injectait dans $data et update() les écartait silencieusement :
+        // performance_score restait null).
+        $task->completed_at = $task->completed_at ?? now('UTC');
+        unset($data['completed_at']);
 
         $estimated = (int) ($data['estimated_minutes'] ?? $task->estimated_minutes ?? 0);
         $completed = (int) ($data['completed_minutes'] ?? $task->completed_minutes ?? 0);
         if ($estimated > 0 && $completed > 0) {
             $ratio = max(0.0, min(2.0, $estimated / $completed));
-            $data['performance_score'] = round($ratio * 50, 2);
+            $task->performance_score = round($ratio * 50, 2);
         }
     }
 
