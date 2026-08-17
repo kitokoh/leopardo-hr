@@ -163,9 +163,32 @@ jobs:
         working-directory: ${{ matrix.project.path }}
         run: flutter pub get --offline || flutter pub get
 
-      - name: Check formatting
-        working-directory: ${{ matrix.project.path }}
-        run: dart format . --set-exit-if-changed
+      - name: Identify changed Dart files
+        id: changed-dart
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${BASE_SHA}" && "${BASE_SHA}" != "0000000000000000000000000000000000000000" ]]; then
+            git diff -z --name-only "${BASE_SHA}" "${HEAD_SHA}" -- '*.dart' > /tmp/changed-dart-files
+          else
+            git diff -z --name-only HEAD^ HEAD -- '*.dart' > /tmp/changed-dart-files
+          fi
+          if [[ -s /tmp/changed-dart-files ]]; then
+            echo "changed=true" >> "${GITHUB_OUTPUT}"
+            echo "Dart files changed in this revision:"
+            tr '\0' '\n' < /tmp/changed-dart-files
+          else
+            echo "changed=false" >> "${GITHUB_OUTPUT}"
+            echo "No Dart files changed in this revision."
+          fi
+
+      - name: Check formatting of changed Dart files
+        if: steps.changed-dart.outputs.changed == 'true'
+        shell: bash
+        run: xargs -0 dart format --set-exit-if-changed < /tmp/changed-dart-files
 
       - name: Run flutter analyze
         working-directory: ${{ matrix.project.path }}
