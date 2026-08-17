@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at": "2026-08-14T18:45:00Z",
+  "generated_at": "2026-08-17T00:00:00Z",
   "default_locale": "fr",
   "rtl_locales": [
     "ar"
@@ -27,22 +27,22 @@
     "fr": {
       "checksum": "c6e21102980da964c02a02c7ce405663b4b37c99b236be359f0f895ce76172de",
       "version": "1.0.0",
-      "updated_at": "2026-08-14T18:45:00Z"
+      "updated_at": "2026-08-17T00:00:00Z"
     },
     "ar": {
       "checksum": "11ae79ece4f303cf9493f7f154e010300c43e268cb3ca77b3315a9fdaceab8b5",
       "version": "1.0.0",
-      "updated_at": "2026-08-14T18:45:00Z"
+      "updated_at": "2026-08-17T00:00:00Z"
     },
     "tr": {
       "checksum": "2f4e031380293aee68ce161f43b589737355e05340123bf2520656f9126af525",
       "version": "1.0.0",
-      "updated_at": "2026-08-14T18:45:00Z"
+      "updated_at": "2026-08-17T00:00:00Z"
     },
     "en": {
       "checksum": "9cb54af82e3d1c0615b972ede54b9ad814a003cf827b8f6b613b4cc580c69ba1",
       "version": "1.0.0",
-      "updated_at": "2026-08-14T18:45:00Z"
+      "updated_at": "2026-08-17T00:00:00Z"
     }
   },
   "surfaces": {
