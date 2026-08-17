@@ -1,5 +1,8 @@
 # RAPPORT QA CI — 2026-04-18
 
+> ⚠️ **MAJ 2026-08-17** : document historique (2026-04-18). Les références à `front/mobile/`
+> sont obsolètes (chemin supprimé par la PR #754) — le mobile vit dans `front/mobile_apps/`.
+
 ## Objectif
 
 Renforcer la qualite des validations backend/mobile en CI, fiabiliser le reset Super Admin pour les tests en ligne, et documenter un protocole de verification pro.
