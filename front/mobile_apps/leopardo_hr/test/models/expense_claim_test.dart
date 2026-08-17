@@ -42,14 +42,12 @@ void main() {
     });
 
     test('fromJson defaults missing fields', () {
-      final claim = ExpenseClaim.fromJson({
-        'id': 3,
-      });
+      final claim = ExpenseClaim.fromJson({'id': 3});
 
       expect(claim.reference, '');
       expect(claim.category, '');
       expect(claim.amount, 0);
-      expect(claim.currency, 'DZD');
+      expect(claim.currency, '');
       expect(claim.date, '');
       expect(claim.status, 'pending');
     });

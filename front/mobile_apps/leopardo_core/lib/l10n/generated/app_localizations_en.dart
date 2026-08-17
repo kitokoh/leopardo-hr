@@ -712,7 +712,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get dashboardPresenceTodayTitle => 'Attendance today';
+  String get dashboardPresenceTodayTitle => 'Today\'s attendance';
 
   @override
   String dashboardPresenceTodaySummary(Object active, Object present) {
@@ -837,6 +837,174 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dashboardNotprovided => 'Not provided';
+
+  @override
+  String get dashboardPendingAbsences => 'Pending absences';
+
+  @override
+  String get dashboardDepartments => 'Departments';
+
+  @override
+  String get dashboardKpiTotal => 'total';
+
+  @override
+  String get dashboardKpiToProcess => 'to process';
+
+  @override
+  String get dashboardKpiActive => 'active';
+
+  @override
+  String get dashboardPriorityProcessAbsences => 'Process pending absences';
+
+  @override
+  String get dashboardPriorityCheckPresences => 'Check today\'s attendance';
+
+  @override
+  String get dashboardRecentActivityEmpty =>
+      'No recent activity to display for this tenant.';
+
+  @override
+  String get dashboardDashboardLoadError => 'Unable to load dashboard data.';
+
+  @override
+  String get dashboardTenantLoading => 'Loading tenant data...';
+
+  @override
+  String get dashboardWelcomeToday =>
+      'Welcome! Here is what is happening today.';
+
+  @override
+  String get dashboardGoLiveReady => 'Your workspace is ready for go-live';
+
+  @override
+  String get dashboardGoLiveRequired => 'Actions required before go-live';
+
+  @override
+  String dashboardGoLiveScore(Object score) {
+    return 'Score $score/100 based on tenant data, communication, payroll, attendance and client instrumentation.';
+  }
+
+  @override
+  String get dashboardTabToday => 'Today';
+
+  @override
+  String get dashboardTabWeek => 'This week';
+
+  @override
+  String get dashboardSystemFallback => 'System';
+
+  @override
+  String get dashboardShortcutEmployees => 'Employees';
+
+  @override
+  String get dashboardShortcutLeave => 'Leave';
+
+  @override
+  String get dashboardShortcutAttendance => 'Attendance';
+
+  @override
+  String get dashboardShortcutAttendanceHint => 'See your status for today.';
+
+  @override
+  String get dashboardShortcutAbsences => 'Absences';
+
+  @override
+  String get dashboardShortcutPayrollHint => 'View your payroll documents.';
+
+  @override
+  String get dashboardShortcutPreferencesHint =>
+      'Your interface follows your preferences.';
+
+  @override
+  String get dashboardJournal => 'Journal';
+
+  @override
+  String get dashboardSeeAllActivity => 'View all activity';
+
+  @override
+  String get dashboardAiAssistant => 'Smart assistant';
+
+  @override
+  String get dashboardMessageSent => 'Message sent to the team';
+
+  @override
+  String get dashboardSending => 'Sending...';
+
+  @override
+  String get dashboardSendYes => 'Yes, send';
+
+  @override
+  String get dashboardLater => 'Later';
+
+  @override
+  String get dashboardQuickActions => 'Quick actions';
+
+  @override
+  String get dashboardQuickReports => 'Reports';
+
+  @override
+  String get dashboardQuickExport => 'Export';
+
+  @override
+  String get dashboardEmpCheckin => 'Attendance';
+
+  @override
+  String get dashboardEmpCheckinHint => 'See your status for today.';
+
+  @override
+  String get dashboardEmpAbsences => 'Absences';
+
+  @override
+  String get dashboardEmpAbsencesHint => 'Track your requests and balances.';
+
+  @override
+  String get dashboardEmpPaystubs => 'Paystubs';
+
+  @override
+  String get dashboardEmpPaystubsHint => 'View your payroll documents.';
+
+  @override
+  String get dashboardEmpLanguage => 'Language';
+
+  @override
+  String get dashboardEmpLanguageHint =>
+      'Your interface follows your preferences.';
+
+  @override
+  String get dashboardEmployeeSpace => 'Employee space';
+
+  @override
+  String dashboardHello(Object name) {
+    return 'Hello $name';
+  }
+
+  @override
+  String get dashboardEmployeeIntro =>
+      'Find your useful actions without going through manager views: attendance, absences, paystubs and language.';
+
+  @override
+  String get dashboardSuperadminIntro =>
+      'This surface is optimized for client workspaces. Platform administration happens from the dedicated admin dashboard.';
+
+  @override
+  String get dashboardOpenAdminDashboard => 'Open the admin dashboard';
+
+  @override
+  String get dashboardAdminUrlHint =>
+      'Set NEXT_PUBLIC_ADMIN_URL to add the direct link to the platform administration.';
+
+  @override
+  String get dashboardPlatformHealth => 'Platform health';
+
+  @override
+  String get dashboardClientRequests => 'Client requests';
+
+  @override
+  String get dashboardTenantsAtRisk => 'Tenants at risk';
+
+  @override
+  String get dashboardPlatformDashboardHint =>
+      'Available in the platform dashboard.';
 
   @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
@@ -2348,110 +2516,143 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companydetailLastactivity => 'Last activity';
 
   @override
-  String get userAuthPersonalLogin => 'Personal login';
+  String get reportsAttendanceTitle => 'Attendance Summary';
 
   @override
-  String get userAuthLoginSubtitle =>
-      'Access your workspace, documents and requests.';
+  String get reportsAttendanceDesc =>
+      'Monthly report of attendance, late arrivals and absences per employee.';
 
   @override
-  String get userAuthNoAccount => 'No account yet? Sign up';
+  String get reportsMonthLabel => 'Month';
 
   @override
-  String userAuthGoogleError(String error) {
-    return 'Google error: $error';
-  }
+  String get reportsPayrollTitle => 'Payroll Summary';
 
   @override
-  String get authTogglePasswordVisibility => 'Show or hide password';
+  String get reportsPayrollDesc =>
+      'Gross/net totals, contributions and charges per payroll period.';
 
   @override
-  String get authDemoAccess => 'Demo access';
+  String get reportsPeriodLabel => 'Period';
 
   @override
-  String get userAuthRegisterTitle => 'Create my account';
+  String get reportsLeaveTitle => 'Leave Balances';
 
   @override
-  String get userAuthRegisterSubtitle => 'Join your team on Leopardo RH.';
+  String get reportsLeaveDesc => 'Leave balances status for all employees.';
 
   @override
-  String get userAuthFirstName => 'First name';
+  String get reportsYearLabel => 'Year';
 
   @override
-  String get userAuthLastName => 'Last name';
+  String get reportsHeadcountTitle => 'Headcount';
 
   @override
-  String get userAuthFirstNameRequired => 'First name required';
+  String get reportsHeadcountDesc =>
+      'Active headcount breakdown by department, contract type and gender.';
 
   @override
-  String get userAuthLastNameRequired => 'Last name required';
+  String get reportsTrainingTitle => 'Training Progress';
 
   @override
-  String get userAuthRegisterButton => 'Create my account';
+  String get reportsTrainingDesc =>
+      'Training participation and completion rates.';
 
   @override
-  String get userAuthAlreadyAccount => 'Already have an account? Sign in';
+  String get reportsContractTitle => 'Contract Expiry';
 
   @override
-  String get userAuthCompanyRequestTitle => 'Request submitted!';
+  String get reportsContractDesc =>
+      'Contracts expiring within the next 30, 60, 90 days.';
 
   @override
-  String get userAuthCompanyRequestBody =>
-      'An administrator will review your request. You will receive a notification once it is processed.';
+  String get reportsDaysLabel => 'Days';
 
   @override
-  String get userAuthBackToHome => 'Back to home';
+  String get reportsGenerate => 'Generate';
 
   @override
-  String get userAuthSubmitError => 'Error submitting request';
+  String get reportsSuccess => 'Report downloaded successfully.';
 
   @override
-  String get userAuthRegisterError => 'Registration error';
+  String get reportsError => 'Error while generating the report.';
 
   @override
-  String get userAuthLoginError => 'Invalid credentials';
+  String get reportsSubtitle =>
+      'Generate and download your HR reports: attendance, payroll, leave, headcount, training and contracts.';
 
   @override
-  String get userAuthGoogleLoginError => 'Google login error';
+  String get notificationsChannelInapp => 'In-app';
 
   @override
-  String get commonRequired => 'Required';
+  String get notificationsChannelEmailDesc =>
+      'Important messages and confirmations.';
 
   @override
-  String get userAuthPhoneOptional => 'Phone (optional)';
+  String get notificationsChannelPushDesc =>
+      'Quick alerts on registered devices.';
 
   @override
-  String get userAuthPhone => 'Phone';
+  String get notificationsChannelSmsDesc =>
+      'Short channel for emergencies, enabled after opt-in.';
 
   @override
-  String get userAuthCreateCompany => 'Create a company';
+  String get notificationsChannelWhatsappDesc =>
+      'Future conversational channel, with explicit opt-in.';
 
   @override
-  String get userAuthCompanyRequestInfo =>
-      'Fill in your company information. An administrator will validate your request.';
+  String get notificationsCategoryPayroll => 'Payroll';
 
   @override
-  String get userAuthCompanyName => 'Company name';
+  String get notificationsCategorySecurity => 'Security';
 
   @override
-  String get userAuthCompanyEmail => 'Company email';
+  String get notificationsCategorySystem => 'System';
 
   @override
-  String get userAuthSector => 'Business sector';
+  String get notificationsCategoryProductTips => 'Product tips';
 
   @override
-  String get userAuthCountry => 'Country';
+  String get notificationsCategoriesTitle => 'Categories';
 
   @override
-  String get userAuthCity => 'City';
+  String get notificationsSaveError => 'Unable to save preferences right now.';
 
   @override
-  String get userAuthDescription => 'Description';
+  String get notificationsChannelInappDesc =>
+      'Web and mobile notification center.';
 
   @override
-  String get userAuthSubmitRequest => 'Submit request';
+  String get employeesLoadError => 'Unable to load employees.';
 
   @override
-  String get userAuthRegisterSubtitleAlt =>
-      'Access your personal workspace and organise your documents.';
+  String get employeesTitle => 'Team';
+
+  @override
+  String get employeesSubtitle =>
+      'Manager view connected to the HR API: employee list, status and key entry points.';
+
+  @override
+  String get employeesTotalTeam => 'Team total';
+
+  @override
+  String get employeesSource => 'Source';
+
+  @override
+  String get employeesState => 'Status';
+
+  @override
+  String get employeesLoadingShort => 'Loading';
+
+  @override
+  String get employeesConnectedApi => 'Connected to the API';
+
+  @override
+  String get employeesRecentCollaborators => 'Recent collaborators';
+
+  @override
+  String get employeesListLoading => 'Loading team list...';
+
+  @override
+  String get employeesEmptyList => 'No employee visible for this account.';
 }

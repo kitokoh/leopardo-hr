@@ -166,4 +166,47 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
+    'MANAGER_REQUIRED' => 'A manager access is required.',
+    'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
+    'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
+    'INVALID_TOKEN' => 'Invalid or expired token.',
+    'CAMERA_NOT_FOUND' => 'Camera not found.',
+    'SELF_DISABLE_FORBIDDEN' => 'You cannot disable your own account.',
+    'MANAGER_REQUIRED' => 'A manager access is required.',
+    'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
+    'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
+    'INVALID_TOKEN' => 'Invalid or expired token.',
+    'CAMERA_NOT_FOUND' => 'Camera not found.',
+    'SELF_DISABLE_FORBIDDEN' => 'You cannot disable your own account.',
+    // #4793 — stable codes used in abort() without catalog entries
+    // Attendance / Biometric / Kiosk / ZKTeco
+    'NO_PROOF_ATTACHED' => 'No supporting document is attached to this request.',
+    'PROOF_FILE_MISSING' => 'The supporting document file is missing.',
+    'DEVICE_TOKEN_NOT_SET' => 'Device token is not configured.',
+    'INVALID_DEVICE_TOKEN' => 'Invalid or expired device token.',
+    'INVALID_KIOSK_TOKEN' => 'Invalid or expired kiosk token.',
+    'BIOMETRIC_NOT_APPROVED' => 'Biometric access is not approved for this employee.',
+    // Company / Tenant
+    'COMPANY_SUSPENDED' => 'Your company has been suspended. Contact support.',
+    // Payroll / Advance / Loan
+    'ADVANCE_CONFIRM_FORBIDDEN' => 'Only the advance owner can confirm reception.',
+    'ADVANCE_DISPUTE_FORBIDDEN' => 'Only the advance owner can dispute this advance.',
+    'LOAN_NOT_APPROVABLE' => 'This loan is not in an approvable state.',
+    'LOAN_NOT_APPROVED' => 'The loan must be approved before this action.',
+    // Schedule / Planning
+    'SCHEDULE_DEFAULT_DELETE_FORBIDDEN' => 'The default schedule cannot be deleted.',
+    // Ledger
+    'INVALID_ENTRY_TYPE_FILTER' => 'Invalid entry_type filter value.',
+    // AI / Webhooks / Marketing
+    'PENDING_ACTION_NOT_FOUND' => 'Pending action not found or has expired.',
+    'MARKETING_WEBHOOK_NOT_CONFIGURED' => 'Marketing lead webhook is not configured.',
+    'EMAIL_BOUNCE_WEBHOOK_NOT_CONFIGURED' => 'Email bounce webhook is not configured.',
+    'UNAUTHORIZED_USER_TYPE' => 'Your user type is not authorised for this action.',
+    'CSV_EXPORT_FAILED' => 'Unable to build the CSV export.',
+
+    'JOB_POSTING_DRAFT_ONLY_PUBLISH' => 'Only draft postings can be published.',
+    'JOB_POSTING_PUBLISHED_ONLY_CLOSE' => 'Only published postings can be closed.',
+    'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Only draft postings can be deleted.',
+    'JOB_POSTING_DELETED' => 'Job posting deleted.',
+    'TASK_DELETED' => 'Task deleted.',
 ];

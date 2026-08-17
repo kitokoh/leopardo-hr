@@ -25,8 +25,8 @@ Issues : #3876 (plans), #3883 (Free), #3913 (trial)
 | Code (API) | Nom affiché | Prix mensuel | Prix annuel (÷12) | Employés inclus |
 |---|---|---|---|---|
 | `free` | Free | 0 € | 0 € | 5 max |
-| `pilot` | Pilot | 29 €/mois | 24 €/mois (290 €/an) | 30 max |
-| `operations` | Operations | 79 €/mois | 66 €/mois (790 €/an) | 200 max |
+| `pilot` | Pilot | 29 €/mois | 24,17 €/mois (290 €/an) | 30 max |
+| `operations` | Operations | 79 €/mois | 65,83 €/mois (790 €/an) | 200 max |
 | `enterprise` | Enterprise | Sur devis | Sur devis | Illimité |
 
 **Rationale prix** :
