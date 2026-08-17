@@ -126,7 +126,7 @@ class PlanSeeder extends Seeder
                     'billing_auto' => true,
                     'multi_managers' => true,
                     'photo_attendance' => true,
-                    'api_public' => false,
+                    'api_public' => true,
                     'evaluations' => true,
                     'schema_isolation' => false,
                 ], JSON_THROW_ON_ERROR),

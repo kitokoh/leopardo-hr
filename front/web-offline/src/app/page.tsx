@@ -7,6 +7,7 @@ import {
   type EdgeHealth,
   type SyncStatus,
 } from '@/lib/edge-health';
+import { getUiCopy } from '@/lib/ui-copy';
 
 const EDGE_API = process.env.NEXT_PUBLIC_EDGE_API ?? 'http://leopardo.local:7878';
 
@@ -14,6 +15,10 @@ export default function HomePage() {
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('checking');
   const [health, setHealth] = useState<EdgeHealth | null>(null);
   const [checking, setChecking] = useState(false);
+
+  // #4806 : copie d'interface localisée (fr/en/tr/ar), détectée depuis
+  // navigator.language avec repli fr.
+  const t = getUiCopy();
 
   const checkEdge = async () => {
     setChecking(true);
@@ -38,10 +43,10 @@ export default function HomePage() {
   }[syncStatus];
 
   const statusLabel = {
-    checking: 'Vérification…',
-    online: 'Edge en ligne',
-    offline: 'Hors ligne',
-    error: 'Erreur de connexion',
+    checking: t.statusCheck,
+    online: t.statusOnline,
+    offline: t.statusOffline,
+    error: t.statusError,
   }[syncStatus];
 
   return (
@@ -62,7 +67,7 @@ export default function HomePage() {
       <main className="flex-1 px-6 py-8 max-w-2xl mx-auto w-full">
         {/* Status card */}
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 mb-6">
-          <h2 className="text-white font-semibold text-base mb-4">Statut du node Edge</h2>
+          <h2 className="text-white font-semibold text-base mb-4">{t.statusCardTitle}</h2>
           {health ? (
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
@@ -76,21 +81,19 @@ export default function HomePage() {
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">En attente de sync</span>
-                <span className="text-white">{health.pending_sync ?? '—'}{typeof health.pending_sync === 'number' ? ' enregistrement(s)' : ''}</span>
+                <span className="text-slate-400">{t.pendingSync}</span>
+                <span className="text-white">{typeof health.pending_sync === 'number' ? t.pendingCount(health.pending_sync) : '—'}</span>
               </div>
               {health.last_sync && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Dernière synchronisation</span>
+                  <span className="text-slate-400">{t.lastSync}</span>
                   <span className="text-white">{new Date(health.last_sync).toLocaleString(typeof window !== 'undefined' ? navigator.language : 'fr-FR')}</span>
                 </div>
               )}
             </div>
           ) : (
             <p className="text-slate-400 text-sm">
-              {syncStatus === 'checking'
-                ? 'Connexion à http://leopardo.local…'
-                : 'Node Edge non joignable. Les pointages seront enregistrés localement.'}
+              {syncStatus === 'checking' ? t.connecting : t.unreachable}
             </p>
           )}
         </div>
@@ -102,30 +105,29 @@ export default function HomePage() {
             disabled={checking}
             className="flex-1 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors"
           >
-            {checking ? 'Vérification…' : 'Actualiser'}
+            {checking ? t.statusCheck : t.refresh}
           </button>
           <button
             disabled
-            title="La synchronisation nécessite un nodeId et un jeton Edge authentifié."
+            title={t.syncTitle}
 
             className="flex-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors"
           >
-            Synchronisation disponible depuis le node Edge authentifié
+            {t.syncButton}
           </button>
         </div>
 
         {/* Offline notice */}
         {syncStatus === 'offline' && (
           <div className="mt-6 bg-slate-800 border border-yellow-600/40 rounded-xl p-4 text-sm text-yellow-300">
-            ⚠️ Le node Edge local n&apos;est pas joignable. Assurez-vous d&apos;être connecté
-            au réseau local ou que le service Edge est démarré sur le serveur.
+            {t.offlineNotice}
           </div>
         )}
       </main>
 
       {/* Footer */}
       <footer className="px-6 py-4 text-center text-slate-600 text-xs">
-        Leopardo RH — Interface Edge locale · {EDGE_API}
+        {t.footer(EDGE_API)}
       </footer>
     </div>
   );

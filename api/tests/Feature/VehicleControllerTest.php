@@ -179,4 +179,38 @@ class VehicleControllerTest extends TestCase
             'type' => 'spaceship',
         ])->assertStatus(422);
     }
+    public function test_assign_rejects_employee_from_another_company(): void
+    {
+        /** @var Company $companyA */
+        $companyA = Company::factory()->create();
+        /** @var Company $companyB */
+        $companyB = Company::factory()->create();
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $companyA->id]);
+        /** @var Employee $foreignEmployee */
+        $foreignEmployee = Employee::factory()->create(['company_id' => $companyB->id]);
+
+        /** @var Vehicle $vehicle */
+        $vehicle = Vehicle::create([
+            'company_id' => $companyA->id,
+            'plate_number' => 'DZ-4788-X',
+            'brand' => 'Toyota',
+            'model' => 'Hilux',
+            'year' => 2024,
+            'type' => 'van',
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        // #4788 : assigner un employé d'une AUTRE société doit être rejeté (422).
+        $this->postJson("/api/v1/vehicles/{$vehicle->id}/assign", [
+            'employee_id' => $foreignEmployee->id,
+            'start_date' => '2026-08-17',
+            'reason' => 'test cross-tenant',
+        ])->assertUnprocessable()
+            ->assertJsonValidationErrors('employee_id');
+
+        $this->assertDatabaseMissing('vehicle_assignments', ['employee_id' => $foreignEmployee->id]);
+    }
 }

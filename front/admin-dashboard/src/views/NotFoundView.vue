@@ -18,7 +18,7 @@
               class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               <ArrowLeftIcon class="-ml-0.5 mr-2 h-4 w-4" />
-              Retour au tableau de bord
+              {{ $t('notFound.backToDashboard') }}
             </router-link>
             <button
               @click="goBack"
@@ -32,7 +32,7 @@
 
       <!-- Additional help -->
       <div class="mt-16 border-t border-gray-200 pt-8">
-        <h2 class="text-lg font-medium text-gray-900">Liens utiles</h2>
+        <h2 class="text-lg font-medium text-gray-900">{{ $t('notFound.usefulLinks') }}</h2>
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <router-link
             to="/users"
@@ -91,8 +91,8 @@
               <div class="flex items-center">
                 <CogIcon class="h-6 w-6 text-gray-400 group-hover:text-gray-500" />
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">Système</p>
-                  <p class="text-sm text-gray-500">Configuration système</p>
+                  <p class="text-sm font-medium text-gray-900">{{ $t('notFound.system') }}</p>
+                  <p class="text-sm text-gray-500">{{ $t('notFound.systemConfig') }}</p>
                 </div>
               </div>
             </div>
