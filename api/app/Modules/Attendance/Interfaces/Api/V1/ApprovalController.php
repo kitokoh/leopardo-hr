@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\ApprovalDecisionResource;
 use App\Http\Resources\Api\V1\ApprovalRequestResource;
 use App\Http\Resources\Api\V1\ApprovalWorkflowResource;
 use App\Modules\Attendance\Domain\Models\ApprovalDecision;
@@ -208,7 +209,10 @@ class ApprovalController extends Controller
             ->orderByDesc('decided_at')
             ->paginate(max(1, min(100, $request->integer('per_page', 15))));
 
-        return response()->json($decisions);
+        // #4688 (audit 360° 2026-08-16) : enveloppe {data, links, meta} alignée
+        // sur pending()/approve()/reject() (resource collection) — avant, le
+        // paginator brut renvoyait les attributs modèles à plat.
+        return ApprovalDecisionResource::collection($decisions)->response();
     }
 }
 
