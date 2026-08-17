@@ -1,4 +1,5 @@
 import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+import { DEFAULT_CURRENCY_OPTION } from '@/modules/vitrine/data/currency';
 
 interface JsonLdProps {
   data: Record<string, unknown>;
@@ -66,12 +67,40 @@ export function ArticleJsonLd({
   );
 }
 
+// #4707 — JSON-LD organisation cohérent par locale : name/description
+// localisés (avant : FR pour toutes les locales). La devise des Offers est
+// pilotée par le module currency (DEFAULT_CURRENCY_OPTION) au lieu de 'EUR'
+// codé en dur — les prix restent autorés en EUR (data/pricing.ts).
+const ORG_COPY: Record<string, { name: string; description: string }> = {
+  fr: {
+    name: 'Leopardo RH',
+    description:
+      'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+  },
+  en: {
+    name: 'Leopardo HR',
+    description:
+      'HR management SaaS platform for SMBs: multi-country payroll, time tracking, leave, training and recruiting.',
+  },
+  tr: {
+    name: 'Leopardo İK',
+    description:
+      "KOBİ'ler için İK yönetimi SaaS platformu: çok ülkeli maaş, puantaj, izin, eğitim ve işe alım.",
+  },
+  ar: {
+    name: 'ليوباردو',
+    description:
+      'منصة موارد بشرية سحابية للشركات الصغيرة والمتوسطة: رواتب متعددة البلدان، حضور، إجازات، تدريب وتوظيف.',
+  },
+};
+
 // #4403 — JSON-LD localisé par locale (page) ; les plans « sur devis »
 // (Enterprise) n'ont pas de prix machine : schema.org/Offer EXIGE `price`,
 // une offre sans prix est invalide (Google Rich Results). On n'émet donc
 // que les plans à prix machine (Free/Pilot/Operations). Le prix 0 du plan
 // Free est conservé (offre gratuite réelle).
 export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
+  const orgCopy = ORG_COPY[locale] ?? ORG_COPY.fr;
   const offers = getPricingPlans(locale as Parameters<typeof getPricingPlans>[0])
     .filter((plan) => Number.isFinite(Number(plan.price)))
     .map((plan) => ({
@@ -79,7 +108,7 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
       name: plan.name,
       description: plan.description,
       price: Number(plan.price),
-      priceCurrency: 'EUR',
+      priceCurrency: DEFAULT_CURRENCY_OPTION.currency,
       url: `${SITE_URL}/pricing`,
     }));
 
@@ -88,16 +117,15 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
       data={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'Leopardo RH',
+        name: orgCopy.name,
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web, Android',
-        description:
-          'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+        description: orgCopy.description,
         availableLanguage: ['fr', 'en', 'ar', 'tr'],
         offers,
         creator: {
           '@type': 'Organization',
-          name: 'Leopardo RH',
+          name: orgCopy.name,
           url: SITE_URL,
         },
       }}

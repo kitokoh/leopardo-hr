@@ -62,6 +62,59 @@ const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> =
   },
 };
 
+// #4707 : keywords racine localisés ×4 (avant : FR codé en dur pour toutes les
+// locales, quelles que soient lang/dir du HTML SSR).
+const ROOT_KEYWORDS: Record<AppLocale, string[]> = {
+  fr: [
+    'SaaS RH',
+    'logiciel RH',
+    'paie',
+    'pointage mobile',
+    'absences',
+    'kiosque RH',
+    'multi-tenant',
+    'RH multilingue',
+  ],
+  en: [
+    'HR SaaS',
+    'HR software',
+    'payroll',
+    'mobile time tracking',
+    'leave management',
+    'HR kiosk',
+    'multi-tenant',
+    'multilingual HR',
+  ],
+  tr: [
+    'İK SaaS',
+    'İK yazılımı',
+    'maaş',
+    'mobil puantaj',
+    'izin yönetimi',
+    'İK kiosk',
+    'çok kiracılı',
+    'çok dilli İK',
+  ],
+  ar: [
+    'نظام موارد بشرية سحابي',
+    'برنامج موارد بشرية',
+    'الرواتب',
+    'تسجيل حضور عبر الجوال',
+    'إدارة الإجازات',
+    'كشك الموارد البشرية',
+    'متعدد المستأجرين',
+    'موارد بشرية متعددة اللغات',
+  ],
+};
+
+// #4707 : alt og:image racine localisé ×4 (avant : FR pour toutes les locales).
+const OG_IMAGE_ALT: Record<AppLocale, string> = {
+  fr: 'Leopardo RH - dashboard RH multilingue',
+  en: 'Leopardo HR - multilingual HR dashboard',
+  tr: 'Leopardo İK - çok dilli İK paneli',
+  ar: 'ليوباردو - لوحة موارد بشرية متعددة اللغات',
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
   const rootMeta = ROOT_METADATA[ssrLocale] ?? ROOT_METADATA.fr;
@@ -90,16 +143,8 @@ export async function generateMetadata(): Promise<Metadata> {
       }`,
     },
     description,
-    keywords: [
-      "SaaS RH",
-      "logiciel RH",
-      "paie",
-      "pointage mobile",
-      "absences",
-      "kiosque RH",
-      "multi-tenant",
-      "RH multilingue",
-    ],
+    // #4707 : keywords par locale (avant : FR pour toutes les locales).
+    keywords: ROOT_KEYWORDS[ssrLocale] ?? ROOT_KEYWORDS.fr,
     manifest: "/manifest",
     metadataBase: new URL(siteUrl),
     icons: {
@@ -119,10 +164,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: siteUrl,
       images: [
         {
-          url: '/opengraph-image',
+          // #4707 : variante locale de l'image OG (generateImageMetadata dans
+          // app/opengraph-image.tsx) + alt localisé — avant : /opengraph-image
+          // FR + alt FR pour toutes les locales.
+          url: `/opengraph-image/${ssrLocale}`,
           width: 1200,
           height: 630,
-          alt: 'Leopardo RH - dashboard RH multilingue',
+          alt: OG_IMAGE_ALT[ssrLocale] ?? OG_IMAGE_ALT.fr,
         },
       ],
     },
@@ -130,7 +178,8 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/twitter-image'],
+      // #4707 : variante locale de l'image Twitter (même famille que l'OG).
+      images: [`/twitter-image/${ssrLocale}`],
     },
     appleWebApp: {
       capable: true,
