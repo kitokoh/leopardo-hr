@@ -6,18 +6,18 @@ import { planNameToCheckoutKey } from '../PricingSection'
  *
  * Le plan affiché sur /pricing (nom + prix mensuel/annuel) doit correspondre
  * à ce que /checkout affiche et facture. Source de vérité backend :
- * api/database/seeders/PlanSeeder.php — Free 0/5emp, Pilot 29/24€/30emp,
- * Operations 99/79€/250emp, Enterprise sur devis.
+ * api/database/seeders/PlanSeeder.php — Free 0/5emp, Pilot 29/24,17€/30emp (290 €/an),
+ * Operations 79/65,83€/200emp (790 €/an), Enterprise sur devis.
  */
 
 // Contrat mirroré depuis checkout/page.tsx (PLAN_CONFIG + PLAN_ALIASES).
 // Si le checkout change, ce test casse → les deux surfaces restent alignées.
-// ADR-0014 (#4456) : Operations = 79 €/mois, 66 €/mois annuel (790 €/an) —
+// ADR-0014 (#4456) : Operations = 79 €/mois, 65,83 €/mois annuel (790 €/an) —
 // le 99 €/mois était une erreur du seeder historique (#4421/#4419).
 const CHECKOUT_PLANS = {
   free: { label: 'Free', monthly: 0, annual: 0 },
-  pilot: { label: 'Pilot', monthly: 29, annual: 24 },
-  operations: { label: 'Operations', monthly: 79, annual: 66 },
+  pilot: { label: 'Pilot', monthly: 29, annual: 24.17 },
+  operations: { label: 'Operations', monthly: 79, annual: 65.83 },
   enterprise: { label: 'Enterprise', monthly: null, annual: null },
 } as const
 
@@ -58,7 +58,8 @@ describe('pricing ↔ checkout alignment (#3919)', () => {
       }
       // Prix mensuel/annuel : la vitrine et le checkout affichent le même montant
       expect(Number(plan.price)).toBe(checkout.monthly)
-      expect(Number(plan.annualPrice)).toBe(checkout.annual)
+      // #4791 : prix annuel exact (290/790 €/an ÷ 12) — virgule locale acceptée.
+      expect(Number(plan.annualPrice.replace(',', '.'))).toBe(checkout.annual)
     }
   })
 

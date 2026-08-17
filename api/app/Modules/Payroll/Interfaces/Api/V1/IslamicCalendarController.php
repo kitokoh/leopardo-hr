@@ -116,7 +116,8 @@ class IslamicCalendarController extends Controller
     private function assertPlatformAdmin(Request $request): void
     {
         if (! $request->user() instanceof SuperAdmin) {
-            abort(403, 'Seul un administrateur plateforme peut modifier le calendrier islamique.');
+            // #4690 : code catalogue — localized_message émis par le renderer.
+            abort(403, 'PLATFORM_ADMIN_ONLY');
         }
     }
 

@@ -28,7 +28,7 @@ class JobPostingActionController extends Controller
         $job = JobPosting::where('company_id', $user->company_id)->findOrFail($id);
 
         if ($job->status !== 'draft') {
-            return response()->json(['message' => 'Only draft postings can be published.'], 422);
+            return response()->json(['message' => __('errors.JOB_POSTING_DRAFT_ONLY_PUBLISH')], 422);
         }
 
         $job->update([
@@ -50,7 +50,7 @@ class JobPostingActionController extends Controller
         $job = JobPosting::where('company_id', $user->company_id)->findOrFail($id);
 
         if ($job->status !== 'published') {
-            return response()->json(['message' => 'Only published postings can be closed.'], 422);
+            return response()->json(['message' => __('errors.JOB_POSTING_PUBLISHED_ONLY_CLOSE')], 422);
         }
 
         $job->update(['status' => 'closed']);
@@ -69,12 +69,12 @@ class JobPostingActionController extends Controller
         $job = JobPosting::where('company_id', $user->company_id)->findOrFail($id);
 
         if ($job->status !== 'draft') {
-            return response()->json(['message' => 'Only draft postings can be deleted.'], 422);
+            return response()->json(['message' => __('errors.JOB_POSTING_DRAFT_ONLY_DELETE')], 422);
         }
 
         $job->delete();
 
-        return response()->json(['message' => 'Job posting deleted.']);
+        return response()->json(['message' => __('errors.JOB_POSTING_DELETED')]);
     }
 
     public function showApplicant(Request $request, int $id): JsonResponse

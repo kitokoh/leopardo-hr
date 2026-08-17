@@ -7,8 +7,8 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
-use Tests\Support\CreatesMvpSchema;
 use Illuminate\Support\Facades\DB;
+use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 class ZktecoControllerTest extends TestCase
@@ -157,39 +157,84 @@ class ZktecoControllerTest extends TestCase
         ]);
     }
 
-    public function test_heartbeat_does_not_inherit_foreign_search_path(): void
+    /**
+     * #4787 — le handler public ne doit JAMAIS laisser le search_path pointer
+     * vers un autre schéma : un worker persistant qui sert un heartbeat puis
+     * une requête tenant hériterait du mauvais contexte (résolution
+     * cross-tenant / 500). Vérifie la restauration après succès ET après 404.
+     */
+    public function test_heartbeat_restores_search_path_after_success(): void
     {
         ZktecoDevice::query()->create([
             'company_id' => $this->company->id,
-            'serial_number' => 'SN-CONTAMINATION-01',
-            'name' => 'Porte Contamination',
+            'serial_number' => 'SN-SP-001',
+            'name' => 'Porte SP1',
             'sync_token_hash' => bcrypt('valid-device-token'),
         ]);
 
-        // #4787 : simule un worker dont la connexion pointe vers un contexte
-        // étranger (search_path hérité d'une requête précédente, classe #3368).
-        // La résolution doit FORCER shared_tenants,public au lieu d'hériter.
-        DB::statement('SET search_path TO public');
+        $this->withHeader('X-Device-Token', 'valid-device-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-SP-001')
+            ->assertOk();
 
-        try {
-            $this->withHeader('X-Device-Token', 'valid-device-token')
-                ->postJson('/api/v1/zkteco/heartbeat/SN-CONTAMINATION-01')
-                ->assertOk()
-                ->assertJsonPath('data.status', 'online');
-        } finally {
-            // Restaure pour ne pas polluer les tests suivants (même contrat
-            // que le middleware kiosk.search_path).
-            DB::statement('SET search_path TO shared_tenants,public');
-        }
+        $row = DB::selectOne('SHOW search_path');
+        $this->assertNotNull($row);
+        $this->assertSame('shared_tenants,public', $row->search_path);
+    }
 
-        // Le heartbeat a écrit sur le device du bon tenant (contexte partagé).
-        $this->assertDatabaseHas('zkteco_devices', [
-            'serial_number' => 'SN-CONTAMINATION-01',
-            'status' => 'online',
+    public function test_heartbeat_restores_search_path_after_unknown_serial(): void
+    {
+        $this->postJson('/api/v1/zkteco/heartbeat/SN-SP-UNKNOWN')
+            ->assertStatus(404);
+
+        $row = DB::selectOne('SHOW search_path');
+        $this->assertNotNull($row);
+        $this->assertSame('shared_tenants,public', $row->search_path);
+    }
+
+    public function test_heartbeat_restores_search_path_after_rejected_token(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-SP-002',
+            'name' => 'Porte SP2',
+            'sync_token_hash' => bcrypt('valid-device-token'),
         ]);
 
-        // Le contexte tenant du device est établi (current_company).
-        $this->assertSame($this->company->id, app('current_company')->id);
+        $this->withHeader('X-Device-Token', 'wrong-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-SP-002')
+            ->assertStatus(401);
+
+        $row = DB::selectOne('SHOW search_path');
+        $this->assertNotNull($row);
+        $this->assertSame('shared_tenants,public', $row->search_path);
+    }
+
+    public function test_sync_attendance_restores_search_path_after_success(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-SP-003',
+            'name' => 'Porte SP3',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'zkteco_id' => 'zk-sp-3',
+        ]);
+
+        $this->withHeader('X-Device-Token', 'valid-device-token')
+            ->postJson('/api/v1/zkteco/sync-attendance/SN-SP-003', [
+                'records' => [
+                    ['user_id' => 'zk-sp-3', 'timestamp' => '2026-01-01 08:00:00'],
+                ],
+            ])
+            ->assertStatus(201);
+
+        $row = DB::selectOne('SHOW search_path');
+        $this->assertNotNull($row);
+        $this->assertSame('shared_tenants,public', $row->search_path);
     }
 
     public function test_sync_attendance_rejects_unauthenticated_device_and_writes_nothing(): void
