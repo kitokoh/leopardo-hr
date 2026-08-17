@@ -79,6 +79,34 @@ function writePhpArray(filePath, payload) {
   fs.writeFileSync(filePath, `<?php\n\nreturn [\n${body}\n];\n`, 'utf8');
 }
 
+function catalogChecksums(dir) {
+  const out = {};
+  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort()) {
+    const locale = path.basename(file, '.json');
+    out[locale] = checksum(flatten(readJson(path.join(dir, file))));
+  }
+  return out;
+}
+
+/**
+ * #4805 — enregistre dans versions.json les checksums des catalogues
+ * GÉNÉRÉS (web/admin) pour détecter un drift silencieux : une modification
+ * manuelle d'un fichier généré (sans repasser par le sync) fait désormais
+ * échouer validate.js.
+ */
+function updateSurfaceVersions(surfaces) {
+  const versions = readJson(versionsPath);
+  versions.surfaces = versions.surfaces || {};
+  for (const [name, dir] of Object.entries(surfaces)) {
+    versions.surfaces[name] = {
+      checksums: catalogChecksums(dir),
+      updated_at: new Date().toISOString(),
+    };
+  }
+  writeJson(versionsPath, versions);
+  return versions;
+}
+
 function updateVersions() {
   const versions = readJson(versionsPath);
   const catalogs = localeCatalogs();
@@ -106,6 +134,8 @@ module.exports = {
   readJson,
   repoRoot,
   updateVersions,
+  updateSurfaceVersions,
+  catalogChecksums,
   versionsPath,
   writeJson,
   writePhpArray,
