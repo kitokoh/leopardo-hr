@@ -41,7 +41,7 @@ return new class extends Migration
         }
 
         foreach (['cnss_bf_matricule', 'inps_ml_matricule'] as $column) {
-            if (Schema::hasColumn('employees', $column)) {
+            if (schemaHasColumn('employees', $column)) {
                 Schema::table('employees', function (Blueprint $blueprint) use ($column): void {
                     $blueprint->dropColumn($column);
                 });

@@ -49,7 +49,7 @@ return new class extends Migration
         }
 
         foreach (['cnss_ci_matricule', 'ipres_matricule', 'ipres_category'] as $column) {
-            if (Schema::hasColumn('employees', $column)) {
+            if (schemaHasColumn('employees', $column)) {
                 Schema::table('employees', function (Blueprint $blueprint) use ($column): void {
                     $blueprint->dropColumn($column);
                 });
