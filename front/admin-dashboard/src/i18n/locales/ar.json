@@ -787,7 +787,7 @@
     "messagesError": "تعذر تحميل الرسائل.",
     "retry": "إعادة المحاولة"
   },
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "attendance": {
     "sending_to_server": "جار إرسال {label} إلى الخادم...",
     "retry_after_failure": "{label}. حاول مرة أخرى."

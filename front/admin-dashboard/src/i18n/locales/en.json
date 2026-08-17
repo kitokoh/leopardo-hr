@@ -525,7 +525,7 @@
     "exportCsv": "Export CSV"
   },
   "_version": "1.0.0",
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "holidays": {
     "saving": "Saving…",
     "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
