@@ -1117,5 +1117,7 @@
   "orgChartEmpty": "L'organigramme sera disponible une fois les employés configurés.",
   "orgChartCollapse": "Réduire",
   "orgChartExpand": "Développer",
-  "errorUnexpected": "Une erreur est survenue"
+  "errorUnexpected": "Une erreur est survenue",
+  "approvalApproved": "Demande approuvée",
+  "approvalRejected": "Demande refusée"
 }
