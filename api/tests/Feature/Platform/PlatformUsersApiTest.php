@@ -125,12 +125,15 @@ class PlatformUsersApiTest extends TestCase
         $usersData = $response->json('data') ?? [];
         $alice = collect($usersData)->firstWhere('first_name', 'Alice');
         $this->assertIsArray($alice);
-        $this->assertSame('Tenant Test', $alice['company']['name']);
-        $this->assertSame('active', $alice['company']['link_status']);
+        /** @var array<string, mixed> $aliceCompany */
+        $aliceCompany = $alice['company'] ?? [];
+        $this->assertSame('Tenant Test', $aliceCompany['name']);
+        $this->assertSame('active', $aliceCompany['link_status']);
         $this->assertTrue($alice['is_active']);
 
         // Bob n'est lié à aucune entreprise → company null (contrat contrôleur).
         $bob = collect($usersData)->firstWhere('first_name', 'Bob');
+        $this->assertIsArray($bob);
         $this->assertNull($bob['company']);
     }
 

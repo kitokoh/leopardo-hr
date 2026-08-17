@@ -90,6 +90,7 @@ class QaHardeningEndpointsTest extends TestCase
     {
         [$company, $manager] = $this->tenantFixture();
         /** @var Employee $employee */
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id, 'status' => 'active']);
         $enrollment = $this->createTrainingEnrollment($employee);
 
@@ -350,6 +351,7 @@ class QaHardeningEndpointsTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Amina',
