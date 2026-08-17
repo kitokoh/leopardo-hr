@@ -56,6 +56,14 @@ return [
         'activate_manager_access' => 'تفعيل صلاحية المدير',
         'try_demo_account' => 'تجربة حساب تجريبي',
         'two_factor_required' => 'رمز التحقق الثنائي مطلوب.',
+        'demo' => [
+            'access' => 'وصول تجريبي',
+        ],
+        'toggle' => [
+            'password' => [
+                'visibility' => 'إظهار أو إخفاء كلمة المرور',
+            ],
+        ],
     ],
     'common' => [
         'language' => [

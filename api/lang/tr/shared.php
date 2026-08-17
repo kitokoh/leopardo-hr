@@ -56,6 +56,14 @@ return [
         'activate_manager_access' => 'Yonetici erisimimi etkinlestir',
         'try_demo_account' => 'Demo hesabini dene',
         'two_factor_required' => '2FA kodu gereklidir.',
+        'demo' => [
+            'access' => 'Demo erisimi',
+        ],
+        'toggle' => [
+            'password' => [
+                'visibility' => 'Sifreyi goster veya gizle',
+            ],
+        ],
     ],
     'common' => [
         'language' => [
