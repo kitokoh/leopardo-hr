@@ -1272,5 +1272,17 @@
     "recent_collaborators": "المتعاونون الأخيرون",
     "list_loading": "جارٍ تحميل قائمة الفريق...",
     "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
+  },
+  "api": {
+    "sessionExpired": "انتهت الجلسة. إعادة الاتصال...",
+    "accessDenied": "تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.",
+    "notFound": "الموارد غير موجودة: :endpoint",
+    "tooManyRequests": "طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.",
+    "serverError": "خطأ في الخادم على :endpoint. :detail",
+    "serverErrorRetry": "حاول مرة أخرى لاحقًا.",
+    "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). يرجى المحاولة مرة أخرى بعد قليل.",
+    "genericError": "خطأ :status على :endpoint.",
+    "invalidData": "بيانات غير صالحة.",
+    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت."
   }
 }
