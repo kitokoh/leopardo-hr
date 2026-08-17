@@ -103,6 +103,7 @@ type LandingCopy = {
     recommended: string
     currency: string
     annualSavings: string
+    toggleBilling: string
   }
   testimonials: {
     badge: string
@@ -268,6 +269,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       recommended: 'Recommande',
       currency: 'EUR',
       annualSavings: "Jusqu'à 17% d'économie",
+      toggleBilling: "Basculer la période de facturation",
     },
     testimonials: {
       badge: 'Temoignages',
@@ -429,6 +431,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       recommended: 'Recommended',
       currency: 'EUR',
       annualSavings: "Save up to 17%",
+      toggleBilling: "Toggle billing period",
     },
     testimonials: {
       badge: 'Testimonials',
@@ -590,6 +593,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       recommended: 'Onerilen',
       currency: 'EUR',
       annualSavings: "%17'ye varan tasarruf",
+      toggleBilling: "Faturalama dönemini değiştir",
     },
     testimonials: {
       badge: 'Musteriler',
@@ -751,6 +755,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       recommended: 'موصى به',
       currency: 'EUR',
       annualSavings: 'وفّر حتى 17%',
+      toggleBilling: 'بدّل فترة الفوترة',
     },
     testimonials: {
       badge: 'العملاء',
