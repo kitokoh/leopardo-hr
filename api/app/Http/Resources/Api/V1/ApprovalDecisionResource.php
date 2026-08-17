@@ -7,6 +7,7 @@ namespace App\Http\Resources\Api\V1;
 use App\Modules\Attendance\Domain\Models\ApprovalDecision;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use LogicException;
 
 /** @mixin ApprovalDecision */
 class ApprovalDecisionResource extends JsonResource
@@ -14,27 +15,45 @@ class ApprovalDecisionResource extends JsonResource
     /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
+        if (! $this->resource instanceof ApprovalDecision) {
+            throw new LogicException('ApprovalDecisionResource requires an ApprovalDecision resource.');
+        }
+
+        $decision = $this->resource;
+
         return [
-            'id' => $this->id,
-            'approval_request_id' => $this->approval_request_id,
-            'level' => $this->level,
-            'approver_id' => $this->approver_id,
-            'decision' => $this->decision,
-            'comment' => $this->comment,
-            'decided_at' => $this->decided_at?->toIso8601String(),
-            'request' => $this->whenLoaded('request', fn () => [
-                'id' => $this->request->id,
-                'status' => $this->request->status,
-                'approvable_type' => $this->request->approvable_type,
-                'approvable_id' => $this->request->approvable_id,
-                'requester_id' => $this->request->requester_id,
-                'requester' => $this->request->relationLoaded('requester') ? [
-                    'id' => $this->request->requester->id,
-                    'first_name' => $this->request->requester->first_name,
-                    'last_name' => $this->request->requester->last_name,
-                ] : null,
-            ]),
-            'created_at' => $this->created_at?->toIso8601String(),
+            'id' => $decision->id,
+            'approval_request_id' => $decision->approval_request_id,
+            'level' => $decision->level,
+            'approver_id' => $decision->approver_id,
+            'decision' => $decision->decision,
+            'comment' => $decision->comment,
+            'decided_at' => $decision->decided_at?->toIso8601String(),
+            'request' => $this->whenLoaded('request', function () use ($decision): ?array {
+                $approvalRequest = $decision->request;
+
+                if ($approvalRequest === null) {
+                    return null;
+                }
+
+                $requester = $approvalRequest->relationLoaded('requester')
+                    ? $approvalRequest->requester
+                    : null;
+
+                return [
+                    'id' => $approvalRequest->id,
+                    'status' => $approvalRequest->status,
+                    'approvable_type' => $approvalRequest->approvable_type,
+                    'approvable_id' => $approvalRequest->approvable_id,
+                    'requester_id' => $approvalRequest->requester_id,
+                    'requester' => $requester === null ? null : [
+                        'id' => $requester->id,
+                        'first_name' => $requester->first_name,
+                        'last_name' => $requester->last_name,
+                    ],
+                ];
+            }),
+            'created_at' => $decision->created_at->toIso8601String(),
         ];
     }
 }

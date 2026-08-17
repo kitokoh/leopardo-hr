@@ -347,9 +347,9 @@ function LoginInner() {
                   value={locale}
                   onChange={(e) => handleLocaleChange(e.target.value)}
                 >
-                  <option value="fr">Francais</option>
+                  <option value="fr">Français</option>
                   <option value="ar">Arabic</option>
-                  <option value="tr">Turkce</option>
+                  <option value="tr">Türkçe</option>
                   <option value="en">English</option>
                 </select>
               </label>

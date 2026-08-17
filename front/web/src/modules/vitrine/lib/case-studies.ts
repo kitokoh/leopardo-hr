@@ -5,6 +5,7 @@
  */
 
 import { modulePageContent } from './content';
+import type { AppLocale } from '@/lib/i18n';
 
 export type CaseStudyModule = 'employes' | 'documents' | 'comptabilite' | 'marketing';
 
@@ -25,6 +26,42 @@ const moduleMeta: Record<CaseStudyModule, { label: string; href: string }> = {
   comptabilite: { label: 'Paie & Comptabilité', href: '/comptabilite' },
   marketing: { label: 'Marketing', href: '/marketing' },
 };
+
+/**
+ * #4703 (audit 360° 2026-08-16) : labels de module localisés — le détail
+ * /case-studies/[slug] injecte `moduleLabel` dans des chaînes ui.* déjà
+ * traduites ; un label FR cassait l'i18n des pages en/tr/ar.
+ */
+const moduleLabelsByLocale: Record<AppLocale, Record<CaseStudyModule, string>> = {
+  fr: {
+    employes: 'Gestion RH',
+    documents: 'Documents',
+    comptabilite: 'Paie & Comptabilité',
+    marketing: 'Marketing',
+  },
+  en: {
+    employes: 'HR Management',
+    documents: 'Documents',
+    comptabilite: 'Payroll & Accounting',
+    marketing: 'Marketing',
+  },
+  tr: {
+    employes: 'İK Yönetimi',
+    documents: 'Belgeler',
+    comptabilite: 'Maaş & Muhasebe',
+    marketing: 'Pazarlama',
+  },
+  ar: {
+    employes: 'إدارة الموارد البشرية',
+    documents: 'المستندات',
+    comptabilite: 'الرواتب والمحاسبة',
+    marketing: 'التسويق',
+  },
+};
+
+export function getModuleLabel(module: CaseStudyModule, locale: AppLocale): string {
+  return moduleLabelsByLocale[locale]?.[module] ?? moduleLabelsByLocale.fr[module];
+}
 
 function toSlug(link: string): string {
   return link.replace(/^\/case-studies\//, '');

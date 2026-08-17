@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
 import 'package:leopardo_manager/features/auth/data/auth_repository.dart';
@@ -83,10 +84,10 @@ void main() {
   test('uses local base url in debug when none is provided (#4530)', () {
     // #4524/#4530 : plus de fallback silencieux vers le backend legacy — en
     // debug sans define, le client pointe le serveur local (loopback hôte).
-    expect(
-      ApiClient.resolveBaseUrl(),
-      'http://127.0.0.1:8000/api/v1',
-    );
+    final expectedHost = defaultTargetPlatform == TargetPlatform.android
+        ? '10.0.2.2'
+        : '127.0.0.1';
+    expect(ApiClient.resolveBaseUrl(), 'http://$expectedHost:8000/api/v1');
   });
 
   test('extracts token from root API payload', () {

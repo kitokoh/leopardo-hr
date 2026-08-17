@@ -35,12 +35,15 @@ class EdgeSyncTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
 
-        $this->company = Company::factory()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'slug' => 'acme-test',
             'status' => 'active',
         ]);
+        $this->company = $company;
 
-        $this->node = EdgeNode::create([
+        /** @var EdgeNode $node */
+        $node = EdgeNode::create([
             'company_id' => $this->company->id,
             'name' => 'Site Principal',
             'slug' => 'site-principal-abc123',
@@ -51,6 +54,7 @@ class EdgeSyncTest extends TestCase
             'license_expires_at' => now()->addDays(30),
             'metadata' => ['edge_token' => hash('sha256', 'test-edge-token-xxx')],
         ]);
+        $this->node = $node;
     }
 
     // ── Registration ─────────────────────────────────────
@@ -58,48 +62,18 @@ class EdgeSyncTest extends TestCase
     /** @test */
     public function it_registers_a_new_edge_node(): void
     {
-        $admin = $this->actingAsCompanyAdmin($this->company);
-
-        $response = $this->postJson('/api/v1/edge', [
-            'name' => 'Entrepôt Nord',
-            'mode' => 'hybrid',
-            'capabilities' => ['max_employees' => 50],
-        ]);
-
-        $response->assertStatus(201)
-            ->assertJsonStructure([
-                'data' => ['id', 'name', 'slug', 'status', 'mode'],
-                'license' => ['license_key', 'expires_at', 'signed_payload'],
-            ]);
-
-        $this->assertDatabaseHas('edge_nodes', ['name' => 'Entrepôt Nord']);
-        $this->assertDatabaseHas('edge_licenses', ['edge_node_id' => $response->json('data.id')]);
+        // #1291 : l'API tenant /api/v1/edge (register) a été démontée — le
+        // schéma bigint legacy n'est jamais créé ; l'enrôlement passe par le
+        // flux EdgeNodeController UUID (edge/nodes) côté plateforme et par le
+        // daemon EdgeSync côté appareil. Ce test cible une surface inexistante.
+        $this->markTestSkipped('API /edge (register) démontée — voir #1291.');
     }
 
     /** @test */
     public function it_cannot_see_other_company_nodes(): void
     {
-        $other = Company::factory()->create(['slug' => 'other-co', 'status' => 'active']);
-        EdgeNode::create([
-            'company_id' => $other->id,
-            'name' => 'Other Node',
-            'slug' => 'other-node-xyz',
-            'status' => 'active',
-            'mode' => 'hybrid',
-            'edge_version' => '1.0.0',
-            'capabilities' => [],
-            'license_expires_at' => now()->addDays(30),
-            'metadata' => [],
-        ]);
-
-        $admin = $this->actingAsCompanyAdmin($this->company);
-
-        $response = $this->getJson('/api/v1/edge');
-        $response->assertOk();
-
-        $ids = collect($response->json('data'))->pluck('company_id')->unique();
-        $this->assertCount(1, $ids);
-        $this->assertEquals($this->company->id, $ids->first());
+        // #1291 : liste tenant /api/v1/edge démontée (voir test précédent).
+        $this->markTestSkipped('API /edge (list) démontée — voir #1291.');
     }
 
     // ── Push (Edge → Cloud) ───────────────────────────────
@@ -182,6 +156,7 @@ class EdgeSyncTest extends TestCase
     /** @test */
     public function it_processes_sync_queue_and_marks_synced(): void
     {
+        /** @var Employee $employee */
         $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'employee',
@@ -282,7 +257,10 @@ class EdgeSyncTest extends TestCase
             'updated_at' => now()->toDateTimeString(),
         ]);
 
-        $absenceId = \DB::table('absences')->first()->id;
+        $absenceRow = \DB::table('absences')->first();
+        $this->assertNotNull($absenceRow);
+        /** @var object{id: int|string} $absenceRow */
+        $absenceId = $absenceRow->id;
 
         SyncQueue::create([
             'edge_node_id' => $this->node->id,
@@ -298,6 +276,7 @@ class EdgeSyncTest extends TestCase
         $service->push($this->node);
 
         $item = SyncQueue::where('entity_type', 'absences')->first();
+        $this->assertNotNull($item);
         $this->assertEquals('conflict', $item->status);
         $this->assertEquals('cloud_wins', $item->conflict_resolution);
     }
@@ -344,19 +323,6 @@ class EdgeSyncTest extends TestCase
     {
         $this->tearDownMvpSchema();
         parent::tearDown();
-    }
-
-    private function actingAsCompanyAdmin(Company $company): self
-    {
-        // App\Core\Auth\Domain\Models\User (table `users`) n'a pas de colonne
-        // company_id/role : ce sont les colonnes du modele tenant Employee.
-        // C'est Employee qui porte le role admin dans ce codebase.
-        $admin = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'admin',
-        ]);
-
-        return $this->actingAs($admin, 'sanctum');
     }
 
     private function withEdgeToken(): void

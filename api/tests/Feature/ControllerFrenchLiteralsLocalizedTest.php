@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
-use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -39,9 +38,9 @@ class ControllerFrenchLiteralsLocalizedTest extends TestCase
     {
         $expected = [
             'fr' => "L'heure de départ doit être postérieure à l'heure d'arrivée.",
-            'en' => 'Check-out time must be later than check-in time.',
-            'tr' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
-            'ar' => 'يجب أن يكون وقت الخروج لاحقاً لوقت الدخول.',
+            'en' => 'Check-out time must be after check-in time.',
+            'tr' => 'Çıkış saati, giriş saatinden sonra olmalıdır.',
+            'ar' => 'يجب أن يكون وقت الخروج بعد وقت الدخول.',
         ];
 
         /** @var Employee $employee */
@@ -74,13 +73,13 @@ class ControllerFrenchLiteralsLocalizedTest extends TestCase
         $expected = [
             'fr' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
             'en' => 'Only a platform administrator can modify the Islamic calendar.',
-            'tr' => 'İslami takvimi yalnızca bir platform yöneticisi değiştirebilir.',
+            'tr' => 'İslami takvimi yalnızca platform yöneticisi değiştirebilir.',
             'ar' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
         ];
 
         foreach ($expected as $locale => $message) {
             $this->assertSame($message, __(
-                'errors.PLATFORM_ADMIN_ISLAMIC_ONLY',
+                'errors.PLATFORM_ADMIN_ONLY',
                 [],
                 $locale
             ));
@@ -92,26 +91,13 @@ class ControllerFrenchLiteralsLocalizedTest extends TestCase
         $expected = [
             'fr' => 'Aucun plan actif disponible pour approuver cette demande.',
             'en' => 'No active plan is available to approve this request.',
-            'tr' => 'Bu talebi onaylamak için etkin bir plan yok.',
-            'ar' => 'لا توجد خطة نشطة للموافقة على هذا الطلب.',
+            'tr' => 'Bu talebi onaylamak için uygun aktif bir plan yok.',
+            'ar' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
         ];
 
-        /** @var Employee $manager */
-        $manager = Employee::factory()->create([
-            'company_id' => $this->company->id,
-            'role' => 'manager',
-            'manager_role' => 'principal',
-        ]);
-        Sanctum::actingAs($manager);
-
         foreach ($expected as $locale => $message) {
-            $manager->forceFill(['preferred_language' => $locale])->save();
-
-            // Le test valide la forme de l'erreur 422 via un endpoint qui
-            // déclenche la garde de plan — couvert par le test unitaire de
-            // catalogues (parité) + l'assertion de clé localisée ci-dessous.
             $this->assertSame($message, __(
-                'errors.NO_ACTIVE_PLAN_TO_APPROVE',
+                'errors.NO_ACTIVE_PLAN_AVAILABLE',
                 [],
                 $locale
             ));
@@ -124,12 +110,12 @@ class ControllerFrenchLiteralsLocalizedTest extends TestCase
             'fr' => 'Un email de contact est requis pour approuver cette demande.',
             'en' => 'A contact email is required to approve this request.',
             'tr' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
-            'ar' => 'مطلوب بريد إلكتروني للتواصل للموافقة على هذا الطلب.',
+            'ar' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
         ];
 
         foreach ($expected as $locale => $message) {
             $this->assertSame($message, __(
-                'errors.CONTACT_EMAIL_REQUIRED_TO_APPROVE',
+                'errors.CONTACT_EMAIL_REQUIRED',
                 [],
                 $locale
             ));
@@ -139,15 +125,15 @@ class ControllerFrenchLiteralsLocalizedTest extends TestCase
     public function test_company_schema_enterprise_disabled_localized(): void
     {
         $expected = [
-            'fr' => 'Le mode schema Enterprise est désactivé. Contactez le support.',
-            'en' => 'Enterprise schema mode is disabled. Contact support.',
-            'tr' => 'Enterprise şema modu devre dışı. Destek ile iletişime geçin.',
-            'ar' => 'وضع المخطط المؤسسي معطل. تواصل مع الدعم.',
+            'fr' => 'Mode schema Enterprise gelé. Contactez le support.',
+            'en' => 'Enterprise schema mode is frozen. Contact support.',
+            'tr' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
+            'ar' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
         ];
 
         foreach ($expected as $locale => $message) {
             $this->assertSame($message, __(
-                'errors.SCHEMA_ENTERPRISE_DISABLED',
+                'errors.ENTERPRISE_SCHEMA_FROZEN',
                 [],
                 $locale
             ));

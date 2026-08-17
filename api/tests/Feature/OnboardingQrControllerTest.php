@@ -66,7 +66,7 @@ class OnboardingQrControllerTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $externalEmployee = Employee::withoutGlobalScopes()->create([
+        $externalEmployee = Employee::withoutGlobalScopes()->forceCreate([
             'first_name' => 'Amina',
             'last_name' => 'Belaid',
             'email' => 'amina.personal@example.test',

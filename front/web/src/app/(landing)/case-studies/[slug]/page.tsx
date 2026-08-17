@@ -8,7 +8,7 @@ import { Navbar, Footer, useScrollReveal } from '@/modules/vitrine';
 import { CTASection } from '@/modules/vitrine';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Building2, CheckCircle, TrendingUp } from 'lucide-react';
-import { getCaseStudy } from '@/modules/vitrine/lib/case-studies';
+import { getCaseStudy, getModuleLabel } from '@/modules/vitrine/lib/case-studies';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { caseStudyUiCopy } from '@/modules/vitrine/data/case-studies';
 
@@ -86,7 +86,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold">
                 <TrendingUp className="w-3 h-3" />
-                {ui.useCase.replace('{module}', study.moduleLabel)}
+                {ui.useCase.replace('{module}', getModuleLabel(study.module, locale))}
               </span>
             </div>
 
@@ -132,7 +132,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
               <CheckCircle className="h-6 w-6" />
             </div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2">
-              {ui.moduleIllustrates.replace('{module}', study.moduleLabel)}
+              {ui.moduleIllustrates.replace('{module}', getModuleLabel(study.module, locale))}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
               {ui.moduleExplore}
@@ -142,7 +142,7 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
                 href={study.moduleHref}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-bold rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20"
               >
-                {ui.discoverModule.replace('{module}', study.moduleLabel)}
+                {ui.discoverModule.replace('{module}', getModuleLabel(study.module, locale))}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link

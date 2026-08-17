@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Http\Controllers\Controller;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
@@ -167,7 +167,7 @@ class PlatformCompanyRequestController extends Controller
             ?? DB::table('plans')->orderBy('id')->value('id');
 
         if (! $resolvedPlanId) {
-            abort(422, __('errors.NO_ACTIVE_PLAN_TO_APPROVE'));
+            abort(422, 'NO_ACTIVE_PLAN_AVAILABLE');
         }
 
         $managerName = trim($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal');
@@ -175,7 +175,7 @@ class PlatformCompanyRequestController extends Controller
 
         $email = $companyRequest->email ?: $companyRequest->user?->email;
         if (! $email) {
-            abort(422, __('errors.CONTACT_EMAIL_REQUIRED_TO_APPROVE'));
+            abort(422, 'CONTACT_EMAIL_REQUIRED');
         }
 
         // MULTI-PAYS (#1867/#1950) : pays obligatoire et supporté — aucun
@@ -204,3 +204,4 @@ class PlatformCompanyRequestController extends Controller
         return $result['company'];
     }
 }
+
