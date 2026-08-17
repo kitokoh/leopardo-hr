@@ -16,7 +16,6 @@ import 'package:leopardo_hr/features/payrolls/data/payroll_repository.dart';
 import 'package:leopardo_hr/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_hr/features/evaluations/data/evaluation_repository.dart';
 import 'package:leopardo_hr/features/cabinet/data/cabinet_repository.dart';
-import 'package:leopardo_hr/features/home/data/project_repository.dart';
 import 'package:leopardo_hr/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
@@ -110,11 +109,6 @@ final evaluationRepositoryProvider = Provider<EvaluationRepository>((ref) {
 final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return CabinetRepository(apiClient);
-});
-
-final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ProjectRepository(apiClient);
 });
 
 final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
