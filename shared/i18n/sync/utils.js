@@ -98,9 +98,15 @@ function updateSurfaceVersions(surfaces) {
   const versions = readJson(versionsPath);
   versions.surfaces = versions.surfaces || {};
   for (const [name, dir] of Object.entries(surfaces)) {
+    const checksums = catalogChecksums(dir);
+    const previous = versions.surfaces[name] || {};
+    // Idempotence (#4838) : ne rafraîchit `updated_at` QUE si un checksum
+    // change — évite un diff à chaque run de sync (validate-and-sync vert).
     versions.surfaces[name] = {
-      checksums: catalogChecksums(dir),
-      updated_at: new Date().toISOString(),
+      checksums,
+      updated_at: JSON.stringify(previous.checksums) === JSON.stringify(checksums)
+        ? (previous.updated_at || new Date().toISOString())
+        : new Date().toISOString(),
     };
   }
   writeJson(versionsPath, versions);
