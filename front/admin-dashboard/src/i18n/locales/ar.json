@@ -820,7 +820,15 @@
     "two_fa_invalid": "رمز 2FA المقدم غير صالح.",
     "two_fa_required_msg": "رمز التحقق مطلوب.",
     "two_fa_setup_failed": "فشل إنشاء سر 2FA.",
-    "unexpected_error": "حدث خطأ غير متوقع."
+    "unexpected_error": "حدث خطأ غير متوقع.",
+    "demo": {
+      "access": "وصول تجريبي"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "إظهار أو إخفاء كلمة المرور"
+      }
+    }
   },
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -1306,7 +1314,18 @@
     "phone": "الهاتف",
     "description": "الوصف",
     "submit_request": "إرسال الطلب",
-    "submit_error": "خطأ في إرسال الطلب"
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
   },
   "partnerPage": {
     "loading": "جارٍ تحميل مساحتك...",
