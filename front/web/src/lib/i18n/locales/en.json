@@ -56,7 +56,15 @@
     "personal_account_link": "Personal account",
     "activate_manager_access": "Activate my manager access",
     "try_demo_account": "Try a demo account",
-    "two_factor_required": "The 2FA code is required."
+    "two_factor_required": "The 2FA code is required.",
+    "demo": {
+      "access": "Demo access"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Show or hide password"
+      }
+    }
   },
   "common": {
     "language": {
@@ -1051,7 +1059,18 @@
     "phone": "Phone",
     "description": "Description",
     "submit_request": "Submit request",
-    "submit_error": "Error submitting request"
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
   },
   "partnerPage": {
     "loading": "Loading your workspace...",

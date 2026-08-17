@@ -196,4 +196,10 @@ return [
     'EMAIL_BOUNCE_WEBHOOK_NOT_CONFIGURED' => 'لم يتم تكوين webhook الرسائل المرتدة.',
     'UNAUTHORIZED_USER_TYPE' => 'نوع مستخدمك غير مخوّل بهذا الإجراء.',
     'CSV_EXPORT_FAILED' => 'تعذّر إنشاء تصدير CSV.',
+
+    'JOB_POSTING_DRAFT_ONLY_PUBLISH' => 'لا يمكن نشر سوى العروض في حالة المسودة.',
+    'JOB_POSTING_PUBLISHED_ONLY_CLOSE' => 'لا يمكن إغلاق سوى العروض المنشورة.',
+    'JOB_POSTING_DRAFT_ONLY_DELETE' => 'لا يمكن حذف سوى العروض في حالة المسودة.',
+    'JOB_POSTING_DELETED' => 'تم حذف العرض.',
+    'TASK_DELETED' => 'تم حذف المهمة.',
 ];

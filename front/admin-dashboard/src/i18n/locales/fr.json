@@ -78,7 +78,15 @@
     "two_fa_invalid": "Le code 2FA fourni est invalide.",
     "two_fa_required_msg": "Un code de vérification est requis.",
     "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
-    "unexpected_error": "Une erreur inattendue est survenue."
+    "unexpected_error": "Une erreur inattendue est survenue.",
+    "demo": {
+      "access": "Acces Demo"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Afficher ou masquer le mot de passe"
+      }
+    }
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -1306,7 +1314,18 @@
     "phone": "Téléphone",
     "description": "Description",
     "submit_request": "Soumettre la demande",
-    "submit_error": "Erreur lors de la soumission"
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
   },
   "partnerPage": {
     "loading": "Chargement de votre espace...",
