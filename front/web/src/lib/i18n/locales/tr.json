@@ -56,7 +56,15 @@
     "personal_account_link": "Kisisel hesap",
     "activate_manager_access": "Yonetici erisimimi etkinlestir",
     "try_demo_account": "Demo hesabini dene",
-    "two_factor_required": "2FA kodu gereklidir."
+    "two_factor_required": "2FA kodu gereklidir.",
+    "demo": {
+      "access": "Demo erisimi"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Sifreyi goster veya gizle"
+      }
+    }
   },
   "common": {
     "language": {
@@ -95,7 +103,8 @@
       "TN": "Tunus",
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
-    }
+    },
+    "required": "Gerekli"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -408,7 +417,16 @@
     "platform_health": "Platform sağlığı",
     "client_requests": "Müşteri talepleri",
     "tenants_at_risk": "Risk altındaki kiracılar",
-    "platform_dashboard_hint": "Platform panelinde mevcuttur."
+    "platform_dashboard_hint": "Platform panelinde mevcuttur.",
+    "activeemployees": "Aktif calisanlar",
+    "presence": {
+      "today": {
+        "title": "Bugünkü katılım"
+      }
+    },
+    "recent": {
+      "activity": "Son Etkinlik"
+    }
   },
   "marketing": {
     "oauth": {
@@ -1033,5 +1051,67 @@
     "recent_collaborators": "Son iş arkadaşları",
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
+  },
+  "user": {
+    "auth": {
+      "already": {
+        "account": "Zaten hesabiniz var mi? Giris yapin"
+      },
+      "back": {
+        "to": {
+          "home": "Ana sayfaya don"
+        }
+      },
+      "city": "Sehir",
+      "company": {
+        "email": "Sirket e-postasi",
+        "name": "Sirket adi",
+        "request": {
+          "body": "Bir yonetici talebinizi inceleyecek. Islendiginde bildirim alacaksiniz.",
+          "info": "Sirket bilgilerini doldurun. Bir yonetici talebinizi dogruladiginda bildirim alacaksiniz.",
+          "title": "Talep gonderildi!"
+        }
+      },
+      "country": "Ulke",
+      "create": {
+        "company": "Sirket olustur"
+      },
+      "description": "Aciklama",
+      "first": {
+        "name": "Ad"
+      },
+      "google": {
+        "error": "Google hatasi: {error}",
+        "login": {
+          "error": "Google giris hatasi"
+        }
+      },
+      "last": {
+        "name": "Soyad"
+      },
+      "login": {
+        "error": "Gecersiz kimlik bilgileri",
+        "subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin."
+      },
+      "no": {
+        "account": "Henuz hesabınız yok mu? Kayit olun"
+      },
+      "personal": {
+        "login": "Kisisel giris"
+      },
+      "phone": "Telefon",
+      "register": {
+        "button": "Hesabimi olustur",
+        "error": "Kayit hatasi",
+        "subtitle": "Leopardo RH'da ekibinize katilin.",
+        "title": "Hesabimi olustur",
+        "subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin."
+      },
+      "sector": "Is sektoru",
+      "submit": {
+        "error": "Gonderme hatasi",
+        "request": "Talep gonder"
+      }
+    }
   }
 }

@@ -56,7 +56,15 @@
     "personal_account_link": "Personal account",
     "activate_manager_access": "Activate my manager access",
     "try_demo_account": "Try a demo account",
-    "two_factor_required": "The 2FA code is required."
+    "two_factor_required": "The 2FA code is required.",
+    "demo": {
+      "access": "Demo access"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Show or hide password"
+      }
+    }
   },
   "common": {
     "language": {
@@ -95,7 +103,8 @@
       "TN": "Tunisia",
       "TR": "Türkiye",
       "US": "United States"
-    }
+    },
+    "required": "Required"
   },
   "modules": {
     "attendance": "Attendance",
@@ -408,7 +417,16 @@
     "platform_health": "Platform health",
     "client_requests": "Client requests",
     "tenants_at_risk": "Tenants at risk",
-    "platform_dashboard_hint": "Available in the platform dashboard."
+    "platform_dashboard_hint": "Available in the platform dashboard.",
+    "activeemployees": "Active employees",
+    "presence": {
+      "today": {
+        "title": "Attendance today"
+      }
+    },
+    "recent": {
+      "activity": "Recent activity"
+    }
   },
   "marketing": {
     "oauth": {
@@ -1033,5 +1051,67 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "user": {
+    "auth": {
+      "already": {
+        "account": "Already have an account? Sign in"
+      },
+      "back": {
+        "to": {
+          "home": "Back to home"
+        }
+      },
+      "city": "City",
+      "company": {
+        "email": "Company email",
+        "name": "Company name",
+        "request": {
+          "body": "An administrator will review your request. You will receive a notification once it is processed.",
+          "info": "Fill in your company information. An administrator will validate your request.",
+          "title": "Request submitted!"
+        }
+      },
+      "country": "Country",
+      "create": {
+        "company": "Create a company"
+      },
+      "description": "Description",
+      "first": {
+        "name": "First name"
+      },
+      "google": {
+        "error": "Google error: {error}",
+        "login": {
+          "error": "Google login error"
+        }
+      },
+      "last": {
+        "name": "Last name"
+      },
+      "login": {
+        "error": "Invalid credentials",
+        "subtitle": "Access your workspace, documents and requests."
+      },
+      "no": {
+        "account": "No account yet? Sign up"
+      },
+      "personal": {
+        "login": "Personal login"
+      },
+      "phone": "Phone",
+      "register": {
+        "button": "Create my account",
+        "error": "Registration error",
+        "subtitle": "Join your team on Leopardo RH.",
+        "title": "Create my account",
+        "subtitle_alt": "Access your personal workspace and organise your documents."
+      },
+      "sector": "Business sector",
+      "submit": {
+        "error": "Error submitting request",
+        "request": "Submit request"
+      }
+    }
   }
 }

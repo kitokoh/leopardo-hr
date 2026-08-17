@@ -56,7 +56,15 @@
     "personal_account_link": "Compte perso",
     "activate_manager_access": "Activer mon acces manager",
     "try_demo_account": "Tester avec un compte demo",
-    "two_factor_required": "Le code 2FA est requis."
+    "two_factor_required": "Le code 2FA est requis.",
+    "demo": {
+      "access": "Acces Demo"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Afficher ou masquer le mot de passe"
+      }
+    }
   },
   "common": {
     "language": {
@@ -95,7 +103,8 @@
       "TN": "Tunisie",
       "TR": "Turquie",
       "US": "États-Unis"
-    }
+    },
+    "required": "Requis"
   },
   "modules": {
     "attendance": "Pointage",
@@ -408,7 +417,16 @@
     "platform_health": "Santé plateforme",
     "client_requests": "Demandes clients",
     "tenants_at_risk": "Tenants à risque",
-    "platform_dashboard_hint": "Disponible dans le dashboard plateforme."
+    "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
+    "activeemployees": "Employes actifs",
+    "presence": {
+      "today": {
+        "title": "Presence aujourd hui"
+      }
+    },
+    "recent": {
+      "activity": "Activite recente"
+    }
   },
   "marketing": {
     "oauth": {
@@ -1033,5 +1051,67 @@
     "recent_collaborators": "Collaborateurs récents",
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
+  },
+  "user": {
+    "auth": {
+      "already": {
+        "account": "Deja un compte ? Se connecter"
+      },
+      "back": {
+        "to": {
+          "home": "Retour a l'accueil"
+        }
+      },
+      "city": "Ville",
+      "company": {
+        "email": "Email entreprise",
+        "name": "Nom de l'entreprise",
+        "request": {
+          "body": "Un administrateur examinera votre demande. Vous recevrez une notification des qu'elle sera traitee.",
+          "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande.",
+          "title": "Demande soumise !"
+        }
+      },
+      "country": "Pays",
+      "create": {
+        "company": "Creer une entreprise"
+      },
+      "description": "Description",
+      "first": {
+        "name": "Prenom"
+      },
+      "google": {
+        "error": "Erreur Google : {error}",
+        "login": {
+          "error": "Erreur connexion Google"
+        }
+      },
+      "last": {
+        "name": "Nom"
+      },
+      "login": {
+        "error": "Identifiants invalides",
+        "subtitle": "Retrouvez votre espace, vos documents et vos demandes."
+      },
+      "no": {
+        "account": "Pas encore de compte ? S'inscrire"
+      },
+      "personal": {
+        "login": "Connexion personnelle"
+      },
+      "phone": "Telephone",
+      "register": {
+        "button": "Creer mon compte",
+        "error": "Erreur lors de l'inscription",
+        "subtitle": "Rejoignez votre equipe sur Leopardo RH.",
+        "title": "Creer mon compte",
+        "subtitle_alt": "Accedez a votre espace personnel et organisez vos documents."
+      },
+      "sector": "Secteur d'activite",
+      "submit": {
+        "error": "Erreur lors de la soumission",
+        "request": "Soumettre la demande"
+      }
+    }
   }
 }

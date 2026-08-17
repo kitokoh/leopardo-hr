@@ -56,7 +56,15 @@
     "personal_account_link": "حساب شخصي",
     "activate_manager_access": "تفعيل صلاحية المدير",
     "try_demo_account": "تجربة حساب تجريبي",
-    "two_factor_required": "رمز التحقق الثنائي مطلوب."
+    "two_factor_required": "رمز التحقق الثنائي مطلوب.",
+    "demo": {
+      "access": "وصول تجريبي"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "إظهار أو إخفاء كلمة المرور"
+      }
+    }
   },
   "common": {
     "language": {
@@ -95,7 +103,8 @@
       "TN": "تونس",
       "TR": "تركيا",
       "US": "الولايات المتحدة"
-    }
+    },
+    "required": "مطلوب"
   },
   "modules": {
     "attendance": "الحضور",
@@ -408,7 +417,16 @@
     "platform_health": "صحة المنصة",
     "client_requests": "طلبات العملاء",
     "tenants_at_risk": "مستأجرون معرضون للخطر",
-    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة."
+    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة.",
+    "activeemployees": "الموظفون النشطون",
+    "presence": {
+      "today": {
+        "title": "الحضور اليوم"
+      }
+    },
+    "recent": {
+      "activity": "النشاط الأخير"
+    }
   },
   "marketing": {
     "oauth": {
@@ -1033,5 +1051,70 @@
     "recent_collaborators": "المتعاونون الأخيرون",
     "list_loading": "جارٍ تحميل قائمة الفريق...",
     "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
+  },
+  "user": {
+    "auth": {
+      "already": {
+        "account": "لديك حساب بالفعل؟ تسجيل الدخول"
+      },
+      "back": {
+        "to": {
+          "home": "العودة إلى الرئيسية"
+        }
+      },
+      "city": "المدينة",
+      "company": {
+        "email": "البريد الإلكتروني للشركة",
+        "name": "اسم الشركة",
+        "request": {
+          "body": "سيقوم أحد المسؤولين بمراجعة طلبك. ستتلقى إشعارًا عند معالجته.",
+          "info": "أدخل معلومات شركتك. سيقوم أحد المسؤولين بالتحقق من طلبك.",
+          "title": "تم إرسال الطلب!"
+        }
+      },
+      "country": "البلد",
+      "create": {
+        "company": "إنشاء شركة"
+      },
+      "description": "الوصف",
+      "first": {
+        "name": "الاسم الأول",
+        "name_required": "الاسم الأول مطلوب"
+      },
+      "google": {
+        "error": "خطأ Google: {error}",
+        "login": {
+          "error": "خطأ في تسجيل الدخول بـ Google"
+        }
+      },
+      "last": {
+        "name": "اسم العائلة",
+        "name_required": "اسم العائلة مطلوب"
+      },
+      "login": {
+        "error": "بيانات اعتماد غير صالحة",
+        "subtitle": "اعثر على مساحتك ومستنداتك وطلباتك."
+      },
+      "no": {
+        "account": "لا حساب بعد؟ إنشاء حساب"
+      },
+      "personal": {
+        "login": "تسجيل الدخول الشخصي"
+      },
+      "phone": "الهاتف",
+      "register": {
+        "button": "إنشاء حسابي",
+        "error": "خطأ أثناء التسجيل",
+        "subtitle": "انضم إلى فريقك على Leopardo RH.",
+        "title": "إنشاء حسابي",
+        "subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك."
+      },
+      "sector": "قطاع النشاط",
+      "submit": {
+        "error": "خطأ أثناء الإرسال",
+        "request": "إرسال الطلب"
+      },
+      "phone_optional": "الهاتف (اختياري)"
+    }
   }
 }
