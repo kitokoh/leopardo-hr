@@ -184,12 +184,6 @@ return [
     'INVALID_TOKEN' => 'Invalid or expired token.',
     'CAMERA_NOT_FOUND' => 'Camera not found.',
     'SELF_DISABLE_FORBIDDEN' => 'You cannot disable your own account.',
-    'MANAGER_REQUIRED' => 'A manager access is required.',
-    'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
-    'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
-    'INVALID_TOKEN' => 'Invalid or expired token.',
-    'CAMERA_NOT_FOUND' => 'Camera not found.',
-    'SELF_DISABLE_FORBIDDEN' => 'You cannot disable your own account.',
     // #4793 — stable codes used in abort() without catalog entries
     // Attendance / Biometric / Kiosk / ZKTeco
     'NO_PROOF_ATTACHED' => 'No supporting document is attached to this request.',

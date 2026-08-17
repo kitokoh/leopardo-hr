@@ -183,12 +183,6 @@ return [
     'INVALID_TOKEN' => 'Geçersiz veya süresi dolmuş jeton.',
     'CAMERA_NOT_FOUND' => 'Kamera bulunamadı.',
     'SELF_DISABLE_FORBIDDEN' => 'Kendi hesabınızı devre dışı bırakamazsınız.',
-    'MANAGER_REQUIRED' => 'Yönetici erişimi gereklidir.',
-    'INSUFFICIENT_ROLE' => 'Bu işlem için yetkiniz yetersiz.',
-    'EMPLOYEE_NOT_FOUND' => 'Çalışan bulunamadı.',
-    'INVALID_TOKEN' => 'Geçersiz veya süresi dolmuş jeton.',
-    'CAMERA_NOT_FOUND' => 'Kamera bulunamadı.',
-    'SELF_DISABLE_FORBIDDEN' => 'Kendi hesabınızı devre dışı bırakamazsınız.',
     // #4793
     'NO_PROOF_ATTACHED' => 'Bu talebe eklenmiş destekleyici belge yok.',
     'PROOF_FILE_MISSING' => 'Destekleyici belge dosyası eksik.',

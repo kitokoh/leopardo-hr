@@ -183,12 +183,6 @@ return [
     'INVALID_TOKEN' => 'رمز غير صالح أو منتهي الصلاحية.',
     'CAMERA_NOT_FOUND' => 'الكاميرا غير موجودة.',
     'SELF_DISABLE_FORBIDDEN' => 'لا يمكنك تعطيل حسابك الخاص.',
-    'MANAGER_REQUIRED' => 'مطلوب صلاحية مدير.',
-    'INSUFFICIENT_ROLE' => 'دور غير كافٍ لهذا الإجراء.',
-    'EMPLOYEE_NOT_FOUND' => 'الموظف غير موجود.',
-    'INVALID_TOKEN' => 'رمز غير صالح أو منتهي الصلاحية.',
-    'CAMERA_NOT_FOUND' => 'الكاميرا غير موجودة.',
-    'SELF_DISABLE_FORBIDDEN' => 'لا يمكنك تعطيل حسابك الخاص.',
     // #4793
     'NO_PROOF_ATTACHED' => 'لا يوجد مستند داعم مرفق بهذا الطلب.',
     'PROOF_FILE_MISSING' => 'ملف المستند الداعم مفقود.',
