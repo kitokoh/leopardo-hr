@@ -8,6 +8,7 @@ import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Tableau de bord Smart Attendance — Manager
 class SmartAttendanceDashboardScreen extends ConsumerWidget {
@@ -23,14 +24,14 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
         title: 'Smart Attendance',
         subtitle: 'Pointage GPS — tableau de bord',
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'Actualiser',
+            tooltip: context.l10n.refresh,
             onPressed: () {
               ref.invalidate(smartAttendanceDashboardProvider);
               ref.invalidate(pendingGeoSessionsProvider);
@@ -92,7 +93,8 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel = (stats['today'] as String?) ??
+    final dateLabel =
+        (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {
@@ -119,7 +121,7 @@ class _StatsGrid extends StatelessWidget {
           childAspectRatio: 1.4,
           children: [
             _StatCard(
-              label: 'Détectées',
+              label: context.l10n.saDetected,
               value: detected,
               color: AppColors.rh,
               icon: Icons.radar_outlined,
@@ -131,13 +133,13 @@ class _StatsGrid extends StatelessWidget {
               icon: Icons.pending_actions_outlined,
             ),
             _StatCard(
-              label: 'Approuvées',
+              label: context.l10n.saApproved,
               value: approved,
               color: AppColors.success,
               icon: Icons.check_circle_outline,
             ),
             _StatCard(
-              label: 'Rejetées',
+              label: context.l10n.saRejected,
               value: rejected,
               color: AppColors.danger,
               icon: Icons.cancel_outlined,
@@ -173,7 +175,10 @@ class _StatCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$value', style: AppTypography.title.copyWith(color: color, fontSize: 28)),
+              Text(
+                '$value',
+                style: AppTypography.title.copyWith(color: color, fontSize: 28),
+              ),
               Icon(icon, color: color.withValues(alpha: 0.8), size: 24),
             ],
           ),

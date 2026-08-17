@@ -89,9 +89,7 @@
 <script setup>
 import { UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { translate, toIntlLocale } from '@/i18n/index.js'
-import { useLocaleStore } from '@/stores/locale.js'
-
-const localeStore = useLocaleStore()
+import { useLocaleStore } from '@/stores/locale'
 
 defineProps({
   user: {
@@ -99,6 +97,10 @@ defineProps({
     required: true
   }
 })
+
+const localeStore = useLocaleStore()
+// Convention repo : alias `t` pour la garde check-i18n-diff (PA2-I18N-014).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 defineEmits(['close', 'impersonate'])
 
@@ -122,20 +124,21 @@ function getStatusColor(status) {
 }
 
 function getStatusLabel(status) {
-  // #4716 : libellés localisés via le catalogue (users.filters.status.*,
-  // présents dans les 4 locales — fallback vide, garde i18n-diff).
+  // #4716 : libellés de statut localisés (avant : FR codé en dur dans les 4 locales).
   const labels = {
-    active: translate(localeStore.current, 'users.filters.status.active', ''),
-    inactive: translate(localeStore.current, 'users.filters.status.inactive', ''),
-    suspended: translate(localeStore.current, 'users.filters.status.suspended', ''),
-    pending: translate(localeStore.current, 'users.filters.status.pending', '')
+    active: t('time.statusActive', 'Actif'),
+    inactive: t('time.statusInactive', 'Inactif'),
+    suspended: t('time.statusSuspended', 'Suspendu'),
+    pending: t('time.statusPending', 'Attente')
   }
   return labels[status] || status
 }
 
 function formatDate(date) {
+  // #4714 : date localisée selon la locale active du cockpit (avant :
+  // toLocaleDateString() sans locale → format du navigateur, incohérent
+  // avec le reste de l'UI).
   if (!date) return '-'
-  // #4714 : locale active (toIntlLocale), pas le défaut navigateur.
   return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current))
 }
 </script>

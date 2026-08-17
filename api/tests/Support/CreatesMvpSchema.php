@@ -3,6 +3,7 @@
 namespace Tests\Support;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Testing\RefreshDatabaseState;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -10,6 +11,17 @@ trait CreatesMvpSchema
 {
     protected function setUpMvpSchema(): void
     {
+        // Ce trait remplace le protocole standard : il DROP le schéma
+        // `shared_tenants` et charge une fixture partielle. Le fichier
+        // `RefreshTenantDatabase` suivant ne doit PAS croire que la base est
+        // dans l'état migré standard (RefreshDatabaseState::$migrated
+        // resterait true après un fichier RefreshTenantDatabase précédent →
+        // skip de la re-migration → tests sur un schéma incomplet, ex.
+        // `relation "app_notifications" does not exist` — observé 2026-08-17
+        // dans la suite Unit : AccrueLeaveBalancesTest + AttendanceServiceTest
+        // + NotificationDispatcherTest).
+        RefreshDatabaseState::$migrated = false;
+
         if (DB::getDriverName() === 'pgsql') {
             $this->preparePostgresSchemas();
             $this->loadPostgresFixtureSchema();

@@ -23,6 +23,8 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { resolveBackendBaseUrl } from '@/lib/backend-url';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
+import { normalizeLocale } from '@/lib/i18n';
 const COOKIE_NAME = 'leopardo_token';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days — matches Sanctum SANCTUM_TOKEN_EXPIRATION default (10080 min)
 const LOGIN_TIMEOUT_MS = 60_000;
@@ -32,10 +34,15 @@ const LOGIN_TIMEOUT_MS = 60_000;
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
 
+  const locale = normalizeLocale(request.headers.get('Accept-Language'));
+
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: 'INVALID_JSON', message: 'Corps de requête invalide.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'INVALID_JSON', message: i18nT(locale, 'api.login_invalid_json', 'Corps de requête invalide.') },
+      { status: 400 },
+    );
   }
 
   const controller = new AbortController();
@@ -63,8 +70,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       {
         error: isTimeout ? 'TIMEOUT' : 'NETWORK_ERROR',
         message: isTimeout
-          ? 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.'
-          : 'Impossible de contacter le serveur.',
+          ? i18nT(locale, 'api.login_timeout', 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.')
+          : i18nT(locale, 'api.login_network_error', 'Impossible de contacter le serveur.'),
       },
       { status: isTimeout ? 408 : 502 },
     );
@@ -77,7 +84,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     payload = (await backendResponse.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: 'BACKEND_ERROR', message: 'Réponse serveur inattendue.' }, { status: 502 });
+    return NextResponse.json({ error: 'BACKEND_ERROR', message: i18nT(locale, 'api.login_backend_error', 'Réponse serveur inattendue.') }, { status: 502 });
   }
 
   // 2FA required — pass through without touching token

@@ -11,25 +11,25 @@
     <!-- Top Stats -->
     <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in">
       <StatsCard
-        title="Entreprises actives"
+        :title="t('dashboard.activeCompanies', 'Entreprises actives')"
         :value="companyMetrics.active"
         icon="BuildingOfficeIcon"
         color="purple"
       />
       <StatsCard
-        title="MRR Plateforme"
+        :title="t('dashboard.platformMrr', 'MRR Plateforme')"
         :value="formattedMrr"
         icon="CurrencyEuroIcon"
         color="green"
       />
       <StatsCard
-        title="Demandes en attente"
+        :title="t('dashboard.pendingRequestsTitle', 'Demandes en attente')"
         :value="pendingRequests"
         icon="ChatBubbleLeftRightIcon"
         color="yellow"
       />
       <StatsCard
-        title="Alertes critiques"
+        :title="t('dashboard.criticalAlerts', 'Alertes critiques')"
         :value="summary.risk.high"
         icon="UsersIcon"
         color="red"
@@ -110,7 +110,7 @@
                 </td>
                 <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
                   <router-link :to="`/companies/${item.company.id}`" class="text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 font-bold">
-                    Détails
+                    {{ t('dashboard.details', 'Détails') }}
                   </router-link>
                 </td>
               </tr>
@@ -148,7 +148,7 @@
         </div>
         <div class="border-t border-slate-200 dark:border-slate-800 px-6 py-4 bg-surface-bright/20 dark:bg-surface-bright/20 backdrop-blur-md">
           <router-link class="text-sm font-bold uppercase tracking-widest text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-brand-300 transition-colors" to="/support">
-            Traiter les demandes
+            {{ t('dashboard.processRequests', 'Traiter les demandes') }}
           </router-link>
         </div>
       </section>
@@ -297,31 +297,31 @@ const formattedMrr = computed(() => formatCurrency(revenue.value.mrr || summary.
 const workflowCards = computed(() => [
   {
     title: t('dashboard.createActivateClient'),
-    description: 'Qualifier une entreprise, ouvrir son tenant et vérifier son statut de lancement.',
+    description: t('dashboard.cards.createClientDesc', 'Qualifier une entreprise, ouvrir son tenant et vérifier son statut de lancement.'),
     action: t('dashboard.openClientPortfolio'),
     to: '/companies',
-    badge: `${companyMetrics.value.total} tenants`,
+    badge: t('dashboard.badgeTenants', ':count tenants').replace(':count', String(companyMetrics.value.total)),
     badgeClass: 'rounded-lg bg-emerald-500/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-emerald-500 dark:bg-brand-900/40 dark:text-brand-300 border border-emerald-500/20 dark:border-brand-800',
   },
   {
     title: t('dashboard.processIncomingRequests'),
-    description: 'Suivre les demandes d’essai, prioriser les leads et éviter les prospects bloqués.',
+    description: t('dashboard.cards.processRequestsDesc', 'Suivre les demandes d’essai, prioriser les leads et éviter les prospects bloqués.'),
     action: t('dashboard.viewClientRequests'),
     to: '/support',
-    badge: `${pendingRequests.value} à traiter`,
+    badge: t('dashboard.badgeToProcess', ':count à traiter').replace(':count', String(pendingRequests.value)),
     badgeClass: 'rounded-lg bg-amber-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
   },
   {
     title: t('dashboard.monitorAtRiskClients'),
-    description: 'Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.',
+    description: t('dashboard.cards.monitorAtRiskDesc', 'Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.'),
     action: t('dashboard.analyzePriorities'),
     to: '/analytics',
-    badge: `${summary.value.risk.high + summary.value.risk.medium} risques`,
+    badge: t('dashboard.badgeRisks', ':count risques').replace(':count', String(summary.value.risk.high + summary.value.risk.medium)),
     badgeClass: 'rounded-lg bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800',
   },
   {
     title: t('dashboard.manageSubscriptionsRevenue'),
-    description: 'Contrôler MRR, impayés, plans actifs et trajectoire commerciale de la plateforme.',
+    description: t('dashboard.cards.manageSubscriptionsDesc', 'Contrôler MRR, impayés, plans actifs et trajectoire commerciale de la plateforme.'),
     action: t('dashboard.openSubscriptions'),
     to: '/subscriptions',
     badge: formatCurrency(revenue.value.mrr, revenue.value.currency),
@@ -329,7 +329,7 @@ const workflowCards = computed(() => [
   },
   {
     title: t('dashboard.checkSystemSecurity'),
-    description: 'Contrôler santé API, configuration, logs, sauvegardes et signaux d’incident.',
+    description: t('dashboard.cards.checkSystemDesc', 'Contrôler santé API, configuration, logs, sauvegardes et signaux d’incident.'),
     action: t('dashboard.openSystem'),
     to: '/system',
     badge: 'Ops',
@@ -337,7 +337,7 @@ const workflowCards = computed(() => [
   },
   {
     title: t('dashboard.preparePartnerIntegrations'),
-    description: 'Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.',
+    description: t('dashboard.cards.prepareIntegrationsDesc', 'Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.'),
     action: t('dashboard.openWebhooks'),
     to: '/webhooks',
     badge: 'API',
