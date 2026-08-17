@@ -121,6 +121,11 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'The end date must be after or equal to the start date.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manual checkout requires a check-in time.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'The checkout time must be after the check-in time.',
+    // #4690 (audit 360° 2026-08-16) : littéraux FR exposés déplacés au catalogue
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'Enterprise schema mode is locked. Contact support.',
+    'COMPANY_REQUEST_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'No active plan is available to approve this request.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
     'TRIAL_STEP_LOGIN' => 'Log in with your email and the password above.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'Change your password on first login.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'Add your first employees via QR or manually.',

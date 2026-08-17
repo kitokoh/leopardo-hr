@@ -333,7 +333,8 @@ class AttendanceController extends Controller
 
         if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
             throw ValidationException::withMessages([
-                'requested_check_out' => ['L\'heure de depart doit etre posterieure a l\'heure d\'arrivee.'],
+                // #4690 (audit 360°) : littéral FR déplacé au catalogue errors.*
+                'requested_check_out' => [__('errors.ATTENDANCE_CHECKOUT_AFTER_CHECKIN')],
             ]);
         }
 

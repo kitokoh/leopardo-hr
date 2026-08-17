@@ -120,6 +120,11 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء أو مساوياً له.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'يتطلب تسجيل الخروج اليدوي وقت تسجيل دخول.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'يجب أن يكون وقت الخروج بعد وقت الدخول.',
+    // #4690 (audit 360° 2026-08-16) : littéraux FR exposés déplacés au catalogue
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'وضع المخطط للمؤسسات مقفل. اتصل بالدعم.',
+    'COMPANY_REQUEST_EMAIL_REQUIRED' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
     'TRIAL_STEP_LOGIN' => 'سجّل الدخول باستخدام بريدك الإلكتروني وكلمة المرور أعلاه.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'غيّر كلمة المرور عند أول تسجيل دخول.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'أضف موظفيك الأوائل عبر رمز QR أو يدوياً.',

@@ -121,6 +121,11 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'La date de fin doit être postérieure ou égale à la date de début.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Le départ manuel nécessite une heure d\'arrivée.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
+    // #4690 (audit 360° 2026-08-16) : littéraux FR exposés déplacés au catalogue
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'Mode schema Enterprise gele. Contactez le support.',
+    'COMPANY_REQUEST_EMAIL_REQUIRED' => 'Un email de contact est requis pour approuver cette demande.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'Aucun plan actif disponible pour approuver cette demande.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
     'TRIAL_STEP_LOGIN' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'Changez votre mot de passe dès la première connexion.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'Ajoutez vos premiers employés via QR ou manuellement.',

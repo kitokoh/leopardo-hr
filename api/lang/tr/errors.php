@@ -120,6 +120,11 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'Bitiş tarihi başlangıç tarihinden sonra veya ona eşit olmalıdır.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manuel çıkış için giriş saati gereklidir.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
+    // #4690 (audit 360° 2026-08-16) : littéraux FR exposés déplacés au catalogue
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'Kurumsal şema modu kilitli. Destekle iletişime geçin.',
+    'COMPANY_REQUEST_EMAIL_REQUIRED' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'Bu talebi onaylamak için etkin bir plan yok.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'İslami takvimi yalnızca bir platform yöneticisi değiştirebilir.',
     'TRIAL_STEP_LOGIN' => 'E-postanız ve yukarıdaki şifreyle giriş yapın.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'İlk girişte şifrenizi değiştirin.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'İlk çalışanlarınızı QR ile veya manuel olarak ekleyin.',
