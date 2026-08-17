@@ -13,7 +13,7 @@ Index de la documentation technique et stratégique du projet.
 | [`QUICKSTART.md`](QUICKSTART.md) | Setup local en 5 minutes |
 | [`DEMARRAGE_RAPIDE.md`](DEMARRAGE_RAPIDE.md) | Guide de démarrage détaillé |
 | [`../DEVELOPMENT.md`](../DEVELOPMENT.md) | Conventions de développement |
-| [`../MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Commandes melos, npm --prefix, Makefile backend |
+| [`MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Commandes melos, npm --prefix, Makefile backend |
 
 ---
 
@@ -54,7 +54,7 @@ Index de la documentation technique et stratégique du projet.
 | Doc | Contenu |
 |---|---|
 | [`mobile/`](mobile/) | Documentation mobile (Flutter) |
-| [`../MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Usage Melos |
+| [`MONOREPO_TOOLING.md`](MONOREPO_TOOLING.md) | Usage Melos |
 
 ---
 
