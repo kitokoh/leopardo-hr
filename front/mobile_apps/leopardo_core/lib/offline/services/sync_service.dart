@@ -38,7 +38,8 @@ class SyncService {
   bool _stopped = false;
   bool _isSyncing = false;
 
-  final _modeController = StreamController<SyncMode>.broadcast();
+  StreamController<SyncMode> _modeController =
+      StreamController<SyncMode>.broadcast();
   Stream<SyncMode> get modeStream => _modeController.stream;
   SyncMode get currentMode => _currentMode;
 
@@ -71,6 +72,13 @@ class SyncService {
 
   /// Initialise connectivity monitoring + periodic sync.
   void start() {
+    // #4960 : après un stop(), le controller est fermé — le recréer pour
+    // permettre un nouveau cycle de vie (hot restart, reconnexion), sinon
+    // _setMode() → _modeController.add() lève un StateError.
+    if (_modeController.isClosed) {
+      _modeController = StreamController<SyncMode>.broadcast();
+    }
+    _stopped = false;
     // Issue #3867 : la subscription est conservée pour être annulée dans
     // stop() — avant, chaque start() créait un listener orphelin (fuite).
     _connectivitySub = Connectivity().onConnectivityChanged.listen(

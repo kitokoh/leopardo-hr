@@ -67,30 +67,32 @@ class BackgroundLocationService {
   BackgroundLocationService({
     required SmartAttendanceRepository repository,
     required GeofenceService geofenceService,
-  })  : _repository = repository,
-        _geofenceService = geofenceService;
+  }) : _repository = repository,
+       _geofenceService = geofenceService;
 
   /// Démarre la surveillance de position.
   ///
   /// [config] : configuration de l'entreprise (zone GPS + mode)
   ///
-  /// Vérifie les permissions avant de démarrer.
-  /// Lance immédiatement une première vérification, puis toutes les 5 minutes.
-  Future<void> startMonitoring(SmartAttendanceConfig config) async {
+  /// Retourne `true` si la surveillance est active, `false` sinon (GPS non
+  /// configuré ou permission refusée) — #4960 : l'appelant doit pouvoir
+  /// distinguer « ça tourne » de « rien ne tourne » (avant, un refus de
+  /// permission rendait l'UI « Surveillance active » factice).
+  Future<bool> startMonitoring(SmartAttendanceConfig config) async {
     if (_isRunning) {
       // Mise à jour de la config sans relancer le timer
       _activeConfig = config;
-      return;
+      return true;
     }
 
     // Vérification préalable si le GPS est activé dans la config
     if (!config.gpsEnabled || !config.hasValidZone) {
-      return;
+      return false;
     }
 
     // Demande des permissions GPS
     final hasPermission = await _requestLocationPermission();
-    if (!hasPermission) return;
+    if (!hasPermission) return false;
 
     _activeConfig = config;
     _isRunning = true;
@@ -102,6 +104,8 @@ class BackgroundLocationService {
     _pollingTimer = Timer.periodic(_pollingInterval, (_) async {
       await _performCheck();
     });
+
+    return true;
   }
 
   /// Arrête la surveillance de position et libère les ressources.

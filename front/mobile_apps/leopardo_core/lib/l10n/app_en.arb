@@ -1142,5 +1142,6 @@
   "orgChartExpand": "Expand",
   "errorUnexpected": "An error occurred",
   "approvalApproved": "Request approved",
-  "approvalRejected": "Request rejected"
+  "approvalRejected": "Request rejected",
+  "saPermissionDenied": "Location permission denied. Enable GPS in settings to start monitoring."
 }
