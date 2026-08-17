@@ -31,8 +31,11 @@ class PlatformUserApiTest extends TestCase
 
         // La fixture MVP ne porte pas la colonne `status` (ajoutée par la
         // migration 2026_08_15_000001) : on l'ajoute localement.
-        if (! Schema::hasColumn('super_admins', 'status')) {
-            Schema::table('super_admins', function ($table): void {
+        // La garde doit cibler le schéma public explicitement :
+        // Schema::hasColumn résout current_schema() (= shared_tenants, premier
+        // du search_path) et ne verrait pas la table publique.
+        if (! Schema::hasColumn('public.super_admins', 'status')) {
+            Schema::table('public.super_admins', function ($table): void {
                 $table->string('status', 20)->default('active')->after('email');
             });
         }

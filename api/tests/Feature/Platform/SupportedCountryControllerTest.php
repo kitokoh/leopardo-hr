@@ -102,9 +102,16 @@ class SupportedCountryControllerTest extends TestCase
         $response = $this->getJson('/api/v1/supported-countries');
 
         $response->assertOk()
-            ->assertHeader('Cache-Control', 'public, max-age=3600')
-            ->assertHeader('Vary', 'Accept-Language')
+            // Symfony normalise l'en-tête en ordre canonique des directives.
+            ->assertHeader('Cache-Control', 'max-age=3600, public')
             ->assertHeader('ETag');
+
+        // Le middleware CORS ajoute `Origin` au Vary — on vérifie la présence
+        // de la variante de langue sans exiger une liste exacte.
+        $this->assertStringContainsString(
+            'Accept-Language',
+            (string) $response->headers->get('Vary')
+        );
 
         $etag = (string) $response->headers->get('ETag');
         $this->assertStringStartsWith('W/"', $etag);
