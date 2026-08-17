@@ -1,5 +1,6 @@
 import { LocaleSsrProvider } from "@/modules/vitrine/lib/locale-ssr-provider";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import { cache } from "react";
 import { headers } from "next/headers";
@@ -14,6 +15,17 @@ import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
 import { pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
+
+// Typographie du design system (REFONTE_PREMIUM_STATUT — typo Inter verrouillée).
+// next/font self-host les fichiers WOFF2 au build (aucun appel runtime externe,
+// conforme CSP + budget font ≤ 150 kB) et expose la variable `--font-inter`
+// consommée par tailwind.config.ts (`font-sans`) et `app/globals.css`.
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+  fallback: ['Aptos', 'Segoe UI Variable', 'Segoe UI', 'system-ui', 'sans-serif'],
+});
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
 // de fr_FR codé en dur (deep-merge racine qui faussait toutes les pages
@@ -191,7 +203,7 @@ export default async function RootLayout({
   const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
   return (
-    <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} suppressHydrationWarning>
+    <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} className={inter.variable} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#10b981" />
         <meta name="mobile-web-app-capable" content="yes" />
