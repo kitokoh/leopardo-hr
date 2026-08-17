@@ -52,7 +52,7 @@ Détails et risques résiduels (forks) : `docs/security/POST_MORTEM_PURGE_2026-0
 |---|---|---|---|
 | Redis Upstash (#1472) | ✅ Fait (2026-08-10) | ✅ Attesté | Rotation attestée 2026-08-10 (issue #1472) |
 | PostgreSQL Neon (#1601) | 🔄 À attester | ⏳ **Action propriétaire** : reset du mot de passe en console Neon, MAJ `DATABASE_URL` Render (API + workers) | Health prod vérifié le 2026-08-11 18:01 UTC : `GET https://gestionemployerbackend.onrender.com/api/v1/health` → `checks.database.ok=true` (latence 39 ms) — l'URL actuelle fonctionne ; l'attestation de la rotation console reste à tracer ici |
-| Clés API Google / Firebase (#1467) | 🔄 À attester | ⏳ **Action propriétaire** : révoquer/restreindre `AIzaSyCYauGS…` et `AIzaSyAkWnXd…` en console Google Cloud/Firebase, MAJ du secret Actions `GOOGLE_SERVICES_JSON` | Historique purgé (0/11 valeurs) ; 2 alertes Secret Scanning résiduelles à résoudre après révocation |
+| Clés API Google / Firebase (#1467) | 🔄 À attester | ⏳ **Action propriétaire** : révoquer/restreindre les 2 clés Google/Firebase (valeurs non citées, convention #1614) en console Google Cloud/Firebase, MAJ du secret Actions `GOOGLE_SERVICES_JSON` | Historique purgé (0/11 valeurs) ; 2 alertes Secret Scanning résiduelles à résoudre après révocation |
 | 5 forks publics | 🍴 Plan documenté | ⏳ **Action propriétaire** : contacts + takedown GitHub Support si sans réponse | `docs/security/PLAN_PURGE_FORKS_2026-08-11.md` (inventaire + messages types) |
 
 > Checklist propriétaire (#1723) : ① console Neon → reset password + MAJ `DATABASE_URL` Render ;
