@@ -45,7 +45,6 @@ const PLAN_CONFIG = {
     priceAnnual: 24,
     savings: 60,
     trialDays: 14,
-    employeeLimit: "Jusqu'à 30 employés",
   },
   operations: {
     icon: Zap,
@@ -55,14 +54,6 @@ const PLAN_CONFIG = {
     priceMonthly: 79,
     priceAnnual: 66,
     savings: 156,
-    features: [
-      'Tout Pilot inclus',
-      'Paie automatisée multi-pays',
-      'Biométrie ZKTeco',
-      'API & Webhooks',
-      'Exports comptables',
-      'Support prioritaire 24h',
-    ],
     trialDays: 14,
   },
   enterprise: {
@@ -72,14 +63,6 @@ const PLAN_CONFIG = {
     priceMonthly: null,
     priceAnnual: null,
     savings: 0,
-    features: [
-      'Tout Operations inclus',
-      'Multi-pays & multi-devises',
-      'SSO SAML/OIDC (bientot disponible)',
-      'Audit trail immuable',
-      'Schema PostgreSQL isolé',
-      'Account manager dédié',
-    ],
     trialDays: 14,
   },
 } as const;
