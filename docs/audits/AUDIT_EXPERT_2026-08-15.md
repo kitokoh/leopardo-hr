@@ -32,7 +32,7 @@
 | API | #2666 | `AbsenceService::approve()` lit le solde sur la chaîne de logs (vide après tout crédit) → **première approbation de congé échoue toujours**. |
 | API | #2616* | Webhook email-bounce non authentifié (clé de config absente, fail-open). |
 | Admin | #2693 | « Désactiver la maintenance » = `setTimeout` + toast (aucun appel API). |
-| Admin | #2695 | Identifiants super-admin `password123` en dur dans le bundle de login. |
+| Admin | #2695 | Identifiants super-admin avec mot de passe par défaut en dur dans le bundle de login (valeur non citée, convention #1614). |
 | Admin | #2696 | Globe « activité temps réel » = points fictifs. |
 | Admin | #2624* | Impersonation : SPA appelle `/admin/impersonations` (404) — endpoints à exposer. |
 | Web | #2628* | Checkout sandbox en prod : carte jamais envoyée, succès simulé, email promis jamais envoyé. |
