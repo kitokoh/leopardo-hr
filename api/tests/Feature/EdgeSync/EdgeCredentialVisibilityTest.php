@@ -26,10 +26,12 @@ class EdgeCredentialVisibilityTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
 
-        $this->company = Company::factory()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'slug' => 'visibility-test-co',
             'status' => 'active',
         ]);
+        $this->company = $company;
 
         $this->node = EdgeNode::create([
             'company_id' => $this->company->id,
@@ -113,6 +115,7 @@ class EdgeCredentialVisibilityTest extends TestCase
 
     private function actingAsCompanyAdmin(Company $company): self
     {
+        /** @var Employee $admin */
         $admin = Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'admin',
