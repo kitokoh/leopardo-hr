@@ -76,7 +76,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: title,
-      template: "%s | Leopardo RH",
+      // #4612 : template localisé — les titres de page n'embarquent plus la
+      // marque (retirée des catalogues) ; le template la pose dans la langue
+      // de la page pour éviter doublon + mix FR/autre.
+      template: `%s | ${
+        ssrLocale === 'en'
+          ? 'Leopardo HR'
+          : ssrLocale === 'tr'
+            ? 'Leopardo İK'
+            : ssrLocale === 'ar'
+              ? 'ليوباردو'
+              : 'Leopardo RH'
+      }`,
     },
     description,
     keywords: [
