@@ -17,7 +17,7 @@ permissions:
   actions: read
 
 env:
-  DEFAULT_ZAP_TARGET_URL: ${{ vars.PROD_API_BASE_URL || vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
+  DEFAULT_ZAP_TARGET_URL: ${{ vars.PROD_API_BASE_URL }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
@@ -25,8 +25,10 @@ concurrency:
   # même anti-cascade que e2e-staging.yml (cf. commentaire là-bas).
   # #3906 : cible = PRODUCTION (aucun staging réel, #1485) — scan honnêtement
   # présenté comme baseline prod.
-  group: owasp-zap-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # workflow_run/dispatch n’émettent jamais l’événement pull_request : la
+  # condition précédente désactivait donc la déduplication en pratique.
+  group: owasp-zap-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   should-run:
@@ -36,6 +38,13 @@ jobs:
     outputs:
       run_scan: ${{ steps.check.outputs.run_scan }}
     steps:
+      # Issue #4720 : plus de fallback silencieux vers un hôte legacy — le scan
+      # échoue explicitement si la base API prod n'est pas positionnée.
+      - name: Guard PROD_API_BASE_URL (fail-closed, #4720)
+        if: ${{ !vars.PROD_API_BASE_URL }}
+        run: |
+          echo "::error::PROD_API_BASE_URL must be set (silent fallback removed, issue #4720)."
+          exit 1
       # Audit §4.2 / Plan P3: previously gated on the parent "Deploy - Leopardo RH"
       # workflow_run's overall conclusion, which also depends on the
       # distribute-mobile job (Flutter/Firebase). A broken mobile build could

@@ -2,7 +2,9 @@ name: Architecture Quality
 
 on:
   pull_request:
-    branches: [main, feat/clean-architecture, feat/modules-migration]
+    # #4719 (audit 360° 2026-08-16) : branches feat/* supprimées du trigger
+    # (elles n'existent nulle part — workflow porteur de 3 checks requis).
+    branches: [main]
   push:
     branches: [main]
   # Issue #2032 : checks requis (PHPStan Strict, Module Structure, Frontend

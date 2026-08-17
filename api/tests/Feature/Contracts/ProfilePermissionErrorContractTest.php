@@ -122,11 +122,11 @@ class ProfilePermissionErrorContractTest extends TestCase
 
     public function test_superadmin_can_reach_platform_only_surface(): void
     {
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Ops Super Admin',
             'email' => 'ops-admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
 

@@ -910,3 +910,12 @@ Référence : issue Spec Kit #4359.
 - Les cinq apps sous `front/mobile_apps/` partagent la même chaîne Flutter/Android CI : Gradle 8.14.3, AGP 8.9.2 et Kotlin 2.1.20. Une app restée sur une version antérieure peut échouer sur les builds release même si les autres apps passent.
 - Toute mise à niveau doit comparer les cinq fichiers `android/settings.gradle.kts`, les wrappers Gradle et les variantes Firebase avant de modifier un seul projet. Ne pas migrer vers AGP 9 sans validation explicite de la version Flutter utilisée en CI et du nouveau DSL supporté.
 - Le workflow `Mobile Distribute - Main` doit rester atomique : aucun artefact Firebase ne doit être publié si le build de l’app correspondante échoue.
+
+
+## Leçon 2026-08-16 — PHPStan Strict #4642 : factories et setups de tests
+
+- Dans les setups PHPUnit, une propriété déclarée (`private Employee $employee`) doit être utilisée dès sa création avec `$this->employee`; une référence locale `$employee` inexistante est une erreur statique réelle et ferait également échouer le test à l’exécution.
+- Les appels `Employee::factory()->create()` et `Company::factory()->create()` peuvent être inférés comme `Illuminate\Database\Eloquent\Model` par PHPStan. Ajouter une annotation locale `/** @var Employee $employee */` ou `/** @var Company $company */` au point d’assignation permet de conserver le contrôle strict sur `id`, `company_id` et `Sanctum::actingAs()` sans augmenter la baseline.
+- Un test qui vérifie volontairement le rejet runtime d’un type interdit peut garder son appel invalide avec un commentaire explicite `// @phpstan-ignore argument.type` immédiatement avant l’appel. Cette suppression doit rester locale et ne doit jamais devenir une règle globale.
+- Avant toute mise à jour de `phpstan-strict-baseline.neon`, corriger les types et réexécuter PHPStan. Pour #4642, la baseline n’a pas eu besoin d’un nouveau pattern : la commande termine avec `[OK] No errors`.
+- La suite PHPUnit locale de cette session a été tentée avec `php artisan test --parallel`, mais le sandbox ne possède pas le pilote `pdo_pgsql` et échoue sur `could not find driver`; l’exécution complète doit être reprise par un runner CI équipé de PostgreSQL.

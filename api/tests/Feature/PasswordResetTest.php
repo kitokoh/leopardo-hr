@@ -92,8 +92,10 @@ class PasswordResetTest extends TestCase
         DB::statement('DROP SCHEMA IF EXISTS '.$schema.' CASCADE');
         DB::statement('CREATE SCHEMA '.$schema);
         DB::statement('CREATE TABLE '.$schema.'.employees (LIKE shared_tenants.employees INCLUDING ALL)');
+        /** @var Company $schemaCompany */
+        $schemaCompany = Company::factory()->create(['schema_name' => $schema]);
         DB::table($schema.'.employees')->insert([
-            'company_id' => Company::factory()->create(['schema_name' => $schema])->id,
+            'company_id' => $schemaCompany->id,
             'first_name' => 'Ghost',
             'last_name' => 'Tenant',
             'email' => 'ghost-tenant@example.com',
@@ -139,8 +141,10 @@ class PasswordResetTest extends TestCase
         DB::statement('DROP SCHEMA IF EXISTS '.$schema.' CASCADE');
         DB::statement('CREATE SCHEMA '.$schema);
         DB::statement('CREATE TABLE '.$schema.'.employees (LIKE shared_tenants.employees INCLUDING ALL)');
+        /** @var Company $schemaCompany */
+        $schemaCompany = Company::factory()->create(['schema_name' => $schema]);
         DB::table($schema.'.employees')->insert([
-            'company_id' => Company::factory()->create(['schema_name' => $schema])->id,
+            'company_id' => $schemaCompany->id,
             'first_name' => 'No',
             'last_name' => 'Lookup',
             'email' => 'no-lookup@example.com',

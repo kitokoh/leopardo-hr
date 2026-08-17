@@ -20,11 +20,11 @@ class PlatformAuthTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
 
-        $this->superAdmin = clone SuperAdmin::query()->create([
+        $this->superAdmin = new SuperAdmin([
             'name' => 'Test Super Admin',
             'email' => 'admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $this->superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
     }
 
     protected function tearDown(): void
@@ -199,11 +199,11 @@ class PlatformAuthTest extends TestCase
 
     public function test_super_admin_profile_update_rejects_email_already_taken(): void
     {
-        SuperAdmin::query()->create([
+        $otherAdmin = new SuperAdmin([
             'name' => 'Other Admin',
             'email' => 'other-admin@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $otherAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
 
         $token = $this->superAdmin->createToken('test')->plainTextToken;
 
@@ -259,11 +259,11 @@ class PlatformAuthTest extends TestCase
 
     public function test_suspended_super_admin_cannot_login(): void
     {
-        $suspended = SuperAdmin::query()->create([
+        $suspended = new SuperAdmin([
             'name' => 'Suspended Admin',
             'email' => 'suspended@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $suspended->forceFill(['password_hash' => Hash::make('password123')])->save();
         $suspended->forceFill([
             'status' => 'suspended',
         ])->save();
@@ -279,11 +279,11 @@ class PlatformAuthTest extends TestCase
 
     public function test_deactivated_super_admin_cannot_login(): void
     {
-        $sensitiveSuperAdmin0 = SuperAdmin::query()->create([
+        $sensitiveSuperAdmin0 = new SuperAdmin([
             'name' => 'Deactivated Admin',
             'email' => 'deactivated@leopardo.test',
-            'password_hash' => Hash::make('password123'),
         ]);
+        $sensitiveSuperAdmin0->forceFill(['password_hash' => Hash::make('password123')])->save();
         $sensitiveSuperAdmin0->forceFill([
             'status' => 'deactivated',
         ])->save();

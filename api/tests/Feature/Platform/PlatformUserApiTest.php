@@ -38,11 +38,11 @@ class PlatformUserApiTest extends TestCase
         }
 
         /** @var SuperAdmin $superAdmin */
-        $superAdmin = SuperAdmin::query()->create([
+        $superAdmin = new SuperAdmin([
             'name' => 'Super Admin Test',
             'email' => 'sa-users-test@leopardo-rh.com',
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $superAdmin->forceFill(['password_hash' => bcrypt('secret123')])->save();
         $this->superAdmin = $superAdmin;
     }
 
@@ -55,11 +55,11 @@ class PlatformUserApiTest extends TestCase
     private function makeUser(string $email = 'other-sa@leopardo-rh.com', string $status = 'active'): SuperAdmin
     {
         /** @var SuperAdmin $user */
-        $user = SuperAdmin::query()->create([
+        $user = new SuperAdmin([
             'name' => 'Other Admin',
             'email' => $email,
-            'password_hash' => bcrypt('secret123'),
         ]);
+        $user->forceFill(['password_hash' => bcrypt('secret123')])->save();
         $user->forceFill([
             'status' => $status,
         ])->save();

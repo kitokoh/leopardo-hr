@@ -78,7 +78,7 @@ class AuthGoogleSignInTest extends TestCase
     {
         $this->mockGoogleUser('google@example.com');
 
-        $employee = Employee::create([
+        $employee = Employee::forceCreate([
             'first_name' => 'Google',
             'last_name' => 'User',
             'email' => 'google@example.com',
@@ -100,7 +100,7 @@ class AuthGoogleSignInTest extends TestCase
     {
         $this->mockGoogleUser('suspended@example.com');
 
-        $employee = Employee::create([
+        $employee = Employee::forceCreate([
             'first_name' => 'Suspended',
             'last_name' => 'User',
             'email' => 'suspended@example.com',

@@ -6,9 +6,9 @@ namespace App\Core\Auth\Interfaces\Api\V1;
 
 use App\Core\Auth\Application\Actions\ChangePasswordAction;
 use App\Core\Auth\Application\Actions\LoginAction;
-use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\LogoutAction;
 use App\Core\Auth\Application\Actions\RefreshTokenAction;
+use App\Core\Auth\Application\Actions\RegisterAction;
 use App\Core\Auth\Application\Actions\UpdateProfileAction;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Interfaces\Requests\ChangePasswordRequest;
@@ -25,7 +25,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\GoogleProvider;
 
 class AuthController extends Controller
 {
@@ -150,7 +152,9 @@ class AuthController extends Controller
 
         $result = $this->refreshTokenAction->execute($employee);
 
-        return new JsonResponse($result);
+        // #4698 (audit 360° 2026-08-16) : enveloppe {data: {...}} alignée sur
+        // login/register/me — avant, le résultat était renvoyé à plat.
+        return new JsonResponse(['data' => $result]);
     }
 
     public function logout(Request $request): JsonResponse
@@ -167,10 +171,10 @@ class AuthController extends Controller
     {
         // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
         // au callback. Plus de Socialite stateless sans protection.
-        $state = \Illuminate\Support\Str::random(40);
+        $state = Str::random(40);
         session(['google_oauth_state' => $state]);
 
-        /** @var \Laravel\Socialite\Two\GoogleProvider $google */
+        /** @var GoogleProvider $google */
         $google = Socialite::driver('google');
 
         return $google->with(['state' => $state])->redirect();
@@ -216,7 +220,7 @@ class AuthController extends Controller
             }
 
             /** @var Employee $employee */
-            $employee = Employee::create([
+            $employee = Employee::forceCreate([
                 'first_name' => $googleUser->offsetGet('given_name') ?? $googleUser->getName(),
                 'last_name' => $googleUser->offsetGet('family_name') ?? '',
                 'email' => $googleUser->getEmail(),

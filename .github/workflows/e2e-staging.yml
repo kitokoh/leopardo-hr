@@ -31,9 +31,9 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  DEFAULT_STAGING_URL: ${{ vars.PROD_API_BASE_URL || vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}
-  DEFAULT_ADMIN_STAGING_URL: ${{ vars.PROD_ADMIN_URL || 'https://leo-admin.pages.dev' }}
-  DEFAULT_WEB_STAGING_URL: ${{ vars.PROD_WEB_URL || 'https://gestionemployer-backend.vercel.app' }}
+  DEFAULT_STAGING_URL: ${{ vars.PROD_API_BASE_URL }}
+  DEFAULT_ADMIN_STAGING_URL: ${{ vars.PROD_ADMIN_URL }}
+  DEFAULT_WEB_STAGING_URL: ${{ vars.PROD_WEB_URL }}
 
 concurrency:
   # Issue #2131 : groupe par SHA du déploiement déclencheur (et non par ref) —
@@ -41,8 +41,10 @@ concurrency:
   # merge précédent (cascade de cancels à chaque push). Par SHA : un seul run
   # par déploiement ; les runs de commits différents ne se marchent pas dessus.
   # cancel-in-progress:true conserve la dédup d'un même déploiement (rerun).
-  group: e2e-staging-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  # Le workflow est déclenché par workflow_run/dispatch, pas par pull_request :
+  # tester github.event_name == pull_request laissait donc les doublons s'empiler.
+  group: e2e-staging-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   should-run:
@@ -52,6 +54,14 @@ jobs:
     outputs:
       run_e2e: ${{ steps.check.outputs.run_e2e }}
     steps:
+      # Issue #4720 : plus de fallback silencieux vers un hôte legacy — les URLs
+      # doivent être positionnées en variables du repo, sinon E2E échoue
+      # explicitement au lieu de tester un hôte mort.
+      - name: Guard production URLs (fail-closed, #4720)
+        if: ${{ !vars.PROD_API_BASE_URL || !vars.PROD_ADMIN_URL || !vars.PROD_WEB_URL }}
+        run: |
+          echo "::error::PROD_API_BASE_URL / PROD_ADMIN_URL / PROD_WEB_URL must be set (silent fallbacks removed, issue #4720)."
+          exit 1
       # Audit §4.2 / Plan P3: previously gated on the parent "Deploy - Leopardo RH"
       # workflow_run's overall conclusion, which also depends on the
       # distribute-mobile job (Flutter/Firebase). A broken mobile build could

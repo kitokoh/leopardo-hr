@@ -47,6 +47,12 @@ jobs:
         with:
           lfs: true
 
+      - name: Guard PROD_API_BASE_URL (#4524, #4720)
+        if: ${{ !github.event.inputs.api_url && !vars.PROD_API_BASE_URL }}
+        run: |
+          echo "::error::PROD_API_BASE_URL must be set (fail-open fallback removed, issues #4524/#4720)."
+          exit 1
+
       - name: Run launch probes
         env:
           LAUNCH_MAX_P95_MS: ${{ github.event.inputs.max_latency_ms || '2500' }}
@@ -54,9 +60,9 @@ jobs:
           LAUNCH_SMOKE_RETRY_DELAY_SECONDS: "15"
         run: |
           bash dev-hub/tools/launch-observability-smoke.sh \
-            "${{ github.event.inputs.api_url || vars.PROD_API_BASE_URL || vars.PROD_API_URL || 'https://gestionemployerbackend.onrender.com' }}" \
-            "${{ github.event.inputs.web_url || vars.PROD_WEB_URL || 'https://gestionemployer-backend.vercel.app' }}" \
-            "${{ github.event.inputs.admin_url || vars.PROD_ADMIN_URL || 'https://leo-admin.pages.dev' }}"
+            "${{ github.event.inputs.api_url || vars.PROD_API_BASE_URL }}" \
+            "${{ github.event.inputs.web_url || vars.PROD_WEB_URL }}" \
+            "${{ github.event.inputs.admin_url || vars.PROD_ADMIN_URL }}"
 
       - name: Upload launch smoke report
         if: always()

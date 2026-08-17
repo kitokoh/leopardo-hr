@@ -33,7 +33,7 @@ class UserAuthServiceTest extends TestCase
 
     public function test_login_success_for_active_user(): void
     {
-        User::query()->create([
+        User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -49,7 +49,7 @@ class UserAuthServiceTest extends TestCase
 
     public function test_suspended_user_cannot_login(): void
     {
-        $sensitiveUser3 = User::query()->create([
+        $sensitiveUser3 = User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -66,7 +66,7 @@ class UserAuthServiceTest extends TestCase
 
     public function test_deactivated_user_cannot_login(): void
     {
-        $sensitiveUser2 = User::query()->create([
+        $sensitiveUser2 = User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',
@@ -85,7 +85,7 @@ class UserAuthServiceTest extends TestCase
     {
         // Fail-closed (#2618, main) : le statut est vérifié AVANT le mot de
         // passe — un compte suspendu ne révèle jamais la validité du mot de passe.
-                $sensitiveUser1 = User::query()->create([
+        $sensitiveUser1 = User::query()->forceCreate([
             'first_name' => 'Jean',
             'last_name' => 'Dupont',
             'email' => 'jean.dupont@example.com',

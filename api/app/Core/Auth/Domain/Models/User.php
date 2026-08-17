@@ -60,7 +60,6 @@ class User extends Authenticatable
         'last_name',
         'email',
         'phone',
-        'password_hash',
         'google_id',
         'avatar_url',
         'provider',

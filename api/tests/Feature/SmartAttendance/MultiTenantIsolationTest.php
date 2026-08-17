@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\SmartAttendance;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\Hash;
@@ -25,12 +25,16 @@ class MultiTenantIsolationTest extends TestCase
 
     // Company A
     private Company $companyA;
+
     private Employee $employeeA;
+
     private Employee $managerA;
 
     // Company B
     private Company $companyB;
+
     private Employee $employeeB;
+
     private Employee $managerB;
 
     protected function setUp(): void
@@ -39,20 +43,20 @@ class MultiTenantIsolationTest extends TestCase
 
         // ── Company A ─────────────────────────────────────────────────────
         $this->companyA = Company::query()->create([
-            'name'         => 'CompanyA',
-            'slug'         => 'company-a-iso',
-            'sector'       => 'tech',
-            'country'      => 'DZ',
-            'city'         => 'Alger',
-            'email'        => 'a@iso.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'CompanyA',
+            'slug' => 'company-a-iso',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'a@iso.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'UTC',
-            'metadata'     => [
+            'status' => 'active',
+            'timezone' => 'UTC',
+            'metadata' => [
                 'attendance_geofence' => [
-                    'lat'           => 36.7538,
-                    'lng'           => 3.0588,
+                    'lat' => 36.7538,
+                    'lng' => 3.0588,
                     'radius_meters' => 200,
                 ],
             ],
@@ -64,58 +68,58 @@ class MultiTenantIsolationTest extends TestCase
         ]);
 
         $scheduleA = Schedule::query()->create([
-            'company_id'               => $this->companyA->id,
-            'name'                     => 'Standard',
-            'start_time'               => '08:00:00',
-            'end_time'                 => '17:00:00',
-            'late_tolerance_minutes'   => 15,
+            'company_id' => $this->companyA->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
             'overtime_threshold_daily' => 8.0,
-            'is_default'               => true,
+            'is_default' => true,
         ]);
 
         $this->employeeA = new Employee([
-            'schedule_id'   => $scheduleA->id,
-            'email'         => 'emp@company-a.test',
+            'schedule_id' => $scheduleA->id,
+            'email' => 'emp@company-a.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $employeeA->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->employeeA->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employeeA->forceFill([
-            'company_id'    => $this->companyA->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $this->companyA->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
 
         $this->managerA = new Employee([
-            'schedule_id'   => $scheduleA->id,
-            'email'         => 'manager@company-a.test',
+            'schedule_id' => $scheduleA->id,
+            'email' => 'manager@company-a.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $managerA->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->managerA->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->managerA->forceFill([
-            'company_id'    => $this->companyA->id,
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
+            'company_id' => $this->companyA->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
         ])->save();
 
         // ── Company B ─────────────────────────────────────────────────────
         $this->companyB = Company::query()->create([
-            'name'         => 'CompanyB',
-            'slug'         => 'company-b-iso',
-            'sector'       => 'finance',
-            'country'      => 'DZ',
-            'city'         => 'Oran',
-            'email'        => 'b@iso.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'CompanyB',
+            'slug' => 'company-b-iso',
+            'sector' => 'finance',
+            'country' => 'DZ',
+            'city' => 'Oran',
+            'email' => 'b@iso.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'UTC',
-            'metadata'     => [
+            'status' => 'active',
+            'timezone' => 'UTC',
+            'metadata' => [
                 'attendance_geofence' => [
-                    'lat'           => 35.6906,
-                    'lng'           => -0.6347,
+                    'lat' => 35.6906,
+                    'lng' => -0.6347,
                     'radius_meters' => 300,
                 ],
             ],
@@ -127,43 +131,42 @@ class MultiTenantIsolationTest extends TestCase
         ]);
 
         $scheduleB = Schedule::query()->create([
-            'company_id'               => $this->companyB->id,
-            'name'                     => 'Standard',
-            'start_time'               => '08:00:00',
-            'end_time'                 => '17:00:00',
-            'late_tolerance_minutes'   => 15,
+            'company_id' => $this->companyB->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
             'overtime_threshold_daily' => 8.0,
-            'is_default'               => true,
+            'is_default' => true,
         ]);
 
         $this->employeeB = new Employee([
-            'schedule_id'   => $scheduleB->id,
-            'email'         => 'emp@company-b.test',
+            'schedule_id' => $scheduleB->id,
+            'email' => 'emp@company-b.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $employeeB->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->employeeB->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employeeB->forceFill([
-            'company_id'    => $this->companyB->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $this->companyB->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
 
         $this->managerB = new Employee([
-            'schedule_id'   => $scheduleB->id,
-            'email'         => 'manager@company-b.test',
+            'schedule_id' => $scheduleB->id,
+            'email' => 'manager@company-b.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $managerB->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->managerB->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->managerB->forceFill([
-            'company_id'    => $this->companyB->id,
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
+            'company_id' => $this->companyB->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
         ])->save();
     }
-
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -171,14 +174,14 @@ class MultiTenantIsolationTest extends TestCase
     {
         /** @var GeoAttendanceSession */
         return GeoAttendanceSession::query()->create([
-            'employee_id'      => $employee->id,
-            'company_id'       => $company->id,
-            'started_at'       => now()->subHours(2),
-            'ended_at'         => now()->subHour(),
+            'employee_id' => $employee->id,
+            'company_id' => $company->id,
+            'started_at' => now()->subHours(2),
+            'ended_at' => now()->subHour(),
             'duration_seconds' => 3600,
-            'check_in_lat'     => 36.7539,
-            'check_in_lng'     => 3.0589,
-            'status'           => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+            'check_in_lat' => 36.7539,
+            'check_in_lng' => 3.0589,
+            'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
         ]);
     }
 
@@ -238,9 +241,9 @@ class MultiTenantIsolationTest extends TestCase
         Sanctum::actingAs($this->employeeB);
 
         $response = $this->postJson('/api/v1/smart-attendance/geo-events', [
-            'event_type'      => 'zone_enter',
-            'latitude'        => $latOran,
-            'longitude'       => $lngOran,
+            'event_type' => 'zone_enter',
+            'latitude' => $latOran,
+            'longitude' => $lngOran,
             'accuracy_meters' => 10,
         ]);
 
@@ -258,4 +261,3 @@ class MultiTenantIsolationTest extends TestCase
         $this->assertNotContains($session->id, $ids);
     }
 }
-

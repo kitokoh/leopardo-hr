@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\SmartAttendance;
 
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\GeoAttendanceSession;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +26,9 @@ class ManagerValidationTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $company;
+
     private Employee $employee;
+
     private Employee $manager;
 
     protected function setUp(): void
@@ -34,16 +36,16 @@ class ManagerValidationTest extends TestCase
         parent::setUp();
 
         $this->company = Company::query()->create([
-            'name'         => 'ValidationCorp',
-            'slug'         => 'validation-corp',
-            'sector'       => 'tech',
-            'country'      => 'DZ',
-            'city'         => 'Alger',
-            'email'        => 'corp@validation.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'ValidationCorp',
+            'slug' => 'validation-corp',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'corp@validation.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'UTC',
+            'status' => 'active',
+            'timezone' => 'UTC',
             'plan_id' => 1,
             'subscription_start' => '2026-01-01',
             'subscription_end' => '2027-01-01',
@@ -52,43 +54,42 @@ class ManagerValidationTest extends TestCase
         ]);
 
         $schedule = Schedule::query()->create([
-            'company_id'               => $this->company->id,
-            'name'                     => 'Standard',
-            'start_time'               => '08:00:00',
-            'end_time'                 => '17:00:00',
-            'late_tolerance_minutes'   => 15,
+            'company_id' => $this->company->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
             'overtime_threshold_daily' => 8.0,
-            'is_default'               => true,
+            'is_default' => true,
         ]);
 
         $this->employee = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'emp@validation.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'emp@validation.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $employee->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->employee->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->employee->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
 
         $this->manager = new Employee([
-            'schedule_id'   => $schedule->id,
-            'email'         => 'manager@validation.test',
+            'schedule_id' => $schedule->id,
+            'email' => 'manager@validation.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
-        $manager->forceFill(['password_hash' => Hash::make('password')])->save();
+        $this->manager->forceFill(['password_hash' => Hash::make('password')])->save();
         $this->manager->forceFill([
-            'company_id'    => $this->company->id,
-            'role'          => 'manager',
-            'manager_role'  => 'rh',
-            'status'        => 'active',
+            'company_id' => $this->company->id,
+            'role' => 'manager',
+            'manager_role' => 'rh',
+            'status' => 'active',
         ])->save();
     }
-
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -96,16 +97,16 @@ class ManagerValidationTest extends TestCase
     {
         /** @var GeoAttendanceSession */
         return GeoAttendanceSession::query()->create([
-            'employee_id'   => $this->employee->id,
-            'company_id'    => $this->company->id,
-            'started_at'    => now()->subHours(8),
-            'ended_at'      => now()->subHour(),
+            'employee_id' => $this->employee->id,
+            'company_id' => $this->company->id,
+            'started_at' => now()->subHours(8),
+            'ended_at' => now()->subHour(),
             'duration_seconds' => 7 * 3600,
-            'check_in_lat'  => 36.7539,
-            'check_in_lng'  => 3.0589,
+            'check_in_lat' => 36.7539,
+            'check_in_lng' => 3.0589,
             'check_out_lat' => 36.7540,
             'check_out_lng' => 3.0590,
-            'status'        => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+            'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
         ]);
     }
 
@@ -216,16 +217,16 @@ class ManagerValidationTest extends TestCase
     {
         // Créer une autre company avec sa propre session
         $otherCompany = Company::query()->create([
-            'name'         => 'OtherCorp',
-            'slug'         => 'other-corp',
-            'sector'       => 'finance',
-            'country'      => 'DZ',
-            'city'         => 'Oran',
-            'email'        => 'other@corp.test',
-            'schema_name'  => 'shared_tenants',
+            'name' => 'OtherCorp',
+            'slug' => 'other-corp',
+            'sector' => 'finance',
+            'country' => 'DZ',
+            'city' => 'Oran',
+            'email' => 'other@corp.test',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
-            'status'       => 'active',
-            'timezone'     => 'UTC',
+            'status' => 'active',
+            'timezone' => 'UTC',
             'plan_id' => 1,
             'subscription_start' => '2026-01-01',
             'subscription_end' => '2027-01-01',
@@ -234,38 +235,38 @@ class ManagerValidationTest extends TestCase
         ]);
 
         $otherSchedule = Schedule::query()->create([
-            'company_id'               => $otherCompany->id,
-            'name'                     => 'Standard',
-            'start_time'               => '08:00:00',
-            'end_time'                 => '17:00:00',
-            'late_tolerance_minutes'   => 15,
+            'company_id' => $otherCompany->id,
+            'name' => 'Standard',
+            'start_time' => '08:00:00',
+            'end_time' => '17:00:00',
+            'late_tolerance_minutes' => 15,
             'overtime_threshold_daily' => 8.0,
-            'is_default'               => true,
+            'is_default' => true,
         ]);
 
         $otherEmployee = new Employee([
-            'schedule_id'   => $otherSchedule->id,
-            'email'         => 'emp@other.test',
+            'schedule_id' => $otherSchedule->id,
+            'email' => 'emp@other.test',
             'first_name' => 'Test',
             'last_name' => 'User',
         ]);
         $otherEmployee->forceFill(['password_hash' => Hash::make('password')])->save();
         $otherEmployee->forceFill([
-            'company_id'    => $otherCompany->id,
-            'role'          => 'employee',
-            'status'        => 'active',
+            'company_id' => $otherCompany->id,
+            'role' => 'employee',
+            'status' => 'active',
         ])->save();
 
         // Session appartenant à l'autre company
         $foreignSession = GeoAttendanceSession::query()->create([
-            'employee_id'      => $otherEmployee->id,
-            'company_id'       => $otherCompany->id,
-            'started_at'       => now()->subHours(8),
-            'ended_at'         => now()->subHour(),
+            'employee_id' => $otherEmployee->id,
+            'company_id' => $otherCompany->id,
+            'started_at' => now()->subHours(8),
+            'ended_at' => now()->subHour(),
             'duration_seconds' => 7 * 3600,
-            'check_in_lat'     => 35.6906,
-            'check_in_lng'     => -0.6347,
-            'status'           => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
+            'check_in_lat' => 35.6906,
+            'check_in_lng' => -0.6347,
+            'status' => GeoAttendanceSession::STATUS_PENDING_VALIDATION,
         ]);
 
         // Le manager de company A tente d'approuver la session de company B
@@ -279,4 +280,3 @@ class ManagerValidationTest extends TestCase
         $response->assertStatus(404);
     }
 }
-

@@ -84,7 +84,9 @@ class SupportedCountryControllerTest extends TestCase
         // #4446 : les pays déclarés `language: en` servent un label en anglais
         // (United States / United Kingdom), pas le libellé FR francisé.
         $response = $this->getJson('/api/v1/supported-countries')->assertOk();
-        $byCode = collect($response->json('data'))->keyBy('country');
+        /** @var array<int, array<string, mixed>> $data */
+        $data = $response->json('data');
+        $byCode = collect($data)->keyBy('country');
 
         $this->assertSame('United States', $byCode['US']['label'] ?? null, 'Label US doit être en anglais.');
         $this->assertSame('United Kingdom', $byCode['GB']['label'] ?? null, 'Label GB doit être en anglais.');

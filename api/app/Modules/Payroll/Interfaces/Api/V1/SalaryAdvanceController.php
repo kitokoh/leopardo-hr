@@ -237,7 +237,8 @@ class SalaryAdvanceController extends Controller
             'action' => 'updated',
             'auditable_type' => $salaryAdvance->getMorphClass(),
             'auditable_id' => $salaryAdvance->id,
-            'old_values' => $oldValues ?: null,
+            // PHPStan strict : `only()` renvoie une entrée par clé demandée → toujours truthy.
+            'old_values' => $oldValues,
             'new_values' => [
                 'payment_declared_at' => $salaryAdvance->payment_declared_at,
                 'payment_declared_by' => $salaryAdvance->payment_declared_by,

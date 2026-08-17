@@ -6,6 +6,7 @@ import { CheckCircle } from 'lucide-react';
 
 interface NewsletterFormProps {
   locale?: string;
+  ariaLabel?: string;
   placeholder?: string;
   submitLabel?: string;
   submittingLabel?: string;
@@ -15,6 +16,7 @@ interface NewsletterFormProps {
 
 export function NewsletterForm({
   locale = 'fr',
+  ariaLabel,
   placeholder = 'Votre email',
   submitLabel = "S'inscrire",
   submittingLabel = 'Envoi...',
@@ -84,6 +86,7 @@ export function NewsletterForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder={placeholder}
+          aria-label={typeof ariaLabel === 'string' ? ariaLabel : placeholder}
           required
           disabled={status === 'loading'}
           className="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all disabled:opacity-50"

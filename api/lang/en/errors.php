@@ -160,4 +160,5 @@ return [
     'PAYROLL_RUN_COUNTRY_MISMATCH' => 'The run country must match the tenant\'s legal country (:country).',
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'The year must match the year of the date.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'The month_day must match the month and day of the date.',
+    'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
 ];

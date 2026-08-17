@@ -72,7 +72,8 @@ Route::prefix('v1')->group(function (): void {
     // Platform-wide metrics (versions PHP/Laravel, drivers, tenant/employee
     // counts) are business intelligence + version fingerprinting material:
     // they must not be served anonymously. See issue #1466.
-    Route::get('/metrics', MetricsController::class)->middleware('auth:super_admin_api');
+    Route::get('/metrics', MetricsController::class)
+        ->middleware(['auth:super_admin_api', 'throttle:metrics']);
 
     // Auth (core, hors module)
     Route::middleware(['throttle:auth-sensitive'])->group(function (): void {

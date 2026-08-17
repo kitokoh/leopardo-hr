@@ -176,13 +176,15 @@ class DemoDzSeeder extends Seeder
                 [
                     'first_name' => $account['first_name'],
                     'last_name' => $account['last_name'],
-                    'password_hash' => $passwordHash,
                     'contract_type' => 'CDI',
                     'contract_start' => '2025-01-01',
                     'salary_type' => 'fixed',
                     'payment_method' => 'bank_transfer',
                 ]
             );
+            // #4695 : password_hash hors $fillable (durcissement #4558) —
+            // assignation explicite (seeder démo : mot de passe fixe assumé).
+            $employee->forceFill(['password_hash' => $passwordHash])->save();
             // Sensitive fields set explicitly (not mass-assignable, #3677) —
             // uniquement à la création (un compte existant garde son rôle/statut).
             if ($employee->wasRecentlyCreated) {

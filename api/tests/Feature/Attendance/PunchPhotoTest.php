@@ -10,6 +10,7 @@ use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Planning\Domain\Models\Schedule;
 use App\Modules\SmartAttendance\Domain\Models\AttendanceModeSettings;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
@@ -28,6 +29,7 @@ class PunchPhotoTest extends TestCase
     use RefreshTenantDatabase;
 
     private Company $company;
+
     private Employee $employee;
 
     protected function setUp(): void
@@ -70,14 +72,13 @@ class PunchPhotoTest extends TestCase
             'schedule_id' => $schedule->id,
             'email' => 'employee@photo.test',
         ]);
-        $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
+        $this->employee->forceFill(['password_hash' => Hash::make('password123')])->save();
         $this->employee->forceFill([
             'company_id' => $this->company->id,
             'role' => 'employee',
             'status' => 'active',
         ])->save();
     }
-
 
     public function test_check_in_without_photo_is_rejected_when_company_requires_photo(): void
     {
@@ -155,7 +156,7 @@ class PunchPhotoTest extends TestCase
      */
     private function openAttendanceSession(): int
     {
-        return (int) \Illuminate\Support\Facades\DB::table('attendance_logs')->insertGetId([
+        return (int) DB::table('attendance_logs')->insertGetId([
             'company_id' => $this->company->id,
             'employee_id' => $this->employee->id,
             'date' => now('UTC')->toDateString(),
