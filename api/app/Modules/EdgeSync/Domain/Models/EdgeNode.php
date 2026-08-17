@@ -48,6 +48,16 @@ class EdgeNode extends Model
 
     protected $keyType = 'string';
 
+    // #4687 : le license_key (identifiant d'appareil) et le metadata (contient
+    // le hash SHA-256 de l'edge_token) ne doivent jamais être sérialisés dans
+    // les réponses list/show — le token en clair n'est montré qu'une fois à
+    // l'enregistrement (edge_token). Les endpoints d'émission (store /
+    // issueLicense) ré-exposent explicitement via makeVisible().
+    protected $hidden = [
+        'license_key',
+        'metadata',
+    ];
+
     protected $fillable = [
         'company_id', 'name', 'slug', 'site_address',
         'status', 'mode', 'license_key', 'license_expires_at',

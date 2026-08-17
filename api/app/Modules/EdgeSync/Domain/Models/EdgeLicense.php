@@ -45,6 +45,14 @@ class EdgeLicense extends Model
 
     protected $keyType = 'string';
 
+    // #4687 : license_key et signed_payload (JWT de licence) ne doivent pas
+    // fuiter dans les sérialisations list/show. L'émission (store / issueLicense)
+    // les ré-expose explicitement via makeVisible() — contrat EdgeSyncTest.
+    protected $hidden = [
+        'license_key',
+        'signed_payload',
+    ];
+
     protected $fillable = [
         'company_id', 'edge_node_id', 'license_key', 'signed_payload',
         'allowed_features', 'max_employees',
