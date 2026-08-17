@@ -1,0 +1,162 @@
+name: E2E - Admin Backend Isole (issue #4101)
+
+# Issue #4101 : exécuter les 10 parcours E2E admin actuellement ignorés
+# (exports, congés, paie, cotisations sociales, tranches fiscales) contre un
+# BACKEND ISOLÉ seedé dans le job — pas contre la prod (contrairement à
+# e2e-staging.yml qui est un prod smoke).
+#
+# Pré-requis du code, vérifiés au run :
+#   - les specs exports/leaves/payroll injectent `sessionStorage.admin_token`
+#     depuis PLAYWRIGHT_AUTH_TOKEN (token super-admin Sanctum) ;
+#   - les specs social-contributions/tax-slabs font un VRAI login form
+#     (admin@leopardo-rh.com / E2E_ADMIN_PASSWORD) et exigent E2E_BACKEND_URL
+#     ET BASE_URL (le flag `isLocal` du spec les skip sinon) ;
+#   - le build admin exige VITE_API_URL (garde #4715) → pointé sur l'API isolée.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/e2e-isolated.yml'
+      - 'front/admin-dashboard/e2e/**'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  E2E_ADMIN_PASSWORD: e2e-fixture-password
+
+jobs:
+  e2e-isolated:
+    timeout-minutes: 60
+    name: E2E Admin — 10 parcours sur backend isolé
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Setup backend (PHP + Composer + multi-tenant DB)
+        uses: ./.github/actions/setup-backend-db
+
+      - name: Seed database (plans, langues, super-admin, configs pays)
+        working-directory: ./api
+        env:
+          SUPER_ADMIN_PASSWORD: ${{ env.E2E_ADMIN_PASSWORD }}
+          FORCE_SUPER_ADMIN_PASSWORD_RESET: 'true'
+        run: |
+          php artisan db:seed --no-interaction
+
+      - name: Seed demo tenant (companies + employés démo)
+        working-directory: ./api
+        env:
+          DEMO_PASSWORD: ${{ env.E2E_ADMIN_PASSWORD }}
+        run: |
+          php artisan db:seed --class=DemoCompanyOnceSeeder --no-interaction || \
+            php artisan db:seed --class=DemoCompanySeeder --no-interaction
+
+      - name: Start API server (built-in Laravel)
+        working-directory: ./api
+        run: |
+          nohup php artisan serve --host=127.0.0.1 --port=8000 > /tmp/api.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:8000/api/v1/health | grep -q 200; then
+              echo "API OK après ${i} tentatives"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "API injoignable — dernières lignes du log :"
+          tail -40 /tmp/api.log || true
+          exit 1
+
+      - name: Obtain super-admin token (POST /platform/auth/login)
+        id: auth
+        run: |
+          TOKEN=$(curl -s --max-time 30 -H 'Accept: application/json' -H 'Content-Type: application/json' \
+            -d "{\"email\":\"admin@leopardo-rh.com\",\"password\":\"${E2E_ADMIN_PASSWORD}\"}" \
+            http://127.0.0.1:8000/api/v1/platform/auth/login \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['data']['token'])")
+          echo "token acquired (${#TOKEN} chars)"
+          echo "token=${TOKEN}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: 'front/admin-dashboard/package-lock.json'
+
+      - name: Install admin-dashboard dependencies
+        working-directory: front/admin-dashboard
+        run: npm ci
+
+      - name: Build admin-dashboard (API isolée embarquée)
+        working-directory: front/admin-dashboard
+        env:
+          VITE_API_URL: http://127.0.0.1:8000/api/v1
+        run: npm run build
+
+      - name: Install Playwright
+        working-directory: front/admin-dashboard
+        run: npx playwright install --with-deps chromium
+
+      - name: Serve admin build (vite preview, port 4173)
+        working-directory: front/admin-dashboard
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1:4173/login | grep -q 200; then
+              echo "Preview OK après ${i} tentatives"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Preview injoignable — log :"
+          tail -40 /tmp/preview.log || true
+          exit 1
+
+      - name: Run the 10 previously-skipped E2E workflows (issue #4101)
+        working-directory: front/admin-dashboard
+        env:
+          CI: 'true'
+          BASE_URL: http://127.0.0.1:4173
+          E2E_BACKEND_URL: http://127.0.0.1:8000/api/v1
+          E2E_ADMIN_PASSWORD: ${{ env.E2E_ADMIN_PASSWORD }}
+          PLAYWRIGHT_AUTH_TOKEN: ${{ steps.auth.outputs.token }}
+        run: npx playwright test exports-flow leaves-flow payroll-flow social-contributions tax-slabs
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: e2e-isolated-playwright-report
+          path: |
+            front/admin-dashboard/playwright-report/
+            front/admin-dashboard/test-results/
+          if-no-files-found: ignore
+          retention-days: 14

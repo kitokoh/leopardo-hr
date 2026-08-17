@@ -87,6 +87,24 @@ reste ouverte même une fois le correctif livré. Règles :
   preuve code : commentaire + état closed).
 - Fallback : fermeture manuelle avec vérification du code sur main.
 
+## Garde anti « ghost close » (issue #4816)
+
+Une issue ne doit être **clôturée que lorsqu'un correctif est réellement
+mergé** (auto-close par `Closes #N` sur main) **ou** avec un commentaire
+motivé (`wontfix` / `superseded` / renvoi vers le ticket canonique).
+Clôturer « pour faire propre » sans code casse le backlog : le visuel devient
+vert alors que le correctif n'existe pas (vague du 2026-08-17 : #4690/#4687/
+#4688/#4305/#4410 fermées non résolues, vérifié sur main).
+
+- Règle : **jamais de `gh issue close` sans commit de merge associé OU sans
+  commentaire de motivation explicite.**
+- Garde de détection : `dev-hub/tools/check-issues-closed-without-merge.sh
+  <owner/repo>` liste les issues clôturées sans commit de fermeture ET sans
+  PR mergée les référençant (rapport non bloquant — ré-ouverture/correction
+  manuelle avec preuve code, même esprit que #2512).
+- Si une issue a été clôturée à tort : la ré-ouvrir, créer le ticket de
+  correctif dédié, et référencer la vérification code dans un commentaire.
+
 ## Lecon 2026-08-16 — Famine du pipeline de deploiement (issue #3545)
 
 - **`cancel-in-progress: false` ne protege PAS les runs `pending`** : GitHub ne
@@ -113,6 +131,7 @@ reste ouverte même une fois le correctif livré. Règles :
   Apps CI rouge sur main. Garde : `Get-DartContent $root @('*mock*.dart')`.
   Tout nouveau fichier de mock doit suivre le pattern `*mock*.dart`.
 
+- **Lecon 2026-08-17 (audit #4868)** : le check externe « Vercel » echoue sur TOUTES les PRs web quand le quota gratuit de deploiements est epuise (`api-deployments-free-per-day`, ~100/jour, famille #3765/#3766). C'est un echec de QUOTA, pas de build — et le check n'est PAS requis (protection de branche : 5 checks requis ; aucun workflow du repo n'attend le status Vercel). Ne pas traiter le rouge Vercel comme bloquant : merger sur la base des checks requis (meme regle que « Workers Builds: gestionemploye », #4216).
 - **Lecon 2026-08-16 (swe-qa-360)** : sous rafale de pushes concurrents (300+
   runs queued), GitHub Actions peut ne PAS creer de runs pour certains
   evenements `synchronize` — zero check suite `github-actions` sur le nouveau
@@ -347,6 +366,7 @@ Depuis la session du 2026-05-06, la meilleure strategie est d'utiliser GitHub Ac
 - Depuis v4.16.218, `leopardo_platform_admin` doit garder `PlatformRepository.createCompany()` avec retour `PlatformCompany` et redirection vers `/platform/companies/{companyId}` apres creation. Ne pas revenir a un `void` silencieux : le super-admin doit voir la fiche du client cree sans attendre un refresh manuel.
 - Depuis v4.16.173, cette fiche client est actionnable : edition abonnement via `GET /platform/plans` + `PATCH /platform/companies/{company}/subscription`, et edition modules via `PATCH /platform/companies/{company}/features`. Le module `rh` reste verrouille actif cote UI comme cote API.
 - `shared/i18n/sync/sync-mobile.js` ecrit les catalogues ARB dans `front/mobile_apps/leopardo_core/lib/l10n` (le script n'ecrit plus dans `front/mobile/lib/l10n`, ce dossier ayant ete supprime du repo dans #754/2026-06-13). Les apps employee/manager/hr/platform admin lisent toutes ce package partage `leopardo_core` ; ne pas laisser Jules traduire un chemin par app individuel.
+- **ARB = artefacts generes (regle dure, incidents #4762/#4837) : ne JAMAIS editer `front/mobile_apps/leopardo_core/lib/l10n/app_*.arb` a la main.** Une cle mobile se PROMOUVOIT dans `shared/i18n/locales/{fr,en,tr,ar}.json` (source de verite) puis on rejoue `node shared/i18n/sync/sync-mobile.js && sync-web.js && sync-backend.js && validators/validate.js` et on committe tout. Les chemins dot se generent en tokens lowercase (`user_auth.first_name` → getter `userAuthFirstName`, `auth.demo.access` → `authDemoAccess`) : verifier le round-trip via `defaultKey()` de sync-mobile.js. AVANT de fermer un fix i18n : comparer TOUTES les references `l10n.X` des ecrans (`git grep -ohE 'l10n\.[A-Za-z]+'`) contre les cles des ARB generes ×4 locales — la suppression de cles (meme pour rendre `validate-and-sync` vert) casse `flutter analyze` (undefined_getter) sur leopardo_employee (cas #4837 → #4856).
 - Depuis v4.16.153, `mobile-distribute.yml` se declenche aussi sur `main` quand `front/mobile_apps/**` change et distribue les trois apps Android `employee`, `manager` et `platform_admin`. Garder `FIREBASE_EMPLOYEE_ANDROID_APP_ID`, `FIREBASE_MANAGER_ANDROID_APP_ID`, `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID` et les fichiers `google-services.json` synchronises ; `deploy-main.yml` peut sauter une app non prete, mais le workflow mobile manuel doit echouer si l'app demandee n'est pas correctement configuree.
 - Depuis v4.16.181, les blocs `node <<'NODE'` dans `deploy-main.yml` et `mobile-distribute.yml` doivent garder le contenu JavaScript et le delimiteur `NODE` sans indentation residuelle dans le script Bash rendu. Sinon GitHub Actions echoue avec `here-document ... wanted NODE` puis `syntax error: unexpected end of file`.
 - `front/mobile_apps/` est la source canonique et desormais unique des apps mobiles de lancement (`leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`). L'ancien mobile monolithique `front/mobile/` a ete supprime du repo dans #754 (2026-06-13) ; le workflow `Legacy Mobile CI - Flutter` et les assets `leopardo-rh-legacy-*` mentionnes dans d'anciennes notes n'existent plus dans `.github/workflows/`. Toute CI/distribution mobile passe par `mobile-apps-ci.yml` et `mobile-distribute.yml`.

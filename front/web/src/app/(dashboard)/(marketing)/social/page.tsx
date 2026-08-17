@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ListChecks, Plus, X } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { PostEditor, type PostEditorSubmitPayload } from '@/modules/marketing/components/PostEditor';
 import {
@@ -63,7 +63,11 @@ function toDatetimeLocalValue(date: Date): string {
  * Complements (does not replace) `/social-marketing`, which keeps the
  * account-connect flow and the flat chronological list + pagination.
  */
+const emptySubscribe = () => () => {};
+
 export default function SocialCalendarPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const a11y = useA11yLabels();
   const [monthStart, setMonthStart] = useState(() => startOfMonth(new Date()));
   const [posts, setPosts] = useState<SocialPost[]>([]);
@@ -112,10 +116,11 @@ export default function SocialCalendarPage() {
       } while (page <= lastPage && page <= 20); // hard safety cap
       setPosts(all);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les publications.');
+      setError(err instanceof ApiError ? err.message : copy.socialPage.loadError);
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -158,7 +163,7 @@ export default function SocialCalendarPage() {
       setComposerDay(null);
       await loadPosts();
     } catch (err) {
-      setSubmitError(err instanceof ApiError ? err.message : 'Impossible de creer la publication.');
+      setSubmitError(err instanceof ApiError ? err.message : copy.socialPage.createError);
     } finally {
       setSubmitting(false);
     }
