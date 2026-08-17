@@ -1,7 +1,7 @@
 <?php
 
 return [
-'work_state_offline' => 'Offline',
+    'work_state_offline' => 'Offline',
     'work_state_leave' => 'On leave',
     'work_state_absent' => 'Absent',
     'work_state_break' => 'On break',

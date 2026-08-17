@@ -13,6 +13,7 @@ use App\Modules\Notification\Infrastructure\Services\PushNotificationService;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Tests\RefreshTenantDatabase;
@@ -165,12 +166,19 @@ class NotificationDispatcherTest extends TestCase
         try {
             $dispatcher = new NotificationDispatcher(new PushNotificationService());
 
+            // Sous-transaction (savepoint) : l'INSERT en échec AVORTE la
+            // transaction PG courante (25P02). Le rollback au savepoint
+            // restaure un état utilisable pour le reste du test et le
+            // teardown (SET search_path / rollback final).
+            DB::beginTransaction();
             try {
                 $dispatcher->dispatch($employee->id, 'leave_approved', 'Congé approuvé', 'Corps');
                 $this->fail('L’échec de création doit être relancé (contrat best-effort de l’appelant).');
             } catch (\Throwable $exception) {
                 // Attendu : le dispatcher journalise (structured) puis relance.
                 $this->assertStringContainsString('app_notifications', $exception->getMessage());
+            } finally {
+                DB::rollBack();
             }
 
             $trace = file_get_contents($logPath) ?: '';

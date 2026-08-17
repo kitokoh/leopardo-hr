@@ -74,11 +74,12 @@ class PlatformUserController extends Controller
             'password' => ['required', 'string', 'min:12'],
         ]);
 
-        $user = SuperAdmin::query()->create([
+        // #4695 : password_hash hors $fillable ET NOT NULL en base — on ne peut
+        // pas passer par create() (INSERT avec password_hash NULL → violation).
+        $user = new SuperAdmin([
             'name' => $validated['name'],
             'email' => mb_strtolower($validated['email']),
         ]);
-        // #4695 : password_hash hors $fillable — assignation explicite.
         $user->forceFill(['password_hash' => Hash::make($validated['password'])])->save();
         // Issue #3597 : status non mass-assignable — assignation explicite.
         $user->status = 'active';
