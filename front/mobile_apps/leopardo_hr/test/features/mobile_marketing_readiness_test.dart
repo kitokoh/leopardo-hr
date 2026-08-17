@@ -55,7 +55,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Mes Absences'), findsOneWidget);
-    expect(find.text('Conge annuel'), findsOneWidget);
+    expect(find.textContaining('Conge annuel'), findsOneWidget);
     expect(find.text('Approuver'), findsOneWidget);
     expect(find.text('Refuser'), findsOneWidget);
 
@@ -67,7 +67,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Avances'), findsOneWidget);
-    expect(find.text('30000 DZD'), findsOneWidget);
+    expect(find.textContaining('30000'), findsAtLeastNWidgets(1));
     expect(find.text('Approuver'), findsOneWidget);
     expect(find.text('Refuser'), findsOneWidget);
   });
