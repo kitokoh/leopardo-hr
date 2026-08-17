@@ -9,7 +9,7 @@
 ## Statut 2026-08-09 — Clés Google (issue #1467, partiel)
 
 Les 4 `google-services.json` committés (projet Firebase `leopardo-rh`, une seule
-clé API partagée `AIzaSyCYauGS…`) ont été **retirés de l'arbre git** et remplacés
+clé API partagée, valeur non citée — convention #1614) ont été **retirés de l'arbre git** et remplacés
 par un **stub à clés factices** versionné (`AIzaSyREPLACE_WITH_REAL_FIREBASE_KEY_0000`).
 Les builds CI restaurent le fichier réel depuis le secret Actions
 `GOOGLE_SERVICES_JSON` (mobile-apps-ci.yml, mobile-distribute.yml,
@@ -29,11 +29,13 @@ jamais être commités.
 
 ## Périmètre des secrets exposés (au 2026-08-07)
 
+> ⚠️ **Statut au 2026-08-17 (revue PM)** : **#1472 est CLOS** (rotation attestée le 10/08, purge historique git exécutée — le commit `70ca415c` n'existe plus dans l'historique). **#1467** reste ouvert (2 clés Google/Firebase à révoquer en console). **#1601** traité avec la purge (commit absent de l'historique). Le tableau ci-dessous est un **instantané historique** daté.
+
 | Secret | Où | Statut |
 |---|---|---|
 | Mot de passe Redis Upstash | 4 fichiers .md (dont `docs/audits/AUDIT.md`, `docs/PLAN_ACTION2/08_...`) + historique git | 🔴 #1472 ouvert depuis 2026-07-01 |
 | Clés API Google (`google-services.json`) | 4 apps Android | 🔴 #1467 (2 alertes secret scanning) |
-| **Mot de passe PostgreSQL Neon** (URL `postgresql://neondb_owner:<pass>@ep-odd-morning-abt600ow-pooler…`) | Historique git — commit `70ca415c` (2026-04-14, « Kitokoh patch 6 (#37) »), fichier `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` | 🔴 **#1601** — plus dans HEAD, mais historique public → à inclure dans la purge coordonnée avec #1472 |
+| **Mot de passe PostgreSQL Neon** (URL `postgresql://neondb_owner:<pass>@ep-<redacted>…`) | Historique git — commit `70ca415c` (2026-04-14, « Kitokoh patch 6 (#37) »), fichier `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` | 🔴 **#1601** — plus dans HEAD, mais historique public → à inclure dans la purge coordonnée avec #1472 |
 | Autres (à inventorier) | scan TruffleHog fetch-depth 0 | À faire |
 
 ## Étape 1 — Inventaire complet

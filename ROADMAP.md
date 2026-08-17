@@ -27,7 +27,7 @@ Depuis 2026-08-07, le projet suit le **programme FOCUS** (plan complet : `docs/f
 ## 🚀 Phase 1: Foundation Hardening (Q2 2026)
 **Status: IN PROGRESS**
 - [x] Professional Documentation & Open Source Positioning.
-- [ ] Domain-Driven Design (DDD) backend restructuring.
+- [x] Domain-Driven Design (DDD) backend restructuring (18 modules — voir ARCHITECTURE.md).
 - [ ] Enterprise-grade security audits and hardening.
 - [ ] Real-time Mobile Experience (RTMX) components.
 
@@ -39,8 +39,8 @@ Activation of specialized modules based on customer demand:
 - **Leo AI (Beta):** Conversation-driven HR assistant for managers.
 
 ## 🏢 Phase 3: Enterprise & Scale (2027)
-- Physical database isolation (Schema Mode) for large corporations.
-- Public API for third-party integrations (Webhooks, SDKs).
+- Physical database isolation (Schema Mode) for large corporations — *déjà activé en partie : multitenancy `schema` en production (voir PILOTAGE.md)*.
+- Public API for third-party integrations (Webhooks, SDKs) — *SDK JS/Python + OpenAPI déjà livrés (Phase 3 partielle).*
 - Multi-country tax compliance engines (Turkey, France, Senegal).
 - Advanced workforce forecasting and performance analytics.
 
