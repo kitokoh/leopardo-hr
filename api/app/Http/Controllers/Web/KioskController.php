@@ -77,7 +77,8 @@ class KioskController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            abort(403, 'Kiosk session required.');
+            // #4812 : littéral EN déplacé au catalogue errors.*
+            abort(403, __('errors.KIOSK_SESSION_REQUIRED'));
         }
 
         $company = PlatformCompanyLookup::findOrFail((string) $kiosk->company_id);

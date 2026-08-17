@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\TenantManager;
 use App\Mail\TrialVerificationMail;
 use App\Mail\TrialWelcomeMail;
+use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Tests\RefreshTenantDatabase;
@@ -349,5 +350,30 @@ class SelfServiceTrialTest extends TestCase
             'email' => 'founder.otp.fail@newtech.dz',
             'status' => 'pending',
         ]);
+    }
+
+    public function test_legacy_path_db_failure_returns_503_not_500(): void
+    {
+        // Issue #4866 : le chemin legacy (sans requestedWorkflow) ne doit
+        // JAMAIS répondre 500 INTERNAL_ERROR quand la création de la
+        // CompanyRequest échoue (observé en prod) — 503 + message localisé.
+        // On simule l'échec de l'action métier.
+        // Pattern identique au test frère (andThrow mockery, lignes 331-333).
+        $this->partialMock(RequestTrialSignup::class)
+            ->shouldReceive('execute')
+            ->andThrow(new \RuntimeException('db unavailable'));
+
+        $response = $this->postJson('/api/v1/trial/signup', [
+            'email' => 'legacy.fail@newtech.dz',
+            'company' => 'Legacy Fail',
+            'role' => 'founder',
+            'employees' => '11-50',
+            'country' => 'DZ',
+            'requestedWorkflow' => 'self_service',
+        ]);
+
+        $response->assertStatus(503)
+            ->assertJsonPath('error', 'TRIAL_SIGNUP_UNAVAILABLE')
+            ->assertJsonPath('success', false);
     }
 }

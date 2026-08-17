@@ -4867,6 +4867,13 @@ parameters:
 			path: tests/Feature/CommunicationServiceTest.php
 
 		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andThrow\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/SelfServiceTrialTest.php
+
+
+		-
 			message: '#^Method Tests\\Feature\\CommunicationServiceTest\:\:employee\(\) should return App\\Core\\Auth\\Domain\\Models\\Employee but returns Illuminate\\Database\\Eloquent\\Model\.$#'
 			identifier: return.type
 			count: 1
