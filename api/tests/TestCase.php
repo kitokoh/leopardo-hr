@@ -23,6 +23,9 @@ abstract class TestCase extends BaseTestCase
         // et les écritures fuyaient d'un test à l'autre (violations
         // d'unicité en cascade, ex. employees_email_unique — observé
         // 2026-08-17 sur main).
+        // $this->app est typé non-nullable par Larastan — la garde reste utile à
+        // l'exécution (premier setUp avant tout refresh), on neutralise le faux positif.
+        // @phpstan-ignore-next-line booleanNot.alwaysFalse
         if (! $this->app) {
             $this->refreshApplication();
             ParallelTesting::callSetUpTestCaseCallbacks($this);
