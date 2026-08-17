@@ -161,4 +161,10 @@ return [
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'The year must match the year of the date.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'The month_day must match the month and day of the date.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
+
+    'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'Check-out time must be later than check-in time.',
+    'PLATFORM_ADMIN_ISLAMIC_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
+    'NO_ACTIVE_PLAN_TO_APPROVE' => 'No active plan is available to approve this request.',
+    'CONTACT_EMAIL_REQUIRED_TO_APPROVE' => 'A contact email is required to approve this request.',
+    'SCHEMA_ENTERPRISE_DISABLED' => 'Enterprise schema mode is disabled. Contact support.',
 ];

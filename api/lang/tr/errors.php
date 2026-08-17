@@ -160,4 +160,10 @@ return [
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'Yıl, tarihin yılıyla eşleşmelidir.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Ay_gün, tarihin ayı ve günüyle eşleşmelidir.',
     'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
+
+    'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
+    'PLATFORM_ADMIN_ISLAMIC_ONLY' => 'İslami takvimi yalnızca bir platform yöneticisi değiştirebilir.',
+    'NO_ACTIVE_PLAN_TO_APPROVE' => 'Bu talebi onaylamak için etkin bir plan yok.',
+    'CONTACT_EMAIL_REQUIRED_TO_APPROVE' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
+    'SCHEMA_ENTERPRISE_DISABLED' => 'Enterprise şema modu devre dışı. Destek ile iletişime geçin.',
 ];

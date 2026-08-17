@@ -161,4 +161,10 @@ return [
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'L\'année doit correspondre à l\'année de la date.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Le mois et le jour doivent correspondre au mois et au jour de la date.',
     'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
+
+    'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => "L'heure de départ doit être postérieure à l'heure d'arrivée.",
+    'PLATFORM_ADMIN_ISLAMIC_ONLY' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
+    'NO_ACTIVE_PLAN_TO_APPROVE' => 'Aucun plan actif disponible pour approuver cette demande.',
+    'CONTACT_EMAIL_REQUIRED_TO_APPROVE' => 'Un email de contact est requis pour approuver cette demande.',
+    'SCHEMA_ENTERPRISE_DISABLED' => 'Le mode schema Enterprise est désactivé. Contactez le support.',
 ];

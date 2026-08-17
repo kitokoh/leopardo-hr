@@ -160,4 +160,10 @@ return [
     'PUBLIC_HOLIDAY_YEAR_MISMATCH' => 'يجب أن تتطابق السنة مع سنة التاريخ.',
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'يجب أن يتطابق اليوم والشهر مع يوم وشهر التاريخ.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
+
+    'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'يجب أن يكون وقت الخروج لاحقاً لوقت الدخول.',
+    'PLATFORM_ADMIN_ISLAMIC_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
+    'NO_ACTIVE_PLAN_TO_APPROVE' => 'لا توجد خطة نشطة للموافقة على هذا الطلب.',
+    'CONTACT_EMAIL_REQUIRED_TO_APPROVE' => 'مطلوب بريد إلكتروني للتواصل للموافقة على هذا الطلب.',
+    'SCHEMA_ENTERPRISE_DISABLED' => 'وضع المخطط المؤسسي معطل. تواصل مع الدعم.',
 ];
