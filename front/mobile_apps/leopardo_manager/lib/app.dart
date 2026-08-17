@@ -73,9 +73,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 color: Colors.redAccent,
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Une erreur est survenue',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              Text(
+                context.l10n.errorUnexpected,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               Text(context.l10n.pageNotFound, textAlign: TextAlign.center),

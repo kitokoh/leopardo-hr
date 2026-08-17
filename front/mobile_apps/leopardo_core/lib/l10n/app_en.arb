@@ -1116,5 +1116,6 @@
   "monthlySummaryLoading": "Loading monthly summary...",
   "orgChartEmpty": "The org chart will be available once employees are configured.",
   "orgChartCollapse": "Collapse",
-  "orgChartExpand": "Expand"
+  "orgChartExpand": "Expand",
+  "errorUnexpected": "An error occurred"
 }

@@ -1116,5 +1116,6 @@
   "monthlySummaryLoading": "Chargement du résumé mensuel...",
   "orgChartEmpty": "L'organigramme sera disponible une fois les employés configurés.",
   "orgChartCollapse": "Réduire",
-  "orgChartExpand": "Développer"
+  "orgChartExpand": "Développer",
+  "errorUnexpected": "Une erreur est survenue"
 }

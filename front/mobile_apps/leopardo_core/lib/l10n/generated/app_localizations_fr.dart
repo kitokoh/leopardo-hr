@@ -2956,4 +2956,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgChartExpand => 'Développer';
+  @override
+  String get errorUnexpected => 'Une erreur est survenue';
 }

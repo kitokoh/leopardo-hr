@@ -5178,6 +5178,7 @@ abstract class AppLocalizations {
   String get orgChartEmpty;
   String get orgChartCollapse;
   String get orgChartExpand;
+  String get errorUnexpected;
 }
 
 class _AppLocalizationsDelegate
