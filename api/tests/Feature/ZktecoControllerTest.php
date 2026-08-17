@@ -66,10 +66,11 @@ class ZktecoControllerTest extends TestCase
             ->assertUnprocessable();
     }
 
-    public function test_heartbeat_accepts_valid_serial(): void
+    public function test_heartbeat_unknown_serial_returns_404(): void
     {
         $this->postJson('/api/v1/zkteco/heartbeat/UNKNOWN-SERIAL')
-            ->assertStatus(404);
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'RESOURCE_NOT_FOUND');
     }
 
     public function test_sync_attendance_rejects_invalid_serial(): void
