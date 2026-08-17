@@ -116,8 +116,67 @@ jobs:
             } >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout deployment SHA
+      - name: Resolve changed areas via API (before privileged checkout)
         if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: changes_api
+        # CodeQL actions/cache-poisoning/poisonable-step (alerte #30) : le
+        # checkout privilégié ne doit JAMAIS utiliser un SHA non vérifié.
+        # On calcule ici web_changed via l'API (compare des fichiers entre le
+        # parent et le SHA) pour permettre au gate de tourner AVANT le
+        # checkout — même logique que le filtre `web` de .github/paths-filters.yml.
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = `${{ steps.context.outputs.sha }}`;
+            const isWebPath = (p) =>
+              p.startsWith('front/admin-dashboard/') ||
+              p === '.github/workflows/web-ci.yml' ||
+              p === '.github/workflows/deploy-main.yml' ||
+              p === 'docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md' ||
+              p === 'docs/GESTION_PROJET/REGISTRE_SCENARIOS_TESTS.md';
+            try {
+              const { data: commit } = await github.rest.repos.getCommit({ owner, repo, ref: sha });
+              const parent = commit.parents[0]?.sha;
+              let webChanged = true; // conservateur : parent inconnu => web requise
+              if (parent) {
+                const { data: cmp } = await github.rest.repos.compareCommitsWithBasehead({
+                  owner,
+                  repo,
+                  basehead: `${parent}...${sha}`,
+                });
+                webChanged = (cmp.files ?? []).some((f) => isWebPath(f.filename));
+              }
+              core.setOutput('web_changed', webChanged ? 'true' : 'false');
+              core.setOutput('parent_sha', parent ?? '');
+            } catch (err) {
+              core.warning(`resolve changes via API failed: ${err.message} — web_changed conservateur (true).`);
+              core.setOutput('web_changed', 'true');
+              core.setOutput('parent_sha', '');
+            }
+
+      - name: Verify required workflow conclusions for deployment SHA
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: workflow_gate
+        # Issue #4723 : logique de gate partagée avec l'autre workflow de
+        # déploiement via l'action composite verify-deploy-workflows.
+        # CodeQL cache-poisoning (alerte #30) : ce gate 100 % API tourne AVANT
+        # le checkout privilégié ; web_changed provient de changes_api (API),
+        # pas d'un diff local post-checkout.
+        uses: ./.github/actions/verify-deploy-workflows
+        with:
+          sha: ${{ steps.context.outputs.sha }}
+          required_workflows: '["Tests - Leopardo RH","Web CI - Leopardo Admin"]'
+          web_changed: ${{ steps.changes_api.outputs.web_changed == 'true' }}
+      - name: Finalize deployment decision
+        if: steps.context.outputs.should_deploy == 'pending-validation'
+        id: decision
+        shell: bash
+        run: |
+          echo "should_deploy=${{ steps.workflow_gate.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout deployment SHA
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           lfs: true
@@ -126,7 +185,7 @@ jobs:
           persist-credentials: false
 
       - name: Resolve parent commit for change detection
-        if: steps.context.outputs.should_deploy == 'pending-validation'
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         id: parent
         shell: bash
         run: |
@@ -136,7 +195,7 @@ jobs:
           echo "sha=${parent:-${sha}}" >> "$GITHUB_OUTPUT"
 
       - name: Detect changed areas for deployment gating
-        if: steps.context.outputs.should_deploy == 'pending-validation'
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         id: changes
         # Audit §3.3 / Plan P2: now shares .github/paths-filters.yml with
         # tests.yml's detect-changes job instead of a second hand-rolled
@@ -147,13 +206,13 @@ jobs:
           base: ${{ steps.parent.outputs.sha }}
 
       - name: Export web_changed output
-        if: steps.context.outputs.should_deploy == 'pending-validation'
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         shell: bash
         run: |
           echo "web_changed=${{ steps.changes.outputs.web }}" >> "$GITHUB_OUTPUT"
 
       - name: Resolve program version for deploy metadata
-        if: steps.context.outputs.should_deploy == 'pending-validation'
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         id: version
         shell: bash
         run: |
@@ -166,25 +225,8 @@ jobs:
           echo "app_version=${program_version}" >> "$GITHUB_OUTPUT"
           echo "Deploy APP_VERSION=${program_version}"
 
-      - name: Verify required workflow conclusions for deployment SHA
-        if: steps.context.outputs.should_deploy == 'pending-validation'
-        id: workflow_gate
-        # Issue #4723 : logique de gate partagée avec l'autre workflow de
-        # déploiement via l'action composite verify-deploy-workflows.
-        uses: ./.github/actions/verify-deploy-workflows
-        with:
-          sha: ${{ steps.context.outputs.sha }}
-          required_workflows: '["Tests - Leopardo RH","Web CI - Leopardo Admin"]'
-          web_changed: ${{ steps.changes.outputs.web == 'true' }}
-      - name: Finalize deployment decision
-        if: steps.context.outputs.should_deploy == 'pending-validation'
-        id: decision
-        shell: bash
-        run: |
-          echo "should_deploy=${{ steps.workflow_gate.outputs.should_deploy }}" >> "$GITHUB_OUTPUT"
-
       - name: Expose validated deployment decision
-        if: steps.context.outputs.should_deploy == 'pending-validation'
+        if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         shell: bash
         run: |
           echo "Deployment gate resolved for ${{ steps.context.outputs.sha }}."
