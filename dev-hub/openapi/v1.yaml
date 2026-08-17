@@ -13095,7 +13095,56 @@ paths:
           schema: { type: integer, default: 15 }
       responses:
         "200":
-          description: "Historique pagine"
+          description: "Historique pagine de l'approbateur (enveloppe data/meta)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer }
+                        approval_request_id: { type: integer }
+                        level: { type: integer }
+                        approver_id: { type: integer }
+                        decision: { type: string, enum: [approved, rejected] }
+                        comment: { type: [string, "null"] }
+                        decided_at: { type: [string, "null"], format: date-time }
+                        request:
+                          type: object
+                          properties:
+                            id: { type: integer }
+                            status: { type: string }
+                            approvable_type: { type: string }
+                            approvable_id: { type: integer }
+                            requester_id: { type: integer }
+                            requester:
+                              type: [object, "null"]
+                              properties:
+                                id: { type: integer }
+                                first_name: { type: string }
+                                last_name: { type: string }
+                        created_at: { type: [string, "null"], format: date-time }
+                  links:
+                    type: object
+                    properties:
+                      first: { type: [string, "null"] }
+                      last: { type: [string, "null"] }
+                      prev: { type: [string, "null"] }
+                      next: { type: [string, "null"] }
+                  meta:
+                    type: object
+                    properties:
+                      current_page: { type: integer }
+                      from: { type: [integer, "null"] }
+                      last_page: { type: integer }
+                      path: { type: string }
+                      per_page: { type: integer }
+                      to: { type: [integer, "null"] }
+                      total: { type: integer }
         "401":
           $ref: "#/components/responses/Error401"
 
@@ -17125,6 +17174,10 @@ components:
         message:
           type: string
           example: "Ressource introuvable."
+        localized_message:
+          type: string
+          description: "Message localisé (catalogue errors.*) — présent sur toute réponse d'erreur HTTP (#4689)"
+          example: "Ressource introuvable."
         request_id:
           type: string
           nullable: true
@@ -17140,6 +17193,10 @@ components:
         message:
           type: string
           example: "The given data was invalid."
+        localized_message:
+          type: string
+          description: "Message localisé (catalogue errors.*) — présent sur toute réponse d'erreur HTTP (#4689)"
+          example: "Les données fournies sont invalides."
         errors:
           type: object
           additionalProperties:

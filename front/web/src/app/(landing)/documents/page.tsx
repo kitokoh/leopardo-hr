@@ -70,7 +70,7 @@ export default function DocumentsPage() {
         ctaPrimary={content.hero.ctaPrimary}
         ctaSecondary={content.hero.ctaSecondary}
         badge={{
-          text: 'Cabinet Numérique',
+          text: content.sections.heroBadge,
           icon: <Lock className="w-3 h-3" />,
         }}
       />
@@ -81,7 +81,7 @@ export default function DocumentsPage() {
         subtitle={content.problem.subtitle}
         items={problemItems}
         badge={{
-          text: 'Les Défis',
+          text: content.sections.problemBadge,
           icon: <Share2 className="w-3 h-3" />,
         }}
       />
@@ -93,19 +93,19 @@ export default function DocumentsPage() {
         description={content.solution.description}
         features={solutionFeatures}
         badge={{
-          text: 'Notre Solution',
+          text: content.sections.solutionBadge,
           icon: <Lock className="w-3 h-3" />,
         }}
       />
 
       {/* Features Section */}
       <FeaturesSection
-        title="Fonctionnalités Détaillées"
-        subtitle="Tout ce dont vous avez besoin"
+        title={content.sections.featuresTitle}
+        subtitle={content.sections.featuresSubtitle}
         features={features}
         columns={4}
         badge={{
-          text: 'Sécurisé & Conforme',
+          text: content.sections.featuresBadge,
           icon: <Shield className="w-3 h-3" />,
         }}
       />

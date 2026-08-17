@@ -21,6 +21,7 @@ export interface BlogCardProps {
   index?: number;
   dateLocale?: string;
   readingTimeLabel?: string;
+  archivedLabel?: string;
 }
 
 export function BlogCard({
@@ -34,8 +35,9 @@ export function BlogCard({
   readingTime,
   archived = false,
   index = 0,
-  dateLocale = 'fr-FR',
-  readingTimeLabel = 'min de lecture',
+  dateLocale,
+  readingTimeLabel,
+  archivedLabel = 'Archivé',
 }: BlogCardProps) {
   const formattedDate = new Date(date).toLocaleDateString(dateLocale, {
     year: 'numeric',
@@ -72,7 +74,7 @@ export function BlogCard({
               </div>
               {archived && (
                 <div className="px-3 py-1 rounded-full bg-amber-500/90 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
-                  Archivé
+                  {archivedLabel}
                 </div>
               )}
             </div>

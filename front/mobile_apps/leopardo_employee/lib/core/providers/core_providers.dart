@@ -21,10 +21,8 @@ import 'package:leopardo_employee/features/payrolls/data/payroll_repository.dart
 import 'package:leopardo_employee/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_employee/features/evaluations/data/evaluation_repository.dart';
 import 'package:leopardo_employee/features/cabinet/data/cabinet_repository.dart';
-import 'package:leopardo_employee/features/home/data/project_repository.dart';
 import 'package:leopardo_employee/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_employee/features/onboarding/data/onboarding_repository.dart';
-import 'package:leopardo_employee/features/smart_attendance/data/smart_attendance_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();
@@ -153,11 +151,6 @@ final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
   return CabinetRepository(apiClient);
 });
 
-final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ProjectRepository(apiClient);
-});
-
 final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   final storage = ref.watch(secureStorageProvider);
@@ -174,8 +167,4 @@ final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   return OnboardingRepository(apiClient);
 });
 
-final smartAttendanceRepositoryCoreProvider =
-    Provider<SmartAttendanceRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return SmartAttendanceRepository(apiClient);
-});
+

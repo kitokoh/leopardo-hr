@@ -15,6 +15,7 @@ use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Modules\Fleet\Domain\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class VehicleController extends Controller
@@ -221,7 +222,8 @@ class VehicleController extends Controller
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
 
         $validated = $request->validate([
-            'employee_id' => 'required|integer',
+            // #4788 : l'employé doit appartenir à la société du véhicule (pattern EmployeeLoanController).
+            'employee_id' => ['required', 'integer', Rule::exists('employees', 'id')->where('company_id', $user->company_id)],
             'start_date' => 'required|date',
             'reason' => 'nullable|string|max:500',
         ]);

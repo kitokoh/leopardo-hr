@@ -51,6 +51,13 @@ class EdgeLicense extends Model
         'issued_at', 'expires_at', 'last_validated_at', 'validation_status',
     ];
 
+    // #4687 (audit 360° 2026-08-16) : la licence contient le signed_payload
+    // (données signées) — jamais exposé via l'API.
+    protected $hidden = [
+        'signed_payload',
+        'license_key',
+    ];
+
     protected $casts = [
         'allowed_features'  => 'array',
         'issued_at'         => 'datetime',

@@ -120,7 +120,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'Paie & finance',
           features: [
             { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Bulletins de paie PDF', free: true, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
@@ -236,7 +236,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'Payroll & finance',
           features: [
             { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
-            { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF pay slips', free: true, starter: true, business: true, enterprise: true },
             { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
             { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
             { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
@@ -352,7 +352,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'Bordro & Finans',
           features: [
             { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF bordro dökümü', free: true, starter: true, business: true, enterprise: true },
             { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
@@ -468,7 +468,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'الرواتب والمالية',
           features: [
             { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
-            { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'قسائم رواتب PDF', free: true, starter: true, business: true, enterprise: true },
             { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
             { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
             { name: 'متعدد الدول والعملات', free: false, starter: false, business: false, enterprise: true },
@@ -659,6 +659,7 @@ export default function PricingPage() {
   const { locale, direction } = vitrine;
   const copy = pricingPageCopy[locale] ?? pricingPageCopy.fr;
   const annualSavingsLabel = vitrine.copy.pricing.annualSavings;
+  const toggleBillingLabel = vitrine.copy.pricing.toggleBilling;
   const plans = getPricingPlans(locale);
   useScrollReveal();
 
@@ -822,7 +823,7 @@ export default function PricingPage() {
             </span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
-              aria-label="Toggle billing period"
+              aria-label={toggleBillingLabel}
               className="relative w-16 h-8 rounded-full bg-emerald-500 shadow-inner shadow-emerald-700/30 transition-colors"
             >
               <motion.div

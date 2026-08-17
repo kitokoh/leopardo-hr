@@ -252,7 +252,7 @@ class SyncService {
     } catch (e) {
       // Issue #3867 : échec de pull loggé (mode, erreur) — silencieux avant,
       // impossible à diagnostiquer sur le terrain.
-      debugPrint('[SyncService] pull failed (${_mode}) — ${e.runtimeType}: $e');
+      debugPrint('[SyncService] pull failed ($_currentMode) — ${e.runtimeType}: $e');
     }
   }
 
