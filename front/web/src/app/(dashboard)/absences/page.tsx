@@ -1,7 +1,8 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
 
 type AbsenceRecord = {
@@ -20,7 +21,11 @@ type AbsencesPayload = {
   data?: AbsenceRecord[];
 };
 
+const emptySubscribe = () => () => {};
+
 export default function AbsencesPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const [absences, setAbsences] = useState<AbsenceRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,7 +48,7 @@ export default function AbsencesPage() {
           return;
         }
 
-        setError(err instanceof ApiError ? err.message : 'Impossible de charger les absences.');
+        setError(err instanceof ApiError ? err.message : copy.absencesPage.loadError);
       } finally {
         if (active) {
           setLoading(false);

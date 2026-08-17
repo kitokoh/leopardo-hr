@@ -1,9 +1,10 @@
 ﻿'use client';
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import {
   FileText,
   Search,
@@ -26,7 +27,11 @@ interface Contract {
   created_at: string;
 }
 
+const emptySubscribe = () => () => {};
+
 export default function ContractsPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -73,7 +78,7 @@ export default function ContractsPage() {
       terminated: 'bg-red-50 text-red-700',
       draft: 'bg-slate-100 text-slate-600',
     };
-    const labels: Record<string, string> = { active: 'Actif', suspended: 'Suspendu', terminated: 'Termine', draft: 'Brouillon' };
+    const labels: Record<string, string> = { active: copy.contracts.statusActive, suspended: copy.contracts.statusSuspended, terminated: 'Terminé', draft: 'Brouillon' };
     return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
   };
 
@@ -93,16 +98,16 @@ export default function ContractsPage() {
   };
 
   const statCards = [
-    { label: 'Actifs', value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: copy.contracts.statusActives, value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
     { label: 'Expirant bientot', value: stats.expiring, icon: AlertTriangle, accent: 'text-amber-600 bg-amber-50' },
-    { label: 'Suspendus', value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
+    { label: copy.contracts.statusSuspendeds, value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
     { label: 'Total', value: stats.total, icon: FileText, accent: 'text-emerald-600 bg-emerald-50' },
   ];
 
   return (
     <ModulePageShell
-      title="Contrats"
-      subtitle="Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH."
+      title={copy.contracts.title}
+      subtitle={copy.contracts.subtitle}
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {downloadError && (
@@ -145,10 +150,10 @@ export default function ContractsPage() {
           onChange={e => setStatusFilter(e.target.value)}
           className="rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm font-medium text-slate-700"
         >
-          <option value="all">Tous les statuts</option>
-          <option value="active">Actif</option>
-          <option value="suspended">Suspendu</option>
-          <option value="terminated">Termine</option>
+          <option value="all">{copy.contracts.statusAll}</option>
+          <option value="active">{copy.contracts.statusActive}</option>
+          <option value="suspended">{copy.contracts.statusSuspended}</option>
+          <option value="terminated">{'Terminé'}</option>
         </select>
       </div>
 

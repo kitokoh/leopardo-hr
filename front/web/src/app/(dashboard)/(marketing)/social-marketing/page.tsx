@@ -1,8 +1,9 @@
 ﻿'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
 import {
   Link2,
@@ -34,7 +35,11 @@ function statusBadge(status: string) {
   );
 }
 
+const emptySubscribe = () => () => {};
+
 export default function MarketingPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const [account, setAccount] = useState<SocialAccount | null>(null);
   const [accountLoading, setAccountLoading] = useState(true);
   const [accountError, setAccountError] = useState<string | null>(null);
@@ -66,7 +71,7 @@ export default function MarketingPage() {
       if (err instanceof ApiError && err.code === 'SOCIAL_ACCOUNT_NOT_FOUND') {
         setAccount(null);
       } else {
-        setAccountError(err instanceof ApiError ? err.message : 'Impossible de charger le compte social.');
+        setAccountError(err instanceof ApiError ? err.message : copy.socialMarketingPage.loadAccountError);
       }
     } finally {
       setAccountLoading(false);
@@ -84,7 +89,7 @@ export default function MarketingPage() {
       setPage(payload.meta?.current_page ?? targetPage);
       setLastPage(payload.meta?.last_page ?? targetPage);
     } catch (err) {
-      setPostsError(err instanceof ApiError ? err.message : 'Impossible de charger les publications.');
+      setPostsError(err instanceof ApiError ? err.message : copy.socialMarketingPage.loadPostsError);
     } finally {
       setPostsLoading(false);
     }
@@ -109,7 +114,7 @@ export default function MarketingPage() {
       setDisplayName('');
       await loadAccount();
     } catch (err) {
-      setAccountError(err instanceof ApiError ? err.message : 'Impossible de connecter le compte social.');
+      setAccountError(err instanceof ApiError ? err.message : copy.socialMarketingPage.connectError);
     } finally {
       setConnecting(false);
     }
@@ -122,7 +127,7 @@ export default function MarketingPage() {
       await apiFetch('/marketing/social-account/disconnect', { method: 'POST' });
       await loadAccount();
     } catch (err) {
-      setAccountError(err instanceof ApiError ? err.message : 'Impossible de deconnecter le compte social.');
+      setAccountError(err instanceof ApiError ? err.message : copy.socialMarketingPage.disconnectError);
     } finally {
       setDisconnecting(false);
     }
@@ -154,7 +159,7 @@ export default function MarketingPage() {
       setScheduledAt('');
       await loadPosts(1, false);
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : 'Impossible de creer la publication.');
+      setActionError(err instanceof ApiError ? err.message : copy.socialMarketingPage.createError);
     } finally {
       setSubmitting(false);
     }
@@ -170,7 +175,7 @@ export default function MarketingPage() {
       });
       await loadPosts(1, false);
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : 'Impossible de publier la publication.');
+      setActionError(err instanceof ApiError ? err.message : copy.socialMarketingPage.publishError);
     } finally {
       setPendingActionId(null);
     }
@@ -183,7 +188,7 @@ export default function MarketingPage() {
       await apiFetch(`/marketing/social-posts/${post.id}`, { method: 'DELETE' });
       setPosts((prev) => prev.filter((p) => p.id !== post.id));
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : 'Impossible de supprimer la publication.');
+      setActionError(err instanceof ApiError ? err.message : copy.socialMarketingPage.deleteError);
     } finally {
       setPendingActionId(null);
     }
@@ -246,7 +251,7 @@ export default function MarketingPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${account.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
-                  {account.status === 'active' ? 'Actif' : account.status}
+                  {account.status === 'active' ? copy.socialMarketingPage.statusActive : account.status}
                 </span>
                 <button
                   onClick={handleDisconnect}
