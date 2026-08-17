@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { CreditCard, Download, ExternalLink, FileText, Loader2, ShieldCheck, XCircle } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
@@ -45,16 +45,34 @@ const PLAN_LABELS: Record<string, string> = {
   business: 'Operations',
 };
 
+function statusLabel(key: string, copy: ReturnType<typeof getCopy>): string {
+  const labels: Record<string, string> = {
+    active: copy.billing.statusActive,
+    cancelled: copy.billing.statusCancelled,
+    past_due: copy.billing.statusPastDue,
+    paid: copy.billing.statusPaid,
+    pending: copy.billing.statusPending,
+  };
+  return labels[key] ?? key;
+}
+function formatMessage(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in values ? String(values[name]) : match
+  );
+}
+
+
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
-  active: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700' },
-  cancelled: { label: 'Annule', className: 'bg-red-50 text-red-700' },
-  past_due: { label: 'Impaye', className: 'bg-amber-50 text-amber-700' },
-  paid: { label: 'Payee', className: 'bg-emerald-50 text-emerald-700' },
-  pending: { label: 'En attente', className: 'bg-amber-50 text-amber-700' },
+  active: { label: '', className: 'bg-emerald-50 text-emerald-700' },
+  cancelled: { label: '', className: 'bg-red-50 text-red-700' },
+  past_due: { label: '', className: 'bg-amber-50 text-amber-700' },
+  paid: { label: '', className: 'bg-emerald-50 text-emerald-700' },
+  pending: { label: '', className: 'bg-amber-50 text-amber-700' },
 };
 
 export default function BillingPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,10 +101,11 @@ export default function BillingPage() {
       const invData = await invRes.json() as { data?: Invoice[] };
       setInvoices(Array.isArray(invData.data) ? invData.data : []);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les informations de facturation.');
+      setError(err instanceof ApiError ? err.message : copy.billing.loadError);
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => { void load(); }, [load]);
@@ -95,7 +114,7 @@ export default function BillingPage() {
     new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency }).format(val || 0);
 
   const handleCancel = async () => {
-    if (!confirm('Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.')) return;
+    if (!confirm(copy.billing.cancelConfirm)) return;
     setActionLoading('cancel');
     setError(null);
     try {
@@ -105,7 +124,7 @@ export default function BillingPage() {
       });
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible d\'annuler l\'abonnement.');
+      setError(err instanceof ApiError ? err.message : copy.billing.cancelError);
     } finally {
       setActionLoading(null);
     }
@@ -118,7 +137,7 @@ export default function BillingPage() {
       await apiFetch('/billing/subscription/renew', { method: 'POST' });
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de reactiver l\'abonnement.');
+      setError(err instanceof ApiError ? err.message : copy.billing.renewError);
     } finally {
       setActionLoading(null);
     }
@@ -160,7 +179,7 @@ export default function BillingPage() {
         window.location.href = data.data.portal_url;
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Aucun compte de paiement associe. Souscrivez d\'abord a un plan.');
+      setError(err instanceof ApiError ? err.message : copy.billing.noPaymentAccount);
     } finally {
       setActionLoading(null);
     }
@@ -177,14 +196,14 @@ export default function BillingPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de telecharger la facture.');
+      setError(err instanceof ApiError ? err.message : copy.billing.downloadError);
     }
   };
 
   return (
     <ModulePageShell
-      title="Facturation"
-      subtitle="Gerez votre abonnement, vos moyens de paiement et vos factures directement depuis votre espace client."
+      title={copy.billing.title}
+      subtitle={copy.billing.subtitle}
       accentClassName="bg-gradient-to-br from-emerald-500/10 via-white to-white"
     >
       {error ? (
@@ -206,8 +225,11 @@ export default function BillingPage() {
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
                       {subscription.current_period_start && subscription.current_period_end
-                        ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
-                        : 'Aucune période active'}
+                        ? formatMessage(copy.billing.periodRange, {
+                            start: new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale)),
+                            end: new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale)),
+                          })
+                        : copy.billing.noActivePeriod}
                     </p>
                   </>
                 ) : (
@@ -217,7 +239,7 @@ export default function BillingPage() {
               {subscription ? (
                 <span className={`inline-flex h-fit items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold uppercase ${STATUS_LABELS[subscription.status]?.className ?? 'bg-slate-100 text-slate-600'}`}>
                   <ShieldCheck className="h-3.5 w-3.5" />
-                  {STATUS_LABELS[subscription.status]?.label ?? subscription.status}
+                  {STATUS_LABELS[subscription.status] ? statusLabel(subscription.status, copy) : subscription.status}
                 </span>
               ) : null}
             </div>
@@ -232,7 +254,7 @@ export default function BillingPage() {
                   disabled={actionLoading === 'cancel'}
                   className="inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 disabled:opacity-40"
                 >
-                  <XCircle className="h-4 w-4" /> Annuler l&apos;abonnement
+                  <XCircle className="h-4 w-4" /> {copy.billing.cancelLabel}
                 </button>
               ) : subscription?.status === 'cancelled' ? (
                 <button
@@ -292,7 +314,7 @@ export default function BillingPage() {
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(invoice.total ?? invoice.amount, invoice.currency)}</td>
                       <td className="px-4 py-4 text-center">
                         <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${STATUS_LABELS[invoice.status]?.className ?? 'bg-slate-100 text-slate-600'}`}>
-                          {STATUS_LABELS[invoice.status]?.label ?? invoice.status}
+                          {STATUS_LABELS[invoice.status] ? statusLabel(invoice.status, copy) : invoice.status}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-slate-600">

@@ -22,7 +22,8 @@ class EnsureManagerRoleMiddleware
         $employee = $request->user();
 
         if (! $employee || ! method_exists($employee, 'isManager') || ! $employee->isManager()) {
-            abort(403, 'Acces reserve aux managers.');
+            // #4812 : message localisé ×4 (avant : FR non accentué en dur).
+            abort(403, __('errors.MANAGER_ROLE_REQUIRED'));
         }
 
         if ($roles === []) {
@@ -30,7 +31,7 @@ class EnsureManagerRoleMiddleware
         }
 
         if (! in_array($employee->manager_role, $roles, true)) {
-            abort(403, 'Sous-role manager insuffisant.');
+            abort(403, __('errors.MANAGER_ROLE_INSUFFICIENT'));
         }
 
         return $next($request);
