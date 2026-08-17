@@ -233,6 +233,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
   seeAll: string;
   ctaTitle: string;
   demoCta: string;
+  usageBadge: string;
   moduleIllustrates: string;
   moduleExplore: string;
   discoverModule: string;
@@ -244,6 +245,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'Voir toutes les études de cas',
     ctaTitle: 'Votre entreprise pourrait être la prochaine',
     demoCta: 'Demander une démo',
+    usageBadge: 'Cas d\'usage — {module}',
     moduleIllustrates: 'Ce cas illustre le module {module}',
     moduleExplore: 'Découvrez comment Leopardo RH couvre ce besoin au quotidien, ou explorez les autres études de cas.',
     discoverModule: 'Découvrir {module}',
@@ -255,6 +257,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'See all case studies',
     ctaTitle: 'Your company could be next',
     demoCta: 'Request a demo',
+    usageBadge: 'Use case — {module}',
     moduleIllustrates: 'This case illustrates the {module} module',
     moduleExplore: 'Discover how Leopardo RH covers this need day to day, or explore other case studies.',
     discoverModule: 'Discover {module}',
@@ -266,6 +269,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'Tüm vaka çalışmalarını gör',
     ctaTitle: 'Sıradaki şirket siz olabilirsiniz',
     demoCta: 'Demo iste',
+    usageBadge: 'Kullanım alanı — {module}',
     moduleIllustrates: 'Bu vaka {module} modülünü gösterir',
     moduleExplore: 'Leopardo RH’nin bu ihtiyacı günlük olarak nasıl karşıladığını keşfedin veya diğer vaka çalışmalarına göz atın.',
     discoverModule: '{module} modülünü keşfedin',
@@ -277,6 +281,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
     seeAll: 'عرض كل دراسات الحالة',
     ctaTitle: 'يمكن أن تكون شركتك التالية',
     demoCta: 'اطلب عرضاً توضيحياً',
+    usageBadge: 'حالة استخدام — {module}',
     moduleIllustrates: 'توضح هذه الحالة وحدة {module}',
     moduleExplore: 'اكتشف كيف تغطي Leopardo RH هذه الحاجة يومياً، أو استكشف دراسات الحالة الأخرى.',
     discoverModule: 'اكتشف {module}',

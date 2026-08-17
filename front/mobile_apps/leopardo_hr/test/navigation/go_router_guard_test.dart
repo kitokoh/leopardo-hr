@@ -19,7 +19,11 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      appRouterHarness(overrides: [authOverride(testEmployee())]),
+      appRouterHarness(
+        overrides: [
+          authOverride(testEmployee(role: 'manager', managerRole: 'rh')),
+        ],
+      ),
     );
     await tester.pumpAndSettle();
 

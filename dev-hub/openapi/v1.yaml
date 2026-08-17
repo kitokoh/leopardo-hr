@@ -17174,6 +17174,10 @@ components:
         message:
           type: string
           example: "Ressource introuvable."
+        localized_message:
+          type: string
+          description: "Message localisé (catalogue errors.*) — présent sur toute réponse d'erreur HTTP (#4689)"
+          example: "Ressource introuvable."
         request_id:
           type: string
           nullable: true
@@ -17189,6 +17193,10 @@ components:
         message:
           type: string
           example: "The given data was invalid."
+        localized_message:
+          type: string
+          description: "Message localisé (catalogue errors.*) — présent sur toute réponse d'erreur HTTP (#4689)"
+          example: "Les données fournies sont invalides."
         errors:
           type: object
           additionalProperties:
