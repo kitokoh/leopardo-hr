@@ -30,15 +30,13 @@
   "authActivateManagerAccess": "Yonetici erisimimi etkinlestir",
   "authTryDemoAccount": "Demo hesabini dene",
   "authTwoFactorRequired": "2FA kodu gereklidir.",
-  "authDemoAccess": "Demo erisimi",
-  "authTogglePasswordVisibility": "Sifreyi goster veya gizle",
   "commonLanguageLabel": "Dil",
   "commonLanguageVariantsFrFr": "Fransizca (Fransa)",
   "commonLanguageVariantsFrBe": "Fransizca (Belcika)",
   "commonLanguageVariantsFrCa": "Fransizca (Kanada)",
   "commonLanguageVariantsArSa": "Arapca (Suudi Arabistan)",
   "commonLanguageVariantsArMa": "Arapca (Fas)",
-  "commonLanguageVariantsTrTr": "Turkce (Turkiye)",
+  "commonLanguageVariantsTrTr": "Türkçe (Türkiye)",
   "commonLanguageVariantsEnUs": "Ingilizce (Amerika Birlesik Devletleri)",
   "commonLanguageVariantsEnGb": "Ingilizce (Birlesik Krallik)",
   "commonOr": "veya",
@@ -63,7 +61,6 @@
   "commonCountriesTn": "Tunus",
   "commonCountriesTr": "Türkiye",
   "commonCountriesUs": "Amerika Birleşik Devletleri",
-  "commonRequired": "Gerekli",
   "modulesAttendance": "Puantaj",
   "modulesPayroll": "Bordro",
   "modulesCabinet": "Belge kasasi",
@@ -836,31 +833,6 @@
   "employeesRecentCollaborators": "Son iş arkadaşları",
   "employeesListLoading": "Ekip listesi yükleniyor...",
   "employeesEmptyList": "Bu hesap için görünür çalışan yok.",
-  "userAuthCompanyRequestTitle": "Talep gönderildi!",
-  "userAuthCompanyRequestBody": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
-  "userAuthCompanyRequestInfo": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak.",
-  "userAuthBackToHome": "Ana sayfaya dön",
-  "userAuthCreateCompany": "Şirket oluştur",
-  "userAuthCompanyName": "Şirket adı",
-  "userAuthCompanyEmail": "Şirket e-postası",
-  "userAuthSector": "İş sektörü",
-  "userAuthCountry": "Ülke",
-  "userAuthCity": "Şehir",
-  "userAuthPhone": "Telefon",
-  "userAuthDescription": "Açıklama",
-  "userAuthSubmitRequest": "Talep gönder",
-  "userAuthSubmitError": "Talep gönderme hatası",
-  "userAuthAlreadyAccount": "Zaten hesabiniz var mi? Giris yapin",
-  "userAuthFirstName": "Ad",
-  "userAuthGoogleError": "Google hatasi: {error}",
-  "userAuthLastName": "Soyad",
-  "userAuthLoginSubtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
-  "userAuthNoAccount": "Henuz hesabınız yok mu? Kayit olun",
-  "userAuthPersonalLogin": "Kisisel giris",
-  "userAuthPhoneOptional": "Telefon (opsiyonel)",
-  "userAuthRegisterButton": "Hesabimi olustur",
-  "userAuthRegisterSubtitleAlt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
-  "userAuthRegisterTitle": "Hesabimi olustur",
   "partnerpageLoading": "Alanınız yükleniyor...",
   "partnerpageApplyerrorprefix": "Başvuru sırasında hata: ",
   "partnerpageNotappliedTitle": "Partner Olun",
@@ -894,228 +866,5 @@
   "partnerpageReferralUnavailable": "Bağlantı kullanılamıyor",
   "partnerpageReferralCopy": "Bağlantımı kopyala",
   "partnerpageReferralCopied": "Kopyalandı!",
-  "partnerpageReferralCopyerror": "Bağlantı kopyalanamadı. Lütfen elle kopyalayın.",
-  "apiSessionexpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
-  "apiAccessdenied": ":endpoint üzerinde erişim reddedildi. Yetersiz izinler.",
-  "apiNotfound": "Kaynak bulunamadı: :endpoint",
-  "apiToomanyrequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
-  "apiServererror": ":endpoint üzerinde sunucu hatası. :detail",
-  "apiServererrorretry": "Daha sonra tekrar deneyin.",
-  "apiServerunavailable": "Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.",
-  "apiGenericerror": ":endpoint üzerinde :status hatası.",
-  "apiInvaliddata": "Geçersiz veri.",
-  "apiConnectionerror": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
-  "settingspageCancel": "İptal",
-  "settingspageConfirmpassword": "Parolayı doğrula",
-  "settingspageCurrentpassword": "Mevcut parola",
-  "settingspageDisable2fa": "2FA'yı devre dışı bırak",
-  "settingspageDisabled": "Devre dışı",
-  "settingspageEmail": "E-posta adresi",
-  "settingspageEnable2fa": "2FA'yı etkinleştir",
-  "settingspageEnabled": "Etkin",
-  "settingspageEntercodestep": "2. Üretilen 6 haneli kodu girin",
-  "settingspageFullname": "Ad soyad",
-  "settingspageGeneratesecret": "2FA sırrı oluştur",
-  "settingspageGeneratesecrethint": "Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.",
-  "settingspageManualsecret": "Manuel sır:",
-  "settingspageMinlengthhint": "En az 8 karakter.",
-  "settingspageNewpassword": "Yeni parola",
-  "settingspagePassword": "Parola",
-  "settingspagePasswordsubtitle": "Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.",
-  "settingspagePasswordtitle": "Parola",
-  "settingspagePasswordupdated": "Parola başarıyla güncellendi.",
-  "settingspagePasswordsmismatch": "Parolalar eşleşmiyor.",
-  "settingspageProfilesubtitle": "Oturum açmak için kullanılan ad ve e-posta adresi.",
-  "settingspageProfiletitle": "Profil bilgileri",
-  "settingspageProfileupdated": "Profil başarıyla güncellendi.",
-  "settingspageSavechanges": "Değişiklikleri kaydet",
-  "settingspageScanstep": "1. Bu bağlantıyı / sırrı 2FA uygulamanızda tarayın:",
-  "settingspageSubtitle": "Bilgilerinizi, parolanızı ve süper yönetici hesabınızın güvenliğini yönetin.",
-  "settingspageTitle": "Hesabım",
-  "settingspageTwofactoractivehint": "2FA etkin. Devre dışı bırakmak için parolanızı doğrulayın.",
-  "settingspageTwofactordisabled": "2FA devre dışı bırakıldı.",
-  "settingspageTwofactorenabled": "2FA başarıyla etkinleştirildi.",
-  "settingspageTwofactorsubtitle": "Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.",
-  "settingspageTwofactortitle": "İki faktörlü kimlik doğrulama (2FA)",
-  "settingspageUpdatepassword": "Parolayı güncelle",
-  "systempageApierror": "Hata: :error",
-  "systempageApioperational": "API çalışıyor",
-  "systempageApioperationaldb": "API çalışıyor — DB :ms ms",
-  "systempageApiservices": "API Hizmetleri",
-  "systempageApiunavailable": "Kullanılamıyor — GET /health/live",
-  "systempageDatabase": "Veritabanı",
-  "systempageDberror": "Hata: :error",
-  "systempageDblatency": "Gecikme: :ms ms",
-  "systempageDbunavailable": "Kullanılamıyor — bir Sağlık Kontrolü çalıştırın.",
-  "systempageDbunreachable": "veritabanına ulaşılamıyor",
-  "systempageGlobalerror": "Birleşik sonda: veritabanına ulaşılamıyor.",
-  "systempageGlobalhealthy": "Birleşik DB + Redis sondası çalışıyor.",
-  "systempageGlobalstatus": "Genel Durum",
-  "systempageGlobalunavailable": "Kullanılamıyor — GET /admin/dashboard/stats",
-  "systempageGlobalwarning": "Birleşik sonda: bozulma algılandı.",
-  "systempageHealthcheck": "Sağlık Kontrolü",
-  "systempageHealthcheckrunning": "Kontrol ediliyor...",
-  "systempageHealtherror": "Sağlık kontrolü tamamlandı — veritabanında hata",
-  "systempageHealthliveunreachable": "/health/live sondasına ulaşılamıyor.",
-  "systempageHealthok": "Sağlık kontrolü tamamlandı — veritabanı çalışıyor",
-  "systempageHealthunreachable": "Sağlık kontrolü tamamlandı — veritabanına ulaşılamıyor",
-  "systempageInfradetails": ":active aktif şirket · PHP :php · kuyruk :queue",
-  "systempageInfraunavailable": "Kullanılamıyor — GET /platform/metrics/overview",
-  "systempageInfrastructure": "Altyapı",
-  "systempageMetricsloaderror": "Platform metrikleri yüklenirken hata oluştu",
-  "systempageNotifobsloaderror": "Bildirim gözlemlenebilirliği yüklenirken hata oluştu",
-  "systempageQueueobsloaderror": "İş gözlemlenebilirliği yüklenirken hata oluştu",
-  "systempageRetry": "Yeniden dene",
-  "systempageServiceunreachable": "hizmete ulaşılamıyor",
-  "systempageStatsloaderror": "Sistem istatistikleri yüklenirken hata oluştu",
-  "systempageSubtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
-  "systempageTitle": "Sistem Yönetimi",
-  "retry": "Yeniden dene",
-  "featureComingSoon": "Özellik yakında",
-  "backToHome": "Ana sayfaya dön",
-  "pageNotFound": "İstenen sayfa bulunamadı veya gezinme başarısız oldu.",
-  "registerCreateAccount": "Hesabınızı oluşturun",
-  "registerFirstName": "Ad",
-  "registerRequired": "Zorunlu",
-  "registerPassword": "Şifre",
-  "registerMinChars": "En az 8 karakter",
-  "registerCreating": "Hesap oluşturuluyor...",
-  "registerSubmit": "Hesabımı oluştur",
-  "accessDeniedTitle": "Erişim reddedildi",
-  "accessDeniedBody": "Hesabınız bu uygulama için gerekli Yönetici rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, İK…) veya yöneticinizle iletişime geçin.",
-  "accessDeniedLogout": "Çıkış yap",
-  "accessDeniedBodyHr": "Hesabınız bu uygulama için gerekli İK rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, Yönetici…) veya yöneticinizle iletişime geçin.",
-  "evaluationsTitle": "Değerlendirmelerim",
-  "evaluationsEmpty": "Değerlendirme yok",
-  "evaluationsEmptyHint": "Henüz kayıtlı bir değerlendirmeniz yok.",
-  "evaluationPeriod": "Dönem: {period}",
-  "@evaluationPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceOnTime": "zamanında",
-  "attendanceLate": "geç",
-  "attendanceAbsent": "yok",
-  "attendanceInProgress": "devam ediyor",
-  "attendanceNoClock": "kayıt yok",
-  "attendanceTimeRange": "{from} - {to}",
-  "@attendanceTimeRange": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceHourWorked": "çalışılan saat",
-  "attendanceHoursWorked": "çalışılan saatler",
-  "attendanceDaySummary": "{date} günü, durum {status}, {range}, {hours}.",
-  "@attendanceDaySummary": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "range": {
-        "type": "String"
-      },
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionApproved": "Oturum onaylandı ✓",
-  "sessionRejected": "Oturum reddedildi",
-  "pendingSessionsToValidate": "Onaylanacak",
-  "pendingSessionsUpToDate": "Her şey güncel",
-  "pendingSessionsEmpty": "Onay bekleyen GPS oturumu yok.",
-  "employeeNumber": "Çalışan #{id}",
-  "@employeeNumber": {
-    "placeholders": {
-      "id": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionEntryAt": "Giriş: {time}",
-  "@sessionEntryAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionsToValidate": "Onaylanacak oturumlar",
-  "errorPrefix": "Hata: {message}",
-  "@errorPrefix": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "saDashboardTitle": "GPS yoklama — ekip paneli",
-  "saDetected": "Algılanan",
-  "saApproved": "Onaylanan",
-  "saRejected": "Reddedilen",
-  "saRecentSessions": "Son oturumlar",
-  "saForced": "Zorunlu",
-  "saPresenceInProgress": "{time} itibarıyla devam eden katılım",
-  "@saPresenceInProgress": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "saGpsZoneNotConfigured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı.",
-  "saDisableAutoGps": "Otomatik GPS'i kapat",
-  "saStatusApproved": "Onaylandı",
-  "saStatusDetected": "Algılandı",
-  "saStatusRejected": "Reddedildi",
-  "saStatusCancelled": "İptal edildi",
-  "saStatusPending": "Onay bekleniyor",
-  "saEnableAutoGps": "Otomatik GPS'i aç",
-  "attendanceOvertime": "Fazla mesai",
-  "approvalsUpToDate": "Her şey güncel",
-  "approvalsEmpty": "Bekleyen onay yok.",
-  "saConfigLoadError": "Yapılandırma yüklenemedi.\n{error}",
-  "@saConfigLoadError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "ampAutoDetectDesc": "Şirket bölgesine girdiğinizde varlığınız otomatik algılanır. Sizden hiçbir işlem gerekmez.",
-  "ampRecommended": "Önerilen",
-  "ampQrScanDesc": "Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın.",
-  "ampManualDesc": "Yoklama ekranındaki Giriş ve Çıkış butonlarına basarak manuel kayıt yapın.",
-  "ampSaveError": "Tercihiniz kaydedilemedi. Bağlantınızı kontrol edin.",
-  "ampTitle": "Her gün katılımınızı nasıl kaydetmek istediğinizi seçin.",
-  "ampModeTitle": "Kayıt modu",
-  "back": "Geri",
-  "refresh": "Yenile",
-  "saSessionsLoadError": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin.",
-  "saStartMonitoringError": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin.",
-  "shellTeam": "Ekip",
-  "shellSettings": "Ayarlar",
-  "homeCompleteOnboarding": "İşe alıştırmamı tamamla",
-  "homeOnboardingHint": "Çalışma alanınızı birkaç adımda kurun.",
-  "welcomeMyTeam": "Ekibim",
-  "welcomePresences": "Yoklamalar",
-  "welcomeTasks": "Görevler",
-  "welcomeLeaves": "İzinler",
-  "monthlySummaryLoading": "Aylık özet yükleniyor...",
-  "orgChartEmpty": "Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.",
-  "orgChartCollapse": "Daralt",
-  "orgChartExpand": "Genişlet",
-  "errorUnexpected": "Bir hata oluştu"
+  "partnerpageReferralCopyerror": "Bağlantı kopyalanamadı. Lütfen elle kopyalayın."
 }
