@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/widgets/leopardo_bottom_nav.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Shell widget that wraps all authenticated routes for the Manager app.
 ///
@@ -15,7 +16,7 @@ class ManagerMainShell extends StatelessWidget {
 
   final Widget child;
 
-  static const _items = [
+  List<LeopardoNavItem> _items(BuildContext context) => [
     LeopardoNavItem(
       icon: Icons.dashboard_outlined,
       activeIcon: Icons.dashboard_rounded,
@@ -25,7 +26,7 @@ class ManagerMainShell extends StatelessWidget {
     LeopardoNavItem(
       icon: Icons.group_outlined,
       activeIcon: Icons.group,
-      label: 'Équipe',
+      label: context.l10n.shellTeam,
       route: '/team',
     ),
     LeopardoNavItem(
@@ -43,7 +44,7 @@ class ManagerMainShell extends StatelessWidget {
     LeopardoNavItem(
       icon: Icons.settings_outlined,
       activeIcon: Icons.settings,
-      label: 'Réglages',
+      label: context.l10n.shellSettings,
       route: '/settings',
     ),
   ];
@@ -56,7 +57,7 @@ class ManagerMainShell extends StatelessWidget {
       body: child,
       bottomNavigationBar: LeopardoBottomNav(
         currentRoute: location,
-        items: _items,
+        items: _items(context),
         onTap: (route) => context.go(route),
       ),
     );

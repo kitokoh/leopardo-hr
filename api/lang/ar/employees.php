@@ -1,7 +1,7 @@
 <?php
 
 return [
-'work_state_offline' => 'غير متصل',
+    'work_state_offline' => 'غير متصل',
     'work_state_leave' => 'في إجازة',
     'work_state_absent' => 'غائب',
     'work_state_break' => 'في استراحة',
