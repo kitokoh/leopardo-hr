@@ -193,6 +193,10 @@ return [
     'INVALID_KIOSK_TOKEN' => 'Invalid or expired kiosk token.',
     'BIOMETRIC_NOT_APPROVED' => 'Biometric access is not approved for this employee.',
     // Company / Tenant
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'Inactive account.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'Company suspended or expired.',
     'COMPANY_SUSPENDED' => 'Your company has been suspended. Contact support.',
     // Payroll / Advance / Loan
     'ADVANCE_CONFIRM_FORBIDDEN' => 'Only the advance owner can confirm reception.',

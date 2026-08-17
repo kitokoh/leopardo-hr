@@ -191,6 +191,10 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Token d\'appareil invalide ou expiré.',
     'INVALID_KIOSK_TOKEN' => 'Token kiosk invalide ou expiré.',
     'BIOMETRIC_NOT_APPROVED' => 'L\'accès biométrique n\'est pas approuvé pour cet employé.',
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'Compte inactif.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'Societe suspendue ou expiree.',
     'COMPANY_SUSPENDED' => 'Votre société a été suspendue. Contactez le support.',
     'ADVANCE_CONFIRM_FORBIDDEN' => 'Seul le bénéficiaire de l\'avance peut confirmer la réception.',
     'ADVANCE_DISPUTE_FORBIDDEN' => 'Seul le bénéficiaire de l\'avance peut la contester.',
