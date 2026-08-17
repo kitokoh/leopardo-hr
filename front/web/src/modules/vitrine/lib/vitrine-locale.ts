@@ -163,7 +163,7 @@ type LandingCopy = {
 }
 
 export const vitrineLocaleOptions: LocaleOption[] = [
-  { value: 'fr', label: 'French', nativeLabel: 'Francais' },
+  { value: 'fr', label: 'French', nativeLabel: 'Français' },
   { value: 'en', label: 'English', nativeLabel: 'English' },
   { value: 'tr', label: 'Turkish', nativeLabel: 'Turkce' },
   { value: 'ar', label: 'Arabic', nativeLabel: 'العربية' },

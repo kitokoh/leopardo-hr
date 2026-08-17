@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -1033,6 +1033,58 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "partnerPage": {
+    "loading": "Loading your workspace...",
+    "applyErrorPrefix": "Error while applying: ",
+    "notApplied": {
+      "title": "Become a Partner",
+      "subtitle": "Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
+      "individual": "Apply as an Individual",
+      "agency": "Apply as an Agency"
+    },
+    "pending": {
+      "title": "Application in progress",
+      "body": "Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated."
+    },
+    "dashboard": {
+      "title": "Partner Dashboard",
+      "subtitle": "Track your Leopardo RH conversions and commissions — active partner status."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Total earned",
+      "pending": "Pending",
+      "withdrawable": "Withdrawable balance"
+    },
+    "commissions": {
+      "title": "Latest commissions",
+      "empty": "No commission recorded."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Status",
+      "amount": "Amount",
+      "statusPaid": "Paid",
+      "statusPending": "Pending"
+    },
+    "payout": {
+      "title": "Payout",
+      "body": "Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.",
+      "request": "Request a transfer",
+      "sending": "Sending...",
+      "insufficient": "Insufficient balance to request a transfer (minimum €100.00).",
+      "success": "Transfer request sent successfully.",
+      "errorPrefix": "Error while requesting the transfer: "
+    },
+    "referral": {
+      "title": "Referral link",
+      "unavailable": "Link unavailable",
+      "copy": "Copy my link",
+      "copied": "Copied!",
+      "copyError": "Unable to copy the link. Copy it manually."
+    }
   },
   "api": {
     "sessionExpired": "Session expired. Reconnecting...",
