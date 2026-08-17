@@ -47,7 +47,7 @@ class Task extends Model
 
     protected $table = 'tasks';
 
-    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility'];
+    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility', 'status'];
 
     protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'completed_at' => 'datetime', 'performance_score' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
