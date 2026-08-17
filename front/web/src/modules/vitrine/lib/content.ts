@@ -6,6 +6,14 @@ import type { AppLocale } from '@/lib/i18n'
 
 export const modulePageContent = {
   employes: {
+    sections: {
+      heroBadge: 'Gestion RH Complète',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Puissant & Flexible',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
+    },
     hero: {
       headline: "Gestion RH Simplifiée pour les PME",
       subheadline: "Pointage, absences, schedules et évaluations en un seul endroit",
@@ -185,6 +193,14 @@ export const modulePageContent = {
   },
 
   documents: {
+    sections: {
+      heroBadge: 'Cabinet Numérique',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Sécurisé & Conforme',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
+    },
     hero: {
       headline: "Cabinet Numérique Sécurisé pour vos Documents",
       subheadline: "Stockage, partage et archivage conformes",
@@ -364,6 +380,14 @@ export const modulePageContent = {
   },
 
   comptabilite: {
+    sections: {
+      heroBadge: 'Paie Automatisée',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Complet & Fiable',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
+    },
     hero: {
       headline: "Paie Automatisée et Conformité Garantie",
       subheadline: "Calculs exacts, bulletins générés, exports comptables",
@@ -543,6 +567,14 @@ export const modulePageContent = {
   },
 
   marketing: {
+    sections: {
+      heroBadge: 'Marketing Complet',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Puissant & Flexible',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
+    },
     hero: {
       headline: "Outils Marketing Intégrés pour PME",
       subheadline: "Email, SMS, réseaux sociaux en un seul endroit",
@@ -736,6 +768,14 @@ type ModulePageContent = typeof modulePageContent
 
 const modulePageContentEn: Partial<ModulePageContent> = {
   employes: {
+    sections: {
+      heroBadge: 'Complete HR Management',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Powerful & Flexible',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
+    },
     hero: {
       headline: 'Simplified HR Management for SMEs',
       subheadline: 'Time tracking, absences, schedules and reviews in one place',
@@ -878,6 +918,14 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     },
   },
   documents: {
+    sections: {
+      heroBadge: 'Digital Office',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Secure & Compliant',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
+    },
     hero: {
       headline: "Secure Digital Cabinet for Your Documents",
       subheadline: "Compliant storage, sharing and archiving",
@@ -1083,6 +1131,14 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     },
   },
   comptabilite: {
+    sections: {
+      heroBadge: 'Automated Payroll',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Complete & Reliable',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
+    },
     hero: {
       headline: "Automated Payroll with Guaranteed Compliance",
       subheadline: "Accurate calculations, generated payslips, accounting exports",
@@ -1288,6 +1344,14 @@ const modulePageContentEn: Partial<ModulePageContent> = {
     },
   },
   marketing: {
+    sections: {
+      heroBadge: 'Complete Marketing',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Powerful & Flexible',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
+    },
     hero: {
       headline: "Integrated Marketing Tools for SMEs",
       subheadline: "Email, SMS, social networks in one place",
@@ -1497,6 +1561,14 @@ const modulePageContentEn: Partial<ModulePageContent> = {
 
 const modulePageContentTr: Partial<ModulePageContent> = {
   employes: {
+    sections: {
+      heroBadge: 'Kapsamlı İK Yönetimi',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Güçlü ve Esnek',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
+    },
     hero: {
       headline: "KOBİ'ler için Basitleştirilmiş İK Yönetimi",
       subheadline: 'Yoklama, izinler, planlamalar ve değerlendirmeler tek yerde',
@@ -1639,6 +1711,14 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     },
   },
   documents: {
+    sections: {
+      heroBadge: 'Dijital Ofis',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Güvenli ve Uyumlu',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
+    },
     hero: {
       headline: "Belgeleriniz için Güvenli Dijital Kasa",
       subheadline: "Uyumlu depolama, paylaşım ve arşivleme",
@@ -1844,6 +1924,14 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     },
   },
   comptabilite: {
+    sections: {
+      heroBadge: 'Otomatik Maaş Bordrosu',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Kapsamlı ve Güvenilir',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
+    },
     hero: {
       headline: "Garantili Uyumla Otomatik Maaş Bordrosu",
       subheadline: "Doğru hesaplamalar, oluşturulan bordrolar, muhasebe dışa aktarımları",
@@ -2049,6 +2137,14 @@ const modulePageContentTr: Partial<ModulePageContent> = {
     },
   },
   marketing: {
+    sections: {
+      heroBadge: 'Kapsamlı Pazarlama',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Güçlü ve Esnek',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
+    },
     hero: {
       headline: "KOBİ'ler için Entegre Pazarlama Araçları",
       subheadline: "E-posta, SMS, sosyal ağlar tek yerde",
@@ -2258,6 +2354,14 @@ const modulePageContentTr: Partial<ModulePageContent> = {
 
 const modulePageContentAr: Partial<ModulePageContent> = {
   employes: {
+    sections: {
+      heroBadge: 'إدارة موارد بشرية شاملة',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'قوي ومرن',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
+    },
     hero: {
       headline: 'إدارة موارد بشرية مبسّطة للشركات الصغيرة والمتوسطة',
       subheadline: 'تسجيل الحضور والإجازات والجداول والتقييمات في مكان واحد',
@@ -2400,6 +2504,14 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     },
   },
   documents: {
+    sections: {
+      heroBadge: 'مكتب رقمي',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'آمن ومتوافق',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
+    },
     hero: {
       headline: "خزانة رقمية آمنة لمستنداتك",
       subheadline: "تخزين ومشاركة وأرشفة متوافقة",
@@ -2605,6 +2717,14 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     },
   },
   comptabilite: {
+    sections: {
+      heroBadge: 'رواتب آلية',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'شامل وموثوق',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
+    },
     hero: {
       headline: "رواتب آلية مع امتثال مضمون",
       subheadline: "حسابات دقيقة، قسائم رواتب مولّدة، تصديرات محاسبية",
@@ -2810,6 +2930,14 @@ const modulePageContentAr: Partial<ModulePageContent> = {
     },
   },
   marketing: {
+    sections: {
+      heroBadge: 'تسويق شامل',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'قوي ومرن',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
+    },
     hero: {
       headline: "أدوات تسويق متكاملة للشركات الصغيرة",
       subheadline: "البريد، الرسائل القصيرة، شبكات التواصل في مكان واحد",

@@ -94,32 +94,36 @@ class CabinetShareController extends Controller
 
     /**
      * Public endpoint: access a shared resource via token (no auth required).
+     *
+     * #4798 — cette route est publique (pas de middleware `tenant`) : sur un
+     * worker persistant, le search_path PostgreSQL peut pointer vers le schéma
+     * d'un tenant (pattern #4787) → lookup cross-tenant ou 500. On recherche
+     * le partage dans CHAQUE tenant actif (schéma propre ou pool
+     * shared_tenants) via TenantManager::withinTenant, et tout le chargement
+     * se fait DANS le contexte tenant (les modèles ne sont jamais ré-hydratés
+     * après restauration du search_path).
+     *
+     * @return array{expired: true}|array{type: 'document', disk: string, path: string, name: string}|array{type: 'folder', id: int, name: string, documents_count: int, children_count: int, documents: array<int, array<string, mixed>>}|null
      */
-    public function accessByToken(string $token): JsonResponse|StreamedResponse
+    private function resolveSharedPayload(CabinetShare $share): ?array
     {
-        $share = CabinetShare::where('share_token', $token)->firstOrFail();
-
         if ($share->isExpired()) {
-            return response()->json(['error' => 'SHARE_EXPIRED'], 410);
+            return ['expired' => true];
         }
 
         $shareable = $share->shareable;
 
         if ($shareable instanceof CabinetDocument) {
-            $disk = Storage::disk($shareable->disk);
-
-            if (! $disk->exists($shareable->path)) {
-                abort(404);
-            }
-
-            return $disk->download($shareable->path, $shareable->original_name);
+            return [
+                'type' => 'document',
+                'disk' => $shareable->disk,
+                'path' => $shareable->path,
+                'name' => $shareable->original_name,
+            ];
         }
 
         if ($shareable instanceof CabinetFolder) {
-            $folder = $shareable;
-            $folder->loadCount(['documents', 'children']);
-
-            $documents = CabinetDocument::where('folder_id', $folder->id)
+            $documents = CabinetDocument::where('folder_id', $shareable->id)
                 ->orderBy('name')
                 ->get()
                 ->map(fn (CabinetDocument $d) => [
@@ -128,23 +132,81 @@ class CabinetShareController extends Controller
                     'original_name' => $d->original_name,
                     'mime_type' => $d->mime_type,
                     'size' => $d->size,
-                ]);
+                ])
+                ->all();
 
-            return response()->json([
-                'data' => [
-                    'type' => 'folder',
-                    'folder' => [
-                        'id' => $folder->id,
-                        'name' => $folder->name,
-                        'documents_count' => $folder->documents_count,
-                        'children_count' => $folder->children_count,
-                    ],
-                    'documents' => $documents,
-                ],
-            ]);
+            return [
+                'type' => 'folder',
+                'id' => $shareable->id,
+                'name' => $shareable->name,
+                'documents_count' => (int) CabinetDocument::where('folder_id', $shareable->id)->count(),
+                'children_count' => (int) CabinetFolder::where('parent_id', $shareable->id)->count(),
+                'documents' => $documents,
+            ];
         }
 
-        abort(404);
+        return null;
+    }
+
+    public function accessByToken(string $token): JsonResponse|StreamedResponse
+    {
+        $tenantManager = app(\App\Core\Tenant\TenantManager::class);
+        $companies = \App\Core\Tenant\Domain\Models\Company::query()
+            ->where('status', 'active')
+            ->orderBy('id')
+            ->get();
+
+        $payload = null;
+
+        foreach ($companies as $company) {
+            $payload = $tenantManager->withinTenant($company, function () use ($token): ?array {
+                $share = CabinetShare::query()
+                    ->with('shareable')
+                    ->where('share_token', $token)
+                    ->first();
+
+                if ($share === null) {
+                    return null;
+                }
+
+                return $this->resolveSharedPayload($share);
+            });
+
+            if ($payload !== null) {
+                break;
+            }
+        }
+
+        if ($payload === null) {
+            abort(404);
+        }
+
+        if (! isset($payload['type'])) {
+            return response()->json(['error' => 'SHARE_EXPIRED'], 410);
+        }
+
+        if ($payload['type'] === 'document') {
+            $disk = Storage::disk($payload['disk']);
+
+            if (! $disk->exists($payload['path'])) {
+                abort(404);
+            }
+
+            return $disk->download($payload['path'], $payload['name']);
+        }
+
+        return response()->json([
+            'data' => [
+                'type' => 'folder',
+                'folder' => [
+                    'id' => $payload['id'],
+                    'name' => $payload['name'],
+                    'documents_count' => $payload['documents_count'],
+                    'children_count' => $payload['children_count'],
+                ],
+                'documents' => $payload['documents'],
+            ],
+        ]);
     }
 
     public function stats(Request $request): JsonResponse

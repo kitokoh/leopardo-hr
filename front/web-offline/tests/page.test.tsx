@@ -23,6 +23,13 @@ const mockedCheck = vi.mocked(checkEdgeHealth);
 
 beforeEach(() => {
   mockedCheck.mockReset();
+  // #4806 : la copie d'interface est détectée depuis navigator.language.
+  // jsdom définit en-US par défaut → on fige fr-FR pour conserver les
+  // assertions FR historiques de cette suite.
+  Object.defineProperty(window.navigator, 'language', {
+    configurable: true,
+    value: 'fr-FR',
+  });
 });
 
 afterEach(() => {
@@ -101,5 +108,28 @@ describe('HomePage (PWA Edge)', () => {
       expect(screen.getByText('Edge en ligne')).toBeInTheDocument();
     });
     expect(mockedCheck).toHaveBeenCalledTimes(2);
+  });
+
+  it('localizes the interface from navigator.language (issue #4806)', async () => {
+    mockedCheck.mockResolvedValue({
+      status: 'online',
+      health: { status: 'healthy', node_id: 'edge-42', pending_sync: 2 },
+    });
+
+    Object.defineProperty(window.navigator, 'language', {
+      configurable: true,
+      value: 'tr-TR',
+    });
+
+    render(<HomePage />);
+
+    expect(await screen.findByText('Edge çevrimiçi')).toBeInTheDocument();
+    expect(screen.getByText('Bekleyen senkronizasyon')).toBeInTheDocument();
+    expect(screen.getByText('2 kayıt')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Yenile' })).toBeInTheDocument();
+    // Chaînes techniques non traduites : la marque et le libellé Statut restent
+    // inchangés quelle que soit la locale.
+    expect(screen.getByText('Leopardo Edge')).toBeInTheDocument();
+    expect(screen.getByText('Statut')).toBeInTheDocument();
   });
 });

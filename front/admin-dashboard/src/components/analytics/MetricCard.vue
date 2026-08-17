@@ -86,8 +86,11 @@ import {
   ArrowTrendingDownIcon as TrendingDownIcon,
   ArrowUpIcon,
   ArrowDownIcon,
+  BuildingOfficeIcon,
   ChartBarIcon,
+  CreditCardIcon,
   CurrencyEuroIcon,
+  LifebuoyIcon,
   UserPlusIcon,
   UsersIcon
 } from '@heroicons/vue/24/outline'
@@ -137,7 +140,7 @@ const props = defineProps({
   color: {
     type: String,
     default: 'blue',
-    validator: (value) => ['blue', 'green', 'purple', 'yellow', 'red', 'indigo'].includes(value)
+    validator: (value) => ['blue', 'green', 'purple', 'yellow', 'amber', 'red', 'indigo'].includes(value)
   },
   showProgress: {
     type: Boolean,
@@ -157,8 +160,11 @@ const props = defineProps({
 const iconMap = {
   TrendingUpIcon,
   TrendingDownIcon,
+  BuildingOfficeIcon,
   ChartBarIcon,
+  CreditCardIcon,
   CurrencyEuroIcon,
+  LifebuoyIcon,
   UserPlusIcon,
   UsersIcon
 }
@@ -191,6 +197,12 @@ const colorClasses = computed(() => {
       icon: 'text-white',
       glow: 'bg-yellow-500',
       progress: 'bg-yellow-500'
+    },
+    amber: {
+      bg: 'bg-gradient-to-br from-amber-500 to-amber-600',
+      icon: 'text-white',
+      glow: 'bg-amber-500',
+      progress: 'bg-amber-500'
     },
     red: {
       bg: 'bg-gradient-to-br from-red-500 to-red-600',

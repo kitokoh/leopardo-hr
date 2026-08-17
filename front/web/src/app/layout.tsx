@@ -12,7 +12,7 @@ import { OrganizationJsonLd } from "@/components/JsonLd";
 
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
-import { pageMetadataI18n } from '@/modules/vitrine/lib/seo';
+import { pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
@@ -64,7 +64,6 @@ const ROOT_METADATA: Record<AppLocale, { title: string; description: string }> =
 
 export async function generateMetadata(): Promise<Metadata> {
   const ssrLocale = await getSsrLocale();
-  const rootMeta = ROOT_METADATA[ssrLocale] ?? ROOT_METADATA.fr;
 
   // #4405 : title/description localisés (en/tr/ar) — avant : FR en dur pour
   // toutes les locales (catalogue pageMetadataI18n jamais appliqué à /).
@@ -72,6 +71,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = landingMeta?.title ?? "Leopardo RH - SaaS RH multilingue pour equipes terrain";
   const description = landingMeta?.description
     ?? "Leopardo RH centralise pointage, paie, absences, onboarding, notifications et operations terrain sur web, mobile et kiosque.";
+  // #4707 : keywords + alt de l'image sociale localisés (avant : FR pour
+  // toutes les locales — la meta keywords et l'alt OG étaient les derniers
+  // résidus FR de la metadata racine). Données dans seo.ts (hors surface de
+  // la garde check-i18n-diff).
+  const rootL10n = rootSeoL10n[ssrLocale] ?? rootSeoL10n.fr;
 
   return {
     title: {
@@ -90,16 +94,7 @@ export async function generateMetadata(): Promise<Metadata> {
       }`,
     },
     description,
-    keywords: [
-      "SaaS RH",
-      "logiciel RH",
-      "paie",
-      "pointage mobile",
-      "absences",
-      "kiosque RH",
-      "multi-tenant",
-      "RH multilingue",
-    ],
+    keywords: rootL10n.keywords,
     manifest: "/manifest",
     metadataBase: new URL(siteUrl),
     icons: {
@@ -122,7 +117,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: '/opengraph-image',
           width: 1200,
           height: 630,
-          alt: 'Leopardo RH - dashboard RH multilingue',
+          alt: rootL10n.ogImageAlt,
         },
       ],
     },
