@@ -120,6 +120,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء أو مساوياً له.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'يتطلب تسجيل الخروج اليدوي وقت تسجيل دخول.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'يجب أن يكون وقت الخروج بعد وقت الدخول.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'تم حذف المركبة.',
+    'SCHEDULE_DELETED' => 'تم حذف الجدول بنجاح.',
+    'KIOSK_SESSION_REQUIRED' => 'جلسة الكشك مطلوبة.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'يتطلب الذكاء الاصطناعي سياق شركة صالحًا.',
+    'EXPORT_FILE_NOT_FOUND' => 'ملف التصدير غير موجود.',
+    'PAYMENT_DOCUMENT_MISSING' => 'مستند الدفع مفقود.',
     'TRIAL_STEP_LOGIN' => 'سجّل الدخول باستخدام بريدك الإلكتروني وكلمة المرور أعلاه.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'غيّر كلمة المرور عند أول تسجيل دخول.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'أضف موظفيك الأوائل عبر رمز QR أو يدوياً.',
@@ -165,14 +172,13 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'الوصول مخصص للمديرين.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'دور المدير غير كافٍ.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'يتطلب الوصول إلى تحليلات الذكاء الاصطناعي دور المدير الرئيسي أو مدير الموارد البشرية.',
     'MANAGER_REQUIRED' => 'مطلوب وصول المدير.',
     'INSUFFICIENT_ROLE' => 'صلاحية غير كافية لهذا الإجراء.',
-    'EMPLOYEE_NOT_FOUND' => 'الموظف غير موجود.',
-    'INVALID_TOKEN' => 'رمز غير صالح أو منتهي الصلاحية.',
-    'CAMERA_NOT_FOUND' => 'الكاميرا غير موجودة.',
-    'SELF_DISABLE_FORBIDDEN' => 'لا يمكنك تعطيل حسابك الخاص.',
-    'MANAGER_REQUIRED' => 'مطلوب صلاحية مدير.',
-    'INSUFFICIENT_ROLE' => 'دور غير كافٍ لهذا الإجراء.',
     'EMPLOYEE_NOT_FOUND' => 'الموظف غير موجود.',
     'INVALID_TOKEN' => 'رمز غير صالح أو منتهي الصلاحية.',
     'CAMERA_NOT_FOUND' => 'الكاميرا غير موجودة.',
@@ -184,6 +190,10 @@ return [
     'INVALID_DEVICE_TOKEN' => 'رمز الجهاز غير صالح أو منتهي الصلاحية.',
     'INVALID_KIOSK_TOKEN' => 'رمز الكشك غير صالح أو منتهي الصلاحية.',
     'BIOMETRIC_NOT_APPROVED' => 'الوصول البيومتري غير معتمد لهذا الموظف.',
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'الحساب غير نشط.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'الشركة موقوفة أو منتهية.',
     'COMPANY_SUSPENDED' => 'تم تعليق شركتك. تواصل مع الدعم.',
     'ADVANCE_CONFIRM_FORBIDDEN' => 'لا يمكن تأكيد الاستلام إلا من صاحب السلفة.',
     'ADVANCE_DISPUTE_FORBIDDEN' => 'لا يمكن الاعتراض على السلفة إلا من صاحبها.',
@@ -202,4 +212,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'لا يمكن حذف سوى العروض في حالة المسودة.',
     'JOB_POSTING_DELETED' => 'تم حذف العرض.',
     'TASK_DELETED' => 'تم حذف المهمة.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => 'خدمة التسجيل للتجربة غير متاحة مؤقتاً. يرجى المحاولة مرة أخرى بعد قليل.',
 ];

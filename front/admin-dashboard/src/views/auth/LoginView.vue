@@ -139,7 +139,7 @@
               <div class="flex items-center gap-3">
                 <ExclamationTriangleIcon class="h-5 w-5 text-red-400 shrink-0" />
                 <div class="space-y-1">
-                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">Erreur de connexion</h3>
+                  <h3 class="text-xs font-black uppercase tracking-wider text-red-400">{{ t('auth.connection_error', 'Erreur de connexion') }}</h3>
                   <p class="text-[10px] font-bold text-red-300/80 leading-tight">{{ error }}</p>
                 </div>
               </div>
@@ -222,7 +222,7 @@ const fieldErrors = computed(() => {
     errors.email = t('auth.email_invalid', "Le format de l'adresse email est invalide.")
   }
   if (!form.password) {
-    errors.password = t('auth.password_required', "La clé d'accès est requise.")
+    errors.password = t('auth.access_key_required', "La clé d'accès est requise.")
   }
   if (requiresTwoFactor.value && !form.twoFactorCode) {
     errors.twoFactorCode = t('auth.two_factor_required', 'Le code 2FA est requis.')
