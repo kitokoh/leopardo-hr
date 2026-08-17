@@ -38,8 +38,10 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
+  # Un nettoyage plus récent remplace un nettoyage ancien ; les deux exécutent
+  # la même maintenance et le plus ancien n’apporte aucune information utile.
   group: ci-queue-orphan-cleanup
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   cancel-orphan-runs:
