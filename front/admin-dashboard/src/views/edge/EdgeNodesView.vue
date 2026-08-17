@@ -140,6 +140,9 @@ import { toIntlLocale, translate } from '@/i18n/index.js';
 
 const store = useEdgeNodesStore();
 const localeStore = useLocaleStore();
+// Convention repo : alias `t` pour que la garde check-i18n-diff (PA2-I18N-014)
+// reconnaisse les appels de traduction (pattern \bt\(['"]).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback);
 const loading = ref(false);
 const syncingNodeId = ref(null);
 // QA 2026-08-15 (#2658) : état d'erreur visible (avant : rejections non
@@ -202,8 +205,8 @@ function licenseClass(valid) {
 function licenseLabel(valid) {
   // #4716 : libellés localisés (avant : FR codé en dur dans les 4 locales).
   return valid
-    ? translate(localeStore.current, 'time.valid', 'Valide')
-    : translate(localeStore.current, 'time.invalid', 'Invalide');
+    ? t('time.valid', 'Valide')
+    : t('time.invalid', 'Invalide');
 }
 
 function formatDate(iso) {
@@ -215,13 +218,13 @@ function formatRelative(iso) {
   // 4 locales). Le date absolue reste le fallback au-delà de 24 h.
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return translate(localeStore.current, 'time.justNow', "à l'instant");
+  if (mins < 1) return t('time.justNow', "à l'instant");
   if (mins < 60) {
-    return translate(localeStore.current, 'time.minutesAgo', 'il y a {count} min').replace('{count}', mins);
+    return t('time.minutesAgo', 'il y a {count} min').replace('{count}', mins);
   }
   const hrs = Math.floor(mins / 60);
   if (hrs < 24) {
-    return translate(localeStore.current, 'time.hoursAgo', 'il y a {count} h').replace('{count}', hrs);
+    return t('time.hoursAgo', 'il y a {count} h').replace('{count}', hrs);
   }
   return formatDate(iso);
 }

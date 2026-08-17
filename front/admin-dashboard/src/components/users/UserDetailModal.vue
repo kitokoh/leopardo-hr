@@ -99,6 +99,8 @@ defineProps({
 })
 
 const localeStore = useLocaleStore()
+// Convention repo : alias `t` pour la garde check-i18n-diff (PA2-I18N-014).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 defineEmits(['close', 'impersonate'])
 
@@ -124,10 +126,10 @@ function getStatusColor(status) {
 function getStatusLabel(status) {
   // #4716 : libellés de statut localisés (avant : FR codé en dur dans les 4 locales).
   const labels = {
-    active: translate(localeStore.current, 'time.statusActive', 'Actif'),
-    inactive: translate(localeStore.current, 'time.statusInactive', 'Inactif'),
-    suspended: translate(localeStore.current, 'time.statusSuspended', 'Suspendu'),
-    pending: translate(localeStore.current, 'time.statusPending', 'Attente')
+    active: t('time.statusActive', 'Actif'),
+    inactive: t('time.statusInactive', 'Inactif'),
+    suspended: t('time.statusSuspended', 'Suspendu'),
+    pending: t('time.statusPending', 'Attente')
   }
   return labels[status] || status
 }

@@ -265,6 +265,8 @@ const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+// Convention repo : alias `t` pour la garde check-i18n-diff (PA2-I18N-014).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 // Issues #3858/#3931 : useRouter() doit être appelé dans setup() (inject), pas
 // dans un event handler — hors setup, inject() renvoie undefined et getRoutes()
 // lève une TypeError (recherche header morte, refonte premium).
@@ -354,12 +356,12 @@ function formatTime(timestamp) {
   const diff = now - time
 
   // #4716 : temps relatif localisé (avant : FR codé en dur dans les 4 locales).
-  if (diff < 60000) return translate(localeStore.current, 'time.justNow', "À l'instant")
+  if (diff < 60000) return t('time.justNow', "À l'instant")
   if (diff < 3600000) {
-    return translate(localeStore.current, 'time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
+    return t('time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
   }
   if (diff < 86400000) {
-    return translate(localeStore.current, 'time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
+    return t('time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
   }
   return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
