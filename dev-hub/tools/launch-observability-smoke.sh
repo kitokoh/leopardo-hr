@@ -9,6 +9,15 @@ API_URL="${API_URL%/}"
 WEB_URL="${WEB_URL%/}"
 ADMIN_URL="${ADMIN_URL%/}"
 
+# Normalise la base API : accepte la racine hôte (https://host) OU la base
+# versionnée (https://host/api/v1) en entrée. Les sondes construisent leurs
+# propres chemins (/api/v1/health, /docs…) à partir de la racine hôte —
+# transmettre PROD_API_BASE_URL (versionnée) ne doit plus produire de double
+# préfixe /api/v1/api/v1 (issue #4721). Le suffixe /api/v1 est ici retiré.
+if [[ "${API_URL}" == */api/v1 ]]; then
+  API_URL="${API_URL%/api/v1}"
+fi
+
 REPORT_DIR="${LAUNCH_REPORT_DIR:-dev-hub/observability/reports}"
 mkdir -p "${REPORT_DIR}"
 REPORT_FILE="${REPORT_DIR}/launch-observability-smoke.json"
