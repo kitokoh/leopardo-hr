@@ -167,7 +167,7 @@ class PlatformCompanyRequestController extends Controller
             ?? DB::table('plans')->orderBy('id')->value('id');
 
         if (! $resolvedPlanId) {
-            abort(422, 'Aucun plan actif disponible pour approuver cette demande.');
+            abort(422, 'NO_ACTIVE_PLAN_AVAILABLE');
         }
 
         $managerName = trim($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal');
@@ -175,7 +175,7 @@ class PlatformCompanyRequestController extends Controller
 
         $email = $companyRequest->email ?: $companyRequest->user?->email;
         if (! $email) {
-            abort(422, 'Un email de contact est requis pour approuver cette demande.');
+            abort(422, 'CONTACT_EMAIL_REQUIRED');
         }
 
         // MULTI-PAYS (#1867/#1950) : pays obligatoire et supporté — aucun

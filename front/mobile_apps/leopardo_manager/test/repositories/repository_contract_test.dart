@@ -93,7 +93,7 @@ class RecordingInterceptor extends Interceptor {
                               }
                             : options.method == 'PUT' &&
                                     options.path ==
-                                        '/salary-advances/12/approve'
+                                        '/salary-advances/12/manager-approve'
                                 ? {
                                     'data': {
                                       'id': 12,
@@ -165,7 +165,7 @@ void main() {
     await OnboardingRepository(client).skipStep('invite_manager');
 
     expect(recorder.requests, [
-      'POST /notifications/mark-all-read',
+      'POST /notifications/read-all',
       'PATCH /notifications/7/read',
       'POST /approvals/9/approve',
       'POST /approvals/10/reject',
@@ -244,20 +244,17 @@ void main() {
       final client = recordingClient(recorder);
 
       await AbsenceRepository(client).approveAbsence(33);
-      await AbsenceRepository(
-        client,
-      ).rejectAbsence(absenceId: 33, reason: 'Solde insuffisant');
-      await SalaryAdvanceRepository(
-        client,
-      ).approveAdvance(advanceId: 12, repaymentMonths: 3);
-      await SalaryAdvanceRepository(
-        client,
-      ).rejectAdvance(advanceId: 12, comment: 'Hors politique interne');
+      await AbsenceRepository(client)
+          .rejectAbsence(absenceId: 33, reason: 'Solde insuffisant');
+      await SalaryAdvanceRepository(client)
+          .approveAdvance(advanceId: 12, repaymentMonths: 3);
+      await SalaryAdvanceRepository(client)
+          .rejectAdvance(advanceId: 12, comment: 'Hors politique interne');
 
       expect(recorder.requests, [
         'PUT /absences/33/approve',
         'PUT /absences/33/reject',
-        'PUT /salary-advances/12/approve',
+        'PUT /salary-advances/12/manager-approve',
         'PUT /salary-advances/12/reject',
       ]);
 

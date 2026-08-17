@@ -38,6 +38,28 @@ function Assert-FileContains([string]$path, [string]$needle, [string]$label) {
     }
 }
 
+function Assert-FirebaseReadbackContract([string]$workflowPath, [string]$label) {
+    if (-not (Test-Path -LiteralPath $workflowPath)) {
+        Add-Failure "$label workflow missing: $workflowPath"
+        return
+    }
+
+    $workflowContent = Get-Content -LiteralPath $workflowPath -Raw
+    if ($workflowContent.Contains("appdistribution:releases:list")) {
+        return
+    }
+
+    $helperPath = Join-Path $repoRoot "dev-hub/tools/verify-firebase-readback.sh"
+    if ($workflowContent.Contains("dev-hub/tools/verify-firebase-readback.sh") -and (Test-Path -LiteralPath $helperPath)) {
+        $helperContent = Get-Content -LiteralPath $helperPath -Raw
+        if ($helperContent.Contains("appdistribution:releases:list")) {
+            return
+        }
+    }
+
+    Add-Failure "$label must contain appdistribution:releases:list or invoke the verified shared readback helper"
+}
+
 function Assert-AndroidFirebasePackage([string]$path, [string]$packageName, [string]$label) {
     if (-not (Test-Path -LiteralPath $path)) {
         Add-Failure "$label Firebase Android config missing: $path"
@@ -159,29 +181,12 @@ Assert-IosFirebaseBundle `
 # at the correct file for the Firebase read-after-write guard and the app-ID
 # secrets (deploy-main.yml still orchestrates the API deploy; the mobile
 # distribution logic lives in mobile-distribute-main.yml).
-#
-# PR #4723 (#4802) extracted the Firebase read-after-write command into
-# the shared helper dev-hub/tools/verify-firebase-readback.sh. Both workflow
-# files now delegate to that script via `bash dev-hub/tools/verify-firebase-readback.sh`.
-# The guard therefore checks that the readback script (the single source of
-# truth) contains the command, and that both workflow files reference the script.
-$readbackScript = Join-Path $repoRoot "dev-hub/tools/verify-firebase-readback.sh"
-Assert-FileContains `
-    $readbackScript `
-    "appdistribution:releases:list" `
-    "Main deploy Firebase read-after-write"
-Assert-FileContains `
-    $readbackScript `
-    "appdistribution:releases:list" `
-    "Manual mobile distribution Firebase read-after-write"
-Assert-FileContains `
+Assert-FirebaseReadbackContract `
     (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
-    "verify-firebase-readback.sh" `
-    "Main deploy Firebase read-after-write script reference"
-Assert-FileContains `
+    "Main deploy Firebase read-after-write"
+Assert-FirebaseReadbackContract `
     (Join-Path $repoRoot ".github/workflows/mobile-distribute.yml") `
-    "verify-firebase-readback.sh" `
-    "Manual mobile distribution Firebase read-after-write script reference"
+    "Manual mobile distribution Firebase read-after-write"
 Assert-FileContains `
     (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
     "FIREBASE_EMPLOYEE_ANDROID_APP_ID" `

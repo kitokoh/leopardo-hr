@@ -185,6 +185,28 @@ function validate() {
     }
   }
 
+  // #4805 — drift silencieux des catalogues GÉNÉRÉS (web/admin) : si
+  // versions.json.surfaces.<surface>.checksums existe (écrit par le sync),
+  // chaque checksum doit correspondre au fichier généré committé.
+  const webLocalesDir = path.join(rootDir, '..', '..', 'front', 'web', 'src', 'lib', 'i18n', 'locales');
+  const adminLocalesDir = path.join(rootDir, '..', '..', 'front', 'admin-dashboard', 'src', 'i18n', 'locales');
+  for (const [surface, dir] of Object.entries({ web: webLocalesDir, admin: adminLocalesDir })) {
+    const expected = versions.surfaces?.[surface]?.checksums;
+    if (!expected) {
+      continue;
+    }
+    const actual = {};
+    for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort()) {
+      const locale = path.basename(file, '.json');
+      actual[locale] = checksum(Object.fromEntries(collectLeafPaths(readJson(path.join(dir, file)))));
+    }
+    for (const locale of Object.keys(expected)) {
+      if (actual[locale] !== expected[locale]) {
+        errors.push(`[${surface}:${locale}] generated catalog checksum mismatch in versions.json (#4805)`);
+      }
+    }
+  }
+
   if (errors.length > 0) {
     console.error('I18N_VALIDATION_FAILED');
     for (const error of errors) {

@@ -101,7 +101,8 @@ jobs:
           DB_SEARCH_PATH: public,shared_tenants
         run: |
           mkdir -p storage/coverage
-          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
+          # Issue #4695 : parallélisé (paratest) pour tenir sous le timeout.
+          php artisan test --parallel --processes=4 --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
 
       - name: Parse coverage percentage
         id: coverage
