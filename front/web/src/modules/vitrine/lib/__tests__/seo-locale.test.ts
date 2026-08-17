@@ -1,4 +1,4 @@
-import { getPageMetadata, pageMetadata, pageMetadataI18n } from '../seo'
+import { getPageMetadata, localizedTitle, pageMetadata, pageMetadataI18n } from '../seo'
 
 describe('getPageMetadata (#4004 — SEO localisé)', () => {
   it('returns the FR default when no lang is provided', () => {
@@ -31,8 +31,12 @@ describe('getPageMetadata (#4004 — SEO localisé)', () => {
     for (const locale of ['en', 'tr', 'ar'] as const) {
       for (const page of [...pages, 'landing']) {
         const seo = getPageMetadata(page, locale)
-        expect(seo.title.length).toBeGreaterThan(10)
-        expect(seo.title.length).toBeLessThanOrEqual(80)
+        // #4612 : le titre RENDU est complété par la marque locale
+        // (localizedTitle dans generateMetadata) — c'est lui qui doit être
+        // substantiel, pas forcément le littéral du catalogue (« Changelog »).
+        const finalTitle = localizedTitle(seo.title, locale)
+        expect(finalTitle.length).toBeGreaterThan(10)
+        expect(finalTitle.length).toBeLessThanOrEqual(80)
         expect(seo.description.length).toBeGreaterThan(30)
       }
     }

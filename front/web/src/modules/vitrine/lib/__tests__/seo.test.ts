@@ -55,9 +55,14 @@ describe('pageMetadata coverage', () => {
         ogImage: entry.ogImage,
       });
 
-      expect(metadata.title).toBe(entry.title);
-      expect(metadata.openGraph?.title).toBe(entry.title);
-      expect(metadata.twitter?.title).toBe(entry.title);
+      // #4612 : le titre est rendu complet via `title.absolute` (plus de
+      // template racine global) — marque FR apposée si absente, jamais
+      // dupliquée quand le catalogue l'embarque déjà.
+      const absolute = (metadata.title as { absolute: string }).absolute;
+      expect(absolute).toContain(entry.title);
+      expect(absolute.match(/Leopardo|ليوباردو/g) ?? []).toHaveLength(1);
+      expect(metadata.openGraph?.title).toBe(absolute);
+      expect(metadata.twitter?.title).toBe(absolute);
     }
   });
 });

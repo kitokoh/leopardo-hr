@@ -37,9 +37,10 @@ export function ogLocaleFor(locale: string): string {
  *
  * Le layout racine ne porte plus de `title.template` global (il dupliquait
  * la marque : « Changelog | Leopardo HR | Leopardo RH ») ; chaque page doit
- * donc produire un titre complet. Cette fonction retire une éventuelle
- * marque déjà embarquée (toute orthographe) puis appose la marque de la
- * locale courante — jamais de mix FR/autre ni de doublon.
+ * donc produire un titre complet. Règle : si le titre catalogue embarque
+ * déjà la marque (n'importe quelle orthographe), il est conservé tel quel ;
+ * sinon la marque de la locale courante est apposée — jamais de doublon ni
+ * de mix FR/autre.
  */
 const TITLE_BRANDS: Record<AppLocale, string> = {
   fr: 'Leopardo RH',
@@ -48,13 +49,14 @@ const TITLE_BRANDS: Record<AppLocale, string> = {
   ar: 'ليوباردو',
 };
 
-function stripTrailingBrand(title: string): string {
-  return title.replace(/\s*\|\s*(?:Leopardo\s*(?:RH|HR|İK|IK)|ليوباردو)\s*$/i, '').trim();
-}
+const BRAND_PATTERN = /Leopardo|ليوباردو/i;
 
 export function localizedTitle(title: string, locale?: string): string {
+  if (BRAND_PATTERN.test(title)) {
+    return title;
+  }
   const brand = TITLE_BRANDS[(locale ?? 'fr') as AppLocale] ?? TITLE_BRANDS.fr;
-  return `${stripTrailingBrand(title)} | ${brand}`;
+  return `${title} | ${brand}`;
 }
 
 /**
