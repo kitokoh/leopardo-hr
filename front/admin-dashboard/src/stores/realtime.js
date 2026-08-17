@@ -61,13 +61,17 @@ export const useRealtimeStore = defineStore('realtime', () => {
     // Défaut dérivé de l'origine API (wss://hôte) pour ne jamais viser le
     // localhost du visiteur en production (#3392). VITE_WEBSOCKET_URL reste
     // prioritaire quand un serveur push existe.
+    // #4715 : plus AUCUN fallback localhost dans le bundle — la base API par
+    // défaut (api.js) pointe déjà la prod (VITE_API_URL absent), on en dérive
+    // la même origine wss.
     const defaultWsUrl = (() => {
       try {
-        const apiUrl = new URL(import.meta.env.VITE_API_URL || '')
+        const base = api.defaults.baseURL || import.meta.env.VITE_API_URL || ''
+        const apiUrl = new URL(base)
         const proto = apiUrl.protocol === 'https:' ? 'wss' : 'ws'
         return `${proto}://${apiUrl.host}`
       } catch {
-        return 'ws://localhost:6001'
+        return 'wss://gestionemployerbackend.onrender.com'
       }
     })()
     socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || defaultWsUrl, {

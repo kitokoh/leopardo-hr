@@ -257,7 +257,7 @@ import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useRouter } from 'vue-router'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 defineEmits(['toggle-sidebar'])
 
@@ -353,9 +353,14 @@ function formatTime(timestamp) {
   const time = new Date(timestamp)
   const diff = now - time
 
-  if (diff < 60000) return 'À l\'instant'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
+  // #4716 : temps relatif localisé (avant : FR codé en dur dans les 4 locales).
+  if (diff < 60000) return translate(localeStore.current, 'time.justNow', "À l'instant")
+  if (diff < 3600000) {
+    return translate(localeStore.current, 'time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
+  }
+  if (diff < 86400000) {
+    return translate(localeStore.current, 'time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
+  }
   return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 

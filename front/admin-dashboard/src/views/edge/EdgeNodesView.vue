@@ -136,7 +136,7 @@ import EdgeStatCard from '@/components/edge/EdgeStatCard.vue';
 import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
 import { useEdgeNodesStore } from '@/stores/edgeNodes';
 import { useLocaleStore } from '@/stores/locale';
-import { toIntlLocale } from '@/i18n/index.js';
+import { toIntlLocale, translate } from '@/i18n/index.js';
 
 const store = useEdgeNodesStore();
 const localeStore = useLocaleStore();
@@ -200,7 +200,10 @@ function licenseClass(valid) {
 }
 
 function licenseLabel(valid) {
-  return valid ? 'Valide' : 'Invalide';
+  // #4716 : libellés localisés (avant : FR codé en dur dans les 4 locales).
+  return valid
+    ? translate(localeStore.current, 'time.valid', 'Valide')
+    : translate(localeStore.current, 'time.invalid', 'Invalide');
 }
 
 function formatDate(iso) {
@@ -208,12 +211,18 @@ function formatDate(iso) {
 }
 
 function formatRelative(iso) {
+  // #4716 : temps relatif localisé (avant : FR codé en dur, visible dans les
+  // 4 locales). Le date absolue reste le fallback au-delà de 24 h.
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "à l'instant";
-  if (mins < 60) return `il y a ${mins} min`;
+  if (mins < 1) return translate(localeStore.current, 'time.justNow', "à l'instant");
+  if (mins < 60) {
+    return translate(localeStore.current, 'time.minutesAgo', 'il y a {count} min').replace('{count}', mins);
+  }
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `il y a ${hrs} h`;
+  if (hrs < 24) {
+    return translate(localeStore.current, 'time.hoursAgo', 'il y a {count} h').replace('{count}', hrs);
+  }
   return formatDate(iso);
 }
 

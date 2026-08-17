@@ -88,6 +88,8 @@
 
 <script setup>
 import { UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { translate, toIntlLocale } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale'
 
 defineProps({
   user: {
@@ -95,6 +97,8 @@ defineProps({
     required: true
   }
 })
+
+const localeStore = useLocaleStore()
 
 defineEmits(['close', 'impersonate'])
 
@@ -118,17 +122,21 @@ function getStatusColor(status) {
 }
 
 function getStatusLabel(status) {
+  // #4716 : libellés de statut localisés (avant : FR codé en dur dans les 4 locales).
   const labels = {
-    active: 'Actif',
-    inactive: 'Inactif',
-    suspended: 'Suspendu',
-    pending: 'Attente'
+    active: translate(localeStore.current, 'time.statusActive', 'Actif'),
+    inactive: translate(localeStore.current, 'time.statusInactive', 'Inactif'),
+    suspended: translate(localeStore.current, 'time.statusSuspended', 'Suspendu'),
+    pending: translate(localeStore.current, 'time.statusPending', 'Attente')
   }
   return labels[status] || status
 }
 
 function formatDate(date) {
+  // #4714 : date localisée selon la locale active du cockpit (avant :
+  // toLocaleDateString() sans locale → format du navigateur, incohérent
+  // avec le reste de l'UI).
   if (!date) return '-'
-  return new Date(date).toLocaleDateString()
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current))
 }
 </script>

@@ -180,6 +180,25 @@
     "tenants_at_risk": "Tenants à risque",
     "platform_dashboard_hint": "Disponible dans le dashboard plateforme."
   },
+  "time": {
+    "justNow": "à l'instant",
+    "minutesAgo": "il y a {count} min",
+    "hoursAgo": "il y a {count} h",
+    "minutesShort": "{count} m",
+    "hoursShort": "{count} h",
+    "never": "jamais",
+    "loadingData": "Chargement des données...",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "inProgress": "En cours…",
+    "valid": "Valide",
+    "invalid": "Invalide",
+    "statusActive": "Actif",
+    "statusInactive": "Inactif",
+    "statusSuspended": "Suspendu",
+    "statusPending": "Attente",
+    "exportCsv": "Export CSV"
+  },
   "_version": "1.0.0",
   "signup": {
     "roleHr": "RH",
