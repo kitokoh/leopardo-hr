@@ -17,6 +17,13 @@ export type CurrencyCode = 'EUR' | 'DZD' | 'MAD' | 'TND' | 'TRY' | 'CAD' | 'USD'
 
 export type CountryCode = 'FR' | 'DZ' | 'MA' | 'TN' | 'TR' | 'CA' | 'US'
 
+/**
+ * #4707 : devise canonique des offres (source de vérité des montants —
+ * les plans sont authorés en EUR, cf. `data/pricing.ts` + PlanSeeder/ADR-0014).
+ * JSON-LD doit déclarer la devise du PRIX MACHINE (EUR) — pas une conversion.
+ */
+export const PRICING_CURRENCY: CurrencyCode = 'EUR'
+
 export type CurrencyOption = {
   country: CountryCode
   currency: CurrencyCode

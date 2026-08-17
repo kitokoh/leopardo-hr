@@ -71,7 +71,7 @@
           <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400">
             <InboxIcon class="h-7 w-7" />
           </div>
-          <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">Aucun ticket</p>
+          <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">{{ $t('support.noTicket') }}</p>
         </div>
 
         <div v-else class="max-h-[640px] divide-y divide-slate-200/50 overflow-y-auto dark:divide-slate-800/50">
@@ -108,7 +108,7 @@
           <div>
             <ChatBubbleBottomCenterTextIcon class="mx-auto h-10 w-10 text-slate-300" />
             <p class="mt-4 text-sm font-bold text-slate-400 uppercase tracking-widest">
-              Sélectionnez un ticket pour voir la conversation
+              {{ $t('support.selectTicket') }}
             </p>
           </div>
         </div>
@@ -207,7 +207,9 @@ import {
 import api from '@/services/api'
 import StatsCard from '@/components/dashboard/StatsCard.vue'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
+
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 
 const toast = useToast()
 const localeStore = useLocaleStore()
@@ -289,7 +291,7 @@ async function selectTicket(ticket) {
     }
   } catch (error) {
     console.error('Failed to load ticket detail:', error)
-    toast.error('Impossible de charger la conversation.')
+    toast.error(t('support.loadConversationError'))
   }
 }
 

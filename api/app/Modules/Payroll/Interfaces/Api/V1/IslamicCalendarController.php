@@ -116,8 +116,8 @@ class IslamicCalendarController extends Controller
     private function assertPlatformAdmin(Request $request): void
     {
         if (! $request->user() instanceof SuperAdmin) {
-            // #4690 (audit 360°) : littéral FR déplacé au catalogue errors.*
-            abort(403, __('errors.ISLAMIC_CALENDAR_PLATFORM_ONLY'));
+            // #4690 : code catalogue — localized_message émis par le renderer.
+            abort(403, 'PLATFORM_ADMIN_ONLY');
         }
     }
 

@@ -97,7 +97,7 @@ class AIGatewayController extends Controller
         );
 
         if ($pending === null) {
-            abort(404, 'Pending action not found or expired.');
+            abort(404, 'PENDING_ACTION_NOT_FOUND');
         }
 
         $result = $this->intentEngine->executeConfirmedWrite(
@@ -132,7 +132,7 @@ class AIGatewayController extends Controller
         );
 
         if ($pending === null) {
-            abort(404, 'Pending action not found or expired.');
+            abort(404, 'PENDING_ACTION_NOT_FOUND');
         }
 
         return response()->json([

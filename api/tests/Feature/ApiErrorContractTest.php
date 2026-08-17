@@ -95,4 +95,61 @@ class ApiErrorContractTest extends TestCase
         $response->assertJsonPath('error', 'I18N_CATALOG_UNAVAILABLE');
         $response->assertJsonPath('message', 'I18N_CATALOG_UNAVAILABLE');
     }
+
+    // ── #4689 (audit 360° 2026-08-16) : abort() statique — localized_message
+    // systématique sur 403/422/429 ────────────────────────────────────────
+
+    public function test_abort_with_catalog_code_includes_localized_message(): void
+    {
+        Route::get('/api/v1/qa-test-abort-code', fn () => abort(403, 'FORBIDDEN'));
+
+        $response = $this->getJson('/api/v1/qa-test-abort-code');
+
+        $response->assertStatus(403);
+        $response->assertJsonPath('error', 'FORBIDDEN');
+        $response->assertJsonPath('message', 'FORBIDDEN');
+        $response->assertJsonPath('localized_message', __('errors.FORBIDDEN'));
+    }
+
+    public function test_abort_with_arbitrary_message_includes_generic_localized_message(): void
+    {
+        Route::get('/api/v1/qa-test-abort-msg', fn () => abort(422, 'Manager role required.'));
+
+        $response = $this->getJson('/api/v1/qa-test-abort-msg');
+
+        $response->assertStatus(422);
+        $response->assertJsonPath('error', 'Manager role required.');
+        $response->assertJsonPath('message', 'Manager role required.');
+        // #4689 (implémentation main) : code mappé par statut → VALIDATION_FAILED.
+        $response->assertJsonPath('localized_message', __('errors.VALIDATION_FAILED'));
+    }
+
+    public function test_abort_catalog_code_respects_accept_language(): void
+    {
+        // #4690 : abort() avec un code du catalogue → localized_message traduit
+        // selon Accept-Language (EN ici), jamais un littéral FR.
+        Route::get('/api/v1/qa-test-abort-i18n', fn () => abort(403, 'FORBIDDEN'));
+
+        $response = $this->withHeaders(['Accept-Language' => 'en'])
+            ->getJson('/api/v1/qa-test-abort-i18n');
+
+        $response->assertStatus(403);
+        $response->assertJsonPath('error', 'FORBIDDEN');
+        $this->assertSame(__('errors.FORBIDDEN', [], 'en'), $response->json('localized_message'));
+        $this->assertSame('You do not have permission for this action.', $response->json('localized_message'));
+    }
+
+    public function test_throttled_route_returns_429_with_localized_message(): void
+    {
+        // /api/v1/health est throttlé 60/min (#4689 : la forme 429 doit porter
+        // localized_message + les headers Retry-After, issue #1774).
+        for ($i = 0; $i < 61; $i++) {
+            $this->getJson('/api/v1/health');
+        }
+
+        $response = $this->getJson('/api/v1/health');
+        $response->assertStatus(429);
+        $this->assertIsString($response->json('localized_message'));
+        $response->assertHeader('Retry-After');
+    }
 }

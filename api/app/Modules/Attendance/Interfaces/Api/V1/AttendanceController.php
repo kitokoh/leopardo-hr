@@ -333,8 +333,7 @@ class AttendanceController extends Controller
 
         if ($requestedCheckOut !== null && $requestedCheckOut->lessThanOrEqualTo($requestedCheckIn)) {
             throw ValidationException::withMessages([
-                // #4690 (audit 360°) : littéral FR déplacé au catalogue errors.*
-                'requested_check_out' => [__('errors.ATTENDANCE_CHECKOUT_AFTER_CHECKIN')],
+                'requested_check_out' => [__('errors.ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN')],
             ]);
         }
 

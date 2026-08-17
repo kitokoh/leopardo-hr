@@ -7,7 +7,6 @@ namespace App\Core\Tenant\Domain\Models;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,8 +38,7 @@ use Illuminate\Support\Facades\DB;
  * @property array<mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @mixin Builder<static>
+ * @mixin \Illuminate\Database\Eloquent\Builder<static>
  */
 class Company extends Model
 {
@@ -136,8 +134,7 @@ class Company extends Model
     {
         static::creating(function (self $company): void {
             if ($company->tenancy_type === 'schema') {
-                // #4690 (audit 360°) : littéral FR déplacé au catalogue errors.*
-                abort(422, __('errors.COMPANY_SCHEMA_MODE_LOCKED'));
+                abort(422, 'ENTERPRISE_SCHEMA_FROZEN');
             }
         });
 

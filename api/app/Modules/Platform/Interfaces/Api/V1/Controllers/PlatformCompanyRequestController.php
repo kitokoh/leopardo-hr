@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
-use App\Http\Controllers\Controller;
 use App\Modules\Platform\Infrastructure\Services\CompanyProvisioningService;
 use App\Support\CountryDefaults;
 use Illuminate\Http\JsonResponse;
@@ -167,8 +167,7 @@ class PlatformCompanyRequestController extends Controller
             ?? DB::table('plans')->orderBy('id')->value('id');
 
         if (! $resolvedPlanId) {
-            // #4690 (audit 360°) : littéral FR déplacé au catalogue errors.*
-            abort(422, __('errors.COMPANY_REQUEST_NO_ACTIVE_PLAN'));
+            abort(422, 'NO_ACTIVE_PLAN_AVAILABLE');
         }
 
         $managerName = trim($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal');
@@ -176,8 +175,7 @@ class PlatformCompanyRequestController extends Controller
 
         $email = $companyRequest->email ?: $companyRequest->user?->email;
         if (! $email) {
-            // #4690 (audit 360°) : littéral FR déplacé au catalogue errors.*
-            abort(422, __('errors.COMPANY_REQUEST_EMAIL_REQUIRED'));
+            abort(422, 'CONTACT_EMAIL_REQUIRED');
         }
 
         // MULTI-PAYS (#1867/#1950) : pays obligatoire et supporté — aucun
@@ -206,3 +204,4 @@ class PlatformCompanyRequestController extends Controller
         return $result['company'];
     }
 }
+
