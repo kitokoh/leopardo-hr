@@ -137,6 +137,14 @@
       "columnCompany": "Company",
       "columnRegisteredAt": "Registered",
       "columnLastLogin": "Last login"
+    },
+    "csv": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "company": "Company",
+      "signup": "Signup",
+      "lastLogin": "Last login"
     }
   },
   "signup": {
@@ -672,7 +680,10 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "inProgress": "In progress…",
-    "justNow": "Just now"
+    "justNow": "Just now",
+    "required": "Required",
+    "noResults": "No results found.",
+    "busy": "In progress…"
   },
   "_locale": "en",
   "attendance": {
@@ -762,7 +773,15 @@
     "two_fa_invalid": "The 2FA code provided is invalid.",
     "two_fa_required_msg": "A verification code is required.",
     "two_fa_setup_failed": "Generating the 2FA secret failed.",
-    "unexpected_error": "An unexpected error occurred."
+    "unexpected_error": "An unexpected error occurred.",
+    "demo": {
+      "access": "Demo access"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Show or hide password"
+      }
+    }
   },
   "marketing": {
     "oauth": {
@@ -1013,7 +1032,36 @@
     "notFound": "Page not found"
   },
   "webhooks": {
-    "confirm_delete": "Delete this webhook?"
+    "confirm_delete": "Delete this webhook?",
+    "subtitle": "Configure and monitor your webhook endpoints.",
+    "titleNew": "New webhook",
+    "titleEdit": "Edit webhook",
+    "searchPlaceholder": "Search for a webhook...",
+    "active": "Active",
+    "inactive": "Inactive",
+    "never": "Never",
+    "test": "Test",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "company": "Company",
+    "url": "URL",
+    "events": "Events",
+    "status": "Status",
+    "lastTriggered": "Last triggered",
+    "companiesLoadError": "Unable to load the list of companies.",
+    "retry": "Retry",
+    "selectCompany": "Select a company...",
+    "confirmDeleteHint": "This action is irreversible. Future deliveries will be interrupted.",
+    "loadError": "Unable to load webhooks.",
+    "saved": "Webhook saved",
+    "saveError": "Error saving webhook",
+    "tested": "Webhook tested",
+    "testError": "Error testing webhook",
+    "deleted": "Webhook deleted",
+    "deleteError": "Error deleting webhook"
   },
   "a11y": {
     "skip_to_content": "Skip to main content",
@@ -1135,7 +1183,10 @@
     "showingSuffix": "requests",
     "loadError": "Unable to sync client requests.",
     "toastApproved": "Request approved. Provisioning started.",
-    "toastRejected": "Request rejected."
+    "toastRejected": "Request rejected.",
+    "noTicket": "No ticket",
+    "selectTicket": "Select a ticket to view the conversation",
+    "loadConversationError": "Unable to load the conversation."
   },
   "reports": {
     "attendance_title": "Attendance Summary",
@@ -1185,5 +1236,280 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "training": {
+    "activeCourses": "Active trainings",
+    "upcomingSessions": "Scheduled sessions",
+    "enrollments": "Enrollments",
+    "completionRate": "Completion rate",
+    "loading": "Loading...",
+    "noCourses": "No trainings.",
+    "uncategorized": "Uncategorized",
+    "noDescription": "No description.",
+    "sessionsUnit": "sessions",
+    "perParticipant": "per participant",
+    "searchSessionPlaceholder": "Search for a session...",
+    "searchEnrollmentPlaceholder": "Search for an enrollment...",
+    "category": "Category",
+    "type": "Type",
+    "status": "Status",
+    "duration": "Duration",
+    "hoursUnit": "hours",
+    "provider": "Provider",
+    "maxPlaces": "Max seats",
+    "costPerParticipant": "Cost / participant",
+    "description": "Description",
+    "sessions": "Sessions",
+    "instructor": "Instructor",
+    "tabCatalog": "Catalog",
+    "tabEnrollments": "Enrollments",
+    "course": "Training",
+    "startDate": "Start",
+    "endDate": "End",
+    "location": "Location",
+    "session": "Session",
+    "employee": "Employee",
+    "progress": "Progress",
+    "statusPlanned": "Planned",
+    "statusInProgress": "In progress",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
+    "statusEnrolled": "Enrolled",
+    "statusDropped": "Dropped",
+    "loadError": "Unable to load training data."
+  },
+  "analytics": {
+    "title": "Platform Analytics",
+    "subtitle": "Real indicators from the super-admin cockpit (issue #2185)",
+    "refresh": "Refresh",
+    "export": "Export",
+    "retry": "Retry",
+    "metricUsers": "Users",
+    "metricCompanies": "Companies",
+    "metricActiveSubscriptions": "Active subscriptions",
+    "metricOpenSupportTickets": "Open support tickets",
+    "today": "today",
+    "recentActivity": "Recent activity",
+    "recentActivityHint": "Last 25 platform events",
+    "loading": "Loading...",
+    "noRecentActivity": "No recent activity",
+    "platformAlerts": "Platform alerts",
+    "platformAlertsHint": "Infrastructure issues and subscription risks",
+    "noActiveAlerts": "No active alerts",
+    "dismiss": "Dismiss",
+    "advancedTitle": "Advanced analytics (cohorts, funnels, predictions, segmentation, benchmarks)",
+    "advancedHint": "Cohorts, funnels, churn predictions and benchmarks are not yet served by a backend endpoint. Data shown here is limited to the cockpit's real aggregates (stats, activities, alerts). QA wave 2026-08-14 — removal of fabricated data.",
+    "healthPrefix": "Health: ",
+    "loadError": "Error loading analytics. Please try again.",
+    "alertDismissed": "Alert dismissed",
+    "alertDismissError": "Error dismissing the alert",
+    "exportDone": "Export complete",
+    "exportError": "Error exporting",
+    "csvHeader": "Type,Message,Date"
+  },
+  "systemAlerts": {
+    "criticalShort": "Critical system alert",
+    "criticalFallback": "Critical system alert detected",
+    "viewDetails": "View details",
+    "closeLabel": "Close system alerts",
+    "fallbackMode": "Fallback mode",
+    "connectionLost": "Connection lost",
+    "pollingMessage": "Real-time connection unavailable. Notifications keep coming via periodic refresh.",
+    "reconnectMessage": "Real-time connection lost. Attempting to reconnect...",
+    "reconnect": "Reconnect"
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
+  },
+  "partnerPage": {
+    "loading": "Loading your workspace...",
+    "applyErrorPrefix": "Error while applying: ",
+    "notApplied": {
+      "title": "Become a Partner",
+      "subtitle": "Join the Leopardo RH ecosystem and earn commissions on every company you refer. Up to 20% recurring commission.",
+      "individual": "Apply as an Individual",
+      "agency": "Apply as an Agency"
+    },
+    "pending": {
+      "title": "Application in progress",
+      "body": "Your application is being reviewed by our sales team. You will receive an email as soon as your access is activated."
+    },
+    "dashboard": {
+      "title": "Partner Dashboard",
+      "subtitle": "Track your Leopardo RH conversions and commissions — active partner status."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Total earned",
+      "pending": "Pending",
+      "withdrawable": "Withdrawable balance"
+    },
+    "commissions": {
+      "title": "Latest commissions",
+      "empty": "No commission recorded."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Status",
+      "amount": "Amount",
+      "statusPaid": "Paid",
+      "statusPending": "Pending"
+    },
+    "payout": {
+      "title": "Payout",
+      "body": "Your commissions are paid once the threshold is reached. Make sure your bank details are up to date.",
+      "request": "Request a transfer",
+      "sending": "Sending...",
+      "insufficient": "Insufficient balance to request a transfer (minimum €100.00).",
+      "success": "Transfer request sent successfully.",
+      "errorPrefix": "Error while requesting the transfer: "
+    },
+    "referral": {
+      "title": "Referral link",
+      "unavailable": "Link unavailable",
+      "copy": "Copy my link",
+      "copied": "Copied!",
+      "copyError": "Unable to copy the link. Copy it manually."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverErrorRetry": "Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection."
+  },
+  "settingsPage": {
+    "cancel": "Cancel",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "disable2fa": "Disable 2FA",
+    "disabled": "Disabled",
+    "email": "Email address",
+    "enable2fa": "Enable 2FA",
+    "enabled": "Enabled",
+    "enterCodeStep": "2. Enter the generated 6-digit code",
+    "fullName": "Full name",
+    "generateSecret": "Generate 2FA secret",
+    "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Manual secret:",
+    "minLengthHint": "Minimum 8 characters.",
+    "newPassword": "New password",
+    "password": "Password",
+    "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
+    "passwordTitle": "Password",
+    "passwordUpdated": "Password updated successfully.",
+    "passwordsMismatch": "Passwords do not match.",
+    "profileSubtitle": "Name and email address used to sign in.",
+    "profileTitle": "Profile information",
+    "profileUpdated": "Profile updated successfully.",
+    "saveChanges": "Save changes",
+    "scanStep": "1. Scan this link / secret in your 2FA app:",
+    "subtitle": "Manage your information, password and the security of your super-admin account.",
+    "title": "My account",
+    "twoFactorActiveHint": "2FA is active. To disable it, confirm your password.",
+    "twoFactorDisabled": "2FA disabled.",
+    "twoFactorEnabled": "2FA enabled successfully.",
+    "twoFactorSubtitle": "Add an extra layer of security to your super-admin account.",
+    "twoFactorTitle": "Two-factor authentication (2FA)",
+    "updatePassword": "Update password"
+  },
+  "systemPage": {
+    "apiError": "Error: :error",
+    "apiOperational": "API operational",
+    "apiOperationalDb": "API operational — DB :ms ms",
+    "apiServices": "API Services",
+    "apiUnavailable": "Unavailable — GET /health/live",
+    "database": "Database",
+    "dbError": "Error: :error",
+    "dbLatency": "Latency: :ms ms",
+    "dbUnavailable": "Unavailable — run a Health Check.",
+    "dbUnreachable": "database unreachable",
+    "globalError": "Aggregated probe: database unreachable.",
+    "globalHealthy": "Aggregated DB + Redis probe operational.",
+    "globalStatus": "Global Status",
+    "globalUnavailable": "Unavailable — GET /admin/dashboard/stats",
+    "globalWarning": "Aggregated probe: degradation detected.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Checking...",
+    "healthError": "Health check completed — database in error",
+    "healthLiveUnreachable": "/health/live probe unreachable.",
+    "healthOk": "Health check completed — database operational",
+    "healthUnreachable": "Health check completed — database unreachable",
+    "infraDetails": ":active active companies · PHP :php · queue :queue",
+    "infraUnavailable": "Unavailable — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Error loading platform metrics",
+    "notifObsLoadError": "Error loading notifications observability",
+    "queueObsLoadError": "Error loading jobs observability",
+    "retry": "Retry",
+    "serviceUnreachable": "service unreachable",
+    "statsLoadError": "Error loading system stats",
+    "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
+    "title": "System Administration"
+  },
+  "crm": {
+    "subtitle": "Track leads from entry to paid conversion.",
+    "leadsTotal": "Total leads",
+    "leadToTrialRate": "Lead -> trial rate",
+    "leadToClientRate": "Lead -> paying client rate",
+    "loading": "Loading pipeline...",
+    "leadsIncoming": "Incoming Leads",
+    "noLead": "No lead",
+    "noTrial": "No ongoing trial",
+    "noClient": "No converted active client",
+    "noHistory": "No history"
+  },
+  "edge": {
+    "title": "Edge Nodes",
+    "nodesTotal": "Total nodes",
+    "licensesExpired": "Expired licenses",
+    "loading": "Loading nodes…",
+    "empty": "No Edge node registered",
+    "colNode": "Node",
+    "colStatus": "Status",
+    "colLicense": "License",
+    "colLastSync": "Last sync",
+    "colActions": "Actions",
+    "syncing": "Syncing…",
+    "sync": "Sync"
+  },
+  "notFound": {
+    "backToDashboard": "Back to dashboard",
+    "usefulLinks": "Useful links",
+    "system": "System",
+    "systemConfig": "System configuration"
   }
 }

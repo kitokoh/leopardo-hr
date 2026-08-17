@@ -1,9 +1,12 @@
 ﻿'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { Clock3, Landmark, Link2, TrendingUp, Users, Wallet, Coins } from 'lucide-react';
+
+const emptySubscribe = () => () => {};
 
 type Commission = {
   id: string;
@@ -25,6 +28,8 @@ type PartnerData = {
 };
 
 export default function PartnerDashboard() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const labels = getCopy(locale).partnerPage;
   const [data, setData] = useState<PartnerData | null>(null);
   const [status, setStatus] = useState('loading'); // 'not_applied', 'pending', 'approved', 'loading'
   const [copied, setCopied] = useState(false);
@@ -61,7 +66,7 @@ export default function PartnerDashboard() {
       });
       setStatus('pending');
     } catch (error) {
-      alert("Erreur lors de la candidature : " + (error as Error).message);
+      alert(labels.applyErrorPrefix + (error as Error).message);
     }
   };
 
@@ -76,14 +81,14 @@ export default function PartnerDashboard() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      alert('Impossible de copier le lien. Copiez-le manuellement.');
+      alert(labels.referral.copyError);
     }
   };
 
   const handleRequestPayout = async () => {
     const available = data?.stats?.approved_upcoming || 0;
     if (available < 100) {
-      alert('Solde insuffisant pour demander un virement (minimum 1,00 \u20ac).');
+      alert(labels.payout.insufficient);
       return;
     }
     setPayoutPending(true);
@@ -92,16 +97,16 @@ export default function PartnerDashboard() {
         method: 'POST',
         body: JSON.stringify({ amount: available, currency: 'EUR' }),
       });
-      alert('Demande de virement envoyee avec succes.');
+      alert(labels.payout.success);
       fetchData();
     } catch (error) {
-      alert('Erreur lors de la demande de virement : ' + (error as Error).message);
+      alert(labels.payout.errorPrefix + (error as Error).message);
     } finally {
       setPayoutPending(false);
     }
   };
 
-  if (status === 'loading') return <div className="p-8 text-center text-sm font-medium text-slate-500">Chargement de votre espace...</div>;
+  if (status === 'loading') return <div className="p-8 text-center text-sm font-medium text-slate-500">{labels.loading}</div>;
 
   if (status === 'not_applied') {
     return (
@@ -110,23 +115,22 @@ export default function PartnerDashboard() {
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50">
             <Users className="h-10 w-10 text-emerald-600" aria-hidden="true" />
           </div>
-          <h1 className="mb-4 text-3xl font-black text-slate-950">Devenir Partenaire</h1>
+          <h1 className="mb-4 text-3xl font-black text-slate-950">{labels.notApplied.title}</h1>
           <p className="mb-8 leading-relaxed text-slate-600">
-            Rejoignez l&apos;ecosysteme Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez.
-            Jusqu&apos;a 20% de commission recurrente.
+            {labels.notApplied.subtitle}
           </p>
           <div className="flex flex-col gap-3">
             <button
               onClick={() => handleApply('individual')}
               className="rounded-2xl bg-emerald-600 px-8 py-4 font-bold text-white transition-all hover:bg-emerald-700"
             >
-              Postuler en tant qu&apos;Individuel
+              {labels.notApplied.individual}
             </button>
             <button
               onClick={() => handleApply('agency')}
               className="rounded-2xl border border-emerald-600 px-8 py-4 font-bold text-emerald-600 transition-all hover:bg-emerald-50"
             >
-              Postuler en tant qu&apos;Agence
+              {labels.notApplied.agency}
             </button>
           </div>
         </div>
@@ -141,8 +145,8 @@ export default function PartnerDashboard() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50">
             <Clock3 className="h-8 w-8 text-amber-600" aria-hidden="true" />
           </div>
-          <h2 className="mb-2 text-2xl font-black text-slate-950">Candidature en cours</h2>
-          <p className="text-slate-500">Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé.</p>
+          <h2 className="mb-2 text-2xl font-black text-slate-950">{labels.pending.title}</h2>
+          <p className="text-slate-500">{labels.pending.body}</p>
         </div>
       </div>
     );
@@ -150,30 +154,30 @@ export default function PartnerDashboard() {
 
   return (
     <ModulePageShell
-      title="Dashboard Partenaire"
-      subtitle="Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+      title={labels.dashboard.title}
+      subtitle={labels.dashboard.subtitle}
       accentClassName="bg-gradient-to-br from-brand-500/10 via-white to-white"
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <MetricCard label="Conversions" value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-emerald-600 bg-emerald-50" />
-        <MetricCard label="Gains Totaux" value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' \u20ac'} icon={Coins} accent="text-emerald-600 bg-emerald-50" />
-        <MetricCard label="En attente" value={((data?.stats?.pending_approval || 0) / 100).toFixed(2) + ' \u20ac'} icon={Clock3} accent="text-amber-600 bg-amber-50" />
-        <MetricCard label="Solde Retirable" value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' \u20ac'} icon={Wallet} accent="text-security-dark bg-security-light" />
+        <MetricCard label={labels.metrics.conversions} value={data?.stats?.total_conversions || 0} icon={TrendingUp} accent="text-emerald-600 bg-emerald-50" />
+        <MetricCard label={labels.metrics.totalEarned} value={((data?.stats?.total_earned || 0) / 100).toFixed(2) + ' \u20ac'} icon={Coins} accent="text-emerald-600 bg-emerald-50" />
+        <MetricCard label={labels.metrics.pending} value={((data?.stats?.pending_approval || 0) / 100).toFixed(2) + ' \u20ac'} icon={Clock3} accent="text-amber-600 bg-amber-50" />
+        <MetricCard label={labels.metrics.withdrawable} value={((data?.stats?.approved_upcoming || 0) / 100).toFixed(2) + ' \u20ac'} icon={Wallet} accent="text-security-dark bg-security-light" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm lg:col-span-2">
           <div className="border-b border-app-border px-6 py-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">Dernieres Commissions</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">{labels.commissions.title}</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-app-border bg-transparent/50">
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Tenant ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">Statut</th>
-                  <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Montant</th>
+                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.tenantId}</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.date}</th>
+                  <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.status}</th>
+                  <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.table.amount}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-app-border">
@@ -185,14 +189,14 @@ export default function PartnerDashboard() {
                       <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${
                         comm.status === 'paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                       }`}>
-                        {comm.status}
+                        {comm.status === 'paid' ? labels.table.statusPaid : labels.table.statusPending}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right text-sm font-bold text-slate-950">{(comm.amount / 100).toFixed(2)} \u20ac</td>
                   </tr>
                 ))}
                 {(!data?.recent_commissions || data.recent_commissions.length === 0) && (
-                  <tr><td colSpan={4} className="px-6 py-10 text-center text-sm italic text-slate-500">Aucune commission enregistree.</td></tr>
+                  <tr><td colSpan={4} className="px-6 py-10 text-center text-sm italic text-slate-500">{labels.commissions.empty}</td></tr>
                 )}
               </tbody>
             </table>
@@ -205,19 +209,18 @@ export default function PartnerDashboard() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
                 <Landmark className="h-5 w-5" aria-hidden="true" />
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-800">Paiement</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-800">{labels.payout.title}</h3>
             </div>
             <div className="space-y-4">
               <p className="text-xs leading-relaxed text-slate-500">
-                Vos commissions sont payees une fois le seuil atteint.
-                Verifiez que vos coordonnees bancaires sont a jour.
+                {labels.payout.body}
               </p>
               <button
                 onClick={handleRequestPayout}
                 disabled={payoutPending}
                 className="w-full rounded-xl bg-slate-950 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
-                {payoutPending ? 'Envoi...' : 'Demander un virement'}
+                {payoutPending ? labels.payout.sending : labels.payout.request}
               </button>
             </div>
           </section>
@@ -225,17 +228,17 @@ export default function PartnerDashboard() {
           <section className="rounded-3xl bg-emerald-600 p-6 text-white shadow-lg shadow-brand-500/20">
             <div className="mb-4 flex items-center gap-2 opacity-90">
               <Link2 className="h-4 w-4" aria-hidden="true" />
-              <h3 className="text-xs font-bold uppercase tracking-widest">Lien de parrainage</h3>
+              <h3 className="text-xs font-bold uppercase tracking-widest">{labels.referral.title}</h3>
             </div>
             <div className="mb-4 break-all rounded-xl bg-white/10 p-3 font-mono text-xs">
-              {referralLink || 'Lien indisponible'}
+              {referralLink || labels.referral.unavailable}
             </div>
             <button
               onClick={handleCopyLink}
               disabled={!referralLink}
               className="w-full rounded-xl bg-white py-2 text-sm font-bold text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-50"
             >
-              {copied ? 'Copie !' : 'Copier mon lien'}
+              {copied ? labels.referral.copied : labels.referral.copy}
             </button>
           </section>
         </div>
@@ -255,4 +258,3 @@ function MetricCard({ label, value, icon: Icon, accent }: { label: string; value
     </div>
   );
 }
-

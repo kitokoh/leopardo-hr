@@ -18,6 +18,15 @@ List<dynamic> extractDataList(dynamic payload) {
   return const <dynamic>[];
 }
 
+/// Extracts the API `data` object without discarding sibling metadata such as
+/// `item`, `sessions`, or `summary`.
+Map<String, dynamic> extractDataEnvelopeMap(dynamic payload) {
+  if (payload is Map && payload['data'] is Map) {
+    return (payload['data'] as Map).cast<String, dynamic>();
+  }
+  return extractDataMap(payload);
+}
+
 Map<String, dynamic> extractDataMap(dynamic payload) {
   if (payload is Map) {
     final data = payload['data'];

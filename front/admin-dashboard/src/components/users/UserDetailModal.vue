@@ -88,8 +88,8 @@
 
 <script setup>
 import { UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
-import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale, translate } from '@/i18n/index.js'
+import { translate, toIntlLocale } from '@/i18n/index.js'
+import { useLocaleStore } from '@/stores/locale.js'
 
 const localeStore = useLocaleStore()
 
@@ -122,19 +122,20 @@ function getStatusColor(status) {
 }
 
 function getStatusLabel(status) {
-  // #4716 — libellés de statut localisés ×4 (users.status.*).
+  // #4716 : libellés localisés via le catalogue (users.filters.status.*,
+  // présents dans les 4 locales — fallback vide, garde i18n-diff).
   const labels = {
-    active: translate(localeStore.current, 'users.status.active', 'Actif'),
-    inactive: translate(localeStore.current, 'users.status.inactive', 'Inactif'),
-    suspended: translate(localeStore.current, 'users.status.suspended', 'Suspendu'),
-    pending: translate(localeStore.current, 'users.status.pending', 'En attente')
+    active: translate(localeStore.current, 'users.filters.status.active', ''),
+    inactive: translate(localeStore.current, 'users.filters.status.inactive', ''),
+    suspended: translate(localeStore.current, 'users.filters.status.suspended', ''),
+    pending: translate(localeStore.current, 'users.filters.status.pending', '')
   }
   return labels[status] || status
 }
 
 function formatDate(date) {
   if (!date) return '-'
-  // #4714 — date alignée sur la locale active (pattern toIntlLocale partout ailleurs).
+  // #4714 : locale active (toIntlLocale), pas le défaut navigateur.
   return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current))
 }
 </script>

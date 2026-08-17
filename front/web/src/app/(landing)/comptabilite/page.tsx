@@ -70,7 +70,7 @@ export default function ComptabilitePage() {
         ctaPrimary={content.hero.ctaPrimary}
         ctaSecondary={content.hero.ctaSecondary}
         badge={{
-          text: 'Paie Automatisée',
+          text: content.sections.heroBadge,
           icon: <CreditCard className="w-3 h-3" />,
         }}
       />
@@ -81,7 +81,7 @@ export default function ComptabilitePage() {
         subtitle={content.problem.subtitle}
         items={problemItems}
         badge={{
-          text: 'Les Défis',
+          text: content.sections.problemBadge,
           icon: <Calculator className="w-3 h-3" />,
         }}
       />
@@ -93,19 +93,19 @@ export default function ComptabilitePage() {
         description={content.solution.description}
         features={solutionFeatures}
         badge={{
-          text: 'Notre Solution',
+          text: content.sections.solutionBadge,
           icon: <CreditCard className="w-3 h-3" />,
         }}
       />
 
       {/* Features Section */}
       <FeaturesSection
-        title="Fonctionnalités Détaillées"
-        subtitle="Tout ce dont vous avez besoin"
+        title={content.sections.featuresTitle}
+        subtitle={content.sections.featuresSubtitle}
         features={features}
         columns={4}
         badge={{
-          text: 'Complet & Fiable',
+          text: content.sections.featuresBadge,
           icon: <CreditCard className="w-3 h-3" />,
         }}
       />

@@ -11,7 +11,7 @@
         <div class="mt-4 flex justify-end gap-2">
           <button class="btn-secondary" @click="cancel">{{ cancelLabel || $t('common.cancel', 'Annuler') }}</button>
           <button class="btn-danger" @click="confirm" :disabled="busy">
-            {{ busy ? (busyLabel || $t('common.inProgress', 'En cours…')) : (confirmLabel || $t('common.confirm', 'Confirmer')) }}
+            {{ busy ? (busyLabel || $t('common.busy', 'En cours…')) : (confirmLabel || $t('common.confirm', 'Confirmer')) }}
           </button>
         </div>
       </div>

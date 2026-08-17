@@ -679,7 +679,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardLaunchReadiness => 'Lansman Hazırlığı';
 
   @override
-  String get dashboardRecentActivity => 'Son Etkinlik';
+  String get dashboardRecentActivity => 'Son aktivite';
 
   @override
   String get dashboardRecentActivityHint => 'Ekibinizin son eylemleri';
@@ -710,7 +710,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get dashboardPresenceTodayTitle => 'Bugünkü katılım';
+  String get dashboardPresenceTodayTitle => 'Bugünkü yoklama';
 
   @override
   String dashboardPresenceTodaySummary(Object active, Object present) {
@@ -754,7 +754,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardCheckins30d => '30 gunluk yoklama';
 
   @override
-  String get dashboardActiveemployees => 'Aktif calisanlar';
+  String get dashboardActiveemployees => 'Aktif çalışanlar';
 
   @override
   String get dashboardClientsatrisk => 'Risk altindaki musteriler';
@@ -836,6 +836,174 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get dashboardNotprovided => 'Belirtilmedi';
+
+  @override
+  String get dashboardPendingAbsences => 'Bekleyen izinler';
+
+  @override
+  String get dashboardDepartments => 'Departmanlar';
+
+  @override
+  String get dashboardKpiTotal => 'toplam';
+
+  @override
+  String get dashboardKpiToProcess => 'işlenecek';
+
+  @override
+  String get dashboardKpiActive => 'aktif';
+
+  @override
+  String get dashboardPriorityProcessAbsences => 'Bekleyen izinleri işle';
+
+  @override
+  String get dashboardPriorityCheckPresences =>
+      'Bugünkü yoklamaları kontrol et';
+
+  @override
+  String get dashboardRecentActivityEmpty =>
+      'Bu kiracı için görüntülenecek son aktivite yok.';
+
+  @override
+  String get dashboardDashboardLoadError => 'Dashboard verileri yüklenemedi.';
+
+  @override
+  String get dashboardTenantLoading => 'Kiracı verileri yükleniyor...';
+
+  @override
+  String get dashboardWelcomeToday => 'Hoş geldiniz! Bugün neler oluyor, işte.';
+
+  @override
+  String get dashboardGoLiveReady => 'Çalışma alanınız go-live için hazır';
+
+  @override
+  String get dashboardGoLiveRequired => 'Go-live öncesi gerekli işlemler';
+
+  @override
+  String dashboardGoLiveScore(Object score) {
+    return 'Puan $score/100 — kiracı verileri, iletişim, maaş, yoklama ve müşteri enstrümantasyonuna dayalı.';
+  }
+
+  @override
+  String get dashboardTabToday => 'Bugün';
+
+  @override
+  String get dashboardTabWeek => 'Bu hafta';
+
+  @override
+  String get dashboardSystemFallback => 'Sistem';
+
+  @override
+  String get dashboardShortcutEmployees => 'Çalışanlar';
+
+  @override
+  String get dashboardShortcutLeave => 'İzinler';
+
+  @override
+  String get dashboardShortcutAttendance => 'Yoklama';
+
+  @override
+  String get dashboardShortcutAttendanceHint => 'Bugünkü durumunuzu görün.';
+
+  @override
+  String get dashboardShortcutAbsences => 'Devamsızlıklar';
+
+  @override
+  String get dashboardShortcutPayrollHint => 'Maaş belgelerinizi görüntüleyin.';
+
+  @override
+  String get dashboardShortcutPreferencesHint =>
+      'Arayüzünüz tercihlerinizi takip eder.';
+
+  @override
+  String get dashboardJournal => 'Günlük';
+
+  @override
+  String get dashboardSeeAllActivity => 'Tüm aktiviteyi gör';
+
+  @override
+  String get dashboardAiAssistant => 'Akıllı asistan';
+
+  @override
+  String get dashboardMessageSent => 'Mesaj ekibe gönderildi';
+
+  @override
+  String get dashboardSending => 'Gönderiliyor...';
+
+  @override
+  String get dashboardSendYes => 'Evet, gönder';
+
+  @override
+  String get dashboardLater => 'Sonra';
+
+  @override
+  String get dashboardQuickActions => 'Hızlı işlemler';
+
+  @override
+  String get dashboardQuickReports => 'Raporlar';
+
+  @override
+  String get dashboardQuickExport => 'Dışa aktar';
+
+  @override
+  String get dashboardEmpCheckin => 'Yoklama';
+
+  @override
+  String get dashboardEmpCheckinHint => 'Bugünkü durumunuzu görün.';
+
+  @override
+  String get dashboardEmpAbsences => 'Devamsızlıklar';
+
+  @override
+  String get dashboardEmpAbsencesHint =>
+      'Taleplerinizi ve bakiyelerinizi takip edin.';
+
+  @override
+  String get dashboardEmpPaystubs => 'Maaş bordroları';
+
+  @override
+  String get dashboardEmpPaystubsHint => 'Maaş belgelerinizi görüntüleyin.';
+
+  @override
+  String get dashboardEmpLanguage => 'Dil';
+
+  @override
+  String get dashboardEmpLanguageHint =>
+      'Arayüzünüz tercihlerinizi takip eder.';
+
+  @override
+  String get dashboardEmployeeSpace => 'Çalışan alanı';
+
+  @override
+  String dashboardHello(Object name) {
+    return 'Merhaba $name';
+  }
+
+  @override
+  String get dashboardEmployeeIntro =>
+      'Yönetici görünümlerinden geçmeden kullanışlı işlemlerinizi bulun: yoklama, devamsızlık, maaş bordrosu ve dil.';
+
+  @override
+  String get dashboardSuperadminIntro =>
+      'Bu alan müşteri çalışma alanları için optimize edilmiştir. Platform yönetimi özel admin panelinden yapılır.';
+
+  @override
+  String get dashboardOpenAdminDashboard => 'Admin panelini aç';
+
+  @override
+  String get dashboardAdminUrlHint =>
+      'Platform yönetimine doğrudan bağlantı eklemek için NEXT_PUBLIC_ADMIN_URL\'yi ayarlayın.';
+
+  @override
+  String get dashboardPlatformHealth => 'Platform sağlığı';
+
+  @override
+  String get dashboardClientRequests => 'Müşteri talepleri';
+
+  @override
+  String get dashboardTenantsAtRisk => 'Risk altındaki kiracılar';
+
+  @override
+  String get dashboardPlatformDashboardHint => 'Platform panelinde mevcuttur.';
 
   @override
   String get marketingOauthNavTitle => 'Pazarlama OAuth';
@@ -2348,110 +2516,140 @@ class AppLocalizationsTr extends AppLocalizations {
   String get companydetailLastactivity => 'Son aktivite';
 
   @override
-  String get userAuthPersonalLogin => 'Kisisel giris';
+  String get reportsAttendanceTitle => 'Yoklama Özeti';
 
   @override
-  String get userAuthLoginSubtitle =>
-      'Alanınıza, belgelerinize ve taleplerinize erisin.';
+  String get reportsAttendanceDesc =>
+      'Çalışan başına aylık devam, geç kalma ve devamsızlık raporu.';
 
   @override
-  String get userAuthNoAccount => 'Henuz hesabınız yok mu? Kayit olun';
+  String get reportsMonthLabel => 'Ay';
 
   @override
-  String userAuthGoogleError(String error) {
-    return 'Google hatasi: $error';
-  }
+  String get reportsPayrollTitle => 'Maaş Özeti';
 
   @override
-  String get authTogglePasswordVisibility => 'Sifreyi goster veya gizle';
+  String get reportsPayrollDesc =>
+      'Maaş dönemi başına brüt/net toplamlar, katkılar ve giderler.';
 
   @override
-  String get authDemoAccess => 'Demo erisimi';
+  String get reportsPeriodLabel => 'Dönem';
 
   @override
-  String get userAuthRegisterTitle => 'Hesabimi olustur';
+  String get reportsLeaveTitle => 'İzin Bakiyeleri';
 
   @override
-  String get userAuthRegisterSubtitle => 'Leopardo RH\'da ekibinize katilin.';
+  String get reportsLeaveDesc => 'Tüm çalışanlar için izin bakiyeleri durumu.';
 
   @override
-  String get userAuthFirstName => 'Ad';
+  String get reportsYearLabel => 'Yıl';
 
   @override
-  String get userAuthLastName => 'Soyad';
+  String get reportsHeadcountTitle => 'Personel Sayısı';
 
   @override
-  String get userAuthFirstNameRequired => 'Ad gerekli';
+  String get reportsHeadcountDesc =>
+      'Aktif personel dağılımı: departman, sözleşme türü ve cinsiyet.';
 
   @override
-  String get userAuthLastNameRequired => 'Soyad gerekli';
+  String get reportsTrainingTitle => 'Eğitim Takibi';
 
   @override
-  String get userAuthRegisterButton => 'Hesabimi olustur';
+  String get reportsTrainingDesc => 'Eğitim katılım ve tamamlama oranları.';
 
   @override
-  String get userAuthAlreadyAccount => 'Zaten hesabiniz var mi? Giris yapin';
+  String get reportsContractTitle => 'Sözleşme Bitişleri';
 
   @override
-  String get userAuthCompanyRequestTitle => 'Talep gonderildi!';
+  String get reportsContractDesc =>
+      'Önümüzdeki 30, 60, 90 gün içinde süresi dolan sözleşmeler.';
 
   @override
-  String get userAuthCompanyRequestBody =>
-      'Bir yonetici talebinizi inceleyecek. Islendiginde bildirim alacaksiniz.';
+  String get reportsDaysLabel => 'Gün';
 
   @override
-  String get userAuthBackToHome => 'Ana sayfaya don';
+  String get reportsGenerate => 'Oluştur';
 
   @override
-  String get userAuthSubmitError => 'Gonderme hatasi';
+  String get reportsSuccess => 'Rapor başarıyla indirildi.';
 
   @override
-  String get userAuthRegisterError => 'Kayit hatasi';
+  String get reportsError => 'Rapor oluşturulurken hata oluştu.';
 
   @override
-  String get userAuthLoginError => 'Gecersiz kimlik bilgileri';
+  String get reportsSubtitle =>
+      'İK raporlarınızı oluşturun ve indirin: devam, maaş, izin, personel, eğitim ve sözleşmeler.';
 
   @override
-  String get userAuthGoogleLoginError => 'Google giris hatasi';
+  String get notificationsChannelInapp => 'Uygulama içi';
 
   @override
-  String get commonRequired => 'Gerekli';
+  String get notificationsChannelEmailDesc => 'Önemli mesajlar ve onaylar.';
 
   @override
-  String get userAuthPhoneOptional => 'Telefon (opsiyonel)';
+  String get notificationsChannelPushDesc =>
+      'Kayıtlı cihazlarda hızlı uyarılar.';
 
   @override
-  String get userAuthPhone => 'Telefon';
+  String get notificationsChannelSmsDesc =>
+      'Acil durumlar için kısa kanal, onay sonrası etkin.';
 
   @override
-  String get userAuthCreateCompany => 'Sirket olustur';
+  String get notificationsChannelWhatsappDesc =>
+      'Gelecekteki sohbet kanalı, açık onayla.';
 
   @override
-  String get userAuthCompanyRequestInfo =>
-      'Sirket bilgilerini doldurun. Bir yonetici talebinizi dogruladiginda bildirim alacaksiniz.';
+  String get notificationsCategoryPayroll => 'Maaş';
 
   @override
-  String get userAuthCompanyName => 'Sirket adi';
+  String get notificationsCategorySecurity => 'Güvenlik';
 
   @override
-  String get userAuthCompanyEmail => 'Sirket e-postasi';
+  String get notificationsCategorySystem => 'Sistem';
 
   @override
-  String get userAuthSector => 'Is sektoru';
+  String get notificationsCategoryProductTips => 'Ürün ipuçları';
 
   @override
-  String get userAuthCountry => 'Ulke';
+  String get notificationsCategoriesTitle => 'Kategoriler';
 
   @override
-  String get userAuthCity => 'Sehir';
+  String get notificationsSaveError => 'Tercihler şu anda kaydedilemiyor.';
 
   @override
-  String get userAuthDescription => 'Aciklama';
+  String get notificationsChannelInappDesc => 'Web ve mobil bildirim merkezi.';
 
   @override
-  String get userAuthSubmitRequest => 'Talep gonder';
+  String get employeesLoadError => 'Çalışanlar yüklenemedi.';
 
   @override
-  String get userAuthRegisterSubtitleAlt =>
-      'Kisisel alanınıza erisin ve belgelerinizi duzenleyin.';
+  String get employeesTitle => 'Ekip';
+
+  @override
+  String get employeesSubtitle =>
+      'HR API\'sine bağlı yönetici görünümü: çalışan listesi, durum ve temel giriş noktaları.';
+
+  @override
+  String get employeesTotalTeam => 'Ekip toplamı';
+
+  @override
+  String get employeesSource => 'Kaynak';
+
+  @override
+  String get employeesState => 'Durum';
+
+  @override
+  String get employeesLoadingShort => 'Yükleniyor';
+
+  @override
+  String get employeesConnectedApi => 'API\'ye bağlı';
+
+  @override
+  String get employeesRecentCollaborators => 'Son iş arkadaşları';
+
+  @override
+  String get employeesListLoading => 'Ekip listesi yükleniyor...';
+
+  @override
+  String get employeesEmptyList => 'Bu hesap için görünür çalışan yok.';
 }
