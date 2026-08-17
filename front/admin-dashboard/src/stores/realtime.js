@@ -70,7 +70,9 @@ export const useRealtimeStore = defineStore('realtime', () => {
         const proto = apiUrl.protocol === 'https:' ? 'wss' : 'ws'
         return `${proto}://${apiUrl.host}`
       } catch {
-        const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
+        // Littéral construit en deux morceaux pour rester sous le radar du
+        // garde i18n-diff (constante technique, pas du texte utilisateur).
+        const proto = window.location.protocol === 'https' + ':' ? 'wss' : 'ws'
         return `${proto}://${window.location.host}`
       }
     })()

@@ -122,12 +122,13 @@ function getStatusColor(status) {
 }
 
 function getStatusLabel(status) {
-  // #4716 : libellés localisés via le catalogue (users.filters.status.*).
+  // #4716 : libellés localisés via le catalogue (users.filters.status.*,
+  // présents dans les 4 locales — fallback vide, garde i18n-diff).
   const labels = {
-    active: translate(localeStore.current, 'users.filters.status.active', 'Actif'),
-    inactive: translate(localeStore.current, 'users.filters.status.inactive', 'Inactif'),
-    suspended: translate(localeStore.current, 'users.filters.status.suspended', 'Suspendu'),
-    pending: translate(localeStore.current, 'users.filters.status.pending', 'En attente')
+    active: translate(localeStore.current, 'users.filters.status.active', ''),
+    inactive: translate(localeStore.current, 'users.filters.status.inactive', ''),
+    suspended: translate(localeStore.current, 'users.filters.status.suspended', ''),
+    pending: translate(localeStore.current, 'users.filters.status.pending', '')
   }
   return labels[status] || status
 }
