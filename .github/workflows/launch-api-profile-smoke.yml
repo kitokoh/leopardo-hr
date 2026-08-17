@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: "API base URL"
+        description: "API base URL versionnée (ex: https://host/api/v1)"
         required: false
-        default: "https://gestionemployerbackend.onrender.com/api/v1"
       include_platform_provisioning:
         description: "Create a guarded trial company smoke record"
         required: false
@@ -48,6 +47,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Guard base URL (fail-closed, #4720)
+        if: ${{ !github.event.inputs.base_url && !vars.PROD_API_BASE_URL }}
+        run: |
+          echo "::error::base_url input or PROD_API_BASE_URL variable must be set (silent fallback removed, issue #4720)."
+          exit 1
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -60,7 +65,7 @@ jobs:
       - name: Run launch API profile smoke
         shell: pwsh
         env:
-          LEOPARDO_API_BASE_URL: ${{ github.event.inputs.base_url }}
+          LEOPARDO_API_BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           LEOPARDO_MANAGER_TOKEN: ${{ secrets.LEOPARDO_MANAGER_TOKEN }}
           LEOPARDO_EMPLOYEE_TOKEN: ${{ secrets.LEOPARDO_EMPLOYEE_TOKEN }}
           LEOPARDO_PLATFORM_ADMIN_TOKEN: ${{ secrets.LEOPARDO_PLATFORM_ADMIN_TOKEN }}

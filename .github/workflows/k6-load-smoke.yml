@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       base_url:
-        description: "API staging base URL"
+        description: "API staging base URL (versionnée, ex: https://host/api/v1)"
         required: false
-        default: "https://gestionemployerbackend.onrender.com"
       health_vus:
         description: "Health virtual users"
         required: false
@@ -66,12 +65,18 @@ jobs:
         with:
           lfs: true
 
+      - name: Guard base URL (fail-closed, #4720)
+        if: ${{ !github.event.inputs.base_url && !vars.PROD_API_BASE_URL }}
+        run: |
+          echo "::error::base_url input or PROD_API_BASE_URL variable must be set (silent fallback removed, issue #4720)."
+          exit 1
+
       - name: Prepare reports directory
         run: mkdir -p dev-hub/load/reports
 
       - name: Run k6 API core smoke
         env:
-          BASE_URL: ${{ github.event.inputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           MANAGER_TOKEN: ${{ secrets.K6_MANAGER_TOKEN }}
           EMPLOYEE_TOKEN: ${{ secrets.K6_EMPLOYEE_TOKEN }}
           HEALTH_VUS: ${{ github.event.inputs.health_vus }}
@@ -125,12 +130,18 @@ jobs:
         with:
           lfs: true
 
+      - name: Guard base URL (fail-closed, #4720)
+        if: ${{ !github.event.inputs.base_url && !vars.PROD_API_BASE_URL }}
+        run: |
+          echo "::error::base_url input or PROD_API_BASE_URL variable must be set (silent fallback removed, issue #4720)."
+          exit 1
+
       - name: Prepare reports directory
         run: mkdir -p dev-hub/load/reports
 
       - name: Run k6 attendance punch scale
         env:
-          BASE_URL: ${{ github.event.inputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           EMPLOYEE_TOKENS: ${{ secrets.K6_EMPLOYEE_TOKENS }}
           PUNCH_MODE: manual  # was github.event.inputs.attendance_punch_mode; hardcoded to reduce inputs to ≤10 (#3612)
           STAGE_DURATION: ${{ github.event.inputs.attendance_stage_duration }}
@@ -171,12 +182,18 @@ jobs:
         with:
           lfs: true
 
+      - name: Guard base URL (fail-closed, #4720)
+        if: ${{ !github.event.inputs.base_url && !vars.PROD_API_BASE_URL }}
+        run: |
+          echo "::error::base_url input or PROD_API_BASE_URL variable must be set (silent fallback removed, issue #4720)."
+          exit 1
+
       - name: Prepare reports directory
         run: mkdir -p dev-hub/load/reports
 
       - name: Run k6 payroll progressive scale
         env:
-          BASE_URL: ${{ github.event.inputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.base_url || vars.PROD_API_BASE_URL }}
           MANAGER_TOKENS: ${{ secrets.K6_MANAGER_TOKENS }}
           PAYROLL_RUN_IDS: ${{ secrets.K6_PAYROLL_RUN_IDS }}
           ALLOW_PAYROLL_MUTATIONS: ${{ github.event.inputs.payroll_allow_mutations }}
