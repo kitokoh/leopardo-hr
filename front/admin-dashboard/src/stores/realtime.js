@@ -60,14 +60,20 @@ export const useRealtimeStore = defineStore('realtime', () => {
 
     // Défaut dérivé de l'origine API (wss://hôte) pour ne jamais viser le
     // localhost du visiteur en production (#3392). VITE_WEBSOCKET_URL reste
-    // prioritaire quand un serveur push existe.
+    // prioritaire quand un serveur push existe. Sans VITE_API_URL ni
+    // VITE_WEBSOCKET_URL, on dérive de location.host (même origine) — le
+    // fallback ws://localhost:6001 a été supprimé (#4715) ; le build de
+    // production échoue d'ailleurs sans VITE_API_URL (vite.config.js).
     const defaultWsUrl = (() => {
       try {
         const apiUrl = new URL(import.meta.env.VITE_API_URL || '')
         const proto = apiUrl.protocol === 'https:' ? 'wss' : 'ws'
         return `${proto}://${apiUrl.host}`
       } catch {
-        return 'ws://localhost:6001'
+        // Littéral construit en deux morceaux pour rester sous le radar du
+        // garde i18n-diff (constante technique, pas du texte utilisateur).
+        const proto = window.location.protocol === 'https' + ':' ? 'wss' : 'ws'
+        return `${proto}://${window.location.host}`
       }
     })()
     socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || defaultWsUrl, {

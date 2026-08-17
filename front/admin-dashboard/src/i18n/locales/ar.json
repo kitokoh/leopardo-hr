@@ -222,7 +222,11 @@
       "TD": "تشاد",
       "TG": "توغو",
       "US": "الولايات المتحدة"
-    }
+    },
+    "noResults": "لا توجد نتائج.",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "busy": "جارٍ التنفيذ…"
   },
   "signup": {
     "otpInvalidCode": "رمز غير صالح أو منتهي الصلاحية.",
@@ -446,6 +450,14 @@
       "title": "تعديل المستخدم",
       "status": "الحالة",
       "save": "تحديث"
+    },
+    "csv": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "status": "الحالة",
+      "company": "الشركة",
+      "signup": "التسجيل",
+      "lastLogin": "آخر تسجيل دخول"
     }
   },
   "_version": "1.0.0",
@@ -1122,7 +1134,8 @@
     "criticalAlerts": "تنبيهات حرجة",
     "level": "المستوى:",
     "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
-    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء"
+    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
+    "noCriticalAlerts": "لا تنبيهات حرجة"
   },
   "exports": {
     "reportEmployees": "الموظفون",
@@ -1284,5 +1297,74 @@
     "genericError": "خطأ :status على :endpoint.",
     "invalidData": "بيانات غير صالحة.",
     "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت."
+  },
+  "settingsPage": {
+    "cancel": "إلغاء",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "disable2fa": "إيقاف المصادقة الثنائية",
+    "disabled": "معطّل",
+    "email": "عنوان البريد الإلكتروني",
+    "enable2fa": "تفعيل المصادقة الثنائية",
+    "enabled": "مفعّل",
+    "enterCodeStep": "2. أدخل الرمز المكوّن من 6 أرقام",
+    "fullName": "الاسم الكامل",
+    "generateSecret": "إنشاء رمز 2FA السري",
+    "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
+    "manualSecret": "الرمز اليدوي:",
+    "minLengthHint": "8 أحرف على الأقل.",
+    "newPassword": "كلمة المرور الجديدة",
+    "password": "كلمة المرور",
+    "passwordSubtitle": "سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.",
+    "passwordTitle": "كلمة المرور",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح.",
+    "passwordsMismatch": "كلمتا المرور غير متطابقتين.",
+    "profileSubtitle": "الاسم وعنوان البريد الإلكتروني المستخدمان لتسجيل الدخول.",
+    "profileTitle": "معلومات الملف الشخصي",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح.",
+    "saveChanges": "حفظ التغييرات",
+    "scanStep": "1. امسح هذا الرابط / الرمز في تطبيق المصادقة الثنائية:",
+    "subtitle": "إدارة معلوماتك وكلمة المرور وأمان حساب المسؤول الأعلى.",
+    "title": "حسابي",
+    "twoFactorActiveHint": "المصادقة الثنائية مفعّلة. لإيقافها، أكّد كلمة المرور.",
+    "twoFactorDisabled": "تم إيقاف المصادقة الثنائية.",
+    "twoFactorEnabled": "تم تفعيل المصادقة الثنائية بنجاح.",
+    "twoFactorSubtitle": "أضف طبقة أمان إضافية إلى حساب المسؤول الأعلى.",
+    "twoFactorTitle": "المصادقة الثنائية (2FA)",
+    "updatePassword": "تحديث كلمة المرور"
+  },
+  "systemPage": {
+    "apiError": "خطأ: :error",
+    "apiOperational": "API يعمل",
+    "apiOperationalDb": "API يعمل — قاعدة البيانات :ms مللي ثانية",
+    "apiServices": "خدمات API",
+    "apiUnavailable": "غير متاح — GET /health/live",
+    "database": "قاعدة البيانات",
+    "dbError": "خطأ: :error",
+    "dbLatency": "زمن الاستجابة: :ms مللي ثانية",
+    "dbUnavailable": "غير متاح — قم بتشغيل فحص الصحة.",
+    "dbUnreachable": "تعذر الوصول إلى قاعدة البيانات",
+    "globalError": "الفحص المجمّع: تعذر الوصول إلى قاعدة البيانات.",
+    "globalHealthy": "فحص قاعدة البيانات وRedis المجمّع يعمل.",
+    "globalStatus": "الحالة العامة",
+    "globalUnavailable": "غير متاح — GET /admin/dashboard/stats",
+    "globalWarning": "الفحص المجمّع: تم اكتشاف تدهور في الأداء.",
+    "healthCheck": "فحص الصحة",
+    "healthCheckRunning": "جارٍ الفحص...",
+    "healthError": "اكتمل فحص الصحة — قاعدة البيانات في حالة خطأ",
+    "healthLiveUnreachable": "تعذر الوصول إلى فحص /health/live.",
+    "healthOk": "اكتمل فحص الصحة — قاعدة البيانات تعمل",
+    "healthUnreachable": "اكتمل فحص الصحة — تعذر الوصول إلى قاعدة البيانات",
+    "infraDetails": ":active شركة نشطة · PHP :php · قائمة الانتظار :queue",
+    "infraUnavailable": "غير متاح — GET /platform/metrics/overview",
+    "infrastructure": "البنية التحتية",
+    "metricsLoadError": "خطأ أثناء تحميل مقاييس المنصة",
+    "notifObsLoadError": "خطأ أثناء تحميل مراقبة الإشعارات",
+    "queueObsLoadError": "خطأ أثناء تحميل مراقبة الوظائف",
+    "retry": "إعادة المحاولة",
+    "serviceUnreachable": "تعذر الوصول إلى الخدمة",
+    "statsLoadError": "خطأ أثناء تحميل إحصائيات النظام",
+    "subtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
+    "title": "إدارة النظام"
   }
 }
