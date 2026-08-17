@@ -2635,4 +2635,262 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get employeesEmptyList => 'لا يوجد موظفون مرئيون لهذا الحساب.';
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get featureComingSoon => 'الميزة قريبًا';
+
+  @override
+  String get backToHome => 'العودة إلى الرئيسية';
+
+  @override
+  String get pageNotFound => 'الصفحة المطلوبة غير موجودة أو فشل التنقل.';
+
+  @override
+  String get registerCreateAccount => 'أنشئ حسابك';
+
+  @override
+  String get registerFirstName => 'الاسم الأول';
+
+  @override
+  String get registerRequired => 'مطلوب';
+
+  @override
+  String get registerPassword => 'كلمة المرور';
+
+  @override
+  String get registerMinChars => '8 أحرف على الأقل';
+
+  @override
+  String get registerCreating => 'جارٍ إنشاء الحساب...';
+
+  @override
+  String get registerSubmit => 'أنشئ حسابي';
+
+  @override
+  String get accessDeniedTitle => 'تم رفض الوصول';
+
+  @override
+  String get accessDeniedBody =>
+      'لا يملك حسابك دور المدير المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، موارد بشرية…) أو تواصل مع المسؤول.';
+
+  @override
+  String get accessDeniedLogout => 'تسجيل الخروج';
+
+  @override
+  String get accessDeniedBodyHr =>
+      'لا يملك حسابك دور الموارد البشرية المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، مدير…) أو تواصل مع المسؤول.';
+
+  @override
+  String get evaluationsTitle => 'تقييماتي';
+
+  @override
+  String get evaluationsEmpty => 'لا توجد تقييمات';
+
+  @override
+  String get evaluationsEmptyHint => 'ليس لديك أي تقييم مسجل بعد.';
+
+  @override
+  String evaluationPeriod(String period) {
+    return 'الفترة: \$period';
+  }
+
+  @override
+  String get attendanceOnTime => 'في الموعد';
+
+  @override
+  String get attendanceLate => 'متأخر';
+
+  @override
+  String get attendanceAbsent => 'غائب';
+
+  @override
+  String get attendanceInProgress => 'قيد التقدم';
+
+  @override
+  String get attendanceNoClock => 'لا يوجد تسجيل حضور';
+
+  @override
+  String attendanceTimeRange(String from, String to) {
+    return 'من \$from إلى \$to';
+  }
+
+  @override
+  String get attendanceHourWorked => 'ساعة عمل';
+
+  @override
+  String get attendanceHoursWorked => 'ساعات عمل';
+
+  @override
+  String attendanceDaySummary(String date, String status, String range, String hours) {
+    return 'يوم \$date، الحالة \$status، \$range، \$hours.';
+  }
+
+  @override
+  String get sessionApproved => 'تمت الموافقة على الجلسة ✓';
+
+  @override
+  String get sessionRejected => 'تم رفض الجلسة';
+
+  @override
+  String get pendingSessionsToValidate => 'للموافقة';
+
+  @override
+  String get pendingSessionsUpToDate => 'كل شيء محدث';
+
+  @override
+  String get pendingSessionsEmpty => 'لا توجد جلسة GPS بانتظار الموافقة.';
+
+  @override
+  String employeeNumber(String id) {
+    return 'الموظف #\$id';
+  }
+
+  @override
+  String sessionEntryAt(String time) {
+    return 'الدخول: \$time';
+  }
+
+  @override
+  String get sessionsToValidate => 'جلسات للموافقة';
+
+  @override
+  String errorPrefix(String message) {
+    return 'خطأ: \$message';
+  }
+
+  @override
+  String get saDashboardTitle => 'حضور GPS — لوحة تحكم الفريق';
+
+  @override
+  String get saDetected => 'تم الكشف';
+
+  @override
+  String get saApproved => 'تمت الموافقة';
+
+  @override
+  String get saRejected => 'مرفوضة';
+
+  @override
+  String get saRecentSessions => 'الجلسات الأخيرة';
+
+  @override
+  String get saForced => 'مفروض';
+
+  @override
+  String saPresenceInProgress(String time) {
+    return 'حضور قيد التقدم منذ \$time';
+  }
+
+  @override
+  String get saGpsZoneNotConfigured => 'لم يتم إعداد منطقة GPS لشركتك بعد.';
+
+  @override
+  String get saDisableAutoGps => 'تعطيل GPS التلقائي';
+
+  @override
+  String get saStatusApproved => 'تمت الموافقة';
+
+  @override
+  String get saStatusDetected => 'تم الكشف';
+
+  @override
+  String get saStatusRejected => 'مرفوضة';
+
+  @override
+  String get saStatusCancelled => 'ملغاة';
+
+  @override
+  String get saStatusPending => 'قيد التحقق';
+
+  @override
+  String get saEnableAutoGps => 'تفعيل GPS التلقائي';
+
+  @override
+  String get attendanceOvertime => 'ساعات إضافية';
+
+  @override
+  String get approvalsUpToDate => 'كل شيء محدث';
+
+  @override
+  String get approvalsEmpty => 'لا توجد موافقات معلقة.';
+
+  @override
+  String saConfigLoadError(String error) {
+    return 'تعذر تحميل الإعدادات.\n\$error';
+  }
+
+  @override
+  String get ampAutoDetectDesc =>
+      'يتم اكتشاف حضورك تلقائيًا عند دخولك منطقة الشركة. لا حاجة لأي إجراء منك.';
+
+  @override
+  String get ampRecommended => 'موصى به';
+
+  @override
+  String get ampQrScanDesc =>
+      'امسح رمز QR المعروض عند مدخل الشركة لتسجيل دخولك وخروجك.';
+
+  @override
+  String get ampManualDesc =>
+      'سجل يدويًا بالضغط على زرّي الوصول والمغادرة في شاشة الحضور.';
+
+  @override
+  String get ampSaveError => 'تعذر حفظ تفضيلاتك. تحقق من اتصالك.';
+
+  @override
+  String get ampTitle => 'اختر كيف تريد تسجيل حضورك كل يوم.';
+
+  @override
+  String get ampModeTitle => 'وضع التسجيل';
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get refresh => 'تحديث';
+
+  @override
+  String get saSessionsLoadError => 'تعذر تحميل جلسات GPS. تحقق من اتصالك.';
+
+  @override
+  String get saStartMonitoringError =>
+      'تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة.';
+
+  @override
+  String get shellTeam => 'الفريق';
+
+  @override
+  String get shellSettings => 'الإعدادات';
+
+  @override
+  String get homeCompleteOnboarding => 'إكمال تأهيلي';
+
+  @override
+  String get homeOnboardingHint => 'هيئ مساحة عملك في بضع خطوات.';
+
+  @override
+  String get welcomeMyTeam => 'فريقي';
+
+  @override
+  String get welcomePresences => 'الحضور';
+
+  @override
+  String get welcomeTasks => 'المهام';
+
+  @override
+  String get welcomeLeaves => 'الإجازات';
+
+  @override
+  String get monthlySummaryLoading => 'جارٍ تحميل الملخص الشهري...';
+
+  @override
+  String get orgChartEmpty => 'سيتوفر الهيكل التنظيمي بمجرد إعداد الموظفين.';
+
+  @override
+  String get orgChartCollapse => 'طي';
+
+  @override
+  String get orgChartExpand => 'توسيع';
 }

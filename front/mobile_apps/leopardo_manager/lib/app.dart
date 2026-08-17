@@ -1,6 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,21 +67,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: Colors.redAccent,
+              ),
               const SizedBox(height: 12),
               const Text(
                 'Une erreur est survenue',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'La page demandée est introuvable ou la navigation a échoué.',
-                textAlign: TextAlign.center,
-              ),
+              Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () => context.go('/'),
-                child: const Text('Retour à l\'accueil'),
+                child: Text(context.l10n.backToHome),
               ),
             ],
           ),
@@ -106,7 +110,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
-      final isAuthorized = isAuth && (authState.employee!.isManager || authState.employee!.isHr);
+      final isAuthorized =
+          isAuth && (authState.employee!.isManager || authState.employee!.isHr);
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && !isAuthorized) {
@@ -195,7 +200,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/me/monthly',
             builder: (context, state) => const MonthlySummaryScreen(),
           ),
-          GoRoute(path: '/team', builder: (context, state) => const TeamScreen()),
+          GoRoute(
+            path: '/team',
+            builder: (context, state) => const TeamScreen(),
+          ),
           GoRoute(
             path: '/tasks',
             builder: (context, state) => const TaskListScreen(),
@@ -212,7 +220,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/cabinet/folder/:folderId',
             builder: (context, state) {
-              final folderId = int.tryParse(state.pathParameters['folderId'] ?? '');
+              final folderId = int.tryParse(
+                state.pathParameters['folderId'] ?? '',
+              );
               if (folderId == null) {
                 return const Scaffold(body: SizedBox.shrink());
               }
@@ -247,7 +257,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/manager/attendance',
-            builder: (context, state) => const ManagerAttendanceMonitoringScreen(),
+            builder: (context, state) =>
+                const ManagerAttendanceMonitoringScreen(),
           ),
           GoRoute(
             path: '/manager/anomalies',
@@ -277,8 +288,10 @@ class LeopardoApp extends ConsumerWidget {
 
   Locale _resolveLocale(String rawLocale) {
     final normalized = rawLocale.trim().replaceAll('_', '-');
-    final parts =
-        normalized.split('-').where((part) => part.isNotEmpty).toList();
+    final parts = normalized
+        .split('-')
+        .where((part) => part.isNotEmpty)
+        .toList();
 
     if (parts.isEmpty) {
       return const Locale('fr');
@@ -319,9 +332,11 @@ class LeopardoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final preferences = ref.watch(appPreferencesProvider);
-    final deviceLanguage =
-        PlatformDispatcher.instance.locale.toLanguageTag().toLowerCase();
-    final languageCode = authState.employee?.language ??
+    final deviceLanguage = PlatformDispatcher.instance.locale
+        .toLanguageTag()
+        .toLowerCase();
+    final languageCode =
+        authState.employee?.language ??
         (preferences.preferredLanguage.isNotEmpty
             ? preferences.preferredLanguage
             : deviceLanguage);
