@@ -187,7 +187,7 @@
                   <p v-if="alert.level" class="text-xs text-gray-400 mt-0.5">{{ $t('shell.level', 'Niveau :') }} {{ alert.level }}</p>
                 </div>
                 <div v-if="dashboardStore.criticalAlerts.length === 0" class="px-4 py-6 text-center">
-                  <p class="text-sm text-gray-500">Aucune alerte critique</p>
+                  <p class="text-sm text-gray-500">{{ $t('shell.noCriticalAlerts', 'Aucune alerte critique') }}</p>
                 </div>
               </div>
             </div>
@@ -352,10 +352,12 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-
-  if (diff < 60000) return 'À l\'instant'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
+  // #4716 : temps relatifs localisés (Intl.RelativeTimeFormat) — avant :
+  // « À l'instant », « Xm », « Xh » en dur.
+  const rtf = new Intl.RelativeTimeFormat(toIntlLocale(localeStore.current), { numeric: 'auto' })
+  if (diff < 60000) return rtf.format(0, 'second')
+  if (diff < 3600000) return rtf.format(-Math.floor(diff / 60000), 'minute')
+  if (diff < 86400000) return rtf.format(-Math.floor(diff / 3600000), 'hour')
   return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 

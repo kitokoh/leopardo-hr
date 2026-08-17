@@ -53,7 +53,7 @@ class MarketingLeadController extends Controller
             // poisonning de la base leads CRM). Miroir d'EmailBounceWebhookController (#2616).
             Log::error('Marketing lead ingest: secret not configured — endpoint REJECTED (fail-closed). Set services.marketing_lead_webhook.secret.');
 
-            abort(503, 'Marketing lead webhook not configured.');
+            abort(503, 'MARKETING_WEBHOOK_NOT_CONFIGURED');
         }
 
         $providedSecret = (string) $request->header('X-Marketing-Lead-Token', '');

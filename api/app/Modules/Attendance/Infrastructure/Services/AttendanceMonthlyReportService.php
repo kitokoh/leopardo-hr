@@ -93,7 +93,7 @@ class AttendanceMonthlyReportService
         $handle = fopen('php://temp', 'r+');
 
         if ($handle === false) {
-            abort(500, 'Unable to build CSV export.');
+            abort(500, 'CSV_EXPORT_FAILED');
         }
 
         fputcsv($handle, ['employee_id', 'matricule', 'name', 'worked_days', 'worked_hours', 'overtime_hours', 'late_minutes', 'missing_check_outs', 'manual_corrections', 'estimated_hourly_rate', 'estimated_gross_amount', 'estimated_overtime_amount']);

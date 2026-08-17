@@ -689,7 +689,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardLaunchReadiness => 'Readiness lancement';
 
   @override
-  String get dashboardRecentActivity => 'Activite recente';
+  String get dashboardRecentActivity => 'Activité récente';
 
   @override
   String get dashboardRecentActivityHint => 'Dernieres actions de votre equipe';
@@ -720,7 +720,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get dashboardPresenceTodayTitle => 'Presence aujourd hui';
+  String get dashboardPresenceTodayTitle => 'Présence aujourd\'hui';
 
   @override
   String dashboardPresenceTodaySummary(Object active, Object present) {
@@ -766,7 +766,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardCheckins30d => 'Pointages 30j';
 
   @override
-  String get dashboardActiveemployees => 'Employes actifs';
+  String get dashboardActiveemployees => 'Employés actifs';
 
   @override
   String get dashboardClientsatrisk => 'Clients a risque';
@@ -849,6 +849,177 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dashboardNotprovided => 'Non renseigne';
+
+  @override
+  String get dashboardPendingAbsences => 'Absences en attente';
+
+  @override
+  String get dashboardDepartments => 'Départements';
+
+  @override
+  String get dashboardKpiTotal => 'total';
+
+  @override
+  String get dashboardKpiToProcess => 'à traiter';
+
+  @override
+  String get dashboardKpiActive => 'actifs';
+
+  @override
+  String get dashboardPriorityProcessAbsences =>
+      'Traiter les absences en attente';
+
+  @override
+  String get dashboardPriorityCheckPresences =>
+      'Vérifier les présences du jour';
+
+  @override
+  String get dashboardRecentActivityEmpty =>
+      'Aucune activité récente à afficher pour ce tenant.';
+
+  @override
+  String get dashboardDashboardLoadError =>
+      'Impossible de charger les données du dashboard.';
+
+  @override
+  String get dashboardTenantLoading => 'Chargement des données tenant...';
+
+  @override
+  String get dashboardWelcomeToday =>
+      'Bienvenue ! Voici ce qui se passe aujourd\'hui.';
+
+  @override
+  String get dashboardGoLiveReady => 'Votre espace est prêt pour le go-live';
+
+  @override
+  String get dashboardGoLiveRequired => 'Actions requises avant le go-live';
+
+  @override
+  String dashboardGoLiveScore(Object score) {
+    return 'Score $score/100 basé sur les données tenant, la communication, la paie, le pointage et l\'instrumentation client.';
+  }
+
+  @override
+  String get dashboardTabToday => 'Aujourd\'hui';
+
+  @override
+  String get dashboardTabWeek => 'Cette semaine';
+
+  @override
+  String get dashboardSystemFallback => 'Système';
+
+  @override
+  String get dashboardShortcutEmployees => 'Employés';
+
+  @override
+  String get dashboardShortcutLeave => 'Congés';
+
+  @override
+  String get dashboardShortcutAttendance => 'Pointage';
+
+  @override
+  String get dashboardShortcutAttendanceHint => 'Voir votre état du jour.';
+
+  @override
+  String get dashboardShortcutAbsences => 'Absences';
+
+  @override
+  String get dashboardShortcutPayrollHint => 'Consulter vos documents de paie.';
+
+  @override
+  String get dashboardShortcutPreferencesHint =>
+      'Votre interface suit vos préférences.';
+
+  @override
+  String get dashboardJournal => 'Journal';
+
+  @override
+  String get dashboardSeeAllActivity => 'Voir toute l\'activité';
+
+  @override
+  String get dashboardAiAssistant => 'Assistant intelligent';
+
+  @override
+  String get dashboardMessageSent => 'Message envoyé à l\'équipe';
+
+  @override
+  String get dashboardSending => 'Envoi...';
+
+  @override
+  String get dashboardSendYes => 'Oui, envoyer';
+
+  @override
+  String get dashboardLater => 'Plus tard';
+
+  @override
+  String get dashboardQuickActions => 'Actions rapides';
+
+  @override
+  String get dashboardQuickReports => 'Rapports';
+
+  @override
+  String get dashboardQuickExport => 'Export';
+
+  @override
+  String get dashboardEmpCheckin => 'Pointage';
+
+  @override
+  String get dashboardEmpCheckinHint => 'Voir votre état du jour.';
+
+  @override
+  String get dashboardEmpAbsences => 'Absences';
+
+  @override
+  String get dashboardEmpAbsencesHint => 'Suivre vos demandes et soldes.';
+
+  @override
+  String get dashboardEmpPaystubs => 'Bulletins';
+
+  @override
+  String get dashboardEmpPaystubsHint => 'Consulter vos documents de paie.';
+
+  @override
+  String get dashboardEmpLanguage => 'Langue';
+
+  @override
+  String get dashboardEmpLanguageHint =>
+      'Votre interface suit vos préférences.';
+
+  @override
+  String get dashboardEmployeeSpace => 'Espace employé';
+
+  @override
+  String dashboardHello(Object name) {
+    return 'Bonjour $name';
+  }
+
+  @override
+  String get dashboardEmployeeIntro =>
+      'Retrouvez vos actions utiles sans passer par les vues manager : pointage, absences, bulletins et langue.';
+
+  @override
+  String get dashboardSuperadminIntro =>
+      'Cette surface est optimisée pour les espaces clients. L\'administration plateforme se fait depuis le dashboard admin dédié.';
+
+  @override
+  String get dashboardOpenAdminDashboard => 'Ouvrir le dashboard admin';
+
+  @override
+  String get dashboardAdminUrlHint =>
+      'Configurez NEXT_PUBLIC_ADMIN_URL pour ajouter le lien direct vers l\'administration plateforme.';
+
+  @override
+  String get dashboardPlatformHealth => 'Santé plateforme';
+
+  @override
+  String get dashboardClientRequests => 'Demandes clients';
+
+  @override
+  String get dashboardTenantsAtRisk => 'Tenants à risque';
+
+  @override
+  String get dashboardPlatformDashboardHint =>
+      'Disponible dans le dashboard plateforme.';
 
   @override
   String get marketingOauthNavTitle => 'Marketing OAuth';
@@ -2377,112 +2548,145 @@ class AppLocalizationsFr extends AppLocalizations {
   String get companydetailLastactivity => 'Derniere Activite';
 
   @override
-  String get userAuthPersonalLogin => 'Connexion personnelle';
+  String get reportsAttendanceTitle => 'Résumé Présences';
 
   @override
-  String get userAuthLoginSubtitle =>
-      'Retrouvez votre espace, vos documents et vos demandes.';
+  String get reportsAttendanceDesc =>
+      'Rapport mensuel des présences, retards et absences par employé.';
 
   @override
-  String get userAuthNoAccount => 'Pas encore de compte ? S\'inscrire';
+  String get reportsMonthLabel => 'Mois';
 
   @override
-  String userAuthGoogleError(String error) {
-    return 'Erreur Google : $error';
-  }
+  String get reportsPayrollTitle => 'Résumé Paie';
 
   @override
-  String get authTogglePasswordVisibility =>
-      'Afficher ou masquer le mot de passe';
+  String get reportsPayrollDesc =>
+      'Total brut/net, cotisations et charges par période de paie.';
 
   @override
-  String get authDemoAccess => 'Acces Demo';
+  String get reportsPeriodLabel => 'Période';
 
   @override
-  String get userAuthRegisterTitle => 'Creer mon compte';
+  String get reportsLeaveTitle => 'Soldes Congés';
 
   @override
-  String get userAuthRegisterSubtitle =>
-      'Rejoignez votre equipe sur Leopardo RH.';
+  String get reportsLeaveDesc =>
+      'État des soldes de congés pour tous les employés.';
 
   @override
-  String get userAuthFirstName => 'Prenom';
+  String get reportsYearLabel => 'Année';
 
   @override
-  String get userAuthLastName => 'Nom';
+  String get reportsHeadcountTitle => 'Effectifs';
 
   @override
-  String get userAuthFirstNameRequired => 'Prenom requis';
+  String get reportsHeadcountDesc =>
+      'Répartition des effectifs actifs par département, type de contrat et genre.';
 
   @override
-  String get userAuthLastNameRequired => 'Nom requis';
+  String get reportsTrainingTitle => 'Suivi Formations';
 
   @override
-  String get userAuthRegisterButton => 'Creer mon compte';
+  String get reportsTrainingDesc =>
+      'Taux de participation et complétion des formations.';
 
   @override
-  String get userAuthAlreadyAccount => 'Deja un compte ? Se connecter';
+  String get reportsContractTitle => 'Échéances Contrats';
 
   @override
-  String get userAuthCompanyRequestTitle => 'Demande soumise !';
+  String get reportsContractDesc =>
+      'Contrats arrivant à échéance dans les 30, 60, 90 prochains jours.';
 
   @override
-  String get userAuthCompanyRequestBody =>
-      'Un administrateur examinera votre demande. Vous recevrez une notification des qu\'elle sera traitee.';
+  String get reportsDaysLabel => 'Jours';
 
   @override
-  String get userAuthBackToHome => 'Retour a l\'accueil';
+  String get reportsGenerate => 'Générer';
 
   @override
-  String get userAuthSubmitError => 'Erreur lors de la soumission';
+  String get reportsSuccess => 'Rapport téléchargé avec succès.';
 
   @override
-  String get userAuthRegisterError => 'Erreur lors de l\'inscription';
+  String get reportsError => 'Erreur lors de la génération du rapport.';
 
   @override
-  String get userAuthLoginError => 'Identifiants invalides';
+  String get reportsSubtitle =>
+      'Générez et téléchargez vos rapports RH : présences, paie, congés, effectifs, formations et contrats.';
 
   @override
-  String get userAuthGoogleLoginError => 'Erreur connexion Google';
+  String get notificationsChannelInapp => 'Dans l\'app';
 
   @override
-  String get commonRequired => 'Requis';
+  String get notificationsChannelEmailDesc =>
+      'Messages importants et confirmations.';
 
   @override
-  String get userAuthPhoneOptional => 'Telephone (optionnel)';
+  String get notificationsChannelPushDesc =>
+      'Alertes rapides sur les appareils enregistrés.';
 
   @override
-  String get userAuthPhone => 'Telephone';
+  String get notificationsChannelSmsDesc =>
+      'Canal court pour urgences, activé après opt-in.';
 
   @override
-  String get userAuthCreateCompany => 'Creer une entreprise';
+  String get notificationsChannelWhatsappDesc =>
+      'Canal conversationnel futur, avec opt-in explicite.';
 
   @override
-  String get userAuthCompanyRequestInfo =>
-      'Remplissez les informations de votre entreprise. Un administrateur validera votre demande.';
+  String get notificationsCategoryPayroll => 'Paie';
 
   @override
-  String get userAuthCompanyName => 'Nom de l\'entreprise';
+  String get notificationsCategorySecurity => 'Sécurité';
 
   @override
-  String get userAuthCompanyEmail => 'Email entreprise';
+  String get notificationsCategorySystem => 'Système';
 
   @override
-  String get userAuthSector => 'Secteur d\'activite';
+  String get notificationsCategoryProductTips => 'Conseils produit';
 
   @override
-  String get userAuthCountry => 'Pays';
+  String get notificationsCategoriesTitle => 'Catégories';
 
   @override
-  String get userAuthCity => 'Ville';
+  String get notificationsSaveError =>
+      'Impossible d\'enregistrer les préférences pour le moment.';
 
   @override
-  String get userAuthDescription => 'Description';
+  String get notificationsChannelInappDesc =>
+      'Centre de notifications web et mobile.';
 
   @override
-  String get userAuthSubmitRequest => 'Soumettre la demande';
+  String get employeesLoadError => 'Impossible de charger les employés.';
 
   @override
-  String get userAuthRegisterSubtitleAlt =>
-      'Accedez a votre espace personnel et organisez vos documents.';
+  String get employeesTitle => 'Équipe';
+
+  @override
+  String get employeesSubtitle =>
+      'Vue manager branchée à l\'API RH : liste des collaborateurs, statut et points d\'entrée essentiels.';
+
+  @override
+  String get employeesTotalTeam => 'Total équipe';
+
+  @override
+  String get employeesSource => 'Source';
+
+  @override
+  String get employeesState => 'État';
+
+  @override
+  String get employeesLoadingShort => 'Chargement';
+
+  @override
+  String get employeesConnectedApi => 'Connecté à l\'API';
+
+  @override
+  String get employeesRecentCollaborators => 'Collaborateurs récents';
+
+  @override
+  String get employeesListLoading => 'Chargement de la liste équipe...';
+
+  @override
+  String get employeesEmptyList => 'Aucun employé visible pour ce compte.';
 }
