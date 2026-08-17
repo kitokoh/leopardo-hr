@@ -337,6 +337,25 @@
       "prepareIntegrationsDesc": "Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs."
     }
   },
+  "time": {
+    "justNow": "à l'instant",
+    "minutesAgo": "il y a {count} min",
+    "hoursAgo": "il y a {count} h",
+    "minutesShort": "{count} m",
+    "hoursShort": "{count} h",
+    "never": "jamais",
+    "loadingData": "Chargement des données...",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "inProgress": "En cours…",
+    "valid": "Valide",
+    "invalid": "Invalide",
+    "statusActive": "Actif",
+    "statusInactive": "Inactif",
+    "statusSuspended": "Suspendu",
+    "statusPending": "Attente",
+    "exportCsv": "Export CSV"
+  },
   "_version": "1.0.0",
   "signup": {
     "roleHr": "RH",

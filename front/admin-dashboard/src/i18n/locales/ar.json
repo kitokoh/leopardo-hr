@@ -483,6 +483,25 @@
       "lastLogin": "آخر تسجيل دخول"
     }
   },
+  "time": {
+    "justNow": "الآن",
+    "minutesAgo": "منذ {count} د",
+    "hoursAgo": "منذ {count} س",
+    "minutesShort": "{count} د",
+    "hoursShort": "{count} س",
+    "never": "أبدًا",
+    "loadingData": "جارٍ تحميل البيانات...",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "inProgress": "جارٍ التنفيذ…",
+    "valid": "صالح",
+    "invalid": "غير صالح",
+    "statusActive": "نشط",
+    "statusInactive": "غير نشط",
+    "statusSuspended": "موقوف",
+    "statusPending": "قيد الانتظار",
+    "exportCsv": "تصدير CSV"
+  },
   "_version": "1.0.0",
   "tax_slabs": {
     "load_error": "تعذّر تحميل الشريحة الضريبية.",

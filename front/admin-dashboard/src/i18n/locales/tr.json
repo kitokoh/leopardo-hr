@@ -330,6 +330,25 @@
     "sending_to_server": "{label} sunucuya gönderiliyor...",
     "retry_after_failure": "{label}. Lütfen tekrar deneyin."
   },
+  "time": {
+    "justNow": "şimdi",
+    "minutesAgo": "{count} dk önce",
+    "hoursAgo": "{count} sa önce",
+    "minutesShort": "{count} dk",
+    "hoursShort": "{count} sa",
+    "never": "hiç",
+    "loadingData": "Veriler yükleniyor...",
+    "confirm": "Onayla",
+    "cancel": "İptal",
+    "inProgress": "Sürüyor…",
+    "valid": "Geçerli",
+    "invalid": "Geçersiz",
+    "statusActive": "Aktif",
+    "statusInactive": "Pasif",
+    "statusSuspended": "Askıya alındı",
+    "statusPending": "Beklemede",
+    "exportCsv": "CSV Dışa Aktar"
+  },
   "_version": "1.0.0",
   "tax_slabs": {
     "delete_confirm": "«{name}» dilimi silinsin mi?",
