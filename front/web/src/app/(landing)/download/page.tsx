@@ -1,6 +1,7 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -423,7 +424,26 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
   ],
 };
 
-export default function DownloadPage() {
+// #4799 (partie 2) : deep links /download?platform=<alias> provenant du Navbar
+// (et d'ailleurs). Les alias sont résolus case-insensitive vers le slug d'ancre
+// cible : cartes bureau (platform-windows / platform-macos), cartes mobile
+// (platform-android / platform-iphone) ou carte Platform Admin du bloc
+// applications mobiles (platform-platform-admin).
+const PLATFORM_SLUG_ALIASES: Record<string, string> = {
+  windows: 'windows',
+  win: 'windows',
+  macos: 'macos',
+  mac: 'macos',
+  android: 'android',
+  ios: 'iphone',
+  iphone: 'iphone',
+  'platform-admin': 'platform-admin',
+  admin: 'platform-admin',
+};
+
+const HIGHLIGHT_CLASS = 'ring-2 ring-emerald-400 ring-offset-2 dark:ring-offset-slate-950';
+
+function DownloadPageInner() {
   const { isDark, toggleDarkMode } = useDarkMode();
   useScrollReveal();
   const { locale, direction } = useVitrineLocale();
@@ -431,6 +451,39 @@ export default function DownloadPage() {
   const platforms = platformLabels[locale as AppLocale] ?? platformLabels.fr;
   const mobileApps = mobileAppsData[locale as AppLocale] ?? mobileAppsData.fr;
   const kiosk = kioskCopy[locale as AppLocale] ?? kioskCopy.fr;
+
+  const searchParams = useSearchParams();
+  const platformParam = searchParams.get('platform');
+  const [highlightedSlug, setHighlightedSlug] = useState<string | null>(null);
+  const highlightTimerRef = useRef<number | null>(null);
+
+  // #4799 : scroll + surbrillance temporaire (~2 s) vers la carte ciblée par
+  // ?platform=. Petit délai avant le scroll : le reflow initial (polices,
+  // layout, animations d'entrée) annulerait sinon le scrollIntoView.
+  useEffect(() => {
+    if (!platformParam) {
+      return;
+    }
+    const slug = PLATFORM_SLUG_ALIASES[platformParam.trim().toLowerCase()];
+    if (!slug) {
+      return;
+    }
+    const scrollTimer = window.setTimeout(() => {
+      const el = document.getElementById(`platform-${slug}`);
+      if (!el) {
+        return;
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setHighlightedSlug(slug);
+      highlightTimerRef.current = window.setTimeout(() => setHighlightedSlug(null), 2000);
+    }, 100);
+    return () => {
+      window.clearTimeout(scrollTimer);
+      if (highlightTimerRef.current) {
+        window.clearTimeout(highlightTimerRef.current);
+      }
+    };
+  }, [platformParam]);
 
   return (
     <div dir={direction} className={`min-h-screen transition-colors duration-500 ${isDark ? 'dark bg-slate-950' : 'bg-white'}`}>
@@ -475,20 +528,26 @@ export default function DownloadPage() {
       <section className="relative -mt-10 pb-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {platforms.map((item) => (
-              <Link
-                key={item.platform}
-                href={item.href}
-                className="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-5 shadow-sm hover:border-emerald-300 hover:shadow-lg transition-all"
-              >
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-300">
-                  {item.platform === 'Android' || item.platform === 'iPhone' ? <Smartphone className="h-5 w-5" /> : <Laptop className="h-5 w-5" />}
-                </div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">{item.platform}</p>
-                <h2 className="mt-2 text-base font-black text-slate-900 dark:text-white">{item.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
-              </Link>
-            ))}
+            {platforms.map((item) => {
+              const platformSlug = item.platform.toLowerCase();
+              return (
+                <Link
+                  key={item.platform}
+                  id={`platform-${platformSlug}`}
+                  href={item.href}
+                  className={`rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-5 shadow-sm hover:border-emerald-300 hover:shadow-lg transition-all ${
+                    highlightedSlug === platformSlug ? HIGHLIGHT_CLASS : ''
+                  }`}
+                >
+                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-300">
+                    {item.platform === 'Android' || item.platform === 'iPhone' ? <Smartphone className="h-5 w-5" /> : <Laptop className="h-5 w-5" />}
+                  </div>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-400">{item.platform}</p>
+                  <h2 className="mt-2 text-base font-black text-slate-900 dark:text-white">{item.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">{item.description}</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -603,11 +662,14 @@ export default function DownloadPage() {
               return (
                 <motion.div
                   key={app.name}
+                  id={`platform-${app.slug}`}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 shadow-sm hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-all"
+                  className={`rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 p-6 shadow-sm hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800/50 transition-all ${
+                    highlightedSlug === app.slug ? HIGHLIGHT_CLASS : ''
+                  }`}
                 >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-950/50 dark:to-cyan-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
                   <Smartphone className="w-6 h-6" />
@@ -723,6 +785,16 @@ export default function DownloadPage() {
 
       <Footer />
     </div>
+  );
+}
+
+// #4799 : useSearchParams nécessite un boundary Suspense (Next.js 16) —
+// même pattern que /contact et /checkout.
+export default function DownloadPage() {
+  return (
+    <Suspense fallback={null}>
+      <DownloadPageInner />
+    </Suspense>
   );
 }
 

@@ -61,7 +61,7 @@ class LedgerController extends Controller
     {
         $entryType = $request->input('entry_type');
         if ($entryType !== null && ! in_array($entryType, LedgerEntry::TYPES, true)) {
-            abort(422, 'Invalid entry_type filter.');
+            abort(422, 'INVALID_ENTRY_TYPE_FILTER');
         }
 
         $perPage = max(1, min(100, $request->integer('per_page', 20)));
