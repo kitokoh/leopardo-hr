@@ -174,7 +174,7 @@ class SalaryAdvanceController extends Controller
             abort(404);
         }
         if (! $actor->isManager()) {
-            abort(403, 'Manager role required.');
+            abort(403, 'MANAGER_REQUIRED');
         }
         if ($salaryAdvance->validation_status !== 'manager_approved') {
             return response()->json(['message' => 'Advance must be manager-approved before declaring payment.'], 422);
@@ -280,7 +280,7 @@ class SalaryAdvanceController extends Controller
             abort(404);
         }
         if ($salaryAdvance->employee_id !== $actor->id) {
-            abort(403, 'Only the advance owner can confirm reception.');
+            abort(403, 'ADVANCE_CONFIRM_FORBIDDEN');
         }
         if ($salaryAdvance->validation_status !== 'payment_declared') {
             return response()->json(['message' => 'Payment must be declared before employee confirmation.'], 422);
@@ -318,7 +318,7 @@ class SalaryAdvanceController extends Controller
             abort(404);
         }
         if ($salaryAdvance->employee_id !== $actor->id) {
-            abort(403, 'Only the advance owner can dispute it.');
+            abort(403, 'ADVANCE_DISPUTE_FORBIDDEN');
         }
         if ($salaryAdvance->validation_status !== 'payment_declared') {
             return response()->json(['message' => 'Payment must be declared before it can be disputed.'], 422);
@@ -358,7 +358,7 @@ class SalaryAdvanceController extends Controller
             abort(404);
         }
         if (! $actor->isManager()) {
-            abort(403, 'Manager role required.');
+            abort(403, 'MANAGER_REQUIRED');
         }
         if ($salaryAdvance->validation_status !== 'disputed') {
             return response()->json(['message' => 'Advance is not currently disputed.'], 422);
@@ -395,7 +395,7 @@ class SalaryAdvanceController extends Controller
             abort(404);
         }
         if (! $actor->isManager()) {
-            abort(403, 'Manager role required.');
+            abort(403, 'MANAGER_REQUIRED');
         }
         if (! in_array($salaryAdvance->status, ['pending', 'approved'], true)) {
             return response()->json(['message' => 'Only pending advances can be manager-approved.'], 422);

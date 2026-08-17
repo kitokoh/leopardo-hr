@@ -56,6 +56,14 @@ return [
         'activate_manager_access' => 'Yonetici erisimimi etkinlestir',
         'try_demo_account' => 'Demo hesabini dene',
         'two_factor_required' => '2FA kodu gereklidir.',
+        'demo' => [
+            'access' => 'Demo erisimi',
+        ],
+        'toggle' => [
+            'password' => [
+                'visibility' => 'Sifreyi goster veya gizle',
+            ],
+        ],
     ],
     'common' => [
         'language' => [
@@ -66,7 +74,7 @@ return [
                 'fr-CA' => 'Fransizca (Kanada)',
                 'ar-SA' => 'Arapca (Suudi Arabistan)',
                 'ar-MA' => 'Arapca (Fas)',
-                'tr-TR' => 'Türkçe (Türkiye)',
+                'tr-TR' => 'Turkce (Turkiye)',
                 'en-US' => 'Ingilizce (Amerika Birlesik Devletleri)',
                 'en-GB' => 'Ingilizce (Birlesik Krallik)',
             ],
@@ -95,6 +103,7 @@ return [
             'TR' => 'Türkiye',
             'US' => 'Amerika Birleşik Devletleri',
         ],
+        'required' => 'Gerekli',
     ],
     'modules' => [
         'attendance' => 'Puantaj',

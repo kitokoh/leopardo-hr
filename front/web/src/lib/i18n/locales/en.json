@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -56,7 +56,15 @@
     "personal_account_link": "Personal account",
     "activate_manager_access": "Activate my manager access",
     "try_demo_account": "Try a demo account",
-    "two_factor_required": "The 2FA code is required."
+    "two_factor_required": "The 2FA code is required.",
+    "demo": {
+      "access": "Demo access"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Show or hide password"
+      }
+    }
   },
   "common": {
     "language": {
@@ -95,7 +103,8 @@
       "TN": "Tunisia",
       "TR": "Türkiye",
       "US": "United States"
-    }
+    },
+    "required": "Required"
   },
   "modules": {
     "attendance": "Attendance",
@@ -1033,6 +1042,35 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
   },
   "partnerPage": {
     "loading": "Loading your workspace...",

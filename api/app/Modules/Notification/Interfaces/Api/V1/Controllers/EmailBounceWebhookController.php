@@ -37,7 +37,7 @@ class EmailBounceWebhookController extends Controller
             // doit jamais traiter un payload (fail-open = spooling/poisoning).
             Log::error('Email bounce webhook: secret non configuré — webhook REJETÉ (fail-closed).');
 
-            abort(503, 'Email bounce webhook not configured.');
+            abort(503, 'EMAIL_BOUNCE_WEBHOOK_NOT_CONFIGURED');
         }
 
         $providedSecret = (string) $request->header('X-Bounce-Webhook-Secret', '');

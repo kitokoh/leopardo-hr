@@ -78,7 +78,15 @@
     "two_fa_invalid": "Le code 2FA fourni est invalide.",
     "two_fa_required_msg": "Un code de vérification est requis.",
     "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
-    "unexpected_error": "Une erreur inattendue est survenue."
+    "unexpected_error": "Une erreur inattendue est survenue.",
+    "demo": {
+      "access": "Acces Demo"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Afficher ou masquer le mot de passe"
+      }
+    }
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -449,13 +457,13 @@
     "language": {
       "label": "Langue",
       "variants": {
-        "fr-FR": "Français (France)",
+        "fr-FR": "Francais (France)",
         "en-US": "Anglais (Etats-Unis)",
         "en-GB": "Anglais (Royaume-Uni)",
-        "fr-CA": "Français (Canada)",
+        "fr-CA": "Francais (Canada)",
         "tr-TR": "Turc (Turquie)",
         "ar-SA": "Arabe (Arabie saoudite)",
-        "fr-BE": "Français (Belgique)",
+        "fr-BE": "Francais (Belgique)",
         "ar-MA": "Arabe (Maroc)"
       }
     },
@@ -483,6 +491,7 @@
       "TR": "Turquie"
     },
     "or": "ou",
+    "required": "Requis",
     "noResults": "Aucun résultat trouvé.",
     "confirm": "Confirmer",
     "cancel": "Annuler",
@@ -574,7 +583,7 @@
       "description": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible."
     }
   },
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "companies": {
     "toast": {
       "subscription_failed": "Échec de la mise à jour de l'abonnement.",
@@ -1235,7 +1244,10 @@
     "showingSuffix": "demandes",
     "loadError": "Impossible de synchroniser les demandes clients.",
     "toastApproved": "Demande approuvée. Provisionnement lancé.",
-    "toastRejected": "Demande rejetée."
+    "toastRejected": "Demande rejetée.",
+    "noTicket": "Aucun ticket",
+    "selectTicket": "Sélectionnez un ticket pour voir la conversation",
+    "loadConversationError": "Impossible de charger la conversation."
   },
   "reports": {
     "attendance_title": "Résumé Présences",
@@ -1285,6 +1297,35 @@
     "recent_collaborators": "Collaborateurs récents",
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
   },
   "partnerPage": {
     "loading": "Chargement de votre espace...",
@@ -1418,5 +1459,37 @@
     "statsLoadError": "Erreur lors du chargement des stats système",
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
     "title": "Administration Système"
+  },
+  "crm": {
+    "subtitle": "Suivi des leads de l'entrée jusqu'à la conversion payante.",
+    "leadsTotal": "Leads totaux",
+    "leadToTrialRate": "Taux lead -> essai",
+    "leadToClientRate": "Taux lead -> client payant",
+    "loading": "Chargement du pipeline...",
+    "leadsIncoming": "Leads Entrants",
+    "noLead": "Aucun lead",
+    "noTrial": "Aucun essai en cours",
+    "noClient": "Aucun client actif converti",
+    "noHistory": "Aucun historique"
+  },
+  "edge": {
+    "title": "Nodes Edge",
+    "nodesTotal": "Nodes total",
+    "licensesExpired": "Licences expirées",
+    "loading": "Chargement des nodes…",
+    "empty": "Aucun node Edge enregistré",
+    "colNode": "Node",
+    "colStatus": "Statut",
+    "colLicense": "Licence",
+    "colLastSync": "Dernière sync",
+    "colActions": "Actions",
+    "syncing": "Sync…",
+    "sync": "Sync"
+  },
+  "notFound": {
+    "backToDashboard": "Retour au tableau de bord",
+    "usefulLinks": "Liens utiles",
+    "system": "Système",
+    "systemConfig": "Configuration système"
   }
 }

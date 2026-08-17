@@ -488,7 +488,7 @@
     "trialUnit": "d"
   },
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "holidays": {
     "saving": "Saving…",
     "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
@@ -661,6 +661,7 @@
       "TG": "Togo",
       "US": "United States"
     },
+    "required": "Required",
     "noResults": "No results found.",
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -754,7 +755,15 @@
     "two_fa_invalid": "The 2FA code provided is invalid.",
     "two_fa_required_msg": "A verification code is required.",
     "two_fa_setup_failed": "Generating the 2FA secret failed.",
-    "unexpected_error": "An unexpected error occurred."
+    "unexpected_error": "An unexpected error occurred.",
+    "demo": {
+      "access": "Demo access"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Show or hide password"
+      }
+    }
   },
   "marketing": {
     "oauth": {
@@ -1235,7 +1244,10 @@
     "showingSuffix": "requests",
     "loadError": "Unable to sync client requests.",
     "toastApproved": "Request approved. Provisioning started.",
-    "toastRejected": "Request rejected."
+    "toastRejected": "Request rejected.",
+    "noTicket": "No ticket",
+    "selectTicket": "Select a ticket to view the conversation",
+    "loadConversationError": "Unable to load the conversation."
   },
   "reports": {
     "attendance_title": "Attendance Summary",
@@ -1285,6 +1297,35 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
   },
   "partnerPage": {
     "loading": "Loading your workspace...",
@@ -1418,5 +1459,37 @@
     "statsLoadError": "Error loading system stats",
     "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
     "title": "System Administration"
+  },
+  "crm": {
+    "subtitle": "Track leads from entry to paid conversion.",
+    "leadsTotal": "Total leads",
+    "leadToTrialRate": "Lead -> trial rate",
+    "leadToClientRate": "Lead -> paying client rate",
+    "loading": "Loading pipeline...",
+    "leadsIncoming": "Incoming Leads",
+    "noLead": "No lead",
+    "noTrial": "No ongoing trial",
+    "noClient": "No converted active client",
+    "noHistory": "No history"
+  },
+  "edge": {
+    "title": "Edge Nodes",
+    "nodesTotal": "Total nodes",
+    "licensesExpired": "Expired licenses",
+    "loading": "Loading nodes…",
+    "empty": "No Edge node registered",
+    "colNode": "Node",
+    "colStatus": "Status",
+    "colLicense": "License",
+    "colLastSync": "Last sync",
+    "colActions": "Actions",
+    "syncing": "Syncing…",
+    "sync": "Sync"
+  },
+  "notFound": {
+    "backToDashboard": "Back to dashboard",
+    "usefulLinks": "Useful links",
+    "system": "System",
+    "systemConfig": "System configuration"
   }
 }

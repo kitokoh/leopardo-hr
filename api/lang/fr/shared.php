@@ -56,14 +56,22 @@ return [
         'activate_manager_access' => 'Activer mon acces manager',
         'try_demo_account' => 'Tester avec un compte demo',
         'two_factor_required' => 'Le code 2FA est requis.',
+        'demo' => [
+            'access' => 'Acces Demo',
+        ],
+        'toggle' => [
+            'password' => [
+                'visibility' => 'Afficher ou masquer le mot de passe',
+            ],
+        ],
     ],
     'common' => [
         'language' => [
             'label' => 'Langue',
             'variants' => [
-                'fr-FR' => 'Français (France)',
-                'fr-BE' => 'Français (Belgique)',
-                'fr-CA' => 'Français (Canada)',
+                'fr-FR' => 'Francais (France)',
+                'fr-BE' => 'Francais (Belgique)',
+                'fr-CA' => 'Francais (Canada)',
                 'ar-SA' => 'Arabe (Arabie saoudite)',
                 'ar-MA' => 'Arabe (Maroc)',
                 'tr-TR' => 'Turc (Turquie)',
@@ -95,6 +103,7 @@ return [
             'TR' => 'Turquie',
             'US' => 'États-Unis',
         ],
+        'required' => 'Requis',
     ],
     'modules' => [
         'attendance' => 'Pointage',
