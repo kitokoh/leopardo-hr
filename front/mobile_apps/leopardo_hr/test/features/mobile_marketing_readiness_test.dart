@@ -53,6 +53,7 @@ void main() {
       overrides: overrides,
       surfaceSize: const Size(430, 1000),
     );
+    await tester.pumpAndSettle();
     expect(find.text('Mes Absences'), findsOneWidget);
     expect(find.text('Conge annuel'), findsOneWidget);
     expect(find.text('Approuver'), findsOneWidget);
@@ -64,6 +65,7 @@ void main() {
       overrides: overrides,
       surfaceSize: const Size(430, 1000),
     );
+    await tester.pumpAndSettle();
     expect(find.text('Avances'), findsOneWidget);
     expect(find.text('30000 DZD'), findsOneWidget);
     expect(find.text('Approuver'), findsOneWidget);

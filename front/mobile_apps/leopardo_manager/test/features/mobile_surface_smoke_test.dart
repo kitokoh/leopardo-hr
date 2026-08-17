@@ -81,6 +81,7 @@ void main() {
         overrides: baseOverrides,
         surfaceSize: const Size(430, 1200),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(entry.key), findsOneWidget);
     }
