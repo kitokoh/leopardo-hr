@@ -123,6 +123,14 @@
       "title": "Edit user",
       "status": "Status",
       "save": "Update"
+    },
+    "csv": {
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "company": "Company",
+      "signup": "Signup",
+      "lastLogin": "Last login"
     }
   },
   "signup": {
@@ -652,7 +660,11 @@
       "TD": "Chad",
       "TG": "Togo",
       "US": "United States"
-    }
+    },
+    "noResults": "No results found.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "busy": "In progress…"
   },
   "_locale": "en",
   "attendance": {
@@ -1122,7 +1134,8 @@
     "criticalAlerts": "Critical alerts",
     "level": "Level:",
     "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
-    "tenantOnly": "Enterprise feature — reserved for client workspaces"
+    "tenantOnly": "Enterprise feature — reserved for client workspaces",
+    "noCriticalAlerts": "No critical alerts"
   },
   "exports": {
     "reportEmployees": "Employees",
