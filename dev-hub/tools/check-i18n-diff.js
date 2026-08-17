@@ -62,6 +62,10 @@ const ignorePathFragments = [
   // Issue #3183 : la garde flaggait chaque PR de contenu (ex. #2972, 25 lignes).
   '/vitrine/lib/vitrine-locale.ts', '/vitrine/data/', '/vitrine/lib/content.ts',
   '/vitrine/lib/seo.ts', '/vitrine/lib/seo-metadata.ts',
+  // case-studies.ts contient moduleLabelsByLocale (Record<AppLocale,...>) —
+  // même mécanique que vitrine-locale.ts : c'est le catalogue inline, pas une
+  // chaîne hardcodée hors i18n. Issue #4703.
+  '/vitrine/lib/case-studies.ts',
 ];
 
 // Lines that already route text through a translation mechanism — never

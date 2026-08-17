@@ -31,19 +31,31 @@ import { getApiBaseUrl } from '@/lib/backend-url';
    PLAN CONFIG
    Montants alignés sur PlanSeeder (api/database/seeders/PlanSeeder.php,
    schéma canonique #2977/#3919) :
-   Free 0€/5 emp · Pilot 29€/mois (24€/an, 30 employés) ·
-   Operations 79€/mois (66€/mois en annuel, 200 employés) · Enterprise sur devis. (ADR-0014)
-   Tarif annuel affiché au mois (24/79 €) — équivalent 290/949 €/an.
+   Free 0€/5 emp · Pilot 29€/mois (24,17€/mois en annuel = 290 €/an, 30 employés) ·
+   Operations 79€/mois (65,83€/mois en annuel = 790 €/an, 200 employés) · Enterprise sur devis. (ADR-0014)
+   Tarif annuel affiché au mois (24,17/65,83 €) — équivalent exact 290/790 €/an (PlanSeeder).
    Essai : 14 jours (décision D-E4-01).
 ───────────────────────────────────────────── */
+// #4791 : prix annuel exact (290/790 €/an ÷ 12) — affiché avec le séparateur
+// décimal de la locale (24,17 € en fr/tr/ar, 24.17 en en).
+function formatPrice(value: number | null, locale: string): string {
+  if (value === null) return '';
+  const isWhole = Number.isInteger(value);
+  const intl = locale === 'en' ? 'en-US' : locale === 'tr' ? 'tr-TR' : locale === 'ar' ? 'ar-EG' : 'fr-FR';
+  return value.toLocaleString(intl, {
+    minimumFractionDigits: isWhole ? 0 : 2,
+    maximumFractionDigits: isWhole ? 0 : 2,
+  });
+}
+
 const PLAN_CONFIG = {
   pilot: {
     icon: Rocket,
     color: 'blue',
     gradient: 'from-blue-500 to-indigo-600',
     priceMonthly: 29,
-    priceAnnual: 24,
-    savings: 60,
+    priceAnnual: 24.17,
+    savings: 58,
     trialDays: 14,
   },
   operations: {
@@ -52,8 +64,8 @@ const PLAN_CONFIG = {
     gradient: 'from-emerald-500 to-cyan-600',
     // ADR-0014 : 79 €/mois, 66 €/mois annuel (790 €/an)
     priceMonthly: 79,
-    priceAnnual: 66,
-    savings: 156,
+    priceAnnual: 65.83,
+    savings: 158,
     trialDays: 14,
   },
   enterprise: {
@@ -176,10 +188,10 @@ function PlanSummaryCard({
   const copy = getCheckoutCopy(locale);
   const planCopy = copy.plans[plan];
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
-  const priceLabel = price === null ? copy.quote : String(price);
-  // #4380 : rabais annuel calculé depuis le tarif (Pilot 29→24 = 17 %, Operations
-  // 99→79 = 20 %) — le badge statique « -17 % » était faux pour Operations et
-  // contredisait la source unique « jusqu'à 20 % » (#4202).
+  const priceLabel = price === null ? copy.quote : formatPrice(price, locale);
+
+  // #4380 : rabais annuel calculé depuis le tarif (Pilot 29→24,17 = 17 %, Operations
+  // 79→65,83 = 17 %) — badge statique remplacé par le calcul exact (#4791).
   const annualDiscountPct =
     billing === 'annual' && cfg.priceMonthly && cfg.priceAnnual
       ? Math.round((1 - cfg.priceAnnual / cfg.priceMonthly) * 100)
@@ -200,7 +212,7 @@ function PlanSummaryCard({
         </div>
         <div>
           <div className="flex items-baseline gap-1">
-            {price !== null && <span className="text-white/70 text-sm">EUR</span>}
+            {price !== null && <span className="text-white/70 text-sm">{copy.currencyLabel}</span>}
             <span className="text-white font-black text-5xl">{priceLabel}</span>
             {price !== null && <span className="text-white/70 text-sm">{copy.perMonth}</span>}
           </div>
@@ -338,7 +350,7 @@ function StepRecap({
   const price = billing === 'annual' ? cfg.priceAnnual : cfg.priceMonthly;
   const { locale } = useVitrineLocale();
   const copy = getCheckoutCopy(locale);
-  const priceLabel = price === null ? copy.quote : String(price);
+  const priceLabel = price === null ? copy.quote : formatPrice(price, locale);
 
   return (
     <motion.div
@@ -375,7 +387,7 @@ function StepRecap({
         <>
           {price === null
             ? copy.quote
-            : copy.recap.continueCta.replace('{price}', String(price))}{' '}
+            : copy.recap.continueCta.replace('{price}', formatPrice(price, locale))}{' '}
           <ArrowRight className="w-5 h-5" />
         </>
       </button>
@@ -824,11 +836,11 @@ function StepPayment({
         <div className="p-4 rounded-2xl bg-transparent dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-600 dark:text-slate-400">{copy.payment.planRow.replace('{label}', copy.plans[plan].label)}</span>
-            <span className="font-bold text-slate-900 dark:text-white">EUR {price}{copy.perMonth}</span>
+            <span className="font-bold text-slate-900 dark:text-white">{copy.currencyLabel} {formatPrice(price, locale)}{copy.perMonth}</span>
           </div>
           <div className="flex items-center justify-between text-sm mt-1">
             <span className="text-slate-600 dark:text-slate-400">{copy.payment.freeTrialRow}</span>
-            <span className="font-bold text-emerald-600">{cfg.trialDays} {locale === 'fr' ? 'jours' : locale === 'tr' ? 'gün' : locale === 'ar' ? 'أيام' : 'days'}</span>
+            <span className="font-bold text-emerald-600">{cfg.trialDays} {copy.trialDaysUnit}</span>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-3 pt-3 flex items-center justify-between">
             <span className="font-bold text-slate-900 dark:text-white">{copy.payment.dueToday}</span>
