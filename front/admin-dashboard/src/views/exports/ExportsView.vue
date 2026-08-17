@@ -108,17 +108,17 @@
       :rows="exportHistory"
       :loading="historyLoading"
       :search-keys="['type', 'requested_by']"
-      search-placeholder="Rechercher dans l'historique..."
+      :search-placeholder="$t('exports.historySearchPlaceholder', 'Rechercher dans l\'historique...')"
       default-sort="created_at"
       default-sort-dir="desc"
-      :empty-message="historyError || 'Aucun export recent.'"
+      :empty-message="historyError || $t('exports.historyEmpty', 'Aucun export recent.')"
     >
       <template #cell-status="{ value }">
         <StatusBadge :status="value" :map="exportStatusMap" />
       </template>
       <template #row-actions="{ row }">
         <a v-if="row.download_url" :href="row.download_url" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
-          Télécharger
+          {{ $t('exports.download') }}
         </a>
       </template>
     </DataTable>
@@ -180,13 +180,13 @@ const reportTypes = reactive([
   { key: 'vehicles', title: 'exports.reportVehicles', description: 'exports.reportVehiclesDesc', icon: TruckIcon, format: 'csv', supportsXlsx: false, downloading: false, endpoint: '/export/vehicles', clientSpace: true },
 ])
 
-const historyColumns = [
-  { key: 'type', label: 'Type', sortable: true },
-  { key: 'format', label: 'Format', sortable: true },
-  { key: 'requested_by', label: 'Demande par', sortable: true },
-  { key: 'created_at', label: 'Date', sortable: true },
-  { key: 'status', label: 'Statut', sortable: true },
-]
+const historyColumns = computed(() => [
+  { key: 'type', label: t('exports.colType', 'Type'), sortable: true },
+  { key: 'format', label: t('exports.colFormat', 'Format'), sortable: true },
+  { key: 'requested_by', label: t('exports.colRequestedBy', 'Demande par'), sortable: true },
+  { key: 'created_at', label: t('exports.colDate', 'Date'), sortable: true },
+  { key: 'status', label: t('exports.colStatus', 'Statut'), sortable: true },
+])
 
 // #4206 : libellés localisés — computed pour rester réactif à la locale.
 const exportStatusMap = computed(() => ({
@@ -202,7 +202,7 @@ async function downloadReport(report) {
     await downloadApiFile(`${report.endpoint}?format=${report.format}`, `${report.key}.${report.format}`)
   } catch (error) {
     console.error('Download failed:', error)
-    toast.error('Erreur lors du téléchargement du rapport')
+    toast.error(t('exports.downloadError', 'Erreur lors du téléchargement du rapport'))
   } finally {
     report.downloading = false
   }
@@ -216,7 +216,7 @@ async function generateHrReport() {
     hrReportResult.value = res.data.data || res.data || null
   } catch (err) {
     hrReportResult.value = null
-    hrReportError.value = err?.response?.data?.message || 'Impossible de générer le rapport HR (endpoint indisponible).'
+    hrReportError.value = err?.response?.data?.message || t('exports.hrReportUnavailable', 'Impossible de générer le rapport HR (endpoint indisponible).')
   } finally {
     generatingReport.value = false
   }

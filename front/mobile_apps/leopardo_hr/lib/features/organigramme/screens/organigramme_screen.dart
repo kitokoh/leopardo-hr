@@ -6,6 +6,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_hr/features/organigramme/data/organigramme_repository.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 final orgChartProvider = FutureProvider<List<OrgNode>>((ref) async {
   final apiClient = ref.watch(apiClientProvider);
@@ -42,13 +43,12 @@ class OrganigrammeScreen extends ConsumerWidget {
             if (nodes.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 80),
+                children: [
+                  const SizedBox(height: 80),
                   EmptyState(
                     icon: Icons.account_tree,
                     title: 'Aucun organigramme',
-                    description:
-                        'L\'organigramme sera disponible une fois les employés configurés.',
+                    description: context.l10n.orgChartEmpty,
                   ),
                 ],
               );
@@ -200,7 +200,9 @@ class _OrgTreeWidgetState extends State<_OrgTreeWidget> {
                           _expanded ? Icons.expand_less : Icons.expand_more,
                           color: AppColors.textMutedDark,
                           size: 18,
-                          semanticLabel: _expanded ? 'Réduire' : 'Développer',
+                          semanticLabel: _expanded
+                              ? context.l10n.orgChartCollapse
+                              : context.l10n.orgChartExpand,
                         ),
                       ],
                     ],
