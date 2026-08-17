@@ -1207,7 +1207,8 @@
       },
       "description": "Aciklama",
       "first": {
-        "name": "Ad"
+        "name": "Ad",
+        "name_required": "Ad gerekli"
       },
       "google": {
         "error": "Google hatasi: {error}",
@@ -1216,7 +1217,8 @@
         }
       },
       "last": {
-        "name": "Soyad"
+        "name": "Soyad",
+        "name_required": "Soyad gerekli"
       },
       "login": {
         "error": "Gecersiz kimlik bilgileri",
@@ -1240,7 +1242,8 @@
       "submit": {
         "error": "Gonderme hatasi",
         "request": "Talep gonder"
-      }
+      },
+      "phone_optional": "Telefon (opsiyonel)"
     }
   }
 }

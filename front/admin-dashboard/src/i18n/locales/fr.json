@@ -1207,7 +1207,8 @@
       },
       "description": "Description",
       "first": {
-        "name": "Prenom"
+        "name": "Prenom",
+        "name_required": "Prenom requis"
       },
       "google": {
         "error": "Erreur Google : {error}",
@@ -1216,7 +1217,8 @@
         }
       },
       "last": {
-        "name": "Nom"
+        "name": "Nom",
+        "name_required": "Nom requis"
       },
       "login": {
         "error": "Identifiants invalides",
@@ -1240,7 +1242,8 @@
       "submit": {
         "error": "Erreur lors de la soumission",
         "request": "Soumettre la demande"
-      }
+      },
+      "phone_optional": "Telephone (optionnel)"
     }
   }
 }

@@ -1207,7 +1207,8 @@
       },
       "description": "Description",
       "first": {
-        "name": "First name"
+        "name": "First name",
+        "name_required": "First name required"
       },
       "google": {
         "error": "Google error: {error}",
@@ -1216,7 +1217,8 @@
         }
       },
       "last": {
-        "name": "Last name"
+        "name": "Last name",
+        "name_required": "Last name required"
       },
       "login": {
         "error": "Invalid credentials",
@@ -1240,7 +1242,8 @@
       "submit": {
         "error": "Error submitting request",
         "request": "Submit request"
-      }
+      },
+      "phone_optional": "Phone (optional)"
     }
   }
 }
