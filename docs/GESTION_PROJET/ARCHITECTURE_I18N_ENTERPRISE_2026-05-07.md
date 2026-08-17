@@ -1,5 +1,9 @@
 # Enterprise Multilingual Infrastructure - Leopardo RH
 
+> ⚠️ **MAJ 2026-08-17** : document historique (2026-05-07). Les chemins `front/mobile/`
+> cités plus bas sont obsolètes (supprimés par la PR #754) — voir `front/mobile_apps/` et
+> `shared/i18n/` pour l'architecture i18n actuelle.
+
 ## 1. Architecture finale
 
 Le systeme multilingue passe d une logique dispersee a une logique centralisee:
