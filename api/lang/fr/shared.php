@@ -56,6 +56,14 @@ return [
         'activate_manager_access' => 'Activer mon acces manager',
         'try_demo_account' => 'Tester avec un compte demo',
         'two_factor_required' => 'Le code 2FA est requis.',
+        'demo' => [
+            'access' => 'Acces Demo',
+        ],
+        'toggle' => [
+            'password' => [
+                'visibility' => 'Afficher ou masquer le mot de passe',
+            ],
+        ],
     ],
     'common' => [
         'language' => [
@@ -95,6 +103,7 @@ return [
             'TR' => 'Turquie',
             'US' => 'États-Unis',
         ],
+        'required' => 'Requis',
     ],
     'modules' => [
         'attendance' => 'Pointage',

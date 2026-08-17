@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Nodes Edge</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('edge.title') }}</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Gestion des nodes Edge Leopardo — synchronisation offline-first
         </p>
@@ -29,33 +29,33 @@
 
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <EdgeStatCard label="Nodes total" :value="stats.total" icon="🖥️" color="indigo" />
+      <EdgeStatCard :label="$t('edge.nodesTotal')" :value="stats.total" icon="🖥️" color="indigo" />
       <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
       <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
-      <EdgeStatCard label="Licences expirées" :value="stats.licenseExpired" icon="⚠️" color="red" />
+      <EdgeStatCard :label="$t('edge.licensesExpired')" :value="stats.licenseExpired" icon="⚠️" color="red" />
     </div>
 
     <!-- Nodes table -->
     <div class="glass-card dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
       <div v-if="loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 animate-spin inline-block">↻</div>
-        <p>Chargement des nodes…</p>
+        <p>{{ $t('edge.loading') }}</p>
       </div>
 
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 opacity-30">🖥️</div>
-        <p class="font-medium">Aucun node Edge enregistré</p>
+        <p class="font-medium">{{ $t('edge.empty') }}</p>
         <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
       </div>
 
       <table v-else class="w-full text-sm">
         <thead>
           <tr class="glass-bg dark:bg-slate-800/50 text-left text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-            <th class="px-4 py-3 font-medium">Node</th>
-            <th class="px-4 py-3 font-medium">Statut</th>
-            <th class="px-4 py-3 font-medium">Licence</th>
-            <th class="px-4 py-3 font-medium">Dernière sync</th>
-            <th class="px-4 py-3 font-medium">Actions</th>
+            <th class="px-4 py-3 font-medium">{{ $t('edge.colNode') }}</th>
+            <th class="px-4 py-3 font-medium">{{ $t('edge.colStatus') }}</th>
+            <th class="px-4 py-3 font-medium">{{ $t('edge.colLicense') }}</th>
+            <th class="px-4 py-3 font-medium">{{ $t('edge.colLastSync') }}</th>
+            <th class="px-4 py-3 font-medium">{{ $t('edge.colActions') }}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -106,7 +106,7 @@
                   :disabled="!node.is_online || syncingNodeId === node.id"
                   class="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 font-medium disabled:opacity-30 disabled:cursor-not-allowed"
                 >
-                  {{ syncingNodeId === node.id ? 'Sync…' : 'Sync' }}
+                  {{ syncingNodeId === node.id ? $t('edge.syncing') : $t('edge.sync') }}
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">

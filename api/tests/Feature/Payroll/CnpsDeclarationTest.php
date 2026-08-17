@@ -251,7 +251,7 @@ class CnpsDeclarationTest extends TestCase
 
         $this->get("/api/v1/payroll-runs/{$run->id}/declarations/cnps-cm")
             ->assertStatus(422)
-            ->assertJson(['message' => 'Ce run ne concerne pas le Cameroun (CNPS CM).']);
+            ->assertJson(['message' => 'Ce run de paie ne concerne pas le Cameroun (CNPS CM).']);
     }
 
     public function test_matricule_falls_back_to_internal_matricule(): void

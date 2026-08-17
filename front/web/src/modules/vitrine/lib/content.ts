@@ -7,12 +7,12 @@ import type { AppLocale } from '@/lib/i18n'
 export const modulePageContent = {
   employes: {
     sections: {
-      heroBadge: "Gestion RH Complète",
-      problemBadge: "Les Défis",
-      solutionBadge: "Notre Solution",
-      featuresTitle: "Fonctionnalités Détaillées",
-      featuresSubtitle: "Tout ce dont vous avez besoin",
-      featuresBadge: "Puissant & Flexible",
+      heroBadge: 'Gestion RH Complète',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Puissant & Flexible',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
     },
     hero: {
       headline: "Gestion RH Simplifiée pour les PME",
@@ -194,12 +194,12 @@ export const modulePageContent = {
 
   documents: {
     sections: {
-      heroBadge: "Cabinet Numérique",
-      problemBadge: "Les Défis",
-      solutionBadge: "Notre Solution",
-      featuresTitle: "Fonctionnalités Détaillées",
-      featuresSubtitle: "Tout ce dont vous avez besoin",
-      featuresBadge: "Sécurisé & Conforme",
+      heroBadge: 'Cabinet Numérique',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Sécurisé & Conforme',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
     },
     hero: {
       headline: "Cabinet Numérique Sécurisé pour vos Documents",
@@ -381,12 +381,12 @@ export const modulePageContent = {
 
   comptabilite: {
     sections: {
-      heroBadge: "Paie Automatisée",
-      problemBadge: "Les Défis",
-      solutionBadge: "Notre Solution",
-      featuresTitle: "Fonctionnalités Détaillées",
-      featuresSubtitle: "Tout ce dont vous avez besoin",
-      featuresBadge: "Complet & Fiable",
+      heroBadge: 'Paie Automatisée',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Complet & Fiable',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
     },
     hero: {
       headline: "Paie Automatisée et Conformité Garantie",
@@ -568,12 +568,12 @@ export const modulePageContent = {
 
   marketing: {
     sections: {
-      heroBadge: "Marketing Complet",
-      problemBadge: "Les Défis",
-      solutionBadge: "Notre Solution",
-      featuresTitle: "Fonctionnalités Détaillées",
-      featuresSubtitle: "Tout ce dont vous avez besoin",
-      featuresBadge: "Puissant & Flexible",
+      heroBadge: 'Marketing Complet',
+      problemBadge: 'Les Défis',
+      solutionBadge: 'Notre Solution',
+      featuresBadge: 'Puissant & Flexible',
+      featuresTitle: 'Fonctionnalités Détaillées',
+      featuresSubtitle: 'Tout ce dont vous avez besoin',
     },
     hero: {
       headline: "Outils Marketing Intégrés pour PME",
@@ -769,12 +769,12 @@ type ModulePageContent = typeof modulePageContent
 const modulePageContentEn: Partial<ModulePageContent> = {
   employes: {
     sections: {
-      heroBadge: "Complete HR Management",
-      problemBadge: "The Challenges",
-      solutionBadge: "Our Solution",
-      featuresTitle: "Detailed Features",
-      featuresSubtitle: "Everything you need",
-      featuresBadge: "Powerful & Flexible",
+      heroBadge: 'Complete HR Management',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Powerful & Flexible',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
     },
     hero: {
       headline: 'Simplified HR Management for SMEs',
@@ -919,12 +919,12 @@ const modulePageContentEn: Partial<ModulePageContent> = {
   },
   documents: {
     sections: {
-      heroBadge: "Digital Document Hub",
-      problemBadge: "The Challenges",
-      solutionBadge: "Our Solution",
-      featuresTitle: "Detailed Features",
-      featuresSubtitle: "Everything you need",
-      featuresBadge: "Secure & Compliant",
+      heroBadge: 'Digital Office',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Secure & Compliant',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
     },
     hero: {
       headline: "Secure Digital Cabinet for Your Documents",
@@ -1132,12 +1132,12 @@ const modulePageContentEn: Partial<ModulePageContent> = {
   },
   comptabilite: {
     sections: {
-      heroBadge: "Automated Payroll",
-      problemBadge: "The Challenges",
-      solutionBadge: "Our Solution",
-      featuresTitle: "Detailed Features",
-      featuresSubtitle: "Everything you need",
-      featuresBadge: "Complete & Reliable",
+      heroBadge: 'Automated Payroll',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Complete & Reliable',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
     },
     hero: {
       headline: "Automated Payroll with Guaranteed Compliance",
@@ -1345,12 +1345,12 @@ const modulePageContentEn: Partial<ModulePageContent> = {
   },
   marketing: {
     sections: {
-      heroBadge: "Complete Marketing Suite",
-      problemBadge: "The Challenges",
-      solutionBadge: "Our Solution",
-      featuresTitle: "Detailed Features",
-      featuresSubtitle: "Everything you need",
-      featuresBadge: "Powerful & Flexible",
+      heroBadge: 'Complete Marketing',
+      problemBadge: 'The Challenges',
+      solutionBadge: 'Our Solution',
+      featuresBadge: 'Powerful & Flexible',
+      featuresTitle: 'Detailed Features',
+      featuresSubtitle: 'Everything you need',
     },
     hero: {
       headline: "Integrated Marketing Tools for SMEs",
@@ -1562,12 +1562,12 @@ const modulePageContentEn: Partial<ModulePageContent> = {
 const modulePageContentTr: Partial<ModulePageContent> = {
   employes: {
     sections: {
-      heroBadge: "Kapsamlı İK Yönetimi",
-      problemBadge: "Zorluklar",
-      solutionBadge: "Çözümümüz",
-      featuresTitle: "Detaylı Özellikler",
-      featuresSubtitle: "İhtiyacınız olan her şey",
-      featuresBadge: "Güçlü ve Esnek",
+      heroBadge: 'Kapsamlı İK Yönetimi',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Güçlü ve Esnek',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
     },
     hero: {
       headline: "KOBİ'ler için Basitleştirilmiş İK Yönetimi",
@@ -1712,12 +1712,12 @@ const modulePageContentTr: Partial<ModulePageContent> = {
   },
   documents: {
     sections: {
-      heroBadge: "Dijital Belge Merkezi",
-      problemBadge: "Zorluklar",
-      solutionBadge: "Çözümümüz",
-      featuresTitle: "Detaylı Özellikler",
-      featuresSubtitle: "İhtiyacınız olan her şey",
-      featuresBadge: "Güvenli ve Uyumlu",
+      heroBadge: 'Dijital Ofis',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Güvenli ve Uyumlu',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
     },
     hero: {
       headline: "Belgeleriniz için Güvenli Dijital Kasa",
@@ -1925,12 +1925,12 @@ const modulePageContentTr: Partial<ModulePageContent> = {
   },
   comptabilite: {
     sections: {
-      heroBadge: "Otomatik Bordro",
-      problemBadge: "Zorluklar",
-      solutionBadge: "Çözümümüz",
-      featuresTitle: "Detaylı Özellikler",
-      featuresSubtitle: "İhtiyacınız olan her şey",
-      featuresBadge: "Eksiksiz ve Güvenilir",
+      heroBadge: 'Otomatik Maaş Bordrosu',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Kapsamlı ve Güvenilir',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
     },
     hero: {
       headline: "Garantili Uyumla Otomatik Maaş Bordrosu",
@@ -2138,12 +2138,12 @@ const modulePageContentTr: Partial<ModulePageContent> = {
   },
   marketing: {
     sections: {
-      heroBadge: "Kapsamlı Pazarlama Paketi",
-      problemBadge: "Zorluklar",
-      solutionBadge: "Çözümümüz",
-      featuresTitle: "Detaylı Özellikler",
-      featuresSubtitle: "İhtiyacınız olan her şey",
-      featuresBadge: "Güçlü ve Esnek",
+      heroBadge: 'Kapsamlı Pazarlama',
+      problemBadge: 'Zorluklar',
+      solutionBadge: 'Çözümümüz',
+      featuresBadge: 'Güçlü ve Esnek',
+      featuresTitle: 'Detaylı Özellikler',
+      featuresSubtitle: 'İhtiyacınız olan her şey',
     },
     hero: {
       headline: "KOBİ'ler için Entegre Pazarlama Araçları",
@@ -2355,12 +2355,12 @@ const modulePageContentTr: Partial<ModulePageContent> = {
 const modulePageContentAr: Partial<ModulePageContent> = {
   employes: {
     sections: {
-      heroBadge: "إدارة موارد بشرية شاملة",
-      problemBadge: "التحديات",
-      solutionBadge: "حلّنا",
-      featuresTitle: "الميزات التفصيلية",
-      featuresSubtitle: "كل ما تحتاجه",
-      featuresBadge: "قوي ومرن",
+      heroBadge: 'إدارة موارد بشرية شاملة',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'قوي ومرن',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
     },
     hero: {
       headline: 'إدارة موارد بشرية مبسّطة للشركات الصغيرة والمتوسطة',
@@ -2505,12 +2505,12 @@ const modulePageContentAr: Partial<ModulePageContent> = {
   },
   documents: {
     sections: {
-      heroBadge: "مركز المستندات الرقمي",
-      problemBadge: "التحديات",
-      solutionBadge: "حلّنا",
-      featuresTitle: "الميزات التفصيلية",
-      featuresSubtitle: "كل ما تحتاجه",
-      featuresBadge: "آمن ومتوافق",
+      heroBadge: 'مكتب رقمي',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'آمن ومتوافق',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
     },
     hero: {
       headline: "خزانة رقمية آمنة لمستنداتك",
@@ -2718,12 +2718,12 @@ const modulePageContentAr: Partial<ModulePageContent> = {
   },
   comptabilite: {
     sections: {
-      heroBadge: "كشوف رواتب آلية",
-      problemBadge: "التحديات",
-      solutionBadge: "حلّنا",
-      featuresTitle: "الميزات التفصيلية",
-      featuresSubtitle: "كل ما تحتاجه",
-      featuresBadge: "كامل وموثوق",
+      heroBadge: 'رواتب آلية',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'شامل وموثوق',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
     },
     hero: {
       headline: "رواتب آلية مع امتثال مضمون",
@@ -2931,12 +2931,12 @@ const modulePageContentAr: Partial<ModulePageContent> = {
   },
   marketing: {
     sections: {
-      heroBadge: "حزمة تسويق شاملة",
-      problemBadge: "التحديات",
-      solutionBadge: "حلّنا",
-      featuresTitle: "الميزات التفصيلية",
-      featuresSubtitle: "كل ما تحتاجه",
-      featuresBadge: "قوي ومرن",
+      heroBadge: 'تسويق شامل',
+      problemBadge: 'التحديات',
+      solutionBadge: 'حلنا',
+      featuresBadge: 'قوي ومرن',
+      featuresTitle: 'ميزات مفصلة',
+      featuresSubtitle: 'كل ما تحتاجه',
     },
     hero: {
       headline: "أدوات تسويق متكاملة للشركات الصغيرة",

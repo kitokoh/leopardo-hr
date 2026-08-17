@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900">Pipeline Commercial</h1>
         <p class="mt-1 text-sm text-gray-500">
-          Suivi des leads de l'entrée jusqu'à la conversion payante.
+          {{ $t('crm.subtitle') }}
         </p>
       </div>
       <button class="btn-secondary" :disabled="isLoading" @click="loadPipeline">
@@ -15,21 +15,21 @@
     <!-- PA2-ADM-004: explicit lead -> trial -> client conversion summary -->
     <div v-if="!isLoading && !errorMessage" class="grid grid-cols-1 gap-4 sm:grid-cols-3 shrink-0">
       <div class="card p-4">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Leads totaux</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $t('crm.leadsTotal') }}</p>
         <p class="mt-1 text-2xl font-black text-slate-900 dark:text-white">{{ meta.total_leads }}</p>
       </div>
       <div class="card p-4">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Taux lead -> essai</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $t('crm.leadToTrialRate') }}</p>
         <p class="mt-1 text-2xl font-black text-emerald-600">{{ formatRate(meta.conversion.lead_to_trial_rate) }}</p>
       </div>
       <div class="card p-4">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Taux lead -> client payant</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ $t('crm.leadToClientRate') }}</p>
         <p class="mt-1 text-2xl font-black text-blue-600">{{ formatRate(meta.conversion.lead_to_client_rate) }}</p>
       </div>
     </div>
 
     <div v-if="isLoading" class="flex-1 flex items-center justify-center p-6 text-sm text-gray-500">
-      Chargement du pipeline...
+      {{ $t('crm.loading') }}
     </div>
     <div v-else-if="errorMessage" class="flex-1 p-6 text-sm text-red-600 bg-red-50 rounded-lg">
       {{ errorMessage }}
@@ -41,7 +41,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
-            Leads Entrants
+            {{ $t('crm.leadsIncoming') }}
           </h2>
           <span class="text-xs font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400">
             {{ pipeline.leads?.length || 0 }}
@@ -60,7 +60,7 @@
             </div>
           </div>
           <div v-if="!pipeline.leads?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
-            Aucun lead
+            {{ $t('crm.noLead') }}
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@
             </div>
           </div>
           <div v-if="!pipeline.trials?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
-            Aucun essai en cours
+            {{ $t('crm.noTrial') }}
           </div>
         </div>
       </div>
@@ -117,7 +117,7 @@
             </div>
           </div>
           <div v-if="!pipeline.active?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
-            Aucun client actif converti
+            {{ $t('crm.noClient') }}
           </div>
         </div>
       </div>
@@ -141,7 +141,7 @@
             </p>
           </div>
           <div v-if="!pipeline.rejected?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg">
-            Aucun historique
+            {{ $t('crm.noHistory') }}
           </div>
         </div>
       </div>
