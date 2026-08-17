@@ -34,10 +34,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    final ok = await ref.read(authProvider.notifier).login(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
+    final ok = await ref
+        .read(authProvider.notifier)
+        .login(_emailController.text.trim(), _passwordController.text);
 
     if (ok && mounted) {
       // La redirection est pilotée par le redirect() du GoRouter (authProvider).
@@ -157,8 +156,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ],
                         const SizedBox(height: 24),
                         FilledButton(
-                          onPressed:
-                              authState.isLoading ? null : _submit,
+                          onPressed: authState.isLoading ? null : _submit,
                           style: FilledButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),

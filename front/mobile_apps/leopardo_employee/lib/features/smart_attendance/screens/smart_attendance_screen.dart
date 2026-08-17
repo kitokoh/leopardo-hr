@@ -161,7 +161,9 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
-                      strokeWidth: 2, color: AppColors.mobileAccentBlue),
+                    strokeWidth: 2,
+                    color: AppColors.mobileAccentBlue,
+                  ),
                 ),
             ],
           ),
@@ -175,7 +177,9 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
         if (sessionState.recentSessions.isEmpty && !sessionState.isLoading)
           _EmptySessionsPanel()
         else
-          ...sessionState.recentSessions.take(10).map(
+          ...sessionState.recentSessions
+              .take(10)
+              .map(
                 (session) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _SessionCard(session: session),
@@ -310,8 +314,10 @@ class _ModeStatusCard extends StatelessWidget {
               // Badge "Imposé" si mode forcé
               if (config.hasForced)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _modeColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -458,8 +464,11 @@ class _GpsZoneStatusCard extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.check_circle_outline_rounded,
-                      color: _green, size: 16),
+                  const Icon(
+                    Icons.check_circle_outline_rounded,
+                    color: _green,
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Présence en cours depuis ${_formatTime(sessionState.activeSession!.startedAt)}',
@@ -482,18 +491,25 @@ class _GpsZoneStatusCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.mobileAccentOrange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
-                border:
-                    Border.all(color: AppColors.mobileAccentOrange.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.mobileAccentOrange.withValues(alpha: 0.3),
+                ),
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.warning_amber_rounded,
-                      color: AppColors.mobileAccentOrange, size: 16),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: AppColors.mobileAccentOrange,
+                    size: 16,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'La zone GPS de votre entreprise n\'est pas encore configurée.',
-                      style: TextStyle(color: AppColors.mobileAccentOrange, fontSize: 12),
+                      style: TextStyle(
+                        color: AppColors.mobileAccentOrange,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],
@@ -522,8 +538,9 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isMonitoring ? _red.withValues(alpha: 0.8) : _accent,
+                  backgroundColor: isMonitoring
+                      ? _red.withValues(alpha: 0.8)
+                      : _accent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -636,7 +653,9 @@ class _SessionCard extends StatelessWidget {
                     // Badge statut
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 3),
+                        horizontal: 10,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: _statusColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
@@ -673,8 +692,10 @@ class _SessionCard extends StatelessWidget {
                       const SizedBox(width: 12),
                       const Text(
                         'En cours',
-                        style:
-                            TextStyle(color: AppColors.mobileAccentGreen, fontSize: 12),
+                        style: TextStyle(
+                          color: AppColors.mobileAccentGreen,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                     if (session.durationFormatted != null) ...[
@@ -714,13 +735,19 @@ class _ErrorPanel extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded,
-                color: AppColors.mobileAccentRedLight, size: 48),
+            const Icon(
+              Icons.error_outline_rounded,
+              color: AppColors.mobileAccentRedLight,
+              size: 48,
+            ),
             const SizedBox(height: 16),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.mobileDarkMuted, fontSize: 13),
+              style: const TextStyle(
+                color: AppColors.mobileDarkMuted,
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -753,11 +780,16 @@ class _ErrorBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.mobileAccentRedLight.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.mobileAccentRedLight.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: AppColors.mobileAccentRedLight.withValues(alpha: 0.3),
+        ),
       ),
       child: Text(
         message,
-        style: const TextStyle(color: AppColors.mobileAccentRedSoft, fontSize: 12),
+        style: const TextStyle(
+          color: AppColors.mobileAccentRedSoft,
+          fontSize: 12,
+        ),
       ),
     );
   }
@@ -779,8 +811,11 @@ class _EmptySessionsPanel extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.history_toggle_off_rounded,
-              color: AppColors.mobileDarkMuted.withValues(alpha: 0.5), size: 40),
+          Icon(
+            Icons.history_toggle_off_rounded,
+            color: AppColors.mobileDarkMuted.withValues(alpha: 0.5),
+            size: 40,
+          ),
           const SizedBox(height: 12),
           const Text(
             'Aucune session GPS pour le moment.',
@@ -791,4 +826,3 @@ class _EmptySessionsPanel extends StatelessWidget {
     );
   }
 }
-

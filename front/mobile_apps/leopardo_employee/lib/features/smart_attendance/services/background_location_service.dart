@@ -67,8 +67,8 @@ class BackgroundLocationService {
   BackgroundLocationService({
     required SmartAttendanceRepository repository,
     required GeofenceService geofenceService,
-  })  : _repository = repository,
-        _geofenceService = geofenceService;
+  }) : _repository = repository,
+       _geofenceService = geofenceService;
 
   /// Démarre la surveillance de position.
   ///
@@ -167,10 +167,7 @@ class BackgroundLocationService {
 
     // Envoi de l'événement si un changement de zone est détecté
     if (event == ZoneEvent.enter || event == ZoneEvent.exit) {
-      await _sendGeoEvent(
-        event: event,
-        position: position,
-      );
+      await _sendGeoEvent(event: event, position: position);
     }
   }
 
@@ -254,15 +251,17 @@ class BackgroundLocationService {
       // on ne bloque jamais le tick courant.
       _pendingGeoEvents.removeAt(0);
     }
-    _pendingGeoEvents.add(_PendingGeoEvent(
-      eventType: eventType,
-      latitude: latitude,
-      longitude: longitude,
-      accuracy: accuracy,
-      createdAt: DateTime.now(),
-      error: error,
-      stackTrace: stackTrace,
-    ));
+    _pendingGeoEvents.add(
+      _PendingGeoEvent(
+        eventType: eventType,
+        latitude: latitude,
+        longitude: longitude,
+        accuracy: accuracy,
+        createdAt: DateTime.now(),
+        error: error,
+        stackTrace: stackTrace,
+      ),
+    );
   }
 
   /// Rejoue les événements géo en attente (best-effort, ne bloque jamais le
