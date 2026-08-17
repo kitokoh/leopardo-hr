@@ -282,6 +282,18 @@ abstract class AppLocalizations {
   /// **'Le code 2FA est requis.'**
   String get authTwoFactorRequired;
 
+  /// No description provided for @authDemoAccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acces Demo'**
+  String get authDemoAccess;
+
+  /// No description provided for @authTogglePasswordVisibility.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher ou masquer le mot de passe'**
+  String get authTogglePasswordVisibility;
+
   /// No description provided for @commonLanguageLabel.
   ///
   /// In fr, this message translates to:
@@ -467,6 +479,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'États-Unis'**
   String get commonCountriesUs;
+
+  /// No description provided for @commonRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Requis'**
+  String get commonRequired;
 
   /// No description provided for @modulesAttendance.
   ///
@@ -5099,228 +5117,1307 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Aucun employé visible pour ce compte.'**
   String get employeesEmptyList;
+
+  /// No description provided for @userAuthCompanyRequestTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande soumise !'**
+  String get userAuthCompanyRequestTitle;
+
+  /// No description provided for @userAuthCompanyRequestBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un administrateur examinera votre demande. Vous recevrez une notification dès qu\'elle sera traitée.'**
+  String get userAuthCompanyRequestBody;
+
+  /// No description provided for @userAuthCompanyRequestInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplissez les informations de votre entreprise. Un administrateur validera votre demande.'**
+  String get userAuthCompanyRequestInfo;
+
+  /// No description provided for @userAuthBackToHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'À l\'accueil'**
+  String get userAuthBackToHome;
+
+  /// No description provided for @userAuthCreateCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer une entreprise'**
+  String get userAuthCreateCompany;
+
+  /// No description provided for @userAuthCompanyName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom de l\'entreprise'**
+  String get userAuthCompanyName;
+
+  /// No description provided for @userAuthCompanyEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email entreprise'**
+  String get userAuthCompanyEmail;
+
+  /// No description provided for @userAuthSector.
+  ///
+  /// In fr, this message translates to:
+  /// **'Secteur d\'activité'**
+  String get userAuthSector;
+
+  /// No description provided for @userAuthCountry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pays'**
+  String get userAuthCountry;
+
+  /// No description provided for @userAuthCity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ville'**
+  String get userAuthCity;
+
+  /// No description provided for @userAuthPhone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Téléphone'**
+  String get userAuthPhone;
+
+  /// No description provided for @userAuthDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Description'**
+  String get userAuthDescription;
+
+  /// No description provided for @userAuthSubmitRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre la demande'**
+  String get userAuthSubmitRequest;
+
+  /// No description provided for @userAuthSubmitError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la soumission'**
+  String get userAuthSubmitError;
+
+  /// No description provided for @userAuthAlreadyAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Deja un compte ? Se connecter'**
+  String get userAuthAlreadyAccount;
+
+  /// No description provided for @userAuthFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prenom'**
+  String get userAuthFirstName;
+
+  /// No description provided for @userAuthGoogleError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur Google : {error}'**
+  String userAuthGoogleError(Object error);
+
+  /// No description provided for @userAuthLastName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom'**
+  String get userAuthLastName;
+
+  /// No description provided for @userAuthLoginSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retrouvez votre espace, vos documents et vos demandes.'**
+  String get userAuthLoginSubtitle;
+
+  /// No description provided for @userAuthNoAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pas encore de compte ? S\'inscrire'**
+  String get userAuthNoAccount;
+
+  /// No description provided for @userAuthPersonalLogin.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion personnelle'**
+  String get userAuthPersonalLogin;
+
+  /// No description provided for @userAuthPhoneOptional.
+  ///
+  /// In fr, this message translates to:
+  /// **'Telephone (optionnel)'**
+  String get userAuthPhoneOptional;
+
+  /// No description provided for @userAuthRegisterButton.
+  ///
+  /// In fr, this message translates to:
+  /// **'Creer mon compte'**
+  String get userAuthRegisterButton;
+
+  /// No description provided for @userAuthRegisterSubtitleAlt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accedez a votre espace personnel et organisez vos documents.'**
+  String get userAuthRegisterSubtitleAlt;
+
+  /// No description provided for @userAuthRegisterTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Creer mon compte'**
+  String get userAuthRegisterTitle;
+
+  /// No description provided for @partnerpageLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement de votre espace...'**
+  String get partnerpageLoading;
+
+  /// No description provided for @partnerpageApplyerrorprefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la candidature : '**
+  String get partnerpageApplyerrorprefix;
+
+  /// No description provided for @partnerpageNotappliedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Devenir Partenaire'**
+  String get partnerpageNotappliedTitle;
+
+  /// No description provided for @partnerpageNotappliedSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoignez l\'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu\'à 20 % de commission récurrente.'**
+  String get partnerpageNotappliedSubtitle;
+
+  /// No description provided for @partnerpageNotappliedIndividual.
+  ///
+  /// In fr, this message translates to:
+  /// **'Postuler en tant qu\'Individuel'**
+  String get partnerpageNotappliedIndividual;
+
+  /// No description provided for @partnerpageNotappliedAgency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Postuler en tant qu\'Agence'**
+  String get partnerpageNotappliedAgency;
+
+  /// No description provided for @partnerpagePendingTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Candidature en cours'**
+  String get partnerpagePendingTitle;
+
+  /// No description provided for @partnerpagePendingBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé.'**
+  String get partnerpagePendingBody;
+
+  /// No description provided for @partnerpageDashboardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dashboard Partenaire'**
+  String get partnerpageDashboardTitle;
+
+  /// No description provided for @partnerpageDashboardSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif.'**
+  String get partnerpageDashboardSubtitle;
+
+  /// No description provided for @partnerpageMetricsConversions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conversions'**
+  String get partnerpageMetricsConversions;
+
+  /// No description provided for @partnerpageMetricsTotalearned.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gains totaux'**
+  String get partnerpageMetricsTotalearned;
+
+  /// No description provided for @partnerpageMetricsPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get partnerpageMetricsPending;
+
+  /// No description provided for @partnerpageMetricsWithdrawable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde retirable'**
+  String get partnerpageMetricsWithdrawable;
+
+  /// No description provided for @partnerpageCommissionsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dernières commissions'**
+  String get partnerpageCommissionsTitle;
+
+  /// No description provided for @partnerpageCommissionsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune commission enregistrée.'**
+  String get partnerpageCommissionsEmpty;
+
+  /// No description provided for @partnerpageTableTenantid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tenant ID'**
+  String get partnerpageTableTenantid;
+
+  /// No description provided for @partnerpageTableDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get partnerpageTableDate;
+
+  /// No description provided for @partnerpageTableStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut'**
+  String get partnerpageTableStatus;
+
+  /// No description provided for @partnerpageTableAmount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Montant'**
+  String get partnerpageTableAmount;
+
+  /// No description provided for @partnerpageTableStatuspaid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Payée'**
+  String get partnerpageTableStatuspaid;
+
+  /// No description provided for @partnerpageTableStatuspending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente'**
+  String get partnerpageTableStatuspending;
+
+  /// No description provided for @partnerpagePayoutTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paiement'**
+  String get partnerpagePayoutTitle;
+
+  /// No description provided for @partnerpagePayoutBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vos commissions sont payées une fois le seuil atteint. Vérifiez que vos coordonnées bancaires sont à jour.'**
+  String get partnerpagePayoutBody;
+
+  /// No description provided for @partnerpagePayoutRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander un virement'**
+  String get partnerpagePayoutRequest;
+
+  /// No description provided for @partnerpagePayoutSending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi...'**
+  String get partnerpagePayoutSending;
+
+  /// No description provided for @partnerpagePayoutInsufficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Solde insuffisant pour demander un virement (minimum 100,00 €).'**
+  String get partnerpagePayoutInsufficient;
+
+  /// No description provided for @partnerpagePayoutSuccess.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande de virement envoyée avec succès.'**
+  String get partnerpagePayoutSuccess;
+
+  /// No description provided for @partnerpagePayoutErrorprefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors de la demande de virement : '**
+  String get partnerpagePayoutErrorprefix;
+
+  /// No description provided for @partnerpageReferralTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien de parrainage'**
+  String get partnerpageReferralTitle;
+
+  /// No description provided for @partnerpageReferralUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien indisponible'**
+  String get partnerpageReferralUnavailable;
+
+  /// No description provided for @partnerpageReferralCopy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier mon lien'**
+  String get partnerpageReferralCopy;
+
+  /// No description provided for @partnerpageReferralCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copié !'**
+  String get partnerpageReferralCopied;
+
+  /// No description provided for @partnerpageReferralCopyerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de copier le lien. Copiez-le manuellement.'**
+  String get partnerpageReferralCopyerror;
+
+  /// No description provided for @apiSessionexpired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session expirée. Reconnexion en cours...'**
+  String get apiSessionexpired;
+
+  /// No description provided for @apiAccessdenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès refusé sur :endpoint. Permissions insuffisantes.'**
+  String get apiAccessdenied;
+
+  /// No description provided for @apiNotfound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ressource introuvable : :endpoint'**
+  String get apiNotfound;
+
+  /// No description provided for @apiToomanyrequests.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop de requêtes. Veuillez patienter quelques secondes.'**
+  String get apiToomanyrequests;
+
+  /// No description provided for @apiServererror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur serveur sur :endpoint. :detail'**
+  String get apiServererror;
+
+  /// No description provided for @apiServererrorretry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayez plus tard.'**
+  String get apiServererrorretry;
+
+  /// No description provided for @apiServerunavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.'**
+  String get apiServerunavailable;
+
+  /// No description provided for @apiGenericerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur :status sur :endpoint.'**
+  String get apiGenericerror;
+
+  /// No description provided for @apiInvaliddata.
+  ///
+  /// In fr, this message translates to:
+  /// **'Données invalides.'**
+  String get apiInvaliddata;
+
+  /// No description provided for @apiConnectionerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de connexion. Vérifiez votre connexion internet.'**
+  String get apiConnectionerror;
+
+  /// No description provided for @settingspageCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get settingspageCancel;
+
+  /// No description provided for @settingspageConfirmpassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Confirmer le mot de passe'**
+  String get settingspageConfirmpassword;
+
+  /// No description provided for @settingspageCurrentpassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe actuel'**
+  String get settingspageCurrentpassword;
+
+  /// No description provided for @settingspageDisable2fa.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactiver le 2FA'**
+  String get settingspageDisable2fa;
+
+  /// No description provided for @settingspageDisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactivé'**
+  String get settingspageDisabled;
+
+  /// No description provided for @settingspageEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adresse email'**
+  String get settingspageEmail;
+
+  /// No description provided for @settingspageEnable2fa.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer le 2FA'**
+  String get settingspageEnable2fa;
+
+  /// No description provided for @settingspageEnabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activé'**
+  String get settingspageEnabled;
+
+  /// No description provided for @settingspageEntercodestep.
+  ///
+  /// In fr, this message translates to:
+  /// **'2. Entrez le code à 6 chiffres généré'**
+  String get settingspageEntercodestep;
+
+  /// No description provided for @settingspageFullname.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom complet'**
+  String get settingspageFullname;
+
+  /// No description provided for @settingspageGeneratesecret.
+  ///
+  /// In fr, this message translates to:
+  /// **'Générer un secret 2FA'**
+  String get settingspageGeneratesecret;
+
+  /// No description provided for @settingspageGeneratesecrethint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Générez un secret et scannez-le avec une application d\'authentification (Google Authenticator, Authy, 1Password...).'**
+  String get settingspageGeneratesecrethint;
+
+  /// No description provided for @settingspageManualsecret.
+  ///
+  /// In fr, this message translates to:
+  /// **'Secret manuel :'**
+  String get settingspageManualsecret;
+
+  /// No description provided for @settingspageMinlengthhint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Minimum 8 caractères.'**
+  String get settingspageMinlengthhint;
+
+  /// No description provided for @settingspageNewpassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau mot de passe'**
+  String get settingspageNewpassword;
+
+  /// No description provided for @settingspagePassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get settingspagePassword;
+
+  /// No description provided for @settingspagePasswordsubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.'**
+  String get settingspagePasswordsubtitle;
+
+  /// No description provided for @settingspagePasswordtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get settingspagePasswordtitle;
+
+  /// No description provided for @settingspagePasswordupdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe mis à jour avec succès.'**
+  String get settingspagePasswordupdated;
+
+  /// No description provided for @settingspagePasswordsmismatch.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les mots de passe ne correspondent pas.'**
+  String get settingspagePasswordsmismatch;
+
+  /// No description provided for @settingspageProfilesubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom et adresse email utilisés pour vous connecter.'**
+  String get settingspageProfilesubtitle;
+
+  /// No description provided for @settingspageProfiletitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Informations du profil'**
+  String get settingspageProfiletitle;
+
+  /// No description provided for @settingspageProfileupdated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Profil mis à jour avec succès.'**
+  String get settingspageProfileupdated;
+
+  /// No description provided for @settingspageSavechanges.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer les modifications'**
+  String get settingspageSavechanges;
+
+  /// No description provided for @settingspageScanstep.
+  ///
+  /// In fr, this message translates to:
+  /// **'1. Scannez ce lien / secret dans votre application 2FA :'**
+  String get settingspageScanstep;
+
+  /// No description provided for @settingspageSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.'**
+  String get settingspageSubtitle;
+
+  /// No description provided for @settingspageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon compte'**
+  String get settingspageTitle;
+
+  /// No description provided for @settingspageTwofactoractivehint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.'**
+  String get settingspageTwofactoractivehint;
+
+  /// No description provided for @settingspageTwofactordisabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'2FA désactivé.'**
+  String get settingspageTwofactordisabled;
+
+  /// No description provided for @settingspageTwofactorenabled.
+  ///
+  /// In fr, this message translates to:
+  /// **'2FA activé avec succès.'**
+  String get settingspageTwofactorenabled;
+
+  /// No description provided for @settingspageTwofactorsubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.'**
+  String get settingspageTwofactorsubtitle;
+
+  /// No description provided for @settingspageTwofactortitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Authentification à deux facteurs (2FA)'**
+  String get settingspageTwofactortitle;
+
+  /// No description provided for @settingspageUpdatepassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mettre à jour le mot de passe'**
+  String get settingspageUpdatepassword;
+
+  /// No description provided for @systempageApierror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : :error'**
+  String get systempageApierror;
+
+  /// No description provided for @systempageApioperational.
+  ///
+  /// In fr, this message translates to:
+  /// **'API opérationnelle'**
+  String get systempageApioperational;
+
+  /// No description provided for @systempageApioperationaldb.
+  ///
+  /// In fr, this message translates to:
+  /// **'API opérationnelle — DB :ms ms'**
+  String get systempageApioperationaldb;
+
+  /// No description provided for @systempageApiservices.
+  ///
+  /// In fr, this message translates to:
+  /// **'Services API'**
+  String get systempageApiservices;
+
+  /// No description provided for @systempageApiunavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non disponible — GET /health/live'**
+  String get systempageApiunavailable;
+
+  /// No description provided for @systempageDatabase.
+  ///
+  /// In fr, this message translates to:
+  /// **'Base de Données'**
+  String get systempageDatabase;
+
+  /// No description provided for @systempageDberror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : :error'**
+  String get systempageDberror;
+
+  /// No description provided for @systempageDblatency.
+  ///
+  /// In fr, this message translates to:
+  /// **'Latence : :ms ms'**
+  String get systempageDblatency;
+
+  /// No description provided for @systempageDbunavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non disponible — lancez un Health Check.'**
+  String get systempageDbunavailable;
+
+  /// No description provided for @systempageDbunreachable.
+  ///
+  /// In fr, this message translates to:
+  /// **'base injoignable'**
+  String get systempageDbunreachable;
+
+  /// No description provided for @systempageGlobalerror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sonde agrégée : base de données injoignable.'**
+  String get systempageGlobalerror;
+
+  /// No description provided for @systempageGlobalhealthy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sonde agrégée DB + Redis opérationnelle.'**
+  String get systempageGlobalhealthy;
+
+  /// No description provided for @systempageGlobalstatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut Global'**
+  String get systempageGlobalstatus;
+
+  /// No description provided for @systempageGlobalunavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non disponible — GET /admin/dashboard/stats'**
+  String get systempageGlobalunavailable;
+
+  /// No description provided for @systempageGlobalwarning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sonde agrégée : dégradation détectée.'**
+  String get systempageGlobalwarning;
+
+  /// No description provided for @systempageHealthcheck.
+  ///
+  /// In fr, this message translates to:
+  /// **'Health Check'**
+  String get systempageHealthcheck;
+
+  /// No description provided for @systempageHealthcheckrunning.
+  ///
+  /// In fr, this message translates to:
+  /// **'Analyse...'**
+  String get systempageHealthcheckrunning;
+
+  /// No description provided for @systempageHealtherror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Health check terminé — base de données en erreur'**
+  String get systempageHealtherror;
+
+  /// No description provided for @systempageHealthliveunreachable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sonde /health/live injoignable.'**
+  String get systempageHealthliveunreachable;
+
+  /// No description provided for @systempageHealthok.
+  ///
+  /// In fr, this message translates to:
+  /// **'Health check terminé — base de données opérationnelle'**
+  String get systempageHealthok;
+
+  /// No description provided for @systempageHealthunreachable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Health check terminé — base de données injoignable'**
+  String get systempageHealthunreachable;
+
+  /// No description provided for @systempageInfradetails.
+  ///
+  /// In fr, this message translates to:
+  /// **':active compagnies actives · PHP :php · queue :queue'**
+  String get systempageInfradetails;
+
+  /// No description provided for @systempageInfraunavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non disponible — GET /platform/metrics/overview'**
+  String get systempageInfraunavailable;
+
+  /// No description provided for @systempageInfrastructure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Infrastructure'**
+  String get systempageInfrastructure;
+
+  /// No description provided for @systempageMetricsloaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des métriques plateforme'**
+  String get systempageMetricsloaderror;
+
+  /// No description provided for @systempageNotifobsloaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement de l\'observabilité des notifications'**
+  String get systempageNotifobsloaderror;
+
+  /// No description provided for @systempageQueueobsloaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement de l\'observabilité des jobs'**
+  String get systempageQueueobsloaderror;
+
+  /// No description provided for @systempageRetry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get systempageRetry;
+
+  /// No description provided for @systempageServiceunreachable.
+  ///
+  /// In fr, this message translates to:
+  /// **'service injoignable'**
+  String get systempageServiceunreachable;
+
+  /// No description provided for @systempageStatsloaderror.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur lors du chargement des stats système'**
+  String get systempageStatsloaderror;
+
+  /// No description provided for @systempageSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Monitoring, configuration et automatisation de la plateforme Leopardo RH.'**
+  String get systempageSubtitle;
+
+  /// No description provided for @systempageTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Administration Système'**
+  String get systempageTitle;
+
+  /// No description provided for @retry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
   String get retry;
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fonction bientôt disponible'**
   String get featureComingSoon;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
   String get backToHome;
+
+  /// No description provided for @pageNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'La page demandée est introuvable ou la navigation a échoué.'**
   String get pageNotFound;
+
+  /// No description provided for @registerCreateAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer votre compte'**
   String get registerCreateAccount;
+
+  /// No description provided for @registerFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
   String get registerFirstName;
+
+  /// No description provided for @registerRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obligatoire'**
   String get registerRequired;
+
+  /// No description provided for @registerPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
   String get registerPassword;
+
+  /// No description provided for @registerMinChars.
+  ///
+  /// In fr, this message translates to:
+  /// **'8 caractères minimum'**
   String get registerMinChars;
+
+  /// No description provided for @registerCreating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Création de compte en cours...'**
   String get registerCreating;
+
+  /// No description provided for @registerSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer mon compte'**
   String get registerSubmit;
+
+  /// No description provided for @accessDeniedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès refusé'**
   String get accessDeniedTitle;
+
+  /// No description provided for @accessDeniedBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre compte n\'a pas le rôle Manager requis pour cette application. Utilisez l\'application correspondant à votre rôle (Employee, RH…) ou contactez votre administrateur.'**
   String get accessDeniedBody;
+
+  /// No description provided for @accessDeniedLogout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Se déconnecter'**
   String get accessDeniedLogout;
+
+  /// No description provided for @accessDeniedBodyHr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre compte n\'a pas le rôle RH requis pour cette application. Utilisez l\'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur.'**
   String get accessDeniedBodyHr;
+
+  /// No description provided for @evaluationsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes Évaluations'**
   String get evaluationsTitle;
+
+  /// No description provided for @evaluationsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune évaluation'**
   String get evaluationsEmpty;
+
+  /// No description provided for @evaluationsEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas encore d\'évaluation enregistrée.'**
   String get evaluationsEmptyHint;
+
+  /// No description provided for @evaluationPeriod.
+  ///
+  /// In fr, this message translates to:
+  /// **'Période : {period}'**
   String evaluationPeriod(String period);
+
+  /// No description provided for @attendanceOnTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'à l\'heure'**
   String get attendanceOnTime;
+
+  /// No description provided for @attendanceLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'en retard'**
   String get attendanceLate;
+
+  /// No description provided for @attendanceAbsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'absent'**
   String get attendanceAbsent;
+
+  /// No description provided for @attendanceInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'en cours'**
   String get attendanceInProgress;
+
+  /// No description provided for @attendanceNoClock.
+  ///
+  /// In fr, this message translates to:
+  /// **'pas de pointage'**
   String get attendanceNoClock;
+
+  /// No description provided for @attendanceTimeRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'de {from} à {to}'**
   String attendanceTimeRange(String from, String to);
+
+  /// No description provided for @attendanceHourWorked.
+  ///
+  /// In fr, this message translates to:
+  /// **'heure travaillée'**
   String get attendanceHourWorked;
+
+  /// No description provided for @attendanceHoursWorked.
+  ///
+  /// In fr, this message translates to:
+  /// **'heures travaillées'**
   String get attendanceHoursWorked;
+
+  /// No description provided for @attendanceDaySummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
   String attendanceDaySummary(
     String date,
     String status,
     String range,
     String hours,
   );
+
+  /// No description provided for @sessionApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session approuvée ✓'**
   String get sessionApproved;
+
+  /// No description provided for @sessionRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session rejetée'**
   String get sessionRejected;
+
+  /// No description provided for @pendingSessionsToValidate.
+  ///
+  /// In fr, this message translates to:
+  /// **'À valider'**
   String get pendingSessionsToValidate;
+
+  /// No description provided for @pendingSessionsUpToDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est à jour'**
   String get pendingSessionsUpToDate;
+
+  /// No description provided for @pendingSessionsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune session GPS en attente de validation.'**
   String get pendingSessionsEmpty;
+
+  /// No description provided for @employeeNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employé #{id}'**
   String employeeNumber(String id);
+
+  /// No description provided for @sessionEntryAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrée : {time}'**
   String sessionEntryAt(String time);
+
+  /// No description provided for @sessionsToValidate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sessions à valider'**
   String get sessionsToValidate;
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur : {message}'**
   String errorPrefix(String message);
+
+  /// No description provided for @saDashboardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage GPS — tableau de bord équipe'**
   String get saDashboardTitle;
+
+  /// No description provided for @saDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détectées'**
   String get saDetected;
+
+  /// No description provided for @saApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuvées'**
   String get saApproved;
+
+  /// No description provided for @saRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejetées'**
   String get saRejected;
+
+  /// No description provided for @saRecentSessions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sessions récentes'**
   String get saRecentSessions;
+
+  /// No description provided for @saForced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Imposé'**
   String get saForced;
+
+  /// No description provided for @saPresenceInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence en cours depuis {time}'**
   String saPresenceInProgress(String time);
+
+  /// No description provided for @saGpsZoneNotConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'La zone GPS de votre entreprise n\'est pas encore configurée.'**
   String get saGpsZoneNotConfigured;
+
+  /// No description provided for @saDisableAutoGps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactiver le GPS automatique'**
   String get saDisableAutoGps;
+
+  /// No description provided for @saStatusApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuvée'**
   String get saStatusApproved;
+
+  /// No description provided for @saStatusDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détectée'**
   String get saStatusDetected;
+
+  /// No description provided for @saStatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejetée'**
   String get saStatusRejected;
+
+  /// No description provided for @saStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
   String get saStatusCancelled;
+
+  /// No description provided for @saStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En validation'**
   String get saStatusPending;
+
+  /// No description provided for @saEnableAutoGps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer le GPS automatique'**
   String get saEnableAutoGps;
+
+  /// No description provided for @attendanceOvertime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures supplémentaires'**
   String get attendanceOvertime;
+
+  /// No description provided for @approvalsUpToDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est à jour'**
   String get approvalsUpToDate;
+
+  /// No description provided for @approvalsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune approbation en attente.'**
   String get approvalsEmpty;
+
+  /// No description provided for @saConfigLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger la configuration.\n{error}'**
   String saConfigLoadError(String error);
+
+  /// No description provided for @ampAutoDetectDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre présence est détectée automatiquement dès que vous entrez dans la zone de l\'entreprise. Aucune action requise de votre part.'**
   String get ampAutoDetectDesc;
+
+  /// No description provided for @ampRecommended.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recommandé'**
   String get ampRecommended;
+
+  /// No description provided for @ampQrScanDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Scannez le QR Code affiché à l\'entrée de l\'entreprise pour pointer votre arrivée et votre départ.'**
   String get ampQrScanDesc;
+
+  /// No description provided for @ampManualDesc.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l\'écran de présence.'**
   String get ampManualDesc;
+
+  /// No description provided for @ampSaveError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de sauvegarder votre préférence. Vérifiez votre connexion.'**
   String get ampSaveError;
+
+  /// No description provided for @ampTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez comment vous souhaitez pointer votre présence chaque jour.'**
   String get ampTitle;
+
+  /// No description provided for @ampModeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode de pointage'**
   String get ampModeTitle;
+
+  /// No description provided for @back.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
   String get back;
+
+  /// No description provided for @refresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
   String get refresh;
+
+  /// No description provided for @saSessionsLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les sessions GPS. Vérifiez votre connexion.'**
   String get saSessionsLoadError;
+
+  /// No description provided for @saStartMonitoringError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.'**
   String get saStartMonitoringError;
+
+  /// No description provided for @shellTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipe'**
   String get shellTeam;
+
+  /// No description provided for @shellSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
   String get shellSettings;
+
+  /// No description provided for @homeCompleteOnboarding.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compléter mon onboarding'**
   String get homeCompleteOnboarding;
+
+  /// No description provided for @homeOnboardingHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Configurez votre espace en quelques étapes.'**
   String get homeOnboardingHint;
+
+  /// No description provided for @welcomeMyTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon équipe'**
   String get welcomeMyTeam;
+
+  /// No description provided for @welcomePresences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présences'**
   String get welcomePresences;
+
+  /// No description provided for @welcomeTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
   String get welcomeTasks;
+
+  /// No description provided for @welcomeLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congés'**
   String get welcomeLeaves;
+
+  /// No description provided for @monthlySummaryLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement du résumé mensuel...'**
   String get monthlySummaryLoading;
+
+  /// No description provided for @orgChartEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'organigramme sera disponible une fois les employés configurés.'**
   String get orgChartEmpty;
+
+  /// No description provided for @orgChartCollapse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réduire'**
   String get orgChartCollapse;
+
+  /// No description provided for @orgChartExpand.
+  ///
+  /// In fr, this message translates to:
+  /// **'Développer'**
   String get orgChartExpand;
+
+  /// No description provided for @errorUnexpected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une erreur est survenue'**
   String get errorUnexpected;
-  String get apiAccessdenied;
-  String get apiConnectionerror;
-  String get apiGenericerror;
-  String get apiInvaliddata;
-  String get apiNotfound;
-  String get apiServererror;
-  String get apiServererrorretry;
-  String get apiServerunavailable;
-  String get apiSessionexpired;
-  String get apiToomanyrequests;
-  String get authDemoAccess;
-  String get authTogglePasswordVisibility;
-  String get commonRequired;
-  String get partnerpageApplyerrorprefix;
-  String get partnerpageCommissionsEmpty;
-  String get partnerpageCommissionsTitle;
-  String get partnerpageDashboardSubtitle;
-  String get partnerpageDashboardTitle;
-  String get partnerpageLoading;
-  String get partnerpageMetricsConversions;
-  String get partnerpageMetricsPending;
-  String get partnerpageMetricsTotalearned;
-  String get partnerpageMetricsWithdrawable;
-  String get partnerpageNotappliedAgency;
-  String get partnerpageNotappliedIndividual;
-  String get partnerpageNotappliedSubtitle;
-  String get partnerpageNotappliedTitle;
-  String get partnerpagePayoutBody;
-  String get partnerpagePayoutErrorprefix;
-  String get partnerpagePayoutInsufficient;
-  String get partnerpagePayoutRequest;
-  String get partnerpagePayoutSending;
-  String get partnerpagePayoutSuccess;
-  String get partnerpagePayoutTitle;
-  String get partnerpagePendingBody;
-  String get partnerpagePendingTitle;
-  String get partnerpageReferralCopied;
-  String get partnerpageReferralCopy;
-  String get partnerpageReferralCopyerror;
-  String get partnerpageReferralTitle;
-  String get partnerpageReferralUnavailable;
-  String get partnerpageTableAmount;
-  String get partnerpageTableDate;
-  String get partnerpageTableStatus;
-  String get partnerpageTableStatuspaid;
-  String get partnerpageTableStatuspending;
-  String get partnerpageTableTenantid;
-  String get settingspageCancel;
-  String get settingspageConfirmpassword;
-  String get settingspageCurrentpassword;
-  String get settingspageDisable2fa;
-  String get settingspageDisabled;
-  String get settingspageEmail;
-  String get settingspageEnable2fa;
-  String get settingspageEnabled;
-  String get settingspageEntercodestep;
-  String get settingspageFullname;
-  String get settingspageGeneratesecret;
-  String get settingspageGeneratesecrethint;
-  String get settingspageManualsecret;
-  String get settingspageMinlengthhint;
-  String get settingspageNewpassword;
-  String get settingspagePassword;
-  String get settingspagePasswordsmismatch;
-  String get settingspagePasswordsubtitle;
-  String get settingspagePasswordtitle;
-  String get settingspagePasswordupdated;
-  String get settingspageProfilesubtitle;
-  String get settingspageProfiletitle;
-  String get settingspageProfileupdated;
-  String get settingspageSavechanges;
-  String get settingspageScanstep;
-  String get settingspageSubtitle;
-  String get settingspageTitle;
-  String get settingspageTwofactoractivehint;
-  String get settingspageTwofactordisabled;
-  String get settingspageTwofactorenabled;
-  String get settingspageTwofactorsubtitle;
-  String get settingspageTwofactortitle;
-  String get settingspageUpdatepassword;
-  String get systempageApierror;
-  String get systempageApioperational;
-  String get systempageApioperationaldb;
-  String get systempageApiservices;
-  String get systempageApiunavailable;
-  String get systempageDatabase;
-  String get systempageDberror;
-  String get systempageDblatency;
-  String get systempageDbunavailable;
-  String get systempageDbunreachable;
-  String get systempageGlobalerror;
-  String get systempageGlobalhealthy;
-  String get systempageGlobalstatus;
-  String get systempageGlobalunavailable;
-  String get systempageGlobalwarning;
-  String get systempageHealthcheck;
-  String get systempageHealthcheckrunning;
-  String get systempageHealtherror;
-  String get systempageHealthliveunreachable;
-  String get systempageHealthok;
-  String get systempageHealthunreachable;
-  String get systempageInfradetails;
-  String get systempageInfrastructure;
-  String get systempageInfraunavailable;
-  String get systempageMetricsloaderror;
-  String get systempageNotifobsloaderror;
-  String get systempageQueueobsloaderror;
-  String get systempageRetry;
-  String get systempageServiceunreachable;
-  String get systempageStatsloaderror;
-  String get systempageSubtitle;
-  String get systempageTitle;
-  String get userAuthAlreadyAccount;
-  String get userAuthBackToHome;
-  String get userAuthCity;
-  String get userAuthCompanyEmail;
-  String get userAuthCompanyName;
-  String get userAuthCompanyRequestBody;
-  String get userAuthCompanyRequestInfo;
-  String get userAuthCompanyRequestTitle;
-  String get userAuthCountry;
-  String get userAuthCreateCompany;
-  String get userAuthDescription;
-  String get userAuthFirstName;
-  String userAuthGoogleError(Object error);
-  String get userAuthLastName;
-  String get userAuthLoginSubtitle;
-  String get userAuthNoAccount;
-  String get userAuthPersonalLogin;
-  String get userAuthPhone;
-  String get userAuthPhoneOptional;
-  String get userAuthRegisterButton;
-  String get userAuthRegisterSubtitleAlt;
-  String get userAuthRegisterTitle;
-  String get userAuthSector;
-  String get userAuthSubmitError;
-  String get userAuthSubmitRequest;
+
+  /// No description provided for @approvalApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande approuvée'**
+  String get approvalApproved;
+
+  /// No description provided for @approvalRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande refusée'**
+  String get approvalRejected;
 }
 
 class _AppLocalizationsDelegate

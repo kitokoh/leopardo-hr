@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -105,6 +104,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get authTwoFactorRequired => '2FA kodu gereklidir.';
 
   @override
+  String get authDemoAccess => 'Demo erisimi';
+
+  @override
+  String get authTogglePasswordVisibility => 'Sifreyi goster veya gizle';
+
+  @override
   String get commonLanguageLabel => 'Dil';
 
   @override
@@ -197,6 +202,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get commonCountriesUs => 'Amerika Birleşik Devletleri';
+
+  @override
+  String get commonRequired => 'Gerekli';
 
   @override
   String get modulesAttendance => 'Puantaj';
@@ -2653,6 +2661,449 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get employeesEmptyList => 'Bu hesap için görünür çalışan yok.';
+
+  @override
+  String get userAuthCompanyRequestTitle => 'Talep gönderildi!';
+
+  @override
+  String get userAuthCompanyRequestBody =>
+      'Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.';
+
+  @override
+  String get userAuthCompanyRequestInfo =>
+      'Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak.';
+
+  @override
+  String get userAuthBackToHome => 'Ana sayfaya dön';
+
+  @override
+  String get userAuthCreateCompany => 'Şirket oluştur';
+
+  @override
+  String get userAuthCompanyName => 'Şirket adı';
+
+  @override
+  String get userAuthCompanyEmail => 'Şirket e-postası';
+
+  @override
+  String get userAuthSector => 'İş sektörü';
+
+  @override
+  String get userAuthCountry => 'Ülke';
+
+  @override
+  String get userAuthCity => 'Şehir';
+
+  @override
+  String get userAuthPhone => 'Telefon';
+
+  @override
+  String get userAuthDescription => 'Açıklama';
+
+  @override
+  String get userAuthSubmitRequest => 'Talep gönder';
+
+  @override
+  String get userAuthSubmitError => 'Talep gönderme hatası';
+
+  @override
+  String get userAuthAlreadyAccount => 'Zaten hesabiniz var mi? Giris yapin';
+
+  @override
+  String get userAuthFirstName => 'Ad';
+
+  @override
+  String userAuthGoogleError(Object error) {
+    return 'Google hatasi: $error';
+  }
+
+  @override
+  String get userAuthLastName => 'Soyad';
+
+  @override
+  String get userAuthLoginSubtitle =>
+      'Alanınıza, belgelerinize ve taleplerinize erisin.';
+
+  @override
+  String get userAuthNoAccount => 'Henuz hesabınız yok mu? Kayit olun';
+
+  @override
+  String get userAuthPersonalLogin => 'Kisisel giris';
+
+  @override
+  String get userAuthPhoneOptional => 'Telefon (opsiyonel)';
+
+  @override
+  String get userAuthRegisterButton => 'Hesabimi olustur';
+
+  @override
+  String get userAuthRegisterSubtitleAlt =>
+      'Kisisel alanınıza erisin ve belgelerinizi duzenleyin.';
+
+  @override
+  String get userAuthRegisterTitle => 'Hesabimi olustur';
+
+  @override
+  String get partnerpageLoading => 'Alanınız yükleniyor...';
+
+  @override
+  String get partnerpageApplyerrorprefix => 'Başvuru sırasında hata: ';
+
+  @override
+  String get partnerpageNotappliedTitle => 'Partner Olun';
+
+  @override
+  String get partnerpageNotappliedSubtitle =>
+      'Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20\'ye varan düzenli komisyon.';
+
+  @override
+  String get partnerpageNotappliedIndividual => 'Bireysel olarak başvurun';
+
+  @override
+  String get partnerpageNotappliedAgency => 'Ajans olarak başvurun';
+
+  @override
+  String get partnerpagePendingTitle => 'Başvuru inceleniyor';
+
+  @override
+  String get partnerpagePendingBody =>
+      'Başvurunuz satış ekibimiz tarafından doğrulanıyor. Erişiminiz etkinleştirilir etkinleştirilmez bir e-posta alacaksınız.';
+
+  @override
+  String get partnerpageDashboardTitle => 'Partner Paneli';
+
+  @override
+  String get partnerpageDashboardSubtitle =>
+      'Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu.';
+
+  @override
+  String get partnerpageMetricsConversions => 'Dönüşümler';
+
+  @override
+  String get partnerpageMetricsTotalearned => 'Toplam kazanç';
+
+  @override
+  String get partnerpageMetricsPending => 'Beklemede';
+
+  @override
+  String get partnerpageMetricsWithdrawable => 'Çekilebilir bakiye';
+
+  @override
+  String get partnerpageCommissionsTitle => 'Son komisyonlar';
+
+  @override
+  String get partnerpageCommissionsEmpty => 'Kayıtlı komisyon yok.';
+
+  @override
+  String get partnerpageTableTenantid => 'Tenant Kimliği';
+
+  @override
+  String get partnerpageTableDate => 'Tarih';
+
+  @override
+  String get partnerpageTableStatus => 'Durum';
+
+  @override
+  String get partnerpageTableAmount => 'Tutar';
+
+  @override
+  String get partnerpageTableStatuspaid => 'Ödendi';
+
+  @override
+  String get partnerpageTableStatuspending => 'Beklemede';
+
+  @override
+  String get partnerpagePayoutTitle => 'Ödeme';
+
+  @override
+  String get partnerpagePayoutBody =>
+      'Komisyonlarınız eşiğe ulaşıldığında ödenir. Banka bilgilerinizin güncel olduğundan emin olun.';
+
+  @override
+  String get partnerpagePayoutRequest => 'Havale talep et';
+
+  @override
+  String get partnerpagePayoutSending => 'Gönderiliyor...';
+
+  @override
+  String get partnerpagePayoutInsufficient =>
+      'Havale talep etmek için bakiye yetersiz (minimum 100,00 €).';
+
+  @override
+  String get partnerpagePayoutSuccess => 'Havale talebi başarıyla gönderildi.';
+
+  @override
+  String get partnerpagePayoutErrorprefix => 'Havale talebi sırasında hata: ';
+
+  @override
+  String get partnerpageReferralTitle => 'Referans bağlantısı';
+
+  @override
+  String get partnerpageReferralUnavailable => 'Bağlantı kullanılamıyor';
+
+  @override
+  String get partnerpageReferralCopy => 'Bağlantımı kopyala';
+
+  @override
+  String get partnerpageReferralCopied => 'Kopyalandı!';
+
+  @override
+  String get partnerpageReferralCopyerror =>
+      'Bağlantı kopyalanamadı. Lütfen elle kopyalayın.';
+
+  @override
+  String get apiSessionexpired =>
+      'Oturum süresi doldu. Yeniden bağlanılıyor...';
+
+  @override
+  String get apiAccessdenied =>
+      ':endpoint üzerinde erişim reddedildi. Yetersiz izinler.';
+
+  @override
+  String get apiNotfound => 'Kaynak bulunamadı: :endpoint';
+
+  @override
+  String get apiToomanyrequests =>
+      'Çok fazla istek. Lütfen birkaç saniye bekleyin.';
+
+  @override
+  String get apiServererror => ':endpoint üzerinde sunucu hatası. :detail';
+
+  @override
+  String get apiServererrorretry => 'Daha sonra tekrar deneyin.';
+
+  @override
+  String get apiServerunavailable =>
+      'Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.';
+
+  @override
+  String get apiGenericerror => ':endpoint üzerinde :status hatası.';
+
+  @override
+  String get apiInvaliddata => 'Geçersiz veri.';
+
+  @override
+  String get apiConnectionerror =>
+      'Bağlantı hatası. İnternet bağlantınızı kontrol edin.';
+
+  @override
+  String get settingspageCancel => 'İptal';
+
+  @override
+  String get settingspageConfirmpassword => 'Parolayı doğrula';
+
+  @override
+  String get settingspageCurrentpassword => 'Mevcut parola';
+
+  @override
+  String get settingspageDisable2fa => '2FA\'yı devre dışı bırak';
+
+  @override
+  String get settingspageDisabled => 'Devre dışı';
+
+  @override
+  String get settingspageEmail => 'E-posta adresi';
+
+  @override
+  String get settingspageEnable2fa => '2FA\'yı etkinleştir';
+
+  @override
+  String get settingspageEnabled => 'Etkin';
+
+  @override
+  String get settingspageEntercodestep => '2. Üretilen 6 haneli kodu girin';
+
+  @override
+  String get settingspageFullname => 'Ad soyad';
+
+  @override
+  String get settingspageGeneratesecret => '2FA sırrı oluştur';
+
+  @override
+  String get settingspageGeneratesecrethint =>
+      'Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.';
+
+  @override
+  String get settingspageManualsecret => 'Manuel sır:';
+
+  @override
+  String get settingspageMinlengthhint => 'En az 8 karakter.';
+
+  @override
+  String get settingspageNewpassword => 'Yeni parola';
+
+  @override
+  String get settingspagePassword => 'Parola';
+
+  @override
+  String get settingspagePasswordsubtitle =>
+      'Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.';
+
+  @override
+  String get settingspagePasswordtitle => 'Parola';
+
+  @override
+  String get settingspagePasswordupdated => 'Parola başarıyla güncellendi.';
+
+  @override
+  String get settingspagePasswordsmismatch => 'Parolalar eşleşmiyor.';
+
+  @override
+  String get settingspageProfilesubtitle =>
+      'Oturum açmak için kullanılan ad ve e-posta adresi.';
+
+  @override
+  String get settingspageProfiletitle => 'Profil bilgileri';
+
+  @override
+  String get settingspageProfileupdated => 'Profil başarıyla güncellendi.';
+
+  @override
+  String get settingspageSavechanges => 'Değişiklikleri kaydet';
+
+  @override
+  String get settingspageScanstep =>
+      '1. Bu bağlantıyı / sırrı 2FA uygulamanızda tarayın:';
+
+  @override
+  String get settingspageSubtitle =>
+      'Bilgilerinizi, parolanızı ve süper yönetici hesabınızın güvenliğini yönetin.';
+
+  @override
+  String get settingspageTitle => 'Hesabım';
+
+  @override
+  String get settingspageTwofactoractivehint =>
+      '2FA etkin. Devre dışı bırakmak için parolanızı doğrulayın.';
+
+  @override
+  String get settingspageTwofactordisabled => '2FA devre dışı bırakıldı.';
+
+  @override
+  String get settingspageTwofactorenabled => '2FA başarıyla etkinleştirildi.';
+
+  @override
+  String get settingspageTwofactorsubtitle =>
+      'Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.';
+
+  @override
+  String get settingspageTwofactortitle =>
+      'İki faktörlü kimlik doğrulama (2FA)';
+
+  @override
+  String get settingspageUpdatepassword => 'Parolayı güncelle';
+
+  @override
+  String get systempageApierror => 'Hata: :error';
+
+  @override
+  String get systempageApioperational => 'API çalışıyor';
+
+  @override
+  String get systempageApioperationaldb => 'API çalışıyor — DB :ms ms';
+
+  @override
+  String get systempageApiservices => 'API Hizmetleri';
+
+  @override
+  String get systempageApiunavailable => 'Kullanılamıyor — GET /health/live';
+
+  @override
+  String get systempageDatabase => 'Veritabanı';
+
+  @override
+  String get systempageDberror => 'Hata: :error';
+
+  @override
+  String get systempageDblatency => 'Gecikme: :ms ms';
+
+  @override
+  String get systempageDbunavailable =>
+      'Kullanılamıyor — bir Sağlık Kontrolü çalıştırın.';
+
+  @override
+  String get systempageDbunreachable => 'veritabanına ulaşılamıyor';
+
+  @override
+  String get systempageGlobalerror =>
+      'Birleşik sonda: veritabanına ulaşılamıyor.';
+
+  @override
+  String get systempageGlobalhealthy =>
+      'Birleşik DB + Redis sondası çalışıyor.';
+
+  @override
+  String get systempageGlobalstatus => 'Genel Durum';
+
+  @override
+  String get systempageGlobalunavailable =>
+      'Kullanılamıyor — GET /admin/dashboard/stats';
+
+  @override
+  String get systempageGlobalwarning => 'Birleşik sonda: bozulma algılandı.';
+
+  @override
+  String get systempageHealthcheck => 'Sağlık Kontrolü';
+
+  @override
+  String get systempageHealthcheckrunning => 'Kontrol ediliyor...';
+
+  @override
+  String get systempageHealtherror =>
+      'Sağlık kontrolü tamamlandı — veritabanında hata';
+
+  @override
+  String get systempageHealthliveunreachable =>
+      '/health/live sondasına ulaşılamıyor.';
+
+  @override
+  String get systempageHealthok =>
+      'Sağlık kontrolü tamamlandı — veritabanı çalışıyor';
+
+  @override
+  String get systempageHealthunreachable =>
+      'Sağlık kontrolü tamamlandı — veritabanına ulaşılamıyor';
+
+  @override
+  String get systempageInfradetails =>
+      ':active aktif şirket · PHP :php · kuyruk :queue';
+
+  @override
+  String get systempageInfraunavailable =>
+      'Kullanılamıyor — GET /platform/metrics/overview';
+
+  @override
+  String get systempageInfrastructure => 'Altyapı';
+
+  @override
+  String get systempageMetricsloaderror =>
+      'Platform metrikleri yüklenirken hata oluştu';
+
+  @override
+  String get systempageNotifobsloaderror =>
+      'Bildirim gözlemlenebilirliği yüklenirken hata oluştu';
+
+  @override
+  String get systempageQueueobsloaderror =>
+      'İş gözlemlenebilirliği yüklenirken hata oluştu';
+
+  @override
+  String get systempageRetry => 'Yeniden dene';
+
+  @override
+  String get systempageServiceunreachable => 'hizmete ulaşılamıyor';
+
+  @override
+  String get systempageStatsloaderror =>
+      'Sistem istatistikleri yüklenirken hata oluştu';
+
+  @override
+  String get systempageSubtitle =>
+      'Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.';
+
+  @override
+  String get systempageTitle => 'Sistem Yönetimi';
+
   @override
   String get retry => 'Yeniden dene';
 
@@ -2922,321 +3373,13 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get orgChartExpand => 'Genişlet';
-  @override
-  String get errorUnexpected => 'Bir hata oluştu';
-  @override
-  String get apiAccessdenied =>
-      ':endpoint üzerinde erişim reddedildi. Yetersiz izinler.';
-  @override
-  String get apiConnectionerror =>
-      'Bağlantı hatası. İnternet bağlantınızı kontrol edin.';
-  @override
-  String get apiGenericerror => ':endpoint üzerinde :status hatası.';
-  @override
-  String get apiInvaliddata => 'Geçersiz veri.';
-  @override
-  String get apiNotfound => 'Kaynak bulunamadı: :endpoint';
-  @override
-  String get apiServererror => ':endpoint üzerinde sunucu hatası. :detail';
-  @override
-  String get apiServererrorretry => 'Daha sonra tekrar deneyin.';
-  @override
-  String get apiServerunavailable =>
-      'Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.';
-  @override
-  String get apiSessionexpired =>
-      'Oturum süresi doldu. Yeniden bağlanılıyor...';
-  @override
-  String get apiToomanyrequests =>
-      'Çok fazla istek. Lütfen birkaç saniye bekleyin.';
-  @override
-  String get authDemoAccess => 'Demo erisimi';
-  @override
-  String get authTogglePasswordVisibility => 'Sifreyi goster veya gizle';
-  @override
-  String get commonRequired => 'Gerekli';
-  @override
-  String get partnerpageApplyerrorprefix => 'Başvuru sırasında hata: ';
-  @override
-  String get partnerpageCommissionsEmpty => 'Kayıtlı komisyon yok.';
-  @override
-  String get partnerpageCommissionsTitle => 'Son komisyonlar';
-  @override
-  String get partnerpageDashboardSubtitle =>
-      'Leopardo RH dönüşümlerinizi ve komisyonlarınızı takip edin — aktif partner durumu.';
-  @override
-  String get partnerpageDashboardTitle => 'Partner Paneli';
-  @override
-  String get partnerpageLoading => 'Alanınız yükleniyor...';
-  @override
-  String get partnerpageMetricsConversions => 'Dönüşümler';
-  @override
-  String get partnerpageMetricsPending => 'Beklemede';
-  @override
-  String get partnerpageMetricsTotalearned => 'Toplam kazanç';
-  @override
-  String get partnerpageMetricsWithdrawable => 'Çekilebilir bakiye';
-  @override
-  String get partnerpageNotappliedAgency => 'Ajans olarak başvurun';
-  @override
-  String get partnerpageNotappliedIndividual => 'Bireysel olarak başvurun';
-  @override
-  String get partnerpageNotappliedSubtitle =>
-      'Leopardo RH ekosistemine katılın ve yönlendirdiğiniz her şirket için komisyon kazanın. %20\'ye varan düzenli komisyon.';
-  @override
-  String get partnerpageNotappliedTitle => 'Partner Olun';
-  @override
-  String get partnerpagePayoutBody =>
-      'Komisyonlarınız eşiğe ulaşıldığında ödenir. Banka bilgilerinizin güncel olduğundan emin olun.';
-  @override
-  String get partnerpagePayoutErrorprefix => 'Havale talebi sırasında hata: ';
-  @override
-  String get partnerpagePayoutInsufficient =>
-      'Havale talep etmek için bakiye yetersiz (minimum 100,00 €).';
-  @override
-  String get partnerpagePayoutRequest => 'Havale talep et';
-  @override
-  String get partnerpagePayoutSending => 'Gönderiliyor...';
-  @override
-  String get partnerpagePayoutSuccess => 'Havale talebi başarıyla gönderildi.';
-  @override
-  String get partnerpagePayoutTitle => 'Ödeme';
-  @override
-  String get partnerpagePendingBody =>
-      'Başvurunuz satış ekibimiz tarafından doğrulanıyor. Erişiminiz etkinleştirilir etkinleştirilmez bir e-posta alacaksınız.';
-  @override
-  String get partnerpagePendingTitle => 'Başvuru inceleniyor';
-  @override
-  String get partnerpageReferralCopied => 'Kopyalandı!';
-  @override
-  String get partnerpageReferralCopy => 'Bağlantımı kopyala';
-  @override
-  String get partnerpageReferralCopyerror =>
-      'Bağlantı kopyalanamadı. Lütfen elle kopyalayın.';
-  @override
-  String get partnerpageReferralTitle => 'Referans bağlantısı';
-  @override
-  String get partnerpageReferralUnavailable => 'Bağlantı kullanılamıyor';
-  @override
-  String get partnerpageTableAmount => 'Tutar';
-  @override
-  String get partnerpageTableDate => 'Tarih';
-  @override
-  String get partnerpageTableStatus => 'Durum';
-  @override
-  String get partnerpageTableStatuspaid => 'Ödendi';
-  @override
-  String get partnerpageTableStatuspending => 'Beklemede';
-  @override
-  String get partnerpageTableTenantid => 'Tenant Kimliği';
-  @override
-  String get settingspageCancel => 'İptal';
-  @override
-  String get settingspageConfirmpassword => 'Parolayı doğrula';
-  @override
-  String get settingspageCurrentpassword => 'Mevcut parola';
-  @override
-  String get settingspageDisable2fa => '2FA\'yı devre dışı bırak';
-  @override
-  String get settingspageDisabled => 'Devre dışı';
-  @override
-  String get settingspageEmail => 'E-posta adresi';
-  @override
-  String get settingspageEnable2fa => '2FA\'yı etkinleştir';
-  @override
-  String get settingspageEnabled => 'Etkin';
-  @override
-  String get settingspageEntercodestep => '2. Üretilen 6 haneli kodu girin';
-  @override
-  String get settingspageFullname => 'Ad soyad';
-  @override
-  String get settingspageGeneratesecret => '2FA sırrı oluştur';
-  @override
-  String get settingspageGeneratesecrethint =>
-      'Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.';
-  @override
-  String get settingspageManualsecret => 'Manuel sır:';
-  @override
-  String get settingspageMinlengthhint => 'En az 8 karakter.';
-  @override
-  String get settingspageNewpassword => 'Yeni parola';
-  @override
-  String get settingspagePassword => 'Parola';
-  @override
-  String get settingspagePasswordsmismatch => 'Parolalar eşleşmiyor.';
-  @override
-  String get settingspagePasswordsubtitle =>
-      'Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.';
-  @override
-  String get settingspagePasswordtitle => 'Parola';
-  @override
-  String get settingspagePasswordupdated => 'Parola başarıyla güncellendi.';
-  @override
-  String get settingspageProfilesubtitle =>
-      'Oturum açmak için kullanılan ad ve e-posta adresi.';
-  @override
-  String get settingspageProfiletitle => 'Profil bilgileri';
-  @override
-  String get settingspageProfileupdated => 'Profil başarıyla güncellendi.';
-  @override
-  String get settingspageSavechanges => 'Değişiklikleri kaydet';
-  @override
-  String get settingspageScanstep =>
-      '1. Bu bağlantıyı / sırrı 2FA uygulamanızda tarayın:';
-  @override
-  String get settingspageSubtitle =>
-      'Bilgilerinizi, parolanızı ve süper yönetici hesabınızın güvenliğini yönetin.';
-  @override
-  String get settingspageTitle => 'Hesabım';
-  @override
-  String get settingspageTwofactoractivehint =>
-      '2FA etkin. Devre dışı bırakmak için parolanızı doğrulayın.';
-  @override
-  String get settingspageTwofactordisabled => '2FA devre dışı bırakıldı.';
-  @override
-  String get settingspageTwofactorenabled => '2FA başarıyla etkinleştirildi.';
-  @override
-  String get settingspageTwofactorsubtitle =>
-      'Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.';
-  @override
-  String get settingspageTwofactortitle =>
-      'İki faktörlü kimlik doğrulama (2FA)';
-  @override
-  String get settingspageUpdatepassword => 'Parolayı güncelle';
-  @override
-  String get systempageApierror => 'Hata: :error';
-  @override
-  String get systempageApioperational => 'API çalışıyor';
-  @override
-  String get systempageApioperationaldb => 'API çalışıyor — DB :ms ms';
-  @override
-  String get systempageApiservices => 'API Hizmetleri';
-  @override
-  String get systempageApiunavailable => 'Kullanılamıyor — GET /health/live';
-  @override
-  String get systempageDatabase => 'Veritabanı';
-  @override
-  String get systempageDberror => 'Hata: :error';
-  @override
-  String get systempageDblatency => 'Gecikme: :ms ms';
-  @override
-  String get systempageDbunavailable =>
-      'Kullanılamıyor — bir Sağlık Kontrolü çalıştırın.';
-  @override
-  String get systempageDbunreachable => 'veritabanına ulaşılamıyor';
-  @override
-  String get systempageGlobalerror =>
-      'Birleşik sonda: veritabanına ulaşılamıyor.';
-  @override
-  String get systempageGlobalhealthy =>
-      'Birleşik DB + Redis sondası çalışıyor.';
-  @override
-  String get systempageGlobalstatus => 'Genel Durum';
-  @override
-  String get systempageGlobalunavailable =>
-      'Kullanılamıyor — GET /admin/dashboard/stats';
-  @override
-  String get systempageGlobalwarning => 'Birleşik sonda: bozulma algılandı.';
-  @override
-  String get systempageHealthcheck => 'Sağlık Kontrolü';
-  @override
-  String get systempageHealthcheckrunning => 'Kontrol ediliyor...';
-  @override
-  String get systempageHealtherror =>
-      'Sağlık kontrolü tamamlandı — veritabanında hata';
-  @override
-  String get systempageHealthliveunreachable =>
-      '/health/live sondasına ulaşılamıyor.';
-  @override
-  String get systempageHealthok =>
-      'Sağlık kontrolü tamamlandı — veritabanı çalışıyor';
-  @override
-  String get systempageHealthunreachable =>
-      'Sağlık kontrolü tamamlandı — veritabanına ulaşılamıyor';
-  @override
-  String get systempageInfradetails =>
-      ':active aktif şirket · PHP :php · kuyruk :queue';
-  @override
-  String get systempageInfrastructure => 'Altyapı';
-  @override
-  String get systempageInfraunavailable =>
-      'Kullanılamıyor — GET /platform/metrics/overview';
-  @override
-  String get systempageMetricsloaderror =>
-      'Platform metrikleri yüklenirken hata oluştu';
-  @override
-  String get systempageNotifobsloaderror =>
-      'Bildirim gözlemlenebilirliği yüklenirken hata oluştu';
-  @override
-  String get systempageQueueobsloaderror =>
-      'İş gözlemlenebilirliği yüklenirken hata oluştu';
-  @override
-  String get systempageRetry => 'Yeniden dene';
-  @override
-  String get systempageServiceunreachable => 'hizmete ulaşılamıyor';
-  @override
-  String get systempageStatsloaderror =>
-      'Sistem istatistikleri yüklenirken hata oluştu';
-  @override
-  String get systempageSubtitle =>
-      'Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.';
-  @override
-  String get systempageTitle => 'Sistem Yönetimi';
-  @override
-  String get userAuthAlreadyAccount => 'Zaten hesabiniz var mi? Giris yapin';
-  @override
-  String get userAuthBackToHome => 'Ana sayfaya dön';
-  @override
-  String get userAuthCity => 'Şehir';
-  @override
-  String get userAuthCompanyEmail => 'Şirket e-postası';
-  @override
-  String get userAuthCompanyName => 'Şirket adı';
-  @override
-  String get userAuthCompanyRequestBody =>
-      'Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.';
-  @override
-  String get userAuthCompanyRequestInfo =>
-      'Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak.';
-  @override
-  String get userAuthCompanyRequestTitle => 'Talep gönderildi!';
-  @override
-  String get userAuthCountry => 'Ülke';
-  @override
-  String get userAuthCreateCompany => 'Şirket oluştur';
-  @override
-  String get userAuthDescription => 'Açıklama';
-  @override
-  String get userAuthFirstName => 'Ad';
-  @override
-  String userAuthGoogleError(Object error) {
-    return 'Google hatasi: $error';
-  }
 
   @override
-  String get userAuthLastName => 'Soyad';
+  String get errorUnexpected => 'Bir hata oluştu';
+
   @override
-  String get userAuthLoginSubtitle =>
-      'Alanınıza, belgelerinize ve taleplerinize erisin.';
+  String get approvalApproved => 'Talep onaylandı';
+
   @override
-  String get userAuthNoAccount => 'Henuz hesabınız yok mu? Kayit olun';
-  @override
-  String get userAuthPersonalLogin => 'Kisisel giris';
-  @override
-  String get userAuthPhone => 'Telefon';
-  @override
-  String get userAuthPhoneOptional => 'Telefon (opsiyonel)';
-  @override
-  String get userAuthRegisterButton => 'Hesabimi olustur';
-  @override
-  String get userAuthRegisterSubtitleAlt =>
-      'Kisisel alanınıza erisin ve belgelerinizi duzenleyin.';
-  @override
-  String get userAuthRegisterTitle => 'Hesabimi olustur';
-  @override
-  String get userAuthSector => 'İş sektörü';
-  @override
-  String get userAuthSubmitError => 'Talep gönderme hatası';
-  @override
-  String get userAuthSubmitRequest => 'Talep gönder';
+  String get approvalRejected => 'Talep reddedildi';
 }
