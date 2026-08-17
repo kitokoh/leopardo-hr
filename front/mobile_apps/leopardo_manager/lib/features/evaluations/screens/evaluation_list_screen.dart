@@ -1,10 +1,11 @@
-﻿import 'package:leopardo_core/core/widgets/glass_card.dart';
+import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_manager/features/evaluations/providers/evaluation_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class EvaluationListScreen extends ConsumerWidget {
   const EvaluationListScreen({super.key});
@@ -19,22 +20,21 @@ class EvaluationListScreen extends ConsumerWidget {
         backgroundColor: AppColors.bgDark,
         elevation: 0,
         title: Text(
-          'Mes Évaluations',
+          context.l10n.evaluationsTitle,
           style: AppTypography.subtitle.copyWith(color: AppColors.textDark),
         ),
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: evaluationsAsync.when(
         data: (evaluations) => evaluations.isEmpty
-            ? const EmptyState(
+            ? EmptyState(
                 icon: Icons.assignment_turned_in,
-                title: 'Aucune évaluation',
-                description:
-                    'Vous n\'avez pas encore d\'évaluation enregistrée.',
+                title: context.l10n.evaluationsEmpty,
+                description: context.l10n.evaluationsEmptyHint,
               )
             : ListView.builder(
                 padding: const EdgeInsets.all(20),
@@ -46,7 +46,7 @@ class EvaluationListScreen extends ConsumerWidget {
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       title: Text(
-                        'Période: ${evaluation.period}',
+                        context.l10n.evaluationPeriod(evaluation.period),
                         style: AppTypography.subtitle.copyWith(
                           color: AppColors.textDark,
                         ),
@@ -91,4 +91,3 @@ class EvaluationListScreen extends ConsumerWidget {
     }
   }
 }
-

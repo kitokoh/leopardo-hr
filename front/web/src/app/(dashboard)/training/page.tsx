@@ -1,10 +1,11 @@
 ﻿'use client';
 
-import { useEffect, useState, useSyncExternalStore, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 import { GraduationCap, Calendar, Users, Clock, BookOpen, Award, ChevronDown, Plus, X, MapPin } from 'lucide-react';
 
 interface TrainingSession {
@@ -46,11 +47,8 @@ const TYPE_LABELS: Record<string, string> = {
   certification: 'Certification',
 };
 
-const emptySubscribe = () => () => {};
-
 export default function TrainingPage() {
-  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
-  const copy = getCopy(locale);
+  const locale = getPreferredLocale();
   const [courses, setCourses] = useState<TrainingCourse[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -79,11 +77,10 @@ export default function TrainingPage() {
       setCourses(Array.isArray(data.data) ? data.data : []);
       setTotal(data.meta?.total ?? data.data?.length ?? 0);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : copy.trainingPage.loadError);
+      setError(err instanceof ApiError ? err.message : 'Impossible de charger les formations.');
     } finally {
       setLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => { void loadCourses(); }, [loadCourses]);
@@ -129,7 +126,7 @@ export default function TrainingPage() {
       setNewCourse({ title: '', description: '', category: '', type: 'internal', provider: '', duration_hours: '', max_participants: '' });
       await loadCourses();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : copy.trainingPage.createError);
+      setError(err instanceof ApiError ? err.message : 'Impossible de creer la formation.');
     } finally {
       setCreating(false);
     }
@@ -297,7 +294,7 @@ export default function TrainingPage() {
               <div className="space-y-3">
                 <input
                   type="text"
-                  placeholder="Titre *"
+                  placeholder={t(locale, 'training.titlePlaceholder')}
                   value={newCourse.title}
                   onChange={(e) => setNewCourse({ ...newCourse, title: e.target.value })}
                   className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -324,7 +321,7 @@ export default function TrainingPage() {
                   >
                     <option value="internal">Interne</option>
                     <option value="external">Externe</option>
-                    <option value="online">En ligne</option>
+                    <option value="online">{t(locale, 'training.online')}</option>
                     <option value="certification">Certification</option>
                   </select>
                 </div>
@@ -338,7 +335,7 @@ export default function TrainingPage() {
                   />
                   <input
                     type="number"
-                    placeholder="Duree (h)"
+                    placeholder={t(locale, 'training.durationPlaceholder')}
                     value={newCourse.duration_hours}
                     onChange={(e) => setNewCourse({ ...newCourse, duration_hours: e.target.value })}
                     className="rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -346,7 +343,7 @@ export default function TrainingPage() {
                 </div>
                 <input
                   type="number"
-                  placeholder="Participants max"
+                  placeholder={t(locale, 'training.maxParticipantsPlaceholder')}
                   value={newCourse.max_participants}
                   onChange={(e) => setNewCourse({ ...newCourse, max_participants: e.target.value })}
                   className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"

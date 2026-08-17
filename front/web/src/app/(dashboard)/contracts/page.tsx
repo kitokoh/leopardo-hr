@@ -1,10 +1,11 @@
 ﻿'use client';
 
-import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 import {
   FileText,
   Search,
@@ -27,11 +28,8 @@ interface Contract {
   created_at: string;
 }
 
-const emptySubscribe = () => () => {};
-
 export default function ContractsPage() {
-  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
-  const copy = getCopy(locale);
+  const locale = getPreferredLocale();
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -78,7 +76,7 @@ export default function ContractsPage() {
       terminated: 'bg-red-50 text-red-700',
       draft: 'bg-slate-100 text-slate-600',
     };
-    const labels: Record<string, string> = { active: copy.contracts.statusActive, suspended: copy.contracts.statusSuspended, terminated: copy.contracts.statusTerminated, draft: copy.contracts.statusDraft };
+    const labels: Record<string, string> = { active: 'Actif', suspended: 'Suspendu', terminated: 'Termine', draft: 'Brouillon' };
     return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
   };
 
@@ -98,16 +96,16 @@ export default function ContractsPage() {
   };
 
   const statCards = [
-    { label: copy.contracts.statusActives, value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
+    { label: 'Actifs', value: stats.active, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-50' },
     { label: 'Expirant bientot', value: stats.expiring, icon: AlertTriangle, accent: 'text-amber-600 bg-amber-50' },
-    { label: copy.contracts.statusSuspendeds, value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
+    { label: 'Suspendus', value: stats.suspended, icon: Clock, accent: 'text-red-500 bg-red-50' },
     { label: 'Total', value: stats.total, icon: FileText, accent: 'text-emerald-600 bg-emerald-50' },
   ];
 
   return (
     <ModulePageShell
-      title={copy.contracts.title}
-      subtitle={copy.contracts.subtitle}
+      title="Contrats"
+      subtitle="Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH."
       accentClassName="bg-gradient-to-br from-rh-light via-white to-white"
     >
       {downloadError && (
@@ -137,9 +135,10 @@ export default function ContractsPage() {
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          {/* #4574 : placeholder localisé */}
           <input
             type="text"
-            placeholder="Rechercher un employe ou un type de contrat..."
+            placeholder={t(locale, 'contracts.searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -150,10 +149,10 @@ export default function ContractsPage() {
           onChange={e => setStatusFilter(e.target.value)}
           className="rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm font-medium text-slate-700"
         >
-          <option value="all">{copy.contracts.statusAll}</option>
-          <option value="active">{copy.contracts.statusActive}</option>
-          <option value="suspended">{copy.contracts.statusSuspended}</option>
-          <option value="terminated">{copy.contracts.statusTerminated}</option>
+          <option value="all">{t(locale, 'contracts.allStatuses')}</option>
+          <option value="active">Actif</option>
+          <option value="suspended">Suspendu</option>
+          <option value="terminated">Termine</option>
         </select>
       </div>
 

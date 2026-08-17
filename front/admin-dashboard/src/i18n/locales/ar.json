@@ -37,7 +37,9 @@
         "redirect_uri": "رابط إعادة التوجيه"
       },
       "saved_ok": "تم حفظ إعدادات {provider}"
-    }
+    },
+    "socialExamplePlaceholder": "مثال: Leopardo RH — وسائل التواصل الاجتماعي",
+    "postContentPlaceholder": "محتوى المنشور..."
   },
   "emails": {
     "payroll_ready": {
@@ -183,7 +185,10 @@
     "platform_health": "صحة المنصة",
     "client_requests": "طلبات العملاء",
     "tenants_at_risk": "مستأجرون معرضون للخطر",
-    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة."
+    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة.",
+    "searchPlaceholder": "بحث...",
+    "modulesActiveSentence": "{active} وحدة نشطة، و{locked} لتفعيلها حسب خطتك.",
+    "yourCompany": "شركتك"
   },
   "common": {
     "language": {
@@ -1084,7 +1089,11 @@
     "statusCancelled": "ملغاة",
     "statusEnrolled": "مسجّل",
     "statusDropped": "منسحب",
-    "loadError": "تعذّر تحميل بيانات التدريب."
+    "loadError": "تعذّر تحميل بيانات التدريب.",
+    "titlePlaceholder": "العنوان *",
+    "durationPlaceholder": "المدة (ساعة)",
+    "maxParticipantsPlaceholder": "الحد الأقصى للمشاركين",
+    "online": "عبر الإنترنت"
   },
   "analytics": {
     "title": "تحليلات المنصة",
@@ -1389,7 +1398,11 @@
     "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). يرجى المحاولة مرة أخرى بعد قليل.",
     "genericError": "خطأ :status على :endpoint.",
     "invalidData": "بيانات غير صالحة.",
-    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت."
+    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت.",
+    "login_invalid_json": "نص الطلب غير صالح.",
+    "login_timeout": "يستغرق الخادم وقتاً طويلاً للرد. يرجى المحاولة مرة أخرى بعد قليل.",
+    "login_network_error": "تعذر الوصول إلى الخادم.",
+    "login_backend_error": "استجابة خادم غير متوقعة."
   },
   "settingsPage": {
     "cancel": "إلغاء",
@@ -1491,5 +1504,19 @@
     "usefulLinks": "روابط مفيدة",
     "system": "النظام",
     "systemConfig": "إعدادات النظام"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
+    "no_active_period": "لا توجد فترة نشطة",
+    "no_active_subscription": "لا يوجد اشتراك نشط",
+    "period_label": "الفترة",
+    "checkout_sandbox_message": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
+    "checkout_unavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
+    "checkout_failed": "تعذر إنشاء جلسة الدفع."
+  },
+  "contracts": {
+    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
+    "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
+    "allStatuses": "كل الحالات"
   }
 }

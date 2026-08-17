@@ -30,7 +30,9 @@
           "description": "Connexion à l'API Facebook Graph"
         }
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "postContentPlaceholder": "Contenu de la publication..."
   },
   "auth": {
     "password_required": "Mot de passe obligatoire",
@@ -159,7 +161,11 @@
     "statusCancelled": "Annulée",
     "statusEnrolled": "Inscrit",
     "statusDropped": "Abandonné",
-    "loadError": "Impossible de charger les données de formation."
+    "loadError": "Impossible de charger les données de formation.",
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne"
   },
   "analytics": {
     "title": "Analytics Plateforme",
@@ -308,7 +314,10 @@
     "platform_health": "Santé plateforme",
     "client_requests": "Demandes clients",
     "tenants_at_risk": "Tenants à risque",
-    "platform_dashboard_hint": "Disponible dans le dashboard plateforme."
+    "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
+    "searchPlaceholder": "Rechercher...",
+    "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
+    "yourCompany": "Votre entreprise"
   },
   "_version": "1.0.0",
   "signup": {
@@ -1389,7 +1398,11 @@
     "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
     "genericError": "Erreur :status sur :endpoint.",
     "invalidData": "Données invalides.",
-    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet."
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet.",
+    "login_invalid_json": "Corps de requête invalide.",
+    "login_timeout": "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+    "login_network_error": "Impossible de contacter le serveur.",
+    "login_backend_error": "Réponse serveur inattendue."
   },
   "settingsPage": {
     "cancel": "Annuler",
@@ -1491,5 +1504,19 @@
     "usefulLinks": "Liens utiles",
     "system": "Système",
     "systemConfig": "Configuration système"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
+    "no_active_period": "Aucune période active",
+    "no_active_subscription": "Aucun abonnement active",
+    "period_label": "Période",
+    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
+    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+    "checkout_failed": "Impossible de créer la session de paiement."
+  },
+  "contracts": {
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts"
   }
 }

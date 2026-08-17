@@ -1,10 +1,11 @@
 ﻿'use client';
 
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 import {
   Link2,
   Unlink,
@@ -35,11 +36,8 @@ function statusBadge(status: string) {
   );
 }
 
-const emptySubscribe = () => () => {};
-
 export default function MarketingPage() {
-  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
-  const copy = getCopy(locale);
+  const locale = getPreferredLocale();
   const [account, setAccount] = useState<SocialAccount | null>(null);
   const [accountLoading, setAccountLoading] = useState(true);
   const [accountError, setAccountError] = useState<string | null>(null);
@@ -71,12 +69,11 @@ export default function MarketingPage() {
       if (err instanceof ApiError && err.code === 'SOCIAL_ACCOUNT_NOT_FOUND') {
         setAccount(null);
       } else {
-        setAccountError(err instanceof ApiError ? err.message : copy.socialMarketingPage.loadAccountError);
+        setAccountError(err instanceof ApiError ? err.message : 'Impossible de charger le compte social.');
       }
     } finally {
       setAccountLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadPosts = useCallback(async (targetPage: number, append: boolean) => {
@@ -90,11 +87,10 @@ export default function MarketingPage() {
       setPage(payload.meta?.current_page ?? targetPage);
       setLastPage(payload.meta?.last_page ?? targetPage);
     } catch (err) {
-      setPostsError(err instanceof ApiError ? err.message : copy.socialMarketingPage.loadPostsError);
+      setPostsError(err instanceof ApiError ? err.message : 'Impossible de charger les publications.');
     } finally {
       setPostsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -116,7 +112,7 @@ export default function MarketingPage() {
       setDisplayName('');
       await loadAccount();
     } catch (err) {
-      setAccountError(err instanceof ApiError ? err.message : copy.socialMarketingPage.connectError);
+      setAccountError(err instanceof ApiError ? err.message : 'Impossible de connecter le compte social.');
     } finally {
       setConnecting(false);
     }
@@ -129,7 +125,7 @@ export default function MarketingPage() {
       await apiFetch('/marketing/social-account/disconnect', { method: 'POST' });
       await loadAccount();
     } catch (err) {
-      setAccountError(err instanceof ApiError ? err.message : copy.socialMarketingPage.disconnectError);
+      setAccountError(err instanceof ApiError ? err.message : 'Impossible de deconnecter le compte social.');
     } finally {
       setDisconnecting(false);
     }
@@ -161,7 +157,7 @@ export default function MarketingPage() {
       setScheduledAt('');
       await loadPosts(1, false);
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : copy.socialMarketingPage.createError);
+      setActionError(err instanceof ApiError ? err.message : 'Impossible de creer la publication.');
     } finally {
       setSubmitting(false);
     }
@@ -177,7 +173,7 @@ export default function MarketingPage() {
       });
       await loadPosts(1, false);
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : copy.socialMarketingPage.publishError);
+      setActionError(err instanceof ApiError ? err.message : 'Impossible de publier la publication.');
     } finally {
       setPendingActionId(null);
     }
@@ -190,7 +186,7 @@ export default function MarketingPage() {
       await apiFetch(`/marketing/social-posts/${post.id}`, { method: 'DELETE' });
       setPosts((prev) => prev.filter((p) => p.id !== post.id));
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : copy.socialMarketingPage.deleteError);
+      setActionError(err instanceof ApiError ? err.message : 'Impossible de supprimer la publication.');
     } finally {
       setPendingActionId(null);
     }
@@ -273,7 +269,7 @@ export default function MarketingPage() {
                 <input
                   id="marketing-display-name"
                   type="text"
-                  placeholder="Ex: Leopardo RH — Reseaux sociaux"
+                  placeholder={t(locale, 'marketing.socialExamplePlaceholder')}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   className="w-full rounded-xl border border-app-border bg-transparent px-3 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -320,7 +316,7 @@ export default function MarketingPage() {
                 <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{actionError}</div>
               ) : null}
               <textarea
-                placeholder="Contenu de la publication..."
+                placeholder={t(locale, 'marketing.postContentPlaceholder')}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={3}
