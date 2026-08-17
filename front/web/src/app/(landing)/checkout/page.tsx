@@ -25,6 +25,8 @@ import { useDarkMode } from '@/modules/vitrine/hooks/useDarkMode';
 import { Navbar, Footer } from '@/modules/vitrine';
 import { getCurrentLocale, useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getCheckoutCopy, type CheckoutPlanKey } from '@/modules/vitrine/data/checkout';
+// #4803 : devise contractuelle pilotée par le module currency (PA2-MKT-003).
+import { DEFAULT_CURRENCY_OPTION } from '@/modules/vitrine/data/currency';
 import { getApiBaseUrl } from '@/lib/backend-url';
 
 /* ─────────────────────────────────────────────
@@ -217,7 +219,7 @@ function PlanSummaryCard({
         </div>
         <div>
           <div className="flex items-baseline gap-1">
-            {price !== null && <span className="text-white/70 text-sm">EUR</span>}
+            {price !== null && <span className="text-white/70 text-sm">{DEFAULT_CURRENCY_OPTION.currency}</span>}
             <span className="text-white font-black text-5xl">{priceLabel}</span>
             {price !== null && <span className="text-white/70 text-sm">{copy.perMonth}</span>}
           </div>
@@ -841,11 +843,11 @@ function StepPayment({
         <div className="p-4 rounded-2xl bg-transparent dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-600 dark:text-slate-400">{copy.payment.planRow.replace('{label}', copy.plans[plan].label)}</span>
-            <span className="font-bold text-slate-900 dark:text-white">EUR {price}{copy.perMonth}</span>
+            <span className="font-bold text-slate-900 dark:text-white">{DEFAULT_CURRENCY_OPTION.currency} {price}{copy.perMonth}</span>
           </div>
           <div className="flex items-center justify-between text-sm mt-1">
             <span className="text-slate-600 dark:text-slate-400">{copy.payment.freeTrialRow}</span>
-            <span className="font-bold text-emerald-600">{cfg.trialDays} {locale === 'fr' ? 'jours' : locale === 'tr' ? 'gün' : locale === 'ar' ? 'أيام' : 'days'}</span>
+            <span className="font-bold text-emerald-600">{cfg.trialDays} {copy.trialPeriodUnit}</span>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-700 mt-3 pt-3 flex items-center justify-between">
             <span className="font-bold text-slate-900 dark:text-white">{copy.payment.dueToday}</span>

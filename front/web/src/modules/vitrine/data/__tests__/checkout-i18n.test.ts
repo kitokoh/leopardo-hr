@@ -32,6 +32,16 @@ describe('checkout i18n (#4185)', () => {
     }
   })
 
+  it("#4803 : unité de période d'essai présente ×4 (pas de ternaire inline)", () => {
+    for (const locale of LOCALES) {
+      const copy = getCheckoutCopy(locale)
+      expect(typeof copy.trialPeriodUnit).toBe('string')
+      expect(copy.trialPeriodUnit.length).toBeGreaterThan(0)
+    }
+    const units = LOCALES.map((l) => getCheckoutCopy(l).trialPeriodUnit)
+    expect(new Set(units).size).toBe(4) // valeurs distinctes par locale
+  })
+
   it('aucune chaîne vide dans les locales non-fr (traductions complètes)', () => {
     const nonEmpty = (obj: unknown): string[] => {
       if (typeof obj === 'string') return obj.trim() ? [] : ['<empty string>']

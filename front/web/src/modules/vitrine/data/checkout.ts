@@ -31,6 +31,7 @@ export interface CheckoutCopy {
   planChosen: string
   quote: string
   perMonth: string
+  trialPeriodUnit: string // #4803 : unité de période de l'essai (jours/gün/أيام/days)
   trialBadge: string // « {days} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai »
   billedAnnually: string // « Facturé annuellement — économisez EUR {savings}/an »
   monthly: string
@@ -159,6 +160,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'Plan choisi',
     quote: 'Sur devis',
     perMonth: '/mois',
+    trialPeriodUnit: 'jours',
     trialBadge:
       "{days} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai",
     billedAnnually: 'Facturé annuellement — économisez EUR {savings}/an',
@@ -356,6 +358,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'Selected plan',
     quote: 'Custom quote',
     perMonth: '/month',
+    trialPeriodUnit: 'days',
     trialBadge: '{days} free days included · No card is charged before the trial ends',
     billedAnnually: 'Billed annually — save EUR {savings}/year',
     monthly: 'Monthly',
@@ -551,6 +554,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'Seçilen plan',
     quote: 'Özel teklif',
     perMonth: '/ay',
+    trialPeriodUnit: 'gün',
     trialBadge: '{days} gün ücretsiz dahil · Deneme bitmeden karttan ücret alınmaz',
     billedAnnually: 'Yıllık faturalandırılır — yılda EUR {savings} tasarruf',
     monthly: 'Aylık',
@@ -744,6 +748,7 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     planChosen: 'الباقة المختارة',
     quote: 'عرض مخصص',
     perMonth: '/شهر',
+    trialPeriodUnit: 'أيام',
     trialBadge: '{days} أيام مجانية مشمولة · لن يُخصم من بطاقتك قبل نهاية التجربة',
     billedAnnually: 'فوترة سنوية — وفّر EUR {savings} سنوياً',
     monthly: 'شهري',
