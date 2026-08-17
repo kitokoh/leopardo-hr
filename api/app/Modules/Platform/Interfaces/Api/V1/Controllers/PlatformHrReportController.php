@@ -85,9 +85,11 @@ class PlatformHrReportController extends Controller
     {
         try {
             $hires = DB::table(self::TENANT_SCHEMA.'.employees')
-                ->select(DB::raw("to_char(hire_date, 'YYYY-MM') as month"), DB::raw('count(*) as hires'))
-                ->whereBetween('hire_date', [$start, $end])
-                ->groupBy(DB::raw("to_char(hire_date, 'YYYY-MM')"))
+                // `hire_date` n'existe pas en base : la date d'embauche est
+                // `contract_start` (même mapping que EmployeeResource::hire_date).
+                ->select(DB::raw("to_char(contract_start, 'YYYY-MM') as month"), DB::raw('count(*) as hires'))
+                ->whereBetween('contract_start', [$start, $end])
+                ->groupBy(DB::raw("to_char(contract_start, 'YYYY-MM')"))
                 ->pluck('hires', 'month');
 
             $departures = DB::table(self::TENANT_SCHEMA.'.contracts')
@@ -183,13 +185,18 @@ class PlatformHrReportController extends Controller
     {
         try {
             $rows = DB::table(self::TENANT_SCHEMA.'.training_enrollments as e')
-                ->leftJoin(self::TENANT_SCHEMA.'.training_courses as c', 'c.id', '=', 'e.course_id')
+                // Le lien enrolment → cours passe par training_sessions
+                // (training_enrollments.training_session_id → sessions.training_course_id).
+                ->leftJoin(self::TENANT_SCHEMA.'.training_sessions as s', 's.id', '=', 'e.training_session_id')
+                ->leftJoin(self::TENANT_SCHEMA.'.training_courses as c', 'c.id', '=', 's.training_course_id')
                 ->select(
                     'c.title as formation',
                     DB::raw('count(*) as inscrits'),
                     DB::raw("count(*) filter (where e.status = 'completed') as completes")
                 )
-                ->whereBetween('e.enrolled_at', [$start.' 00:00:00', $end.' 23:59:59'])
+                // `enrolled_at` n'existe pas en base — la date d'inscription est
+                // created_at (fixture et migration 2026_05_10_000006).
+                ->whereBetween('e.created_at', [$start.' 00:00:00', $end.' 23:59:59'])
                 ->groupBy('c.title')
                 ->orderByDesc('inscrits')
                 ->get()

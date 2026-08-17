@@ -375,6 +375,68 @@ export type CopyTree = {
     edgeModeBody: string;
     retry: string;
   };
+  // #4574 Lot 2 — portail client : sections restantes localisées ×4.
+  billing: {
+    title: string;
+    subtitle: string;
+    statusActive: string;
+    statusCancelled: string;
+    statusPastDue: string;
+    statusPaid: string;
+    statusPending: string;
+    cancelConfirm: string;
+    cancelError: string;
+    renewError: string;
+    noPaymentAccount: string;
+    downloadError: string;
+    noActivePeriod: string;
+    periodRange: string;
+    cancelLabel: string;
+    loadError: string;
+  };
+  contracts: {
+    title: string;
+    subtitle: string;
+    statusAll: string;
+    statusActive: string;
+    statusSuspended: string;
+    statusActives: string;
+    statusSuspendeds: string;
+    statusTerminated: string;
+    statusDraft: string;
+  };
+  absencesPage: {
+    loadError: string;
+  };
+  attendancePage: {
+    loadError: string;
+  };
+  socialPage: {
+    title: string;
+    subtitle: string;
+    loadError: string;
+    createError: string;
+  };
+  socialMarketingPage: {
+    title: string;
+    subtitle: string;
+    loadAccountError: string;
+    loadPostsError: string;
+    connectError: string;
+    disconnectError: string;
+    createError: string;
+    publishError: string;
+    deleteError: string;
+    statusActive: string;
+  };
+  trainingPage: {
+    loadError: string;
+    createError: string;
+  };
+  notificationsPage: {
+    statusEnabled: string;
+    statusDisabled: string;
+  };
 };
 
 const copy: Record<AppLocale, CopyTree> = {
@@ -723,6 +785,65 @@ const copy: Record<AppLocale, CopyTree> = {
       edgeModeBody: "Accedez a l'interface locale via :",
       retry: 'Reessayer',
     },
+
+  billing: {
+    title: 'Facturation',
+    subtitle: 'Gérez votre abonnement, vos factures et vos informations de paiement.',
+    statusActive: 'Actif',
+    statusCancelled: 'Annulé',
+    statusPastDue: 'Impayé',
+    statusPaid: 'Payée',
+    statusPending: 'En attente',
+    cancelConfirm: 'Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.',
+    cancelError: 'Impossible d\'annuler l\'abonnement.',
+    renewError: 'Impossible de réactiver l\'abonnement.',
+    noPaymentAccount: 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
+    downloadError: 'Impossible de télécharger la facture.',
+    noActivePeriod: 'Aucune période active',
+    periodRange: 'Période : {start} au {end}',
+    cancelLabel: 'Annuler l\'abonnement',
+    loadError: 'Impossible de charger les informations de facturation.',
+  },
+  contracts: {
+    title: 'Contrats',
+    subtitle: 'Gestion des contrats de votre équipe',
+    statusAll: 'Tous les statuts',
+    statusActive: 'Actif',
+    statusSuspended: 'Suspendu',
+    statusActives: 'Actifs',
+    statusSuspendeds: 'Suspendus',
+    statusTerminated: 'Terminé',
+    statusDraft: 'Brouillon',
+  },
+  absencesPage: { loadError: 'Impossible de charger les absences.' },
+  attendancePage: { loadError: 'Impossible de charger le pointage.' },
+  socialPage: {
+    title: 'Réseaux sociaux',
+    subtitle: 'Publiez et planifiez vos contenus',
+    loadError: 'Impossible de charger les publications.',
+    createError: 'Impossible de créer la publication.',
+  },
+  socialMarketingPage: {
+    title: 'Marketing',
+    subtitle: 'Connectez votre compte social et gérez vos publications',
+    loadAccountError: 'Impossible de charger le compte social.',
+    loadPostsError: 'Impossible de charger les publications.',
+    connectError: 'Impossible de connecter le compte social.',
+    disconnectError: 'Impossible de déconnecter le compte social.',
+    createError: 'Impossible de créer la publication.',
+    publishError: 'Impossible de publier la publication.',
+    deleteError: 'Impossible de supprimer la publication.',
+    statusActive: 'Actif',
+  },
+  trainingPage: {
+    loadError: 'Impossible de charger les formations.',
+    createError: 'Impossible de créer la formation.',
+  },
+  notificationsPage: {
+    statusEnabled: 'Activé',
+    statusDisabled: 'Désactivé',
+  },
+
   },
   ar: {
     login: {
@@ -1069,6 +1190,65 @@ const copy: Record<AppLocale, CopyTree> = {
       edgeModeBody: 'ادخل إلى الواجهة المحلية عبر:',
       retry: 'إعادة المحاولة',
     },
+
+  billing: {
+    title: 'الفواتير',
+    subtitle: 'إدارة اشتراكك وفواتيرك ومعلومات الدفع.',
+    statusActive: 'نشط',
+    statusCancelled: 'ملغى',
+    statusPastDue: 'متأخر',
+    statusPaid: 'مدفوع',
+    statusPending: 'قيد الانتظار',
+    cancelConfirm: 'إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.',
+    cancelError: 'تعذر إلغاء الاشتراك.',
+    renewError: 'تعذر إعادة تفعيل الاشتراك.',
+    noPaymentAccount: 'لا يوجد حساب دفع مرتبط. اشترك في خطة أولاً.',
+    downloadError: 'تعذر تنزيل الفاتورة.',
+    noActivePeriod: 'لا توجد فترة نشطة',
+    periodRange: 'الفترة: {start} إلى {end}',
+    cancelLabel: 'إلغاء الاشتراك',
+    loadError: 'تعذر تحميل معلومات الفوترة.',
+  },
+  contracts: {
+    title: 'العقود',
+    subtitle: 'إدارة عقود فريقك',
+    statusAll: 'كل الحالات',
+    statusActive: 'نشط',
+    statusSuspended: 'موقوف',
+    statusActives: 'نشطة',
+    statusSuspendeds: 'موقوفة',
+    statusTerminated: 'منتهي',
+    statusDraft: 'مسودة',
+  },
+  absencesPage: { loadError: 'تعذر تحميل حالات الغياب.' },
+  attendancePage: { loadError: 'تعذر تحميل الحضور.' },
+  socialPage: {
+    title: 'وسائل التواصل',
+    subtitle: 'انشر محتواك وجدوله',
+    loadError: 'تعذر تحميل المنشورات.',
+    createError: 'تعذر إنشاء المنشور.',
+  },
+  socialMarketingPage: {
+    title: 'التسويق',
+    subtitle: 'اربط حسابك الاجتماعي وأدر منشوراتك',
+    loadAccountError: 'تعذر تحميل الحساب الاجتماعي.',
+    loadPostsError: 'تعذر تحميل المنشورات.',
+    connectError: 'تعذر ربط الحساب الاجتماعي.',
+    disconnectError: 'تعذر فصل الحساب الاجتماعي.',
+    createError: 'تعذر إنشاء المنشور.',
+    publishError: 'تعذر نشر المنشور.',
+    deleteError: 'تعذر حذف المنشور.',
+    statusActive: 'نشط',
+  },
+  trainingPage: {
+    loadError: 'تعذر تحميل التدريبات.',
+    createError: 'تعذر إنشاء التدريب.',
+  },
+  notificationsPage: {
+    statusEnabled: 'مفعل',
+    statusDisabled: 'معطل',
+  },
+
   },
   tr: {
     login: {
@@ -1415,6 +1595,65 @@ const copy: Record<AppLocale, CopyTree> = {
       edgeModeBody: 'Yerel arayuze su adresten erisin:',
       retry: 'Yeniden dene',
     },
+
+  billing: {
+    title: 'Faturalama',
+    subtitle: 'Aboneliğinizi, faturalarınızı ve ödeme bilgilerinizi yönetin.',
+    statusActive: 'Aktif',
+    statusCancelled: 'İptal edildi',
+    statusPastDue: 'Vadesi geçti',
+    statusPaid: 'Ödendi',
+    statusPending: 'Beklemede',
+    cancelConfirm: 'Aboneliğiniz iptal edilsin mi? Premium modüllere erişiminizi geçerli dönemin sonunda kaybedersiniz.',
+    cancelError: 'Abonelik iptal edilemedi.',
+    renewError: 'Abonelik yeniden etkinleştirilemedi.',
+    noPaymentAccount: 'Bağlı ödeme hesabı yok. Önce bir plana abone olun.',
+    downloadError: 'Fatura indirilemedi.',
+    noActivePeriod: 'Etkin dönem yok',
+    periodRange: 'Dönem: {start} - {end}',
+    cancelLabel: 'Aboneliği iptal et',
+    loadError: 'Faturalama bilgileri yüklenemedi.',
+  },
+  contracts: {
+    title: 'Sözleşmeler',
+    subtitle: 'Ekip sözleşmelerinizi yönetin',
+    statusAll: 'Tüm durumlar',
+    statusActive: 'Aktif',
+    statusSuspended: 'Askıya alındı',
+    statusActives: 'Aktif',
+    statusSuspendeds: 'Askıya alındı',
+    statusTerminated: 'Sonlandırıldı',
+    statusDraft: 'Taslak',
+  },
+  absencesPage: { loadError: 'Devamsızlıklar yüklenemedi.' },
+  attendancePage: { loadError: 'Yoklama yüklenemedi.' },
+  socialPage: {
+    title: 'Sosyal medya',
+    subtitle: 'İçeriklerinizi yayınlayın ve planlayın',
+    loadError: 'Yayınlar yüklenemedi.',
+    createError: 'Yayın oluşturulamadı.',
+  },
+  socialMarketingPage: {
+    title: 'Pazarlama',
+    subtitle: 'Sosyal hesabınızı bağlayın ve yayınlarınızı yönetin',
+    loadAccountError: 'Sosyal hesap yüklenemedi.',
+    loadPostsError: 'Yayınlar yüklenemedi.',
+    connectError: 'Sosyal hesap bağlanamadı.',
+    disconnectError: 'Sosyal hesap bağlantısı kesilemedi.',
+    createError: 'Yayın oluşturulamadı.',
+    publishError: 'Yayın yayınlanamadı.',
+    deleteError: 'Yayın silinemedi.',
+    statusActive: 'Aktif',
+  },
+  trainingPage: {
+    loadError: 'Eğitimler yüklenemedi.',
+    createError: 'Eğitim oluşturulamadı.',
+  },
+  notificationsPage: {
+    statusEnabled: 'Etkin',
+    statusDisabled: 'Devre dışı',
+  },
+
   },
   en: {
     login: {
@@ -1761,6 +2000,65 @@ const copy: Record<AppLocale, CopyTree> = {
       edgeModeBody: 'Access the local interface via:',
       retry: 'Retry',
     },
+
+  billing: {
+    title: 'Billing',
+    subtitle: 'Manage your subscription, invoices and payment information.',
+    statusActive: 'Active',
+    statusCancelled: 'Cancelled',
+    statusPastDue: 'Past due',
+    statusPaid: 'Paid',
+    statusPending: 'Pending',
+    cancelConfirm: 'Cancel your subscription? You will lose access to premium modules at the end of the current period.',
+    cancelError: 'Unable to cancel the subscription.',
+    renewError: 'Unable to reactivate the subscription.',
+    noPaymentAccount: 'No payment account linked. Subscribe to a plan first.',
+    downloadError: 'Unable to download the invoice.',
+    noActivePeriod: 'No active period',
+    periodRange: 'Period: {start} to {end}',
+    cancelLabel: 'Cancel subscription',
+    loadError: 'Unable to load billing information.',
+  },
+  contracts: {
+    title: 'Contracts',
+    subtitle: 'Manage your team contracts',
+    statusAll: 'All statuses',
+    statusActive: 'Active',
+    statusSuspended: 'Suspended',
+    statusActives: 'Active',
+    statusSuspendeds: 'Suspended',
+    statusTerminated: 'Terminated',
+    statusDraft: 'Draft',
+  },
+  absencesPage: { loadError: 'Unable to load absences.' },
+  attendancePage: { loadError: 'Unable to load attendance.' },
+  socialPage: {
+    title: 'Social media',
+    subtitle: 'Publish and schedule your content',
+    loadError: 'Unable to load posts.',
+    createError: 'Unable to create the post.',
+  },
+  socialMarketingPage: {
+    title: 'Marketing',
+    subtitle: 'Connect your social account and manage your posts',
+    loadAccountError: 'Unable to load the social account.',
+    loadPostsError: 'Unable to load posts.',
+    connectError: 'Unable to connect the social account.',
+    disconnectError: 'Unable to disconnect the social account.',
+    createError: 'Unable to create the post.',
+    publishError: 'Unable to publish the post.',
+    deleteError: 'Unable to delete the post.',
+    statusActive: 'Active',
+  },
+  trainingPage: {
+    loadError: 'Unable to load trainings.',
+    createError: 'Unable to create the training.',
+  },
+  notificationsPage: {
+    statusEnabled: 'Enabled',
+    statusDisabled: 'Disabled',
+  },
+
   },
 };
 
