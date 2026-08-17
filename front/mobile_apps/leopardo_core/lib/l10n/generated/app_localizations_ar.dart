@@ -2893,4 +2893,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get orgChartExpand => 'توسيع';
+  @override
+  String get errorUnexpected => 'حدث خطأ';
 }

@@ -1116,5 +1116,6 @@
   "monthlySummaryLoading": "جارٍ تحميل الملخص الشهري...",
   "orgChartEmpty": "سيتوفر الهيكل التنظيمي بمجرد إعداد الموظفين.",
   "orgChartCollapse": "طي",
-  "orgChartExpand": "توسيع"
+  "orgChartExpand": "توسيع",
+  "errorUnexpected": "حدث خطأ"
 }

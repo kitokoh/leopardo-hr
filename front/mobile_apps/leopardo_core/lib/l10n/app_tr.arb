@@ -1116,5 +1116,6 @@
   "monthlySummaryLoading": "Aylık özet yükleniyor...",
   "orgChartEmpty": "Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.",
   "orgChartCollapse": "Daralt",
-  "orgChartExpand": "Genişlet"
+  "orgChartExpand": "Genişlet",
+  "errorUnexpected": "Bir hata oluştu"
 }

@@ -2916,4 +2916,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get orgChartExpand => 'Genişlet';
+  @override
+  String get errorUnexpected => 'Bir hata oluştu';
 }

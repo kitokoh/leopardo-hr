@@ -2920,4 +2920,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgChartExpand => 'Expand';
+  @override
+  String get errorUnexpected => 'An error occurred';
 }
