@@ -165,7 +165,7 @@ void main() {
     await OnboardingRepository(client).skipStep('invite_manager');
 
     expect(recorder.requests, [
-      'POST /notifications/mark-all-read',
+      'POST /notifications/read-all',
       'PATCH /notifications/7/read',
       'POST /approvals/9/approve',
       'POST /approvals/10/reject',

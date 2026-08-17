@@ -252,7 +252,7 @@ class AttendanceRepository {
       timeoutOverride: _readTimeout,
       queryParameters: {'employee_id': employeeId},
     );
-    final data = extractDataMap(response.data);
+    final data = extractDataEnvelopeMap(response.data);
     return EmployeeDayDetail.fromJson(data);
   }
 

@@ -26,6 +26,9 @@ void main() {
   final baseOverrides = [
     authOverride(employee),
     tenantBrandingProvider.overrideWith((ref) async => null),
+    managerDigestProvider.overrideWith(
+      (ref) async => const ManagerDigest.empty(),
+    ),
     absencesProvider.overrideWith((ref) async => []),
     payrollsProvider.overrideWith((ref) async => []),
     notificationsProvider.overrideWith((ref) async => []),

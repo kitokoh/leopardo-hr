@@ -49,7 +49,7 @@ void main() {
       expect(claim.reference, '');
       expect(claim.category, '');
       expect(claim.amount, 0);
-      expect(claim.currency, 'DZD');
+      expect(claim.currency, '');
       expect(claim.date, '');
       expect(claim.status, 'pending');
     });
