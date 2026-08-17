@@ -61,6 +61,7 @@
   "commonCountriesTn": "Tunus",
   "commonCountriesTr": "Türkiye",
   "commonCountriesUs": "Amerika Birleşik Devletleri",
+  "commonRequired": "Gerekli",
   "modulesAttendance": "Puantaj",
   "modulesPayroll": "Bordro",
   "modulesCabinet": "Belge kasasi",
@@ -832,5 +833,19 @@
   "employeesConnectedApi": "API'ye bağlı",
   "employeesRecentCollaborators": "Son iş arkadaşları",
   "employeesListLoading": "Ekip listesi yükleniyor...",
-  "employeesEmptyList": "Bu hesap için görünür çalışan yok."
+  "employeesEmptyList": "Bu hesap için görünür çalışan yok.",
+  "userAuthCompanyRequestTitle": "Talep gönderildi!",
+  "userAuthCompanyRequestBody": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
+  "userAuthCompanyRequestInfo": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak.",
+  "userAuthBackToHome": "Ana sayfaya dön",
+  "userAuthCreateCompany": "Şirket oluştur",
+  "userAuthCompanyName": "Şirket adı",
+  "userAuthCompanyEmail": "Şirket e-postası",
+  "userAuthSector": "İş sektörü",
+  "userAuthCountry": "Ülke",
+  "userAuthCity": "Şehir",
+  "userAuthPhone": "Telefon",
+  "userAuthDescription": "Açıklama",
+  "userAuthSubmitRequest": "Talep gönder",
+  "userAuthSubmitError": "Talep gönderme hatası"
 }

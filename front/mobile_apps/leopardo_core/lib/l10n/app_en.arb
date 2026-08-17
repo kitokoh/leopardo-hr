@@ -61,6 +61,7 @@
   "commonCountriesTn": "Tunisia",
   "commonCountriesTr": "Türkiye",
   "commonCountriesUs": "United States",
+  "commonRequired": "Required",
   "modulesAttendance": "Attendance",
   "modulesPayroll": "Payroll",
   "modulesCabinet": "Document vault",
@@ -832,5 +833,19 @@
   "employeesConnectedApi": "Connected to the API",
   "employeesRecentCollaborators": "Recent collaborators",
   "employeesListLoading": "Loading team list...",
-  "employeesEmptyList": "No employee visible for this account."
+  "employeesEmptyList": "No employee visible for this account.",
+  "userAuthCompanyRequestTitle": "Request submitted!",
+  "userAuthCompanyRequestBody": "An administrator will review your request. You will receive a notification once it is processed.",
+  "userAuthCompanyRequestInfo": "Fill in your company information. An administrator will validate your request.",
+  "userAuthBackToHome": "Back to home",
+  "userAuthCreateCompany": "Create a company",
+  "userAuthCompanyName": "Company name",
+  "userAuthCompanyEmail": "Company email",
+  "userAuthSector": "Business sector",
+  "userAuthCountry": "Country",
+  "userAuthCity": "City",
+  "userAuthPhone": "Phone",
+  "userAuthDescription": "Description",
+  "userAuthSubmitRequest": "Submit request",
+  "userAuthSubmitError": "Error submitting request"
 }

@@ -61,6 +61,7 @@
   "commonCountriesTn": "Tunisie",
   "commonCountriesTr": "Turquie",
   "commonCountriesUs": "États-Unis",
+  "commonRequired": "Requis",
   "modulesAttendance": "Pointage",
   "modulesPayroll": "Paie",
   "modulesCabinet": "Coffre documentaire",
@@ -832,5 +833,19 @@
   "employeesConnectedApi": "Connecté à l'API",
   "employeesRecentCollaborators": "Collaborateurs récents",
   "employeesListLoading": "Chargement de la liste équipe...",
-  "employeesEmptyList": "Aucun employé visible pour ce compte."
+  "employeesEmptyList": "Aucun employé visible pour ce compte.",
+  "userAuthCompanyRequestTitle": "Demande soumise !",
+  "userAuthCompanyRequestBody": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+  "userAuthCompanyRequestInfo": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande.",
+  "userAuthBackToHome": "À l'accueil",
+  "userAuthCreateCompany": "Créer une entreprise",
+  "userAuthCompanyName": "Nom de l'entreprise",
+  "userAuthCompanyEmail": "Email entreprise",
+  "userAuthSector": "Secteur d'activité",
+  "userAuthCountry": "Pays",
+  "userAuthCity": "Ville",
+  "userAuthPhone": "Téléphone",
+  "userAuthDescription": "Description",
+  "userAuthSubmitRequest": "Soumettre la demande",
+  "userAuthSubmitError": "Erreur lors de la soumission"
 }

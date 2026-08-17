@@ -61,6 +61,7 @@
   "commonCountriesTn": "تونس",
   "commonCountriesTr": "تركيا",
   "commonCountriesUs": "الولايات المتحدة",
+  "commonRequired": "مطلوب",
   "modulesAttendance": "الحضور",
   "modulesPayroll": "الرواتب",
   "modulesCabinet": "خزانة المستندات",
@@ -832,5 +833,19 @@
   "employeesConnectedApi": "متصل بواجهة البرمجة",
   "employeesRecentCollaborators": "المتعاونون الأخيرون",
   "employeesListLoading": "جارٍ تحميل قائمة الفريق...",
-  "employeesEmptyList": "لا يوجد موظفون مرئيون لهذا الحساب."
+  "employeesEmptyList": "لا يوجد موظفون مرئيون لهذا الحساب.",
+  "userAuthCompanyRequestTitle": "تم إرسال الطلب!",
+  "userAuthCompanyRequestBody": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
+  "userAuthCompanyRequestInfo": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك.",
+  "userAuthBackToHome": "العودة إلى الرئيسية",
+  "userAuthCreateCompany": "إنشاء شركة",
+  "userAuthCompanyName": "اسم الشركة",
+  "userAuthCompanyEmail": "بريد الشركة الإلكتروني",
+  "userAuthSector": "قطاع الأعمال",
+  "userAuthCountry": "البلد",
+  "userAuthCity": "المدينة",
+  "userAuthPhone": "الهاتف",
+  "userAuthDescription": "الوصف",
+  "userAuthSubmitRequest": "إرسال الطلب",
+  "userAuthSubmitError": "خطأ في إرسال الطلب"
 }

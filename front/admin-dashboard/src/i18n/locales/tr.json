@@ -692,7 +692,8 @@
         "ar-MA": "Arapca (Fas)"
       },
       "label": "Dil"
-    }
+    },
+    "required": "Gerekli"
   },
   "payroll": {
     "confidence": {
@@ -1272,5 +1273,23 @@
     "recent_collaborators": "Son iş arkadaşları",
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Talep gönderildi!",
+      "body": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
+      "info": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak."
+    },
+    "back_to_home": "Ana sayfaya dön",
+    "create_company": "Şirket oluştur",
+    "company_name": "Şirket adı",
+    "company_email": "Şirket e-postası",
+    "sector": "İş sektörü",
+    "country": "Ülke",
+    "city": "Şehir",
+    "phone": "Telefon",
+    "description": "Açıklama",
+    "submit_request": "Talep gönder",
+    "submit_error": "Talep gönderme hatası"
   }
 }

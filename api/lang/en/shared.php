@@ -95,6 +95,7 @@ return [
             'TR' => 'Türkiye',
             'US' => 'United States',
         ],
+        'required' => 'Required',
     ],
     'modules' => [
         'attendance' => 'Attendance',

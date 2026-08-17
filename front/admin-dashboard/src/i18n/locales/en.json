@@ -652,7 +652,8 @@
       "TD": "Chad",
       "TG": "Togo",
       "US": "United States"
-    }
+    },
+    "required": "Required"
   },
   "_locale": "en",
   "attendance": {
@@ -1272,5 +1273,23 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request"
   }
 }
