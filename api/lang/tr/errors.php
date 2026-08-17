@@ -190,6 +190,10 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Geçersiz veya süresi dolmuş cihaz tokeni.',
     'INVALID_KIOSK_TOKEN' => 'Geçersiz veya süresi dolmuş kiosk tokeni.',
     'BIOMETRIC_NOT_APPROVED' => 'Bu çalışan için biyometrik erişim onaylanmamış.',
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'Hesap etkin değil.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'Şirket askıya alındı veya süresi doldu.',
     'COMPANY_SUSPENDED' => 'Şirketiniz askıya alınmıştır. Destek ile iletişime geçin.',
     'ADVANCE_CONFIRM_FORBIDDEN' => 'Teslim alımı yalnızca avans sahibi onaylayabilir.',
     'ADVANCE_DISPUTE_FORBIDDEN' => 'Avansa yalnızca avans sahibi itiraz edebilir.',

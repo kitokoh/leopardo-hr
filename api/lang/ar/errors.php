@@ -190,6 +190,10 @@ return [
     'INVALID_DEVICE_TOKEN' => 'رمز الجهاز غير صالح أو منتهي الصلاحية.',
     'INVALID_KIOSK_TOKEN' => 'رمز الكشك غير صالح أو منتهي الصلاحية.',
     'BIOMETRIC_NOT_APPROVED' => 'الوصول البيومتري غير معتمد لهذا الموظف.',
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'الحساب غير نشط.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'الشركة موقوفة أو منتهية.',
     'COMPANY_SUSPENDED' => 'تم تعليق شركتك. تواصل مع الدعم.',
     'ADVANCE_CONFIRM_FORBIDDEN' => 'لا يمكن تأكيد الاستلام إلا من صاحب السلفة.',
     'ADVANCE_DISPUTE_FORBIDDEN' => 'لا يمكن الاعتراض على السلفة إلا من صاحبها.',
