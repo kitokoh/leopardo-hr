@@ -100,11 +100,11 @@ jobs:
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
         run: |
+          set -o pipefail
           mkdir -p storage/coverage
-          # Issue #4976 : la suite parallèle crée des bases PostgreSQL `_test_N`
-          # en concurrence et provoque des collisions `already exists`, ce qui
-          # empêche PHPUnit de produire Clover. Le timeout de 75 minutes garde
-          # la suite séquentielle déterministe et conserve la gate de couverture.
+          # Issue #4976 : la suite parallèle créait des bases PostgreSQL
+          # `_test_N` en concurrence et empêchait Clover de se générer. Cette
+          # gate dédiée reste séquentielle et déterministe sous 75 minutes.
           php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
 
       - name: Parse coverage percentage

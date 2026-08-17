@@ -49,9 +49,9 @@ class Task extends Model
     protected $table = 'tasks';
 
     // #4861/#4883 (audit 2026-08-17) : conserver une seule déclaration
-    // $fillable ; status et performance_score sont désormais autorisés pour
-    // les mises à jour validées du contrôleur Task.
-    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility', 'status', 'performance_score'];
+    // $fillable ; status et performance_score sont des champs sensibles et
+    // sont assignés explicitement par TaskController après validation serveur.
+    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility'];
 
     protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'completed_at' => 'datetime', 'performance_score' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
