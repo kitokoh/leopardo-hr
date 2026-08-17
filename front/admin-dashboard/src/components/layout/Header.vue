@@ -187,7 +187,7 @@
                   <p v-if="alert.level" class="text-xs text-gray-400 mt-0.5">{{ $t('shell.level', 'Niveau :') }} {{ alert.level }}</p>
                 </div>
                 <div v-if="dashboardStore.criticalAlerts.length === 0" class="px-4 py-6 text-center">
-                  <p class="text-sm text-gray-500">{{ $t('shell.noCriticalAlerts', 'Aucune alerte critique') }}</p>
+                  <p class="text-sm text-gray-500">Aucune alerte critique</p>
                 </div>
               </div>
             </div>
@@ -257,7 +257,7 @@ import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useRouter } from 'vue-router'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 defineEmits(['toggle-sidebar'])
 
@@ -265,6 +265,8 @@ const dashboardStore = useDashboardStore()
 const realtimeStore = useRealtimeStore()
 const themeStore = useThemeStore()
 const localeStore = useLocaleStore()
+// Convention repo : alias `t` pour la garde check-i18n-diff (PA2-I18N-014).
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 // Issues #3858/#3931 : useRouter() doit être appelé dans setup() (inject), pas
 // dans un event handler — hors setup, inject() renvoie undefined et getRoutes()
 // lève une TypeError (recherche header morte, refonte premium).
@@ -352,12 +354,15 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
-  // #4716 : temps relatifs localisés (Intl.RelativeTimeFormat) — avant :
-  // « À l'instant », « Xm », « Xh » en dur.
-  const rtf = new Intl.RelativeTimeFormat(toIntlLocale(localeStore.current), { numeric: 'auto' })
-  if (diff < 60000) return rtf.format(0, 'second')
-  if (diff < 3600000) return rtf.format(-Math.floor(diff / 60000), 'minute')
-  if (diff < 86400000) return rtf.format(-Math.floor(diff / 3600000), 'hour')
+
+  // #4716 : temps relatif localisé (avant : FR codé en dur dans les 4 locales).
+  if (diff < 60000) return t('time.justNow', "À l'instant")
+  if (diff < 3600000) {
+    return t('time.minutesShort', '{count} m').replace('{count}', Math.floor(diff / 60000))
+  }
+  if (diff < 86400000) {
+    return t('time.hoursShort', '{count} h').replace('{count}', Math.floor(diff / 3600000))
+  }
   return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 

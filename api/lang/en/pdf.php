@@ -171,5 +171,5 @@ return [
     'cert_position_fallback' => 'employee',
 
     'payslip_regularization_banner' => 'REGULARIZATION PAYSLIP — corrects run #:run',
-        'payslip_regularization_banner_slip' => 'REGULARIZATION PAYSLIP — corrects slip #:slip',
+    'payslip_regularization_banner_slip' => 'REGULARIZATION PAYSLIP — corrects slip #:slip',
 ];
