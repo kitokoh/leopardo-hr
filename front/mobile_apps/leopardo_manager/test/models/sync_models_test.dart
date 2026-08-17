@@ -98,7 +98,10 @@ void main() {
       );
 
       expect(textColumn.formatValue('Test'), equals('Test'));
-      expect(currencyColumn.formatValue(123.45), equals('123.45 €'));
+      expect(
+        currencyColumn.formatValue(123.45, locale: 'en_US', currency: '€'),
+        equals('€123.45'),
+      );
 
       final testDate = DateTime(2024, 1, 15);
       expect(dateColumn.formatValue(testDate), equals('15/01/2024'));

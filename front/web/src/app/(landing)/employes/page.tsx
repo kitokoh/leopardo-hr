@@ -72,7 +72,7 @@ export default function EmployesPage() {
         ctaPrimary={content.hero.ctaPrimary}
         ctaSecondary={content.hero.ctaSecondary}
         badge={{
-          text: 'Gestion RH Complète',
+          text: content.sections.heroBadge,
           icon: <Zap className="w-3 h-3" />,
         }}
       />
@@ -83,7 +83,7 @@ export default function EmployesPage() {
         subtitle={content.problem.subtitle}
         items={problemItems}
         badge={{
-          text: 'Les Défis',
+          text: content.sections.problemBadge,
           icon: <TrendingUp className="w-3 h-3" />,
         }}
       />
@@ -95,19 +95,19 @@ export default function EmployesPage() {
         description={content.solution.description}
         features={solutionFeatures}
         badge={{
-          text: 'Notre Solution',
+          text: content.sections.solutionBadge,
           icon: <Zap className="w-3 h-3" />,
         }}
       />
 
       {/* Features Section */}
       <FeaturesSection
-        title="Fonctionnalités Détaillées"
-        subtitle="Tout ce dont vous avez besoin"
+        title={content.sections.featuresTitle}
+        subtitle={content.sections.featuresSubtitle}
         features={features}
         columns={4}
         badge={{
-          text: 'Puissant & Flexible',
+          text: content.sections.featuresBadge,
           icon: <Zap className="w-3 h-3" />,
         }}
       />

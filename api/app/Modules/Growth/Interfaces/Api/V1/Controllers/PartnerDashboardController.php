@@ -48,7 +48,7 @@ class PartnerDashboardController extends Controller
             return $user;
         }
 
-        abort(401, 'Unauthorized user type.');
+        abort(401, 'UNAUTHORIZED_USER_TYPE');
     }
 
     /**
