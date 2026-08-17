@@ -428,6 +428,14 @@ export type CopyTree = {
     deleteError: string;
     statusActive: string;
   };
+  trainingPage: {
+    loadError: string;
+    createError: string;
+  };
+  notificationsPage: {
+    statusEnabled: string;
+    statusDisabled: string;
+  };
 };
 
 const copy: Record<AppLocale, CopyTree> = {
@@ -825,6 +833,14 @@ const copy: Record<AppLocale, CopyTree> = {
     deleteError: 'Impossible de supprimer la publication.',
     statusActive: 'Actif',
   },
+  trainingPage: {
+    loadError: 'Impossible de charger les formations.',
+    createError: 'Impossible de créer la formation.',
+  },
+  notificationsPage: {
+    statusEnabled: 'Activé',
+    statusDisabled: 'Désactivé',
+  },
 
   },
   ar: {
@@ -1220,6 +1236,14 @@ const copy: Record<AppLocale, CopyTree> = {
     publishError: 'تعذر نشر المنشور.',
     deleteError: 'تعذر حذف المنشور.',
     statusActive: 'نشط',
+  },
+  trainingPage: {
+    loadError: 'Unable to load trainings.',
+    createError: 'Unable to create the training.',
+  },
+  notificationsPage: {
+    statusEnabled: 'Enabled',
+    statusDisabled: 'Disabled',
   },
 
   },
@@ -1617,6 +1641,14 @@ const copy: Record<AppLocale, CopyTree> = {
     deleteError: 'Yayın silinemedi.',
     statusActive: 'Aktif',
   },
+  trainingPage: {
+    loadError: 'Eğitimler yüklenemedi.',
+    createError: 'Eğitim oluşturulamadı.',
+  },
+  notificationsPage: {
+    statusEnabled: 'Etkin',
+    statusDisabled: 'Devre dışı',
+  },
 
   },
   en: {
@@ -2012,6 +2044,14 @@ const copy: Record<AppLocale, CopyTree> = {
     publishError: 'Unable to publish the post.',
     deleteError: 'Unable to delete the post.',
     statusActive: 'Active',
+  },
+  trainingPage: {
+    loadError: 'تعذر تحميل التدريبات.',
+    createError: 'تعذر إنشاء التدريب.',
+  },
+  notificationsPage: {
+    statusEnabled: 'مفعل',
+    statusDisabled: 'معطل',
   },
 
   },

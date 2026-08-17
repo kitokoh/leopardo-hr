@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Bell, Mail, MessageSquareText, Smartphone, Save, ShieldCheck } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { useSyncExternalStore } from 'react';
-import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t as i18nT } from '@/lib/i18n/locale-catalog';
 
 type NotificationPreferences = {
@@ -45,6 +45,7 @@ function getCategories(locale: AppLocale) {
 
 export default function NotificationSettingsPage() {
   const locale = useSyncExternalStore<AppLocale>(() => () => {}, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const CHANNELS = getChannels(locale);
   const CATEGORIES = getCategories(locale);
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
@@ -195,7 +196,7 @@ export default function NotificationSettingsPage() {
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <span className={`rounded-full px-3 py-1 text-xs font-bold ${enabled ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
-                  {enabled ? 'Actif' : 'Desactive'}
+                  {enabled ? copy.notificationsPage.statusEnabled : copy.notificationsPage.statusDisabled}
                 </span>
               </div>
               <h2 className="mt-4 text-lg font-black text-slate-950">{channel.label}</h2>

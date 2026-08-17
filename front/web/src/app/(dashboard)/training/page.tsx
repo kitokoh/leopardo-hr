@@ -1,8 +1,9 @@
 ﻿'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useSyncExternalStore, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { GraduationCap, Calendar, Users, Clock, BookOpen, Award, ChevronDown, Plus, X, MapPin } from 'lucide-react';
 
@@ -45,7 +46,11 @@ const TYPE_LABELS: Record<string, string> = {
   certification: 'Certification',
 };
 
+const emptySubscribe = () => () => {};
+
 export default function TrainingPage() {
+  const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
+  const copy = getCopy(locale);
   const [courses, setCourses] = useState<TrainingCourse[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -74,10 +79,11 @@ export default function TrainingPage() {
       setCourses(Array.isArray(data.data) ? data.data : []);
       setTotal(data.meta?.total ?? data.data?.length ?? 0);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de charger les formations.');
+      setError(err instanceof ApiError ? err.message : copy.trainingPage.loadError);
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => { void loadCourses(); }, [loadCourses]);
@@ -123,7 +129,7 @@ export default function TrainingPage() {
       setNewCourse({ title: '', description: '', category: '', type: 'internal', provider: '', duration_hours: '', max_participants: '' });
       await loadCourses();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de creer la formation.');
+      setError(err instanceof ApiError ? err.message : copy.trainingPage.createError);
     } finally {
       setCreating(false);
     }
