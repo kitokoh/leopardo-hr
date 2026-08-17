@@ -4,22 +4,22 @@
       <div class="space-y-1">
         <router-link to="/companies" class="group inline-flex items-center text-sm font-bold text-brand-600 hover:text-brand-700 dark:text-brand-400 transition-colors">
           <ArrowLeftIcon class="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Retour au portefeuille
+          {{ t('companyDetail.backToPortfolio', 'Retour au portefeuille') }}
         </router-link>
         <h1 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
-          {{ health?.company?.name || 'Chargement...' }}
+          {{ health?.company?.name || t('companyDetail.loading', 'Chargement...') }}
           <span v-if="health?.company?.status" :class="statusBadgeClass(health.company.status)">
             {{ health.company.status }}
           </span>
         </h1>
         <p class="text-slate-500 dark:text-slate-400 font-medium">
-          Santé opérationnelle, abonnement et configuration des modules.
+          {{ t('companyDetail.subtitle', 'Santé opérationnelle, abonnement et configuration des modules.') }}
         </p>
       </div>
       <div class="flex gap-3">
         <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="loadCompany">
           <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
-          Actualiser
+          {{ t('companyDetail.refresh', 'Actualiser') }}
         </button>
       </div>
     </div>
@@ -40,10 +40,10 @@
     <template v-else-if="health">
       <!-- Top Stats -->
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-        <StatsCard title="Score Santé" :value="health.adoption.health_score" unit="/100" icon="HeartIcon" :color="scoreColor" />
-        <StatsCard title="Équipe Active" :value="health.adoption.employees.active" icon="UsersIcon" color="green" />
-        <StatsCard title="Pointages (30j)" :value="health.adoption.attendance.logs_30d" icon="FingerPrintIcon" color="blue" />
-        <StatsCard title="Revenu (MRR)" :value="formatCurrency(health.subscription.mrr, health.subscription.currency)" icon="BanknotesIcon" color="purple" />
+        <StatsCard :title="t('companyDetail.scoreHealth', 'Score Santé')" :value="health.adoption.health_score" unit="/100" icon="HeartIcon" :color="scoreColor" />
+        <StatsCard :title="t('companyDetail.teamActive', 'Équipe Active')" :value="health.adoption.employees.active" icon="UsersIcon" color="green" />
+        <StatsCard :title="t('companies.checkins30d', 'Pointage (30j)')" :value="health.adoption.attendance.logs_30d" icon="FingerPrintIcon" color="blue" />
+        <StatsCard :title="t('companyDetail.revenueMrr', 'Revenu (MRR)')" :value="formatCurrency(health.subscription.mrr, health.subscription.currency)" icon="BanknotesIcon" color="purple" />
       </div>
 
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 animate-slide-up" style="animation-delay: 0.1s">
@@ -55,7 +55,7 @@
               <div class="flex items-center justify-between">
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('companyDetail.fieldAdoption') }}</h2>
                 <span :class="riskClass(health.adoption.risk_level)">
-                  Niveau de risque : {{ health.adoption.risk_level }}
+                  {{ t('companyDetail.riskLevel', 'Niveau de risque :') }} {{ health.adoption.risk_level }}
                 </span>
               </div>
             </div>
@@ -83,7 +83,7 @@
               <div class="mt-8">
                 <h3 class="text-sm font-black uppercase tracking-[0.15em] text-slate-400 dark:text-slate-500 flex items-center gap-2">
                   <BoltIcon class="h-4 w-4 text-brand-500" />
-                  Actions Prioritaires
+                  {{ t('companyDetail.priorityActions', 'Actions Prioritaires') }}
                 </h3>
                 <div v-if="health.next_actions.length > 0" class="mt-4 space-y-3">
                   <div
@@ -112,7 +112,7 @@
           <section class="card overflow-hidden">
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
               <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ t('companyDetail.modulesConfig') }}</h2>
-              <p class="mt-1 text-sm font-medium text-slate-500">Activez ou désactivez les fonctionnalités spécifiques pour ce client.</p>
+              <p class="mt-1 text-sm font-medium text-slate-500">{{ t('companyDetail.modulesConfigHint', 'Activez ou désactivez les fonctionnalités spécifiques pour ce client.') }}</p>
             </div>
 
             <div class="p-6">
@@ -131,7 +131,7 @@
                     </div>
                     <div>
                       <p class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wide">{{ formatFeatureName(key) }}</p>
-                      <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? 'Module Actif' : 'Module Désactivé' }}</p>
+                      <p class="text-[10px] font-bold text-slate-500 uppercase">{{ enabled ? t('companyDetail.moduleActive', 'Module Actif') : t('companyDetail.moduleDisabled', 'Module Désactivé') }}</p>
                     </div>
                   </div>
                   <Switch
@@ -162,7 +162,7 @@
                 >
                   <CloudArrowUpIcon v-if="!isSavingFeatures" class="mr-2 h-4 w-4" />
                   <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                  {{ isSavingFeatures ? 'Mise à jour...' : 'Sauvegarder la configuration' }}
+                  {{ isSavingFeatures ? t('companyDetail.updating', 'Mise à jour...') : t('companyDetail.saveConfig', 'Sauvegarder la configuration') }}
                 </button>
               </div>
             </div>
@@ -176,7 +176,7 @@
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30">
               <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <CreditCardIcon class="h-5 w-5 text-purple-500" />
-                Abonnement
+                {{ t('companyDetail.subscription', 'Abonnement') }}
               </h2>
             </div>
 
@@ -206,20 +206,20 @@
                   <input id="subscription_start" v-model="subscriptionForm.subscription_start" type="date" class="form-input" />
                 </div>
                 <div class="space-y-1.5">
-                  <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="subscription_end">Fin</label>
+                  <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="subscription_end">{{ t('companyDetail.endDate', 'Fin') }}</label>
                   <input id="subscription_end" v-model="subscriptionForm.subscription_end" type="date" class="form-input" />
                 </div>
               </div>
 
               <div class="space-y-1.5">
                 <label class="text-xs font-black uppercase tracking-widest text-slate-500" for="notes">{{ t('companyDetail.internalNotes') }}</label>
-                <textarea id="notes" v-model="subscriptionForm.notes" rows="3" class="form-input" placeholder="Détails sur la négociation, remises, etc."></textarea>
+                <textarea id="notes" v-model="subscriptionForm.notes" rows="3" class="form-input" :placeholder="t('companyDetail.notesPlaceholder', 'Détails sur la négociation, remises, etc.')"></textarea>
               </div>
 
               <!-- Activer client -->
               <button class="btn-primary w-full justify-center shadow-premium py-3" :disabled="isSavingSubscription">
                 <span v-if="isSavingSubscription" class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
-                {{ isSavingSubscription ? 'Enregistrement...' : 'Mettre à jour l\'abonnement' }}
+                {{ isSavingSubscription ? t('companyDetail.saving', 'Enregistrement...') : t('companyDetail.updateSubscription', "Mettre à jour l'abonnement") }}
               </button>
               <button
                 v-if="health?.company?.status === 'trial'"
@@ -229,7 +229,7 @@
                 :disabled="isSavingSubscription"
                 @click="activateClient"
               >
-                Activer client
+                {{ t('companyDetail.activateClient', 'Activer client') }}
               </button>
             </form>
           </section>
@@ -239,16 +239,16 @@
             <div class="border-b border-slate-200/50 bg-slate-50/50 px-6 py-5 dark:border-slate-800/50 dark:bg-slate-800/30 flex items-center justify-between gap-3">
               <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <LifebuoyIcon class="h-5 w-5 text-amber-500" />
-                Support
+                {{ t('companyDetail.support', 'Support') }}
                 <span v-if="supportSummary.open_count > 0" class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-                  {{ supportSummary.open_count }} ouvert{{ supportSummary.open_count > 1 ? 's' : '' }}
+                  {{ supportSummary.open_count }} {{ supportSummary.open_count > 1 ? t('companyDetail.openPlural', 'ouverts') : t('companyDetail.openSingular', 'ouvert') }}
                 </span>
               </h2>
               <router-link
                 :to="{ name: 'support-tickets', query: { company_id: route.params.id, company_name: health?.company?.name || '' } }"
                 class="text-xs font-black uppercase tracking-widest text-brand-600 hover:text-brand-700 dark:text-brand-400"
               >
-                Voir tous les tickets
+                {{ t('companyDetail.viewAllTickets', 'Voir tous les tickets') }}
               </router-link>
             </div>
 
@@ -276,7 +276,7 @@
                     <span :class="['rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', ticketStatusClass(ticket.status)]">
                       {{ ticket.status }}
                     </span>
-                    <span class="text-[10px] font-semibold text-slate-400">{{ ticket.messages_count }} message{{ ticket.messages_count > 1 ? 's' : '' }}</span>
+                    <span class="text-[10px] font-semibold text-slate-400">{{ ticket.messages_count }} {{ ticket.messages_count > 1 ? t('companyDetail.messagePlural', 'messages') : t('companyDetail.messageSingular', 'message') }}</span>
                   </div>
                 </li>
               </ul>
@@ -418,7 +418,7 @@ async function loadCompany() {
     originalFeatures.value = { ...feats }
   } catch (error) {
     console.error('Failed to load company detail:', error)
-    errorMessage.value = 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.'
+    errorMessage.value = t('companyDetail.loadFailed', 'Impossible de charger le detail entreprise. Verifiez que l\'UUID est valide.')
     toast.error(translate(localeStore.current, 'companies.toast.load_failed', 'companies.toast.load_failed'))
   } finally {
     isLoading.value = false
@@ -454,7 +454,7 @@ async function saveSubscription() {
 
   try {
     await api.patch(`/platform/companies/${route.params.id}/subscription`, subscriptionForm.value)
-    toast.success('Abonnement mis à jour avec succès.')
+    toast.success(t('companyDetail.subscriptionUpdated', 'Abonnement mis à jour avec succès.'))
     await loadCompany()
   } catch (error) {
     console.error('Failed to save subscription:', error)
@@ -472,7 +472,7 @@ async function saveFeatures() {
     await api.patch(`/platform/companies/${route.params.id}/features`, {
       features: featuresForm.value
     })
-    toast.success('Configuration des modules enregistrée.')
+    toast.success(t('companyDetail.featuresSaved', 'Configuration des modules enregistrée.'))
     originalFeatures.value = { ...featuresForm.value }
   } catch (error) {
     console.error('Failed to save features:', error)
@@ -484,7 +484,7 @@ async function saveFeatures() {
 
 async function activateClient() {
   if (!subscriptionForm.value.plan_id) {
-    toast.error('Plan client manquant.')
+    toast.error(t('companyDetail.planMissing', 'Plan client manquant.'))
     return
   }
 
@@ -524,12 +524,12 @@ function formatCurrency(value, currency = 'EUR') {
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseigné'
+  if (!value) return t('support.notProvided', 'Non renseigné')
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), { dateStyle: 'medium' }).format(new Date(value))
 }
 
 function formatDateTime(value) {
-  if (!value) return 'Aucun pointage'
+  if (!value) return t('companyDetail.noPunch', 'Aucun pointage')
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -562,7 +562,28 @@ function priorityBadgeClass(priority) {
 }
 
 function formatFeatureName(key) {
-  const names = {
+  const featureKeys = {
+    rh: 'companyDetail.features.rh',
+    finance: 'companyDetail.features.finance',
+    ai: 'companyDetail.features.ai',
+    cameras: 'companyDetail.features.cameras',
+    tracking: 'companyDetail.features.tracking',
+    planning: 'companyDetail.features.planning',
+    training: 'companyDetail.features.training',
+    cabinet: 'companyDetail.features.cabinet',
+    biometric: 'subscriptions.features.biometric',
+    tasks: 'subscriptions.features.tasks',
+    advanced_reports: 'subscriptions.features.advanced_reports',
+    excel_export: 'subscriptions.features.excel_export',
+    bank_export: 'subscriptions.features.bank_export',
+    billing_auto: 'subscriptions.features.billing_auto',
+    multi_managers: 'subscriptions.features.multi_managers',
+    photo_attendance: 'subscriptions.features.photo_attendance',
+    api_public: 'subscriptions.features.api_public',
+    evaluations: 'subscriptions.features.evaluations',
+    schema_isolation: 'subscriptions.features.schema_isolation',
+  }
+  const fallbacks = {
     rh: 'Ressources Humaines',
     finance: 'Finance & Gestion',
     ai: 'Intelligence Artificielle',
@@ -583,7 +604,9 @@ function formatFeatureName(key) {
     evaluations: 'Évaluations',
     schema_isolation: 'Isolation schéma',
   }
-  return names[key] || key.toUpperCase()
+  const catalogKey = featureKeys[key]
+  if (!catalogKey) return key.toUpperCase()
+  return translate(localeStore.current, catalogKey, fallbacks[key] || catalogKey)
 }
 
 function ticketPriorityClass(priority) {

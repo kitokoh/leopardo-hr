@@ -2,12 +2,12 @@
   <div class="space-y-8 animate-fade-in">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">Centre support client</h1>
+        <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{{ t('supportTickets.title', 'Centre support client') }}</h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-          Conversations ouvertes par les entreprises clientes, triées par priorité.
+          {{ t('supportTickets.subtitle', 'Conversations ouvertes par les entreprises clientes, triées par priorité.') }}
         </p>
         <div v-if="companyFilter.id" class="mt-3 inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-black uppercase tracking-widest text-brand-700 dark:border-brand-800 dark:bg-brand-900/30 dark:text-brand-300">
-          Filtre : {{ companyFilter.name || 'Entreprise sélectionnée' }}
+          {{ t('supportTickets.filterPrefix', 'Filtre :') }} {{ companyFilter.name || t('supportTickets.companySelected', 'Entreprise sélectionnée') }}
           <button type="button" class="rounded-full p-0.5 hover:bg-brand-100 dark:hover:bg-brand-900/50" @click="clearCompanyFilter">
             <XMarkIcon class="h-3.5 w-3.5" />
           </button>
@@ -15,16 +15,16 @@
       </div>
       <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="loadTickets">
         <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
-        Actualiser
+        {{ t('supportTickets.refresh', 'Actualiser') }}
       </button>
     </div>
 
     <!-- KPI Summary -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-      <StatsCard title="Ouverts" :value="statusCounts.open" icon="ChatBubbleBottomCenterTextIcon" color="blue" />
-      <StatsCard title="En attente client" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
-      <StatsCard title="Résolus" :value="statusCounts.resolved" icon="CheckCircleIcon" color="green" />
-      <StatsCard title="Fermés" :value="statusCounts.closed" icon="XCircleIcon" color="red" />
+      <StatsCard :title="t('supportTickets.statsOpen', 'Ouverts')" :value="statusCounts.open" icon="ChatBubbleBottomCenterTextIcon" color="blue" />
+      <StatsCard :title="t('supportTickets.statsPendingClient', 'En attente client')" :value="statusCounts.pending" icon="ClockIcon" color="yellow" />
+      <StatsCard :title="t('supportTickets.statsResolved', 'Résolus')" :value="statusCounts.resolved" icon="CheckCircleIcon" color="green" />
+      <StatsCard :title="t('supportTickets.statsClosed', 'Fermés')" :value="statusCounts.closed" icon="XCircleIcon" color="red" />
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -90,7 +90,7 @@
               </span>
             </div>
             <p class="mt-1 truncate text-xs font-semibold text-slate-500 dark:text-slate-400">
-              {{ ticket.company?.name || 'Entreprise inconnue' }}
+              {{ ticket.company?.name || t('supportTickets.companyUnknown', 'Entreprise inconnue') }}
             </p>
             <div class="mt-2 flex items-center justify-between">
               <span :class="['rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-widest', statusClass(ticket.status)]">
@@ -119,7 +119,7 @@
               <div>
                 <h2 class="text-xl font-bold text-slate-900 dark:text-white">{{ selectedTicket.subject }}</h2>
                 <p class="mt-1 text-sm font-semibold text-slate-500 dark:text-slate-400">
-                  {{ selectedTicket.company?.name }} · {{ selectedTicket.created_by?.name || 'Contact inconnu' }}
+                  {{ selectedTicket.company?.name }} · {{ selectedTicket.created_by?.name || t('supportTickets.contactUnknown', 'Contact inconnu') }}
                 </p>
               </div>
               <div class="flex flex-wrap gap-2">
@@ -163,7 +163,7 @@
               >
                 <p class="whitespace-pre-wrap leading-relaxed">{{ message.body }}</p>
                 <p :class="['mt-1 text-[10px] font-semibold', message.from_platform ? 'text-brand-100' : 'text-slate-400']">
-                  {{ message.author_name || (message.from_platform ? 'Équipe Leopardo' : 'Client') }} · {{ formatDate(message.created_at) }}
+                  {{ message.author_name || (message.from_platform ? t('supportTickets.teamLeopardo', 'Équipe Leopardo') : t('supportTickets.client', 'Client')) }} · {{ formatDate(message.created_at) }}
                 </p>
               </div>
             </div>
@@ -175,7 +175,7 @@
                 v-model="replyBody"
                 rows="2"
                 class="form-input flex-1 text-sm"
-                placeholder="Répondre au client..."
+                :placeholder="t('supportTickets.replyPlaceholder', 'Répondre au client...')"
                 :disabled="isReplying"
               ></textarea>
               <button
@@ -194,7 +194,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import {
@@ -236,21 +236,21 @@ const triagePriority = ref('normal')
 const statusCounts = ref({ open: 0, pending: 0, resolved: 0, closed: 0 })
 const messagesContainer = ref(null)
 
-const statusFilters = [
-  { value: 'all', label: 'Tous' },
-  { value: 'open', label: 'Ouverts' },
-  { value: 'pending', label: 'En attente' },
-  { value: 'resolved', label: 'Résolus' },
-  { value: 'closed', label: 'Fermés' },
-]
+const statusFilters = computed(() => [
+  { value: 'all', label: t('supportTickets.filterAll', 'Tous') },
+  { value: 'open', label: t('supportTickets.filterOpen', 'Ouverts') },
+  { value: 'pending', label: t('supportTickets.filterPending', 'En attente') },
+  { value: 'resolved', label: t('supportTickets.filterResolved', 'Résolus') },
+  { value: 'closed', label: t('supportTickets.filterClosed', 'Fermés') },
+])
 
-const priorityFilters = [
-  { value: 'all', label: 'Toutes priorités' },
-  { value: 'urgent', label: 'Urgent' },
-  { value: 'high', label: 'Haute' },
-  { value: 'normal', label: 'Normale' },
-  { value: 'low', label: 'Basse' },
-]
+const priorityFilters = computed(() => [
+  { value: 'all', label: t('supportTickets.filterAllPriorities', 'Toutes priorités') },
+  { value: 'urgent', label: t('supportTickets.priorityUrgent', 'Urgent') },
+  { value: 'high', label: t('supportTickets.priorityHigh', 'Haute') },
+  { value: 'normal', label: t('supportTickets.priorityNormal', 'Normale') },
+  { value: 'low', label: t('supportTickets.priorityLow', 'Basse') },
+])
 
 async function loadTickets() {
   isLoading.value = true
@@ -273,7 +273,7 @@ async function loadTickets() {
     }
   } catch (error) {
     console.error('Failed to load support tickets:', error)
-    toast.error('Impossible de charger les tickets de support.')
+    toast.error(t('supportTickets.loadError', 'Impossible de charger les tickets de support.'))
   } finally {
     isLoading.value = false
   }
@@ -312,7 +312,7 @@ async function sendReply() {
     }
   } catch (error) {
     console.error('Failed to reply to ticket:', error)
-    toast.error('Envoi de la réponse impossible.')
+    toast.error(t('supportTickets.replyError', 'Envoi de la réponse impossible.'))
   } finally {
     isReplying.value = false
   }
@@ -327,11 +327,11 @@ async function applyTriage() {
       status: triageStatus.value,
       priority: triagePriority.value,
     })
-    toast.success('Ticket mis à jour.')
+    toast.success(t('supportTickets.ticketUpdated', 'Ticket mis à jour.'))
     await loadTickets()
   } catch (error) {
     console.error('Failed to triage ticket:', error)
-    toast.error('Mise à jour du ticket impossible.')
+    toast.error(t('supportTickets.triageError', 'Mise à jour du ticket impossible.'))
   } finally {
     isTriaging.value = false
   }
@@ -364,7 +364,12 @@ function statusClass(status) {
 }
 
 function statusLabel(status) {
-  const labels = { open: 'Ouvert', pending: 'En attente', resolved: 'Résolu', closed: 'Fermé' }
+  const labels = {
+    open: t('supportTickets.statusOpen', 'Ouvert'),
+    pending: t('supportTickets.statusPending', 'En attente'),
+    resolved: t('supportTickets.statusResolved', 'Résolu'),
+    closed: t('supportTickets.statusClosed', 'Fermé'),
+  }
   return labels[status] || status
 }
 
@@ -379,12 +384,17 @@ function priorityClass(priority) {
 }
 
 function priorityLabel(priority) {
-  const labels = { urgent: 'Urgent', high: 'Haute', normal: 'Normale', low: 'Basse' }
+  const labels = {
+    urgent: t('supportTickets.priorityUrgent', 'Urgent'),
+    high: t('supportTickets.priorityHigh', 'Haute'),
+    normal: t('supportTickets.priorityNormal', 'Normale'),
+    low: t('supportTickets.priorityLow', 'Basse'),
+  }
   return labels[priority] || priority
 }
 
 function formatDate(value) {
-  if (!value) return 'Non renseigné'
+  if (!value) return t('support.notProvided', 'Non renseigné')
 
   return new Intl.DateTimeFormat(toIntlLocale(localeStore.current), {
     dateStyle: 'short',
