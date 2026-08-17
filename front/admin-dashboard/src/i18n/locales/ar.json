@@ -795,7 +795,19 @@
     "login_placeholder_email": "admin@leopardo-rh.com",
     "login_submit": "تسجيل الدخول",
     "remember_me": "تذكرني",
-    "login_subtitle": "سجل الدخول إلى مساحتك"
+    "login_subtitle": "سجل الدخول إلى مساحتك",
+    "connection_error": "خطأ في الاتصال.",
+    "disable_two_fa_failed": "تعطيل المصادقة الثنائية فشل.",
+    "hide_password": "إخفاء كلمة المرور",
+    "incomplete_response": "استجابة تسجيل الدخول غير مكتملة.",
+    "loading": "جارٍ المصادقة…",
+    "password_change_failed": "فشل تغيير كلمة المرور.",
+    "profile_update_failed": "فشل تحديث الملف الشخصي.",
+    "show_password": "إظهار كلمة المرور",
+    "two_fa_invalid": "رمز 2FA المقدم غير صالح.",
+    "two_fa_required_msg": "رمز التحقق مطلوب.",
+    "two_fa_setup_failed": "فشل إنشاء سر 2FA.",
+    "unexpected_error": "حدث خطأ غير متوقع."
   },
   "app": {
     "title": "ليوباردو للموارد البشرية"

@@ -66,7 +66,19 @@
     "login_placeholder_email": "admin@leopardo-rh.com",
     "login_submit": "Se connecter",
     "remember_me": "Se souvenir de moi",
-    "login_subtitle": "Connectez-vous à votre espace"
+    "login_subtitle": "Connectez-vous à votre espace",
+    "connection_error": "Erreur de connexion.",
+    "disable_two_fa_failed": "La désactivation du 2FA a échoué.",
+    "hide_password": "Masquer le mot de passe",
+    "incomplete_response": "La réponse de connexion est incomplète.",
+    "loading": "Authentification…",
+    "password_change_failed": "Le changement de mot de passe a échoué.",
+    "profile_update_failed": "La mise à jour du profil a échoué.",
+    "show_password": "Afficher le mot de passe",
+    "two_fa_invalid": "Le code 2FA fourni est invalide.",
+    "two_fa_required_msg": "Un code de vérification est requis.",
+    "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
+    "unexpected_error": "Une erreur inattendue est survenue."
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?"

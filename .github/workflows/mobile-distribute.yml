@@ -316,7 +316,7 @@ jobs:
             Leopardo ${{ matrix.app.name }} ${{ env.BUILD_NAME }}
             Ref: ${{ github.ref_name }}
             Notes: ${{ github.event.inputs.release_notes || 'Tag build' }}
-            Backend: ${{ vars.PROD_API_BASE_URL || 'https://gestionemployerbackend.onrender.com' }}
+            Backend: ${{ vars.PROD_API_BASE_URL }}
 
       - name: Verify Firebase App Distribution release is visible
         if: env.SHOULD_BUILD == 'true' && env.TARGET == 'staging'
