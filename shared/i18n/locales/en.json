@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-14T18:45:00Z",
+  "_updated_at": "2026-08-17T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -417,7 +417,10 @@
     "platform_health": "Platform health",
     "client_requests": "Client requests",
     "tenants_at_risk": "Tenants at risk",
-    "platform_dashboard_hint": "Available in the platform dashboard."
+    "platform_dashboard_hint": "Available in the platform dashboard.",
+    "searchPlaceholder": "Search...",
+    "modulesActiveSentence": "{active} modules active, {locked} to activate based on your plan.",
+    "yourCompany": "Your company"
   },
   "marketing": {
     "oauth": {
@@ -450,7 +453,9 @@
         "placeholder_secret": "New secret (optional)",
         "placeholder_uri": "https://example.com/oauth/callback"
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Social media",
+    "postContentPlaceholder": "Post content..."
   },
   "attendance": {
     "sending_to_server": "Sending {label} to the server...",
@@ -1134,7 +1139,11 @@
     "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
     "genericError": "Error :status on :endpoint.",
     "invalidData": "Invalid data.",
-    "connectionError": "Connection error. Check your internet connection."
+    "connectionError": "Connection error. Check your internet connection.",
+    "login_invalid_json": "Invalid request body.",
+    "login_timeout": "The server is taking too long to respond. Please try again shortly.",
+    "login_network_error": "Unable to reach the server.",
+    "login_backend_error": "Unexpected server response."
   },
   "settingsPage": {
     "cancel": "Cancel",
@@ -1204,5 +1213,25 @@
     "statsLoadError": "Error loading system stats",
     "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
     "title": "System Administration"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
+    "no_active_period": "No active period",
+    "no_active_subscription": "No active subscription",
+    "period_label": "Period",
+    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
+    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
+    "checkout_failed": "Unable to create the payment session."
+  },
+  "contracts": {
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses"
+  },
+  "training": {
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online"
   }
 }

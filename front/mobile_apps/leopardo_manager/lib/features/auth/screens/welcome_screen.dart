@@ -152,17 +152,17 @@ class _ManagerCapabilities extends StatelessWidget {
     final items = [
       _CapItem(
         icon: Icons.people_alt_outlined,
-        label: 'Mon équipe',
+        label: context.l10n.welcomeMyTeam,
         color: AppColors.rh,
       ),
       _CapItem(
         icon: Icons.access_time_rounded,
-        label: 'Présences',
+        label: context.l10n.welcomePresences,
         color: AppColors.info,
       ),
       _CapItem(
         icon: Icons.task_alt_rounded,
-        label: 'Tâches',
+        label: context.l10n.welcomeTasks,
         color: AppColors.finance,
       ),
       _CapItem(

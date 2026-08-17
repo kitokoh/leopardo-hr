@@ -21,7 +21,7 @@
           @click="$emit('export')"
         >
           <ArrowDownTrayIcon class="h-4 w-4 mr-2" />
-          Export CSV
+          {{ $t('time.exportCsv', 'Export CSV') }}
         </button>
         <slot name="actions" />
       </div>
@@ -29,7 +29,7 @@
 
     <div v-if="loading" class="p-12 text-center text-sm text-slate-500 dark:text-slate-400">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
-      Chargement des données...
+      {{ $t('time.loadingData', 'Chargement des données...') }}
     </div>
     <div v-else-if="error" class="p-8 text-center text-sm text-red-600">{{ error }}</div>
     <div v-else-if="filteredRows.length === 0" class="p-8 text-center text-sm text-gray-500">

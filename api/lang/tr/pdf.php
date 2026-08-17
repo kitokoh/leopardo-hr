@@ -171,5 +171,5 @@ return [
     'cert_position_fallback' => 'çalışan',
 
     'payslip_regularization_banner' => 'DÜZELTME BORDROSU — :run numaralı ödemeyi düzeltir',
-        'payslip_regularization_banner_slip' => 'DÜZELTME BORDROSU — :slip numaralı bordroyu düzeltir',
+    'payslip_regularization_banner_slip' => 'DÜZELTME BORDROSU — :slip numaralı bordroyu düzeltir',
 ];
