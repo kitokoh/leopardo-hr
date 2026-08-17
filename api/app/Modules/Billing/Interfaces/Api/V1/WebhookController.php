@@ -127,6 +127,15 @@ class WebhookController extends Controller
      */
     public function test(Request $request, WebhookEndpoint $webhookEndpoint): JsonResponse
     {
+        // #2654/#3949 : isolation tenant — un endpoint d'un autre tenant répond
+        // 404 (pas 403) pour ne pas révéler l'existence de ressources tierces,
+        // aligné sur deadLetters()/replayDeadLetter() du même contrôleur.
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($webhookEndpoint->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
         $this->authorize('test', $webhookEndpoint);
 
         // Anti-SSRF defence-in-depth: same guard as DispatchWebhook::handle().

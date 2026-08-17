@@ -103,6 +103,23 @@ CREATE TABLE public.companies (
 CREATE UNIQUE INDEX companies_slug_unique ON public.companies (slug);
 CREATE UNIQUE INDEX companies_email_unique ON public.companies (email);
 
+
+-- Lien employé ↔ compte utilisateur (migration 2026_05_02_100001,
+-- table publique lue par PlatformUsersController /admin/users).
+-- Créée après public.companies (FK uuid) et public.users.
+CREATE TABLE public.user_employee_links (
+    id bigserial PRIMARY KEY,
+    user_id bigint NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    employee_id bigint NOT NULL,
+    company_id uuid NOT NULL REFERENCES public.companies(id),
+    status varchar(20) NOT NULL DEFAULT 'pending',
+    linked_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE UNIQUE INDEX user_employee_links_user_id_company_id_unique ON public.user_employee_links (user_id, company_id);
+
 -- Growth module tables
 CREATE TABLE public.partners (
     id bigserial PRIMARY KEY,
