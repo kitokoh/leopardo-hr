@@ -41,6 +41,18 @@ trait RefreshTenantDatabase
             config(["database.connections.{$name}.search_path" => 'public']);
             DB::purge($name);
             DB::reconnect($name);
+
+            // Réinitialisation COMPLÈTE des deux schémas. Sans ce DROP, les
+            // fichiers qui utilisent `CreatesMvpSchema` (AI*Test,
+            // QaHardeningEndpointsTest, Platform*Test...) laissent un schéma
+            // `shared_tenants` PARTIEL (fixture mvp + DROP SCHEMA du repo
+            // migrations) : le `migrate:fresh` suivant ne droppe que les
+            // tables publiques (db:wipe limité au search_path=public) et les
+            // migrations tenant re-créent des tables déjà présentes
+            // (`relation "projects" already exists`, 42P07) → toute la suite
+            // Feature en aval échoue en cascade. Observé 2026-08-17.
+            DB::statement('DROP SCHEMA IF EXISTS shared_tenants CASCADE');
+            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
         }
 
         try {

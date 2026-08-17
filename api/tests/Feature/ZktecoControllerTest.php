@@ -376,10 +376,11 @@ class ZktecoControllerTest extends TestCase
     }
 
     /**
-     * #4787 — vérifie que le search_path a été restauré (schémas et ordre).
-     * Comparaison normalisée : PostgreSQL formate SHOW search_path avec
-     * « , » (espace) après un SET alors que le défaut de connexion (option
-     * DSN) s'affiche sans espace — comparer les chaînes brutes est fragile.
+     * #4787/#4817 — vérifie que le search_path a été restauré (schémas et
+     * ordre). Comparaison normalisée : PostgreSQL formate SHOW search_path
+     * avec « , » (espace) après un SET alors que le défaut de connexion
+     * (option DSN) s'affiche sans espace — comparer les chaînes brutes
+     * casse la suite selon l'historique de SET de la session.
      */
     private function assertSearchPathRestored(array $expectedSchemas): void
     {
