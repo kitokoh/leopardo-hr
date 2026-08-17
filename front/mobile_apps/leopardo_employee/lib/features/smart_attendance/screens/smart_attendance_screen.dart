@@ -7,6 +7,8 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
+import 'package:leopardo_employee/features/smart_attendance/screens/attendance_mode_picker_screen.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran principal du module Pointage Intelligent.
 ///
@@ -81,7 +83,7 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
             child: CircularProgressIndicator(color: AppColors.mobileAccentBlue),
           ),
           error: (error, _) => _ErrorPanel(
-            message: 'Impossible de charger la configuration.\n$error',
+            message: context.l10n.saConfigLoadError(error.toString()),
             onRetry: () => ref.invalidate(smartAttendanceConfigProvider),
           ),
           data: (config) => _buildBody(
@@ -132,7 +134,11 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
-                  ..showSnackBar(SnackBar(content: Text(current.error!)));
+                  ..showSnackBar(
+                    SnackBar(
+                      content: Text(_localizeSaError(context, current.error!)),
+                    ),
+                  );
               }
             },
             onStopMonitoring: () {
@@ -148,8 +154,8 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Sessions récentes',
+              Text(
+                context.l10n.saRecentSessions,
                 style: TextStyle(
                   color: _text,
                   fontWeight: FontWeight.w600,
@@ -171,13 +177,15 @@ class _SmartAttendanceScreenState extends ConsumerState<SmartAttendanceScreen> {
 
         // Erreur de chargement des sessions
         if (sessionState.error != null)
-          _ErrorBanner(message: sessionState.error!),
+          _ErrorBanner(message: _localizeSaError(context, sessionState.error!)),
 
         // Liste des sessions ou message vide
         if (sessionState.recentSessions.isEmpty && !sessionState.isLoading)
           _EmptySessionsPanel()
         else
-          ...sessionState.recentSessions.take(10).map(
+          ...sessionState.recentSessions
+              .take(10)
+              .map(
                 (session) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: _SessionCard(session: session),
@@ -321,7 +329,7 @@ class _ModeStatusCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'Imposé',
+                    context.l10n.saForced,
                     style: TextStyle(
                       color: _modeColor,
                       fontSize: 11,
@@ -469,7 +477,9 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Présence en cours depuis ${_formatTime(sessionState.activeSession!.startedAt)}',
+                    context.l10n.saPresenceInProgress(
+                      _formatTime(sessionState.activeSession!.startedAt),
+                    ),
                     style: const TextStyle(
                       color: _green,
                       fontSize: 12,
@@ -503,7 +513,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'La zone GPS de votre entreprise n\'est pas encore configurée.',
+                      context.l10n.saGpsZoneNotConfigured,
                       style: TextStyle(
                         color: AppColors.mobileAccentOrange,
                         fontSize: 12,
@@ -531,13 +541,14 @@ class _GpsZoneStatusCard extends StatelessWidget {
                 ),
                 label: Text(
                   isMonitoring
-                      ? 'Désactiver le GPS automatique'
-                      : 'Activer le GPS automatique',
+                      ? context.l10n.saDisableAutoGps
+                      : context.l10n.saEnableAutoGps,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isMonitoring ? _red.withValues(alpha: 0.8) : _accent,
+                  backgroundColor: isMonitoring
+                      ? _red.withValues(alpha: 0.8)
+                      : _accent,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -589,15 +600,15 @@ class _SessionCard extends StatelessWidget {
   String get _statusLabel {
     switch (session.status) {
       case 'approved':
-        return 'Approuvée';
+        return context.l10n.saStatusApproved;
       case 'detected':
-        return 'Détectée';
+        return context.l10n.saStatusDetected;
       case 'pending_validation':
-        return 'En validation';
+        return context.l10n.saStatusPending;
       case 'rejected':
-        return 'Rejetée';
+        return context.l10n.saStatusRejected;
       case 'cancelled':
-        return 'Annulée';
+        return context.l10n.saStatusCancelled;
       default:
         return session.status;
     }
@@ -750,7 +761,7 @@ class _ErrorPanel extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Réessayer'),
+              label: Text(context.l10n.retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.mobileAccentBlue,
                 foregroundColor: Colors.white,
@@ -764,6 +775,17 @@ class _ErrorPanel extends StatelessWidget {
 }
 
 /// Bannière d'erreur inline.
+/// #4303 : traduit les codes d'erreur du provider en messages localisés.
+String _localizeSaError(BuildContext context, String code) {
+  if (code == 'sa.sessionsLoadError') {
+    return context.l10n.saSessionsLoadError;
+  }
+  if (code == 'sa.startMonitoringError') {
+    return context.l10n.saStartMonitoringError;
+  }
+  return code;
+}
+
 class _ErrorBanner extends StatelessWidget {
   final String message;
 

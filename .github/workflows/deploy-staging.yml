@@ -40,6 +40,11 @@ jobs:
       should_deploy: ${{ steps.final.outputs.should_deploy }}
       sha: ${{ steps.context.outputs.sha }}
     steps:
+      - name: Checkout repository for local composite action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+
       - name: Resolve deployment source
         id: context
         shell: bash

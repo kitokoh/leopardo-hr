@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran « accès refusé » — T116 (QA omnichannel 2026-08-15).
 ///
@@ -27,15 +28,13 @@ class AccessDeniedScreen extends ConsumerWidget {
                 Icon(Icons.lock_outline, size: 64, color: AppColors.rh),
                 const SizedBox(height: 16),
                 Text(
-                  'Accès refusé',
+                  context.l10n.accessDeniedTitle,
                   style: AppTypography.title,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Votre compte n\'a pas le rôle RH requis pour cette '
-                  'application. Utilisez l\'application correspondant à votre '
-                  'rôle (Employee, Manager…) ou contactez votre administrateur.',
+                  context.l10n.accessDeniedBodyHr,
                   style: AppTypography.body,
                   textAlign: TextAlign.center,
                 ),
@@ -46,7 +45,7 @@ class AccessDeniedScreen extends ConsumerWidget {
                     if (context.mounted) context.go('/welcome');
                   },
                   icon: const Icon(Icons.logout),
-                  label: const Text('Se déconnecter'),
+                  label: Text(context.l10n.accessDeniedLogout),
                 ),
               ],
             ),
