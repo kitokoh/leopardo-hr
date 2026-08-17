@@ -96,7 +96,9 @@ for STATUS in queued pending in_progress; do
 done
 
 # Issue #2540 — runs QUEUED supersédés : pour chaque (branche, workflow),
-# tous les runs queued sauf le plus récent. Ne touche jamais main.
+# tous les runs queued sauf le plus récent. Cette règle s’applique aussi à main
+# afin de supprimer les doublons E2E/ZAP du même déploiement ; le run récent
+# reste toujours conservé.
 SUPERSEDED_CANCELLED=0
 if [[ "${SUPERSEDED}" -eq 1 ]]; then
   # [run_id, branch, workflow_name, created_at] pour les runs queued.
@@ -115,14 +117,15 @@ if [[ "${SUPERSEDED}" -eq 1 ]]; then
   done < <(
     gh api "repos/${REPO}/actions/runs?status=queued&per_page=100" --paginate \
       | strip_ansi \
-      | jq -s -r 'map(.workflow_runs[])[] | select(.head_branch != "main") | [.id, .head_branch, .name, .created_at] | @tsv'
+      | jq -s -r 'map(.workflow_runs[])[] | [.id, .head_branch, .name, .created_at] | @tsv'
   )
   for run_id in "${!RUN_BRANCH[@]}"; do
     branch="${RUN_BRANCH["${run_id}"]}"
     wf="${RUN_WF["${run_id}"]}"
     key="${branch}\u0001${wf}"
     if [[ "${RUN_TS["${run_id}"]}" != "${NEWEST_TS["${key}"]}" ]]; then
-      # Garde : jamais un run d'une branche vivante si c'est le plus récent du couple.
+      # Garde : le run le plus récent de chaque couple branche/workflow reste actif,
+      # y compris sur main ; seuls les doublons plus anciens sont annulés.
       SUPERSEDED_CANCELLED=$((SUPERSEDED_CANCELLED + 1))
       echo "superseded queued run ${run_id} (branch '${branch}', workflow '${wf}')"
       if [[ "${DRY_RUN}" -eq 0 ]]; then
