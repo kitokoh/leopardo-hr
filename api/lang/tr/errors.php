@@ -212,4 +212,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Yalnızca taslak durumundaki ilanlar silinebilir.',
     'JOB_POSTING_DELETED' => 'İlan silindi.',
     'TASK_DELETED' => 'Görev silindi.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => 'Deneme kayıt hizmeti geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.',
 ];

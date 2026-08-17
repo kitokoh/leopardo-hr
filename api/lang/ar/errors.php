@@ -212,4 +212,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'لا يمكن حذف سوى العروض في حالة المسودة.',
     'JOB_POSTING_DELETED' => 'تم حذف العرض.',
     'TASK_DELETED' => 'تم حذف المهمة.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => 'خدمة التسجيل للتجربة غير متاحة مؤقتاً. يرجى المحاولة مرة أخرى بعد قليل.',
 ];

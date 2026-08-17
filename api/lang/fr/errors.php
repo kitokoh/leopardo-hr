@@ -213,4 +213,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Seules les offres au statut brouillon peuvent être supprimées.',
     'JOB_POSTING_DELETED' => 'Offre supprimée.',
     'TASK_DELETED' => 'Tâche supprimée.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => "Le service d'essai est temporairement indisponible. Veuillez réessayer dans quelques instants.",
 ];
