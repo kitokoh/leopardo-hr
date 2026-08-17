@@ -185,19 +185,22 @@ jobs:
           else
             git diff -z --name-only HEAD^ HEAD -- '*.dart' > /tmp/changed-dart-files
           fi
-          if [[ -s /tmp/changed-dart-files ]]; then
+          project_prefix="${{ matrix.project.path }}/"
+          grep -z "^${project_prefix}" /tmp/changed-dart-files | sed -z "s#^${project_prefix}##" > /tmp/changed-dart-files-relative || true
+          if [[ -s /tmp/changed-dart-files-relative ]]; then
             echo "changed=true" >> "${GITHUB_OUTPUT}"
-            echo "Dart files changed in this revision:"
-            tr '\0' '\n' < /tmp/changed-dart-files
+            echo "Dart files changed in this project:"
+            tr '\0' '\n' < /tmp/changed-dart-files-relative
           else
             echo "changed=false" >> "${GITHUB_OUTPUT}"
-            echo "No Dart files changed in this revision."
+            echo "No Dart files changed in this project."
           fi
 
       - name: Check formatting of changed Dart files
         if: steps.changed-dart.outputs.changed == 'true'
+        working-directory: ${{ matrix.project.path }}
         shell: bash
-        run: xargs -0 dart format --set-exit-if-changed < /tmp/changed-dart-files
+        run: xargs -0 dart format --set-exit-if-changed < /tmp/changed-dart-files-relative
 
       - name: Run flutter analyze
         working-directory: ${{ matrix.project.path }}
