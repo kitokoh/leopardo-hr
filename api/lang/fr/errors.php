@@ -166,6 +166,11 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'Un email de contact est requis pour approuver cette demande.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Mode schema Enterprise gelé. Contactez le support.',
     'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'Accès réservé aux managers.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'Sous-rôle manager insuffisant.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'L\'accès aux analyses IA requiert un rôle Principal ou RH.',
     'MANAGER_REQUIRED' => 'Un accès manager est requis.',
     'INSUFFICIENT_ROLE' => 'Rôle insuffisant pour cette action.',
     'EMPLOYEE_NOT_FOUND' => 'Employé introuvable.',

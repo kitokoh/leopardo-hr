@@ -165,6 +165,11 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'AI_FEATURE_DISABLED' => 'Bu çalışma alanı için yapay zeka özellikleri devre dışı.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'Yalnızca yöneticiler erişebilir.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'Yetersiz yönetici rolü.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'AI analizlerine erişim Principal veya İK yöneticisi rolü gerektirir.',
     'MANAGER_REQUIRED' => 'Yönetici erişimi gereklidir.',
     'INSUFFICIENT_ROLE' => 'Bu işlem için yetersiz rol.',
     'EMPLOYEE_NOT_FOUND' => 'Çalışan bulunamadı.',
