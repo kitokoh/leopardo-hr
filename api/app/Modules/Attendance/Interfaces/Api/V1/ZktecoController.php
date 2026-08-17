@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\TenantManager;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
@@ -164,7 +165,14 @@ class ZktecoController extends Controller
     {
         $device = $this->resolveAuthorizedDevice($request, $serialNumber);
 
-        $this->zktecoService->heartbeat($device);
+        $company = $device->company;
+        abort_unless($company !== null, 404, 'RESOURCE_NOT_FOUND');
+
+        // #4787 : traitement dans le contexte tenant du device (search_path)
+        // — robuste en mode schema-par-tenant, neutre en mode shared.
+        app(TenantManager::class)->withinTenant($company, function () use ($device): void {
+            $this->zktecoService->heartbeat($device);
+        });
 
         return new JsonResponse([
             'data' => [
@@ -187,7 +195,14 @@ class ZktecoController extends Controller
 
         $device = $this->resolveAuthorizedDevice($request, $serialNumber);
 
-        $syncLog = $this->zktecoService->pullAttendance($device, $validated['records']);
+        $company = $device->company;
+        abort_unless($company !== null, 404, 'RESOURCE_NOT_FOUND');
+
+        // #4787 : même principe — traitement scopé au schema du device.
+        $syncLog = app(TenantManager::class)->withinTenant(
+            $company,
+            fn () => $this->zktecoService->pullAttendance($device, $validated['records']),
+        );
 
         return new JsonResponse([
             'data' => [

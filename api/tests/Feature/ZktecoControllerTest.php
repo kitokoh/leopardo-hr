@@ -66,10 +66,11 @@ class ZktecoControllerTest extends TestCase
             ->assertUnprocessable();
     }
 
-    public function test_heartbeat_accepts_valid_serial(): void
+    public function test_heartbeat_unknown_serial_returns_404(): void
     {
         $this->postJson('/api/v1/zkteco/heartbeat/UNKNOWN-SERIAL')
-            ->assertStatus(404);
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'RESOURCE_NOT_FOUND');
     }
 
     public function test_sync_attendance_rejects_invalid_serial(): void
@@ -176,9 +177,7 @@ class ZktecoControllerTest extends TestCase
             ->postJson('/api/v1/zkteco/heartbeat/SN-SP-001')
             ->assertOk();
 
-        $row = DB::selectOne('SHOW search_path');
-        $this->assertNotNull($row);
-        $this->assertSame('shared_tenants,public', $row->search_path);
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
     }
 
     public function test_heartbeat_restores_search_path_after_unknown_serial(): void
@@ -186,9 +185,7 @@ class ZktecoControllerTest extends TestCase
         $this->postJson('/api/v1/zkteco/heartbeat/SN-SP-UNKNOWN')
             ->assertStatus(404);
 
-        $row = DB::selectOne('SHOW search_path');
-        $this->assertNotNull($row);
-        $this->assertSame('shared_tenants,public', $row->search_path);
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
     }
 
     public function test_heartbeat_restores_search_path_after_rejected_token(): void
@@ -204,9 +201,7 @@ class ZktecoControllerTest extends TestCase
             ->postJson('/api/v1/zkteco/heartbeat/SN-SP-002')
             ->assertStatus(401);
 
-        $row = DB::selectOne('SHOW search_path');
-        $this->assertNotNull($row);
-        $this->assertSame('shared_tenants,public', $row->search_path);
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
     }
 
     public function test_sync_attendance_restores_search_path_after_success(): void
@@ -232,9 +227,7 @@ class ZktecoControllerTest extends TestCase
             ])
             ->assertStatus(201);
 
-        $row = DB::selectOne('SHOW search_path');
-        $this->assertNotNull($row);
-        $this->assertSame('shared_tenants,public', $row->search_path);
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
     }
 
     public function test_sync_attendance_rejects_unauthenticated_device_and_writes_nothing(): void
@@ -380,5 +373,25 @@ class ZktecoControllerTest extends TestCase
         $this->actingAs($this->manager)
             ->postJson('/api/v1/zkteco/devices/'.$ownDevice->serial_number.'/push-users')
             ->assertOk();
+    }
+
+    /**
+     * #4787/#4817 — vérifie que le search_path a été restauré (schémas et
+     * ordre). Comparaison normalisée : PostgreSQL formate SHOW search_path
+     * avec « , » (espace) après un SET alors que le défaut de connexion
+     * (option DSN) s'affiche sans espace — comparer les chaînes brutes
+     * casse la suite selon l'historique de SET de la session.
+     */
+    private function assertSearchPathRestored(array $expectedSchemas): void
+    {
+        $row = DB::selectOne('SHOW search_path');
+        $this->assertNotNull($row);
+
+        $normalize = static fn (string $path): array => array_values(array_filter(array_map(
+            'trim',
+            explode(',', str_replace('"', '', $path)),
+        ), static fn (string $s): bool => $s !== ''));
+
+        $this->assertSame($expectedSchemas, $normalize((string) $row->search_path));
     }
 }
