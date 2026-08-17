@@ -55,7 +55,7 @@ type FaqItem = {
 
 type PricingPageCopy = {
   hero: { headline: string; subheadline: string; primary: string; secondary: string; badge: string };
-  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
+  plans: { title: string; subtitle: string; badge: string; monthly: string; annual: string; toggleBilling: string; customPrice: string; periodMonthly: string; periodAnnual: string; trialNote: string };
   currency: { label: string; approx: string };
   trust: { items: string[] };
   comparison: { badge: string; title: string; subtitle: string; featureColumn: string; categories: ComparisonCategory[] };
@@ -82,6 +82,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Commencez petit, montez en puissance sans changer de plateforme.',
       monthly: 'Mensuel',
       annual: 'Annuel',
+      toggleBilling: 'Basculer la période de facturation',
       customPrice: 'Sur devis',
       periodMonthly: '/mois',
       periodAnnual: '/mois facturé annuellement',
@@ -120,7 +121,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'Paie & finance',
           features: [
             { name: 'Calcul automatisé de la paie', free: false, starter: false, business: true, enterprise: true },
-            { name: 'Bulletins de paie PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'Bulletins de paie PDF', free: true, starter: true, business: true, enterprise: true },
             { name: 'Exports comptables', free: false, starter: false, business: true, enterprise: true },
             { name: 'Avances sur salaire', free: false, starter: false, business: true, enterprise: true },
             { name: 'Multi-pays & multi-devises', free: false, starter: false, business: true, enterprise: true },
@@ -198,6 +199,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Start small, scale up without switching platforms.',
       monthly: 'Monthly',
       annual: 'Annual',
+      toggleBilling: 'Toggle billing period',
       customPrice: 'Custom',
       periodMonthly: '/month',
       periodAnnual: '/month billed annually',
@@ -236,7 +238,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'Payroll & finance',
           features: [
             { name: 'Automated payroll', free: false, starter: false, business: true, enterprise: true },
-            { name: 'PDF pay slips', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF pay slips', free: true, starter: true, business: true, enterprise: true },
             { name: 'Accounting exports', free: false, starter: false, business: true, enterprise: true },
             { name: 'Salary advances', free: false, starter: false, business: true, enterprise: true },
             { name: 'Multi-country & currency', free: false, starter: false, business: true, enterprise: true },
@@ -314,6 +316,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'Küçük başlayın, platform değiştirmeden büyüyün.',
       monthly: 'Aylık',
       annual: 'Yıllık',
+      toggleBilling: 'Faturalama dönemini değiştir',
       customPrice: 'Teklif alın',
       periodMonthly: '/ay',
       periodAnnual: '/ay yıllık faturalama',
@@ -352,7 +355,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'Bordro & Finans',
           features: [
             { name: 'Otomatik bordro hesabı', free: false, starter: false, business: true, enterprise: true },
-            { name: 'PDF bordro dökümü', free: false, starter: true, business: true, enterprise: true },
+            { name: 'PDF bordro dökümü', free: true, starter: true, business: true, enterprise: true },
             { name: 'Muhasebe dışa aktarımı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Maaş avansı', free: false, starter: false, business: true, enterprise: true },
             { name: 'Çok ülke & çok para birimi', free: false, starter: false, business: true, enterprise: true },
@@ -430,6 +433,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
       subtitle: 'ابدأ صغيرًا، توسع دون تغيير المنصة.',
       monthly: 'شهري',
       annual: 'سنوي',
+      toggleBilling: 'بدّل فترة الفوترة',
       customPrice: 'حسب الطلب',
       periodMonthly: '/شهر',
       periodAnnual: '/شهر مع فوترة سنوية',
@@ -468,7 +472,7 @@ const pricingPageCopy: Record<AppLocale, PricingPageCopy> = {
           category: 'الرواتب والمالية',
           features: [
             { name: 'حساب رواتب آلي', free: false, starter: false, business: true, enterprise: true },
-            { name: 'قسائم رواتب PDF', free: false, starter: true, business: true, enterprise: true },
+            { name: 'قسائم رواتب PDF', free: true, starter: true, business: true, enterprise: true },
             { name: 'تصدير محاسبي', free: false, starter: false, business: true, enterprise: true },
             { name: 'سلف الرواتب', free: false, starter: false, business: true, enterprise: true },
             { name: 'متعدد الدول والعملات', free: false, starter: false, business: false, enterprise: true },
@@ -822,7 +826,7 @@ export default function PricingPage() {
             </span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
-              aria-label="Toggle billing period"
+              aria-label={copy.plans.toggleBilling}
               className="relative w-16 h-8 rounded-full bg-emerald-500 shadow-inner shadow-emerald-700/30 transition-colors"
             >
               <motion.div
