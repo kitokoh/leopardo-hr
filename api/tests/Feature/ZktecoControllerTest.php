@@ -389,7 +389,7 @@ class ZktecoControllerTest extends TestCase
         $row = DB::selectOne('SHOW search_path');
         $this->assertNotNull($row);
 
-        /** @var \Closure(string): array<int, string> $normalize */
+        /** @var \Closure(string): list<string> $normalize */
         $normalize = static fn (string $path): array => array_values(array_filter(array_map(
             'trim',
             explode(',', str_replace('"', '', $path)),
