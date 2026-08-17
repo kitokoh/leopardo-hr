@@ -203,6 +203,40 @@ if (Test-Path "CHANGELOG.md") {
     Pass "CHANGELOG.md section headers are not duplicated."
 }
 
+# Session 2026-08-17 — consolidation CHANGELOG (audit doc chef de projet) :
+# la structure doit rester UN SEUL header "## [Unreleased]" et des headers de
+# version uniques ; plafond dur de taille anti-régression (CONVENTIONS §4.3).
+# Ces contrôles ne s'appliquent qu'aux PR qui touchent CHANGELOG.md (pas aux
+# autres PR, qui héritent de l'état de main au moment de leur création).
+$changelogTouched = $false
+foreach ($line in $changed) {
+    if ($line -eq "CHANGELOG.md") { $changelogTouched = $true; break }
+}
+if ($changelogTouched -and (Test-Path "CHANGELOG.md")) {
+    $chg = Get-Content "CHANGELOG.md" -Raw
+    $unrelCount = ([regex]::Matches($chg, '(?m)^## \[Unreleased\]$')).Count
+    if ($unrelCount -ne 1) {
+        Fail "CHANGELOG.md doit contenir exactement 1 header '## [Unreleased]' (trouvé: $unrelCount) — les merges parallèles dupliquent les en-têtes, fusionner avant merge."
+    }
+    Pass "CHANGELOG.md has exactly one [Unreleased] header."
+
+    $vers = [regex]::Matches($chg, '(?m)^## \[(4\.[0-9]+\.[0-9]+[a-z0-9-]*)\](?: - .*)?$') | ForEach-Object { $_.Groups[1].Value }
+    $dups = $vers | Group-Object | Where-Object { $_.Count -gt 1 }
+    if ($dups) {
+        Fail "CHANGELOG.md contient des headers de version dupliqués: $(($dups | ForEach-Object { $_.Name + 'x' + $_.Count }) -join ', ') — fusionner avant merge."
+    }
+    Pass "CHANGELOG.md version headers are unique."
+
+    $size = (Get-Item "CHANGELOG.md").Length
+    if ($size -gt 1.2MB) {
+        Fail "CHANGELOG.md dépasse le plafond dur 1,2 Mo ($([math]::Round($size/1MB,2)) Mo) — consolider/archiver (règle CONVENTIONS §4.3)."
+    }
+    if ($size -gt 300KB) {
+        Write-Host "WARN: CHANGELOG.md = $([math]::Round($size/1KB,0)) Ko (> 300 Ko) — prévoir une release pour condenser [Unreleased] actif." -ForegroundColor Yellow
+    }
+    Pass "CHANGELOG.md size within hard ceiling."
+}
+
 # Garde .claude/ : le scratch de planification des agents ne doit jamais
 # être commité (fichiers locaux, cf. issue #2494 / session 2026-08-15).
 foreach ($line in $changedList) {
