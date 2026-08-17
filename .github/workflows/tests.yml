@@ -138,7 +138,11 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
-        run: php artisan test --testsuite=Feature --log-junit=storage/test-results/feature.xml
+        # Issue #4695 : suite Feature en parallèle (paratest, 1 base par worker
+        # `leopardo_test_test_{token}`, créée automatiquement — voir
+        # tests/TestCase::configureTestingDatabaseConnection). La suite sérielle
+        # dépassait les 45 min (timeout du job) et bloquait main.
+        run: php artisan test --testsuite=Feature --parallel --processes=4 --log-junit=storage/test-results/feature.xml
 
       - name: Upload backend test reports
         if: always()
@@ -484,7 +488,9 @@ jobs:
           DB_SEARCH_PATH: public,shared_tenants
         run: |
           mkdir -p storage/test-results storage/coverage-html
-          php artisan test \
+          # Issue #4695 : parallélisé comme le job backend-tests (paratest
+          # fusionne les rapports de couverture des workers).
+          php artisan test --parallel --processes=4 \
             --coverage-clover=storage/test-results/clover.xml \
             --coverage-html=storage/coverage-html
 

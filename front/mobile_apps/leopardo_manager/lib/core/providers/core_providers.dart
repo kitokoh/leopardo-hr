@@ -16,7 +16,6 @@ import 'package:leopardo_manager/features/payrolls/data/payroll_repository.dart'
 import 'package:leopardo_manager/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_manager/features/evaluations/data/evaluation_repository.dart';
 import 'package:leopardo_manager/features/cabinet/data/cabinet_repository.dart';
-import 'package:leopardo_manager/features/home/data/project_repository.dart';
 import 'package:leopardo_manager/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_manager/features/ai_chat/data/ai_chat_repository.dart';
 import 'package:leopardo_manager/features/vehicle_position/data/vehicle_position_repository.dart';
@@ -112,11 +111,6 @@ final evaluationRepositoryProvider = Provider<EvaluationRepository>((ref) {
 final cabinetRepositoryProvider = Provider<CabinetRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
   return CabinetRepository(apiClient);
-});
-
-final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
-  final apiClient = ref.watch(apiClientProvider);
-  return ProjectRepository(apiClient);
 });
 
 final userAuthRepositoryProvider = Provider<UserAuthRepository>((ref) {

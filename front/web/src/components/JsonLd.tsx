@@ -1,4 +1,5 @@
 import { getPricingPlans } from '@/modules/vitrine/data/pricing';
+import { PRICING_CURRENCY } from '@/modules/vitrine/data/currency';
 
 interface JsonLdProps {
   data: Record<string, unknown>;
@@ -71,6 +72,14 @@ export function ArticleJsonLd({
 // une offre sans prix est invalide (Google Rich Results). On n'émet donc
 // que les plans à prix machine (Free/Pilot/Operations). Le prix 0 du plan
 // Free est conservé (offre gratuite réelle).
+// #4707 : description Organisation localisée ×4 (avant : FR pour toutes les locales).
+const organizationDescription: Record<string, string> = {
+  fr: 'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+  en: 'SaaS HR platform for SMBs: multi-country payroll, time tracking, leave, training and recruiting.',
+  tr: "KOBİ'ler için SaaS İK platformu: çok ülkeli bordro, yoklama, izin, eğitim ve işe alım.",
+  ar: 'منصة موارد بشرية سحابية للشركات الصغيرة والمتوسطة: رواتب متعددة البلدان، حضور، إجازات، تدريب وتوظيف.',
+};
+
 export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
   const offers = getPricingPlans(locale as Parameters<typeof getPricingPlans>[0])
     .filter((plan) => Number.isFinite(Number(plan.price)))
@@ -79,7 +88,7 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
       name: plan.name,
       description: plan.description,
       price: Number(plan.price),
-      priceCurrency: 'EUR',
+      priceCurrency: PRICING_CURRENCY,
       url: `${SITE_URL}/pricing`,
     }));
 
@@ -91,8 +100,7 @@ export function OrganizationJsonLd({ locale = 'fr' }: { locale?: string }) {
         name: 'Leopardo RH',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Web, Android',
-        description:
-          'Plateforme SaaS de gestion RH pour PME : paie multi-pays, pointage, absences, formations, recrutement.',
+        description: organizationDescription[locale] ?? organizationDescription.fr,
         availableLanguage: ['fr', 'en', 'ar', 'tr'],
         offers,
         creator: {
