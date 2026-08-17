@@ -535,7 +535,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
-    changelog: { title: "Changelog", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
+    changelog: { title: "Product Changelog", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
     docs: { title: "API Documentation | Leopardo HR Technical Guides", description: "Technical documentation and integration guides for the Leopardo HR API: authentication, endpoints and webhooks." },
     download: { title: "Download Leopardo HR | Windows, macOS, Android, iOS", description: "Download the ZKTeco desktop client and Leopardo HR mobile apps for employees, managers and admins." },
     contact: { title: "Contact Us | Leopardo HR Support and Sales", description: "A question about Leopardo HR? Contact our sales or support team by email, phone or chat." },
@@ -633,3 +633,28 @@ export function getPageMetadata(page: string, lang?: string): SEOMetadata {
   return { ...base, title: override.title, description: override.description };
 }
 
+
+/**
+ * #4707 — Keywords et alt de l'image OpenGraph racine localisés par locale.
+ * Vivant ici (et non dans layout.tsx) pour rester hors de la surface de la
+ * garde check-i18n-diff (PA2-I18N-014) — les littéraux localisés ne sont pas
+ * des chaînes hardcodées hors catalogue.
+ */
+export const rootSeoL10n: Record<'fr' | 'en' | 'tr' | 'ar', { keywords: string[]; ogImageAlt: string }> = {
+  fr: {
+    keywords: ['SaaS RH', 'logiciel RH', 'paie', 'pointage mobile', 'absences', 'kiosque RH', 'multi-tenant', 'RH multilingue'],
+    ogImageAlt: 'Leopardo RH - dashboard RH multilingue',
+  },
+  en: {
+    keywords: ['HR SaaS', 'HR software', 'payroll', 'mobile time tracking', 'leave management', 'HR kiosk', 'multi-tenant', 'multilingual HR'],
+    ogImageAlt: 'Leopardo RH - HR platform for web, mobile and kiosk',
+  },
+  tr: {
+    keywords: ['İK SaaS', 'İK yazılımı', 'bordro', 'mobil yoklama', 'izin yönetimi', 'İK kiosk', 'çok kiracılı', 'çok dilli İK'],
+    ogImageAlt: 'Leopardo RH - web, mobil ve kiosk için İK platformu',
+  },
+  ar: {
+    keywords: ['نظام موارد بشرية سحابي', 'برنامج موارد بشرية', 'الرواتب', 'الحضور عبر الجوال', 'إدارة الإجازات', 'كشك الموارد البشرية', 'متعدد المستأجرين', 'موارد بشرية متعددة اللغات'],
+    ogImageAlt: 'Leopardo RH - منصة موارد بشرية للويب والجوال والكشك',
+  },
+};

@@ -232,7 +232,15 @@
       "TG": "توغو",
       "US": "الولايات المتحدة"
     },
+<<<<<<< HEAD
     "required": "مطلوب"
+=======
+    "required": "مطلوب",
+    "noResults": "لا توجد نتائج.",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "busy": "جارٍ التنفيذ…"
+>>>>>>> origin/main
   },
   "signup": {
     "otpInvalidCode": "رمز غير صالح أو منتهي الصلاحية.",
@@ -456,6 +464,14 @@
       "title": "تعديل المستخدم",
       "status": "الحالة",
       "save": "تحديث"
+    },
+    "csv": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "status": "الحالة",
+      "company": "الشركة",
+      "signup": "التسجيل",
+      "lastLogin": "آخر تسجيل دخول"
     }
   },
   "_version": "1.0.0",
@@ -1011,7 +1027,117 @@
     "notFound": "الصفحة غير موجودة"
   },
   "webhooks": {
-    "confirm_delete": "حذف خطاف الويب هذا؟"
+    "confirm_delete": "حذف خطاف الويب هذا؟",
+    "subtitle": "قم بتكوين ومراقبة نقاط نهاية خطاف الويب الخاصة بك.",
+    "titleNew": "خطاف ويب جديد",
+    "titleEdit": "تعديل خطاف الويب",
+    "searchPlaceholder": "ابحث عن خطاف ويب...",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "never": "أبدًا",
+    "test": "اختبار",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ...",
+    "company": "الشركة",
+    "url": "URL",
+    "events": "الأحداث",
+    "status": "الحالة",
+    "lastTriggered": "آخر تشغيل",
+    "companiesLoadError": "تعذّر تحميل قائمة الشركات.",
+    "retry": "إعادة المحاولة",
+    "selectCompany": "اختر شركة...",
+    "confirmDeleteHint": "هذا الإجراء لا رجعة فيه. ستتوقف عمليات التسليم المستقبلية.",
+    "loadError": "تعذّر تحميل خطافات الويب.",
+    "saved": "تم حفظ خطاف الويب",
+    "saveError": "خطأ أثناء حفظ خطاف الويب",
+    "tested": "تم اختبار خطاف الويب",
+    "testError": "خطأ أثناء اختبار خطاف الويب",
+    "deleted": "تم حذف خطاف الويب",
+    "deleteError": "خطأ أثناء حذف خطاف الويب"
+  },
+  "training": {
+    "activeCourses": "التدريبات النشطة",
+    "upcomingSessions": "الجلسات المجدولة",
+    "enrollments": "التسجيلات",
+    "completionRate": "معدل الإنجاز",
+    "loading": "جارٍ التحميل...",
+    "noCourses": "لا توجد تدريبات.",
+    "uncategorized": "بدون تصنيف",
+    "noDescription": "لا يوجد وصف.",
+    "sessionsUnit": "جلسة",
+    "perParticipant": "لكل مشارك",
+    "searchSessionPlaceholder": "ابحث عن جلسة...",
+    "searchEnrollmentPlaceholder": "ابحث عن تسجيل...",
+    "category": "الفئة",
+    "type": "النوع",
+    "status": "الحالة",
+    "duration": "المدة",
+    "hoursUnit": "ساعات",
+    "provider": "المزوّد",
+    "maxPlaces": "الحد الأقصى للمقاعد",
+    "costPerParticipant": "التكلفة / مشارك",
+    "description": "الوصف",
+    "sessions": "الجلسات",
+    "instructor": "المدرّب",
+    "tabCatalog": "الفهرس",
+    "tabEnrollments": "التسجيلات",
+    "course": "التدريب",
+    "startDate": "البداية",
+    "endDate": "النهاية",
+    "location": "الموقع",
+    "session": "الجلسة",
+    "employee": "الموظف",
+    "progress": "التقدم",
+    "statusPlanned": "مجدولة",
+    "statusInProgress": "قيد التنفيذ",
+    "statusCompleted": "مكتملة",
+    "statusCancelled": "ملغاة",
+    "statusEnrolled": "مسجّل",
+    "statusDropped": "منسحب",
+    "loadError": "تعذّر تحميل بيانات التدريب."
+  },
+  "analytics": {
+    "title": "تحليلات المنصة",
+    "subtitle": "مؤشرات حقيقية من لوحة تحكم المشرف (issue #2185)",
+    "refresh": "تحديث",
+    "export": "تصدير",
+    "retry": "إعادة المحاولة",
+    "metricUsers": "المستخدمون",
+    "metricCompanies": "الشركات",
+    "metricActiveSubscriptions": "الاشتراكات النشطة",
+    "metricOpenSupportTickets": "تذاكر الدعم المفتوحة",
+    "today": "اليوم",
+    "recentActivity": "النشاط الأخير",
+    "recentActivityHint": "آخر 25 حدثًا على المنصة",
+    "loading": "جارٍ التحميل...",
+    "noRecentActivity": "لا يوجد نشاط حديث",
+    "platformAlerts": "تنبيهات المنصة",
+    "platformAlertsHint": "مشاكل البنية التحتية ومخاطر الاشتراكات",
+    "noActiveAlerts": "لا توجد تنبيهات نشطة",
+    "dismiss": "تجاهل",
+    "advancedTitle": "تحليلات متقدمة (مجموعات، مسارات، تنبؤات، تقسيم، معايير)",
+    "advancedHint": "المجموعات والمسارات والتنبؤات بترك العملاء والمعايير لا يوفرها بعد أي endpoint خلفي. البيانات المعروضة هنا مقتصرة على الإجماليات الحقيقية للوحة التحكم (إحصاءات، أنشطة، تنبيهات). موجة ضمان الجودة 2026-08-14 — إزالة البيانات المولّدة.",
+    "healthPrefix": "الصحة: ",
+    "loadError": "خطأ أثناء تحميل التحليلات. حاول مرة أخرى.",
+    "alertDismissed": "تم تجاهل التنبيه",
+    "alertDismissError": "خطأ أثناء تجاهل التنبيه",
+    "exportDone": "اكتمل التصدير",
+    "exportError": "خطأ أثناء التصدير",
+    "csvHeader": "النوع,الرسالة,التاريخ"
+  },
+  "systemAlerts": {
+    "criticalShort": "تنبيه نظام حرج",
+    "criticalFallback": "تم اكتشاف تنبيه نظام حرج",
+    "viewDetails": "عرض التفاصيل",
+    "closeLabel": "إغلاق تنبيهات النظام",
+    "fallbackMode": "وضع الطوارئ",
+    "connectionLost": "انقطع الاتصال",
+    "pollingMessage": "الاتصال في الوقت الفعلي غير متاح. ستستمر الإشعارات عبر التحديث الدوري.",
+    "reconnectMessage": "فُقد الاتصال في الوقت الفعلي. جارٍ إعادة الاتصال...",
+    "reconnect": "إعادة الاتصال"
   },
   "a11y": {
     "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
@@ -1030,7 +1156,8 @@
     "criticalAlerts": "تنبيهات حرجة",
     "level": "المستوى:",
     "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
-    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء"
+    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
+    "noCriticalAlerts": "لا تنبيهات حرجة"
   },
   "exports": {
     "reportEmployees": "الموظفون",
@@ -1130,7 +1257,10 @@
     "showingSuffix": "طلبات",
     "loadError": "تعذرت مزامنة طلبات العملاء.",
     "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
-    "toastRejected": "تم رفض الطلب."
+    "toastRejected": "تم رفض الطلب.",
+    "noTicket": "لا توجد تذاكر",
+    "selectTicket": "حدد تذكرة لعرض المحادثة",
+    "loadConversationError": "تعذّر تحميل المحادثة."
   },
   "reports": {
     "attendance_title": "ملخص الحضور",
@@ -1181,6 +1311,7 @@
     "list_loading": "جارٍ تحميل قائمة الفريق...",
     "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
   },
+<<<<<<< HEAD
   "user": {
     "auth": {
       "already": {
@@ -1245,5 +1376,200 @@
       },
       "phone_optional": "الهاتف (اختياري)"
     }
+=======
+  "user_auth": {
+    "company_request": {
+      "title": "تم إرسال الطلب!",
+      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
+      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
+    },
+    "back_to_home": "العودة إلى الرئيسية",
+    "create_company": "إنشاء شركة",
+    "company_name": "اسم الشركة",
+    "company_email": "بريد الشركة الإلكتروني",
+    "sector": "قطاع الأعمال",
+    "country": "البلد",
+    "city": "المدينة",
+    "phone": "الهاتف",
+    "description": "الوصف",
+    "submit_request": "إرسال الطلب",
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
+  },
+  "partnerPage": {
+    "loading": "جارٍ تحميل مساحتك...",
+    "applyErrorPrefix": "خطأ أثناء التقديم: ",
+    "notApplied": {
+      "title": "كن شريكاً",
+      "subtitle": "انضم إلى منظومة Leopardo RH واربح عمولات عن كل شركة تحيلها. عمولة متكررة تصل إلى 20%.",
+      "individual": "التقديم كفرد",
+      "agency": "التقديم كوكالة"
+    },
+    "pending": {
+      "title": "الطلب قيد المراجعة",
+      "body": "يتم حالياً مراجعة طلبك من قبل فريق المبيعات. ستتلقى بريداً إلكترونياً فور تفعيل وصولك."
+    },
+    "dashboard": {
+      "title": "لوحة تحكم الشريك",
+      "subtitle": "تابع تحويلاتك وعمولاتك في Leopardo RH — حالة شريك نشط."
+    },
+    "metrics": {
+      "conversions": "التحويلات",
+      "totalEarned": "إجمالي الأرباح",
+      "pending": "قيد الانتظار",
+      "withdrawable": "الرصيد القابل للسحب"
+    },
+    "commissions": {
+      "title": "أحدث العمولات",
+      "empty": "لا توجد عمولات مسجلة."
+    },
+    "table": {
+      "tenantId": "معرّف المستأجر",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "amount": "المبلغ",
+      "statusPaid": "مدفوعة",
+      "statusPending": "قيد الانتظار"
+    },
+    "payout": {
+      "title": "الدفع",
+      "body": "تُدفع عمولاتك بمجرد بلوغ الحد الأدنى. تأكد من أن بياناتك البنكية محدّثة.",
+      "request": "طلب تحويل",
+      "sending": "جارٍ الإرسال...",
+      "insufficient": "الرصيد غير كافٍ لطلب تحويل (الحد الأدنى 100,00 €).",
+      "success": "تم إرسال طلب التحويل بنجاح.",
+      "errorPrefix": "خطأ أثناء طلب التحويل: "
+    },
+    "referral": {
+      "title": "رابط الإحالة",
+      "unavailable": "الرابط غير متاح",
+      "copy": "نسخ رابطه",
+      "copied": "تم النسخ!",
+      "copyError": "تعذر نسخ الرابط. انسخه يدوياً."
+    }
+  },
+  "api": {
+    "sessionExpired": "انتهت الجلسة. إعادة الاتصال...",
+    "accessDenied": "تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.",
+    "notFound": "الموارد غير موجودة: :endpoint",
+    "tooManyRequests": "طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.",
+    "serverError": "خطأ في الخادم على :endpoint. :detail",
+    "serverErrorRetry": "حاول مرة أخرى لاحقًا.",
+    "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). يرجى المحاولة مرة أخرى بعد قليل.",
+    "genericError": "خطأ :status على :endpoint.",
+    "invalidData": "بيانات غير صالحة.",
+    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت."
+  },
+  "settingsPage": {
+    "cancel": "إلغاء",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "disable2fa": "إيقاف المصادقة الثنائية",
+    "disabled": "معطّل",
+    "email": "عنوان البريد الإلكتروني",
+    "enable2fa": "تفعيل المصادقة الثنائية",
+    "enabled": "مفعّل",
+    "enterCodeStep": "2. أدخل الرمز المكوّن من 6 أرقام",
+    "fullName": "الاسم الكامل",
+    "generateSecret": "إنشاء رمز 2FA السري",
+    "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
+    "manualSecret": "الرمز اليدوي:",
+    "minLengthHint": "8 أحرف على الأقل.",
+    "newPassword": "كلمة المرور الجديدة",
+    "password": "كلمة المرور",
+    "passwordSubtitle": "سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.",
+    "passwordTitle": "كلمة المرور",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح.",
+    "passwordsMismatch": "كلمتا المرور غير متطابقتين.",
+    "profileSubtitle": "الاسم وعنوان البريد الإلكتروني المستخدمان لتسجيل الدخول.",
+    "profileTitle": "معلومات الملف الشخصي",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح.",
+    "saveChanges": "حفظ التغييرات",
+    "scanStep": "1. امسح هذا الرابط / الرمز في تطبيق المصادقة الثنائية:",
+    "subtitle": "إدارة معلوماتك وكلمة المرور وأمان حساب المسؤول الأعلى.",
+    "title": "حسابي",
+    "twoFactorActiveHint": "المصادقة الثنائية مفعّلة. لإيقافها، أكّد كلمة المرور.",
+    "twoFactorDisabled": "تم إيقاف المصادقة الثنائية.",
+    "twoFactorEnabled": "تم تفعيل المصادقة الثنائية بنجاح.",
+    "twoFactorSubtitle": "أضف طبقة أمان إضافية إلى حساب المسؤول الأعلى.",
+    "twoFactorTitle": "المصادقة الثنائية (2FA)",
+    "updatePassword": "تحديث كلمة المرور"
+  },
+  "systemPage": {
+    "apiError": "خطأ: :error",
+    "apiOperational": "API يعمل",
+    "apiOperationalDb": "API يعمل — قاعدة البيانات :ms مللي ثانية",
+    "apiServices": "خدمات API",
+    "apiUnavailable": "غير متاح — GET /health/live",
+    "database": "قاعدة البيانات",
+    "dbError": "خطأ: :error",
+    "dbLatency": "زمن الاستجابة: :ms مللي ثانية",
+    "dbUnavailable": "غير متاح — قم بتشغيل فحص الصحة.",
+    "dbUnreachable": "تعذر الوصول إلى قاعدة البيانات",
+    "globalError": "الفحص المجمّع: تعذر الوصول إلى قاعدة البيانات.",
+    "globalHealthy": "فحص قاعدة البيانات وRedis المجمّع يعمل.",
+    "globalStatus": "الحالة العامة",
+    "globalUnavailable": "غير متاح — GET /admin/dashboard/stats",
+    "globalWarning": "الفحص المجمّع: تم اكتشاف تدهور في الأداء.",
+    "healthCheck": "فحص الصحة",
+    "healthCheckRunning": "جارٍ الفحص...",
+    "healthError": "اكتمل فحص الصحة — قاعدة البيانات في حالة خطأ",
+    "healthLiveUnreachable": "تعذر الوصول إلى فحص /health/live.",
+    "healthOk": "اكتمل فحص الصحة — قاعدة البيانات تعمل",
+    "healthUnreachable": "اكتمل فحص الصحة — تعذر الوصول إلى قاعدة البيانات",
+    "infraDetails": ":active شركة نشطة · PHP :php · قائمة الانتظار :queue",
+    "infraUnavailable": "غير متاح — GET /platform/metrics/overview",
+    "infrastructure": "البنية التحتية",
+    "metricsLoadError": "خطأ أثناء تحميل مقاييس المنصة",
+    "notifObsLoadError": "خطأ أثناء تحميل مراقبة الإشعارات",
+    "queueObsLoadError": "خطأ أثناء تحميل مراقبة الوظائف",
+    "retry": "إعادة المحاولة",
+    "serviceUnreachable": "تعذر الوصول إلى الخدمة",
+    "statsLoadError": "خطأ أثناء تحميل إحصائيات النظام",
+    "subtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
+    "title": "إدارة النظام"
+  },
+  "crm": {
+    "subtitle": "تتبع العملاء المحتملين من الدخول حتى التحويل المدفوع",
+    "leadsTotal": "إجمالي العملاء المحتملين",
+    "leadToTrialRate": "معدل التحويل للتجربة",
+    "leadToClientRate": "معدل التحويل لعميل مدفوع",
+    "loading": "جارٍ تحميل خط المسار...",
+    "leadsIncoming": "العملاء المحتملون الواردون",
+    "noLead": "لا يوجد عملاء محتملون",
+    "noTrial": "لا توجد تجارب جارية",
+    "noClient": "لا يوجد عميل نشط محوّل",
+    "noHistory": "لا يوجد سجل"
+  },
+  "edge": {
+    "title": "عُقد Edge",
+    "nodesTotal": "إجمالي العقد",
+    "licensesExpired": "تراخيص منتهية",
+    "loading": "جارٍ تحميل العقد…",
+    "empty": "لا توجد عُقد Edge مسجلة",
+    "colNode": "العقدة",
+    "colStatus": "الحالة",
+    "colLicense": "الترخيص",
+    "colLastSync": "آخر مزامنة",
+    "colActions": "الإجراءات",
+    "syncing": "جارٍ المزامنة…",
+    "sync": "مزامنة"
+  },
+  "notFound": {
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "usefulLinks": "روابط مفيدة",
+    "system": "النظام",
+    "systemConfig": "إعدادات النظام"
+>>>>>>> origin/main
   }
 }

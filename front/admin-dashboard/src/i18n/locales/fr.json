@@ -89,7 +89,117 @@
     }
   },
   "webhooks": {
-    "confirm_delete": "Supprimer ce webhook ?"
+    "confirm_delete": "Supprimer ce webhook ?",
+    "subtitle": "Configurez et surveillez vos endpoints de webhook.",
+    "titleNew": "Nouveau webhook",
+    "titleEdit": "Modifier le webhook",
+    "searchPlaceholder": "Rechercher un webhook...",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "never": "Jamais",
+    "test": "Tester",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "company": "Société",
+    "url": "URL",
+    "events": "Événements",
+    "status": "Statut",
+    "lastTriggered": "Dernier déclenchement",
+    "companiesLoadError": "Impossible de charger la liste des sociétés.",
+    "retry": "Réessayer",
+    "selectCompany": "Sélectionner une société...",
+    "confirmDeleteHint": "Cette action est irréversible. Les livraisons futures seront interrompues.",
+    "loadError": "Impossible de charger les webhooks.",
+    "saved": "Webhook enregistré",
+    "saveError": "Erreur lors de l'enregistrement du webhook",
+    "tested": "Webhook testé",
+    "testError": "Erreur lors du test du webhook",
+    "deleted": "Webhook supprimé",
+    "deleteError": "Erreur lors de la suppression du webhook"
+  },
+  "training": {
+    "activeCourses": "Formations actives",
+    "upcomingSessions": "Sessions planifiées",
+    "enrollments": "Inscrits",
+    "completionRate": "Taux de complétion",
+    "loading": "Chargement...",
+    "noCourses": "Aucune formation.",
+    "uncategorized": "Sans catégorie",
+    "noDescription": "Pas de description.",
+    "sessionsUnit": "sessions",
+    "perParticipant": "par participant",
+    "searchSessionPlaceholder": "Rechercher une session...",
+    "searchEnrollmentPlaceholder": "Rechercher une inscription...",
+    "category": "Catégorie",
+    "type": "Type",
+    "status": "Statut",
+    "duration": "Durée",
+    "hoursUnit": "heures",
+    "provider": "Prestataire",
+    "maxPlaces": "Places max",
+    "costPerParticipant": "Coût / participant",
+    "description": "Description",
+    "sessions": "Sessions",
+    "instructor": "Formateur",
+    "tabCatalog": "Catalogue",
+    "tabEnrollments": "Inscriptions",
+    "course": "Formation",
+    "startDate": "Début",
+    "endDate": "Fin",
+    "location": "Lieu",
+    "session": "Session",
+    "employee": "Employé",
+    "progress": "Progression",
+    "statusPlanned": "Planifiée",
+    "statusInProgress": "En cours",
+    "statusCompleted": "Terminée",
+    "statusCancelled": "Annulée",
+    "statusEnrolled": "Inscrit",
+    "statusDropped": "Abandonné",
+    "loadError": "Impossible de charger les données de formation."
+  },
+  "analytics": {
+    "title": "Analytics Plateforme",
+    "subtitle": "Indicateurs réels du cockpit super-admin (issue #2185)",
+    "refresh": "Actualiser",
+    "export": "Exporter",
+    "retry": "Réessayer",
+    "metricUsers": "Utilisateurs",
+    "metricCompanies": "Entreprises",
+    "metricActiveSubscriptions": "Abonnements actifs",
+    "metricOpenSupportTickets": "Tickets support ouverts",
+    "today": "aujourd'hui",
+    "recentActivity": "Activité récente",
+    "recentActivityHint": "25 derniers événements plateforme",
+    "loading": "Chargement...",
+    "noRecentActivity": "Aucune activité récente",
+    "platformAlerts": "Alertes plateforme",
+    "platformAlertsHint": "Problèmes d'infrastructure et risques abonnements",
+    "noActiveAlerts": "Aucune alerte active",
+    "dismiss": "Ignorer",
+    "advancedTitle": "Analyses avancées (cohortes, funnels, prédictions, segmentation, benchmarks)",
+    "advancedHint": "Les cohortes, entonnoirs, prédictions de churn et benchmarks ne sont pas encore servis par un endpoint backend. Les données affichées ici sont limitées aux agrégats réels du cockpit (stats, activités, alertes). Vague QA 2026-08-14 — suppression des données fabriquées.",
+    "healthPrefix": "Santé : ",
+    "loadError": "Erreur lors du chargement des analytics. Réessayez.",
+    "alertDismissed": "Alerte ignorée",
+    "alertDismissError": "Erreur lors de l'ignorance de l'alerte",
+    "exportDone": "Export terminé",
+    "exportError": "Erreur lors de l'export",
+    "csvHeader": "Type,Message,Date"
+  },
+  "systemAlerts": {
+    "criticalShort": "Alerte critique système",
+    "criticalFallback": "Alerte critique système détectée",
+    "viewDetails": "Voir les détails",
+    "closeLabel": "Fermer les alertes système",
+    "fallbackMode": "Mode secours",
+    "connectionLost": "Connexion perdue",
+    "pollingMessage": "Connexion temps réel indisponible. Les notifications continuent d'arriver via actualisation périodique.",
+    "reconnectMessage": "Connexion temps réel perdue. Tentative de reconnexion...",
+    "reconnect": "Reconnecter"
   },
   "dashboard": {
     "leo_announcements_count": "{count} annonce(s) publiee(s) dans votre entreprise.",
@@ -390,7 +500,15 @@
       "TR": "Turquie"
     },
     "or": "ou",
+<<<<<<< HEAD
     "required": "Requis"
+=======
+    "required": "Requis",
+    "noResults": "Aucun résultat trouvé.",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "busy": "En cours…"
+>>>>>>> origin/main
   },
   "seo": {
     "pricing": {
@@ -957,6 +1075,14 @@
       "title": "Modifier l'utilisateur",
       "status": "Statut",
       "save": "Mettre à jour"
+    },
+    "csv": {
+      "name": "Nom",
+      "email": "Email",
+      "status": "Statut",
+      "company": "Entreprise",
+      "signup": "Inscription",
+      "lastLogin": "Dernière connexion"
     }
   },
   "adminChat": {
@@ -1030,7 +1156,8 @@
     "criticalAlerts": "Alertes critiques",
     "level": "Niveau :",
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
-    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
+    "noCriticalAlerts": "Aucune alerte critique"
   },
   "exports": {
     "reportEmployees": "Employes",
@@ -1130,7 +1257,10 @@
     "showingSuffix": "demandes",
     "loadError": "Impossible de synchroniser les demandes clients.",
     "toastApproved": "Demande approuvée. Provisionnement lancé.",
-    "toastRejected": "Demande rejetée."
+    "toastRejected": "Demande rejetée.",
+    "noTicket": "Aucun ticket",
+    "selectTicket": "Sélectionnez un ticket pour voir la conversation",
+    "loadConversationError": "Impossible de charger la conversation."
   },
   "reports": {
     "attendance_title": "Résumé Présences",
@@ -1181,6 +1311,7 @@
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
   },
+<<<<<<< HEAD
   "user": {
     "auth": {
       "already": {
@@ -1245,5 +1376,200 @@
       },
       "phone_optional": "Telephone (optionnel)"
     }
+=======
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
+  },
+  "partnerPage": {
+    "loading": "Chargement de votre espace...",
+    "applyErrorPrefix": "Erreur lors de la candidature : ",
+    "notApplied": {
+      "title": "Devenir Partenaire",
+      "subtitle": "Rejoignez l'écosystème Leopardo RH et gagnez des commissions sur chaque entreprise que vous parrainez. Jusqu'à 20 % de commission récurrente.",
+      "individual": "Postuler en tant qu'Individuel",
+      "agency": "Postuler en tant qu'Agence"
+    },
+    "pending": {
+      "title": "Candidature en cours",
+      "body": "Votre demande est en cours de validation par notre équipe commerciale. Vous recevrez un email dès que votre accès sera activé."
+    },
+    "dashboard": {
+      "title": "Dashboard Partenaire",
+      "subtitle": "Suivez vos conversions et vos commissions Leopardo RH — statut partenaire actif."
+    },
+    "metrics": {
+      "conversions": "Conversions",
+      "totalEarned": "Gains totaux",
+      "pending": "En attente",
+      "withdrawable": "Solde retirable"
+    },
+    "commissions": {
+      "title": "Dernières commissions",
+      "empty": "Aucune commission enregistrée."
+    },
+    "table": {
+      "tenantId": "Tenant ID",
+      "date": "Date",
+      "status": "Statut",
+      "amount": "Montant",
+      "statusPaid": "Payée",
+      "statusPending": "En attente"
+    },
+    "payout": {
+      "title": "Paiement",
+      "body": "Vos commissions sont payées une fois le seuil atteint. Vérifiez que vos coordonnées bancaires sont à jour.",
+      "request": "Demander un virement",
+      "sending": "Envoi...",
+      "insufficient": "Solde insuffisant pour demander un virement (minimum 100,00 €).",
+      "success": "Demande de virement envoyée avec succès.",
+      "errorPrefix": "Erreur lors de la demande de virement : "
+    },
+    "referral": {
+      "title": "Lien de parrainage",
+      "unavailable": "Lien indisponible",
+      "copy": "Copier mon lien",
+      "copied": "Copié !",
+      "copyError": "Impossible de copier le lien. Copiez-le manuellement."
+    }
+  },
+  "api": {
+    "sessionExpired": "Session expirée. Reconnexion en cours...",
+    "accessDenied": "Accès refusé sur :endpoint. Permissions insuffisantes.",
+    "notFound": "Ressource introuvable : :endpoint",
+    "tooManyRequests": "Trop de requêtes. Veuillez patienter quelques secondes.",
+    "serverError": "Erreur serveur sur :endpoint. :detail",
+    "serverErrorRetry": "Réessayez plus tard.",
+    "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
+    "genericError": "Erreur :status sur :endpoint.",
+    "invalidData": "Données invalides.",
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet."
+  },
+  "settingsPage": {
+    "cancel": "Annuler",
+    "confirmPassword": "Confirmer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "disable2fa": "Désactiver le 2FA",
+    "disabled": "Désactivé",
+    "email": "Adresse email",
+    "enable2fa": "Activer le 2FA",
+    "enabled": "Activé",
+    "enterCodeStep": "2. Entrez le code à 6 chiffres généré",
+    "fullName": "Nom complet",
+    "generateSecret": "Générer un secret 2FA",
+    "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Secret manuel :",
+    "minLengthHint": "Minimum 8 caractères.",
+    "newPassword": "Nouveau mot de passe",
+    "password": "Mot de passe",
+    "passwordSubtitle": "Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.",
+    "passwordTitle": "Mot de passe",
+    "passwordUpdated": "Mot de passe mis à jour avec succès.",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas.",
+    "profileSubtitle": "Nom et adresse email utilisés pour vous connecter.",
+    "profileTitle": "Informations du profil",
+    "profileUpdated": "Profil mis à jour avec succès.",
+    "saveChanges": "Enregistrer les modifications",
+    "scanStep": "1. Scannez ce lien / secret dans votre application 2FA :",
+    "subtitle": "Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.",
+    "title": "Mon compte",
+    "twoFactorActiveHint": "Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.",
+    "twoFactorDisabled": "2FA désactivé.",
+    "twoFactorEnabled": "2FA activé avec succès.",
+    "twoFactorSubtitle": "Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.",
+    "twoFactorTitle": "Authentification à deux facteurs (2FA)",
+    "updatePassword": "Mettre à jour le mot de passe"
+  },
+  "systemPage": {
+    "apiError": "Erreur : :error",
+    "apiOperational": "API opérationnelle",
+    "apiOperationalDb": "API opérationnelle — DB :ms ms",
+    "apiServices": "Services API",
+    "apiUnavailable": "Non disponible — GET /health/live",
+    "database": "Base de Données",
+    "dbError": "Erreur : :error",
+    "dbLatency": "Latence : :ms ms",
+    "dbUnavailable": "Non disponible — lancez un Health Check.",
+    "dbUnreachable": "base injoignable",
+    "globalError": "Sonde agrégée : base de données injoignable.",
+    "globalHealthy": "Sonde agrégée DB + Redis opérationnelle.",
+    "globalStatus": "Statut Global",
+    "globalUnavailable": "Non disponible — GET /admin/dashboard/stats",
+    "globalWarning": "Sonde agrégée : dégradation détectée.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Analyse...",
+    "healthError": "Health check terminé — base de données en erreur",
+    "healthLiveUnreachable": "Sonde /health/live injoignable.",
+    "healthOk": "Health check terminé — base de données opérationnelle",
+    "healthUnreachable": "Health check terminé — base de données injoignable",
+    "infraDetails": ":active compagnies actives · PHP :php · queue :queue",
+    "infraUnavailable": "Non disponible — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Erreur lors du chargement des métriques plateforme",
+    "notifObsLoadError": "Erreur lors du chargement de l'observabilité des notifications",
+    "queueObsLoadError": "Erreur lors du chargement de l'observabilité des jobs",
+    "retry": "Réessayer",
+    "serviceUnreachable": "service injoignable",
+    "statsLoadError": "Erreur lors du chargement des stats système",
+    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
+    "title": "Administration Système"
+  },
+  "crm": {
+    "subtitle": "Suivi des leads de l'entrée jusqu'à la conversion payante.",
+    "leadsTotal": "Leads totaux",
+    "leadToTrialRate": "Taux lead -> essai",
+    "leadToClientRate": "Taux lead -> client payant",
+    "loading": "Chargement du pipeline...",
+    "leadsIncoming": "Leads Entrants",
+    "noLead": "Aucun lead",
+    "noTrial": "Aucun essai en cours",
+    "noClient": "Aucun client actif converti",
+    "noHistory": "Aucun historique"
+  },
+  "edge": {
+    "title": "Nodes Edge",
+    "nodesTotal": "Nodes total",
+    "licensesExpired": "Licences expirées",
+    "loading": "Chargement des nodes…",
+    "empty": "Aucun node Edge enregistré",
+    "colNode": "Node",
+    "colStatus": "Statut",
+    "colLicense": "Licence",
+    "colLastSync": "Dernière sync",
+    "colActions": "Actions",
+    "syncing": "Sync…",
+    "sync": "Sync"
+  },
+  "notFound": {
+    "backToDashboard": "Retour au tableau de bord",
+    "usefulLinks": "Liens utiles",
+    "system": "Système",
+    "systemConfig": "Configuration système"
+>>>>>>> origin/main
   }
 }

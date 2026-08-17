@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\ApprovalDecision;
 use App\Modules\Attendance\Domain\Models\ApprovalRequest;
 use App\Modules\Attendance\Domain\Models\ApprovalWorkflow;
 use App\Modules\Planning\Domain\Models\Absence; // modèle approvable réel (Planning)
@@ -137,5 +138,41 @@ class ApprovalControllerTest extends TestCase
             ->assertForbidden();
 
         $this->assertSame('pending', $pending2->fresh()?->status);
+    }
+
+    public function test_history_returns_data_meta_envelope(): void
+    {
+        // #4688 (audit 360° 2026-08-16) : le paginator brut renvoyait les
+        // attributs modèles à plat — la forme standard {data, links, meta}
+        // (resource collection) doit s'appliquer comme sur pending/approve.
+        $request = $this->makeApprovalRequest('approved');
+
+        ApprovalDecision::create([
+            'approval_request_id' => $request->id,
+            'level' => 1,
+            'approver_id' => $this->manager->id,
+            'decision' => 'approved',
+            'comment' => 'Validé',
+            'decided_at' => now(),
+        ]);
+
+        $this->actingAs($this->manager)
+            ->getJson('/api/v1/approvals/history')
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => [[
+                    'id',
+                    'approval_request_id',
+                    'decision',
+                    'comment',
+                    'decided_at',
+                    'request' => ['id', 'status', 'approvable_type', 'approvable_id', 'requester' => ['id', 'first_name', 'last_name']],
+                ]],
+                'links' => ['first', 'last', 'prev', 'next'],
+                'meta' => ['current_page', 'from', 'last_page', 'path', 'per_page', 'to', 'total'],
+            ])
+            ->assertJsonPath('data.0.request.status', 'approved')
+            ->assertJsonPath('data.0.comment', 'Validé')
+            ->assertJsonPath('meta.total', 1);
     }
 }

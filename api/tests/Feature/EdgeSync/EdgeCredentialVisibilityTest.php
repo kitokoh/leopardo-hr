@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\EdgeSync;
 
-use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\EdgeSync\Domain\Models\EdgeLicense;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
 /**
  * #4687 — les credentials Edge (license_key, metadata, signed_payload) ne
- * doivent jamais fuiter dans les sérialisations list/show ; ils ne sont
- * exposés qu'aux moments légitimes d'émission (store / issueLicense).
+ * doivent jamais fuiter dans les sérialisations par défaut ; ils ne sont
+ * exposés qu'aux moments légitimes d'émission (store / issueLicense) via
+ * `makeVisible()` dans EdgeNodeController.
+ *
+ * Les routes tenant /api/v1/edge (register/list/show) ont été démontées
+ * (#1291) — le contrat est validé au niveau MODÈLE (serialization), qui est
+ * exactement la garantie de sécurité apportée par $hidden.
  */
 class EdgeCredentialVisibilityTest extends TestCase
 {
@@ -21,17 +28,22 @@ class EdgeCredentialVisibilityTest extends TestCase
 
     private EdgeNode $node;
 
+    private EdgeLicense $license;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpMvpSchema();
 
-        $this->company = Company::factory()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'slug' => 'visibility-test-co',
             'status' => 'active',
         ]);
+        $this->company = $company;
 
-        $this->node = EdgeNode::create([
+        /** @var EdgeNode $node */
+        $node = EdgeNode::create([
             'company_id' => $this->company->id,
             'name' => 'Site Principal',
             'slug' => 'site-principal-visibility',
@@ -43,81 +55,56 @@ class EdgeCredentialVisibilityTest extends TestCase
             'license_key' => 'lk-visibility-secret',
             'metadata' => ['edge_token' => hash('sha256', 'visibility-token')],
         ]);
-    }
+        $this->node = $node;
 
-    /** @test */
-    public function it_hides_license_key_and_metadata_in_node_list(): void
-    {
-        $this->actingAsCompanyAdmin($this->company);
-
-        $response = $this->getJson('/api/v1/edge');
-
-        $response->assertOk();
-        $node = $response->json('data.0');
-        $this->assertNotNull($node);
-        $this->assertArrayNotHasKey('license_key', $node, 'license_key ne doit pas être sérialisé dans la liste.');
-        $this->assertArrayNotHasKey('metadata', $node, 'metadata (hash edge_token) ne doit pas être sérialisé dans la liste.');
-        $this->assertArrayHasKey('id', $node);
-        $this->assertArrayHasKey('name', $node);
-    }
-
-    /** @test */
-    public function it_hides_license_key_and_metadata_in_node_show(): void
-    {
-        $this->actingAsCompanyAdmin($this->company);
-
-        $response = $this->getJson("/api/v1/edge/{$this->node->id}");
-
-        $response->assertOk();
-        $this->assertArrayNotHasKey('license_key', $response->json('data'), 'license_key ne doit pas être sérialisé dans show.');
-        $this->assertArrayNotHasKey('metadata', $response->json('data'), 'metadata ne doit pas être sérialisé dans show.');
-        $this->assertSame('Site Principal', $response->json('data.name'));
-    }
-
-    /** @test */
-    public function it_still_exposes_license_at_registration(): void
-    {
-        $this->actingAsCompanyAdmin($this->company);
-
-        $response = $this->postJson('/api/v1/edge', [
-            'name' => 'Entrepôt Nord',
-            'mode' => 'hybrid',
+        /** @var EdgeLicense $license */
+        $license = EdgeLicense::create([
+            'company_id' => $this->company->id,
+            'edge_node_id' => $node->id,
+            'license_key' => 'lk-visibility-secret',
+            'signed_payload' => 'signed-payload-visibility',
+            'issued_at' => now(),
+            'expires_at' => now()->addDays(30),
+            'validation_status' => 'valid',
         ]);
-
-        $response->assertStatus(201)
-            ->assertJsonStructure([
-                'data' => ['id', 'name'],
-                'license' => ['license_key', 'expires_at', 'signed_payload'],
-                'edge_token',
-            ]);
-        // Le token en clair n'est montré qu'à l'enregistrement — jamais le hash dans metadata.
-        $this->assertArrayNotHasKey('metadata', $response->json('data'), 'metadata ne doit pas fuiter même à l\'enregistrement.');
-        $this->assertNotEmpty($response->json('license.license_key'));
-        $this->assertNotEmpty($response->json('license.signed_payload'));
+        $this->license = $license;
     }
 
     /** @test */
-    public function it_still_exposes_license_when_issuing(): void
+    public function edge_node_never_serializes_credentials_by_default(): void
     {
-        $this->actingAsCompanyAdmin($this->company);
+        $data = $this->node->toArray();
 
-        $response = $this->postJson("/api/v1/edge/{$this->node->id}/license", [
-            'valid_days' => 30,
-        ]);
-
-        $response->assertOk()
-            ->assertJsonStructure(['data' => ['license_key', 'expires_at', 'signed_payload']]);
-        $this->assertNotEmpty($response->json('data.license_key'));
-        $this->assertNotEmpty($response->json('data.signed_payload'));
+        $this->assertArrayNotHasKey('license_key', $data, 'license_key ne doit pas être sérialisé par défaut.');
+        $this->assertArrayNotHasKey('metadata', $data, 'metadata (hash edge_token) ne doit pas être sérialisé par défaut.');
+        $this->assertArrayHasKey('id', $data);
+        $this->assertArrayHasKey('name', $data);
+        $this->assertSame('Site Principal', $data['name']);
     }
 
-    private function actingAsCompanyAdmin(Company $company): self
+    /** @test */
+    public function edge_license_never_serializes_credentials_by_default(): void
     {
-        $admin = Employee::factory()->create([
-            'company_id' => $company->id,
-            'role' => 'admin',
-        ]);
+        $data = $this->license->toArray();
 
-        return $this->actingAs($admin, 'sanctum');
+        $this->assertArrayNotHasKey('license_key', $data, 'license_key ne doit pas être sérialisé par défaut.');
+        $this->assertArrayNotHasKey('signed_payload', $data, 'signed_payload ne doit pas être sérialisé par défaut.');
+        $this->assertArrayHasKey('id', $data);
+    }
+
+    /** @test */
+    public function credentials_are_exposed_explicitly_at_emission(): void
+    {
+        // L'émission (store / issueLicense) ré-expose explicitement les
+        // credentials via makeVisible() — contrat « montré une seule fois ».
+        $nodeData = $this->node->makeVisible(['license_key', 'metadata'])->toArray();
+        $this->assertArrayHasKey('license_key', $nodeData);
+        $this->assertArrayHasKey('metadata', $nodeData);
+        $this->assertSame('lk-visibility-secret', $nodeData['license_key']);
+
+        $licenseData = $this->license->makeVisible(['license_key', 'signed_payload'])->toArray();
+        $this->assertArrayHasKey('license_key', $licenseData);
+        $this->assertArrayHasKey('signed_payload', $licenseData);
+        $this->assertSame('signed-payload-visibility', $licenseData['signed_payload']);
     }
 }

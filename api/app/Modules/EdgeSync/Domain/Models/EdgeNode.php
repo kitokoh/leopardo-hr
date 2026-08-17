@@ -65,6 +65,14 @@ class EdgeNode extends Model
         'edge_version', 'capabilities', 'metadata',
     ];
 
+    // #4687 (audit 360° 2026-08-16) : credentials d'appareil jamais sérialisés
+    // — license_key (identifiant) + metadata (hash SHA-256 de l'edge_token,
+    // « montré une seule fois » au moment de l'enrôlement).
+    protected $hidden = [
+        'license_key',
+        'metadata',
+    ];
+
     protected $casts = [
         'license_expires_at' => 'datetime',
         'last_sync_at'       => 'datetime',

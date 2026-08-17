@@ -705,7 +705,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get dashboardPresenceTodayTitle => 'الحضور اليوم';
+  String get dashboardPresenceTodayTitle => 'حضور اليوم';
 
   @override
   String dashboardPresenceTodaySummary(Object active, Object present) {
@@ -829,6 +829,170 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashboardNotprovided => 'غير محدد';
+
+  @override
+  String get dashboardPendingAbsences => 'الغيابات المعلقة';
+
+  @override
+  String get dashboardDepartments => 'الأقسام';
+
+  @override
+  String get dashboardKpiTotal => 'الإجمالي';
+
+  @override
+  String get dashboardKpiToProcess => 'للمعالجة';
+
+  @override
+  String get dashboardKpiActive => 'نشط';
+
+  @override
+  String get dashboardPriorityProcessAbsences => 'معالجة الغيابات المعلقة';
+
+  @override
+  String get dashboardPriorityCheckPresences => 'التحقق من حضور اليوم';
+
+  @override
+  String get dashboardRecentActivityEmpty =>
+      'لا يوجد نشاط حديث لعرضه لهذا المستأجر.';
+
+  @override
+  String get dashboardDashboardLoadError => 'تعذر تحميل بيانات لوحة القيادة.';
+
+  @override
+  String get dashboardTenantLoading => 'جارٍ تحميل بيانات المستأجر...';
+
+  @override
+  String get dashboardWelcomeToday => 'مرحبًا! إليك ما يحدث اليوم.';
+
+  @override
+  String get dashboardGoLiveReady => 'مساحة العمل لديك جاهزة للإطلاق';
+
+  @override
+  String get dashboardGoLiveRequired => 'إجراءات مطلوبة قبل الإطلاق';
+
+  @override
+  String dashboardGoLiveScore(Object score) {
+    return 'النتيجة $score/100 بناءً على بيانات المستأجر والتواصل والرواتب والحضور وأدوات قياس العميل.';
+  }
+
+  @override
+  String get dashboardTabToday => 'اليوم';
+
+  @override
+  String get dashboardTabWeek => 'هذا الأسبوع';
+
+  @override
+  String get dashboardSystemFallback => 'النظام';
+
+  @override
+  String get dashboardShortcutEmployees => 'الموظفون';
+
+  @override
+  String get dashboardShortcutLeave => 'الإجازات';
+
+  @override
+  String get dashboardShortcutAttendance => 'الحضور';
+
+  @override
+  String get dashboardShortcutAttendanceHint => 'عرض حالتك لهذا اليوم.';
+
+  @override
+  String get dashboardShortcutAbsences => 'الغيابات';
+
+  @override
+  String get dashboardShortcutPayrollHint => 'عرض مستندات الرواتب الخاصة بك.';
+
+  @override
+  String get dashboardShortcutPreferencesHint => 'واجهتك تتبع تفضيلاتك.';
+
+  @override
+  String get dashboardJournal => 'السجل';
+
+  @override
+  String get dashboardSeeAllActivity => 'عرض كل النشاط';
+
+  @override
+  String get dashboardAiAssistant => 'مساعد ذكي';
+
+  @override
+  String get dashboardMessageSent => 'تم إرسال الرسالة إلى الفريق';
+
+  @override
+  String get dashboardSending => 'جارٍ الإرسال...';
+
+  @override
+  String get dashboardSendYes => 'نعم، أرسل';
+
+  @override
+  String get dashboardLater => 'لاحقًا';
+
+  @override
+  String get dashboardQuickActions => 'إجراءات سريعة';
+
+  @override
+  String get dashboardQuickReports => 'التقارير';
+
+  @override
+  String get dashboardQuickExport => 'تصدير';
+
+  @override
+  String get dashboardEmpCheckin => 'الحضور';
+
+  @override
+  String get dashboardEmpCheckinHint => 'عرض حالتك لهذا اليوم.';
+
+  @override
+  String get dashboardEmpAbsences => 'الغيابات';
+
+  @override
+  String get dashboardEmpAbsencesHint => 'تتبع طلباتك وأرصدتك.';
+
+  @override
+  String get dashboardEmpPaystubs => 'قسائم الرواتب';
+
+  @override
+  String get dashboardEmpPaystubsHint => 'عرض مستندات الرواتب الخاصة بك.';
+
+  @override
+  String get dashboardEmpLanguage => 'اللغة';
+
+  @override
+  String get dashboardEmpLanguageHint => 'واجهتك تتبع تفضيلاتك.';
+
+  @override
+  String get dashboardEmployeeSpace => 'مساحة الموظف';
+
+  @override
+  String dashboardHello(Object name) {
+    return 'مرحبًا $name';
+  }
+
+  @override
+  String get dashboardEmployeeIntro =>
+      'اعثر على إجراءاتك المفيدة دون المرور عبر عروض المدير: الحضور والغيابات وقسائم الرواتب واللغة.';
+
+  @override
+  String get dashboardSuperadminIntro =>
+      'هذه الواجهة محسّنة لمساحات العملاء. تتم إدارة المنصة من لوحة تحكم المشرف المخصصة.';
+
+  @override
+  String get dashboardOpenAdminDashboard => 'فتح لوحة تحكم المشرف';
+
+  @override
+  String get dashboardAdminUrlHint =>
+      'عيّن NEXT_PUBLIC_ADMIN_URL لإضافة رابط مباشر لإدارة المنصة.';
+
+  @override
+  String get dashboardPlatformHealth => 'صحة المنصة';
+
+  @override
+  String get dashboardClientRequests => 'طلبات العملاء';
+
+  @override
+  String get dashboardTenantsAtRisk => 'مستأجرون معرضون للخطر';
+
+  @override
+  String get dashboardPlatformDashboardHint => 'متاح في لوحة تحكم المنصة.';
 
   @override
   String get marketingOauthNavTitle => 'تسويق OAuth';
@@ -2335,109 +2499,140 @@ class AppLocalizationsAr extends AppLocalizations {
   String get companydetailLastactivity => 'آخر نشاط';
 
   @override
-  String get userAuthPersonalLogin => 'تسجيل الدخول الشخصي';
+  String get reportsAttendanceTitle => 'ملخص الحضور';
 
   @override
-  String get userAuthLoginSubtitle => 'اعثر على مساحتك ومستنداتك وطلباتك.';
+  String get reportsAttendanceDesc =>
+      'تقرير شهري عن الحضور والتأخير والغيابات لكل موظف.';
 
   @override
-  String get userAuthNoAccount => 'لا حساب بعد؟ إنشاء حساب';
+  String get reportsMonthLabel => 'الشهر';
 
   @override
-  String userAuthGoogleError(String error) {
-    return 'خطأ Google: $error';
-  }
+  String get reportsPayrollTitle => 'ملخص الرواتب';
 
   @override
-  String get authTogglePasswordVisibility => 'إظهار أو إخفاء كلمة المرور';
+  String get reportsPayrollDesc =>
+      'إجمالي إجمالي/صافي والاشتراكات والرسوم لكل فترة رواتب.';
 
   @override
-  String get authDemoAccess => 'وصول تجريبي';
+  String get reportsPeriodLabel => 'الفترة';
 
   @override
-  String get userAuthRegisterTitle => 'إنشاء حسابي';
+  String get reportsLeaveTitle => 'أرصدة الإجازات';
 
   @override
-  String get userAuthRegisterSubtitle => 'انضم إلى فريقك على Leopardo RH.';
+  String get reportsLeaveDesc => 'حالة أرصدة الإجازات لجميع الموظفين.';
 
   @override
-  String get userAuthFirstName => 'الاسم الأول';
+  String get reportsYearLabel => 'السنة';
 
   @override
-  String get userAuthLastName => 'اسم العائلة';
+  String get reportsHeadcountTitle => 'عدد الموظفين';
 
   @override
-  String get userAuthFirstNameRequired => 'الاسم الأول مطلوب';
+  String get reportsHeadcountDesc =>
+      'توزيع الموظفين النشطين حسب القسم ونوع العقد والجنس.';
 
   @override
-  String get userAuthLastNameRequired => 'اسم العائلة مطلوب';
+  String get reportsTrainingTitle => 'متابعة التدريب';
 
   @override
-  String get userAuthRegisterButton => 'إنشاء حسابي';
+  String get reportsTrainingDesc => 'معدلات المشاركة وإتمام التدريب.';
 
   @override
-  String get userAuthAlreadyAccount => 'لديك حساب بالفعل؟ تسجيل الدخول';
+  String get reportsContractTitle => 'انتهاء العقود';
 
   @override
-  String get userAuthCompanyRequestTitle => 'تم إرسال الطلب!';
+  String get reportsContractDesc =>
+      'العقود المنتهية خلال 30، 60، 90 يومًا القادمة.';
 
   @override
-  String get userAuthCompanyRequestBody =>
-      'سيقوم أحد المسؤولين بمراجعة طلبك. ستتلقى إشعارًا عند معالجته.';
+  String get reportsDaysLabel => 'أيام';
 
   @override
-  String get userAuthBackToHome => 'العودة إلى الرئيسية';
+  String get reportsGenerate => 'إنشاء';
 
   @override
-  String get userAuthSubmitError => 'خطأ أثناء الإرسال';
+  String get reportsSuccess => 'تم تنزيل التقرير بنجاح.';
 
   @override
-  String get userAuthRegisterError => 'خطأ أثناء التسجيل';
+  String get reportsError => 'حدث خطأ أثناء إنشاء التقرير.';
 
   @override
-  String get userAuthLoginError => 'بيانات اعتماد غير صالحة';
+  String get reportsSubtitle =>
+      'أنشئ ونزّل تقارير الموارد البشرية: الحضور، الرواتب، الإجازات، الموظفين، التدريب والعقود.';
 
   @override
-  String get userAuthGoogleLoginError => 'خطأ في تسجيل الدخول بـ Google';
+  String get notificationsChannelInapp => 'داخل التطبيق';
 
   @override
-  String get commonRequired => 'مطلوب';
+  String get notificationsChannelEmailDesc => 'رسائل مهمة وتأكيدات.';
 
   @override
-  String get userAuthPhoneOptional => 'الهاتف (اختياري)';
+  String get notificationsChannelPushDesc =>
+      'تنبيهات سريعة على الأجهزة المسجلة.';
 
   @override
-  String get userAuthPhone => 'الهاتف';
+  String get notificationsChannelSmsDesc =>
+      'قناة قصيرة للطوارئ، تُفعَّل بعد الاشتراك.';
 
   @override
-  String get userAuthCreateCompany => 'إنشاء شركة';
+  String get notificationsChannelWhatsappDesc =>
+      'قناة محادثة مستقبلية، بموافقة صريحة.';
 
   @override
-  String get userAuthCompanyRequestInfo =>
-      'أدخل معلومات شركتك. سيقوم أحد المسؤولين بالتحقق من طلبك.';
+  String get notificationsCategoryPayroll => 'الرواتب';
 
   @override
-  String get userAuthCompanyName => 'اسم الشركة';
+  String get notificationsCategorySecurity => 'الأمان';
 
   @override
-  String get userAuthCompanyEmail => 'البريد الإلكتروني للشركة';
+  String get notificationsCategorySystem => 'النظام';
 
   @override
-  String get userAuthSector => 'قطاع النشاط';
+  String get notificationsCategoryProductTips => 'نصائح المنتج';
 
   @override
-  String get userAuthCountry => 'البلد';
+  String get notificationsCategoriesTitle => 'الفئات';
 
   @override
-  String get userAuthCity => 'المدينة';
+  String get notificationsSaveError => 'تعذر حفظ التفضيلات الآن.';
 
   @override
-  String get userAuthDescription => 'الوصف';
+  String get notificationsChannelInappDesc => 'مركز الإشعارات للويب والجوال.';
 
   @override
-  String get userAuthSubmitRequest => 'إرسال الطلب';
+  String get employeesLoadError => 'تعذر تحميل الموظفين.';
 
   @override
-  String get userAuthRegisterSubtitleAlt =>
-      'اعثر على مساحتك الشخصية ونظم مستنداتك.';
+  String get employeesTitle => 'الفريق';
+
+  @override
+  String get employeesSubtitle =>
+      'عرض المدير المتصل بواجهة الموارد البشرية: قائمة الموظفين والحالة ونقاط الدخول الأساسية.';
+
+  @override
+  String get employeesTotalTeam => 'إجمالي الفريق';
+
+  @override
+  String get employeesSource => 'المصدر';
+
+  @override
+  String get employeesState => 'الحالة';
+
+  @override
+  String get employeesLoadingShort => 'جارٍ التحميل';
+
+  @override
+  String get employeesConnectedApi => 'متصل بواجهة البرمجة';
+
+  @override
+  String get employeesRecentCollaborators => 'المتعاونون الأخيرون';
+
+  @override
+  String get employeesListLoading => 'جارٍ تحميل قائمة الفريق...';
+
+  @override
+  String get employeesEmptyList => 'لا يوجد موظفون مرئيون لهذا الحساب.';
 }

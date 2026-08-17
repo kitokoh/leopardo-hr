@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
+use Illuminate\Support\Facades\DB;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -65,10 +66,11 @@ class ZktecoControllerTest extends TestCase
             ->assertUnprocessable();
     }
 
-    public function test_heartbeat_accepts_valid_serial(): void
+    public function test_heartbeat_unknown_serial_returns_404(): void
     {
         $this->postJson('/api/v1/zkteco/heartbeat/UNKNOWN-SERIAL')
-            ->assertStatus(404);
+            ->assertStatus(404)
+            ->assertJsonPath('error', 'RESOURCE_NOT_FOUND');
     }
 
     public function test_sync_attendance_rejects_invalid_serial(): void
@@ -154,6 +156,78 @@ class ZktecoControllerTest extends TestCase
             'serial_number' => 'SN-AUTH-003',
             'status' => 'online',
         ]);
+    }
+
+    /**
+     * #4787 — le handler public ne doit JAMAIS laisser le search_path pointer
+     * vers un autre schéma : un worker persistant qui sert un heartbeat puis
+     * une requête tenant hériterait du mauvais contexte (résolution
+     * cross-tenant / 500). Vérifie la restauration après succès ET après 404.
+     */
+    public function test_heartbeat_restores_search_path_after_success(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-SP-001',
+            'name' => 'Porte SP1',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        $this->withHeader('X-Device-Token', 'valid-device-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-SP-001')
+            ->assertOk();
+
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
+    }
+
+    public function test_heartbeat_restores_search_path_after_unknown_serial(): void
+    {
+        $this->postJson('/api/v1/zkteco/heartbeat/SN-SP-UNKNOWN')
+            ->assertStatus(404);
+
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
+    }
+
+    public function test_heartbeat_restores_search_path_after_rejected_token(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-SP-002',
+            'name' => 'Porte SP2',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        $this->withHeader('X-Device-Token', 'wrong-token')
+            ->postJson('/api/v1/zkteco/heartbeat/SN-SP-002')
+            ->assertStatus(401);
+
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
+    }
+
+    public function test_sync_attendance_restores_search_path_after_success(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-SP-003',
+            'name' => 'Porte SP3',
+            'sync_token_hash' => bcrypt('valid-device-token'),
+        ]);
+
+        Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+            'zkteco_id' => 'zk-sp-3',
+        ]);
+
+        $this->withHeader('X-Device-Token', 'valid-device-token')
+            ->postJson('/api/v1/zkteco/sync-attendance/SN-SP-003', [
+                'records' => [
+                    ['user_id' => 'zk-sp-3', 'timestamp' => '2026-01-01 08:00:00'],
+                ],
+            ])
+            ->assertStatus(201);
+
+        $this->assertSearchPathRestored(['shared_tenants', 'public']);
     }
 
     public function test_sync_attendance_rejects_unauthenticated_device_and_writes_nothing(): void
@@ -299,5 +373,25 @@ class ZktecoControllerTest extends TestCase
         $this->actingAs($this->manager)
             ->postJson('/api/v1/zkteco/devices/'.$ownDevice->serial_number.'/push-users')
             ->assertOk();
+    }
+
+    /**
+     * #4787/#4817 — vérifie que le search_path a été restauré (schémas et
+     * ordre). Comparaison normalisée : PostgreSQL formate SHOW search_path
+     * avec « , » (espace) après un SET alors que le défaut de connexion
+     * (option DSN) s'affiche sans espace — comparer les chaînes brutes
+     * casse la suite selon l'historique de SET de la session.
+     */
+    private function assertSearchPathRestored(array $expectedSchemas): void
+    {
+        $row = DB::selectOne('SHOW search_path');
+        $this->assertNotNull($row);
+
+        $normalize = static fn (string $path): array => array_values(array_filter(array_map(
+            'trim',
+            explode(',', str_replace('"', '', $path)),
+        ), static fn (string $s): bool => $s !== ''));
+
+        $this->assertSame($expectedSchemas, $normalize((string) $row->search_path));
     }
 }
