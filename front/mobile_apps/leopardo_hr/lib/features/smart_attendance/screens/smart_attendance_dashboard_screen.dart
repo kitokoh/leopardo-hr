@@ -7,6 +7,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Tableau de bord Smart Attendance — Manager
 ///
@@ -27,16 +28,16 @@ class SmartAttendanceDashboardScreen extends ConsumerWidget {
       backgroundColor: _bg,
       appBar: MobileTopBar(
         title: 'Smart Attendance',
-        subtitle: 'Pointage GPS — tableau de bord équipe',
+        subtitle: context.l10n.saDashboardTitle,
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'Actualiser',
+            tooltip: context.l10n.refresh,
             onPressed: () {
               ref.invalidate(smartAttendanceDashboardProvider);
               ref.invalidate(pendingGeoSessionsProvider);
@@ -93,7 +94,8 @@ class _StatsGrid extends StatelessWidget {
     final pending = counters['pending_validation'] ?? 0;
     final approved = counters['approved'] ?? 0;
     final rejected = counters['rejected'] ?? 0;
-    final dateLabel = (stats['today'] as String?) ??
+    final dateLabel =
+        (stats['today'] as String?) ??
         DateFormat('yyyy-MM-dd').format(DateTime.now());
     DateTime? parsedDate;
     try {
@@ -105,7 +107,9 @@ class _StatsGrid extends StatelessWidget {
       children: [
         Text(
           "Aujourd'hui — ${parsedDate != null ? DateFormat('d MMM yyyy', deviceIntlDateLocale).format(parsedDate) : dateLabel}",
-          style: AppTypography.bodySmall.copyWith(color: AppColors.textMutedDark),
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.textMutedDark,
+          ),
         ),
         const SizedBox(height: 12),
         GridView.count(
@@ -116,10 +120,26 @@ class _StatsGrid extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 1.6,
           children: [
-            _StatCard(label: 'Détectées', value: detected, color: AppColors.info),
-            _StatCard(label: 'En attente', value: pending, color: Colors.orange),
-            _StatCard(label: 'Approuvées', value: approved, color: Colors.green),
-            _StatCard(label: 'Rejetées', value: rejected, color: AppColors.danger),
+            _StatCard(
+              label: context.l10n.saDetected,
+              value: detected,
+              color: AppColors.info,
+            ),
+            _StatCard(
+              label: 'En attente',
+              value: pending,
+              color: Colors.orange,
+            ),
+            _StatCard(
+              label: context.l10n.saApproved,
+              value: approved,
+              color: Colors.green,
+            ),
+            _StatCard(
+              label: context.l10n.saRejected,
+              value: rejected,
+              color: AppColors.danger,
+            ),
           ],
         ),
       ],
@@ -150,15 +170,13 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            '$value',
-            style: AppTypography.title.copyWith(color: color),
-          ),
+          Text('$value', style: AppTypography.title.copyWith(color: color)),
           const SizedBox(height: 4),
           Text(
             label,
-            style: AppTypography.bodySmall
-                .copyWith(color: AppColors.textMutedDark),
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textMutedDark,
+            ),
           ),
         ],
       ),
@@ -186,7 +204,9 @@ class _PendingCard extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               'Aucune session en attente de validation',
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textDark),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textDark,
+              ),
             ),
           ],
         ),
@@ -204,8 +224,11 @@ class _PendingCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.pending_actions_rounded,
-                color: Colors.orange, size: 28),
+            const Icon(
+              Icons.pending_actions_rounded,
+              color: Colors.orange,
+              size: 28,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -213,12 +236,15 @@ class _PendingCard extends StatelessWidget {
                 children: [
                   Text(
                     '$count session${count > 1 ? 's' : ''} en attente',
-                    style: AppTypography.subtitle.copyWith(color: Colors.orange),
+                    style: AppTypography.subtitle.copyWith(
+                      color: Colors.orange,
+                    ),
                   ),
                   Text(
                     'Appuyez pour valider ou rejeter',
-                    style: AppTypography.bodySmall
-                        .copyWith(color: AppColors.textMutedDark),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textMutedDark,
+                    ),
                   ),
                 ],
               ),

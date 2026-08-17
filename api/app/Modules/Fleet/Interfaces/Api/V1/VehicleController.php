@@ -16,7 +16,6 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Throwable;
 
 class VehicleController extends Controller
 {
@@ -113,7 +112,8 @@ class VehicleController extends Controller
         $vehicle = Vehicle::where('company_id', $user->company_id)->findOrFail($id);
         $vehicle->delete();
 
-        return response()->json(['message' => 'Vehicle deleted.']);
+        // #4812 : littéral EN déplacé au catalogue errors.*
+        return response()->json(['message' => __('errors.VEHICLE_DELETED')]);
     }
 
     public function position(Request $request, int $id, TraccarService $traccar): JsonResponse
@@ -275,6 +275,4 @@ class VehicleController extends Controller
 
         return VehicleAssignmentResource::collection($assignments)->response();
     }
-
-    
 }
