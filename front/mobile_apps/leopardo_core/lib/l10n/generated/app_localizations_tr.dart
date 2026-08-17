@@ -2652,4 +2652,270 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get employeesEmptyList => 'Bu hesap için görünür çalışan yok.';
+  @override
+  String get retry => 'Yeniden dene';
+
+  @override
+  String get featureComingSoon => 'Özellik yakında';
+
+  @override
+  String get backToHome => 'Ana sayfaya dön';
+
+  @override
+  String get pageNotFound =>
+      'İstenen sayfa bulunamadı veya gezinme başarısız oldu.';
+
+  @override
+  String get registerCreateAccount => 'Hesabınızı oluşturun';
+
+  @override
+  String get registerFirstName => 'Ad';
+
+  @override
+  String get registerRequired => 'Zorunlu';
+
+  @override
+  String get registerPassword => 'Şifre';
+
+  @override
+  String get registerMinChars => 'En az 8 karakter';
+
+  @override
+  String get registerCreating => 'Hesap oluşturuluyor...';
+
+  @override
+  String get registerSubmit => 'Hesabımı oluştur';
+
+  @override
+  String get accessDeniedTitle => 'Erişim reddedildi';
+
+  @override
+  String get accessDeniedBody =>
+      'Hesabınız bu uygulama için gerekli Yönetici rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, İK…) veya yöneticinizle iletişime geçin.';
+
+  @override
+  String get accessDeniedLogout => 'Çıkış yap';
+
+  @override
+  String get accessDeniedBodyHr =>
+      'Hesabınız bu uygulama için gerekli İK rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, Yönetici…) veya yöneticinizle iletişime geçin.';
+
+  @override
+  String get evaluationsTitle => 'Değerlendirmelerim';
+
+  @override
+  String get evaluationsEmpty => 'Değerlendirme yok';
+
+  @override
+  String get evaluationsEmptyHint => 'Henüz kayıtlı bir değerlendirmeniz yok.';
+
+  @override
+  String evaluationPeriod(String period) {
+    return 'Dönem: \$period';
+  }
+
+  @override
+  String get attendanceOnTime => 'zamanında';
+
+  @override
+  String get attendanceLate => 'geç';
+
+  @override
+  String get attendanceAbsent => 'yok';
+
+  @override
+  String get attendanceInProgress => 'devam ediyor';
+
+  @override
+  String get attendanceNoClock => 'kayıt yok';
+
+  @override
+  String attendanceTimeRange(String from, String to) {
+    return '\$from - \$to';
+  }
+
+  @override
+  String get attendanceHourWorked => 'çalışılan saat';
+
+  @override
+  String get attendanceHoursWorked => 'çalışılan saatler';
+
+  @override
+  String attendanceDaySummary(String date, String status, String range, String hours) {
+    return '\$date günü, durum \$status, \$range, \$hours.';
+  }
+
+  @override
+  String get sessionApproved => 'Oturum onaylandı ✓';
+
+  @override
+  String get sessionRejected => 'Oturum reddedildi';
+
+  @override
+  String get pendingSessionsToValidate => 'Onaylanacak';
+
+  @override
+  String get pendingSessionsUpToDate => 'Her şey güncel';
+
+  @override
+  String get pendingSessionsEmpty => 'Onay bekleyen GPS oturumu yok.';
+
+  @override
+  String employeeNumber(String id) {
+    return 'Çalışan #\$id';
+  }
+
+  @override
+  String sessionEntryAt(String time) {
+    return 'Giriş: \$time';
+  }
+
+  @override
+  String get sessionsToValidate => 'Onaylanacak oturumlar';
+
+  @override
+  String errorPrefix(String message) {
+    return 'Hata: \$message';
+  }
+
+  @override
+  String get saDashboardTitle => 'GPS yoklama — ekip paneli';
+
+  @override
+  String get saDetected => 'Algılanan';
+
+  @override
+  String get saApproved => 'Onaylanan';
+
+  @override
+  String get saRejected => 'Reddedilen';
+
+  @override
+  String get saRecentSessions => 'Son oturumlar';
+
+  @override
+  String get saForced => 'Zorunlu';
+
+  @override
+  String saPresenceInProgress(String time) {
+    return '\$time itibarıyla devam eden katılım';
+  }
+
+  @override
+  String get saGpsZoneNotConfigured =>
+      'Şirketinizin GPS bölgesi henüz yapılandırılmadı.';
+
+  @override
+  String get saDisableAutoGps => 'Otomatik GPS\'i kapat';
+
+  @override
+  String get saStatusApproved => 'Onaylandı';
+
+  @override
+  String get saStatusDetected => 'Algılandı';
+
+  @override
+  String get saStatusRejected => 'Reddedildi';
+
+  @override
+  String get saStatusCancelled => 'İptal edildi';
+
+  @override
+  String get saStatusPending => 'Onay bekleniyor';
+
+  @override
+  String get saEnableAutoGps => 'Otomatik GPS\'i aç';
+
+  @override
+  String get attendanceOvertime => 'Fazla mesai';
+
+  @override
+  String get approvalsUpToDate => 'Her şey güncel';
+
+  @override
+  String get approvalsEmpty => 'Bekleyen onay yok.';
+
+  @override
+  String saConfigLoadError(String error) {
+    return 'Yapılandırma yüklenemedi.\n\$error';
+  }
+
+  @override
+  String get ampAutoDetectDesc =>
+      'Şirket bölgesine girdiğinizde varlığınız otomatik algılanır. Sizden hiçbir işlem gerekmez.';
+
+  @override
+  String get ampRecommended => 'Önerilen';
+
+  @override
+  String get ampQrScanDesc =>
+      'Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın.';
+
+  @override
+  String get ampManualDesc =>
+      'Yoklama ekranındaki Giriş ve Çıkış butonlarına basarak manuel kayıt yapın.';
+
+  @override
+  String get ampSaveError =>
+      'Tercihiniz kaydedilemedi. Bağlantınızı kontrol edin.';
+
+  @override
+  String get ampTitle =>
+      'Her gün katılımınızı nasıl kaydetmek istediğinizi seçin.';
+
+  @override
+  String get ampModeTitle => 'Kayıt modu';
+
+  @override
+  String get back => 'Geri';
+
+  @override
+  String get refresh => 'Yenile';
+
+  @override
+  String get saSessionsLoadError =>
+      'GPS oturumları yüklenemedi. Bağlantınızı kontrol edin.';
+
+  @override
+  String get saStartMonitoringError =>
+      'GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin.';
+
+  @override
+  String get shellTeam => 'Ekip';
+
+  @override
+  String get shellSettings => 'Ayarlar';
+
+  @override
+  String get homeCompleteOnboarding => 'İşe alıştırmamı tamamla';
+
+  @override
+  String get homeOnboardingHint => 'Çalışma alanınızı birkaç adımda kurun.';
+
+  @override
+  String get welcomeMyTeam => 'Ekibim';
+
+  @override
+  String get welcomePresences => 'Yoklamalar';
+
+  @override
+  String get welcomeTasks => 'Görevler';
+
+  @override
+  String get welcomeLeaves => 'İzinler';
+
+  @override
+  String get monthlySummaryLoading => 'Aylık özet yükleniyor...';
+
+  @override
+  String get orgChartEmpty =>
+      'Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.';
+
+  @override
+  String get orgChartCollapse => 'Daralt';
+
+  @override
+  String get orgChartExpand => 'Genişlet';
+  @override
+  String get errorUnexpected => 'Bir hata oluştu';
 }

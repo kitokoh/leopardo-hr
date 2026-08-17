@@ -35,10 +35,6 @@ return [
         // front/web/.env.local.example). See issue #1468.
         'https://gestionemployer-backend.vercel.app',
         'https://leopardo-hr.vercel.app',
-        'https://leopardo-rh.com',
-        'https://www.leopardo-rh.com',
-        'https://app.leopardo-rh.com',
-        'https://admin.leopardo-rh.com',
         // Issue #2333 : le panneau admin est déployé sur Cloudflare Pages
         // (leo-admin.pages.dev — cf. PILOTAGE.md) ; ADMIN_DASHBOARD_URL
         // n'est pas renseignée sur Render, donc l'origine réelle est listée

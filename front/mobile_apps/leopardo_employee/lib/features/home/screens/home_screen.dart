@@ -15,6 +15,7 @@ import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/mobile_experience.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -32,10 +33,9 @@ class HomeScreen extends ConsumerWidget {
     final stage = experience.stage;
     final quickActions = experience.quickActions.take(3).toList();
     final activeModules = experience.activeModules.take(4).toList();
-    final firstName =
-        employee?.firstName.isNotEmpty == true
-            ? employee!.firstName
-            : employee?.email.split('@').first ?? '';
+    final firstName = employee?.firstName.isNotEmpty == true
+        ? employee!.firstName
+        : employee?.email.split('@').first ?? '';
     final branding = ref.watch(
       tenantBrandingProvider.select(
         (value) => value.maybeWhen(data: (data) => data, orElse: () => null),
@@ -81,10 +81,9 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: 18),
                     _SectionTitle(
                       title: 'Actions rapides',
-                      subtitle:
-                          stage == 'new'
-                              ? 'Les premiers gestes vraiment utiles.'
-                              : 'Vos trois gestes RH du jour.',
+                      subtitle: stage == 'new'
+                          ? 'Les premiers gestes vraiment utiles.'
+                          : 'Vos trois gestes RH du jour.',
                     ),
                     const SizedBox(height: 12),
                     _QuickActionsGrid(actions: quickActions),
@@ -115,7 +114,8 @@ class _HeaderRow extends StatelessWidget {
   });
 
   final String firstName;
-  final String stage;  final TenantBranding? branding;
+  final String stage;
+  final TenantBranding? branding;
 
   @override
   Widget build(BuildContext context) {
@@ -161,9 +161,10 @@ class _HeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     const text = MobileSurface.text;
     const muted = MobileSurface.muted;
-    final dateLabel = DateFormat.EEEE(
-      deviceIntlDateLocale,
-    ).add_d().add_MMMM().format(DateTime.now());
+    final dateLabel = DateFormat.EEEE(deviceIntlDateLocale)
+        .add_d()
+        .add_MMMM()
+        .format(DateTime.now());
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -266,10 +267,9 @@ class _QuickActionsGrid extends StatelessWidget {
           childAspectRatio: 1.04,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          children:
-              actions
-                  .map((action) => _QuickActionCard(action: action))
-                  .toList(),
+          children: actions
+              .map((action) => _QuickActionCard(action: action))
+              .toList(),
         );
       },
     );
@@ -342,7 +342,6 @@ class _ModuleCard extends StatelessWidget {
   }
 }
 
-
 /// T117 (QA omnichannel 2026-08-15) — entrée vers l'écran /onboarding,
 /// affichée quand le stage mobile est « new » (checklist non complétée).
 class _OnboardingEntryCard extends StatelessWidget {
@@ -370,12 +369,14 @@ class _OnboardingEntryCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Compléter mon onboarding',
-                    style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
+                    context.l10n.homeCompleteOnboarding,
+                    style: AppTypography.body.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Configurez votre espace en quelques étapes.',
+                    context.l10n.homeOnboardingHint,
                     style: AppTypography.caption,
                   ),
                 ],

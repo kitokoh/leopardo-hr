@@ -7,6 +7,7 @@ import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/shimmer_loading.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -64,9 +65,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async => ref.refresh(
-          historyProvider(DateTime(now.year, now.month)).future,
-        ),
+        onRefresh: () async =>
+            ref.refresh(historyProvider(DateTime(now.year, now.month)).future),
         child: historyAsync.when(
           loading: () => ListView.separated(
             padding: const EdgeInsets.all(16),
@@ -74,11 +74,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (_, __) => Row(
               children: [
-                const ShimmerLoading(
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                ),
+                const ShimmerLoading(width: 40, height: 40, borderRadius: 20),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -86,10 +82,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     children: const [
                       ShimmerLoading(width: 100, height: 16),
                       SizedBox(height: 8),
-                      ShimmerLoading(
-                        width: double.infinity,
-                        height: 16,
-                      ),
+                      ShimmerLoading(width: double.infinity, height: 16),
                     ],
                   ),
                 ),
@@ -137,16 +130,16 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           color: AppColors.textMuted,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'Fonction bientôt disponible',
-                          style: TextStyle(fontSize: 20),
+                        Text(
+                          context.l10n.featureComingSoon,
+                          style: const TextStyle(fontSize: 20),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => ref.refresh(
                             historyProvider(DateTime(now.year, now.month)),
                           ),
-                          child: const Text('Réessayer'),
+                          child: Text(context.l10n.retry),
                         ),
                       ],
                     ),
@@ -172,8 +165,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   EmptyState(
                     icon: Icons.history_toggle_off,
                     title: 'Aucun historique',
-                    description:
-                        'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
+                    description: 'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
                   ),
                 ],
               );
@@ -229,31 +221,39 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       String statusLabel;
                       switch (log.status) {
                         case 'ontime':
-                          statusLabel = "à l'heure";
+                          statusLabel = context.l10n.attendanceOnTime;
                           break;
                         case 'late':
-                          statusLabel = "en retard";
+                          statusLabel = context.l10n.attendanceLate;
                           break;
                         case 'absent':
-                          statusLabel = "absent";
+                          statusLabel = context.l10n.attendanceAbsent;
                           break;
                         default:
                           statusLabel = log.status;
                       }
 
                       final timeRange = log.checkIn != null
-                          ? 'de ${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} à '
-                              '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "en cours"}'
-                          : 'pas de pointage';
+                          ? context.l10n.attendanceTimeRange(
+                              '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')}',
+                              log.checkOut != null
+                                  ? '${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}'
+                                  : context.l10n.attendanceInProgress,
+                            )
+                          : context.l10n.attendanceNoClock;
 
                       final hours = log.workedHours ?? 0;
-                      final hoursLabel =
-                          '$hours ${hours < 2 ? "heure travaillée" : "heures travaillées"}';
+                      final hoursLabel = hours < 2
+                          ? context.l10n.attendanceHourWorked
+                          : context.l10n.attendanceHoursWorked;
 
                       return Semantics(
-                        label:
-                            'Journée du ${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}, '
-                            'statut $statusLabel, $timeRange, $hoursLabel.',
+                        label: context.l10n.attendanceDaySummary(
+                          '${log.date.day.toString().padLeft(2, '0')}/${log.date.month.toString().padLeft(2, '0')}',
+                          statusLabel,
+                          timeRange,
+                          hoursLabel,
+                        ),
                         container: true,
                         child: ExcludeSemantics(
                           child: ListTile(
@@ -273,7 +273,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             subtitle: Text(
                               log.checkIn != null
                                   ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                        '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
                                   : 'Absence',
                             ),
                             trailing: Text(
@@ -328,9 +328,11 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Heures supplémentaires',
-                              style: TextStyle(color: AppColors.textMuted),
+                            Text(
+                              context.l10n.attendanceOvertime,
+                              style: const TextStyle(
+                                color: AppColors.textMuted,
+                              ),
                             ),
                             Text(
                               '${(totalHeures > 160 ? totalHeures - 160 : 0).toStringAsFixed(1)}h',

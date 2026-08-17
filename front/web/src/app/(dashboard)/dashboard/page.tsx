@@ -134,7 +134,7 @@ export default function DashboardPage() {
   const role = user?.role?.toLowerCase() ?? null;
   const isEmployee = role === 'employee';
   const isSuperAdmin = role === 'super_admin';
-  const companyName = user?.company?.name ?? 'Votre entreprise';
+  const companyName = user?.company?.name ?? i18nT(locale, 'dashboard.yourCompany');
   const modules = getClientModuleAccess(user);
   const activeModules = modules.filter((module) => module.enabled && module.key !== 'dashboard').length;
   const lockedModules = modules.filter((module) => !module.enabled).length;
@@ -392,9 +392,10 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            {/* #4574 : placeholder localisé */}
             <input
               type="text"
-              placeholder="Rechercher..."
+              placeholder={i18nT(locale, 'dashboard.searchPlaceholder')}
               className="w-64 rounded-xl border border-app-border bg-white py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
@@ -412,7 +413,7 @@ export default function DashboardPage() {
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">{i18nT(locale, 'dashboard.company', 'Entreprise')}</p>
               <h2 className="mt-2 text-2xl font-black text-slate-950">{companyName}</h2>
               <p className="mt-1 text-sm text-slate-500">
-                {activeModules} modules actifs, {lockedModules} a activer selon votre plan.
+                {formatMessage(i18nT(locale, 'dashboard.modulesActiveSentence'), { active: activeModules, locked: lockedModules })}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 text-center">
