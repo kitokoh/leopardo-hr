@@ -187,7 +187,7 @@
                   <p v-if="alert.level" class="text-xs text-gray-400 mt-0.5">{{ $t('shell.level', 'Niveau :') }} {{ alert.level }}</p>
                 </div>
                 <div v-if="dashboardStore.criticalAlerts.length === 0" class="px-4 py-6 text-center">
-                  <p class="text-sm text-gray-500">Aucune alerte critique</p>
+                  <p class="text-sm text-gray-500">{{ $t('shell.noCriticalAlerts', 'Aucune alerte critique') }}</p>
                 </div>
               </div>
             </div>
@@ -197,7 +197,7 @@
           <button
             @click="themeStore.toggle()"
             class="rounded-md p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
-            :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
+            :title="themeStore.isDark ? $t('shell.lightMode', 'Mode clair') : $t('shell.darkMode', 'Mode sombre')"
             :aria-label="themeStore.isDark ? 'Activer le mode clair' : 'Activer le mode sombre'"
           >
             <SunIcon v-if="themeStore.isDark" class="h-5 w-5" />
@@ -257,7 +257,7 @@ import { useRealtimeStore } from '@/stores/realtime'
 import { useThemeStore } from '@/stores/theme'
 import { useLocaleStore } from '@/stores/locale'
 import { useRouter } from 'vue-router'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 defineEmits(['toggle-sidebar'])
 
@@ -352,10 +352,12 @@ function formatTime(timestamp) {
   const now = new Date()
   const time = new Date(timestamp)
   const diff = now - time
+  const rtf = new Intl.RelativeTimeFormat(toIntlLocale(localeStore.current), { numeric: 'auto' })
 
-  if (diff < 60000) return 'À l\'instant'
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`
+  // #4716 — temps relatifs localisés (Intl.RelativeTimeFormat) ×4 locales.
+  if (diff < 60000) return translate(localeStore.current, 'common.justNow', "À l'instant")
+  if (diff < 3600000) return rtf.format(-Math.floor(diff / 60000), 'minute')
+  if (diff < 86400000) return rtf.format(-Math.floor(diff / 3600000), 'hour')
   return time.toLocaleDateString(toIntlLocale(localeStore.current))
 }
 

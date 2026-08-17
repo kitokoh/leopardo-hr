@@ -372,7 +372,13 @@
       "BJ": "Bénin",
       "TR": "Turquie"
     },
-    "or": "ou"
+    "or": "ou",
+    "loading": "Chargement des données...",
+    "emptyResults": "Aucun résultat trouvé.",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "inProgress": "En cours…",
+    "justNow": "À l'instant"
   },
   "seo": {
     "pricing": {
@@ -939,6 +945,20 @@
       "title": "Modifier l'utilisateur",
       "status": "Statut",
       "save": "Mettre à jour"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "suspended": "Suspendu",
+      "pending": "En attente"
+    },
+    "export": {
+      "columnName": "Nom",
+      "columnEmail": "Email",
+      "columnStatus": "Statut",
+      "columnCompany": "Entreprise",
+      "columnRegisteredAt": "Inscription",
+      "columnLastLogin": "Dernière connexion"
     }
   },
   "adminChat": {
@@ -1012,7 +1032,10 @@
     "criticalAlerts": "Alertes critiques",
     "level": "Niveau :",
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
-    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
+    "noCriticalAlerts": "Aucune alerte critique",
+    "lightMode": "Mode clair",
+    "darkMode": "Mode sombre"
   },
   "exports": {
     "reportEmployees": "Employes",

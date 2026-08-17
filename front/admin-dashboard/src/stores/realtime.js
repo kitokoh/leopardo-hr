@@ -67,7 +67,14 @@ export const useRealtimeStore = defineStore('realtime', () => {
         const proto = apiUrl.protocol === 'https:' ? 'wss' : 'ws'
         return `${proto}://${apiUrl.host}`
       } catch {
-        return 'ws://localhost:6001'
+        // #4715 : VITE_API_URL absent ou invalide au build — on dérive le
+        // socket du host SERTI (le dashboard est servi depuis le même hôte
+        // que l'API en prod/staging). Plus jamais ws://localhost du visiteur.
+        if (typeof window !== 'undefined' && window.location?.host) {
+          const proto = window.location.protocol === 'https:' ? 'wss' : 'ws'
+          return `${proto}://${window.location.host}`
+        }
+        return ''
       }
     })()
     socket.value = io(import.meta.env.VITE_WEBSOCKET_URL || defaultWsUrl, {

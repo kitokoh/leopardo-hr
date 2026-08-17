@@ -469,6 +469,20 @@
       "title": "Kullanıcıyı düzenle",
       "status": "Durum",
       "save": "Güncelle"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Pasif",
+      "suspended": "Askıya alındı",
+      "pending": "Beklemede"
+    },
+    "export": {
+      "columnName": "Ad",
+      "columnEmail": "E-posta",
+      "columnStatus": "Durum",
+      "columnCompany": "Şirket",
+      "columnRegisteredAt": "Kayıt",
+      "columnLastLogin": "Son giriş"
     }
   },
   "auth": {
@@ -692,7 +706,13 @@
         "ar-MA": "Arapca (Fas)"
       },
       "label": "Dil"
-    }
+    },
+    "loading": "Veriler yükleniyor...",
+    "emptyResults": "Sonuç bulunamadı.",
+    "confirm": "Onayla",
+    "cancel": "İptal",
+    "inProgress": "Sürüyor…",
+    "justNow": "Az önce"
   },
   "payroll": {
     "confidence": {
@@ -1012,7 +1032,10 @@
     "criticalAlerts": "Kritik uyarilar",
     "level": "Seviye:",
     "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
-    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir"
+    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
+    "noCriticalAlerts": "Kritik uyarı yok",
+    "lightMode": "Açık mod",
+    "darkMode": "Koyu mod"
   },
   "exports": {
     "reportEmployees": "Calisanlar",

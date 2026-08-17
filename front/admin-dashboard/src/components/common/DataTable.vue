@@ -29,11 +29,11 @@
 
     <div v-if="loading" class="p-12 text-center text-sm text-slate-500 dark:text-slate-400">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
-      Chargement des données...
+      {{ $t('common.loading', 'Chargement des données...') }}
     </div>
     <div v-else-if="error" class="p-8 text-center text-sm text-red-600">{{ error }}</div>
     <div v-else-if="filteredRows.length === 0" class="p-8 text-center text-sm text-gray-500">
-      {{ emptyMessage }}
+      {{ emptyMessage || $t('common.emptyResults', 'Aucun résultat trouvé.') }}
     </div>
     <div v-else class="overflow-x-auto">
       <table class="min-w-full divide-y divide-slate-200/50 dark:divide-slate-800/50" role="table">
@@ -102,7 +102,7 @@ const props = defineProps({
   searchPlaceholder: { type: String, default: 'Rechercher...' },
   searchKeys: { type: Array, default: () => [] },
   exportable: { type: Boolean, default: false },
-  emptyMessage: { type: String, default: 'Aucun resultat trouve.' },
+  emptyMessage: { type: String, default: '' },  // #4716 — défaut localisé via common.emptyResults
   defaultSort: { type: String, default: '' },
   defaultSortDir: { type: String, default: 'asc' },
   keyField: { type: String, default: 'id' },

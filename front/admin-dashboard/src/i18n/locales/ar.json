@@ -222,7 +222,13 @@
       "TD": "تشاد",
       "TG": "توغو",
       "US": "الولايات المتحدة"
-    }
+    },
+    "loading": "جارٍ تحميل البيانات...",
+    "emptyResults": "لا توجد نتائج.",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "inProgress": "قيد التنفيذ…",
+    "justNow": "في هذه اللحظة"
   },
   "signup": {
     "otpInvalidCode": "رمز غير صالح أو منتهي الصلاحية.",
@@ -446,6 +452,20 @@
       "title": "تعديل المستخدم",
       "status": "الحالة",
       "save": "تحديث"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "suspended": "موقوف",
+      "pending": "قيد الانتظار"
+    },
+    "export": {
+      "columnName": "الاسم",
+      "columnEmail": "البريد الإلكتروني",
+      "columnStatus": "الحالة",
+      "columnCompany": "الشركة",
+      "columnRegisteredAt": "تاريخ التسجيل",
+      "columnLastLogin": "آخر تسجيل دخول"
     }
   },
   "_version": "1.0.0",
@@ -1012,7 +1032,10 @@
     "criticalAlerts": "تنبيهات حرجة",
     "level": "المستوى:",
     "fallbackPollingTitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
-    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء"
+    "tenantOnly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
+    "noCriticalAlerts": "لا توجد تنبيهات حرجة",
+    "lightMode": "الوضع الفاتح",
+    "darkMode": "الوضع الداكن"
   },
   "exports": {
     "reportEmployees": "الموظفون",

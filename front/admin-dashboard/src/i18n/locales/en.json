@@ -123,6 +123,20 @@
       "title": "Edit user",
       "status": "Status",
       "save": "Update"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "suspended": "Suspended",
+      "pending": "Pending"
+    },
+    "export": {
+      "columnName": "Name",
+      "columnEmail": "Email",
+      "columnStatus": "Status",
+      "columnCompany": "Company",
+      "columnRegisteredAt": "Registered",
+      "columnLastLogin": "Last login"
     }
   },
   "signup": {
@@ -652,7 +666,13 @@
       "TD": "Chad",
       "TG": "Togo",
       "US": "United States"
-    }
+    },
+    "loading": "Loading data...",
+    "emptyResults": "No results found.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "inProgress": "In progress…",
+    "justNow": "Just now"
   },
   "_locale": "en",
   "attendance": {
@@ -1012,7 +1032,10 @@
     "criticalAlerts": "Critical alerts",
     "level": "Level:",
     "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
-    "tenantOnly": "Enterprise feature — reserved for client workspaces"
+    "tenantOnly": "Enterprise feature — reserved for client workspaces",
+    "noCriticalAlerts": "No critical alerts",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
   },
   "exports": {
     "reportEmployees": "Employees",

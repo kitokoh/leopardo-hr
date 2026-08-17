@@ -88,6 +88,10 @@
 
 <script setup>
 import { UserIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { useLocaleStore } from '@/stores/locale'
+import { toIntlLocale, translate } from '@/i18n/index.js'
+
+const localeStore = useLocaleStore()
 
 defineProps({
   user: {
@@ -118,17 +122,19 @@ function getStatusColor(status) {
 }
 
 function getStatusLabel(status) {
+  // #4716 — libellés de statut localisés ×4 (users.status.*).
   const labels = {
-    active: 'Actif',
-    inactive: 'Inactif',
-    suspended: 'Suspendu',
-    pending: 'Attente'
+    active: translate(localeStore.current, 'users.status.active', 'Actif'),
+    inactive: translate(localeStore.current, 'users.status.inactive', 'Inactif'),
+    suspended: translate(localeStore.current, 'users.status.suspended', 'Suspendu'),
+    pending: translate(localeStore.current, 'users.status.pending', 'En attente')
   }
   return labels[status] || status
 }
 
 function formatDate(date) {
   if (!date) return '-'
-  return new Date(date).toLocaleDateString()
+  // #4714 — date alignée sur la locale active (pattern toIntlLocale partout ailleurs).
+  return new Date(date).toLocaleDateString(toIntlLocale(localeStore.current))
 }
 </script>
