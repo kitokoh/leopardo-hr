@@ -5,7 +5,6 @@ namespace Tests;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
 
