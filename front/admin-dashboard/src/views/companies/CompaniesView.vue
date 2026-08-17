@@ -4,27 +4,27 @@
       <div>
         <h1 class="text-4xl font-black tracking-tight text-slate-900 dark:text-white uppercase">{{ t('companies.portfolio') }}</h1>
         <p class="mt-1 text-slate-500 dark:text-slate-400 font-medium text-lg">
-          Adoption, risque, revenus récurrents et prochaine action par entreprise.
+          {{ t('companies.portfolioSub', 'Adoption, risque, revenus récurrents et prochaine action par entreprise.') }}
         </p>
       </div>
       <div class="flex flex-wrap gap-3">
         <button class="btn-primary py-2.5 shadow-premium" @click="openCreateClient">
           <PlusIcon class="mr-2 h-5 w-5" />
-          Nouveau Client
+          {{ t('companies.newClient', 'Nouveau Client') }}
         </button>
         <button class="btn-secondary py-2.5 shadow-glass-sm" :disabled="isLoading" @click="fetchPortfolio">
           <ArrowPathIcon class="mr-2 h-4 w-4" :class="{ 'animate-spin': isLoading }" />
-          Actualiser
+          {{ t('companies.refresh', 'Actualiser') }}
         </button>
       </div>
     </div>
 
     <!-- Summary Stats -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 animate-slide-up">
-      <StatsCard title="Clients Suivis" :value="summary.companies" icon="BuildingOffice2Icon" color="blue" />
-      <StatsCard title="Clients Actifs" :value="summary.active_companies" icon="UsersIcon" color="green" />
-      <StatsCard title="MRR Global" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
-      <StatsCard title="Alerte Risque" :value="summary.risk.high" icon="ExclamationTriangleIcon" color="red" />
+      <StatsCard :title="t('companies.statsFollowed', 'Clients Suivis')" :value="summary.companies" icon="BuildingOffice2Icon" color="blue" />
+      <StatsCard :title="t('companies.statsActive', 'Clients Actifs')" :value="summary.active_companies" icon="UsersIcon" color="green" />
+      <StatsCard :title="t('companies.statsGlobalMrr', 'MRR Global')" :value="formattedMrr" icon="BanknotesIcon" color="purple" />
+      <StatsCard :title="t('companies.statsRiskAlert', 'Alerte Risque')" :value="summary.risk.high" icon="ExclamationTriangleIcon" color="red" />
     </div>
 
     <div class="card animate-slide-up" style="animation-delay: 0.1s">
@@ -87,7 +87,7 @@
                 </div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
-                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.plan.name || 'SANS PLAN' }}</div>
+                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.plan.name || t('companies.noPlan', 'SANS PLAN') }}</div>
                 <div class="text-xs font-black text-brand-600 dark:text-brand-400 mt-0.5">{{ formatCurrency(item.subscription.mrr, item.subscription.currency) }}/m</div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
@@ -97,19 +97,19 @@
                 </div>
               </td>
               <td class="whitespace-nowrap px-6 py-5">
-                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.attendance_logs_30d }} logs</div>
-                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active }} actifs</div>
+                <div class="font-bold text-slate-700 dark:text-slate-300 text-sm">{{ item.attendance_logs_30d }} {{ t('companies.logsUnit', 'logs') }}</div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">{{ item.employees_active }} {{ t('companies.activeUnit', 'actifs') }}</div>
               </td>
               <td class="px-6 py-5">
                 <div v-if="item.next_action" class="flex items-center gap-2">
                   <div class="h-1.5 w-1.5 rounded-full bg-brand-500"></div>
                   <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ item.next_action.label }}</span>
                 </div>
-                <span v-else class="text-[10px] font-black text-slate-300 uppercase tracking-widest">RAS</span>
+                <span v-else class="text-[10px] font-black text-slate-300 uppercase tracking-widest">{{ t('companies.ras', 'RAS') }}</span>
               </td>
               <td class="whitespace-nowrap px-6 py-5 text-right">
                 <router-link class="inline-flex items-center px-4 py-2 rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-xs font-black uppercase tracking-widest hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-all shadow-glass-sm group-hover:shadow-glass hover:-translate-y-0.5" :to="`/companies/${item.company.id}`">
-                  Ouvrir
+                  {{ t('companies.open', 'Ouvrir') }}
                 </router-link>
               </td>
             </tr>
@@ -132,7 +132,7 @@
             <div>
               <p class="text-[10px] font-black uppercase tracking-[0.3em] text-brand-600 dark:text-brand-400">{{ t('companies.system') }}</p>
               <h2 id="create-client-title" class="text-xl font-black tracking-tight text-slate-900 dark:text-white uppercase">
-                Provisionnement Client
+                {{ t('companies.provisioningTitle', 'Provisionnement Client') }}
               </h2>
             </div>
             <button
@@ -225,13 +225,13 @@
 
             <div class="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end sm:gap-4">
               <button class="btn-secondary px-8 py-3 uppercase tracking-widest text-xs font-black" type="button" @click="closeCreateClient">
-                Annuler
+                {{ t('common.cancel', 'Annuler') }}
               </button>
               <button id="btn-creer-le-client" class="btn-primary px-10 py-3 uppercase tracking-widest text-xs font-black shadow-premium" type="submit" :disabled="isCreating">
                 <PlusIcon v-if="!isCreating" class="mr-2 h-4 w-4" />
                 <span v-else class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
                 <!-- Creer le client -->
-                {{ isCreating ? 'Provisionnement...' : 'Créer le client' }}
+                {{ isCreating ? t('companies.provisioning', 'Provisionnement...') : t('companies.createClient', 'Créer le client') }}
               </button>
             </div>
           </form>
@@ -315,7 +315,7 @@ async function fetchPortfolio() {
     items.value = response.data?.data?.items || []
   } catch (error) {
     console.error('Failed to load company portfolio:', error)
-    errorMessage.value = 'Impossible de charger le cockpit clients.'
+    errorMessage.value = t('companies.loadError', 'Impossible de charger le cockpit clients.')
   } finally {
     isLoading.value = false
   }
@@ -364,7 +364,7 @@ async function submitCreateClient() {
     const company = response.data?.data?.company
 
     showCreateModal.value = false
-    toast.success('Client créé et invitation manager envoyée.')
+    toast.success(t('companies.created', 'Client créé et invitation manager envoyée.'))
     await fetchPortfolio()
 
     if (company?.id) {
@@ -372,7 +372,7 @@ async function submitCreateClient() {
     }
   } catch (error) {
     console.error('Failed to create platform company:', error)
-    createError.value = error.response?.data?.message || 'Impossible de creer ce client.'
+    createError.value = error.response?.data?.message || t('companies.createError', 'Impossible de creer ce client.')
   } finally {
     isCreating.value = false
   }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -36,7 +37,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
 
-    final success = await ref.read(authProvider.notifier).register(
+    final success = await ref
+        .read(authProvider.notifier)
+        .register(
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
           email: _emailController.text.trim(),
@@ -90,7 +93,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Créer votre compte',
+                        context.l10n.registerCreateAccount,
                         style: AppTypography.subtitle.copyWith(
                           color: AppColors.textPrimaryFor(context),
                         ),
@@ -101,11 +104,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         textInputAction: TextInputAction.next,
                         decoration: _fieldDecoration(
                           context,
-                          label: 'Prénom',
+                          label: context.l10n.registerFirstName,
                           icon: Icons.person_outline,
                         ),
-                        validator: (v) =>
-                            (v ?? '').isEmpty ? 'Obligatoire' : null,
+                        validator: (v) => (v ?? '').isEmpty
+                            ? context.l10n.registerRequired
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
@@ -145,11 +149,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         textInputAction: TextInputAction.done,
                         decoration: _fieldDecoration(
                           context,
-                          label: 'Mot de passe',
+                          label: context.l10n.registerPassword,
                           icon: Icons.lock_outline,
                         ),
                         validator: (v) => (v ?? '').length < 8
-                            ? '8 caractères minimum'
+                            ? context.l10n.registerMinChars
                             : null,
                       ),
                       const SizedBox(height: 24),
@@ -162,11 +166,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   color: Colors.white,
-                                  semanticsLabel:
-                                      'Création de compte en cours...',
+                                  semanticsLabel: context.l10n.registerCreating,
                                 ),
                               )
-                            : const Text('Créer mon compte'),
+                            : Text(context.l10n.registerSubmit),
                       ),
                     ],
                   ),

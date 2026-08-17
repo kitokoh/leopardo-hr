@@ -3,8 +3,8 @@
 namespace App\Http\Middleware\AI;
 
 use App\Core\Auth\Domain\Models\Employee;
-use Closure;
 use App\Core\Tenant\Domain\Models\Company;
+use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -14,7 +14,8 @@ class AITenantInjector
     {
         $user = $request->user();
         if (! $user || ! $user->company_id) {
-            abort(403, 'AI requires a valid company context.');
+            // #4812 : littéral EN déplacé au catalogue errors.*
+            abort(403, __('errors.AI_COMPANY_CONTEXT_REQUIRED'));
         }
 
         // Sécurité #2635 : mêmes gardes que le login (AuthService) — un employé

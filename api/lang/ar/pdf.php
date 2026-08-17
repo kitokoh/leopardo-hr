@@ -171,5 +171,5 @@ return [
     'cert_position_fallback' => 'موظف',
 
     'payslip_regularization_banner' => 'قسيمة تسوية — تصحيح الدفعة رقم :run',
-        'payslip_regularization_banner_slip' => 'قسيمة تسوية — تصحيح الكشف رقم :slip',
+    'payslip_regularization_banner_slip' => 'قسيمة تسوية — تصحيح الكشف رقم :slip',
 ];
