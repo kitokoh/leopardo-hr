@@ -390,6 +390,7 @@ export type CopyTree = {
     noPaymentAccount: string;
     downloadError: string;
     noActivePeriod: string;
+    periodRange: string;
     cancelLabel: string;
     loadError: string;
   };
@@ -799,6 +800,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
     downloadError: 'Impossible de télécharger la facture.',
     noActivePeriod: 'Aucune période active',
+    periodRange: 'Période : {start} au {end}',
     cancelLabel: 'Annuler l\'abonnement',
     loadError: 'Impossible de charger les informations de facturation.',
   },
@@ -1203,6 +1205,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'لا يوجد حساب دفع مرتبط. اشترك في خطة أولاً.',
     downloadError: 'تعذر تنزيل الفاتورة.',
     noActivePeriod: 'لا توجد فترة نشطة',
+    periodRange: 'الفترة: {start} إلى {end}',
     cancelLabel: 'إلغاء الاشتراك',
     loadError: 'تعذر تحميل معلومات الفوترة.',
   },
@@ -1238,12 +1241,12 @@ const copy: Record<AppLocale, CopyTree> = {
     statusActive: 'نشط',
   },
   trainingPage: {
-    loadError: 'Unable to load trainings.',
-    createError: 'Unable to create the training.',
+    loadError: 'تعذر تحميل التدريبات.',
+    createError: 'تعذر إنشاء التدريب.',
   },
   notificationsPage: {
-    statusEnabled: 'Enabled',
-    statusDisabled: 'Disabled',
+    statusEnabled: 'مفعل',
+    statusDisabled: 'معطل',
   },
 
   },
@@ -1607,6 +1610,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'Bağlı ödeme hesabı yok. Önce bir plana abone olun.',
     downloadError: 'Fatura indirilemedi.',
     noActivePeriod: 'Etkin dönem yok',
+    periodRange: 'Dönem: {start} - {end}',
     cancelLabel: 'Aboneliği iptal et',
     loadError: 'Faturalama bilgileri yüklenemedi.',
   },
@@ -2011,6 +2015,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'No payment account linked. Subscribe to a plan first.',
     downloadError: 'Unable to download the invoice.',
     noActivePeriod: 'No active period',
+    periodRange: 'Period: {start} to {end}',
     cancelLabel: 'Cancel subscription',
     loadError: 'Unable to load billing information.',
   },
@@ -2046,12 +2051,12 @@ const copy: Record<AppLocale, CopyTree> = {
     statusActive: 'Active',
   },
   trainingPage: {
-    loadError: 'تعذر تحميل التدريبات.',
-    createError: 'تعذر إنشاء التدريب.',
+    loadError: 'Unable to load trainings.',
+    createError: 'Unable to create the training.',
   },
   notificationsPage: {
-    statusEnabled: 'مفعل',
-    statusDisabled: 'معطل',
+    statusEnabled: 'Enabled',
+    statusDisabled: 'Disabled',
   },
 
   },

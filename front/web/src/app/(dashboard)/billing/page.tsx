@@ -55,6 +55,12 @@ function statusLabel(key: string, copy: ReturnType<typeof getCopy>): string {
   };
   return labels[key] ?? key;
 }
+function formatMessage(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in values ? String(values[name]) : match
+  );
+}
+
 
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   active: { label: '', className: 'bg-emerald-50 text-emerald-700' },
@@ -219,7 +225,10 @@ export default function BillingPage() {
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
                       {subscription.current_period_start && subscription.current_period_end
-                        ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
+                        ? formatMessage(copy.billing.periodRange, {
+                            start: new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale)),
+                            end: new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale)),
+                          })
                         : copy.billing.noActivePeriod}
                     </p>
                   </>
@@ -230,7 +239,7 @@ export default function BillingPage() {
               {subscription ? (
                 <span className={`inline-flex h-fit items-center gap-1 rounded-full px-3 py-1.5 text-xs font-bold uppercase ${STATUS_LABELS[subscription.status]?.className ?? 'bg-slate-100 text-slate-600'}`}>
                   <ShieldCheck className="h-3.5 w-3.5" />
-                  {STATUS_LABELS[subscription.status]?.label ? statusLabel(subscription.status, copy) : subscription.status}
+                  {STATUS_LABELS[subscription.status] ? statusLabel(subscription.status, copy) : subscription.status}
                 </span>
               ) : null}
             </div>
@@ -305,7 +314,7 @@ export default function BillingPage() {
                       <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(invoice.total ?? invoice.amount, invoice.currency)}</td>
                       <td className="px-4 py-4 text-center">
                         <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${STATUS_LABELS[invoice.status]?.className ?? 'bg-slate-100 text-slate-600'}`}>
-                          {STATUS_LABELS[invoice.status]?.label ? statusLabel(invoice.status, copy) : invoice.status}
+                          {STATUS_LABELS[invoice.status] ? statusLabel(invoice.status, copy) : invoice.status}
                         </span>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
