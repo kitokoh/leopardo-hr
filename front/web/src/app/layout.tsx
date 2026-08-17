@@ -1,6 +1,5 @@
 import { LocaleSsrProvider } from "@/modules/vitrine/lib/locale-ssr-provider";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import { cache } from "react";
 import { headers } from "next/headers";
@@ -11,21 +10,11 @@ import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 
+import { inter } from '@/lib/fonts';
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
 import { pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
 import type { AppLocale } from '@/lib/i18n';
-
-// Typographie du design system (REFONTE_PREMIUM_STATUT — typo Inter verrouillée).
-// next/font self-host les fichiers WOFF2 au build (aucun appel runtime externe,
-// conforme CSP + budget font ≤ 150 kB) et expose la variable `--font-inter`
-// consommée par tailwind.config.ts (`font-sans`) et `app/globals.css`.
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-  fallback: ['Aptos', 'Segoe UI Variable', 'Segoe UI', 'system-ui', 'sans-serif'],
-});
 
 // #3807 : og:locale doit suivre la locale SSR réelle (Accept-Language) au lieu
 // de fr_FR codé en dur (deep-merge racine qui faussait toutes les pages

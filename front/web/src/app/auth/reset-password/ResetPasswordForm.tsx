@@ -62,8 +62,8 @@ export function ResetPasswordForm({
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950 px-4 py-10 text-slate-950 dark:text-white sm:px-6 lg:px-8">
-      <div className="absolute inset-0 z-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#14b8a6 0.5px, transparent 0.5px)', backgroundSize: '24px 24px' }} />
-      <div className="absolute inset-0 z-0 opacity-70 [background:radial-gradient(circle_at_18%_12%,rgba(45,212,191,0.20),transparent_32%),radial-gradient(circle_at_84%_20%,rgba(56,189,248,0.18),transparent_30%)]" />
+      <div className="auth-surface-dots absolute inset-0 z-0 opacity-10" />
+      <div className="auth-surface-glow absolute inset-0 z-0 opacity-70" />
 
       <div className="relative z-10 w-full max-w-md">
         <div className="overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-slate-900">
@@ -126,7 +126,7 @@ export function ResetPasswordForm({
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                      aria-label={showPassword ? labels.hidePassword : labels.showPassword}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}

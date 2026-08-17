@@ -118,6 +118,8 @@ export type CopyTree = {
     missingTokenTitle: string;
     missingTokenBody: string;
     genericError: string;
+    showPassword: string;
+    hidePassword: string;
   };
   onboarding: {
     stepBadge: string;
@@ -568,6 +570,8 @@ const copy: Record<AppLocale, CopyTree> = {
       missingTokenTitle: 'Lien invalide ou expiré',
       missingTokenBody: 'Le lien de réinitialisation est invalide ou a expiré. Relancez une demande de réinitialisation.',
       genericError: 'Une erreur est survenue. Réessayez dans quelques instants.',
+      showPassword: 'Afficher le mot de passe',
+      hidePassword: 'Masquer le mot de passe',
     },
     onboarding: {
       stepBadge: 'Étape {current} sur {total}',
@@ -1038,6 +1042,8 @@ const copy: Record<AppLocale, CopyTree> = {
       missingTokenTitle: 'رابط غير صالح أو منتهي الصلاحية',
       missingTokenBody: 'رابط إعادة التعيين هذا غير صالح أو انتهت صلاحيته. يرجى طلب رابط جديد.',
       genericError: 'حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.',
+      showPassword: 'إظهار كلمة المرور',
+      hidePassword: 'إخفاء كلمة المرور',
     },
     onboarding: {
       stepBadge: 'الخطوة {current} من {total}',
@@ -1508,6 +1514,8 @@ const copy: Record<AppLocale, CopyTree> = {
       missingTokenTitle: 'Geçersiz veya süresi dolmuş bağlantı',
       missingTokenBody: 'Bu sıfırlama bağlantısı geçersiz veya süresi dolmuş. Lütfen yeni bir tane isteyin.',
       genericError: 'Bir hata oluştu. Lütfen birkaç dakika sonra tekrar deneyin.',
+      showPassword: 'Şifreyi göster',
+      hidePassword: 'Şifreyi gizle',
     },
     onboarding: {
       stepBadge: 'Adım {current} / {total}',
@@ -1978,6 +1986,8 @@ const copy: Record<AppLocale, CopyTree> = {
       missingTokenTitle: 'Invalid or expired link',
       missingTokenBody: 'This reset link is invalid or has expired. Please request a new one.',
       genericError: 'Something went wrong. Please try again in a few moments.',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
     },
     onboarding: {
       stepBadge: 'Step {current} of {total}',
