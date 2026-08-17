@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
-import 'package:leopardo_marketing/features/auth/providers/auth_provider.dart';
+import 'package:leopardo_marketing/core/providers/core_providers.dart';
 
 /// Écran d'accueil provisoire de l'app Marketing.
 ///
