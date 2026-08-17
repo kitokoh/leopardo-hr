@@ -16,6 +16,7 @@ import 'package:leopardo_hr/features/team/screens/team_screen.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_hr/features/attendance/screens/monthly_summary_screen.dart';
+import 'package:leopardo_hr/features/company_branding/providers/tenant_branding_provider.dart';
 import 'package:leopardo_core/models/monthly_summary.dart';
 
 import '../helpers/mobile_test_harness.dart';
@@ -24,6 +25,7 @@ void main() {
   final employee = testEmployee(role: 'manager', managerRole: 'rh');
   final baseOverrides = [
     authOverride(employee),
+    tenantBrandingProvider.overrideWith((ref) async => null),
     absencesProvider.overrideWith((ref) async => []),
     payrollsProvider.overrideWith((ref) async => []),
     notificationsProvider.overrideWith((ref) async => []),

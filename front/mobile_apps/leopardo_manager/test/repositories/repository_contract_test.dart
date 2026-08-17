@@ -93,7 +93,7 @@ class RecordingInterceptor extends Interceptor {
                               }
                             : options.method == 'PUT' &&
                                     options.path ==
-                                        '/salary-advances/12/approve'
+                                        '/salary-advances/12/manager-approve'
                                 ? {
                                     'data': {
                                       'id': 12,
@@ -257,7 +257,7 @@ void main() {
       expect(recorder.requests, [
         'PUT /absences/33/approve',
         'PUT /absences/33/reject',
-        'PUT /salary-advances/12/approve',
+        'PUT /salary-advances/12/manager-approve',
         'PUT /salary-advances/12/reject',
       ]);
 
