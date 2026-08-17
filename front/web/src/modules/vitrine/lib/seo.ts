@@ -191,7 +191,7 @@ export const pageMetadata = {
   },
 
   integrations: {
-    title: "Integrations & Connecteurs | Leopardo RH",
+    title: "Integrations & Connecteurs",
     description:
       "Connecteurs comptables et API Leopardo RH : Sage, QuickBooks, API publique, webhooks. Intégrez la paie et les RH à votre stack.",
     keywords: [
@@ -244,7 +244,7 @@ export const pageMetadata = {
   },
 
   changelog: {
-    title: "Journal des versions | Leopardo RH",
+    title: "Journal des versions",
     description:
       "Découvrez les dernieres evolutions produit : API, paie, monitoring et admin. Extrait du changelog officiel.",
     keywords: [
@@ -348,7 +348,7 @@ export const pageMetadata = {
   },
 
   demo: {
-    title: "Demander une Démo | Leopardo RH",
+    title: "Demander une Démo",
     description:
       "Planifiez une démo gratuite de Leopardo RH. Découvrez la gestion RH automatisée : paie multi-pays, pointage, absences, formations.",
     keywords: [
@@ -535,7 +535,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     pricing: { title: "Transparent Pricing | Flexible Plans", description: "Simple pricing: Free €0 (5 emp.), Pilot €29/month (30 emp.), Operations €79/month (200 emp.), Enterprise on quote. 14-day free trial." },
     about: { title: "About Us | Our Mission and Team", description: "Discover our mission, team and values. We help SMBs manage their employees with a mobile-first HR platform." },
     blog: { title: "Blog & Resources | HR Guides and Tips", description: "Guides, articles and webinars about HR management, payroll and productivity for SMBs." },
-    changelog: { title: "Changelog | Leopardo RH", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
+    changelog: { title: "Changelog", description: "Discover the latest product updates: API, payroll, monitoring and admin." },
     docs: { title: "API Documentation | Leopardo HR Technical Guides", description: "Technical documentation and integration guides for the Leopardo HR API: authentication, endpoints and webhooks." },
     download: { title: "Download Leopardo HR | Windows, macOS, Android, iOS", description: "Download the ZKTeco desktop client and Leopardo HR mobile apps for employees, managers and admins." },
     contact: { title: "Contact Us | Leopardo HR Support and Sales", description: "A question about Leopardo HR? Contact our sales or support team by email, phone or chat." },
@@ -581,7 +581,7 @@ export const pageMetadataI18n: Record<'en' | 'tr' | 'ar', Record<string, Pick<SE
     branding: { title: "Marka & Özelleştirme | Leopardo İK Çok Kiracılı", description: "Leopardo İK'yı şirketiniz için logonuz, renkleriniz ve görünen adınızla özelleştirin." },
     careers: { title: "Kariyer | Leopardo İK Ekibine Katılın", description: "Açık pozisyonlarımızı keşfedin ve saha KOBİ'leri için İK platformu kuran ekibe katılın." },
     mobile: { title: "Mobil Uygulamalar | Android ve iOS'ta Leopardo İK", description: "Çalışan, yönetici ve admin uygulamaları: giriş-çıkış, izinler, maaş bordroları ve bildirimler." },
-    signup: { title: "Ücretsiz Rehberli Deneme | Leopardo İK'yı Keşfedin", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
+    signup: { title: "Ücretsiz Rehberli Deneme'yı Keşfedin", description: "Ücretsiz rehberli Leopardo İK denemenizi talep edin: şifre gerekmez, bir uzman 24 saat içinde sizinle iletişime geçer." },
     checkout: { title: "Planınızı Seçin | Leopardo İK Aboneliği", description: "Şirketinize uygun Leopardo İK planını seçin ve abone olun: Free, Pilot, Operations veya Enterprise." },
     checkoutSuccess: { title: "Leopardo Alanınız Hazır | Abonelik Onayı", description: "Leopardo İK denemeniz onaylandı: alanınız hazır, 14 gün ücretsiz, bugün kartınızdan ücret alınmaz." },
   },

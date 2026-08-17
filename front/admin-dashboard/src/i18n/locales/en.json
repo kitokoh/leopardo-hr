@@ -749,7 +749,19 @@
     "login_placeholder_email": "admin@leopardo-rh.com",
     "login_submit": "Sign in",
     "remember_me": "Remember me",
-    "login_subtitle": "Sign in to your workspace"
+    "login_subtitle": "Sign in to your workspace",
+    "connection_error": "Connection error.",
+    "disable_two_fa_failed": "Disabling 2FA failed.",
+    "hide_password": "Hide password",
+    "incomplete_response": "The login response is incomplete.",
+    "loading": "Authenticating…",
+    "password_change_failed": "The password change failed.",
+    "profile_update_failed": "The profile update failed.",
+    "show_password": "Show password",
+    "two_fa_invalid": "The 2FA code provided is invalid.",
+    "two_fa_required_msg": "A verification code is required.",
+    "two_fa_setup_failed": "Generating the 2FA secret failed.",
+    "unexpected_error": "An unexpected error occurred."
   },
   "marketing": {
     "oauth": {
