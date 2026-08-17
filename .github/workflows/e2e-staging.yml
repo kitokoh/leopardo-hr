@@ -70,6 +70,13 @@ jobs:
       # specific `deploy-api` job's conclusion via the Checks API, matching
       # the level of specificity deploy-main.yml already uses for its own
       # gating, and the same approach applied to owasp-zap.yml.
+      # Local actions are unavailable until the repository is checked out.
+      - name: Checkout repository for local deploy gate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+
       - name: Determine if E2E should run
         id: gate
         uses: ./.github/actions/deploy-gate
@@ -80,7 +87,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          BASE="${{ steps.url.outputs.base_url }}/api/v1"
+          BASE="${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}/api/v1"
           FAILED=0
 
           test_endpoint() {
@@ -111,7 +118,7 @@ jobs:
       - name: Optional demo auth smoke
         shell: bash
         env:
-          BASE_URL: ${{ steps.url.outputs.base_url }}
+          BASE_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
           STAGING_DEMO_AUTH_SMOKE: ${{ github.event.inputs.demo_auth_smoke || secrets.STAGING_DEMO_AUTH_SMOKE || 'false' }}
           STAGING_MANAGER_EMAIL: ${{ secrets.STAGING_MANAGER_EMAIL }}
           STAGING_MANAGER_PASSWORD: ${{ secrets.STAGING_MANAGER_PASSWORD }}
