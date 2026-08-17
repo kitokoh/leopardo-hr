@@ -78,10 +78,21 @@ jobs:
         working-directory: front/web
         run: npm ci
 
+      - name: Guard NEXT_PUBLIC_SITE_URL (#4819)
+        shell: bash
+        run: |
+          if [[ -z "${{ vars.PROD_WEB_URL }}" ]]; then
+            echo "::warning::PROD_WEB_URL repo variable not set — site-url guard will throw at build time. Set vars.PROD_WEB_URL to the live Vercel URL."
+          fi
+
       - name: Build Next.js vitrine
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
+          # #4819 : la garde site-url.ts lance une erreur en production build
+          # si NEXT_PUBLIC_SITE_URL n'est pas posée (canonical vers NXDOMAIN).
+          # PROD_WEB_URL = https://gestionemployer-backend.vercel.app (live).
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PROD_WEB_URL }}
         run: npm run build
 
   web-marketing-funnel-e2e:
@@ -115,6 +126,7 @@ jobs:
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PROD_WEB_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
         run: npx playwright test e2e/marketing-funnel.spec.ts --project=chromium --workers=1
 
@@ -122,6 +134,7 @@ jobs:
         working-directory: front/web
         env:
           NEXT_PUBLIC_API_URL: ${{ vars.PROD_API_BASE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PROD_WEB_URL }}
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
         run: npx playwright test e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts --project=chromium --workers=1
 
