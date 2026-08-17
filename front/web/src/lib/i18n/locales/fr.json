@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -62,9 +62,9 @@
     "language": {
       "label": "Langue",
       "variants": {
-        "fr-FR": "Français (France)",
-        "fr-BE": "Français (Belgique)",
-        "fr-CA": "Français (Canada)",
+        "fr-FR": "Francais (France)",
+        "fr-BE": "Francais (Belgique)",
+        "fr-CA": "Francais (Canada)",
         "ar-SA": "Arabe (Arabie saoudite)",
         "ar-MA": "Arabe (Maroc)",
         "tr-TR": "Turc (Turquie)",
@@ -95,7 +95,8 @@
       "TN": "Tunisie",
       "TR": "Turquie",
       "US": "États-Unis"
-    }
+    },
+    "required": "Requis"
   },
   "modules": {
     "attendance": "Pointage",
@@ -1033,6 +1034,24 @@
     "recent_collaborators": "Collaborateurs récents",
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission"
   },
   "partnerPage": {
     "loading": "Chargement de votre espace...",

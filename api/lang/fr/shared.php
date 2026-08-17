@@ -95,6 +95,7 @@ return [
             'TR' => 'Turquie',
             'US' => 'États-Unis',
         ],
+        'required' => 'Requis',
     ],
     'modules' => [
         'attendance' => 'Pointage',

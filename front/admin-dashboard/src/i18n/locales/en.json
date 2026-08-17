@@ -488,7 +488,7 @@
     "trialUnit": "d"
   },
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "holidays": {
     "saving": "Saving…",
     "page_subtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
@@ -661,6 +661,7 @@
       "TG": "Togo",
       "US": "United States"
     },
+    "required": "Required",
     "noResults": "No results found.",
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -1285,6 +1286,24 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request"
   },
   "partnerPage": {
     "loading": "Loading your workspace...",

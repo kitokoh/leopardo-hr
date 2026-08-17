@@ -95,6 +95,7 @@ return [
             'TR' => 'Türkiye',
             'US' => 'Amerika Birleşik Devletleri',
         ],
+        'required' => 'Gerekli',
     ],
     'modules' => [
         'attendance' => 'Puantaj',

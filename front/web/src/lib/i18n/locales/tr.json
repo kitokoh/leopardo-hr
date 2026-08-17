@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-14T18:45:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -67,7 +67,7 @@
         "fr-CA": "Fransizca (Kanada)",
         "ar-SA": "Arapca (Suudi Arabistan)",
         "ar-MA": "Arapca (Fas)",
-        "tr-TR": "Türkçe (Türkiye)",
+        "tr-TR": "Turkce (Turkiye)",
         "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
         "en-GB": "Ingilizce (Birlesik Krallik)"
       }
@@ -95,7 +95,8 @@
       "TN": "Tunus",
       "TR": "Türkiye",
       "US": "Amerika Birleşik Devletleri"
-    }
+    },
+    "required": "Gerekli"
   },
   "modules": {
     "attendance": "Puantaj",
@@ -1033,6 +1034,24 @@
     "recent_collaborators": "Son iş arkadaşları",
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Talep gönderildi!",
+      "body": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
+      "info": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak."
+    },
+    "back_to_home": "Ana sayfaya dön",
+    "create_company": "Şirket oluştur",
+    "company_name": "Şirket adı",
+    "company_email": "Şirket e-postası",
+    "sector": "İş sektörü",
+    "country": "Ülke",
+    "city": "Şehir",
+    "phone": "Telefon",
+    "description": "Açıklama",
+    "submit_request": "Talep gönder",
+    "submit_error": "Talep gönderme hatası"
   },
   "partnerPage": {
     "loading": "Alanınız yükleniyor...",
