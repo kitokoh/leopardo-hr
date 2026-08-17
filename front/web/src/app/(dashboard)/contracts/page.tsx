@@ -78,7 +78,7 @@ export default function ContractsPage() {
       terminated: 'bg-red-50 text-red-700',
       draft: 'bg-slate-100 text-slate-600',
     };
-    const labels: Record<string, string> = { active: copy.contracts.statusActive, suspended: copy.contracts.statusSuspended, terminated: 'Terminé', draft: 'Brouillon' };
+    const labels: Record<string, string> = { active: copy.contracts.statusActive, suspended: copy.contracts.statusSuspended, terminated: copy.contracts.statusTerminated, draft: copy.contracts.statusDraft };
     return <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>{labels[status] || status}</span>;
   };
 
@@ -153,7 +153,7 @@ export default function ContractsPage() {
           <option value="all">{copy.contracts.statusAll}</option>
           <option value="active">{copy.contracts.statusActive}</option>
           <option value="suspended">{copy.contracts.statusSuspended}</option>
-          <option value="terminated">{'Terminé'}</option>
+          <option value="terminated">{copy.contracts.statusTerminated}</option>
         </select>
       </div>
 

@@ -390,6 +390,7 @@ export type CopyTree = {
     noPaymentAccount: string;
     downloadError: string;
     noActivePeriod: string;
+    cancelLabel: string;
     loadError: string;
   };
   contracts: {
@@ -400,6 +401,8 @@ export type CopyTree = {
     statusSuspended: string;
     statusActives: string;
     statusSuspendeds: string;
+    statusTerminated: string;
+    statusDraft: string;
   };
   absencesPage: {
     loadError: string;
@@ -788,6 +791,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'Aucun compte de paiement associé. Souscrivez d\'abord à un plan.',
     downloadError: 'Impossible de télécharger la facture.',
     noActivePeriod: 'Aucune période active',
+    cancelLabel: 'Annuler l\'abonnement',
     loadError: 'Impossible de charger les informations de facturation.',
   },
   contracts: {
@@ -798,6 +802,8 @@ const copy: Record<AppLocale, CopyTree> = {
     statusSuspended: 'Suspendu',
     statusActives: 'Actifs',
     statusSuspendeds: 'Suspendus',
+    statusTerminated: 'Terminé',
+    statusDraft: 'Brouillon',
   },
   absencesPage: { loadError: 'Impossible de charger les absences.' },
   attendancePage: { loadError: 'Impossible de charger le pointage.' },
@@ -1181,6 +1187,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'لا يوجد حساب دفع مرتبط. اشترك في خطة أولاً.',
     downloadError: 'تعذر تنزيل الفاتورة.',
     noActivePeriod: 'لا توجد فترة نشطة',
+    cancelLabel: 'إلغاء الاشتراك',
     loadError: 'تعذر تحميل معلومات الفوترة.',
   },
   contracts: {
@@ -1191,6 +1198,8 @@ const copy: Record<AppLocale, CopyTree> = {
     statusSuspended: 'موقوف',
     statusActives: 'نشطة',
     statusSuspendeds: 'موقوفة',
+    statusTerminated: 'منتهي',
+    statusDraft: 'مسودة',
   },
   absencesPage: { loadError: 'تعذر تحميل حالات الغياب.' },
   attendancePage: { loadError: 'تعذر تحميل الحضور.' },
@@ -1574,6 +1583,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'Bağlı ödeme hesabı yok. Önce bir plana abone olun.',
     downloadError: 'Fatura indirilemedi.',
     noActivePeriod: 'Etkin dönem yok',
+    cancelLabel: 'Aboneliği iptal et',
     loadError: 'Faturalama bilgileri yüklenemedi.',
   },
   contracts: {
@@ -1584,6 +1594,8 @@ const copy: Record<AppLocale, CopyTree> = {
     statusSuspended: 'Askıya alındı',
     statusActives: 'Aktif',
     statusSuspendeds: 'Askıya alındı',
+    statusTerminated: 'Sonlandırıldı',
+    statusDraft: 'Taslak',
   },
   absencesPage: { loadError: 'Devamsızlıklar yüklenemedi.' },
   attendancePage: { loadError: 'Yoklama yüklenemedi.' },
@@ -1967,6 +1979,7 @@ const copy: Record<AppLocale, CopyTree> = {
     noPaymentAccount: 'No payment account linked. Subscribe to a plan first.',
     downloadError: 'Unable to download the invoice.',
     noActivePeriod: 'No active period',
+    cancelLabel: 'Cancel subscription',
     loadError: 'Unable to load billing information.',
   },
   contracts: {
@@ -1977,6 +1990,8 @@ const copy: Record<AppLocale, CopyTree> = {
     statusSuspended: 'Suspended',
     statusActives: 'Active',
     statusSuspendeds: 'Suspended',
+    statusTerminated: 'Terminated',
+    statusDraft: 'Draft',
   },
   absencesPage: { loadError: 'Unable to load absences.' },
   attendancePage: { loadError: 'Unable to load attendance.' },

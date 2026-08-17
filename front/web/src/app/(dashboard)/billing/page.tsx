@@ -45,7 +45,6 @@ const PLAN_LABELS: Record<string, string> = {
   business: 'Operations',
 };
 
-// #4574 : libellés de statut localisés via le CopyTree (getCopy ×4 locales).
 function statusLabel(key: string, copy: ReturnType<typeof getCopy>): string {
   const labels: Record<string, string> = {
     active: copy.billing.statusActive,
@@ -100,6 +99,7 @@ export default function BillingPage() {
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => { void load(); }, [load]);
@@ -245,7 +245,7 @@ export default function BillingPage() {
                   disabled={actionLoading === 'cancel'}
                   className="inline-flex items-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-50 disabled:opacity-40"
                 >
-                  <XCircle className="h-4 w-4" /> Annuler l&apos;abonnement
+                  <XCircle className="h-4 w-4" /> {copy.billing.cancelLabel}
                 </button>
               ) : subscription?.status === 'cancelled' ? (
                 <button

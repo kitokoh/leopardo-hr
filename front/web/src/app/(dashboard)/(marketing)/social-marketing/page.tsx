@@ -76,6 +76,7 @@ export default function MarketingPage() {
     } finally {
       setAccountLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadPosts = useCallback(async (targetPage: number, append: boolean) => {
@@ -93,6 +94,7 @@ export default function MarketingPage() {
     } finally {
       setPostsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -251,7 +253,7 @@ export default function MarketingPage() {
               </div>
               <div className="flex items-center gap-3">
                 <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${account.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
-                  {account.status === 'active' ? copy.socialMarketingPage.statusActive : account.status}
+                  {account.status === 'active' ? 'Actif' : account.status}
                 </span>
                 <button
                   onClick={handleDisconnect}
