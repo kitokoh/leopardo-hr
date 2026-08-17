@@ -159,14 +159,29 @@ Assert-IosFirebaseBundle `
 # at the correct file for the Firebase read-after-write guard and the app-ID
 # secrets (deploy-main.yml still orchestrates the API deploy; the mobile
 # distribution logic lives in mobile-distribute-main.yml).
+#
+# PR #4723 (#4802) extracted the Firebase read-after-write command into
+# the shared helper dev-hub/tools/verify-firebase-readback.sh. Both workflow
+# files now delegate to that script via `bash dev-hub/tools/verify-firebase-readback.sh`.
+# The guard therefore checks that the readback script (the single source of
+# truth) contains the command, and that both workflow files reference the script.
+$readbackScript = Join-Path $repoRoot "dev-hub/tools/verify-firebase-readback.sh"
 Assert-FileContains `
-    (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
+    $readbackScript `
     "appdistribution:releases:list" `
     "Main deploy Firebase read-after-write"
 Assert-FileContains `
-    (Join-Path $repoRoot ".github/workflows/mobile-distribute.yml") `
+    $readbackScript `
     "appdistribution:releases:list" `
     "Manual mobile distribution Firebase read-after-write"
+Assert-FileContains `
+    (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
+    "verify-firebase-readback.sh" `
+    "Main deploy Firebase read-after-write script reference"
+Assert-FileContains `
+    (Join-Path $repoRoot ".github/workflows/mobile-distribute.yml") `
+    "verify-firebase-readback.sh" `
+    "Manual mobile distribution Firebase read-after-write script reference"
 Assert-FileContains `
     (Join-Path $repoRoot ".github/workflows/mobile-distribute-main.yml") `
     "FIREBASE_EMPLOYEE_ANDROID_APP_ID" `
