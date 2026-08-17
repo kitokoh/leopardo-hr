@@ -197,4 +197,10 @@ return [
     'EMAIL_BOUNCE_WEBHOOK_NOT_CONFIGURED' => 'Le webhook de rejet email n\'est pas configuré.',
     'UNAUTHORIZED_USER_TYPE' => 'Votre type d\'utilisateur n\'est pas autorisé pour cette action.',
     'CSV_EXPORT_FAILED' => 'Impossible de générer l\'export CSV.',
+
+    'JOB_POSTING_DRAFT_ONLY_PUBLISH' => 'Seules les offres au statut brouillon peuvent être publiées.',
+    'JOB_POSTING_PUBLISHED_ONLY_CLOSE' => 'Seules les offres publiées peuvent être clôturées.',
+    'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Seules les offres au statut brouillon peuvent être supprimées.',
+    'JOB_POSTING_DELETED' => 'Offre supprimée.',
+    'TASK_DELETED' => 'Tâche supprimée.',
 ];

@@ -196,4 +196,10 @@ return [
     'EMAIL_BOUNCE_WEBHOOK_NOT_CONFIGURED' => 'E-posta geri dönen webhook yapılandırılmamış.',
     'UNAUTHORIZED_USER_TYPE' => 'Kullanıcı türünüz bu işlem için yetkilendirilmemiş.',
     'CSV_EXPORT_FAILED' => 'CSV dışa aktarımı oluşturulamadı.',
+
+    'JOB_POSTING_DRAFT_ONLY_PUBLISH' => 'Yalnızca taslak durumundaki ilanlar yayınlanabilir.',
+    'JOB_POSTING_PUBLISHED_ONLY_CLOSE' => 'Yalnızca yayınlanmış ilanlar kapatılabilir.',
+    'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Yalnızca taslak durumundaki ilanlar silinebilir.',
+    'JOB_POSTING_DELETED' => 'İlan silindi.',
+    'TASK_DELETED' => 'Görev silindi.',
 ];

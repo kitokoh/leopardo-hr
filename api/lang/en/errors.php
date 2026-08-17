@@ -203,4 +203,10 @@ return [
     'EMAIL_BOUNCE_WEBHOOK_NOT_CONFIGURED' => 'Email bounce webhook is not configured.',
     'UNAUTHORIZED_USER_TYPE' => 'Your user type is not authorised for this action.',
     'CSV_EXPORT_FAILED' => 'Unable to build the CSV export.',
+
+    'JOB_POSTING_DRAFT_ONLY_PUBLISH' => 'Only draft postings can be published.',
+    'JOB_POSTING_PUBLISHED_ONLY_CLOSE' => 'Only published postings can be closed.',
+    'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Only draft postings can be deleted.',
+    'JOB_POSTING_DELETED' => 'Job posting deleted.',
+    'TASK_DELETED' => 'Task deleted.',
 ];
