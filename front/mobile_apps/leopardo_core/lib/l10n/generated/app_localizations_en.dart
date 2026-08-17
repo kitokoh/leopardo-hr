@@ -2655,4 +2655,271 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get employeesEmptyList => 'No employee visible for this account.';
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get featureComingSoon => 'Feature coming soon';
+
+  @override
+  String get backToHome => 'Back to home';
+
+  @override
+  String get pageNotFound =>
+      'The requested page was not found or the navigation failed.';
+
+  @override
+  String get registerCreateAccount => 'Create your account';
+
+  @override
+  String get registerFirstName => 'First name';
+
+  @override
+  String get registerRequired => 'Required';
+
+  @override
+  String get registerPassword => 'Password';
+
+  @override
+  String get registerMinChars => '8 characters minimum';
+
+  @override
+  String get registerCreating => 'Creating your account...';
+
+  @override
+  String get registerSubmit => 'Create my account';
+
+  @override
+  String get accessDeniedTitle => 'Access denied';
+
+  @override
+  String get accessDeniedBody =>
+      'Your account does not have the required Manager role for this application. Use the application matching your role (Employee, HR…) or contact your administrator.';
+
+  @override
+  String get accessDeniedLogout => 'Log out';
+
+  @override
+  String get accessDeniedBodyHr =>
+      'Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator.';
+
+  @override
+  String get evaluationsTitle => 'My Evaluations';
+
+  @override
+  String get evaluationsEmpty => 'No evaluations';
+
+  @override
+  String get evaluationsEmptyHint =>
+      'You don\'t have any recorded evaluation yet.';
+
+  @override
+  String evaluationPeriod(String period) {
+    return 'Period: \$period';
+  }
+
+  @override
+  String get attendanceOnTime => 'on time';
+
+  @override
+  String get attendanceLate => 'late';
+
+  @override
+  String get attendanceAbsent => 'absent';
+
+  @override
+  String get attendanceInProgress => 'in progress';
+
+  @override
+  String get attendanceNoClock => 'no clock-in';
+
+  @override
+  String attendanceTimeRange(String from, String to) {
+    return 'from \$from to \$to';
+  }
+
+  @override
+  String get attendanceHourWorked => 'hour worked';
+
+  @override
+  String get attendanceHoursWorked => 'hours worked';
+
+  @override
+  String attendanceDaySummary(String date, String status, String range, String hours) {
+    return 'Day of \$date, status \$status, \$range, \$hours.';
+  }
+
+  @override
+  String get sessionApproved => 'Session approved ✓';
+
+  @override
+  String get sessionRejected => 'Session rejected';
+
+  @override
+  String get pendingSessionsToValidate => 'To validate';
+
+  @override
+  String get pendingSessionsUpToDate => 'All up to date';
+
+  @override
+  String get pendingSessionsEmpty => 'No GPS session waiting for validation.';
+
+  @override
+  String employeeNumber(String id) {
+    return 'Employee #\$id';
+  }
+
+  @override
+  String sessionEntryAt(String time) {
+    return 'Entry: \$time';
+  }
+
+  @override
+  String get sessionsToValidate => 'Sessions to validate';
+
+  @override
+  String errorPrefix(String message) {
+    return 'Error: \$message';
+  }
+
+  @override
+  String get saDashboardTitle => 'GPS attendance — team dashboard';
+
+  @override
+  String get saDetected => 'Detected';
+
+  @override
+  String get saApproved => 'Approved';
+
+  @override
+  String get saRejected => 'Rejected';
+
+  @override
+  String get saRecentSessions => 'Recent sessions';
+
+  @override
+  String get saForced => 'Enforced';
+
+  @override
+  String saPresenceInProgress(String time) {
+    return 'Presence in progress since \$time';
+  }
+
+  @override
+  String get saGpsZoneNotConfigured =>
+      'Your company\'s GPS zone is not configured yet.';
+
+  @override
+  String get saDisableAutoGps => 'Disable automatic GPS';
+
+  @override
+  String get saStatusApproved => 'Approved';
+
+  @override
+  String get saStatusDetected => 'Detected';
+
+  @override
+  String get saStatusRejected => 'Rejected';
+
+  @override
+  String get saStatusCancelled => 'Cancelled';
+
+  @override
+  String get saStatusPending => 'Pending validation';
+
+  @override
+  String get saEnableAutoGps => 'Enable automatic GPS';
+
+  @override
+  String get attendanceOvertime => 'Overtime hours';
+
+  @override
+  String get approvalsUpToDate => 'All up to date';
+
+  @override
+  String get approvalsEmpty => 'No pending approvals.';
+
+  @override
+  String saConfigLoadError(String error) {
+    return 'Unable to load the configuration.\n\$error';
+  }
+
+  @override
+  String get ampAutoDetectDesc =>
+      'Your presence is detected automatically as soon as you enter the company zone. No action required from you.';
+
+  @override
+  String get ampRecommended => 'Recommended';
+
+  @override
+  String get ampQrScanDesc =>
+      'Scan the QR Code displayed at the company entrance to clock in and out.';
+
+  @override
+  String get ampManualDesc =>
+      'Clock in manually using the Arrival and Departure buttons in the attendance screen.';
+
+  @override
+  String get ampSaveError =>
+      'Unable to save your preference. Check your connection.';
+
+  @override
+  String get ampTitle =>
+      'Choose how you want to clock your presence every day.';
+
+  @override
+  String get ampModeTitle => 'Attendance mode';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get saSessionsLoadError =>
+      'Unable to load GPS sessions. Check your connection.';
+
+  @override
+  String get saStartMonitoringError =>
+      'Unable to start GPS monitoring. Check location permissions and try again.';
+
+  @override
+  String get shellTeam => 'Team';
+
+  @override
+  String get shellSettings => 'Settings';
+
+  @override
+  String get homeCompleteOnboarding => 'Complete my onboarding';
+
+  @override
+  String get homeOnboardingHint => 'Set up your workspace in a few steps.';
+
+  @override
+  String get welcomeMyTeam => 'My team';
+
+  @override
+  String get welcomePresences => 'Attendance';
+
+  @override
+  String get welcomeTasks => 'Tasks';
+
+  @override
+  String get welcomeLeaves => 'Leave';
+
+  @override
+  String get monthlySummaryLoading => 'Loading monthly summary...';
+
+  @override
+  String get orgChartEmpty =>
+      'The org chart will be available once employees are configured.';
+
+  @override
+  String get orgChartCollapse => 'Collapse';
+
+  @override
+  String get orgChartExpand => 'Expand';
+  @override
+  String get errorUnexpected => 'An error occurred';
 }
