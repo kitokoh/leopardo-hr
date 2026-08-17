@@ -53,17 +53,14 @@ strip_ansi() {
 # jamais annulés ici.
 DEFAULT_BRANCH=$(gh api "repos/${REPO}" | strip_ansi | jq -r '.default_branch')
 
-# 1. Branches vivantes : existent encore sur le remote.
-mapfile -t LIVE_BRANCHES < <(
-    gh api "repos/${REPO}/branches?per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].name'
-)
-# 2. Têtes de branches des PRs ouvertes (une PR ouverte = travail en cours,
-# ses runs doivent tourner même si la branche a été supprimée par erreur).
+# Seule la branche par défaut et les têtes de PR ouvertes sont considérées
+# comme actives. Une branche distante sans PR peut être abandonnée et ne doit
+# pas garder des runs queued/in_progress indéfiniment.
 mapfile -t OPEN_PR_HEADS < <(
     gh api "repos/${REPO}/pulls?state=open&per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].head.ref'
 )
 
-PROTECTED_BRANCHES=$(printf '%s\n%s\n%s\n' "${DEFAULT_BRANCH}" "${LIVE_BRANCHES[@]}" "${OPEN_PR_HEADS[@]}" | sort -u)
+PROTECTED_BRANCHES=$(printf '%s\n%s\n' "${DEFAULT_BRANCH}" "${OPEN_PR_HEADS[@]}" | sort -u)
 
 is_protected() {
   local branch="$1"
