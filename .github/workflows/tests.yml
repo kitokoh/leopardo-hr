@@ -73,7 +73,10 @@ jobs:
           echo "Web changed: ${{ steps.changes.outputs.web }}"
 
   backend-tests:
-    timeout-minutes: 45
+    # Issue #4976 : les workers parallèles se disputent la création des bases
+    # PostgreSQL `_test_N` dans TestCase::configureTestingDatabaseConnection.
+    # La suite séquentielle est déterministe ; le timeout couvre sa durée réelle.
+    timeout-minutes: 75
     name: Backend (PHP 8.4 + PostgreSQL 16 + Redis 7)
     runs-on: ubuntu-latest
     needs: detect-changes
@@ -138,11 +141,10 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
-        # Issue #4695 : suite Feature en parallèle (paratest, 1 base par worker
-        # `leopardo_test_test_{token}`, créée automatiquement — voir
-        # tests/TestCase::configureTestingDatabaseConnection). La suite sérielle
-        # dépassait les 45 min (timeout du job) et bloquait main.
-        run: php artisan test --testsuite=Feature --parallel --processes=4 --log-junit=storage/test-results/feature.xml
+        # Issue #4976 : la suite parallèle provoque des collisions `already
+        # exists` lorsque plusieurs workers initialisent les bases `_test_N`.
+        # L’exécution séquentielle privilégie la fiabilité du gate CI.
+        run: php artisan test --testsuite=Feature --log-junit=storage/test-results/feature.xml
 
       - name: Upload backend test reports
         if: always()
@@ -488,9 +490,10 @@ jobs:
           DB_SEARCH_PATH: public,shared_tenants
         run: |
           mkdir -p storage/test-results storage/coverage-html
-          # Issue #4695 : parallélisé comme le job backend-tests (paratest
-          # fusionne les rapports de couverture des workers).
-          php artisan test --parallel --processes=4 \
+          # Issue #4976 : la suite parallèle provoque des collisions PostgreSQL
+          # lors de la création des bases `_test_N`, empêchant Clover de se
+          # générer. L’exécution séquentielle rend le gate déterministe.
+          php artisan test \
             --coverage-clover=storage/test-results/clover.xml \
             --coverage-html=storage/coverage-html
 
