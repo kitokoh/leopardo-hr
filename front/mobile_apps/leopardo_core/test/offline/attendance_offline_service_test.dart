@@ -155,6 +155,34 @@ void main() {
       final logs = await db.getAttendanceLogs('emp-6');
       expect(logs.single.checkOut, isNotNull);
     });
+
+    test('check-in online + check-out pendant une coupure : pas de crash, '
+        'update minimal mis en file (#4960)', () async {
+      syncServiceSetMode(syncService, SyncMode.cloud);
+
+      // Check-in en ligne : ID cloud, aucune ligne locale.
+      adapter.queueSuccess(data: {
+        'data': {'id': 'cloud-log-42'},
+      });
+      final checkIn = await service.checkIn(
+        employeeId: 'emp-7',
+        companyId: 'co-1',
+      );
+      expect(checkIn.savedLocally, isFalse);
+      expect(checkIn.synced, isTrue);
+      expect(checkIn.id, 'cloud-log-42');
+
+      // Coupure réseau au check-out : l'ancien code crashe en StateError
+      // (getSingle sur une ligne inexistante) — désormais update minimal.
+      adapter.queueFailure();
+      await service.checkOut(logId: 'cloud-log-42');
+
+      final pending = await db.getPendingItems();
+      expect(pending, hasLength(1));
+      expect(pending.single.entityId, 'cloud-log-42');
+      expect(pending.single.operation, 'update');
+      expect(pending.single.payload, contains('check_out'));
+    });
   });
 }
 
