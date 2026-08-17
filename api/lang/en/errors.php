@@ -121,6 +121,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'The end date must be after or equal to the start date.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manual checkout requires a check-in time.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'The checkout time must be after the check-in time.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'Vehicle deleted.',
+    'SCHEDULE_DELETED' => 'Schedule deleted successfully.',
+    'KIOSK_SESSION_REQUIRED' => 'Kiosk session required.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'AI requires a valid company context.',
+    'EXPORT_FILE_NOT_FOUND' => 'Export file not found.',
+    'PAYMENT_DOCUMENT_MISSING' => 'Payment document is missing.',
     'TRIAL_STEP_LOGIN' => 'Log in with your email and the password above.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'Change your password on first login.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'Add your first employees via QR or manually.',

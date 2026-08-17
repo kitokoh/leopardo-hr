@@ -121,6 +121,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'La date de fin doit être postérieure ou égale à la date de début.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Le départ manuel nécessite une heure d\'arrivée.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'Véhicule supprimé.',
+    'SCHEDULE_DELETED' => 'Planning supprimé avec succès.',
+    'KIOSK_SESSION_REQUIRED' => 'Session kiosque requise.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'L\'IA requiert un contexte entreprise valide.',
+    'EXPORT_FILE_NOT_FOUND' => 'Fichier d\'export introuvable.',
+    'PAYMENT_DOCUMENT_MISSING' => 'Document manquant.',
     'TRIAL_STEP_LOGIN' => 'Connectez-vous avec votre email et le mot de passe ci-dessus.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'Changez votre mot de passe dès la première connexion.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'Ajoutez vos premiers employés via QR ou manuellement.',

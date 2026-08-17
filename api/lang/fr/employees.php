@@ -1,7 +1,7 @@
 <?php
 
 return [
-'work_state_offline' => 'Hors ligne',
+    'work_state_offline' => 'Hors ligne',
     'work_state_leave' => 'En congé',
     'work_state_absent' => 'Absent',
     'work_state_break' => 'En pause',

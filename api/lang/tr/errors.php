@@ -120,6 +120,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'Bitiş tarihi başlangıç tarihinden sonra veya ona eşit olmalıdır.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manuel çıkış için giriş saati gereklidir.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'Çıkış saati giriş saatinden sonra olmalıdır.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'Araç silindi.',
+    'SCHEDULE_DELETED' => 'Program başarıyla silindi.',
+    'KIOSK_SESSION_REQUIRED' => 'Kiosk oturumu gerekli.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'Yapay zeka geçerli bir şirket bağlamı gerektirir.',
+    'EXPORT_FILE_NOT_FOUND' => 'Dışa aktarma dosyası bulunamadı.',
+    'PAYMENT_DOCUMENT_MISSING' => 'Ödeme belgesi eksik.',
     'TRIAL_STEP_LOGIN' => 'E-postanız ve yukarıdaki şifreyle giriş yapın.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'İlk girişte şifrenizi değiştirin.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'İlk çalışanlarınızı QR ile veya manuel olarak ekleyin.',

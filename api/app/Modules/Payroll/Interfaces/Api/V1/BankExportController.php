@@ -200,7 +200,8 @@ class BankExportController extends Controller
 
         $filePath = $bankExport->file_path;
         if ($filePath === null || ! Storage::disk('local')->exists($filePath)) {
-            return response()->json(['message' => 'Export file not found.'], 404);
+            // #4812 : littéral EN déplacé au catalogue errors.*
+            return response()->json(['message' => __('errors.EXPORT_FILE_NOT_FOUND')], 404);
         }
 
         $this->auditLogger->recordSensitive($request, $actor, 'payroll.bank_export', $bankExport, [
