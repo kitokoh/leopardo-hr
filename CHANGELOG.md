@@ -5,6 +5,8 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+## [Unreleased]
+- **fix(admin): résiduel i18n FR — Support/CRM/Edge/NotFound localisés ×4 (Closes #4840).** SupportTicketsView (« Aucun ticket », sélection, erreur de chargement), CrmPipelineView (10 libellés pipeline), EdgeNodesView (table + stats + sync), NotFoundView (liens utiles, système) passent aux catalogues fr/en/ar/tr (clés support.*, crm.*, edge.*, notFound.*). Toast script via le helper `translate` (pattern #4781), plus de chaînes FR/EN en dur dans ces 4 vues.
 - **fix(ci): normalisation de l’URL API dans le smoke E2E (Closes #4216).** Le workflow accepte désormais indifféremment une variable Render racine ou déjà suffixée `/api/v1`, supprime les slash finaux et n’ajoute le segment qu’une seule fois. Cela évite les faux rouges 404 (`/api/v1/api/v1/...`) observés sur les smoke tests de production.
 - **fix(web): page partner localisée ×4 + diacritiques sélecteur de langue (Closes #4796, #4799).** Portail client 100 % FR migré vers `getCopy(locale)` (labels, métriques, tableau commissions, payout, referral, aria-label billing toggle). Sélecteur de langue : « Français » / « Türkçe » avec diacritiques. TrackLabel caption localisé ×4 via copyByLocale. Sync backend shared.php (fr/tr).
 - **fix(ci): VITE_API_URL dans web-ci admin build (#4715).** La garde `vite.config.js` du dashboard admin lève une erreur si `VITE_API_URL` est absent en production-build. La variable est désormais injectée depuis `vars.PROD_API_BASE_URL` dans l'étape Build admin dashboard de `web-ci.yml`.
