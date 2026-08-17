@@ -65,10 +65,12 @@ depuis les steps des workflows ci-dessous, pas declenchees directement.
 
 ---
 
-### 🏢 Gouvernance interne (PLAN_ACTION2) — jamais bloquants pour les externes
+### 🏢 Gouvernance interne (PLAN_ACTION2 / GitHub Issues) — jamais bloquants pour les externes
 
-Ces workflows appartiennent au processus interne multi-agents `docs/PLAN_ACTION2`
-(issue #1731). Ils sont **internes** : sur une PR de fork (contributeur externe)
+Ces workflows appartiennent au processus interne multi-agents issu de `docs/PLAN_ACTION2`
+(issue #1731). Depuis le 2026-07-26, la gestion de projet active passe par **GitHub Issues
+et GitHub Projects** (`docs/PLAN_ACTION2/` est un redirect vers l'archive — voir
+`docs/archive/PLAN_ACTION2/`). Ils sont **internes** : sur une PR de fork (contributeur externe)
 ils sont **sautés** (`if: github.event.pull_request.head.repo.full_name ==
 github.repository`) — le check apparaît « skipped », aucun bruit pour l'externe.
 Ils ne font **jamais** partie des checks requis de la branche `main`.
