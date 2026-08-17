@@ -87,6 +87,24 @@ reste ouverte même une fois le correctif livré. Règles :
   preuve code : commentaire + état closed).
 - Fallback : fermeture manuelle avec vérification du code sur main.
 
+## Garde anti « ghost close » (issue #4816)
+
+Une issue ne doit être **clôturée que lorsqu'un correctif est réellement
+mergé** (auto-close par `Closes #N` sur main) **ou** avec un commentaire
+motivé (`wontfix` / `superseded` / renvoi vers le ticket canonique).
+Clôturer « pour faire propre » sans code casse le backlog : le visuel devient
+vert alors que le correctif n'existe pas (vague du 2026-08-17 : #4690/#4687/
+#4688/#4305/#4410 fermées non résolues, vérifié sur main).
+
+- Règle : **jamais de `gh issue close` sans commit de merge associé OU sans
+  commentaire de motivation explicite.**
+- Garde de détection : `dev-hub/tools/check-issues-closed-without-merge.sh
+  <owner/repo>` liste les issues clôturées sans commit de fermeture ET sans
+  PR mergée les référençant (rapport non bloquant — ré-ouverture/correction
+  manuelle avec preuve code, même esprit que #2512).
+- Si une issue a été clôturée à tort : la ré-ouvrir, créer le ticket de
+  correctif dédié, et référencer la vérification code dans un commentaire.
+
 ## Lecon 2026-08-16 — Famine du pipeline de deploiement (issue #3545)
 
 - **`cancel-in-progress: false` ne protege PAS les runs `pending`** : GitHub ne
