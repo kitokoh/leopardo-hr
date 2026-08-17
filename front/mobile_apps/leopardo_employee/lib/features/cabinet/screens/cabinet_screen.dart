@@ -340,7 +340,6 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 if (!mounted) return;
                 final url = result['share_url'] ?? '';
                 await Clipboard.setData(ClipboardData(text: url));
-                if (!mounted) return;
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('Lien copié : $url')));
               },
