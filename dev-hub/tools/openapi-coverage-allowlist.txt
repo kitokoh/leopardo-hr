@@ -1,3 +1,13 @@
+# openapi-coverage-allowlist.txt — gaps documentés (exclusions volontaires)
+#
+# Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier
+# fait échouer la CI. Ajouter une route ici UNIQUEMENT avec justification
+# (issue de suivi, alias documenté ailleurs, surface hors contrat public).
+# Entrées devenues documentées à purger (issue #3596) : le checker échoue
+# avec --strict-staleness. Régénéré le 2026-08-17 (revue PM) depuis
+# check-openapi-route-coverage.py --json.
+
+
 ## ai.php — 9 route(s)
 GET /v1/ai/agent/workflows
 GET /v1/ai/workflows/weekly-report
@@ -30,15 +40,9 @@ POST /v1/webhooks/chargily
 POST /v1/webhooks/email-bounce
 POST /v1/webhooks/stripe
 
-## modules/absence.php — 4 route(s)
-GET /v1/absences/{param}/proof
-GET /v1/employees/{param}/leave-balances
-
-## modules/cabinet.php — 4 route(s)
-DELETE /v1/cabinet/shares/{param}
-GET /v1/cabinet/shared/{param}
-GET /v1/cabinet/shares
-POST /v1/cabinet/shares
+## api/app/Modules/SmartAttendance/routes/smart_attendance.php — 2 route(s)
+GET /api/v1/smart-attendance/mode-settings
+PUT /api/v1/smart-attendance/mode-settings
 
 ## modules/dashboard.php — 11 route(s)
 DELETE /v1/api-tokens/{param}
@@ -53,9 +57,7 @@ POST /v1/api-tokens
 POST /v1/employees/{param}/assign-role
 POST /v1/notifications/mark-all-read
 
-## modules/hr_app.php — 7 route(s)
-
-## modules/hr_extended.php — 17 route(s)
+## modules/hr_extended.php — 7 route(s)
 DELETE /v1/recruitment/applicants/{param}
 DELETE /v1/recruitment/interviews/{param}
 DELETE /v1/recruitment/jobs/{param}
@@ -63,13 +65,6 @@ GET /v1/me/contract
 GET /v1/recruitment/applicants/{param}
 PATCH /v1/recruitment/applicants/{param}/status
 PATCH /v1/recruitment/interviews/{param}/feedback
-
-## modules/integrations.php — 5 route(s)
-DELETE /v1/calendar/disconnect/{param}
-GET /v1/calendar/connections
-GET /v1/calendar/events
-POST /v1/calendar/connect
-POST /v1/calendar/sync
 
 ## modules/marketing.php — 9 route(s)
 DELETE /v1/marketing/posts/{param}
@@ -82,7 +77,7 @@ POST /v1/marketing/posts/{param}/publish
 POST /v1/marketing/social-accounts/connect
 POST /v1/marketing/social-accounts/disconnect
 
-## modules/rh.php — 18 route(s)
+## modules/rh.php — 12 route(s)
 DELETE /v1/payrolls/{param}
 GET /v1/notifications/stream
 GET /v1/payrolls/{param}
@@ -95,19 +90,3 @@ PATCH /v1/sites/{param}
 POST /v1/notifications/sse-token
 PUT /v1/payrolls/{param}
 PUT /v1/payrolls/{param}/validate
-
-## modules/user.php — 9 route(s)
-
-## modules DDD (SmartAttendance) — enregistrees via loadRoutesFrom (hors api/routes/) — 12 route(s)
-GET /api/v1/smart-attendance/config
-GET /api/v1/smart-attendance/dashboard
-GET /api/v1/smart-attendance/employees/{param}/preference
-GET /api/v1/smart-attendance/mode-settings
-GET /api/v1/smart-attendance/my-sessions
-GET /api/v1/smart-attendance/sessions
-GET /api/v1/smart-attendance/sessions/{param}
-POST /api/v1/smart-attendance/geo-events
-POST /api/v1/smart-attendance/sessions/{param}/approve
-POST /api/v1/smart-attendance/sessions/{param}/reject
-PUT /api/v1/smart-attendance/mode-settings
-PUT /api/v1/smart-attendance/preferences
