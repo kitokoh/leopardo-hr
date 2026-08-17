@@ -162,7 +162,27 @@ class SelfServiceTrialController extends Controller
             ], 200);
         }
 
-        $this->requestTrialSignup->execute($validated);
+        // Issue #4866 : le chemin legacy (sans requestedWorkflow ou
+        // self_service) échouait en 500 INTERNAL_ERROR quand la création de
+        // la CompanyRequest échouait (ex. schéma prod incomplet) — un échec
+        // d'écriture n'est pas une erreur client à 422, mais il ne doit
+        // JAMAIS devenir un 500 brut : on répond 503 SERVICE_UNAVAILABLE
+        // avec un message localisé, le client peut réessayer.
+        try {
+            $this->requestTrialSignup->execute($validated);
+        } catch (\Throwable $e) {
+            Log::error('trial.signup_legacy_failed', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'TRIAL_SIGNUP_UNAVAILABLE',
+                'message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+                'localized_message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+            ], 503);
+        }
 
         return new JsonResponse([
             'success' => true,

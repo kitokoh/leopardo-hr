@@ -4,6 +4,8 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { t } from '@/lib/i18n/locale-catalog';
+import { getPreferredLocale } from '@/lib/i18n';
 import {
   FileText,
   Search,
@@ -27,6 +29,7 @@ interface Contract {
 }
 
 export default function ContractsPage() {
+  const locale = getPreferredLocale();
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -132,9 +135,10 @@ export default function ContractsPage() {
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+          {/* #4574 : placeholder localisé */}
           <input
             type="text"
-            placeholder="Rechercher un employe ou un type de contrat..."
+            placeholder={t(locale, 'contracts.searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full rounded-xl border border-app-border bg-white pl-10 pr-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -145,7 +149,7 @@ export default function ContractsPage() {
           onChange={e => setStatusFilter(e.target.value)}
           className="rounded-xl border border-app-border bg-white px-3 py-2.5 text-sm font-medium text-slate-700"
         >
-          <option value="all">Tous les statuts</option>
+          <option value="all">{t(locale, 'contracts.allStatuses')}</option>
           <option value="active">Actif</option>
           <option value="suspended">Suspendu</option>
           <option value="terminated">Termine</option>
