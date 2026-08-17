@@ -13,6 +13,7 @@ use App\Modules\Fleet\Domain\Models\Vehicle;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -264,13 +265,16 @@ class QaHardeningEndpointsTest extends TestCase
         [$company, $manager] = $this->tenantFixture();
 
         Http::fake([
-            'erp.client.example/*' => Http::response('{"ok":true}', 200, ['Content-Type' => 'application/json']),
+            'example.com/*' => Http::response('{"ok":true}', 200, ['Content-Type' => 'application/json']),
         ]);
 
         $endpoint = WebhookEndpoint::query()->create([
             'company_id' => $company->id,
             'name' => 'ERP',
-            'url' => 'https://erp.client.example/hook',
+            // #4549 : la garde anti-SSRF (NotPrivateUrl::isPublicHost) rejette les
+            // TLD réservés non résolvables (.example) en fail-closed — le test
+            // utilise un hôte public résolvable comme les autres tests webhook.
+            'url' => 'https://example.com/hook',
             'secret' => 'test-secret',
             'events' => ['employee.created'],
             'active' => true,
@@ -285,7 +289,7 @@ class QaHardeningEndpointsTest extends TestCase
             ->assertJsonStructure(['message', 'status', 'http_status', 'duration_ms', 'delivery']);
 
         Http::assertSent(function ($request): bool {
-            return str_contains($request->url(), 'erp.client.example/hook')
+            return str_contains($request->url(), 'example.com/hook')
                 && $request->hasHeader('X-Leopardo-Event', 'test')
                 && $request->hasHeader('Webhook-Signature');
         });
@@ -332,7 +336,23 @@ class QaHardeningEndpointsTest extends TestCase
 
         /** @var Company $company */
         $company = Company::factory()->create(['name' => 'TECHCORP ALGERIE']);
-        Employee::factory()->create([
+
+        // Le contrôleur lit le schéma PUBLIC (public.users + user_employee_links,
+        // cf. PlatformUsersApiTest) : un simple Employee (schéma tenant) ne suffit
+        // pas — il faut une vraie ligne users + le lien employé.
+        $userId = DB::table('users')->insertGetId([
+            'first_name' => 'Amina',
+            'last_name' => 'Benali',
+            'email' => 'amina@techcorp.example',
+            'password_hash' => Hash::make('password123'),
+            'provider' => 'local',
+            'preferred_language' => 'fr',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
             'first_name' => 'Amina',
             'last_name' => 'Benali',
@@ -340,9 +360,20 @@ class QaHardeningEndpointsTest extends TestCase
             'status' => 'active',
         ]);
 
+        DB::table('user_employee_links')->insert([
+            'user_id' => $userId,
+            'employee_id' => $employee->id,
+            'company_id' => $company->id,
+            'status' => 'active',
+            'linked_at' => now(),
+            'created_at' => now(),
+        ]);
+
         $this->getJson('/api/v1/admin/users')
             ->assertOk()
-            ->assertJsonStructure(['data' => [['id', 'name', 'email', 'status', 'company_id', 'company_name']]]);
+            ->assertJsonPath('data.0.email', 'amina@techcorp.example')
+            ->assertJsonPath('data.0.company.name', 'TECHCORP ALGERIE')
+            ->assertJsonStructure(['data' => [['id', 'name', 'email', 'status', 'is_active', 'company']]]);
     }
 
     public function test_admin_users_requires_super_admin_auth(): void
