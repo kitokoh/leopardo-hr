@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
+import { t as i18nT } from '@/lib/i18n/locale-catalog';
 import { CreditCard, Download, ExternalLink, FileText, Loader2, ShieldCheck, XCircle } from 'lucide-react';
 
 const emptySubscribe = () => () => {};
@@ -95,7 +96,7 @@ export default function BillingPage() {
     new Intl.NumberFormat(toIntlLocale(locale), { style: 'currency', currency }).format(val || 0);
 
   const handleCancel = async () => {
-    if (!confirm('Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.')) return;
+    if (!confirm(i18nT(locale, 'billing.cancel_subscription_confirm', "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours."))) return;
     setActionLoading('cancel');
     setError(null);
     try {
@@ -206,12 +207,12 @@ export default function BillingPage() {
                     </h2>
                     <p className="mt-1 text-sm text-slate-500">
                       {subscription.current_period_start && subscription.current_period_end
-                        ? `Periode: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
-                        : 'Aucune période active'}
+                        ? `${i18nT(locale, 'billing.period_label', 'Période')}: ${new Date(subscription.current_period_start).toLocaleDateString(toIntlLocale(locale))} au ${new Date(subscription.current_period_end).toLocaleDateString(toIntlLocale(locale))}`
+                        : i18nT(locale, 'billing.no_active_period', 'Aucune période active')}
                     </p>
                   </>
                 ) : (
-                  <h2 className="mt-2 text-xl font-bold text-slate-500">Aucun abonnement actif</h2>
+                  <h2 className="mt-2 text-xl font-bold text-slate-500">{i18nT(locale, 'billing.no_active_subscription', 'Aucun abonnement actif')}</h2>
                 )}
               </div>
               {subscription ? (
