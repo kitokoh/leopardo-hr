@@ -282,7 +282,7 @@ class BackgroundLocationService {
           accuracy: pending.accuracy,
         );
         _pendingGeoEvents.remove(pending);
-      } catch (error, stackTrace) {
+      } catch (error) {
         debugPrint(
           '[BackgroundLocationService] replay ${pending.eventType} '
           '(créé ${pending.createdAt.toIso8601String()}) failed : $error',

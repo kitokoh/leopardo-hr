@@ -7,7 +7,6 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
-import 'package:leopardo_employee/features/smart_attendance/screens/attendance_mode_picker_screen.dart';
 
 /// Écran principal du module Pointage Intelligent.
 ///
