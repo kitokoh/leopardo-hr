@@ -10,6 +10,7 @@ import 'package:leopardo_core/core/widgets/glass_card.dart';
 import 'package:leopardo_manager/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_manager/features/smart_attendance/providers/smart_attendance_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran liste des sessions GPS en attente de validation — Manager
 class PendingGeoSessionsScreen extends ConsumerStatefulWidget {
@@ -38,8 +39,8 @@ class _PendingGeoSessionsScreenState
       ref.invalidate(pendingGeoSessionsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Session approuvée ✓'),
+          SnackBar(
+            content: Text(context.l10n.sessionApproved),
             backgroundColor: AppColors.success,
           ),
         );
@@ -120,15 +121,15 @@ class _PendingGeoSessionsScreenState
             .rejectSession(session.id, note: _noteController.text.trim());
         ref.invalidate(pendingGeoSessionsProvider);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Session rejetée')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.sessionRejected)));
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Erreur : $e'),
+              content: Text(context.l10n.errorPrefix(e.toString())),
               backgroundColor: AppColors.danger,
             ),
           );
@@ -143,16 +144,16 @@ class _PendingGeoSessionsScreenState
 
     return MobilePage(
       appBar: MobileTopBar(
-        title: 'À valider',
+        title: context.l10n.pendingSessionsToValidate,
         subtitle: 'Sessions Smart Attendance',
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => context.pop(),
         ),
         actions: [
           IconButton(
-            tooltip: 'Actualiser',
+            tooltip: context.l10n.refresh,
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(pendingGeoSessionsProvider),
           ),
@@ -162,12 +163,12 @@ class _PendingGeoSessionsScreenState
         sessionsAsync.when(
           data: (sessions) {
             if (sessions.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.only(top: 80),
+              return Padding(
+                padding: const EdgeInsets.only(top: 80),
                 child: EmptyState(
                   icon: Icons.check_circle_outline,
-                  title: 'Tout est à jour',
-                  description: 'Aucune session GPS en attente de validation.',
+                  title: context.l10n.pendingSessionsUpToDate,
+                  description: context.l10n.pendingSessionsEmpty,
                 ),
               );
             }
@@ -178,7 +179,10 @@ class _PendingGeoSessionsScreenState
               child: ListView.separated(
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 itemCount: sessions.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
@@ -254,7 +258,9 @@ class _SessionCard extends StatelessWidget {
                 child: Text(
                   session.employeeName.isNotEmpty
                       ? session.employeeName
-                      : 'Employé #${session.employeeId}',
+                      : context.l10n.employeeNumber(
+                          session.employeeId.toString(),
+                        ),
                   style: AppTypography.subtitle.copyWith(
                     color: MobileSurface.text,
                     fontWeight: FontWeight.w600,
@@ -273,7 +279,9 @@ class _SessionCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Entrée : ${fmt.format(session.startedAt.toLocal())}',
+                context.l10n.sessionEntryAt(
+                  fmt.format(session.startedAt.toLocal()),
+                ),
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.muted,
                 ),

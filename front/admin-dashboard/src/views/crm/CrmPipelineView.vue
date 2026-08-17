@@ -2,13 +2,13 @@
   <div class="space-y-6 h-full flex flex-col">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between shrink-0">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Pipeline Commercial</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{{ $t('crm.title', 'Pipeline Commercial') }}</h1>
         <p class="mt-1 text-sm text-gray-500">
           {{ $t('crm.subtitle') }}
         </p>
       </div>
       <button class="btn-secondary" :disabled="isLoading" @click="loadPipeline">
-        Actualiser
+        {{ $t('crm.refresh', 'Actualiser') }}
       </button>
     </div>
 
@@ -50,7 +50,7 @@
         <div class="flex-1 p-3 space-y-3 overflow-y-auto">
           <div v-for="item in pipeline.leads" :key="item.id" class="glass-card dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800">
             <h3 class="font-bold text-slate-900 dark:text-white">{{ item.company_name }}</h3>
-            <p class="text-xs text-slate-500 mt-1">{{ item.sector || 'Secteur non précisé' }}</p>
+            <p class="text-xs text-slate-500 mt-1">{{ item.sector || $t('support.sectorUnknown', 'Secteur non précisé') }}</p>
             <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
               {{ formatSource(item.source) }}
             </span>
@@ -70,7 +70,7 @@
         <div class="p-4 border-b border-emerald-100 dark:border-emerald-900/30 flex justify-between items-center dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-            En Essai (Trial)
+            {{ $t('crm.columnTrials', 'En Essai (Trial)') }}
           </h2>
           <span class="text-xs font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400">
             {{ pipeline.trials?.length || 0 }}
@@ -85,7 +85,7 @@
             </span>
             <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
-              <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{{ item.company.days_left }}j restants</span>
+              <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{{ item.company.days_left }}{{ $t('crm.daysLeft', 'j restants') }}</span>
             </div>
           </div>
           <div v-if="!pipeline.trials?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
@@ -99,7 +99,7 @@
         <div class="p-4 border-b border-blue-100 dark:border-blue-900/30 flex justify-between items-center dark:bg-slate-900 rounded-t-xl">
           <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-            Clients Actifs
+            {{ $t('crm.columnActive', 'Clients Actifs') }}
           </h2>
           <span class="text-xs font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-400">
             {{ pipeline.active?.length || 0 }}
@@ -113,7 +113,7 @@
             </span>
             <p v-if="item.note" class="text-xs text-slate-400 mt-2 line-clamp-2">{{ item.note }}</p>
             <div class="mt-3 flex items-center justify-between">
-              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Actif</span>
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">{{ $t('crm.activeBadge', 'Actif') }}</span>
             </div>
           </div>
           <div v-if="!pipeline.active?.length" class="text-center p-4 text-sm text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-lg">
@@ -127,7 +127,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-transparent rounded-t-xl">
           <h2 class="font-bold text-slate-600 dark:text-slate-400 flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-slate-400"></span>
-            Rejetés / Expirés
+            {{ $t('crm.columnRejected', 'Rejetés / Expirés') }}
           </h2>
           <span class="text-xs font-semibold px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded-full text-slate-600 dark:text-slate-400">
             {{ pipeline.rejected?.length || 0 }}
@@ -155,10 +155,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import { useLocaleStore } from '@/stores/locale'
-import { toIntlLocale } from '@/i18n/index.js'
+import { toIntlLocale, translate } from '@/i18n/index.js'
 
 const router = useRouter()
 const localeStore = useLocaleStore()
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
 const isLoading = ref(false)
 const errorMessage = ref('')
 const pipeline = ref({
@@ -176,16 +177,6 @@ const meta = ref({
   }
 })
 
-const SOURCE_LABELS = {
-  signup_form: 'Inscription',
-  demo_form: 'Demande de démo',
-  contact_form: 'Contact',
-  newsletter_form: 'Newsletter',
-  self_service_trial: 'Essai self-service',
-  manager_request: 'Demande manager',
-  direct: 'Direct'
-}
-
 async function loadPipeline() {
   isLoading.value = true
   errorMessage.value = ''
@@ -199,7 +190,7 @@ async function loadPipeline() {
     }
   } catch (error) {
     console.error('Failed to load CRM pipeline:', error)
-    errorMessage.value = 'Impossible de charger le pipeline CRM.'
+    errorMessage.value = t('crm.loadError', 'Impossible de charger le pipeline CRM.')
   } finally {
     isLoading.value = false
   }
@@ -213,8 +204,17 @@ function formatRate(rate) {
 }
 
 function formatSource(source) {
-  if (!source) return SOURCE_LABELS.direct
-  return SOURCE_LABELS[source] || source
+  const labels = {
+    signup_form: t('crm.sourceSignup', 'Inscription'),
+    demo_form: t('crm.sourceDemo', 'Demande de démo'),
+    contact_form: t('crm.sourceContact', 'Contact'),
+    newsletter_form: t('crm.sourceNewsletter', 'Newsletter'),
+    self_service_trial: t('crm.sourceSelfService', 'Essai self-service'),
+    manager_request: t('crm.sourceManager', 'Demande manager'),
+    direct: t('crm.sourceDirect', 'Direct'),
+  }
+  if (!source) return labels.direct
+  return labels[source] || source
 }
 
 

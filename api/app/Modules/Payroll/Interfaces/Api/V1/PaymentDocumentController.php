@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\PaymentDocumentResource;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Http\JsonResponse;
@@ -60,7 +60,8 @@ class PaymentDocumentController extends Controller
 
         $disk = Storage::disk($paymentDocument->disk ?: 'local');
         if (! $disk->exists($paymentDocument->path)) {
-            return response()->json(['message' => 'Document file is missing.'], 404);
+            // #4812 : littéral EN déplacé au catalogue errors.*
+            return response()->json(['message' => __('errors.PAYMENT_DOCUMENT_MISSING')], 404);
         }
 
         return $disk->download(
@@ -104,4 +105,3 @@ class PaymentDocumentController extends Controller
         }
     }
 }
-
