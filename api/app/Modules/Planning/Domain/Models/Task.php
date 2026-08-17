@@ -38,7 +38,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, TaskComment> $comments
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Task extends Model
 {
@@ -47,7 +48,14 @@ class Task extends Model
 
     protected $table = 'tasks';
 
-    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility', 'status'];
+    // #4861/#4883 (audit 2026-08-17) : `status` et `performance_score` restent
+    // volontairement HORS $fillable (garde SensitiveFillableGuardTest) :
+    // assignation explicite dans TaskController::update / applyCompletionMetrics.
+        protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility'];
+    // #4861 (audit 2026-08-17) : `status` + `performance_score` étaient absents
+    // du fillable → PATCH silencieusement ignoré (mass-assignment) et score de
+    // régularité taskCompletion toujours 0.
+    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility', 'status', 'performance_score'];
 
     protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'completed_at' => 'datetime', 'performance_score' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 

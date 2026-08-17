@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,13 +50,15 @@ class WebAuthController extends Controller
         if ($employee->status !== 'active') {
             return back()
                 ->withInput(['email' => $validated['email']])
-                ->withErrors(['email' => 'Compte inactif.']);
+                // #4878 : littéral FR déplacé au catalogue errors.*
+                ->withErrors(['email' => __('errors.EMPLOYEE_INACTIVE')]);
         }
 
         if (in_array($employee->company?->status, ['suspended', 'expired'], true)) {
             return back()
                 ->withInput(['email' => $validated['email']])
-                ->withErrors(['email' => 'Societe suspendue ou expiree.']);
+                // #4878 : littéral FR déplacé au catalogue errors.*
+                ->withErrors(['email' => __('errors.COMPANY_SUSPENDED_EXPIRED')]);
         }
 
         Auth::guard('web')->login($employee);
