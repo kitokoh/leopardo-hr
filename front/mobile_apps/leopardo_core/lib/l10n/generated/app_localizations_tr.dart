@@ -3194,11 +3194,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String attendanceDaySummary(
-    String date,
-    String status,
-    String range,
-    String hours,
-  ) {
+      String date, String status, String range, String hours) {
     return '$date günü, durum $status, $range, $hours.';
   }
 
