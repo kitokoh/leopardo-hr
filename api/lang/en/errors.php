@@ -166,6 +166,11 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'Manager access required.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'Insufficient manager role.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'AI analytics access requires Principal or RH manager role.',
     'MANAGER_REQUIRED' => 'A manager access is required.',
     'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
     'EMPLOYEE_NOT_FOUND' => 'Employee not found.',

@@ -165,6 +165,11 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'الوصول مخصص للمديرين.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'دور المدير غير كافٍ.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'يتطلب الوصول إلى تحليلات الذكاء الاصطناعي دور المدير الرئيسي أو مدير الموارد البشرية.',
     'MANAGER_REQUIRED' => 'مطلوب وصول المدير.',
     'INSUFFICIENT_ROLE' => 'صلاحية غير كافية لهذا الإجراء.',
     'EMPLOYEE_NOT_FOUND' => 'الموظف غير موجود.',
