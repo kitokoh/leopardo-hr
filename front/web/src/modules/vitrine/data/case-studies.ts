@@ -236,6 +236,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
   moduleIllustrates: string;
   moduleExplore: string;
   discoverModule: string;
+  ctaDescription: string;
+  ctaPrimaryText: string;
 }> = {
   fr: {
     backLink: 'Toutes les études de cas',
@@ -246,6 +248,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'Ce cas illustre le module {module}',
     moduleExplore: 'Découvrez comment Leopardo RH couvre ce besoin au quotidien, ou explorez les autres études de cas.',
     discoverModule: 'Découvrir {module}',
+    ctaDescription: 'Rejoignez les entreprises qui ont choisi Leopardo RH',
+    ctaPrimaryText: 'Essai gratuit',
   },
   en: {
     backLink: 'All case studies',
@@ -256,6 +260,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'This case illustrates the {module} module',
     moduleExplore: 'Discover how Leopardo RH covers this need day to day, or explore other case studies.',
     discoverModule: 'Discover {module}',
+    ctaDescription: 'Join the companies that chose Leopardo RH',
+    ctaPrimaryText: 'Free trial',
   },
   tr: {
     backLink: 'Tüm vaka çalışmaları',
@@ -266,6 +272,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'Bu vaka {module} modülünü gösterir',
     moduleExplore: 'Leopardo RH’nin bu ihtiyacı günlük olarak nasıl karşıladığını keşfedin veya diğer vaka çalışmalarına göz atın.',
     discoverModule: '{module} modülünü keşfedin',
+    ctaDescription: 'Leopardo RH’yi seçen şirketlere katılın',
+    ctaPrimaryText: 'Ücretsiz deneme',
   },
   ar: {
     backLink: 'كل دراسات الحالة',
@@ -276,5 +284,7 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'توضح هذه الحالة وحدة {module}',
     moduleExplore: 'اكتشف كيف تغطي Leopardo RH هذه الحاجة يومياً، أو استكشف دراسات الحالة الأخرى.',
     discoverModule: 'اكتشف {module}',
+    ctaDescription: 'انضم إلى الشركات التي اختارت Leopardo RH',
+    ctaPrimaryText: 'تجربة مجانية',
   },
 };
