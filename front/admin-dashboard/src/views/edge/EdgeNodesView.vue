@@ -5,7 +5,7 @@
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $t('edge.title') }}</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Gestion des nodes Edge Leopardo — synchronisation offline-first
+          {{ $t('edge.subtitle', 'Gestion des nodes Edge Leopardo — synchronisation offline-first') }}
         </p>
       </div>
       <button
@@ -14,7 +14,7 @@
         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <span :class="['inline-block w-4 h-4', loading ? 'animate-spin' : '']">↻</span>
-        Actualiser
+        {{ $t('edge.refresh', 'Actualiser') }}
       </button>
     </div>
 
@@ -30,8 +30,8 @@
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <EdgeStatCard :label="$t('edge.nodesTotal')" :value="stats.total" icon="🖥️" color="indigo" />
-      <EdgeStatCard label="En ligne" :value="stats.online" icon="✅" color="green" />
-      <EdgeStatCard label="Hors ligne" :value="stats.offline" icon="⭕" color="gray" />
+      <EdgeStatCard :label="$t('edge.online', 'En ligne')" :value="stats.online" icon="✅" color="green" />
+      <EdgeStatCard :label="$t('edge.offline', 'Hors ligne')" :value="stats.offline" icon="⭕" color="gray" />
       <EdgeStatCard :label="$t('edge.licensesExpired')" :value="stats.licenseExpired" icon="⚠️" color="red" />
     </div>
 
@@ -45,7 +45,7 @@
       <div v-else-if="!loading && nodes.length === 0" class="p-12 text-center text-gray-400">
         <div class="text-4xl mb-3 opacity-30">🖥️</div>
         <p class="font-medium">{{ $t('edge.empty') }}</p>
-        <p class="text-sm mt-1">Les nodes apparaissent ici une fois enregistrés via l'API Edge.</p>
+        <p class="text-sm mt-1">{{ $t('edge.emptyHint', "Les nodes apparaissent ici une fois enregistrés via l'API Edge.") }}</p>
       </div>
 
       <table v-else class="w-full text-sm">
@@ -79,10 +79,10 @@
                 ]"
               >
                 <span :class="['w-1.5 h-1.5 rounded-full', node.is_online ? 'bg-green-500' : 'bg-gray-400']" />
-                {{ node.is_online ? 'En ligne' : 'Hors ligne' }}
+                {{ node.is_online ? $t('edge.online', 'En ligne') : $t('edge.offline', 'Hors ligne') }}
               </span>
               <div v-if="!node.is_online && node.last_seen_at" class="text-xs text-red-400 mt-0.5">
-                Vu {{ formatRelative(node.last_seen_at) }}
+                {{ $t('edge.lastSeenPrefix', 'Vu') }} {{ formatRelative(node.last_seen_at) }}
               </div>
             </td>
 
@@ -91,7 +91,7 @@
                 {{ licenseLabel(node.license_valid) }}
               </span>
               <div v-if="node.license_expires_at" class="text-xs text-gray-400 mt-0.5">
-                Exp. {{ formatDate(node.license_expires_at) }}
+                {{ $t('edge.expiresPrefix', 'Exp.') }} {{ formatDate(node.license_expires_at) }}
               </div>
             </td>
 
@@ -110,7 +110,7 @@
                 </button>
                 <span class="text-gray-300 dark:text-gray-600">|</span>
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
-                  Détails
+                  {{ $t('edge.details', 'Détails') }}
                 </button>
               </div>
             </td>
@@ -136,10 +136,11 @@ import EdgeStatCard from '@/components/edge/EdgeStatCard.vue';
 import EdgeNodeModal from '@/components/edge/EdgeNodeModal.vue';
 import { useEdgeNodesStore } from '@/stores/edgeNodes';
 import { useLocaleStore } from '@/stores/locale';
-import { toIntlLocale } from '@/i18n/index.js';
+import { toIntlLocale, translate } from '@/i18n/index.js';
 
 const store = useEdgeNodesStore();
 const localeStore = useLocaleStore();
+const t = (key, fallback = '') => translate(localeStore.current, key, fallback);
 const loading = ref(false);
 const syncingNodeId = ref(null);
 // QA 2026-08-15 (#2658) : état d'erreur visible (avant : rejections non
@@ -165,7 +166,7 @@ async function refresh() {
   } catch (err) {
     loadError.value = err?.response?.data?.localized_message
       || err?.message
-      || 'Erreur lors du chargement des nodes Edge.';
+      || t('edge.loadError', 'Erreur lors du chargement des nodes Edge.');
     toast.error(loadError.value);
   } finally {
     loading.value = false;
@@ -178,11 +179,11 @@ async function triggerSync(node) {
   try {
     await store.triggerSync(node.id);
     await refresh();
-    toast.success(`Synchronisation lancée pour ${node.name || node.id}`);
+    toast.success(t('edge.syncStarted', 'Synchronisation lancée pour :name').replace(':name', String(node.name || node.id)));
   } catch (err) {
     loadError.value = err?.response?.data?.localized_message
       || err?.message
-      || 'Erreur lors du déclenchement de la synchronisation.';
+      || t('edge.syncError', 'Erreur lors du déclenchement de la synchronisation.');
     toast.error(loadError.value);
   } finally {
     syncingNodeId.value = null;
@@ -200,7 +201,7 @@ function licenseClass(valid) {
 }
 
 function licenseLabel(valid) {
-  return valid ? 'Valide' : 'Invalide';
+  return valid ? t('edge.licenseValid', 'Valide') : t('edge.licenseInvalid', 'Invalide');
 }
 
 function formatDate(iso) {
@@ -210,10 +211,10 @@ function formatDate(iso) {
 function formatRelative(iso) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "à l'instant";
-  if (mins < 60) return `il y a ${mins} min`;
+  if (mins < 1) return t('edge.justNow', "à l'instant");
+  if (mins < 60) return t('edge.minutesAgo', 'il y a :count min').replace(':count', String(mins));
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `il y a ${hrs} h`;
+  if (hrs < 24) return t('edge.hoursAgo', 'il y a :count h').replace(':count', String(hrs));
   return formatDate(iso);
 }
 
