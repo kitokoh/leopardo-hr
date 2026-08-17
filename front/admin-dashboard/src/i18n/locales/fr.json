@@ -1236,7 +1236,10 @@
     "showingSuffix": "demandes",
     "loadError": "Impossible de synchroniser les demandes clients.",
     "toastApproved": "Demande approuvée. Provisionnement lancé.",
-    "toastRejected": "Demande rejetée."
+    "toastRejected": "Demande rejetée.",
+    "noTicket": "Aucun ticket",
+    "selectTicket": "Sélectionnez un ticket pour voir la conversation",
+    "loadConversationError": "Impossible de charger la conversation."
   },
   "reports": {
     "attendance_title": "Résumé Présences",
@@ -1437,5 +1440,37 @@
     "statsLoadError": "Erreur lors du chargement des stats système",
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
     "title": "Administration Système"
+  },
+  "crm": {
+    "subtitle": "Suivi des leads de l'entrée jusqu'à la conversion payante.",
+    "leadsTotal": "Leads totaux",
+    "leadToTrialRate": "Taux lead -> essai",
+    "leadToClientRate": "Taux lead -> client payant",
+    "loading": "Chargement du pipeline...",
+    "leadsIncoming": "Leads Entrants",
+    "noLead": "Aucun lead",
+    "noTrial": "Aucun essai en cours",
+    "noClient": "Aucun client actif converti",
+    "noHistory": "Aucun historique"
+  },
+  "edge": {
+    "title": "Nodes Edge",
+    "nodesTotal": "Nodes total",
+    "licensesExpired": "Licences expirées",
+    "loading": "Chargement des nodes…",
+    "empty": "Aucun node Edge enregistré",
+    "colNode": "Node",
+    "colStatus": "Statut",
+    "colLicense": "Licence",
+    "colLastSync": "Dernière sync",
+    "colActions": "Actions",
+    "syncing": "Sync…",
+    "sync": "Sync"
+  },
+  "notFound": {
+    "backToDashboard": "Retour au tableau de bord",
+    "usefulLinks": "Liens utiles",
+    "system": "Système",
+    "systemConfig": "Configuration système"
   }
 }

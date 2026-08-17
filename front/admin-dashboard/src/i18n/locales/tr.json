@@ -1236,7 +1236,10 @@
     "showingSuffix": "talep",
     "loadError": "Müşteri talepleri senkronize edilemedi.",
     "toastApproved": "Talep onaylandı. Sağlama başladı.",
-    "toastRejected": "Talep reddedildi."
+    "toastRejected": "Talep reddedildi.",
+    "noTicket": "Bilet yok",
+    "selectTicket": "Konuşmayı görüntülemek için bir bilet seçin",
+    "loadConversationError": "Konuşma yüklenemedi."
   },
   "reports": {
     "attendance_title": "Yoklama Özeti",
@@ -1437,5 +1440,37 @@
     "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
     "subtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
     "title": "Sistem Yönetimi"
+  },
+  "crm": {
+    "subtitle": "Potansiyel müşterileri girişten ücretli dönüşüme kadar takip edin",
+    "leadsTotal": "Toplam potansiyel müşteri",
+    "leadToTrialRate": "Potansiyel müşteri -> deneme oranı",
+    "leadToClientRate": "Potansiyel müşteri -> ücretli müşteri oranı",
+    "loading": "Hat yükleniyor...",
+    "leadsIncoming": "Gelen Potansiyel Müşteriler",
+    "noLead": "Potansiyel müşteri yok",
+    "noTrial": "Devam eden deneme yok",
+    "noClient": "Dönüştürülmüş aktif müşteri yok",
+    "noHistory": "Geçmiş yok"
+  },
+  "edge": {
+    "title": "Edge Düğümleri",
+    "nodesTotal": "Toplam düğüm",
+    "licensesExpired": "Süresi dolan lisanslar",
+    "loading": "Düğümler yükleniyor…",
+    "empty": "Kayıtlı Edge düğümü yok",
+    "colNode": "Düğüm",
+    "colStatus": "Durum",
+    "colLicense": "Lisans",
+    "colLastSync": "Son senkronizasyon",
+    "colActions": "İşlemler",
+    "syncing": "Senkronize ediliyor…",
+    "sync": "Senkronize"
+  },
+  "notFound": {
+    "backToDashboard": "Panele dön",
+    "usefulLinks": "Faydalı bağlantılar",
+    "system": "Sistem",
+    "systemConfig": "Sistem yapılandırması"
   }
 }

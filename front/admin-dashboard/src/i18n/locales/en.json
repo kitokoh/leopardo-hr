@@ -1236,7 +1236,10 @@
     "showingSuffix": "requests",
     "loadError": "Unable to sync client requests.",
     "toastApproved": "Request approved. Provisioning started.",
-    "toastRejected": "Request rejected."
+    "toastRejected": "Request rejected.",
+    "noTicket": "No ticket",
+    "selectTicket": "Select a ticket to view the conversation",
+    "loadConversationError": "Unable to load the conversation."
   },
   "reports": {
     "attendance_title": "Attendance Summary",
@@ -1437,5 +1440,37 @@
     "statsLoadError": "Error loading system stats",
     "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
     "title": "System Administration"
+  },
+  "crm": {
+    "subtitle": "Track leads from entry to paid conversion.",
+    "leadsTotal": "Total leads",
+    "leadToTrialRate": "Lead -> trial rate",
+    "leadToClientRate": "Lead -> paying client rate",
+    "loading": "Loading pipeline...",
+    "leadsIncoming": "Incoming Leads",
+    "noLead": "No lead",
+    "noTrial": "No ongoing trial",
+    "noClient": "No converted active client",
+    "noHistory": "No history"
+  },
+  "edge": {
+    "title": "Edge Nodes",
+    "nodesTotal": "Total nodes",
+    "licensesExpired": "Expired licenses",
+    "loading": "Loading nodes…",
+    "empty": "No Edge node registered",
+    "colNode": "Node",
+    "colStatus": "Status",
+    "colLicense": "License",
+    "colLastSync": "Last sync",
+    "colActions": "Actions",
+    "syncing": "Syncing…",
+    "sync": "Sync"
+  },
+  "notFound": {
+    "backToDashboard": "Back to dashboard",
+    "usefulLinks": "Useful links",
+    "system": "System",
+    "systemConfig": "System configuration"
   }
 }

@@ -1236,7 +1236,10 @@
     "showingSuffix": "طلبات",
     "loadError": "تعذرت مزامنة طلبات العملاء.",
     "toastApproved": "تمت الموافقة على الطلب. بدأ التجهيز.",
-    "toastRejected": "تم رفض الطلب."
+    "toastRejected": "تم رفض الطلب.",
+    "noTicket": "لا توجد تذاكر",
+    "selectTicket": "حدد تذكرة لعرض المحادثة",
+    "loadConversationError": "تعذّر تحميل المحادثة."
   },
   "reports": {
     "attendance_title": "ملخص الحضور",
@@ -1437,5 +1440,37 @@
     "statsLoadError": "خطأ أثناء تحميل إحصائيات النظام",
     "subtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
     "title": "إدارة النظام"
+  },
+  "crm": {
+    "subtitle": "تتبع العملاء المحتملين من الدخول حتى التحويل المدفوع",
+    "leadsTotal": "إجمالي العملاء المحتملين",
+    "leadToTrialRate": "معدل التحويل للتجربة",
+    "leadToClientRate": "معدل التحويل لعميل مدفوع",
+    "loading": "جارٍ تحميل خط المسار...",
+    "leadsIncoming": "العملاء المحتملون الواردون",
+    "noLead": "لا يوجد عملاء محتملون",
+    "noTrial": "لا توجد تجارب جارية",
+    "noClient": "لا يوجد عميل نشط محوّل",
+    "noHistory": "لا يوجد سجل"
+  },
+  "edge": {
+    "title": "عُقد Edge",
+    "nodesTotal": "إجمالي العقد",
+    "licensesExpired": "تراخيص منتهية",
+    "loading": "جارٍ تحميل العقد…",
+    "empty": "لا توجد عُقد Edge مسجلة",
+    "colNode": "العقدة",
+    "colStatus": "الحالة",
+    "colLicense": "الترخيص",
+    "colLastSync": "آخر مزامنة",
+    "colActions": "الإجراءات",
+    "syncing": "جارٍ المزامنة…",
+    "sync": "مزامنة"
+  },
+  "notFound": {
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "usefulLinks": "روابط مفيدة",
+    "system": "النظام",
+    "systemConfig": "إعدادات النظام"
   }
 }
