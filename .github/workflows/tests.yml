@@ -127,7 +127,11 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
-        run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
+        # Issue #4978 : `set -euo pipefail` — toute transformation de sortie
+        # (tee, grep…) doit propager l'échec PHPUnit au job, jamais le masquer.
+        run: |
+          set -euo pipefail
+          php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
       - name: Run backend feature tests
         id: backend_feature_tests
@@ -142,7 +146,27 @@ jobs:
         # `leopardo_test_test_{token}`, créée automatiquement — voir
         # tests/TestCase::configureTestingDatabaseConnection). La suite sérielle
         # dépassait les 45 min (timeout du job) et bloquait main.
-        run: php artisan test --testsuite=Feature --parallel --processes=4 --log-junit=storage/test-results/feature.xml
+        # Issue #4978 : `set -euo pipefail` — ne jamais masquer l'échec PHPUnit
+        # derrière une transformation de sortie.
+        run: |
+          set -euo pipefail
+          php artisan test --testsuite=Feature --parallel --processes=4 --log-junit=storage/test-results/feature.xml
+
+      - name: Extract causal test errors from JUnit reports
+        # Issue #4978 (critère 5) : quand la suite échoue en cascade (ex. 178
+        # échecs après une première violation SQL), extraire l'erreur CAUSALE
+        # (première occurrence du SQLSTATE dominant) au lieu de noyer le log.
+        if: always()
+        working-directory: ./api
+        run: |
+          set -uo pipefail
+          for report in storage/test-results/unit.xml storage/test-results/feature.xml; do
+            if [[ -s "$report" ]] && grep -qE '<(failure|error)' "$report"; then
+              echo "::group::Erreurs causales — ${report}"
+              php ../dev-hub/tools/parse-junit-causal-errors.php "$report" || true
+              echo "::endgroup::"
+            fi
+          done
 
       - name: Upload backend test reports
         if: always()
@@ -487,9 +511,11 @@ jobs:
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
         run: |
+          set -euo pipefail
           mkdir -p storage/test-results storage/coverage-html
           # Issue #4695 : parallélisé comme le job backend-tests (paratest
           # fusionne les rapports de couverture des workers).
+          # Issue #4978 : pipefail — ne pas masquer l'échec PHPUnit.
           php artisan test --parallel --processes=4 \
             --coverage-clover=storage/test-results/clover.xml \
             --coverage-html=storage/coverage-html
