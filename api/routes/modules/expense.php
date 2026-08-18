@@ -9,10 +9,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);
     Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
     Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);
+    // #4933 : mise à jour (brouillon/rejeté) + suppression (brouillon) par le
+    // propriétaire — complète le cycle notes de frais.
+    Route::put('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'update']);
+    Route::delete('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'destroy']);
     Route::put('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
 
     Route::middleware('api.manager')->group(function (): void {
-        Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
-        Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
+        Route::post('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
+        Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']); // déprécié #4930
+        Route::post('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
+        Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']); // déprécié #4930
     });
 });
