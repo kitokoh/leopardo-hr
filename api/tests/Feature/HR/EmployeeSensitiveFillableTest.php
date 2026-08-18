@@ -7,7 +7,7 @@ namespace Tests\Feature\HR;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -18,19 +18,7 @@ use Tests\TestCase;
  */
 class EmployeeSensitiveFillableTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_sensitive_fields_are_not_written_by_mass_assignment(): void
     {

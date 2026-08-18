@@ -10,7 +10,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -22,21 +22,14 @@ use Tests\TestCase;
  */
 class WebKioskSessionGateTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         // La route web est protégée par CSRF ; le test du gate de session
         // n'a pas vocation à re-tester le CSRF (couvert par ailleurs).
         $this->withoutMiddleware(VerifyCsrfToken::class);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     /**
