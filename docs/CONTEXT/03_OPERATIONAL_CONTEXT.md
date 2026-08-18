@@ -14,7 +14,7 @@ Preuves importantes:
 
 ## Comptes demo
 
-- Platform Admin: `admin@leopardo-rh.com` / `password123`
+- Platform Admin: `admin@leopardo-rh.com` / `********` (mot de passe redige, convention #1614 — ne jamais citer un secret reel)
 - Les autres comptes sont exposes par `/api/v1/demo-users`.
 
 ## Risques restants
