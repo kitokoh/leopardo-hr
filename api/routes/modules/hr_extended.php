@@ -130,6 +130,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/training/courses/{trainingCourse}/sessions', [TrainingController::class, 'storeSession']);
         Route::put('/training/sessions/{trainingSession}', [TrainingController::class, 'updateSession']);
         Route::put('/training/enrollments/{trainingEnrollment}', [TrainingController::class, 'updateEnrollment']);
+        // #4933 : suppressions formation (cours/session/inscription).
+        Route::delete('/training/courses/{trainingCourse}', [TrainingController::class, 'destroyCourse']);
+        Route::delete('/training/sessions/{trainingSession}', [TrainingController::class, 'destroySession']);
+        Route::delete('/training/enrollments/{trainingEnrollment}', [TrainingController::class, 'destroyEnrollment']);
 
         // ── Loan management ──────────────────────────────────────────────
         Route::put('/loans/{employeeLoan}/approve', [EmployeeLoanController::class, 'approve']);

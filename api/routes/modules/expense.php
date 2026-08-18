@@ -9,6 +9,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);
     Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
     Route::get('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'show']);
+    // #4933 : mise à jour (brouillon/rejeté) + suppression (brouillon) par le
+    // propriétaire — complète le cycle notes de frais.
+    Route::put('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'update']);
+    Route::delete('/expense-claims/{expenseClaim}', [ExpenseClaimController::class, 'destroy']);
     Route::put('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
 
     Route::middleware('api.manager')->group(function (): void {
