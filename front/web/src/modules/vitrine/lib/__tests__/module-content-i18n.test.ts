@@ -76,3 +76,41 @@ describe('module page content i18n (#4196)', () => {
     }
   })
 })
+
+describe('module page sections i18n (#4702)', () => {
+  it('les badges/titres de section sont localisés pour les 4 modules × 4 locales', () => {
+    for (const locale of ['fr', 'en', 'tr', 'ar'] as const) {
+      const merged = getModulePageContent(locale)
+      for (const mod of FR_MODULES) {
+        const sections = merged[mod as keyof typeof merged].sections
+        expect(sections).toBeDefined()
+        for (const key of ['heroBadge', 'problemBadge', 'solutionBadge', 'featuresTitle', 'featuresSubtitle', 'featuresBadge'] as const) {
+          expect(sections[key].trim().length).toBeGreaterThan(0)
+          // Pas de placeholder technique ni de clé brute
+          expect(sections[key]).not.toMatch(/^(en|tr|ar)\./)
+        }
+      }
+    }
+  })
+
+  it('ne contient aucun littéral FR hardcodé dans les pages modules', () => {
+    const fs = require('fs')
+    const path = require('path')
+    const base = path.join(__dirname, '../../../../app/(landing)')
+    for (const mod of ['employes', 'documents', 'comptabilite', 'marketing']) {
+      const raw = fs.readFileSync(path.join(base, mod, 'page.tsx'), 'utf8')
+      // Retire les commentaires // et /* */ puis analyse ligne par ligne :
+      // seuls les littéraux du CODE réel comptent (commentaires FR OK).
+      const code = raw
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .split('\n')
+        .filter((l: string) => !l.trim().startsWith('//'))
+        .join('\n')
+      const frLines = code.split('\n').filter((l: string) => {
+        const matches = l.match(/(['"])[^'"]*[àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ][^'"]*\1/g)
+        return (matches ?? []).length > 0
+      })
+      expect(frLines).toEqual([])
+    }
+  })
+})
