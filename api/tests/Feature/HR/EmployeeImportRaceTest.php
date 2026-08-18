@@ -97,6 +97,17 @@ class EmployeeImportRaceTest extends TestCase
         $csv = "first_name,last_name,email\n"
             ."Ali,Ben,{$email}\n";
 
+        // Connexion dédiée « race » : simule un VRAI import concurrent dont la
+        // transaction est indépendante (autocommit). Sans cela, l'insert simulé
+        // dans le hook `creating` vivrait dans le SAVEPOINT de l'import et serait
+        // annulé par le ROLLBACK TO SAVEPOINT du conflit (#4947 : PostgreSQL
+        // aborte la transaction à la première erreur SQL, même catchée).
+        config()->set('database.connections.race', array_merge(
+            config('database.connections.pgsql'),
+            ['database' => config('database.connections.pgsql.database')],
+        ));
+        DB::purge('race');
+
         // Simule la course : au moment où le contrôleur insère l'employé, un
         // import concurrent a déjà inséré le même email (index unique global).
         Employee::creating(function (Employee $model) use ($company, $email): void {
@@ -104,7 +115,7 @@ class EmployeeImportRaceTest extends TestCase
                 return;
             }
 
-            DB::table('employees')->insert([
+            DB::connection('race')->table('employees')->insert([
                 'company_id' => $company->id,
                 'email' => $email,
                 'first_name' => 'Concurrent',

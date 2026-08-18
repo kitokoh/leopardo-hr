@@ -172,8 +172,11 @@ export default function BillingPage() {
     setError(null);
     try {
       const origin = window.location.origin;
-      const returnUrl = encodeURIComponent(`${origin}/billing`);
-      const res = await apiFetch(`/billing/portal?return_url=${returnUrl}`, { method: 'POST' });
+      const res = await apiFetch(`/billing/portal`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ return_url: `${origin}/billing` }),
+      });
       const data = await res.json() as { data?: { portal_url?: string } };
       if (data.data?.portal_url) {
         window.location.href = data.data.portal_url;

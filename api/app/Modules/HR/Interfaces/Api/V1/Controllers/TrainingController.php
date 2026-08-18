@@ -290,4 +290,66 @@ class TrainingController extends Controller
 
         return (new TrainingEnrollmentResource($trainingEnrollment->fresh()))->response();
     }
+    /**
+     * #4933 — suppression d'un cours (et de ses sessions/inscriptions).
+     * Réservée aux rôles principal/rh.
+     */
+    public function destroyCourse(Request $request, TrainingCourse $trainingCourse): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($trainingCourse->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $trainingCourse->sessions()->each(function (TrainingSession $session): void {
+            $session->enrollments()->delete();
+            $session->delete();
+        });
+        $trainingCourse->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * #4933 — suppression d'une session (et de ses inscriptions).
+     */
+    public function destroySession(Request $request, TrainingSession $trainingSession): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($trainingSession->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            abort(403);
+        }
+
+        $trainingSession->enrollments()->delete();
+        $trainingSession->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * #4933 — annulation d'une inscription (manager, ou l'employé lui-même).
+     */
+    public function destroyEnrollment(Request $request, TrainingEnrollment $trainingEnrollment): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        if ($trainingEnrollment->company_id !== $actor->company_id) {
+            abort(404);
+        }
+        if (! $actor->isManager() && $trainingEnrollment->employee_id !== $actor->id) {
+            abort(403);
+        }
+
+        $trainingEnrollment->delete();
+
+        return response()->json(null, 204);
+    }
 }
