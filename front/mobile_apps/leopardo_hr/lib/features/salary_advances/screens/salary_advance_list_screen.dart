@@ -412,7 +412,7 @@ class _SalaryAdvanceListScreenState
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(context.l10n.salaryAdvanceConfirmAction),
+            child: Text(context.l10n.salaryAdvanceConfirmAction),
           ),
         ],
       ),
