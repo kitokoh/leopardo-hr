@@ -158,8 +158,8 @@ export default function CaseStudyPage({ params }: CaseStudyPageProps) {
 
       <CTASection
         title={ui.ctaTitle}
-        description="Rejoignez les entreprises qui ont choisi Leopardo RH"
-        primaryCta={{ text: 'Essai gratuit', href: '/signup' }}
+        description={ui.ctaDescription}
+        primaryCta={{ text: ui.ctaPrimaryText, href: '/signup' }}
         secondaryCta={{ text: ui.demoCta, href: '/demo' }}
       />
 
