@@ -478,11 +478,13 @@ class _SalaryAdvanceListScreenState
 
   String _getStatusLabel(SalaryAdvance advance) {
     final validation = advance.validationStatus;
-    if (validation == 'manager_approved')
+    if (validation == 'manager_approved') {
       return context.l10n.salaryStatusValidated;
+    }
     if (validation == 'payment_declared') return 'envoyee';
-    if (validation == 'employee_confirmed')
+    if (validation == 'employee_confirmed') {
       return context.l10n.salaryStatusReceived;
+    }
 
     if (advance.status == 'active') return context.l10n.salaryStatusActive;
 

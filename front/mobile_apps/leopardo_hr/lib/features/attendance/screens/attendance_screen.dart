@@ -754,8 +754,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 
   String _statusLabel(AttendanceLog? log) {
-    if (log == null || log.checkIn == null)
+    if (log == null || log.checkIn == null) {
       return context.l10n.attendanceStatusPointer;
+    }
     if (log.checkOut == null) return context.l10n.attendanceStatusInProgress;
     if ((log.lateMinutes ?? 0) > 0) return context.l10n.attendanceStatusLate;
     return context.l10n.attendanceStatusComplete;
