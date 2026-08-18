@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -132,8 +133,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           EmptyState(
             icon: Icons.door_sliding_outlined,
             title: 'Placard vide',
-            description:
-                'Ajoutez des dossiers et documents pour organiser votre espace.',
+            description: 'Ajoutez des dossiers et documents pour organiser votre espace.',
           ),
         ],
       );
@@ -260,10 +260,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               if (name.isEmpty) return;
               Navigator.pop(ctx);
               final repo = ref.read(cabinetRepositoryProvider);
-              await repo.createFolder(
-                name: name,
-                parentId: widget.folderId,
-              );
+              await repo.createFolder(name: name, parentId: widget.folderId);
               ref.invalidate(cabinetFoldersProvider(widget.folderId));
             },
             child: const Text('Creer'),
@@ -278,9 +275,8 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     if (picked == null) return;
 
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Envoi en cours...')));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Envoi en cours...')));
 
     final repo = ref.read(cabinetRepositoryProvider);
     try {
@@ -302,7 +298,9 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       // le snackbar affiché pour toujours et perdait l'image sélectionnée.
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Echec de l\'envoi du document. Reessayez.')),
+        const SnackBar(
+          content: Text('Echec de l\'envoi du document. Reessayez.'),
+        ),
       );
     }
   }
@@ -341,9 +339,10 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 );
                 if (!mounted) return;
                 final url = result['share_url'] ?? '';
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Lien copie : $url')),
-                );
+                await Clipboard.setData(ClipboardData(text: url));
+                if (!mounted) return;
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Lien copié : $url')));
               },
             ),
             const Divider(),
@@ -401,9 +400,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
             child: const Text('Annuler'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.danger,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () async {
               Navigator.pop(ctx);
               final repo = ref.read(cabinetRepositoryProvider);
@@ -439,10 +436,8 @@ class _FolderTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => context.push(
-            '/cabinet/folder/${folder.id}',
-            extra: folder.name,
-          ),
+          onTap: () =>
+              context.push('/cabinet/folder/${folder.id}', extra: folder.name),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(

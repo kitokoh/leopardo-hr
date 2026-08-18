@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `api/app/Services/` (reste TenantManager.php shim + Cache/Communication/Payroll/SSO/Security/Tracking) | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (19 modules)
+## Modules existants (18 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -37,7 +37,6 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
 | `SmartAttendance` | Pointage intelligent / variantes avancées d'Attendance |
-| `Training` | Formations, sessions, suivis |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.

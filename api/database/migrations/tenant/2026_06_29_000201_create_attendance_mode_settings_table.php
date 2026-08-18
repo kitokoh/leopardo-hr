@@ -17,7 +17,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('attendance_mode_settings')) {
+        if (! schemaTableExists('attendance_mode_settings')) {
             Schema::create('attendance_mode_settings', function (Blueprint $table) {
                 $table->increments('id');
 

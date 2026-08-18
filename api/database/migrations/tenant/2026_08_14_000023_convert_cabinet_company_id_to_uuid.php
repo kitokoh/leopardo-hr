@@ -27,11 +27,11 @@ return new class extends Migration
     public function up(): void
     {
         foreach (['cabinet_folders', 'cabinet_documents', 'cabinet_shares'] as $table) {
-            if (! Schema::hasTable($table)) {
+            if (! schemaTableExists($table)) {
                 continue;
             }
 
-            if (! Schema::hasColumn($table, 'company_id')) {
+            if (! schemaHasColumn($table, 'company_id')) {
                 continue;
             }
 

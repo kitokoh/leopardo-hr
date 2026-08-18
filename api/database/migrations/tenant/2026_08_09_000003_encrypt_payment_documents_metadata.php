@@ -22,11 +22,12 @@ use Illuminate\Support\Facades\Schema;
  *    (AES-256, même encrypter que le cast Eloquent). Idempotente.
  *
  * NB search_path : `DB::table('x')` résout la table via le search_path de la
- * session, alors que `Schema::hasTable('x')` interroge uniquement
- * `current_schema()`. Selon le contexte (CI : DB_SEARCH_PATH=shared_tenants ;
- * phpunit après `migrate:fresh` où la migration 0001 pose `SET search_path TO
- * public`) la table peut vivre dans un autre schéma que current_schema() — le
- * garde d'existence et le changement de colonne sont donc résolus via
+ * session, alors que le garde d'existence historiquement utilisé
+ * (`Schema::hasTable('x')`) interroge uniquement `current_schema()`. Selon le
+ * contexte (CI : DB_SEARCH_PATH=shared_tenants ; phpunit après
+ * `migrate:fresh` où la migration 0001 pose `SET search_path TO public`) la
+ * table peut vivre dans un autre schéma que current_schema() — le garde
+ * d'existence et le changement de colonne sont donc résolus via
  * `current_schemas(false)` (même ordre que la résolution de DB::table).
  */
 return new class extends Migration

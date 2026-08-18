@@ -30,7 +30,7 @@ leopardo-hr/
 ├── postman/                # Collection Postman de l'API
 ├── examples/               # Exemples d'usage du SDK
 ├── assets/ , screenshots/  # Visuels marketing/README (candidats Git LFS — voir docs/architecture/ARCHITECTURE.md)
-└── .github/workflows/      # 31 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
+└── .github/workflows/      # 40 pipelines CI/CD (voir .github/workflows/README.md pour la cartographie)
 ```
 
 > Cet arbre doit rester synchronisé avec la structure réelle du repo. En cas de doute, vérifier avec `find . -maxdepth 2 -not -path '*/node_modules/*'`.
@@ -57,7 +57,7 @@ Modules/<Name>/
 └── Providers/          # ServiceProvider du module
 ```
 
-Modules actifs (19, sous `api/app/Modules/`) : `Absence`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `SmartAttendance`, `Training` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
+Modules actifs (18, sous `api/app/Modules/`) : `Absence`, `Attendance`, `Billing`, `Cabinet`, `Cameras`, `EdgeSync`, `Expense`, `Fleet`, `Growth`, `HR`, `Marketing`, `Notification`, `Onboarding`, `Payroll`, `Planning`, `Platform`, `Recruitment`, `SmartAttendance` + socle transversal `Core/Auth`, `Core/Tenant`, `Core/Feature` (sous `api/app/Core/`).
 
 > Décompte vérifié via `ls api/app/Modules | wc -l`. Voir `docs/ARCHITECTURE_STATUS.md` pour l'état couche-par-couche (Domain/Application/Infrastructure/Interfaces/Providers/Tests) de chaque module.
 
@@ -123,7 +123,7 @@ Pour supprimer un alias restant :
 
 - `leopardo_core` est le package fondation partagé par toutes les apps.
 - `leopardo_employee`, `leopardo_manager` et `leopardo_hr` utilisent le pattern **Feature-first** avec `data/`, `providers/`, `screens/`.
-- Apps actives : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin` (voir `front/mobile_apps/README.md`). Le mobile historique (`front/mobile/`) a été retiré du dépôt.
+- Apps actives : `leopardo_core` (package), `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing` (voir `front/mobile_apps/README.md`). Le mobile historique (`front/mobile/`) a été retiré du dépôt.
 
 ## i18n
 

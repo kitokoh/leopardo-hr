@@ -24,7 +24,7 @@ return new class extends Migration
         }
 
         foreach ($indexes as [$table, $name, $columns]) {
-            if (! Schema::hasTable($table)) {
+            if (! schemaTableExists($table)) {
                 continue;
             }
 

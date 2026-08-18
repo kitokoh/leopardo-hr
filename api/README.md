@@ -1,8 +1,8 @@
-# Leopardo RH - Backend API (Laravel 11)
+# Leopardo RH - Backend API (Laravel 12)
 
 ## Stack
 
-- Laravel 11 + PostgreSQL 16
+- Laravel 12 + PostgreSQL 16
 - Auth API : Laravel Sanctum
 - Auth web : session manager
 - Cache : file

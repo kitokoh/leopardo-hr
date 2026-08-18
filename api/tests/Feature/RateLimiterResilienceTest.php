@@ -103,6 +103,12 @@ class RateLimiterResilienceTest extends TestCase
             // Avant le correctif : 500 « Server Error ».
             $response->assertStatus(429);
             $response->assertHeader('Retry-After');
+
+            // Issue #4955 : le 429 dégradé suit le contrat API localisé
+            // (code stable + localized_message via le catalogue errors.*).
+            $response->assertJsonPath('error', 'TOO_MANY_REQUESTS_DEGRADED');
+            $response->assertJsonPath('message', 'TOO_MANY_REQUESTS_DEGRADED');
+            $response->assertJsonStructure(['localized_message']);
         } finally {
             $repository->setStore($originalStore);
         }

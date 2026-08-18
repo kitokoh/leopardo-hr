@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('calendar_connections')) {
+        if (schemaTableExists('calendar_connections')) {
             return;
         }
 
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->unique(['employee_id', 'provider']);
         });
 
-        if (Schema::hasTable('calendar_events')) {
+        if (schemaTableExists('calendar_events')) {
             return;
         }
 

@@ -1,7 +1,7 @@
 # Conventions de Code — Leopardo RH
 
 > Ce document definit les standards de code obligatoires pour tout contributeur (humain ou IA).
-> Derniere mise a jour : 2026-05-14
+> Derniere mise a jour : 2026-08-17 (revue PM — réconciliation README/ARCHITECTURE/PILOTAGE)
 
 ---
 
@@ -9,11 +9,11 @@
 
 ```
 leopardo-hr/
-├── api/                    # Backend Laravel (PHP 8.2+)
+├── api/                    # Backend Laravel (PHP 8.4+)
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
 │   ├── web/                # Vitrine (Next.js)
-│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin
+│   └── mobile_apps/        # Apps Flutter : leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_platform_admin
 ├── docs/                   # Documentation technique
 ├── .github/workflows/      # CI/CD GitHub Actions
 ├── docker-compose.yml      # Dev environment
@@ -24,7 +24,7 @@ leopardo-hr/
 
 ### 2.1 Style general
 
-- **PHP 8.2 minimum** — utiliser les fonctionnalites modernes (enums, readonly, named args, match)
+- **PHP 8.4 minimum** — utiliser les fonctionnalites modernes (enums, readonly, named args, match)
 - **`declare(strict_types=1);`** en haut de chaque fichier PHP (sauf config)
 - **Namespace PSR-4** — `App\Modules\<NomModule>\*`, `App\Core\*`, `App\Shared\*`
   _(Les anciens espaces `App\Http\Controllers\Api\V1\*` et `App\Services\*` sont supprimés — voir `api/ARCHITECTURE.md`)_
@@ -153,7 +153,7 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 - Tester : CRUD, workflow (status transitions), RBAC (roles autorises/refuses), isolation tenant
 - Repertoire : `tests/Feature/` et `tests/Unit/`
 - Commande : `php artisan test`
-- **Coverage gate** : seuil actuel 55%, cible 60%
+- **Coverage gate** : seuil bloquant 65 % (mesuré 71,11 % au 17/08/2026, ratchet depuis 60 % le 10/08)
 
 #### Règle PendingCommand — `run()` explicite (#1596)
 
@@ -219,7 +219,7 @@ $this->artisan('my:command')->assertSuccessful();
   et nettoyer `docs/archive/` des fichiers non référencés (l'historique git
   conserve tout) — issue #1729.
 - **CI doit etre vert** — GitHub Actions est la source de verite (pas la validation locale)
-- Workflows critiques : `backend`, `backend quality`, `mobile`, `build`, `lint`, `type-check`, `test Node 20`, `CodeQL`, `governance`
+- Workflows critiques : `tests.yml`, `coverage-gate.yml`, `backend-jobs-ci.yml`, `architecture-check.yml` (phpstan-modules + phpstan-strict), `mobile-apps-ci.yml`, `governance`, `CodeQL`, `secret-scan`
 
 ### 4.4 Fichiers interdits en commit
 

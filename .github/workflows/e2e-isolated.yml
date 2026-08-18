@@ -21,9 +21,16 @@ on:
       - '.github/workflows/e2e-isolated.yml'
       - 'front/admin-dashboard/e2e/**'
 
+permissions:
+  contents: read
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   E2E_ADMIN_PASSWORD: e2e-fixture-password
+
+# Alerte CodeQL #31 (2026-08-17) : permissions explicites least-privilege.
+permissions:
+  contents: read
 
 jobs:
   e2e-isolated:

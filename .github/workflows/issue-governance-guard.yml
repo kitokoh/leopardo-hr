@@ -1,0 +1,56 @@
+name: Issue Governance Guard
+
+# #4816 (PROCESS P1) — câblage CI des gardes de gouvernance des issues.
+# Rétroaction de la vague 2026-08-17 : ~84 issues clôturées dont plusieurs
+# SANS correctif mergé (#4690/#4687/#4688/#4305/#4410 — rouvertes en
+# résiduels). Les scripts existent dans dev-hub/tools/ ; ce workflow les
+# exécute sur un rythme planifié pour que la dérive soit visible, sans
+# bloquer la CI (rôle = RAPPORT pour arbitrage manuel, sortie 0 par
+# conception dans les deux scripts) :
+#   - check-issues-closed-without-merge.sh   (#4816) : issues clôturées
+#     sans PR mergée référencée ni commit de fermeture (« ghost close »).
+#   - check-issues-left-open-by-merged-prs.sh (#2512) : issues référencées
+#     par une PR mergée mais restées ouvertes.
+# Fermeture/réouverture des issues : toujours manuelle avec preuve code
+# (règle #4816 : ne clôturer que lorsque la PR de correction est MERGÉE).
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC, quotidien
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: issue-governance-guard-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  report:
+    timeout-minutes: 20
+    name: Rapport gouvernance issues (ghost-close #4816 / left-open #2512)
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: true
+
+      - name: Garde ghost-close (#4816) — issues clôturées sans correctif mergé
+        continue-on-error: true
+        run: |
+          if [ -f dev-hub/tools/check-issues-closed-without-merge.sh ]; then
+            ./dev-hub/tools/check-issues-closed-without-merge.sh kitokoh/leopardo-hr --since-days 7
+          else
+            echo "::warning::check-issues-closed-without-merge.sh absent — attendu après merge de la branche fix/4816-governance-ghost-close"
+          fi
+
+      - name: Garde left-open (#2512) — issues ouvertes malgré une PR mergée
+        continue-on-error: true
+        run: |
+          ./dev-hub/tools/check-issues-left-open-by-merged-prs.sh kitokoh/leopardo-hr --since-days 7

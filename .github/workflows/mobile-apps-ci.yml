@@ -17,6 +17,7 @@ on:
       - 'dev-hub/tools/validate-mobile-plan29.ps1'
       - 'dev-hub/tools/validate-mobile-color-tokens.ps1'
       - 'dev-hub/tools/check-mobile-number-locale.sh'
+      - 'dev-hub/tools/check-mobile-l10n-sync.sh'
       - 'dev-hub/tools/check-mobile-manifest-routes.sh'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
@@ -36,6 +37,7 @@ on:
       - 'dev-hub/tools/validate-mobile-plan29.ps1'
       - 'dev-hub/tools/validate-mobile-color-tokens.ps1'
       - 'dev-hub/tools/check-mobile-number-locale.sh'
+      - 'dev-hub/tools/check-mobile-l10n-sync.sh'
       - 'dev-hub/tools/check-mobile-manifest-routes.sh'
       - 'dev-hub/tools/mobile-workflow-contracts.json'
       - 'api/app/Modules/HR/Infrastructure/Services/MobileExperienceService.php'
@@ -127,6 +129,20 @@ jobs:
         # sur des montants = locale forcée FR pour les utilisateurs AR/TR/EN.
         shell: bash
         run: 'bash ./dev-hub/tools/check-mobile-number-locale.sh'
+
+      - name: Validate ARB keys exist in generated localizations
+        # #4762 (récurrence) : toute clé ARB absente des générés casse la
+        # compile des apps qui la référencent. Garde = `flutter gen-l10n`
+        # doit être exécuté dans leopardo_core à chaque ajout de clé.
+        shell: bash
+        run: 'bash ./dev-hub/tools/check-mobile-l10n-sync.sh'
+
+      - name: Validate ARB keys exist in generated localizations
+        # #4762 (récurrence) : toute clé ARB absente des générés casse la
+        # compile des apps qui la référencent. Garde = `flutter gen-l10n`
+        # doit être exécuté dans leopardo_core à chaque ajout de clé.
+        shell: bash
+        run: 'bash ./dev-hub/tools/check-mobile-l10n-sync.sh'
 
   flutter-analyze:
     timeout-minutes: 90

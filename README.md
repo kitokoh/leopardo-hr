@@ -25,18 +25,18 @@
 
 ## 📊 Project Stats
 
-> Measured on `main`, 2026-08-15 — see the [full audit](docs/audits/AUDIT.md) for methodology.
+> Measured on `main`, 2026-08-17 — see the [full audit](docs/audits/AUDIT.md) for methodology.
 
 | Metric | Value |
 | :--- | :--- |
-| 🧪 **Backend tests passing** | **1 917** (6 909 assertions, 291 test files) |
+| 🧪 **Backend tests passing** | **1 917** (dernier run complet 2026-08-15 · 462 fichiers `*Test.php` sur main au 17/08) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
-| 🧩 **DDD business modules** | **19** + shared core (Auth, Tenant, Feature) |
-| 🔌 **API endpoints** (OpenAPI spec) | **424** |
+| 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
+| 🔌 **API endpoints** (OpenAPI spec) | **517** |
 | 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
-| ⚙️ **CI/CD pipelines** | **35** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
-| 📚 **Documentation files** | **518** (architecture, security, specs, runbooks, GTM) |
-| 🕒 **Commit history** | **2 622 commits** since Sept 2025 |
+| ⚙️ **CI/CD pipelines** | **41** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
+| 📚 **Documentation files** | **685** (architecture, security, specs, runbooks, GTM) |
+| 🕒 **Commit history** | **5 216 commits** since 2026-03-28 |
 | 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇹🇳 🇫🇷 🇹🇷 🇨🇲 🇬🇦 🇨🇬 🇨🇮 🇸🇳 🇧🇫 🇲🇱 (+ 19 codes au catalogue, voir `docs/payroll/`) |
 | 📦 **License** | MIT — open source, self-hostable or SaaS |
 
@@ -79,7 +79,7 @@ graph TB
         Sec[RBAC & JWT Shield + SSO]
     end
 
-    subgraph "Core Business Logic — 19 DDD Modules"
+    subgraph "Core Business Logic — 18 DDD Modules"
         HRM[HR Core]
         PAY[Payroll Engine]
         ATT[Smart Attendance]
@@ -104,12 +104,19 @@ graph TB
 
 ## 🚀 Live ecosystem
 
+> ⚠️ **Stabilisation production en cours** — le domaine `leopardo-rh.com` est en NXDOMAIN
+> ([#3452](https://github.com/kitokoh/leopardo-hr/issues/3452)) et la migration vers les
+> services gratuits Render/Vercel est planifiée ([#3765](https://github.com/kitokoh/leopardo-hr/issues/3765),
+> [#3766](https://github.com/kitokoh/leopardo-hr/issues/3766)) ; la vitrine déployée peut être en retard
+> sur `main` ([#4867](https://github.com/kitokoh/leopardo-hr/issues/4867)). Les URLs ci-dessous sont les
+> endpoints **actifs** au 2026-08-17 mais non contractuels tant que la stabilisation n'est pas terminée.
+
 | Layer | Access | Stack |
 | :--- | :--- | :--- |
 | **API Backend** | [gestionemployerbackend.onrender.com](https://gestionemployerbackend.onrender.com) | Laravel 12 · PostgreSQL 16 · Redis |
 | **Corporate Web** | [gestionemployer-backend.vercel.app](https://gestionemployer-backend.vercel.app) | Next.js 16 · Tailwind |
 | **Admin Panel** | [leo-admin.pages.dev](https://leo-admin.pages.dev) | Vue 3 · Cloudflare Pages |
-| **Mobile Suite** | [Employee / Manager / HR / Platform Admin](docs/mobile/README.md) | Flutter · Riverpod |
+| **Mobile Suite** | [Employee / Manager / HR / Marketing / Platform Admin](docs/mobile/README.md) | Flutter · Riverpod |
 
 ---
 
@@ -173,7 +180,7 @@ Operational reality is tracked in [PILOTAGE.md](PILOTAGE.md) (source of truth, F
 - **Contribute** : [CONTRIBUTING.md](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md)
 - **Report a bug** : [Issues](https://github.com/kitokoh/leopardo-hr/issues) — always reference `Closes #X`
 - **Security issue** : private disclosure via [SECURITY.md](SECURITY.md)
-- **Documentation** : [docs/README.md](docs/README.md) (518 files, FR/EN)
+- **Documentation** : [docs/README.md](docs/README.md) (685 files, FR/EN)
 
 <div align="center">
 

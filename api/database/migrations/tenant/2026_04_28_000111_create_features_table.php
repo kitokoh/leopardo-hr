@@ -18,7 +18,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('features')) {
+        if (! schemaTableExists('features')) {
             Schema::create('features', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
