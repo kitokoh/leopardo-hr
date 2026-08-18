@@ -662,7 +662,6 @@
     "simulator_title": "Etki simülatörü",
     "simulator_subtitle": "Brüt maaş girin: hesaplama (katkılar, matrah, dilim başına vergi, net, işveren maliyeti) gerçek maaş motoruyla çalışır — hiçbir şey kaydedilmez.",
     "sim_gross": "Brüt maaş",
-    "sim_compare": "Karşılaştırılacak maaş",
     "sim_run": "Simüle et",
     "sim_running": "Hesaplanıyor…",
     "sim_social": "Katkılar (çalışan)",

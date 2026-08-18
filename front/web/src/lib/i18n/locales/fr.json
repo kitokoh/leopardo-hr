@@ -662,7 +662,6 @@
     "simulator_title": "Simulateur d'impact",
     "simulator_subtitle": "Saisissez un salaire brut : le calcul (cotisations, assiette, impôt par tranche, net, coût employeur) est exécuté par le moteur de paie réel, sans rien persister.",
     "sim_gross": "Salaire brut",
-    "sim_compare": "Salaire à comparer",
     "sim_run": "Simuler",
     "sim_running": "Calcul…",
     "sim_social": "Cotisations (salariales)",
