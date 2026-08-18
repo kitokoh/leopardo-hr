@@ -9,7 +9,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
   fr: [
     {
       question: 'Combien de temps faut-il pour déployer Leopardo RH ?',
-      answer: "Le deploiement standard prend moins de 24 heures. Votre équipe peut commencer a utiliser la plateforme des le premier jour avec notre onboarding guide.",
+      answer: "Le déploiement standard prend moins de 24 heures. Votre équipe peut commencer à utiliser la plateforme des le premier jour avec notre onboarding guide.",
     },
     {
       question: 'Est-ce que Leopardo RH fonctionne hors ligne ?',
@@ -29,7 +29,7 @@ const faqByLocale: Record<AppLocale, FaqItem[]> = {
     },
     {
       question: 'Y a-t-il un engagement minimum ?',
-      answer: 'Non, les plans restent flexibles. Un engagement annuel peut etre propose pour les contrats enterprise.',
+      answer: 'Non, les plans restent flexibles. Un engagement annuel peut être proposé pour les contrats enterprise.',
     },
   ],
   en: [

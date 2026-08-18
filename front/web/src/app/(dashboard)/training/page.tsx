@@ -160,7 +160,7 @@ export default function TrainingPage() {
     <>
       <ModulePageShell
         title="Formations"
-        subtitle="Catalogue de formations et sessions associees, connecte a /training/courses de l'API RH."
+        subtitle="Catalogue de formations et sessions associées, connecté à /training/courses de l'API RH."
         accentClassName="bg-gradient-to-br from-finance-light via-white to-white"
       >
         <div className="flex justify-end">

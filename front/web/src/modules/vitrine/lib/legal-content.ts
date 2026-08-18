@@ -30,14 +30,14 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       intro:
         'Leopardo RH traite des données RH sensibles pour aider les entreprises a piloter le pointage, la paie, les absences et les workflows terrain. Cette page explique notre approche de protection, de transparence et de controle.',
       updatedAt: 'Dernière mise a jour : 14 mai 2026',
-      backLabel: 'Retour a l accueil',
+      backLabel: 'Retour à l’accueil',
       languageLabel: 'Langue du document',
       sections: [
         {
           title: 'Données traitees',
           body: [
             'Nous pouvons traiter des données d identification, de contact, de poste, de pointage, d absence, de paie, de documents RH, de roles, de permissions et de journaux techniques.',
-            'Les données biometriques ou assimilees ne doivent etre activees que lorsque le client dispose d une base legale claire et d un consentement ou cadre interne documente.',
+            'Les données biometriques ou assimilees ne doivent être activées que lorsque le client dispose d une base legale claire et d un consentement ou cadre interne documente.',
           ],
         },
         {
@@ -51,7 +51,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           title: 'Droits des utilisateurs',
           body: [
             'Les utilisateurs peuvent demander l export de leurs données, une correction, une limitation ou une suppression selon les lois applicables et les obligations de conservation de l employeur.',
-            'La plateforme expose aussi des controles produit pour tracer les demandes de suppression et le consentement biométrique.',
+            'La plateforme expose aussi des contrôles produit pour tracer les demandes de suppression et le consentement biométrique.',
           ],
         },
         {
@@ -74,13 +74,13 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       intro:
         'Ces conditions encadrent l utilisation de Leopardo RH par les entreprises, administrateurs, managers, employés, kiosques et integrateurs autorises.',
       updatedAt: 'Dernière mise a jour : 14 mai 2026',
-      backLabel: 'Retour a l accueil',
+      backLabel: 'Retour à l’accueil',
       languageLabel: 'Langue du document',
       sections: [
         {
           title: 'Accès a la plateforme',
           body: [
-            'L accès est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l administration de la plateforme.',
+            'L accès est reserve aux utilisateurs autorises par une entreprise cliente ou par Leopardo RH pour l’administration de la plateforme.',
             'Chaque utilisateur doit proteger ses identifiants, respecter les permissions accordees et signaler toute activité suspecte.',
           ],
         },
@@ -108,7 +108,7 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
       ],
       contact: {
         title: 'Contact service',
-        body: 'Pour une question contractuelle ou une demande liee au service, contactez notre équipe avec votre identifiant entreprise.',
+        body: 'Pour une question contractuelle ou une demande liée au service, contactez notre équipe avec votre identifiant entreprise.',
         email: 'support@leopardo-rh.com',
       },
     },

@@ -52,7 +52,7 @@
     "email_invalid": "Email invalide",
     "personal_account": {
       "explanation": "Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace.",
-      "create": "Creer un compte personnel"
+      "create": "Créer un compte personnel"
     },
     "personal_account_link": "Compte perso",
     "email_required": "Email obligatoire",
@@ -255,7 +255,7 @@
     "analyzePriorities": "Analyser les priorites",
     "manageSubscriptionsRevenue": "Piloter abonnements et revenus",
     "openSubscriptions": "Ouvrir abonnements",
-    "checkSystemSecurity": "Verifier systeme et securite",
+    "checkSystemSecurity": "Vérifier système et sécurité",
     "openSystem": "Ouvrir systeme",
     "preparePartnerIntegrations": "Preparer integrations partenaires",
     "openWebhooks": "Ouvrir les webhooks",
@@ -630,7 +630,7 @@
       "subtitle": "Conversationnelle, mobile-first, modulaire."
     },
     "hero": {
-      "title": "Votre journee commence ici, pas dans un back-office.",
+      "title": "Votre journée commence ici, pas dans un back-office.",
       "description": "Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible."
     },
     "leaves": "Congés",
@@ -971,7 +971,7 @@
   "profile": {
     "language_saving": "Mise a jour...",
     "loading": "Chargement du profil...",
-    "open_settings": "Ouvrir les parametres du compte",
+    "open_settings": "Ouvrir les paramètres du compte",
     "job_title_unset": "Poste non renseigne",
     "details_title": "Informations",
     "matricule_label": "Matricule",
@@ -1237,7 +1237,7 @@
     "reportVehicles": "Vehicules",
     "reportVehiclesDesc": "Flotte, kilometrage, maintenances.",
     "hrReportsTitle": "Rapports RH personnalises",
-    "hrReportsSub": "Generez des rapports avances avec filtres de periode et departement.",
+    "hrReportsSub": "Générez des rapports avancés avec filtres de période et département.",
     "reportType": "Type de rapport",
     "typeHeadcount": "Effectifs",
     "typeTurnover": "Turnover",

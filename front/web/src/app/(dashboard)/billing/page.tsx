@@ -161,7 +161,7 @@ export default function BillingPage() {
         window.location.href = data.data.checkout_url;
       }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Le paiement en ligne n\'est pas encore configure pour ce compte.');
+      setError(err instanceof ApiError ? err.message : 'Le paiement en ligne n\'est pas encore configuré pour ce compte.');
     } finally {
       setActionLoading(null);
     }

@@ -11,7 +11,7 @@ test.describe('Web vitrine staging smoke', () => {
     await expect(page).toHaveTitle(/Leopardo RH/i);
     await expect(page.locator('body')).toContainText(/Leopardo/i);
     await expect(page.locator('body')).toContainText(/Pointage|paie|absences|Attendance|payroll|leave/i);
-    await expect(page.locator('body')).toContainText(/Fonctionnalites|Tarifs|Features|Pricing|FAQ/i);
+    await expect(page.locator('body')).toContainText(/Fonctionnalités|Fonctionnalites|Tarifs|Features|Pricing|FAQ/i);
   });
 
   test('exposes the main acquisition and login links', async ({ page }) => {

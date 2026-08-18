@@ -81,12 +81,12 @@ export type DocsCopy = {
 export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
   fr: [
     {
-      title: 'Demarrage rapide',
+      title: 'Démarrage rapide',
       iconKey: 'zap',
       color: 'emerald',
       items: [
         { title: 'Introduction', desc: "Vue d'ensemble de Leopardo RH — Mobile-First Company OS", href: '/docs#intro' },
-        { title: 'Inscription & premier tenant', desc: 'Creer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
+        { title: 'Inscription & premier tenant', desc: 'Créer un compte et configurer votre entreprise', href: '/docs#api-quickstart' },
         { title: 'Inviter votre équipe', desc: 'Ajouter des managers et des employés', href: '/docs#api-quickstart' },
         { title: 'Pointage depuis le kiosque', desc: 'Configurer une borne ZKTeco', href: '/docs#kiosk' },
       ],
@@ -121,7 +121,7 @@ export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
       items: [
         { title: 'Authentification', desc: 'Bearer token, /auth/login, /auth/me, Google OAuth', href: '/docs#api-quickstart' },
         { title: 'Employés & RH', desc: 'CRUD employés, absences, pointages, paie', href: '/docs#api-quickstart' },
-        { title: 'Platform Admin', desc: 'Tenants, creation entreprise, super-admin', href: '/docs#api-quickstart' },
+        { title: 'Platform Admin', desc: 'Tenants, création entreprise, super-admin', href: '/docs#api-quickstart' },
         { title: 'Erreurs & pagination', desc: 'Codes erreur standards, throttling, curseur', href: '/docs#api-quickstart' },
       ],
     },
@@ -154,7 +154,7 @@ export const docsCategoriesCopy: Record<AppLocale, DocsCategory[]> = {
       items: [
         { title: 'Environnement sandbox', desc: 'URL demo Render, comptes de test, token Bearer demo', href: '/docs#api-quickstart' },
         { title: 'Explorer les endpoints', desc: 'Interface Swagger / Redoc interactive', href: '/docs#api-quickstart' },
-        { title: 'Exemples cURL', desc: "Collection d'appels prets a l'emploi pour tous les modules", href: '/docs#api-quickstart' },
+        { title: 'Exemples cURL', desc: "Collection d'appels prêts à l'emploi pour tous les modules", href: '/docs#api-quickstart' },
         { title: 'Tokens développeur', desc: 'Creer un token scope-reduit pour tests partenaires', href: '/docs#api-quickstart' },
       ],
     },

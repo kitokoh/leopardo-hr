@@ -173,7 +173,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
   fr: {
     nav: {
       sections: [
-        { id: 'fonctionnalites', label: 'Fonctionnalites' },
+        { id: 'fonctionnalites', label: 'Fonctionnalités' },
         { id: 'tarifs', label: 'Tarifs' },
         { id: 'temoignages', label: 'Temoignages' },
         { id: 'faq', label: 'FAQ' },
@@ -190,9 +190,9 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badgeNew: 'Nouveau',
       titleTop: 'Pilotez votre entreprise',
       titleBottom: 'avec une precision absolue.',
-      subtitle: 'Simplifiez vos RH, automatisez votre paie et connectez vos equipes terrain.',
+      subtitle: 'Simplifiez vos RH, automatisez votre paie et connectez vos équipes terrain.',
       subtitleHighlight: 'Leopardo est l\'OS tout-en-un',
-      subtitleTail: 'pour transformer vos operations quotidiennes sans la complexite d\'un ERP.',
+      subtitleTail: 'pour transformer vos operations quotidiennes sans la complexité d\'un ERP.',
       mobileBadge: 'Disponible sur mobile',
       downloadCta: 'Telecharger les apps',
       visualAlt: 'Capture du tableau de bord admin Leopardo RH',
@@ -219,7 +219,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       subtitle: 'Les feuilles de presence papier, les erreurs de paie et le manque de visibilite sur le terrain ralentissent votre croissance.',
       items: [
         { title: 'Pointage manuel et erreurs', description: 'Les oublis et les saisies manuelles coutent des heures precieuses chaque semaine.' },
-        { title: 'Opacite du terrain', description: 'Difficile de savoir qui est present et sur quelle tache en temps reel.' },
+        { title: 'Opacité du terrain', description: 'Difficile de savoir qui est présent et sur quelle tâche en temps reel.' },
         { title: 'Complexite de la paie', description: 'Le calcul des variables de paie est un casse-tete mensuel sujet aux erreurs.' },
         { title: 'Documents eparpilles', description: 'Les contrats et justificatifs sont perdus dans des emails ou des classeurs.' },
       ],
@@ -227,8 +227,8 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
     solution: {
       badge: 'La solution Leopardo',
       title: 'Un systeme d\'exploitation pour',
-      subtitle: 'vos operations terrain.',
-      description: 'Leopardo unifie tout votre flux operationnel dans une plateforme moderne, mobile-first et intuitive.',
+      subtitle: 'vos opérations terrain.',
+      description: 'Leopardo unifie tout votre flux opérationnel dans une plateforme moderne, mobile-first et intuitive.',
       features: [
         { title: 'Pointage Biometrique & Mobile', description: 'Securisez les entrees avec ZKTeco, QR code ou GPS mobile.' },
         { title: 'Automatisation de la Paie', description: 'Generez les variables de paie en un clic, sans risque d\'erreur.' },
@@ -237,7 +237,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       ],
     },
     features: {
-      badge: 'Fonctionnalites',
+      badge: 'Fonctionnalités',
       title: 'Tout ce dont vous avez',
       titleHighlight: 'besoin',
       subtitle: "Une suite complete d'outils RH concue pour simplifier chaque aspect de votre quotidien.",
@@ -298,12 +298,12 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       repoNote: 'Historique detaille : fichier CHANGELOG.md a la racine du depot.',
     },
     footer: {
-      description: "Mobile-First Company OS pour gerer votre personnel sur le terrain, en bureau et a distance. Employee, Manager et Platform Admin disponibles sur mobile.",
+      description: "Mobile-First Company OS pour gérer votre personnel sur le terrain, en bureau et à distance. Employee, Manager et Platform Admin disponibles sur mobile.",
       sections: [
-        { title: 'Produit', links: ['Fonctionnalites', 'Tarifs', 'Integrations', 'API', 'Changelog', 'Leopardo for Windows', 'A propos', 'Videos'] },
-        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communaute'] },
+        { title: 'Produit', links: ['Fonctionnalités', 'Tarifs', 'Intégrations', 'API', 'Changelog', 'Leopardo for Windows', 'À propos', 'Vidéos'] },
+        { title: 'Ressources', links: ['Documentation', 'Guides', 'Blog', 'Contact', 'Communauté'] },
         { title: 'Applications mobiles', links: ['Employee (Android)', 'Employee (iOS)', 'Manager (Android)', 'Manager (iOS)', 'Platform Admin (Android)'] },
-        { title: 'Legal', links: ['Confidentialite', 'CGU', 'Mentions legales', 'RGPD'] },
+        { title: 'Legal', links: ['Confidentialité', 'CGU', 'Mentions légales', 'RGPD'] },
       ],
       rights: 'Tous droits reserves.',
       newsletter: {
@@ -319,14 +319,14 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       heroBadge: 'Succes Clients',
       heroTitle: 'Etudes de Cas Clients',
       heroSubtitle: 'Comment nos clients ont transforme leur gestion RH avec Leopardo',
-      heroPrimary: 'Demarrer gratuitement',
+      heroPrimary: 'Démarrer gratuitement',
       heroSecondary: 'Voir les temoignages',
       demoBadge: 'Etude illustrative',
       demoNotice: 'Ces etudes de cas sont des exemples illustratifs (donnees fictives) pour montrer les cas d\'usage de la plateforme.',
       challenge: 'Le defi',
       solution: 'La solution',
       employees: 'employes',
-      ctaTitle: 'Votre entreprise pourrait etre la prochaine',
+      ctaTitle: 'Votre entreprise pourrait être la prochaine',
       ctaDescription: 'Decouvrez Leopardo RH avec un essai gratuit de 14 jours.',
       ctaPrimary: 'Essai gratuit 14 jours',
       ctaSecondary: 'Demander une demo',

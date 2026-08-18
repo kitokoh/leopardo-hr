@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Trop de tentatives. Veuillez reessayer plus tard.',
+          message: 'Trop de tentatives. Veuillez réessayer plus tard.',
           error: 'RATE_LIMIT_EXCEEDED',
         },
         { status: 429 }
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          message: 'Code de verification envoye.',
+          message: 'Code de vérification envoyé.',
           data: {
             id: lead.id,
             email: signupResult.email,

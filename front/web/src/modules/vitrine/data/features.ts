@@ -43,7 +43,7 @@ const featuresByLocale: Record<AppLocale, Feature[]> = {
     },
     {
       icon: Shield,
-      title: 'Securite renforcee',
+      title: 'Sécurité renforcée',
       description: 'Authentification forte, chiffrement bout-en-bout et audit trail complet.',
       gradient: 'from-violet-400 to-purple-500',
       stats: 'SOC2',
