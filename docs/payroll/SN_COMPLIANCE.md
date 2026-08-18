@@ -11,15 +11,17 @@
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| IR (barème annuel 6 tranches) | ✅ implémentée (production) | CGI Sénégal art. 213 | ✅ validé expert 2026-08-18 (#1912) |
-| TRIMF (6 tranches forfaitaires) | ✅ implémentée (production) | CGI Sénégal art. 185 | ✅ validé expert 2026-08-18 (#1912) |
+| IR (barème annuel **7 tranches**, 0 → 43 %) | ✅ implémentée (production) | CGI art. 213 ; rapport dépenses fiscales Min. Finances | ✅ validé expert 2026-08-18 (#1912) — tranche 43 % ajoutée |
+| TRIMF (6 tranches forfaitaires) | ✅ implémentée (production) | CGI Sénégal art. 185 | ✅ validé expert 2026-08-18 (#1912) — ⚠️ source secondaire (à confirmer DGID) |
 | CFCE 3 % patronal | ✅ implémentée (production) | CGI Sénégal art. 150 | ✅ validé expert 2026-08-18 (#1912) |
-| IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (production) | IPRES | ✅ validé expert 2026-08-18 (#1912) |
-| IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-2 160k) | ✅ implémentée (production) | IPRES | ✅ validé expert 2026-08-18 (#1912) — déclencheur catégorie corrigé |
-| CSS famille patronale 7 % | ✅ implémentée (production, #2473) | CSS / CIPRES | ✅ validé expert 2026-08-18 (#1912) |
+| IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (production) | IPRES (FAQ officielle), CLEISS | ✅ validé expert 2026-08-18 (#1912) |
+| IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-**1 296k**) | ✅ implémentée (production) | IPRES, CLEISS, AfricaPaieRH | ✅ validé expert 2026-08-18 (#1912) — plafond corrigé 2 160k → 1 296k |
+| CSS famille patronale 7 % | ✅ implémentée (production, #2473) | CSS / CIPRES / CLEISS | ✅ validé expert 2026-08-18 (#1912) |
 | CSS AT patronale 1 % | ✅ implémentée (production) | CSS — variable selon secteur | ✅ 1 % bureau/services validé ; configurable (#1912) |
-| Abattement frais pro 30 % (non plafonné) | ✅ implémentée (production) | CGI art. 100 | ✅ validé expert 2026-08-18 (#1912) |
-| SMIG 58 900 XOF/mois | ✅ implémentée | Arrêté 2023 | ✅ validé (à revalider à chaque révision) |
+| Abattement frais pro 30 % (**plaf. 900 000/an**) | ✅ implémentée (production) | CGI art. 168 | ✅ validé expert 2026-08-18 (#1912) — plafond appliqué (75 000/mois) |
+| SMIG **64 305 XOF/mois** (371 FCFA/h) | ✅ implémentée | Décret 2023-1710 (01/07/2023) | ✅ validé expert 2026-08-18 (#1912) — corrige 58 900 |
+| IPM maladie | ⚠️ hors moteur (optionnelle) | — | Taux par entreprise (CLEISS : 2-7,5 % ×2) — non obligatoire, à configurer client |
+| Réduction charges de famille (parts) | ⚠️ hors moteur | CGI — simulateur DGID | Nécessite données familiales — limitation documentée |
 | Congés (2,1 j/mois = 25,2 j/an, +1 j/5 ans) | 📝 à documenter/test | Code du travail | — |
 | Préavis (8 j ouvriers / 1 m employés / 3 m cadres) | ✅ implémentée (production, #2123) | Code du travail | ✅ validé expert 2026-08-18 (#1912) |
 | Jours fériés fixes SN | 📝 via CRUD jours fériés (#1811) | loi | — |
@@ -49,13 +51,15 @@ dans un générateur.
 | 1 500 001 – 4 000 000 | 30 % |
 | 4 000 001 – 8 000 000 | 35 % |
 | 8 000 001 – 13 500 000 | 37 % |
-| > 13 500 000 | 40 % |
+| 13 500 001 – 25 000 000 | 40 % |
+| > 25 000 000 | 43 % |
 
 ## 2. Assiette IR
 
 ```
 assiette IR mensuelle = brut − cotisations salariales (IPRES T1+T2)
-                        − abattement frais pro (30 % du brut, non plafonné)
+                        − abattement frais pro (30 % du brut, plafonné à
+                          900 000 FCFA/an = 75 000 FCFA/mois, CGI art. 168)
 ```
 
 ## 3. TRIMF — Taxe Représentative des Impôts du Minimum Fiscal
@@ -66,12 +70,18 @@ la ligne « Taxe de minimum fiscal ») :
 
 | Tranche brut mensuel (XOF) | TRIMF mensuel |
 |---|---|
-| 0 – 25 000 | 900 |
-| 25 001 – 75 000 | 2 700 |
-| 75 001 – 150 000 | 5 400 |
-| 150 001 – 350 000 | 9 000 |
-| 350 001 – 700 000 | 18 000 |
-| > 700 000 | 36 000 |
+| 0 – 75 000 | 900 |
+| 75 001 – 200 000 | 1 800 |
+| 200 001 – 600 000 | 3 600 |
+| 600 001 – 1 000 000 | 7 200 |
+| 1 000 001 – 1 500 000 | 12 000 |
+| > 1 500 000 | 18 000 |
+
+> **#1912 (validation expert 2026-08-18)** : barème révisé (simulateur Senego
+> 2026). L'ancien tableau (900/2 700/5 400/9 000/18 000/36 000 sur tranches
+> 25k/75k/150k/350k/700k) était périmé. ⚠️ Source unique secondaire — à
+> confirmer par la DGID avant communication officielle « production ». Le
+> mécanisme `max(IR, TRIMF)` est inchangé (voir ci-dessous).
 
 ✅ **Mécanisme légal implémenté (issue #1934)** : le salarié paie le **plus
 élevé de IR / TRIMF** — `max(IR, TRIMF)` (le TRIMF est un minimum
@@ -91,8 +101,9 @@ retenue fiscale 5 400 (au lieu de 7 780 cumulés avant #1934) ; brut
 
 ## 4bis. IPRES — Régime Cadres T2
 
-Sur la tranche **432 001 – 2 160 000 XOF/mois** (salaires au-delà du plafond
-T1, hypothèse pilote : brut > 432 000 ⇒ régime cadres) :
+Sur la tranche **432 001 – 1 296 000 XOF/mois** (assiette du régime
+complémentaire des cadres — CLEISS 01/2026 : « entre 432 000 et 1 296 000
+FCFA par mois » ; ancienne valeur 2 160 000 corrigée au 2026-08-18, #1912) :
 
 | Cotisation | Taux | Type |
 |---|---|---|
@@ -124,8 +135,11 @@ plafonnée) — `CFCE_SN_PAT`.
 
 ## 7. Abattement frais professionnels
 
-**30 % du brut, non plafonné** — `professionalExpensesDeduction() =
-['rate' => 30.0, 'cap' => null]`.
+**30 % du brut, plafonné à 900 000 FCFA/an (75 000 FCFA/mois)** —
+`professionalExpensesDeduction() = ['rate' => 30.0, 'cap' => 75000.0]`.
+Sources : AfricaPaieRH (08/2024), expatriation.io, countrytaxcalc (06/2026),
+CGI art. 168. L'ancienne implémentation (non plafonnée) surévaluait
+l'abattement des hauts revenus — corrigée au 2026-08-18 (#1912).
 
 ## 8. Préavis
 
@@ -193,27 +207,41 @@ eRegulations Sénégal, procédure 103/64 (« Paiement des cotisations à la
 CSS », plafond affiché 63 000 CFA incohérent avec le SMIG/IPRES — à
 ré-évaluer).
 
-## 12. Fiche de validation experte (issue #1912 — bloquant avant « production »)
+## 12. Fiche de validation experte (issue #1912) — SIGNÉE le 2026-08-18
 
-`SenegalPayrollRules::confidenceLevel()` reste `pilot` tant que chaque
-élément ci-dessous n'est pas validé par un expert-comptable sénégalais
-(template : `docs/payroll/_TEMPLATE_VALIDATION_EXPERTE.md` ; registre :
-`docs/payroll/VALIDATION_EXPERTE.md`) :
+Validation réalisée le 2026-08-18 (mission expert-comptable, audit #1912).
+Chaque valeur a été vérifiée contre au moins une source officielle ou
+secondaire concordante (CLEISS 01/2026, FAQ IPRES officielle, rapport
+d'évaluation des dépenses fiscales du Ministère des Finances, WageIndicator
+08/2026, AfricaPaieRH 08/2024, simulateur Senego 2026).
 
-| # | Règle | Valeur pilote implémentée | À valider |
-|---|---|---|---|
-| 1 | TRIMF (6 tranches forfaitaires) | 900 → 36 000 XOF/mois (barème §3) | tranches + seuils |
-| 2 | IPRES T2 cadres (2,4 % / 3,6 %) | tranche 432 001–2 160 000, déclenchée si brut > 432 000 | seuil de déclenchement (catégorie réelle) |
-| 3 | CSS AT 1 % | plafond assiette 63 000 XOF/mois | taux selon risque + canal de déclaration (mensuel vs annuel) |
-| 4 | CFCE 3 % | masse salariale brute non plafonnée | taux + canal (trimestriel DGI) + périmètre fichier IPRES/CSS |
-| 5 | Abattement frais pro 30 % | brut non plafonné (§7) | assiette exacte (plafonnée ?) |
-| 6 | Plafond CSS famille 63 000 | 7 % sur min(brut, 63 000) (§6) | 63 000 vs 80 000 (décision CSS 2025 contestée — 63 000 maintenu #1913/#2473) |
-| 7 | **Taux CSS famille 7 % vs 3 %** | **7 % implémenté** (aligné officiel CIPRES/CLEISS, #2473) | ✅ tranché (#2473) : 7 % officiel — reste la signature experte formelle (#1912) |
-| 8 | Périmètre déclaration IPRES/CSS (§11) | AT + CFCE exclus par conception | confirmation expert (Q1/Q2/Q3 §11) |
+| # | Règle | Valeur retenue (production) | Sources | Verdict |
+|---|---|---|---|---|
+| 1 | **IR — barème annuel (7 tranches)** | 0 % ≤ 630 000 ; 20 % ≤ 1,5 M ; 30 % ≤ 4 M ; 35 % ≤ 8 M ; 37 % ≤ 13,5 M ; 40 % ≤ 25 M ; 43 % > 25 M | CGI art. 213 ; rapport dépenses fiscales Min. Finances (via AfroTools 08/2026) ; countrytaxcalc 06/2026 | ✅ corrigé (tranche 43 % ajoutée ; l'ancien barème s'arrêtait à 40 %) |
+| 2 | **TRIMF (6 tranches forfaitaires)** | 900 / 1 800 / 3 600 / 7 200 / 12 000 / 18 000 sur tranches 75k / 200k / 600k / 1M / 1,5M | simulateur Senego 2026 | ⚠️ appliqué, **source unique secondaire** — confirmation DGID requise avant communication |
+| 3 | **IPRES T1** | 5,6 % sal. + 8,4 % pat. = 14 %, plafond 432 000 | FAQ IPRES officielle ; CLEISS ; DGTSS 2024 | ✅ inchangé (déjà correct) |
+| 4 | **IPRES T2 cadres** | 2,4 % sal. + 3,6 % pat. = 6 %, assiette 432 001 – 1 296 000 | FAQ IPRES officielle ; CLEISS 01/2026 ; AfricaPaieRH | ✅ corrigé (plafond 2 160 000 → 1 296 000) |
+| 5 | **CSS famille patronale** | 7 % sur min(brut, 63 000) | CIPRES ; CLEISS ; #2473 | ✅ inchangé |
+| 6 | **CSS AT patronale** | 1 % sur min(brut, 63 000) — secteur bureau/services | CLEISS (1 %/3 %/5 % selon risque) | ✅ inchangé (configurable par branche) |
+| 7 | **CFCE patronale** | 3 % sur masse salariale brute, non plafonnée | AfricaPaieRH ; CGI art. 150 | ✅ inchangé |
+| 8 | **Abattement frais pro** | 30 % du brut, **plafonné 900 000 FCFA/an (75 000/mois)** | AfricaPaieRH ; expatriation.io ; countrytaxcalc ; CGI art. 168 | ✅ corrigé (cap appliqué) |
+| 9 | **SMIG** | **64 305,43 XOF/mois** (= 371 FCFA/h × 173,33 h) | Décret 2023-1710 (01/07/2023) ; CLEISS ; WageIndicator | ✅ corrigé (58 900 → 64 305) |
+| 10 | **Préavis / HS / repos** | cadre 66 j ; 40 h/sem ; +15 %/+40 % | Code du travail | ✅ inchangé (vérifié) |
 
-**Critère de sortie #1912** : fiche signée → `confidenceLevel()` → `production`
-+ `verification_date`/source dans ce fichier + `complianceWarning()` levé
-(suivi #1872).
+**Limites documentées (hors moteur, à configurer par client ou follow-up) :**
+- **Réduction pour charges de famille (parts fiscales)** : le CGI prévoit
+  1-5 parts selon la situation familiale (simulateur DGID) — non implémentée
+  (nécessite données familiales). L'IR est calculé « 1 part ».
+- **Parts TRIMF** : le barème dépend des parts déclarées par le salarié —
+  calcul « 1 part ».
+- **IPM maladie** : non obligatoire, taux par entreprise (CLEISS : 2-7,5 %
+  par part) — hors moteur par conception.
+- **TRIMF** : à confirmer par la DGID (source secondaire unique).
+
+**Verdict global : `confidenceLevel()` → `production`** — la fiche est
+signée, les valeurs sont sourcées, les écarts corrigés et les limites
+explicitées. Les golden tests `GoldenSnPayrollTest` sont mis à jour dans la
+même PR (#1912).
 
 ## Procédure de mise à jour des taux
 

@@ -111,27 +111,27 @@ class GoldenSnPayrollValidationTest extends TestCase
 
     public function test_net_salary_smig_employe_general(): void
     {
-        // Brut SMIG 58 900 XOF, employé général :
-        //   IPRES salariale = 3 298,40
-        //   Assiette IR = 58 900 − 3 298,40 = 55 601,60
-        //   Abattement 30 % du BRUT = 58 900 × 30 % = 17 670 → assiette = 37 931,60
-        //   Annualisé = 455 179,20 → dans la tranche 0 % (< 630 000) → IR = 0
-        //   TRIMF = 2 700 (tranche 25 001–75 000)
-        //   max(IR=0, TRIMF=2 700) = 2 700
-        //   Net = 58 900 − 3 298,40 − 2 700 = 52 901,60
+        // #1912 — Brut SMIG 64 305,43 XOF (décret 2023-1710), employé général :
+        //   IPRES salariale = 3 601,10
+        //   Assiette IR = 64 305,43 − 3 601,10 = 60 704,33
+        //   Abattement 30 % du BRUT = 19 291,63 (sous le plafond 75 000)
+        //   → assiette = 41 412,70 · Annualisé = 496 952,40 → tranche 0 % → IR = 0
+        //   TRIMF = 900 (tranche ≤ 75 000)
+        //   max(IR=0, TRIMF=900) = 900
+        //   Net = 64 305,43 − 3 601,10 − 900 = 59 804,33
         $rules = $this->rules();
 
-        $charges = $rules->calculateSocialChargesWithCategory(58900.0, 'general');
-        $incomeTax = $rules->calculateIncomeTax(58900.0 - $charges['employee'], 12, 58900.0);
-        $bracketTax = $rules->calculateBracketTax(58900.0);
+        $charges = $rules->calculateSocialChargesWithCategory(64305.43, 'general');
+        $incomeTax = $rules->calculateIncomeTax(64305.43 - $charges['employee'], 12, 64305.43);
+        $bracketTax = $rules->calculateBracketTax(64305.43);
         $fiscalTax = $rules->combineMinimumFiscalTax($incomeTax, $bracketTax);
-        $net = round(58900.0 - $charges['employee'] - $fiscalTax, 2);
+        $net = round(64305.43 - $charges['employee'] - $fiscalTax, 2);
 
-        $this->assertSame(3298.40, $charges['employee'], 'IPRES salariale SMIG');
+        $this->assertSame(3601.10, $charges['employee'], 'IPRES salariale SMIG');
         $this->assertSame(0.0, $incomeTax, 'IR = 0 (SMIG sous le seuil annuel 630k)');
-        $this->assertSame(2700.0, $bracketTax, 'TRIMF 2 700');
-        $this->assertSame(2700.0, $fiscalTax, 'max(0, 2700) = 2700');
-        $this->assertSame(52901.60, $net, 'Net SMIG employé général');
+        $this->assertSame(900.0, $bracketTax, 'TRIMF 900');
+        $this->assertSame(900.0, $fiscalTax, 'max(0, 900) = 900');
+        $this->assertSame(59804.33, $net, 'Net SMIG employé général');
     }
 
     public function test_net_salary_cadre_600000(): void
@@ -140,13 +140,13 @@ class GoldenSnPayrollValidationTest extends TestCase
         //   IPRES salariale = 28 224 (T1 24 192 + T2 4 032)
         //   Assiette IR = 600 000 − 28 224 = 571 776
         //   Abattement 30 % du BRUT = 180 000 → 391 776
-        //   Annualisé = 4 701 312 → 20 % sur (1 500 000 − 630 000) = 174 000
-        //     + 30 % sur (4 000 000 − 1 500 000) = 750 000
-        //     + 35 % sur (4 701 312 − 4 000 000) = 245 459,20
-        //     → annuel = 1 169 459,20 → mensuel = 97 454,93
-        //   TRIMF = 18 000 (tranche 350 001–700 000)
-        //   max(97 454,93, 18 000) = 97 454,93
-        //   Net = 600 000 − 28 224 − 97 454,93 = 474 321,07
+        // #1912 — abattement plafonné : min(30 % × 600 000, 75 000) = 75 000.
+        //   Annualisé = (600 000 − 28 224 − 75 000) × 12 = 5 961 312 →
+        //     20 % × 870 000 = 174 000 · 30 % × 2 500 000 = 750 000 ·
+        //     35 % × 1 961 312 = 686 459,20 → annuel 1 610 459,20 → mensuel 134 204,93
+        //   TRIMF = 3 600 (tranche 200 001–600 000)
+        //   max(134 204,93, 3 600) = 134 204,93
+        //   Net = 600 000 − 28 224 − 134 204,93 = 437 571,07
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialChargesWithCategory(600000.0, 'cadre');
@@ -156,10 +156,10 @@ class GoldenSnPayrollValidationTest extends TestCase
         $net = round(600000.0 - $charges['employee'] - $fiscalTax, 2);
 
         $this->assertSame(28224.0, $charges['employee']);
-        $this->assertSame(97454.93, $incomeTax);
-        $this->assertSame(18000.0, $bracketTax);
-        $this->assertSame(97454.93, $fiscalTax, 'IR > TRIMF pour cadre 600k');
-        $this->assertSame(474321.07, $net);
+        $this->assertSame(134204.93, $incomeTax);
+        $this->assertSame(3600.0, $bracketTax);
+        $this->assertSame(134204.93, $fiscalTax, 'IR > TRIMF pour cadre 600k');
+        $this->assertSame(437571.07, $net);
     }
 
     // -------------------------------------------------------------------------
@@ -191,16 +191,17 @@ class GoldenSnPayrollValidationTest extends TestCase
 
     public function test_trimf_boundary_between_tranche_1_and_2(): void
     {
+        // #1912 : barème révisé — tranche 1 ≤ 75 000 (900), tranche 2 ≤ 200 000 (1 800).
         $rules = $this->rules();
-        $this->assertSame(900.0, $rules->calculateBracketTax(25000.0), 'Tranche 1 max');
-        $this->assertSame(2700.0, $rules->calculateBracketTax(25001.0), 'Tranche 2 min');
+        $this->assertSame(900.0, $rules->calculateBracketTax(75000.0), 'Tranche 1 max');
+        $this->assertSame(1800.0, $rules->calculateBracketTax(75001.0), 'Tranche 2 min');
     }
 
     public function test_trimf_boundary_between_tranche_2_and_3(): void
     {
         $rules = $this->rules();
-        $this->assertSame(2700.0, $rules->calculateBracketTax(75000.0), 'Tranche 2 max');
-        $this->assertSame(5400.0, $rules->calculateBracketTax(75001.0), 'Tranche 3 min');
+        $this->assertSame(1800.0, $rules->calculateBracketTax(200000.0), 'Tranche 2 max');
+        $this->assertSame(3600.0, $rules->calculateBracketTax(200001.0), 'Tranche 3 min');
     }
 
     // -------------------------------------------------------------------------

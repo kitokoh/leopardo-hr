@@ -37,19 +37,19 @@ class GoldenSnPayrollTest extends TestCase
         return new SenegalPayrollRules;
     }
 
-    public function test_golden_sn_smig_58900(): void
+    public function test_golden_sn_smig_64305(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §3), brut = SMIG 58 900 XOF :
-        //   TRIMF tranche 25 001–75 000 → 2 700
-        //   IPRES salariale = 58 900 × 5,6 % = 3 298,40 (sous plafond T1)
-        //   Patronal = 4 947,60 (T1) + 4 123 + 589 + 1 767 (CSS/AT/CFCE) = 11 426,60
+        // #1912 — SMIG = 371 FCFA/h × 173,33 h = 64 305,43 (décret 2023-1710).
+        //   TRIMF tranche ≤ 75 000 → 900
+        //   IPRES salariale = 64 305,43 × 5,6 % = 3 601,10 (sous plafond T1)
+        //   Patronal = 5 401,66 (T1) + 4 410 + 630 + 1 929,16 (CSS/AT/CFCE) = 12 370,82
         $rules = $this->rules();
 
-        $charges = $rules->calculateSocialCharges(58900.0);
+        $charges = $rules->calculateSocialCharges(64305.43);
 
-        $this->assertSame(3298.40, $charges['employee']);
-        $this->assertSame(11426.60, $charges['employer']);
-        $this->assertSame(SnPayrollFixtures::bracketTax(58900.0), $rules->calculateBracketTax(58900.0));
+        $this->assertSame(3601.10, $charges['employee']);
+        $this->assertSame(12370.82, $charges['employer']);
+        $this->assertSame(SnPayrollFixtures::bracketTax(64305.43), $rules->calculateBracketTax(64305.43));
     }
 
     public function test_golden_sn_ouvrier_100000(): void
@@ -140,29 +140,30 @@ class GoldenSnPayrollTest extends TestCase
         $this->assertSame(SnPayrollFixtures::bracketTax(1000000.0), $rules->calculateBracketTax(1000000.0));
     }
 
-    public function test_golden_sn_cadre_haut_t2_max_2160000(): void
+    public function test_golden_sn_cadre_haut_t2_plafonne_1296000(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §4bis), brut = plafond T2 2 160 000 :
-        //   T2 = (2 160 000 − 432 000) × 2,4 % = 41 472 → salariale 65 664
+        // #1912 — plafond T2 = 1 296 000 (CLEISS). Brut 2 160 000 (au-delà du
+        // plafond) : T2 = (1 296 000 − 432 000) × 2,4 % = 20 736 → salariale
+        // 24 192 + 20 736 = 44 928 ; patronal 36 288 + 31 104 + 4 410 + 630
+        // + 64 800 = 137 232.
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(2160000.0);
 
-        $this->assertSame(65664.0, $charges['employee']);
-        $this->assertSame(168336.0, $charges['employer']);
+        $this->assertSame(44928.0, $charges['employee']);
+        $this->assertSame(137232.0, $charges['employer']);
     }
 
     public function test_golden_sn_haut_salaire_t2_plafonne_3000000(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §4bis), brut 3 000 000 :
-        //   T2 plafonné à 2 160 000 → salariale identique à 2 160 000 (65 664)
-        //   Patronal : 36 288 + 62 208 (T2) + 4 410 + 630 + 90 000 = 193 536
+        // #1912 — T2 plafonné à 1 296 000 → salariale 44 928 (comme 2 160 000)
+        //   Patronal : 36 288 + 31 104 (T2) + 4 410 + 630 + 90 000 = 162 432
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(3000000.0);
 
-        $this->assertSame(65664.0, $charges['employee']);
-        $this->assertSame(193536.0, $charges['employer']);
+        $this->assertSame(44928.0, $charges['employee']);
+        $this->assertSame(162432.0, $charges['employer']);
     }
 
     public function test_golden_sn_css_family_and_at_caps_are_independent_from_ipres_t2(): void
@@ -172,14 +173,14 @@ class GoldenSnPayrollTest extends TestCase
         $atT2Ceiling = $rules->calculateSocialCharges(2160000.0);
         $aboveAllCaps = $rules->calculateSocialCharges(3000000.0);
 
-        self::assertSame(168336.0, $atT2Ceiling['employer']);
-        self::assertSame(193536.0, $aboveAllCaps['employer']);
+        self::assertSame(137232.0, $atT2Ceiling['employer']);
+        self::assertSame(162432.0, $aboveAllCaps['employer']);
         self::assertSame(
-            103536.0,
+            72432.0,
             $atT2Ceiling['employer'] - (2160000.0 * 3.0 / 100),
         );
         self::assertSame(
-            103536.0,
+            72432.0,
             $aboveAllCaps['employer'] - (3000000.0 * 3.0 / 100),
         );
     }
@@ -199,13 +200,14 @@ class GoldenSnPayrollTest extends TestCase
      */
     public static function trimfProvider(): array
     {
+        // #1912 : barème TRIMF révisé (900/1 800/3 600/7 200/12 000/18 000).
         return [
-            'tranche 1 (≤ 25k)' => [25000.0, 900.0],
-            'tranche 2 (25k-75k)' => [75000.0, 2700.0],
-            'tranche 3 (75k-150k)' => [150000.0, 5400.0],
-            'tranche 4 (150k-350k)' => [350000.0, 9000.0],
-            'tranche 5 (350k-700k)' => [700000.0, 18000.0],
-            'tranche 6 (> 700k)' => [800000.0, 36000.0],
+            'tranche 1 (≤ 75k)' => [75000.0, 900.0],
+            'tranche 2 (75k-200k)' => [200000.0, 1800.0],
+            'tranche 3 (200k-600k)' => [600000.0, 3600.0],
+            'tranche 4 (600k-1M)' => [1000000.0, 7200.0],
+            'tranche 5 (1M-1.5M)' => [1500000.0, 12000.0],
+            'tranche 6 (> 1.5M)' => [2000000.0, 18000.0],
         ];
     }
 
@@ -223,22 +225,22 @@ class GoldenSnPayrollTest extends TestCase
 
     public function test_golden_sn_abattement_30_pct(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §7) : abattement frais pro 30 % du
-        // brut, non plafonné.
+        // #1912 (SN_COMPLIANCE.md §7) : abattement frais pro 30 % du brut,
+        // plafonné à 900 000 FCFA/an = 75 000 FCFA/mois (CGI art. 168).
         $rules = $this->rules();
 
         $abatement = $rules->professionalExpensesDeduction();
 
         $this->assertSame(30.0, $abatement['rate']);
-        $this->assertNull($abatement['cap']);
+        $this->assertSame(75000.0, $abatement['cap']);
     }
 
-    public function test_golden_sn_ir_tranche_40_pct(): void
+    public function test_golden_sn_ir_tranche_43_pct(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md §1), brut 3 000 000 :
-        //   IPRES salariale 65 664 → assiette = 3 000 000 − 65 664 = 2 934 336 ;
-        //   abattement 30 % du BRUT (3 000 000 × 30 % = 900 000) → 2 034 336
-        //   → annuel 24 412 032 → 40 % au-delà de 13 500 000.
+        // #1912 (SN_COMPLIANCE.md §1), brut 3 000 000 :
+        //   IPRES salariale 44 928 → assiette = 2 955 072 ;
+        //   abattement plafonné (75 000) → 2 880 072
+        //   → annuel 34 560 864 → tranche 43 % au-delà de 25 000 000.
         $rules = $this->rules();
 
         $charges = $rules->calculateSocialCharges(3000000.0);
@@ -298,11 +300,11 @@ class GoldenSnPayrollTest extends TestCase
 
     public function test_golden_sn_minimum_wage_currency_timezone(): void
     {
-        // Calcul manuel (SN_COMPLIANCE.md) : SMIG 58 900 XOF, XOF/BCEAO,
-        // timezone Dakar.
+        // #1912 : SMIG 64 305,43 XOF (371 FCFA/h × 173,33 h, décret 2023-1710),
+        // XOF/BCEAO, timezone Dakar.
         $rules = $this->rules();
 
-        $this->assertSame(58900.0, $rules->minimumWage());
+        $this->assertSame(64305.43, $rules->minimumWage());
         $this->assertSame('XOF', $rules->currency());
         $this->assertSame('Africa/Dakar', $rules->timezone());
     }
@@ -338,13 +340,15 @@ class GoldenSnPayrollTest extends TestCase
      */
     public static function irProvider(): array
     {
+        // #1912 : valeurs régénérées — abattement plafonné à 75 000/mois et
+        // tranche 43 % au-delà de 25 M de revenu imposable annuel.
         return [
             'tranche 20 % (annuel 772 800)' => [100000.0, 2380.0],
             'tranche 30 % (annuel 1 932 000)' => [250000.0, 25300.0],
-            'tranche 35 % (annuel 4 701 312)' => [600000.0, 97454.93],
-            'tranche 37 % (annuel 7 946 112)' => [1000000.0, 192094.93],
-            'tranche 40 % (annuel 17 356 032)' => [2160000.0, 491784.40],
-            'tranche 40 % (annuel 24 412 032)' => [3000000.0, 726984.40],
+            'tranche 35 % (annuel 4 701 312)' => [600000.0, 134204.93],
+            'tranche 37 % (annuel 7 946 112)' => [1000000.0, 275255.12],
+            'tranche 40 % (annuel imposable 24 480 864)' => [2160000.0, 729278.80],
+            'tranche 43 % (annuel imposable 34 560 864)' => [3000000.0, 1089180.96],
         ];
     }
 }
