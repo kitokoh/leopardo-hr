@@ -30,25 +30,25 @@ type MetricItem = {
 
 const metricsByLocale: Record<AppLocale, MetricItem[]> = {
   fr: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'Pays avec regles de paie dediees' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'Pays avec regles de paie dediees' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
     { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Tests automatises backend' },
   ],
   en: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'Countries with dedicated payroll rules' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'Countries with dedicated payroll rules' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Product languages (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Product surfaces (web, mobile, kiosk)' },
     { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Automated backend tests' },
   ],
   tr: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'Ozel bordro kurali olan ulke' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'Ozel bordro kurali olan ulke' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'Urun dili (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'Urun yuzeyi (web, mobil, kiosk)' },
     { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'Otomatik backend testi' },
   ],
   ar: [
-    { icon: <Globe2 className="w-6 h-6" />, value: '6', label: 'دول بقواعد رواتب مخصصة' },
+    { icon: <Globe2 className="w-6 h-6" />, value: '19', label: 'دول بقواعد رواتب مخصصة' },
     { icon: <Layers className="w-6 h-6" />, value: '4', label: 'لغات المنتج (FR/EN/TR/AR)' },
     { icon: <Building2 className="w-6 h-6" />, value: '7', label: 'واجهات المنتج (ويب، موبايل، كشك)' },
     { icon: <ShieldCheck className="w-6 h-6" />, value: '1200+', label: 'اختبار تلقائي للخلفية' },
