@@ -700,6 +700,8 @@ function StepPayment({
         setCheckoutUnavailable(true);
         setError(data.message || copy.payment.errors.generic);
       } else {
+        setError(data.message || copy.payment.errors.generic);
+      }
     } catch {
       setError(copy.payment.errors.network);
     } finally {
