@@ -1133,6 +1133,7 @@
   "absencesSubmitToHr": "Submit to HR",
   "absencesSubmittedSnack": "Absence request sent to HR.",
   "absencesDaysAvailable": " day(s) available",
+  "absencesDaysShort": " d",
   "settingsJourneyLoadError": "Unable to load your journey.",
   "settingsStatsLoadError": "Unable to load statistics.",
   "cabinetScreenTitleRoot": "My cabinet",

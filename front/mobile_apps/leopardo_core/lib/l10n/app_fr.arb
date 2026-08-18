@@ -1133,6 +1133,7 @@
   "absencesSubmitToHr": "Soumettre au RH",
   "absencesSubmittedSnack": "Demande d'absence transmise au RH.",
   "absencesDaysAvailable": " j disponibles",
+  "absencesDaysShort": " j",
   "settingsJourneyLoadError": "Impossible de charger votre parcours.",
   "settingsStatsLoadError": "Impossible de charger les statistiques.",
   "cabinetScreenTitleRoot": "Mon placard",
