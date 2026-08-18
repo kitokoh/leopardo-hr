@@ -148,7 +148,7 @@ export default function AbsencesPage() {
   return (
     <ModulePageShell
       title="Absences"
-      subtitle="Lecture directe des demandes et statuts exposes par le backend RH pour verifier le bon dialogue client/API."
+      subtitle="Lecture directe des demandes et statuts exposés par le backend RH pour vérifier le bon dialogue client/API."
       accentClassName="bg-gradient-to-br from-info/10 via-white to-white"
     >
       {error ? (
