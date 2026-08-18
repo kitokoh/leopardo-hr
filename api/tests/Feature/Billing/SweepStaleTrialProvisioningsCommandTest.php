@@ -23,7 +23,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     /** @param array<string, mixed> $overrides */
     private function insertProvisioning(array $overrides = []): void
     {
-        DB::table('trial_provisionings')->insert(array_merge([
+        DB::table('public.trial_provisionings')->insert(array_merge([
             'email' => 'prospect@example.dz',
             'provisioning_token' => str_repeat('a', 64),
             'status' => 'pending',
@@ -43,11 +43,11 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
             self::assertSame(0, $command);
         }
 
-        $this->assertDatabaseHas('trial_provisionings', [
+        $this->assertDatabaseHas('public.trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'failed',
         ]);
-        $row = DB::table('trial_provisionings')->where('email', 'prospect@example.dz')->first();
+        $row = DB::table('public.trial_provisionings')->where('email', 'prospect@example.dz')->first();
         self::assertNotNull($row);
         $this->assertStringContainsString('SWEEP_TIMEOUT', (string) $row->error);
     }
@@ -63,7 +63,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
             self::assertSame(0, $command);
         }
 
-        $this->assertDatabaseHas('trial_provisionings', [
+        $this->assertDatabaseHas('public.trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'pending',
         ]);
@@ -81,8 +81,8 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
             self::assertSame(0, $command);
         }
 
-        $this->assertDatabaseHas('trial_provisionings', ['provisioning_token' => str_repeat('b', 64), 'status' => 'ready']);
-        $this->assertDatabaseHas('trial_provisionings', ['provisioning_token' => str_repeat('c', 64), 'status' => 'failed']);
+        $this->assertDatabaseHas('public.trial_provisionings', ['provisioning_token' => str_repeat('b', 64), 'status' => 'ready']);
+        $this->assertDatabaseHas('public.trial_provisionings', ['provisioning_token' => str_repeat('c', 64), 'status' => 'failed']);
     }
 
     public function test_dry_run_does_not_write(): void
@@ -96,7 +96,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
             self::assertSame(0, $command);
         }
 
-        $this->assertDatabaseHas('trial_provisionings', [
+        $this->assertDatabaseHas('public.trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'pending',
         ]);
