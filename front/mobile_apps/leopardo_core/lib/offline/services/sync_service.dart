@@ -17,10 +17,10 @@ enum SyncMode { cloud, edge, offline }
 class SyncService {
   final EdgeDatabase _db;
   final Dio _dio;
-  final String _edgeBaseUrl;   // e.g. http://leopardo.local:7878
-  final String _cloudBaseUrl;  // e.g. https://api.leopardo.app
-  final String _edgeNodeId;    // Cloud-issued UUID for this Edge node
-  String _edgeToken;           // Bearer secret, distinct from _edgeNodeId
+  final String _edgeBaseUrl; // e.g. http://leopardo.local:7878
+  final String _cloudBaseUrl; // e.g. https://api.leopardo.app
+  final String _edgeNodeId; // Cloud-issued UUID for this Edge node
+  String _edgeToken; // Bearer secret, distinct from _edgeNodeId
 
   /// Audit #1700 : le secret est hydraté depuis flutter_secure_storage au
   /// démarrage (après construction du provider) — setter mutable.
@@ -54,12 +54,12 @@ class SyncService {
     required String cloudBaseUrl,
     required String edgeNodeId,
     required String edgeToken,
-  })  : _db = db,
-        _dio = dio,
-        _edgeBaseUrl = edgeBaseUrl,
-        _cloudBaseUrl = cloudBaseUrl,
-        _edgeNodeId = edgeNodeId,
-        _edgeToken = edgeToken {
+  }) : _db = db,
+       _dio = dio,
+       _edgeBaseUrl = edgeBaseUrl,
+       _cloudBaseUrl = cloudBaseUrl,
+       _edgeNodeId = edgeNodeId,
+       _edgeToken = edgeToken {
     // Issue #4406 : les providers passent un `Dio()` nu (aucun BaseOptions) —
     // une requête Edge/Cloud pendante (TCP accepté, réponse jamais reçue)
     // bloquerait `syncNow()` pour toujours. Bornes par défaut : 10 s connect /
@@ -76,10 +76,7 @@ class SyncService {
     _connectivitySub = Connectivity().onConnectivityChanged.listen(
       _onConnectivityChangedList,
     );
-    _syncTimer = Timer.periodic(
-      const Duration(minutes: 5),
-      (_) => syncNow(),
-    );
+    _syncTimer = Timer.periodic(const Duration(minutes: 5), (_) => syncNow());
     _detectMode();
   }
 
@@ -146,8 +143,8 @@ class SyncService {
   /// Returns the correct base URL for API calls — transparent to callers.
   String get apiBaseUrl {
     return switch (_currentMode) {
-      SyncMode.edge    => '$_edgeBaseUrl/api',
-      SyncMode.cloud   => '$_cloudBaseUrl/api',
+      SyncMode.edge => '$_edgeBaseUrl/api',
+      SyncMode.cloud => '$_cloudBaseUrl/api',
       SyncMode.offline => '$_edgeBaseUrl/api',
     };
   }
@@ -167,27 +164,30 @@ class SyncService {
       // Batch into groups of 50
       final batches = <List<LocalSyncQueueItem>>[];
       for (var i = 0; i < pending.length; i += 50) {
-        batches.add(pending.sublist(
-          i,
-          i + 50 > pending.length ? pending.length : i + 50,
-        ));
+        batches.add(
+          pending.sublist(i, i + 50 > pending.length ? pending.length : i + 50),
+        );
       }
 
       for (final batch in batches) {
         final List<Map<String, dynamic>> records;
         try {
-          records = batch.map((item) => {
-            'entity_type': item.entityType,
-            'entity_id': item.entityId,
-            'operation': item.operation,
-            'payload': jsonDecode(item.payload),
-          }).toList();
+          records = batch
+              .map(
+                (item) => {
+                  'entity_type': item.entityType,
+                  'entity_id': item.entityId,
+                  'operation': item.operation,
+                  'payload': jsonDecode(item.payload),
+                },
+              )
+              .toList();
         } on FormatException {
           // Audit #1707 : payload illisible (anciens enregistrements
           // sérialisés par l'encodeur maison) — marquer le batch en erreur
           // et continuer au lieu de bloquer la file pour toujours.
           for (final item in batch) {
-            await _db.markFailed(item.id);
+            await _db.markFailed(item);
             failed++;
           }
           continue;
@@ -199,14 +199,13 @@ class SyncService {
           // app image), so the path is identical — only the base URL and
           // the real edgeNodeId (a Cloud-issued UUID, distinct from the
           // bearer edgeToken) differ.
-          final target = '${_activeBaseUrl()}/api/v1/edge-node/$_edgeNodeId/push';
+          final target =
+              '${_activeBaseUrl()}/api/v1/edge-node/$_edgeNodeId/push';
 
           await _dio.post(
             target,
             data: {'records': records},
-            options: Options(
-              headers: {'Authorization': 'Bearer $_edgeToken'},
-            ),
+            options: Options(headers: {'Authorization': 'Bearer $_edgeToken'}),
           );
 
           for (final item in batch) {
@@ -215,7 +214,7 @@ class SyncService {
           }
         } on DioException {
           for (final item in batch) {
-            await _db.markFailed(item.id);
+            await _db.markFailed(item);
             failed++;
           }
         }
@@ -240,9 +239,7 @@ class SyncService {
 
       final response = await _dio.get(
         url,
-        options: Options(
-          headers: {'Authorization': 'Bearer $_edgeToken'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $_edgeToken'}),
       );
 
       final delta = response.data as Map<String, dynamic>?;
@@ -252,7 +249,9 @@ class SyncService {
     } catch (e) {
       // Issue #3867 : échec de pull loggé (mode, erreur) — silencieux avant,
       // impossible à diagnostiquer sur le terrain.
-      debugPrint('[SyncService] pull failed ($_currentMode) — ${e.runtimeType}: $e');
+      debugPrint(
+        '[SyncService] pull failed ($_currentMode) — ${e.runtimeType}: $e',
+      );
     }
   }
 

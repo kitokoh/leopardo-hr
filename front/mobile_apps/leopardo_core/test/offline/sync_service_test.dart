@@ -115,10 +115,38 @@ void main() {
     expect(result.sent, 0);
     expect(result.failed, 1);
 
-    // The item is no longer "pending" (it was marked failed, ready for a
-    // future retry policy), so the sync queue drains it from this cycle.
+    // #4960 : l'item échoué est re-piégé au cycle suivant (retry policy) —
+    // attemptCount incrémenté, status 'failed' mais < maxSyncAttempts. Ce
+    // n'est plus un drop silencieux.
     final pending = await db.getPendingItems();
-    expect(pending, isEmpty);
+    expect(pending, hasLength(1));
+    expect(pending.first.status, 'failed');
+    expect(pending.first.attemptCount, 1);
+  });
+
+  test('syncNow() stops retrying an item after maxSyncAttempts failures', () async {
+    service.debugSetModeForTesting(SyncMode.cloud);
+    await db.insertAttendanceLog(
+      LocalAttendanceLogsCompanion.insert(
+        employeeId: 'emp-2',
+        companyId: 'co-1',
+        checkIn: DateTime.now(),
+      ),
+    );
+
+    // Simule 5 échecs de push successifs (statut terminal 'failed').
+    for (var i = 0; i < EdgeDatabase.maxSyncAttempts; i++) {
+      adapter.queueFailure();
+      adapter.queueSuccess(data: {'entities': <String, dynamic>{}});
+      await service.syncNow();
+    }
+
+    final pending = await db.getPendingItems();
+    expect(pending, isEmpty, reason: 'item terminal — plus de retry');
+
+    final item = await (db.select(db.localSyncQueue)).getSingle();
+    expect(item.status, 'failed');
+    expect(item.attemptCount, EdgeDatabase.maxSyncAttempts);
   });
 
   test('syncNow() applies an employees delta from the pull response', () async {
