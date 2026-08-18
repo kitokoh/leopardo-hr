@@ -54,7 +54,7 @@ class AuthSelfRegistrationTest extends TestCase
             'company_id' => $company->id,
             'email' => $email,
             'role' => 'ordinary',
-            'status' => 'pending',
+            'status' => 'active',
         ]);
 
         DB::table('public.user_invitations')->insert([
