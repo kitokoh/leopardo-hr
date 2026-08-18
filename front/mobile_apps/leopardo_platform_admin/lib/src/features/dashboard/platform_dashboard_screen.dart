@@ -132,6 +132,23 @@ class PlatformDashboardScreen extends ConsumerWidget {
           trailing: const Icon(Icons.chevron_right_rounded),
           onTap: () => context.push('/platform/company-requests'),
         ),
+        // #3912 — Support & Edge
+        MobileListGlassCard(
+          icon: Icons.support_agent_rounded,
+          iconColor: AppColors.danger,
+          title: 'Support client',
+          subtitle: 'Tickets tenant — repondre et trier.',
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => context.push('/platform/support-tickets'),
+        ),
+        MobileListGlassCard(
+          icon: Icons.router_rounded,
+          iconColor: AppColors.rh,
+          title: 'Noeuds Edge',
+          subtitle: 'Sites on-premise — statut et synchronisation.',
+          trailing: const Icon(Icons.chevron_right_rounded),
+          onTap: () => context.push('/platform/edge-nodes'),
+        ),
       ],
     );
   }

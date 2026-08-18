@@ -322,3 +322,141 @@ class PlatformMetrics {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Support Tickets (#3912)
+// ---------------------------------------------------------------------------
+
+class PlatformSupportTicket {
+  const PlatformSupportTicket({
+    required this.id,
+    required this.subject,
+    required this.status,
+    required this.priority,
+    required this.companyName,
+    required this.messagesCount,
+    required this.lastMessageAt,
+    required this.createdAt,
+    this.assignedTo,
+  });
+
+  final int id;
+  final String subject;
+  final String status;
+  final String priority;
+  final String companyName;
+  final int messagesCount;
+  final String lastMessageAt;
+  final String createdAt;
+  final String? assignedTo;
+
+  factory PlatformSupportTicket.fromJson(Map<String, dynamic> json) {
+    final company =
+        (json['company'] as Map?)?.cast<String, dynamic>() ?? {};
+    final assigned =
+        (json['assigned_super_admin'] as Map?)?.cast<String, dynamic>();
+    return PlatformSupportTicket(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      subject: json['subject']?.toString() ?? '-',
+      status: json['status']?.toString() ?? 'open',
+      priority: json['priority']?.toString() ?? 'normal',
+      companyName: company['name']?.toString() ?? json['company_id']?.toString() ?? '-',
+      messagesCount: (json['messages_count'] as num?)?.toInt() ?? 0,
+      lastMessageAt: json['last_message_at']?.toString() ?? json['created_at']?.toString() ?? '',
+      createdAt: json['created_at']?.toString() ?? '',
+      assignedTo: assigned?['name']?.toString(),
+    );
+  }
+}
+
+class PlatformSupportTicketDetail {
+  const PlatformSupportTicketDetail({
+    required this.ticket,
+    required this.messages,
+  });
+
+  final PlatformSupportTicket ticket;
+  final List<PlatformTicketMessage> messages;
+
+  factory PlatformSupportTicketDetail.fromJson(Map<String, dynamic> json) {
+    final data = (json['data'] as Map?)?.cast<String, dynamic>() ?? json;
+    final ticket = PlatformSupportTicket.fromJson(data);
+    final msgs = data['messages'];
+    return PlatformSupportTicketDetail(
+      ticket: ticket,
+      messages: msgs is List
+          ? msgs
+              .whereType<Map>()
+              .map((m) => PlatformTicketMessage.fromJson(m.cast<String, dynamic>()))
+              .toList()
+          : const [],
+    );
+  }
+}
+
+class PlatformTicketMessage {
+  const PlatformTicketMessage({
+    required this.id,
+    required this.body,
+    required this.authorName,
+    required this.authorType,
+    required this.createdAt,
+  });
+
+  final int id;
+  final String body;
+  final String authorName;
+  final String authorType;
+  final String createdAt;
+
+  bool get isSuperAdmin => authorType == 'super_admin';
+
+  factory PlatformTicketMessage.fromJson(Map<String, dynamic> json) {
+    final author = (json['author'] as Map?)?.cast<String, dynamic>() ?? {};
+    return PlatformTicketMessage(
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      body: json['body']?.toString() ?? '',
+      authorName: author['name']?.toString() ??
+          '${author['first_name'] ?? ''} ${author['last_name'] ?? ''}'.trim(),
+      authorType: json['author_type']?.toString() ?? 'employee',
+      createdAt: json['created_at']?.toString() ?? '',
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Edge Nodes (#3912)
+// ---------------------------------------------------------------------------
+
+class PlatformEdgeNode {
+  const PlatformEdgeNode({
+    required this.id,
+    required this.companyName,
+    required this.status,
+    required this.version,
+    required this.lastSyncAt,
+    required this.employeesCount,
+  });
+
+  final String id;
+  final String companyName;
+  final String status;
+  final String version;
+  final String lastSyncAt;
+  final int employeesCount;
+
+  bool get isOnline => status == 'online' || status == 'active';
+
+  factory PlatformEdgeNode.fromJson(Map<String, dynamic> json) {
+    final company =
+        (json['company'] as Map?)?.cast<String, dynamic>() ?? {};
+    return PlatformEdgeNode(
+      id: json['node_id']?.toString() ?? json['id']?.toString() ?? '-',
+      companyName: company['name']?.toString() ?? json['company_id']?.toString() ?? '-',
+      status: json['status']?.toString() ?? 'unknown',
+      version: json['version']?.toString() ?? '-',
+      lastSyncAt: json['last_sync_at']?.toString() ?? json['updated_at']?.toString() ?? '',
+      employeesCount: (json['employees_count'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
