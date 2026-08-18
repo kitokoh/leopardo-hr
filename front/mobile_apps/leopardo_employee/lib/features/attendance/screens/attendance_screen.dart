@@ -414,7 +414,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 break;
             }
           },
-          itemBuilder: (_) => const [
+          itemBuilder: (_) => [
             PopupMenuItem(
               value: 'tasks',
               child: _MenuItem(
