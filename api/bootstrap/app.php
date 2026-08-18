@@ -256,7 +256,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 $rawMessage
             );
 
-            if ($leakSignature === 1 || trim($rawMessage) === '') {
+            // #4955 (audit web client 2026-08-17) : le 429 de ThrottleRequests
+            // porte toujours le message Laravel brut ("Too Many Attempts.") qui
+            // n'est PAS un message statique volontaire. On sert systématiquement
+            // le code stable + message localisé (headers Retry-After conservés).
+            if ($statusCode === 429 || $leakSignature === 1 || trim($rawMessage) === '') {
 
                 Log::warning('HTTP exception rendered with sanitized message (issue #3810)', [
                     'status' => $statusCode,
