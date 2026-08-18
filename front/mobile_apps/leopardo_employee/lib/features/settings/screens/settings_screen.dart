@@ -352,7 +352,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             FilledButton(
               onPressed: _profileSaving ? null : _saveProfile,
               child: Text(
-                _profileSaving ? 'Enregistrement...' : 'Enregistrer le profil',
+                _profileSaving ? context.l10n.savingProfile : context.l10n.saveProfile,
               ),
             ),
           ],

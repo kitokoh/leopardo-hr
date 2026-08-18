@@ -483,7 +483,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               child: tasks.isEmpty
                   ? const _SheetMessage(
                       icon: Icons.task_alt_outlined,
-                      title: 'Aucune tache aujourd hui',
+                      title: context.l10n.noTasksToday,
                       body:
                           'Vous pourrez pointer normalement. Les taches assignees apparaitront ici.',
                     )
@@ -1105,7 +1105,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                   if (day.sessions.isEmpty)
                     const _SheetMessage(
                       icon: Icons.event_busy_outlined,
-                      title: 'Aucune session',
+                      title: context.l10n.emptySessions,
                       body: 'Cette journee ne contient pas encore de pointage.',
                     )
                   else

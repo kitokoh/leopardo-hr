@@ -3155,6 +3155,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsStatsLoadError => 'Impossible de charger les statistiques.';
+  @override
+  String get emptyAbsences => '{'fr': 'Aucune absence', 'en': 'No absences', 'tr': 'Devamsızlık yok', 'ar': 'لا توجد غيابات'}';
+  @override
+  String get cancelRequest => '{'fr': 'Annuler la demande', 'en': 'Cancel request', 'tr': 'Talebi iptal et', 'ar': 'إلغاء الطلب'}';
+  @override
+  String get emptySessions => '{'fr': 'Aucune session', 'en': 'No sessions', 'tr': 'Oturum yok', 'ar': 'لا توجد جلسات'}';
+  @override
+  String get emptyHistory => '{'fr': 'Aucun historique', 'en': 'No history', 'tr': 'Geçmiş yok', 'ar': 'لا يوجد سجل'}';
+  @override
+  String get emptyPayslips => '{'fr': 'Aucune fiche de paie', 'en': 'No payslips', 'tr': 'Maaş bordrosu yok', 'ar': 'لا توجد كشوف رواتب'}';
+  @override
+  String get emptyAdvances => '{'fr': 'Aucune avance', 'en': 'No advances', 'tr': 'Avans yok', 'ar': 'لا توجد سلف'}';
+  @override
+  String get noReason => '{'fr': 'Aucun motif', 'en': 'No reason', 'tr': 'Gerekçe yok', 'ar': 'لا يوجد سبب'}';
+  @override
+  String get confirmReceipt => '{'fr': 'Confirmer la réception', 'en': 'Confirm receipt', 'tr': 'Teslim alındığını onayla', 'ar': 'تأكيد الاستلام'}';
+  @override
+  String get saveProfile => '{'fr': 'Enregistrer le profil', 'en': 'Save profile', 'tr': 'Profili kaydet', 'ar': 'حفظ الملف الشخصي'}';
+  @override
+  String get savingProfile => '{'fr': 'Enregistrement…', 'en': 'Saving…', 'tr': 'Kaydediliyor…', 'ar': 'جارٍ الحفظ…'}';
+  @override
+  String get loadError => '{'fr': 'Erreur de chargement', 'en': 'Loading error', 'tr': 'Yükleme hatası', 'ar': 'خطأ في التحميل'}';
+  @override
+  String get noData => '{'fr': 'Aucune donnée', 'en': 'No data', 'tr': 'Veri yok', 'ar': 'لا توجد بيانات'}';
+  @override
+  String get noTasksToday => '{'fr': "Aucune tâche aujourd'hui", 'en': 'No tasks today', 'tr': 'Bugün görev yok', 'ar': 'لا توجد مهام اليوم'}';
 
   @override
   String get featureComingSoon => 'Fonction bientôt disponible';

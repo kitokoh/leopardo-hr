@@ -5933,6 +5933,33 @@ abstract class AppLocalizations {
 
   /// No description provided for @settingsStatsLoadError.
   String get settingsStatsLoadError;
+
+  /// No description provided for @emptyAbsences.
+  String get emptyAbsences;
+  /// No description provided for @cancelRequest.
+  String get cancelRequest;
+  /// No description provided for @emptySessions.
+  String get emptySessions;
+  /// No description provided for @emptyHistory.
+  String get emptyHistory;
+  /// No description provided for @emptyPayslips.
+  String get emptyPayslips;
+  /// No description provided for @emptyAdvances.
+  String get emptyAdvances;
+  /// No description provided for @noReason.
+  String get noReason;
+  /// No description provided for @confirmReceipt.
+  String get confirmReceipt;
+  /// No description provided for @saveProfile.
+  String get saveProfile;
+  /// No description provided for @savingProfile.
+  String get savingProfile;
+  /// No description provided for @loadError.
+  String get loadError;
+  /// No description provided for @noData.
+  String get noData;
+  /// No description provided for @noTasksToday.
+  String get noTasksToday;
   /// No description provided for @featureComingSoon.
   ///
   /// In fr, this message translates to:

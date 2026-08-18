@@ -16,6 +16,8 @@ import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -64,7 +66,7 @@ class _SalaryAdvanceListScreenState
                 children: const [
                   EmptyState(
                     icon: Icons.payments,
-                    title: 'Aucune avance',
+                    title: context.l10n.emptyAdvances,
                     description:
                         'Demandez une avance en quelques secondes, puis suivez la decision RH ici.',
                   ),
@@ -82,7 +84,7 @@ class _SalaryAdvanceListScreenState
                 final amount = _formatMoney(advance.amount, advance.currency);
                 final reason = advance.reason?.trim().isNotEmpty == true
                     ? advance.reason!
-                    : 'Aucun motif';
+                    : context.l10n.noReason;
                 final months = advance.repaymentMonths;
 
                 return Semantics(
@@ -148,7 +150,7 @@ class _SalaryAdvanceListScreenState
             child: FilledButton.icon(
               onPressed: () => _confirmReceived(context, advance.id),
               icon: const Icon(Icons.verified_user_outlined, size: 16),
-              label: const Text('Confirmer reception'),
+              label: Text(context.l10n.confirmReceipt),
             ),
           ),
         ],
@@ -168,7 +170,7 @@ class _SalaryAdvanceListScreenState
           child: TextButton.icon(
             onPressed: () => _confirmCancelAdvance(context, advance.id),
             icon: const Icon(Icons.close_rounded, size: 16),
-            label: const Text('Annuler la demande'),
+            label: Text(context.l10n.cancelRequest),
           ),
         ),
       ],

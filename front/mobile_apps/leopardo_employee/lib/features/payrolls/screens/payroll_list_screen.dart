@@ -14,6 +14,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+
 
 class PayrollListScreen extends ConsumerStatefulWidget {
   const PayrollListScreen({super.key});
@@ -153,7 +155,7 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
                   padding: EdgeInsets.only(top: 56),
                   child: EmptyState(
                     icon: Icons.description,
-                    title: 'Aucune fiche de paie',
+                    title: context.l10n.emptyPayslips,
                     description:
                         'Vos fiches de paie apparaitront ici des qu elles seront validees.',
                   ),

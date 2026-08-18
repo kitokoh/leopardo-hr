@@ -15,6 +15,8 @@ import 'package:leopardo_core/models/absence.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+
 
 class AbsenceListScreen extends ConsumerStatefulWidget {
   const AbsenceListScreen({super.key});
@@ -59,7 +61,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 children: const [
                   EmptyState(
                     icon: Icons.calendar_today,
-                    title: 'Aucune absence',
+                    title: context.l10n.emptyAbsences,
                     description:
                         'Demandez une absence depuis le bouton principal, puis suivez la decision RH ici.',
                   ),
@@ -158,7 +160,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
               TextButton.icon(
                 onPressed: () => _confirmCancelAbsence(context, absence.id),
                 icon: const Icon(Icons.close_rounded, size: 16),
-                label: const Text('Annuler la demande'),
+                label: Text(context.l10n.cancelRequest),
               ),
           ],
         ),
