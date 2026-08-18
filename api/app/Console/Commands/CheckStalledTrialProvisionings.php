@@ -55,6 +55,7 @@ class CheckStalledTrialProvisionings extends Command
         }
 
         foreach ($stalled as $row) {
+            /** @var object{company_name: mixed, country: mixed, attempts: mixed, provisioning_token: mixed, email: mixed} $row */
             $this->recover($row);
         }
 
@@ -63,6 +64,7 @@ class CheckStalledTrialProvisionings extends Command
         return self::SUCCESS;
     }
 
+    /** @param object{company_name: mixed, country: mixed, attempts: mixed, provisioning_token: mixed, email: mixed} $row */
     private function recover(object $row): void
     {
         // Ligne non reconstructible (créée avant la migration 000001) : pas
@@ -95,6 +97,7 @@ class CheckStalledTrialProvisionings extends Command
         $this->warn("Re-dispatched {$row->email} (attempt ".(int) $row->attempts + 1 .').');
     }
 
+    /** @param object{company_name: mixed, country: mixed, attempts: mixed, provisioning_token: mixed, email: mixed} $row */
     private function failPermanently(object $row, string $reason): void
     {
         DB::table('trial_provisionings')
