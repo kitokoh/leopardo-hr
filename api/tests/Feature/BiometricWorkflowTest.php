@@ -7,24 +7,12 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\BiometricEnrollmentRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class BiometricWorkflowTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_biometric_request_requires_manager_approval_before_activation(): void
     {
