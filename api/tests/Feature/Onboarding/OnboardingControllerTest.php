@@ -96,7 +96,9 @@ class OnboardingControllerTest extends TestCase
     {
         Sanctum::actingAs($this->manager);
 
-        $response = $this->getJson('/api/v1/onboarding/steps');
+        // #4929 : l'alias /onboarding/steps est supprimé — le contrat
+        // canonique est GET /onboarding-setup/checklist.
+        $response = $this->getJson('/api/v1/onboarding-setup/checklist');
 
         $response->assertStatus(200);
     }

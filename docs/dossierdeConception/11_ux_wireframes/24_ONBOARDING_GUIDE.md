@@ -24,70 +24,75 @@ Il s'affiche automatiquement si `company_settings.onboarding_completed = false`.
 
 ## API — Endpoints onboarding
 
-### GET /onboarding/status
-Retourne l'état de progression de l'onboarding.
+> **Mise à jour #4929 (2026-08-17) — contrat réel.** L'ancien contrat
+> (`GET /onboarding/status`, `POST /onboarding/complete-step`,
+> `POST /onboarding/skip`, colonnes `company_settings.onboarding_step_*`)
+> **n'a jamais été implémenté** et est retiré de cette documentation. Le
+> contrat canonique, consommé par le wizard web (Next.js) et les apps
+> mobiles Flutter, est piloté par la table `onboarding_steps` (10 étapes) :
 
-**Response 200 :**
+### GET /onboarding-setup/checklist
+Retourne la checklist pilotée par la table `onboarding_steps` (seedée au
+provisioning, seed paresseux si absente). Shape canonique :
+`data{ completed_steps, total_steps, progress_percent, progress, go_live_ready, next_actions, steps }`.
+
 ```json
 {
   "data": {
-    "completed": false,
-    "current_step": 1,
-    "steps": [
-      { "id": 1, "title": "Ajoutez vos employés", "completed": false, "required": true },
-      { "id": 2, "title": "Configurez votre planning", "completed": false, "required": true },
-      { "id": 3, "title": "Téléchargez l'app mobile", "completed": false, "required": false },
-      { "id": 4, "title": "Premier pointage de test", "completed": false, "required": false }
+    "completed_steps": 0,
+    "total_steps": 10,
+    "progress_percent": 0,
+    "progress": 0,
+    "go_live_ready": false,
+    "next_actions": [
+      { "key": "company_info", "label": "Renseigner les informations entreprise" }
     ],
-    "trial_ends_at": "2026-04-14",
-    "trial_days_remaining": 13
+    "steps": [
+      { "step_key": "company_info", "title": "Renseigner les informations entreprise", "order": 1, "required": true, "status": "pending" }
+    ]
   }
 }
 ```
 
-### POST /onboarding/complete-step
-Marque une étape comme complétée.
+### PATCH /onboarding-setup/{stepKey}/complete
+Marque une étape comme complétée (manager uniquement). Résilient : si la
+société n'a aucune étape seedée, le seed est déclenché avant la résolution
+(#4929). Une clé inconnue répond 404.
 
-**Request :**
-```json
-{ "step": 2 }
-```
+### PATCH /onboarding-setup/{stepKey}/skip
+Saute une étape **optionnelle** (`required=false`). Une étape requise répond
+422.
 
-**Response 200 :**
-```json
-{
-  "data": {
-    "step": 2,
-    "completed": true,
-    "all_steps_done": false,
-    "next_step": 3
-  }
-}
-```
-
-### POST /onboarding/skip
-Passe l'onboarding (optionnel après étape 2 complétée).
+### GET /onboarding/checklist — DÉPRÉCIÉ (lecture seule)
+Checklist calculée de « go-live readiness » (8 étapes auto-détectées) :
+`company_created, manager_active, employees_added, employees_active,
+payroll_ready, geofence_configured, biometrics_ready, kiosk_connected`.
+Conservée pour les clients existants ; le contrat canonique est
+`/onboarding-setup/checklist`.
 
 ---
 
 ## LOGIQUE BACKEND
 
 ```php
-// Étape 1 auto-complétée quand : Employee::count() >= 1
-// Étape 2 auto-complétée quand : Schedule::where('is_default', true)->exists()
-// Étape 3 auto-complétée quand : EmployeeDevice::count() >= 1 (premier FCM enregistré)
-// Étape 4 auto-complétée quand : AttendanceLog::count() >= 1 (premier pointage)
+// #4929 : la source de vérité est la table onboarding_steps (10 étapes)
+// seedée par SeedDefaultSteps (action canonique) :
+//   company_info, first_department, first_employee, first_attendance,
+//   invite_manager, configure_schedules, first_report, configure_payroll,
+//   install_kiosk, activate_geofence
+// Appelée au provisioning (CompanyProvisioningService) + paresseusement par
+// GET/PATCH /onboarding-setup/*. Les anciens champs
+// company_settings.onboarding_step_{1..4}_done N'EXISTENT PAS (jamais
+// migrés) — ne pas les utiliser.
 
-// CompanySettings
-onboarding_step_1_done  BOOLEAN DEFAULT false
-onboarding_step_2_done  BOOLEAN DEFAULT false
-onboarding_step_3_done  BOOLEAN DEFAULT false
-onboarding_step_4_done  BOOLEAN DEFAULT false
-onboarding_completed    BOOLEAN DEFAULT false   -- true quand étapes 1+2 terminées
-onboarding_skipped_at   TIMESTAMPTZ NULL
+// AUTO-COMPLETION de la checklist calculée (8 étapes, DÉPRÉCIÉE) :
+// company_created : company existe
+// manager_active  : manager principal actif
+// employees_added : Employee::count() >= 2
+// employees_active: comptes employés activés
+// payroll_ready   : bases de paie renseignées
+// geofence_configured / biometrics_ready / kiosk_connected
 ```
-
----
 
 ## COMPOSANT VUE.JS — OnboardingWizard.vue
 

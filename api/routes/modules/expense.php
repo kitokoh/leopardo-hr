@@ -12,7 +12,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::put('/expense-claims/{expenseClaim}/submit', [ExpenseClaimController::class, 'submit']);
 
     Route::middleware('api.manager')->group(function (): void {
-        Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
-        Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
+        Route::post('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']);
+        Route::put('/expense-claims/{expenseClaim}/approve', [ExpenseClaimController::class, 'approve']); // déprécié #4930
+        Route::post('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']);
+        Route::put('/expense-claims/{expenseClaim}/reject', [ExpenseClaimController::class, 'reject']); // déprécié #4930
     });
 });
