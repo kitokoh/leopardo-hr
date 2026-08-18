@@ -57,12 +57,15 @@ class ContractLifecycleTest extends TestCase
             });
         }
 
+        /** @var Company $company */
         $company = Company::factory()->create([
             'id' => '11111111-1111-1111-1111-111111111111',
         ]);
-        $this->employee = Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $company->id,
         ]);
+        $this->employee = $employee;
     }
 
     private function createContract(string $status = 'draft', ?string $companyId = null): Contract
