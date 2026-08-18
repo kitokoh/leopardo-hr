@@ -39,6 +39,8 @@ class EmployeeSensitiveFillableTest extends TestCase
             'slug' => 'sensitive-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            // #5034 : companies.city est NOT NULL sur le vrai schéma.
+            'city' => 'Alger',
         ]);
 
         $employee = new Employee([
@@ -68,6 +70,8 @@ class EmployeeSensitiveFillableTest extends TestCase
             'slug' => 'explicit-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            // #5034 : companies.city est NOT NULL sur le vrai schéma.
+            'city' => 'Alger',
         ]);
 
         $employee = Employee::query()->create([
