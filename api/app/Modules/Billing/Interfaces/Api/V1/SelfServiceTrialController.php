@@ -67,6 +67,7 @@ class SelfServiceTrialController extends Controller
         // en 503 localisé réessayable (même contrat que #4866/#4874). La
         // détection d'email existant est purement informative ici : la réponse
         // reste uniforme (anti-énumération #3945).
+        $existingManager = null;
         try {
             $existingManager = $this->requestTrialSignup->findExistingManager($email);
             if ($existingManager) {
