@@ -343,7 +343,13 @@
     },
     "brand": {
       "subtitle": "Conversational, mobile-first, modular."
-    }
+    },
+    "leaves": "Leave",
+    "my": {
+      "team": "My team"
+    },
+    "presences": "Attendance",
+    "tasks": "Tasks"
   },
   "tax_slabs": {
     "saving": "Saving…",
@@ -688,7 +694,31 @@
   "_locale": "en",
   "attendance": {
     "retry_after_failure": "{label}. Please try again.",
-    "sending_to_server": "Sending {label} to the server..."
+    "sending_to_server": "Sending {label} to the server...",
+    "absent": "absent",
+    "day": {
+      "summary": "Day of {date}, status {status}, {range}, {hours}."
+    },
+    "hours": {
+      "worked": "hours worked"
+    },
+    "hour": {
+      "worked": "hour worked"
+    },
+    "in": {
+      "progress": "in progress"
+    },
+    "late": "late",
+    "no": {
+      "clock": "no clock-in"
+    },
+    "on": {
+      "time": "on time"
+    },
+    "overtime": "Overtime hours",
+    "time": {
+      "range": "from {from} to {to}"
+    }
   },
   "emails": {
     "invitation": {
@@ -1189,7 +1219,9 @@
     "level": "Level:",
     "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
     "tenantOnly": "Enterprise feature — reserved for client workspaces",
-    "noCriticalAlerts": "No critical alerts"
+    "noCriticalAlerts": "No critical alerts",
+    "settings": "Settings",
+    "team": "Team"
   },
   "exports": {
     "reportEmployees": "Employees",
@@ -1720,5 +1752,213 @@
     "statusPending": "Pending",
     "statusResolved": "Resolved",
     "statusClosed": "Closed"
+  },
+  "access": {
+    "denied": {
+      "body": "Your account does not have the required Manager role for this application. Use the application matching your role (Employee, HR…) or contact your administrator.",
+      "logout": "Log out",
+      "title": "Access denied",
+      "hr": {
+        "body": "Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator."
+      }
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Your presence is detected automatically as soon as you enter the company zone. No action required from you."
+      }
+    },
+    "manual": {
+      "desc": "Clock in manually using the Arrival and Departure buttons in the attendance screen."
+    },
+    "mode": {
+      "title": "Attendance mode"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scan the QR Code displayed at the company entrance to clock in and out."
+      }
+    },
+    "recommended": "Recommended",
+    "save": {
+      "error": "Unable to save your preference. Check your connection."
+    },
+    "title": "Choose how you want to clock your presence every day."
+  },
+  "approval": {
+    "approved": "Request approved",
+    "rejected": "Request rejected"
+  },
+  "approvals": {
+    "empty": "No pending approvals.",
+    "up": {
+      "to": {
+        "date": "All up to date"
+      }
+    }
+  },
+  "back": {
+    "to": {
+      "home": "Back to home"
+    },
+    "simple": "Back"
+  },
+  "create": {
+    "personal": {
+      "account": "Create a personal account"
+    }
+  },
+  "employee": {
+    "invitation": {
+      "access": "Employee access (invitation)"
+    },
+    "number": "Employee #{id}"
+  },
+  "error": {
+    "prefix": "Error: {message}",
+    "unexpected": "An error occurred"
+  },
+  "evaluation": {
+    "period": "Period: {period}"
+  },
+  "evaluations": {
+    "empty": {
+      "hint": "You don't have any recorded evaluation yet.",
+      "title": "No evaluations"
+    },
+    "title": "My Evaluations"
+  },
+  "feature": {
+    "coming": {
+      "soon": "Feature coming soon"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Complete my onboarding"
+    },
+    "onboarding": {
+      "hint": "Set up your workspace in a few steps."
+    }
+  },
+  "login": "Sign in",
+  "monthly": {
+    "summary": {
+      "loading": "Loading monthly summary..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Collapse",
+      "empty": "The org chart will be available once employees are configured.",
+      "expand": "Expand"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "The requested page was not found or the navigation failed."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "No GPS session waiting for validation.",
+      "to": {
+        "validate": "To validate"
+      },
+      "up": {
+        "to": {
+          "date": "All up to date"
+        }
+      }
+    }
+  },
+  "refresh": "Refresh",
+  "register": {
+    "create": {
+      "account": "Create your account"
+    },
+    "creating": "Creating your account...",
+    "first": {
+      "name": "First name"
+    },
+    "min": {
+      "chars": "8 characters minimum"
+    },
+    "password": "Password",
+    "required": "Required",
+    "submit": "Create my account"
+  },
+  "retry": "Retry",
+  "sa": {
+    "approved": "Approved",
+    "config": {
+      "load": {
+        "error": "Unable to load the configuration.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "GPS attendance — team dashboard"
+    },
+    "detected": "Detected",
+    "disable": {
+      "auto": {
+        "gps": "Disable automatic GPS"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Enable automatic GPS"
+      }
+    },
+    "forced": "Enforced",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Your company's GPS zone is not configured yet."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Location permission denied. Enable GPS in settings to start monitoring."
+    },
+    "presence": {
+      "in": {
+        "progress": "Presence in progress since {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Recent sessions"
+    },
+    "rejected": "Rejected",
+    "sessions": {
+      "load": {
+        "error": "Unable to load GPS sessions. Check your connection."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Unable to start GPS monitoring. Check location permissions and try again."
+      }
+    },
+    "status": {
+      "approved": "Approved",
+      "cancelled": "Cancelled",
+      "detected": "Detected",
+      "pending": "Pending validation",
+      "rejected": "Rejected"
+    }
+  },
+  "session": {
+    "approved": "Session approved ✓",
+    "entry": {
+      "at": "Entry: {time}"
+    },
+    "rejected": "Session rejected"
+  },
+  "sessions": {
+    "to": {
+      "validate": "Sessions to validate"
+    }
   }
 }

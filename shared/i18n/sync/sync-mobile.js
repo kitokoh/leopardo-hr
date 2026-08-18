@@ -26,6 +26,11 @@ const keyAliases = {
   'auth.employee.invitation.access': 'employeeInvitationAccess',
   'auth.personal_account.create': 'createPersonalAccount',
   'auth.personal_account.explanation': 'personalAccountExplanation',
+  // #4928 : chemins promus dont le defaultKey entre en collision avec une
+  // structure existante (feuille vs objet) — alias explicite vers la clé ARB.
+  'access.denied.hr.body': 'accessDeniedBodyHr',
+  'back.simple': 'back',
+  'evaluations.empty.title': 'evaluationsEmpty',
 };
 
 function sanitizePart(part) {
