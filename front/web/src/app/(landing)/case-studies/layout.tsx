@@ -36,10 +36,12 @@ export async function generateMetadata({
     return listingMetadata(lang);
   }
 
+  // #4867 : ogType 'article' pour les études de cas individuelles (contenu
+  // éditorial — cohérent avec le schéma OpenGraph et les robots de crawl).
   return generateSEOMetadata({
     title: study.title,
     description: study.description,
-    ogType: 'website',
+    ogType: 'article',
     canonical: `${SITE_URL}/case-studies/${study.slug}`,
     locale: lang,
   });

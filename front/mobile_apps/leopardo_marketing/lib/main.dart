@@ -14,6 +14,8 @@ import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/marketing/screens/marketing_home_screen.dart';
+import 'features/marketing/screens/social_posts_screen.dart';
+import 'features/marketing/screens/create_post_screen.dart';
 import 'core/providers/core_providers.dart';
 
 void main() {
@@ -116,6 +118,15 @@ final _routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const MarketingHomeScreen(),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      // #3910 — Social posts screens
+      GoRoute(
+        path: '/posts',
+        builder: (context, state) => const SocialPostsScreen(),
+      ),
+      GoRoute(
+        path: '/create-post',
+        builder: (context, state) => const CreatePostScreen(),
+      ),
     ],
   );
 });

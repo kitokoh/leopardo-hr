@@ -4007,4 +4007,87 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get actionCancel => 'Annuler';
 
+
+
+  @override
+  String get attendanceThisWeek => 'CETTE SEMAINE';
+  @override
+  String get attendanceToday => 'AUJOURD\'HUI';
+  @override
+  String get attendanceCheckinLabel => 'Arrivée';
+  @override
+  String get attendanceCheckoutLabel => 'Départ';
+  @override
+  String get attendanceDailyEstimate => 'Gain estimé du jour';
+  @override
+  String get attendanceWeekHours => 'Heures semaine';
+  @override
+  String get attendanceWeekEarnings => 'Gain estimé';
+  @override
+  String get attendanceWeekLate => 'Retard cumulé';
+  @override
+  String get attendanceMenuEdit => 'Modifier';
+  @override
+  String get attendanceMenuMonthly => 'Mon mois complet';
+  @override
+  String get attendanceMenuProfile => 'Mon profil';
+  @override
+  String get attendanceCheckoutSending => 'Envoi du départ vers le serveur...';
+  @override
+  String get attendanceCheckinSending => 'Envoi de l\'arrivée vers le serveur...';
+  @override
+  String get attendanceCheckoutSuccess => 'Départ confirmé.';
+  @override
+  String get attendanceCheckoutFailure => 'Départ non confirmé. Réessayez.';
+  @override
+  String get attendanceCheckinSuccess => 'Arrivée confirmée.';
+  @override
+  String get attendanceCheckinFailure => 'Arrivée non confirmée. Réessayez.';
+  @override
+  String get attendanceFingerprintEnabled => 'Empreinte activée (optionnel)';
+  @override
+  String get attendanceFingerprintEnable => 'Activer l\'empreinte (optionnel)';
+  @override
+  String get attendanceAbsent => 'Absent';
+  @override
+  String get attendanceStatusPointer => 'À pointer';
+  @override
+  String get attendanceStatusInProgress => 'En cours';
+  @override
+  String get attendanceStatusLate => 'Retard';
+  @override
+  String get attendanceStatusComplete => 'Complet';
+  @override
+  String get attendanceCorrectionTitle => 'Modifier le pointage';
+  @override
+  String get attendanceCorrectionDirectHint => 'La correction sera appliquée au dossier de pointage.';
+  @override
+  String get attendanceCorrectionRequestHint => 'La demande sera transmise au RH pour validation.';
+  @override
+  String get attendanceCorrectionCheckinLabel => 'Arrivée réelle *';
+  @override
+  String get attendanceCorrectionCheckoutLabel => 'Départ réel';
+  @override
+  String get attendanceCorrectionReasonHint => 'Motif (ex: oubli de pointage à 8h)';
+  @override
+  String get attendanceCorrectionReasonRequired => 'Motif obligatoire';
+  @override
+  String get attendanceCorrectionNoLogWarning => 'Aucune ligne de pointage existante à modifier pour ce jour.';
+  @override
+  String get attendanceCorrectionSubmitDirect => 'Modifier';
+  @override
+  String get attendanceCorrectionSubmitRequest => 'Demander une modification';
+  @override
+  String get attendanceRoleEmployee2 => 'Employé';
+  @override
+  String get attendanceRolePrincipal => 'Manager principal';
+  @override
+  String get attendanceRoleHr => 'Responsable RH';
+  @override
+  String get attendanceRoleFinance => 'Finance';
+  @override
+  String get attendanceRoleManager => 'Manager';
+  @override
+  String get attendanceNone => 'Aucun';
+
 }

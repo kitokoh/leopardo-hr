@@ -3928,4 +3928,87 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get actionCancel => 'إلغاء';
 
+
+
+  @override
+  String get attendanceThisWeek => 'هذا الأسبوع';
+  @override
+  String get attendanceToday => 'اليوم';
+  @override
+  String get attendanceCheckinLabel => 'وقت الدخول';
+  @override
+  String get attendanceCheckoutLabel => 'وقت الخروج';
+  @override
+  String get attendanceDailyEstimate => 'الأرباح اليومية التقديرية';
+  @override
+  String get attendanceWeekHours => 'ساعات الأسبوع';
+  @override
+  String get attendanceWeekEarnings => 'الأرباح التقديرية';
+  @override
+  String get attendanceWeekLate => 'التأخر المتراكم';
+  @override
+  String get attendanceMenuEdit => 'تعديل';
+  @override
+  String get attendanceMenuMonthly => 'شهري الكامل';
+  @override
+  String get attendanceMenuProfile => 'ملفي الشخصي';
+  @override
+  String get attendanceCheckoutSending => 'إرسال وقت الخروج إلى الخادم...';
+  @override
+  String get attendanceCheckinSending => 'إرسال وقت الدخول إلى الخادم...';
+  @override
+  String get attendanceCheckoutSuccess => 'تم تأكيد الخروج.';
+  @override
+  String get attendanceCheckoutFailure => 'لم يتم تأكيد الخروج. حاول مجدداً.';
+  @override
+  String get attendanceCheckinSuccess => 'تم تأكيد الدخول.';
+  @override
+  String get attendanceCheckinFailure => 'لم يتم تأكيد الدخول. حاول مجدداً.';
+  @override
+  String get attendanceFingerprintEnabled => 'البصمة مفعلة (اختياري)';
+  @override
+  String get attendanceFingerprintEnable => 'تفعيل البصمة (اختياري)';
+  @override
+  String get attendanceAbsent => 'غائب';
+  @override
+  String get attendanceStatusPointer => 'للتسجيل';
+  @override
+  String get attendanceStatusInProgress => 'جارٍ';
+  @override
+  String get attendanceStatusLate => 'متأخر';
+  @override
+  String get attendanceStatusComplete => 'مكتمل';
+  @override
+  String get attendanceCorrectionTitle => 'تعديل الحضور';
+  @override
+  String get attendanceCorrectionDirectHint => 'سيُطبق التصحيح على سجل الحضور.';
+  @override
+  String get attendanceCorrectionRequestHint => 'سيُرسل الطلب إلى الموارد البشرية للمراجعة.';
+  @override
+  String get attendanceCorrectionCheckinLabel => 'وقت الدخول الفعلي *';
+  @override
+  String get attendanceCorrectionCheckoutLabel => 'وقت الخروج الفعلي';
+  @override
+  String get attendanceCorrectionReasonHint => 'السبب (مثلاً: نسيت التسجيل في الساعة 8)';
+  @override
+  String get attendanceCorrectionReasonRequired => 'السبب مطلوب';
+  @override
+  String get attendanceCorrectionNoLogWarning => 'لا يوجد سجل حضور لتعديله لهذا اليوم.';
+  @override
+  String get attendanceCorrectionSubmitDirect => 'تعديل';
+  @override
+  String get attendanceCorrectionSubmitRequest => 'طلب تصحيح';
+  @override
+  String get attendanceRoleEmployee2 => 'موظف';
+  @override
+  String get attendanceRolePrincipal => 'مدير رئيسي';
+  @override
+  String get attendanceRoleHr => 'مسؤول الموارد البشرية';
+  @override
+  String get attendanceRoleFinance => 'مالية';
+  @override
+  String get attendanceRoleManager => 'مدير';
+  @override
+  String get attendanceNone => 'لا شيء';
+
 }
