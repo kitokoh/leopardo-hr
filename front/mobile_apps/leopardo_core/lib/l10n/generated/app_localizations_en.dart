@@ -3401,4 +3401,82 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String get absencesListTitle => 'My absences';
+
+  @override
+  String get absencesListSubtitle => 'Requests, balances and HR decisions';
+
+  @override
+  String get absenceRequest => 'Request';
+
+  @override
+  String get absencesEmpty => 'No absences';
+
+  @override
+  String get absencesEmptyHint => 'Request an absence from the main button, then track the HR decision here.';
+
+  @override
+  String get absenceLabel => 'Absence';
+
+  @override
+  String absencesDaysCount(Object date, Object days) {
+    return '$date - $days d';
+  }
+
+  @override
+  String get absencesLoading => 'Loading absences';
+
+  @override
+  String get absenceViewProof => 'View proof';
+
+  @override
+  String get absenceCancelRequest => 'Cancel request';
+
+  @override
+  String absenceProofDownloaded(Object path) {
+    return 'Proof downloaded: $path';
+  }
+
+  @override
+  String get absenceCancelTitle => 'Cancel this request?';
+
+  @override
+  String get absenceCancelBody => 'The pending request will be removed and HR will see the cancelled status.';
+
+  @override
+  String get absenceCancelled => 'Absence request cancelled.';
+
+  @override
+  String get absenceNewTitle => 'New absence';
+
+  @override
+  String get absenceNewHint => 'Choose the balance type and the period to send to HR.';
+
+  @override
+  String get absenceNoType => 'No absence type available for this account. Contact HR to configure balances.';
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String get salaryAdvanceKeep => 'Keep';
+
+  @override
+  String get salaryAdvanceCancelAction => 'Cancel';
+
+  @override
+  String get salaryStatusApproved => 'approved';
+
+  @override
+  String get salaryStatusPending => 'pending';
+
+  @override
+  String get salaryStatusRejected => 'rejected';
+
+  @override
+  String get salaryStatusCancelled => 'cancelled';
 }

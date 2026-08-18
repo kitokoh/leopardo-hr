@@ -3369,4 +3369,82 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.';
+
+  @override
+  String get absencesListTitle => 'غياباتي';
+
+  @override
+  String get absencesListSubtitle => 'الطلبات والأرصدة وقرارات الموارد البشرية';
+
+  @override
+  String get absenceRequest => 'طلب';
+
+  @override
+  String get absencesEmpty => 'لا توجد غيابات';
+
+  @override
+  String get absencesEmptyHint => 'اطلب غيابًا من الزر الرئيسي، ثم تابع قرار الموارد البشرية هنا.';
+
+  @override
+  String get absenceLabel => 'غياب';
+
+  @override
+  String absencesDaysCount(Object date, Object days) {
+    return '$date - $days يومًا';
+  }
+
+  @override
+  String get absencesLoading => 'جارٍ تحميل الغيابات';
+
+  @override
+  String get absenceViewProof => 'عرض الإثبات';
+
+  @override
+  String get absenceCancelRequest => 'إلغاء الطلب';
+
+  @override
+  String absenceProofDownloaded(Object path) {
+    return 'تم تنزيل الإثبات: $path';
+  }
+
+  @override
+  String get absenceCancelTitle => 'إلغاء هذا الطلب؟';
+
+  @override
+  String get absenceCancelBody => 'سيُحذف الطلب المعلق وسيرى الموارد البشرية الحالة ملغاة.';
+
+  @override
+  String get absenceCancelled => 'تم إلغاء طلب الغياب.';
+
+  @override
+  String get absenceNewTitle => 'غياب جديد';
+
+  @override
+  String get absenceNewHint => 'اختر نوع الرصيد والفترة المراد إرسالها إلى الموارد البشرية.';
+
+  @override
+  String get absenceNoType => 'لا يوجد نوع غياب متاح لهذا الحساب. تواصل مع الموارد البشرية لضبط الأرصدة.';
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'فشل: $error';
+  }
+
+  @override
+  String get salaryAdvanceKeep => 'إبقاء';
+
+  @override
+  String get salaryAdvanceCancelAction => 'إلغاء';
+
+  @override
+  String get salaryStatusApproved => 'معتمدة';
+
+  @override
+  String get salaryStatusPending => 'قيد الانتظار';
+
+  @override
+  String get salaryStatusRejected => 'مرفوضة';
+
+  @override
+  String get salaryStatusCancelled => 'ملغاة';
 }

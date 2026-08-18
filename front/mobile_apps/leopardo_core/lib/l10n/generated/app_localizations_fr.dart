@@ -3448,4 +3448,82 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.';
+
+  @override
+  String get absencesListTitle => 'Mes Absences';
+
+  @override
+  String get absencesListSubtitle => 'Demandes, soldes et décisions RH';
+
+  @override
+  String get absenceRequest => 'Demander';
+
+  @override
+  String get absencesEmpty => 'Aucune absence';
+
+  @override
+  String get absencesEmptyHint => 'Demandez une absence depuis le bouton principal, puis suivez la décision RH ici.';
+
+  @override
+  String get absenceLabel => 'Absence';
+
+  @override
+  String absencesDaysCount(Object date, Object days) {
+    return '$date - $days j';
+  }
+
+  @override
+  String get absencesLoading => 'Chargement des absences';
+
+  @override
+  String get absenceViewProof => 'Voir le justificatif';
+
+  @override
+  String get absenceCancelRequest => 'Annuler la demande';
+
+  @override
+  String absenceProofDownloaded(Object path) {
+    return 'Justificatif téléchargé: $path';
+  }
+
+  @override
+  String get absenceCancelTitle => 'Annuler cette demande ?';
+
+  @override
+  String get absenceCancelBody => 'La demande en attente sera retirée et le RH verra le statut annulé.';
+
+  @override
+  String get absenceCancelled => 'Demande d\'absence annulée.';
+
+  @override
+  String get absenceNewTitle => 'Nouvelle absence';
+
+  @override
+  String get absenceNewHint => 'Choisissez le type de solde et la période à transmettre au RH.';
+
+  @override
+  String get absenceNoType => 'Aucun type d\'absence disponible pour ce compte. Contactez le RH pour configurer les soldes.';
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Échec : $error';
+  }
+
+  @override
+  String get salaryAdvanceKeep => 'Garder';
+
+  @override
+  String get salaryAdvanceCancelAction => 'Annuler';
+
+  @override
+  String get salaryStatusApproved => 'approuvée';
+
+  @override
+  String get salaryStatusPending => 'en attente';
+
+  @override
+  String get salaryStatusRejected => 'rejetée';
+
+  @override
+  String get salaryStatusCancelled => 'annulée';
 }

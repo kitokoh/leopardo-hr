@@ -6477,4 +6477,76 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       'an issue with the localizations generation tool. Please file an issue '
       'on GitHub with a reproducible sample app and the gen-l10n configuration '
       'that was used.');
+
+  /// No description provided for @absencesListTitle.
+  String get absencesListTitle;
+
+  /// No description provided for @absencesListSubtitle.
+  String get absencesListSubtitle;
+
+  /// No description provided for @absenceRequest.
+  String get absenceRequest;
+
+  /// No description provided for @absencesEmpty.
+  String get absencesEmpty;
+
+  /// No description provided for @absencesEmptyHint.
+  String get absencesEmptyHint;
+
+  /// No description provided for @absenceLabel.
+  String get absenceLabel;
+
+  /// No description provided for @absencesDaysCount.
+  String absencesDaysCount(Object date, Object days);
+
+  /// No description provided for @absencesLoading.
+  String get absencesLoading;
+
+  /// No description provided for @absenceViewProof.
+  String get absenceViewProof;
+
+  /// No description provided for @absenceCancelRequest.
+  String get absenceCancelRequest;
+
+  /// No description provided for @absenceProofDownloaded.
+  String absenceProofDownloaded(Object path);
+
+  /// No description provided for @absenceCancelTitle.
+  String get absenceCancelTitle;
+
+  /// No description provided for @absenceCancelBody.
+  String get absenceCancelBody;
+
+  /// No description provided for @absenceCancelled.
+  String get absenceCancelled;
+
+  /// No description provided for @absenceNewTitle.
+  String get absenceNewTitle;
+
+  /// No description provided for @absenceNewHint.
+  String get absenceNewHint;
+
+  /// No description provided for @absenceNoType.
+  String get absenceNoType;
+
+  /// No description provided for @salaryAdvanceError.
+  String salaryAdvanceError(Object error);
+
+  /// No description provided for @salaryAdvanceKeep.
+  String get salaryAdvanceKeep;
+
+  /// No description provided for @salaryAdvanceCancelAction.
+  String get salaryAdvanceCancelAction;
+
+  /// No description provided for @salaryStatusApproved.
+  String get salaryStatusApproved;
+
+  /// No description provided for @salaryStatusPending.
+  String get salaryStatusPending;
+
+  /// No description provided for @salaryStatusRejected.
+  String get salaryStatusRejected;
+
+  /// No description provided for @salaryStatusCancelled.
+  String get salaryStatusCancelled;
 }

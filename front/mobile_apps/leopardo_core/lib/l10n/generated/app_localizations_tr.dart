@@ -3402,4 +3402,82 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
+
+  @override
+  String get absencesListTitle => 'İzinlerim';
+
+  @override
+  String get absencesListSubtitle => 'Talepler, bakiyeler ve İK kararları';
+
+  @override
+  String get absenceRequest => 'Talep Et';
+
+  @override
+  String get absencesEmpty => 'İzin yok';
+
+  @override
+  String get absencesEmptyHint => 'Ana düğmeden izin talep edin, ardından İK kararını buradan takip edin.';
+
+  @override
+  String get absenceLabel => 'İzin';
+
+  @override
+  String absencesDaysCount(Object date, Object days) {
+    return '$date - $days g';
+  }
+
+  @override
+  String get absencesLoading => 'İzinler yükleniyor';
+
+  @override
+  String get absenceViewProof => 'Kanıtı görüntüle';
+
+  @override
+  String get absenceCancelRequest => 'Talebi iptal et';
+
+  @override
+  String absenceProofDownloaded(Object path) {
+    return 'Kanıt indirildi: $path';
+  }
+
+  @override
+  String get absenceCancelTitle => 'Bu talep iptal edilsin mi?';
+
+  @override
+  String get absenceCancelBody => 'Bekleyen talep kaldırılacak ve İK iptal edilmiş durumu görecek.';
+
+  @override
+  String get absenceCancelled => 'İzin talebi iptal edildi.';
+
+  @override
+  String get absenceNewTitle => 'Yeni izin';
+
+  @override
+  String get absenceNewHint => 'İK\'ya iletilecek bakiye türünü ve dönemi seçin.';
+
+  @override
+  String get absenceNoType => 'Bu hesap için kullanılabilir izin türü yok. Bakiyeleri yapılandırmak için İK ile iletişime geçin.';
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Başarısız: $error';
+  }
+
+  @override
+  String get salaryAdvanceKeep => 'Tut';
+
+  @override
+  String get salaryAdvanceCancelAction => 'İptal';
+
+  @override
+  String get salaryStatusApproved => 'onaylandı';
+
+  @override
+  String get salaryStatusPending => 'beklemede';
+
+  @override
+  String get salaryStatusRejected => 'reddedildi';
+
+  @override
+  String get salaryStatusCancelled => 'iptal edildi';
 }
