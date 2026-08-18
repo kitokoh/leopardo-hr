@@ -6,14 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src --max-warnings 0",
+    "lint": "eslint src e2e --max-warnings 0",
     "check:mojibake": "node scripts/check-mojibake.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "lint:src": "eslint src --max-warnings 0"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
