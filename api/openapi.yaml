@@ -1176,6 +1176,289 @@ paths:
           description: "Non autorisé"
 
 
+  /auth/google:
+    get:
+      tags: ["Auth"]
+      summary: "Redirection vers le flux OAuth Google (state anti-CSRF en session, #2619)"
+      responses:
+        "302":
+          description: "Redirection vers la page de consentement Google"
+        "500":
+          description: "Erreur de configuration OAuth"
+
+  /auth/google/callback:
+    get:
+      tags: ["Auth"]
+      summary: "Callback OAuth Google — échange le code contre une session"
+      parameters:
+        - name: code
+          in: query
+          schema: { type: string }
+        - name: state
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Authentification réussie (session ou token)"
+        "400":
+          description: "State invalide ou code manquant"
+        "401":
+          description: "Email inconnu (EMPLOYEE_NOT_FOUND, plus d'auto-création tenantless #2998)"
+
+  /webhooks/stripe:
+    post:
+      tags: ["Webhooks"]
+      summary: "Webhook Stripe (événements de paiement/abonnement)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "Payload signé Stripe (stripe-signature)"
+      responses:
+        "200":
+          description: "Événement traité (retry Stripe si erreur, #2668)"
+        "400":
+          description: "Signature invalide"
+        "503":
+          description: "Traitement indisponible — l'erreur doit être renvoyée pour retry Stripe"
+
+  /webhooks/chargily:
+    post:
+      tags: ["Webhooks"]
+      summary: "Webhook Chargily Pay (paiements CEMAC)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Événement traité"
+        "400":
+          description: "Payload invalide"
+
+  /webhooks/email-bounce:
+    post:
+      tags: ["Webhooks"]
+      summary: "Webhook de bounce email (SES/SendGrid) — fail-closed si secret absent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Bounce enregistré"
+        "503":
+          description: "Secret non configuré (fail-closed, #2616/#2667)"
+
+  /public/careers/{companySlug}:
+    get:
+      tags: ["Careers"]
+      summary: "Offres d'emploi publiques d'une entreprise"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Liste des offres publiques"
+        "404":
+          description: "Entreprise inconnue ou sans page carrières"
+
+  /public/careers/{companySlug}/feed.xml:
+    get:
+      tags: ["Careers"]
+      summary: "Flux XML des offres (agrégateurs)"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Flux XML"
+          content:
+            application/xml:
+              schema:
+                type: string
+
+  /public/careers/{companySlug}/jobs/{jobPosting}:
+    get:
+      tags: ["Careers"]
+      summary: "Détail d'une offre publique"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Détail de l'offre"
+        "404":
+          description: "Offre introuvable ou non publiée"
+
+  /public/careers/{companySlug}/jobs/{jobPosting}/apply:
+    post:
+      tags: ["Careers"]
+      summary: "Postuler à une offre publique (anti-doublon par email, #3860)"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [first_name, last_name, email]
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                phone:
+                  type: string
+                  maxLength: 20
+                cover_letter:
+                  type: string
+                  maxLength: 5000
+                resume_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+                resume:
+                  type: string
+                  format: binary
+                  description: "CV (pdf/doc/docx, 5 Mo max)"
+                source:
+                  type: string
+                  enum: [website, linkedin, referral, agency, other]
+      responses:
+        "201":
+          description: "Candidature créée"
+        "409":
+          description: "ALREADY_APPLIED (déjà postulé)"
+        "422":
+          description: "Validation"
+
+  /onboarding/invitation/{token}:
+    get:
+      tags: ["Onboarding"]
+      summary: "Consulter une invitation d'onboarding (token public)"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Invitation valide"
+        "404":
+          description: "INVITATION_NOT_FOUND"
+
+  /onboarding/invitation/{token}/activate:
+    post:
+      tags: ["Onboarding"]
+      summary: "Activer une invitation (définir le mot de passe)"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+      responses:
+        "200":
+          description: "Compte activé"
+        "404":
+          description: "INVITATION_NOT_FOUND"
+        "422":
+          description: "Validation (mot de passe trop court / non confirmé)"
+
+  /onboarding/checklist:
+    get:
+      tags: ["Onboarding"]
+      summary: "Checklist d'onboarding de l'employé authentifié"
+      responses:
+        "200":
+          description: "Progression de l'onboarding"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /company-requests:
+    get:
+      tags: ["Billing"]
+      summary: "Demandes de création d'entreprise de l'utilisateur"
+      responses:
+        "200":
+          description: "Demandes"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Billing"]
+      summary: "Soumettre une demande de création d'entreprise"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_name]
+              properties:
+                company_name:
+                  type: string
+                  maxLength: 200
+                sector:
+                  type: string
+                  maxLength: 100
+                country:
+                  type: string
+                  maxLength: 100
+                city:
+                  type: string
+                  maxLength: 100
+      responses:
+        "201":
+          description: "Demande créée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Validation"
+
   /auth/login:
     post:
       tags: ["Auth"]
@@ -1920,6 +2203,113 @@ paths:
                     type: string
                     example: "ok"
 
+  /platform/auth/profile:
+    patch:
+      tags: ["Platform Admin"]
+      summary: "Mettre à jour le profil du super-admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                  maxLength: 150
+      responses:
+        "200":
+          description: "Profil mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/auth/change-password:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Changer le mot de passe du super-admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, new_password]
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+                  format: password
+                  minLength: 8
+                new_password_confirmation:
+                  type: string
+      responses:
+        "200":
+          description: "Mot de passe changé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Validation / mot de passe actuel incorrect"
+
+  /platform/auth/2fa/setup:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Démarrer la configuration 2FA (secret TOTP)"
+      responses:
+        "200":
+          description: "Secret TOTP (qrcode/secret) — à confirmer via enable"
+        "409":
+          description: "2FA déjà configurée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/auth/2fa/enable:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Activer la 2FA avec le code de confirmation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: "2FA activée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Code invalide"
+
+  /platform/auth/2fa/disable:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Désactiver la 2FA (mot de passe requis)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: "2FA désactivée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Mot de passe incorrect"
   /platform/country-defaults:
     get:
       tags: ["Platform"]
