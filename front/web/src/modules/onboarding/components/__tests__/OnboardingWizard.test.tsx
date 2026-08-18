@@ -36,8 +36,66 @@ jest.mock('framer-motion', () => {
       }
     ),
   };
-});
+  it('shows the Quick Start badge when the company has fewer than 15 employees (#4939)', async () => {
+    mockedApiFetch.mockImplementation((url) => {
+      if (String(url).includes('onboarding-setup')) {
+        return Promise.resolve({ json: async () => checklistPayload } as Response);
+      }
+      // moteur calculé : employees_added.metrics.employees_count = 3
+      return Promise.resolve({
+        json: async () => ({
+          data: {
+            steps: [{ key: 'employees_added', label: 'Equipe', completed: false, metrics: { employees_count: 3 } }],
+          },
+        }),
+      } as Response);
+    });
 
+    render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
+
+    expect(await screen.findByText('Quick Start')).toBeInTheDocument();
+    // Badge « Recommandé plus tard » sur les étapes optionnelles (setup_schedules non requise ici)
+    expect(screen.getAllByText('Recommandé plus tard').length).toBeGreaterThan(0);
+  });
+
+  it('shows the company QR on the first check-in step and fetches /company/qr-onboarding (#4938)', async () => {
+    const firstCheckinPayload = {
+      data: {
+        completed_steps: 0,
+        total_steps: 1,
+        progress_percent: 0,
+        go_live_ready: false,
+        steps: [
+          {
+            id: 9,
+            step_key: 'first_checkin',
+            title: 'Premier pointage',
+            description: null,
+            status: 'pending',
+            order: 1,
+            required: false,
+          },
+        ],
+      },
+    };
+    mockedApiFetch.mockImplementation((url) => {
+      if (String(url).includes('/company/qr-onboarding')) {
+        return Promise.resolve({ json: async () => ({ data: { token: 'signed-qr-token' } }) } as Response);
+      }
+      return Promise.resolve({ json: async () => firstCheckinPayload } as Response);
+    });
+
+    render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
+
+    await screen.findAllByText('Premier pointage');
+    await userEvent.click(screen.getByRole('button', { name: /Afficher le QR de l.entreprise/i }));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/company/qr-onboarding')
+    );
+    expect(await screen.findByRole('img', { name: /Scannez ce QR avec l.app mobile/i })).toBeInTheDocument();
+  });
+});
 jest.mock('@/lib/api-client', () => ({
   apiFetch: jest.fn(),
 }));
@@ -45,6 +103,11 @@ jest.mock('@/lib/api-client', () => ({
 jest.mock('@/lib/i18n', () => ({
   ...jest.requireActual('@/lib/i18n'),
   storeAuthSession: jest.fn(),
+}));
+
+// #4938 — le rendu QR utilise toCanvas (canvas jsdom non implémenté) → mock.
+jest.mock('qrcode', () => ({
+  toCanvas: jest.fn((_canvas, _data, _opts, cb) => cb(null)),
 }));
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
@@ -187,5 +250,65 @@ describe('OnboardingWizard', () => {
     } as Response);
     await userEvent.click(screen.getByRole('button', { name: /Réessayer/i }));
     expect((await screen.findAllByText('Ajoutez vos équipes')).length).toBeGreaterThan(0);
+  });
+
+  it('shows the Quick Start badge when the company has fewer than 15 employees (#4939)', async () => {
+    mockedApiFetch.mockImplementation((url) => {
+      if (String(url).includes('onboarding-setup')) {
+        return Promise.resolve({ json: async () => checklistPayload } as Response);
+      }
+      // moteur calculé : employees_added.metrics.employees_count = 3
+      return Promise.resolve({
+        json: async () => ({
+          data: {
+            steps: [{ key: 'employees_added', label: 'Equipe', completed: false, metrics: { employees_count: 3 } }],
+          },
+        }),
+      } as Response);
+    });
+
+    render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
+
+    expect(await screen.findByText('Quick Start')).toBeInTheDocument();
+    // Badge « Recommandé plus tard » sur les étapes optionnelles (setup_schedules non requise ici)
+    expect(screen.getAllByText('Recommandé plus tard').length).toBeGreaterThan(0);
+  });
+
+  it('shows the company QR on the first check-in step and fetches /company/qr-onboarding (#4938)', async () => {
+    const firstCheckinPayload = {
+      data: {
+        completed_steps: 0,
+        total_steps: 1,
+        progress_percent: 0,
+        go_live_ready: false,
+        steps: [
+          {
+            id: 9,
+            step_key: 'first_checkin',
+            title: 'Premier pointage',
+            description: null,
+            status: 'pending',
+            order: 1,
+            required: false,
+          },
+        ],
+      },
+    };
+    mockedApiFetch.mockImplementation((url) => {
+      if (String(url).includes('/company/qr-onboarding')) {
+        return Promise.resolve({ json: async () => ({ data: { token: 'signed-qr-token' } }) } as Response);
+      }
+      return Promise.resolve({ json: async () => firstCheckinPayload } as Response);
+    });
+
+    render(<OnboardingWizard user={managerUser} onComplete={jest.fn()} />);
+
+    await screen.findAllByText('Premier pointage');
+    await userEvent.click(screen.getByRole('button', { name: /Afficher le QR de l.entreprise/i }));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/company/qr-onboarding')
+    );
+    expect(await screen.findByRole('img', { name: /Scannez ce QR avec l.app mobile/i })).toBeInTheDocument();
   });
 });
