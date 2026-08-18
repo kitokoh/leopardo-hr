@@ -7,8 +7,7 @@ namespace Tests\Feature;
 use App\Modules\Payroll\Domain\Models\SocialContribution;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\AlgeriaPayrollRules;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -22,62 +21,14 @@ use Tests\TestCase;
  * period can be recalculated using the rates that were effective *during
  * that period*, even after newer rates have since been configured.
  *
- * `tax_slabs`/`social_contributions` are not part of the shared MVP test
- * fixture (F-13 #1569 : plus utilisé par le module Payroll), so this test
- * creates/drops them directly, scoped to this test only.
+ * F-13 (#1543) : ce test est désormais sur les vraies migrations
+ * (`tax_slabs`/`social_contributions` créées par
+ * 2026_05_10_100001_create_payroll_engine_tables.php, unicité
+ * (company_id, code, effective_from) par 2026_07_23_000006 — PA2-ARCH-004).
  */
 class PayrollCountryRulesTemporalVersioningTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Schema::dropIfExists('tax_slabs');
-        Schema::dropIfExists('social_contributions');
-
-        Schema::create('tax_slabs', function (Blueprint $table): void {
-            $table->bigIncrements('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('country_code', 2);
-            $table->string('name', 150);
-            $table->decimal('min_amount', 14, 2);
-            $table->decimal('max_amount', 14, 2)->nullable();
-            $table->decimal('rate', 8, 4);
-            $table->decimal('fixed_deduction', 14, 2)->default(0);
-            $table->date('effective_from');
-            $table->date('effective_to')->nullable();
-            $table->string('status', 20)->default('active')->index();
-            $table->timestampsTz();
-
-            $table->index(['country_code', 'effective_from']);
-        });
-
-        Schema::create('social_contributions', function (Blueprint $table): void {
-            $table->bigIncrements('id');
-            $table->uuid('company_id')->nullable()->index();
-            $table->string('country_code', 2);
-            $table->string('name', 150);
-            $table->string('code', 50);
-            $table->enum('type', ['employee', 'employer']);
-            $table->decimal('rate', 8, 4);
-            $table->decimal('cap', 14, 2)->nullable();
-            $table->date('effective_from');
-            $table->date('effective_to')->nullable();
-            $table->string('status', 20)->default('active')->index();
-            $table->timestampsTz();
-
-            $table->unique(['company_id', 'code', 'effective_from'], 'social_contributions_company_code_effective_unique');
-            $table->index(['country_code', 'type', 'effective_from']);
-        });
-    }
-
-    protected function tearDown(): void
-    {
-        Schema::dropIfExists('social_contributions');
-        Schema::dropIfExists('tax_slabs');
-
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     /**
      * Two non-overlapping dated SocialContribution rows for the same code
