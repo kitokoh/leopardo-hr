@@ -7,6 +7,7 @@ namespace Tests\Feature\Billing;
 use App\Jobs\ProvisionDemoTenantJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Testing\PendingCommand;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -27,6 +28,7 @@ class TrialProvisioningSweepTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /** @param array<string, mixed> $overrides */
     private function insertStalledRow(array $overrides = []): int
     {
         return DB::table('trial_provisionings')->insertGetId(array_merge([
@@ -41,13 +43,23 @@ class TrialProvisioningSweepTest extends TestCase
         ], $overrides));
     }
 
+    private function assertSweepCommand(string $command = 'trial:provisioning-sweep'): void
+    {
+        $result = $this->artisan($command);
+        if ($result instanceof PendingCommand) {
+            $result->assertExitCode(0);
+        } else {
+            self::assertSame(0, $result);
+        }
+    }
+
     public function test_stalled_pending_row_is_redispatched_with_original_arguments(): void
     {
         Queue::fake();
         $token = 'tok_redispatched';
         $this->insertStalledRow(['provisioning_token' => $token]);
 
-        $this->artisan('trial:provisioning-sweep')->assertExitCode(0);
+        $this->assertSweepCommand();
 
         Queue::assertPushed(ProvisionDemoTenantJob::class, function (ProvisionDemoTenantJob $job) use ($token): bool {
             return $job->email === 'prospect@example.com'
@@ -70,11 +82,12 @@ class TrialProvisioningSweepTest extends TestCase
         $token = 'tok_exhausted';
         $this->insertStalledRow(['provisioning_token' => $token, 'attempts' => 3]);
 
-        $this->artisan('trial:provisioning-sweep')->assertExitCode(0);
+        $this->assertSweepCommand();
 
         Queue::assertNotPushed(ProvisionDemoTenantJob::class);
 
         $row = DB::table('trial_provisionings')->where('provisioning_token', $token)->first();
+        self::assertNotNull($row);
         $this->assertSame('failed', $row->status);
         $this->assertSame('sweeper:worker_stalled_after_3_attempts', $row->error);
     }
@@ -86,11 +99,12 @@ class TrialProvisioningSweepTest extends TestCase
         // Ligne « antérieure » à la migration 000001 : company_name/country NULL.
         $this->insertStalledRow(['provisioning_token' => $token, 'company_name' => null, 'country' => null]);
 
-        $this->artisan('trial:provisioning-sweep')->assertExitCode(0);
+        $this->assertSweepCommand();
 
         Queue::assertNotPushed(ProvisionDemoTenantJob::class);
 
         $row = DB::table('trial_provisionings')->where('provisioning_token', $token)->first();
+        self::assertNotNull($row);
         $this->assertSame('failed', $row->status);
         $this->assertSame('sweeper:company_context_missing', $row->error);
     }
@@ -101,7 +115,7 @@ class TrialProvisioningSweepTest extends TestCase
         $token = 'tok_fresh';
         $this->insertStalledRow(['provisioning_token' => $token, 'created_at' => now()->subMinutes(5)]);
 
-        $this->artisan('trial:provisioning-sweep')->assertExitCode(0);
+        $this->assertSweepCommand();
 
         Queue::assertNotPushed(ProvisionDemoTenantJob::class);
         $this->assertSame('pending', DB::table('trial_provisionings')->where('provisioning_token', $token)->value('status'));
