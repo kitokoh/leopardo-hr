@@ -44,6 +44,7 @@ class HrController extends Controller
      */
     public function dashboard(Request $request): JsonResponse
     {
+        /** @var Employee $employee */
         $employee = $request->user();
 
         $company_id = $employee->company_id;
@@ -91,6 +92,7 @@ class HrController extends Controller
      */
     public function employees(Request $request): AnonymousResourceCollection
     {
+        /** @var Employee $employee */
         $employee = $request->user();
 
         $query = Employee::where('company_id', $employee->company_id)
@@ -126,6 +128,7 @@ class HrController extends Controller
      */
     public function addEmployee(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $validated = $request->validate([
@@ -146,6 +149,8 @@ class HrController extends Controller
             'site_id'         => 'nullable|integer|exists:sites,id',
             'schedule_id'     => 'nullable|integer|exists:schedules,id',
         ]);
+
+        /** @var array{first_name: string, last_name: string, email: string, personal_phone?: string|null, gender?: string|null, date_of_birth?: string|null, contract_type?: string|null, contract_start?: string|null, salary_type?: string|null, salary_base?: int|float|string|null, hourly_rate?: int|float|string|null, schedule_id?: int|null} $validated */
 
         // #3245 : délégation à EmployeeService::create — suppression de la
         // logique dupliquée (HrController réimplémentait EmployeeService) et
@@ -174,10 +179,6 @@ class HrController extends Controller
             ),
             $actor,
         );
-        if ($employee->preferred_language === null) {
-            $employee->forceFill(['preferred_language' => 'fr'])->save();
-        }
-
         return response()->json([
             'message' => 'Employee created successfully.',
             'data'    => new EmployeeResource($employee),
@@ -190,6 +191,7 @@ class HrController extends Controller
      */
     public function showEmployee(Request $request, Employee $employee): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
@@ -209,6 +211,7 @@ class HrController extends Controller
      */
     public function updateEmployee(Request $request, Employee $employee): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
@@ -231,6 +234,8 @@ class HrController extends Controller
             'status'         => ['sometimes', Rule::in(['active', 'inactive', 'on_leave', 'suspended'])],
         ]);
 
+        /** @var array<string, mixed> $validated */
+
         // Ensure HR cannot escalate roles
         unset($validated['role'], $validated['manager_role']);
 
@@ -248,6 +253,7 @@ class HrController extends Controller
      */
     public function teamOverview(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $employees = Employee::where('company_id', $actor->company_id)
@@ -257,7 +263,7 @@ class HrController extends Controller
             ->get(['id', 'first_name', 'last_name', 'email', 'role', 'manager_role', 'status', 'photo_path', 'contract_type', 'department_id', 'position_id']);
 
         return response()->json([
-            'data' => $employees->map(fn (Employee $e) => [
+            'data' => $employees->map(fn (Employee $e): array => [
                 'id'            => $e->id,
                 'name'          => trim("{$e->first_name} {$e->last_name}"),
                 'email'         => $e->email,
