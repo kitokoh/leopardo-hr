@@ -258,8 +258,8 @@ class DemoDzSeeder extends Seeder
      */
     private function seedPayrollHistory(Company $company, Employee $manager): void
     {
-        $calculator = new PayrollCalculator();
-        $closing = new PayrollClosingService();
+        $calculator = new PayrollCalculator;
+        $closing = new PayrollClosingService;
 
         $months = [2, 1, 0];
         foreach ($months as $back) {

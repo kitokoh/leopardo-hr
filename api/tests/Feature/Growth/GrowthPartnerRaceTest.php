@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Tests\Feature\Growth;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Exceptions\DomainException;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerPayoutRequest;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use App\Modules\Payroll\Domain\Models\Commission;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -31,8 +35,12 @@ class GrowthPartnerRaceTest extends TestCase
     {
         parent::setUp();
 
-        $this->company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
-        $this->employee = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
+        $this->company = $company;
+        /** @var Employee $employee */
+        $employee = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $this->employee = $employee;
         Sanctum::actingAs($this->employee);
     }
 
@@ -88,12 +96,12 @@ class GrowthPartnerRaceTest extends TestCase
 
     public function test_service_apply_is_idempotent_under_unique_constraint(): void
     {
-        $service = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
+        $service = app(PartnerService::class);
 
         $first = $service->apply((int) $this->employee->id, ['type' => 'individual']);
         $this->assertInstanceOf(Partner::class, $first);
 
-        $this->expectException(\App\Exceptions\DomainException::class);
+        $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Déjà partenaire.');
         $service->apply((int) $this->employee->id, ['type' => 'individual']);
     }
@@ -103,7 +111,7 @@ class GrowthPartnerRaceTest extends TestCase
         // #3859 : transitions de statut gardées (allowlist). Un payout déjà
         // payé ne peut pas repasser en pending (sinon le solde disponible le
         // compterait deux fois en attente), et un statut inconnu est refusé.
-        $service = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
+        $service = app(PartnerService::class);
         $partner = $this->createApprovedPartner(10000);
 
         $payout = PartnerPayoutRequest::create([
@@ -122,7 +130,7 @@ class GrowthPartnerRaceTest extends TestCase
         try {
             $service->updatePayoutStatus($payout, 'pending', (int) $this->employee->id, 'Reouverture');
             $this->fail('La transition paid -> pending doit etre refusee.');
-        } catch (\App\Exceptions\DomainException $e) {
+        } catch (DomainException $e) {
             $this->assertSame(422, $e->statusCode());
             $this->assertSame('INVALID_PAYOUT_TRANSITION', $e->errorCode());
         }
@@ -134,8 +142,17 @@ class GrowthPartnerRaceTest extends TestCase
 
     private function createApprovedPartner(int $commissionsCents): Partner
     {
+        // #PR : partners.user_id → users.id (FK publique) — les employees
+        // vivent dans la table employees (tenant), leurs ids ne sont PAS des
+        // users.id : créer un vrai User pour satisfaire la FK (23503).
+        $user = User::query()->forceCreate([
+            'first_name' => 'Partner',
+            'last_name' => 'QA',
+            'email' => 'partner-'.uniqid().'@test.hr',
+            'password_hash' => Hash::make('password123'),
+        ]);
         $partner = Partner::create([
-            'user_id' => $this->employee->id,
+            'user_id' => $user->id,
             'referral_code' => 'QA-'.strtoupper(substr(uniqid(), -6)),
             'application_status' => 'approved',
             'status' => 'active',

@@ -188,8 +188,16 @@ class PayrollCountryRulesTest extends TestCase
                 $rules->countryCode().': language() must match App\Support\CountryDefaults'
             );
             self::assertNotSame('', $rules->complianceWarning(), $rules->countryCode().': complianceWarning must not be empty');
+            // Le warning dérivé du niveau de confiance (AbstractCountryRules) :
+            // placeholder → 'placeholder', pilot → 'pilot', production →
+            // 'legally validated' (Sénégal promu en production, merge #5096).
+            $warningNeedle = match ($rules->confidenceLevel()) {
+                'placeholder' => 'placeholder',
+                'production' => 'legally validated',
+                default => 'pilot',
+            };
             self::assertStringContainsString(
-                $rules->confidenceLevel() === 'placeholder' ? 'placeholder' : 'pilot',
+                $warningNeedle,
                 strtolower($rules->complianceWarning()),
                 $rules->countryCode().': complianceWarning should be explicit about its confidenceLevel'
             );
