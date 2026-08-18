@@ -662,7 +662,6 @@
     "simulator_title": "Impact simulator",
     "simulator_subtitle": "Enter a gross salary: the calculation (contributions, base, per-bracket tax, net, employer cost) runs on the real payroll engine — nothing is persisted.",
     "sim_gross": "Gross salary",
-    "sim_compare": "Salary to compare",
     "sim_run": "Simulate",
     "sim_running": "Calculating…",
     "sim_social": "Contributions (employee)",
