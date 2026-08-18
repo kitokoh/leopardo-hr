@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Billing;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\PendingCommand;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -18,7 +18,7 @@ use Tests\TestCase;
  */
 class SweepStaleTrialProvisioningsCommandTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
     /** @param array<string, mixed> $overrides */
     private function insertProvisioning(array $overrides = []): void

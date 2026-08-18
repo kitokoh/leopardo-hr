@@ -72,7 +72,7 @@ class AuthSelfRegistrationTest extends TestCase
     public function test_registration_requires_a_valid_invitation(): void
     {
         // Sans invitation : inscription refusée (fail-closed, #2617).
-        $this->postJson('/api/v1/auth/register', [
+        $this->postJson('/api/v1/user/register', [
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
@@ -89,7 +89,7 @@ class AuthSelfRegistrationTest extends TestCase
     {
         $token = $this->createInvitation('john.doe@example.com');
 
-        $response = $this->postJson('/api/v1/auth/register', [
+        $response = $this->postJson('/api/v1/user/register', [
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
