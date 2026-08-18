@@ -50,7 +50,15 @@ return [
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            // Issue #5115 : `encryption` manquait → MAIL_ENCRYPTION (tls/ssl)
+            // était ignoré et les envois SMTP partaient en clair / échouaient.
+            // `timeout` borné (15s) : sans lui, un connect SMTP bloqué attend
+            // le défaut socket et finit en fatal max_execution_time (30s).
+            // `stream.socket.bindto` IPv4 : un connect SMTP vers Mailgun
+            // blackhole sur IPv6 (Render) — 0.0.0.0:0 force le résolveur IPv4.
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'timeout' => env('MAIL_SMTP_TIMEOUT', 15),
+            'stream' => ['socket' => ['bindto' => env('MAIL_SMTP_BINDTO', '0.0.0.0:0')]],
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
