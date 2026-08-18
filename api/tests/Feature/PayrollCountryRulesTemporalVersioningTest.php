@@ -23,9 +23,8 @@ use Tests\TestCase;
  * that period*, even after newer rates have since been configured.
  *
  * `tax_slabs`/`social_contributions` are not part of the shared MVP test
- * fixture (schéma manuel CreatesMvpSchema, F-13 #1569 : plus utilisé par le
- * module Payroll), so this test creates/drops
- * them directly, scoped to this test only.
+ * fixture (F-13 #1569 : plus utilisé par le module Payroll), so this test
+ * creates/drops them directly, scoped to this test only.
  */
 class PayrollCountryRulesTemporalVersioningTest extends TestCase
 {
