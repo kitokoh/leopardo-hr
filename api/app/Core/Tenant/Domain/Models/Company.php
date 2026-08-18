@@ -134,7 +134,7 @@ class Company extends Model
     {
         static::creating(function (self $company): void {
             if ($company->tenancy_type === 'schema') {
-                abort(422, 'ENTERPRISE_SCHEMA_FROZEN');
+                abort(422, __('errors.COMPANY_SCHEMA_MODE_LOCKED'));
             }
         });
 
