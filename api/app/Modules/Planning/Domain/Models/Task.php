@@ -28,7 +28,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $completed_minutes
  * @property Carbon|null $completed_at
  * @property string|null $completion_note
- * @property string|null $performance_score
+ * @property float|string|null $performance_score
  * @property string|null $recurrence_rule
  * @property string|null $template_key
  * @property string $status
@@ -38,7 +38,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, TaskComment> $comments
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ *
+ * @mixin Builder<static>
  */
 class Task extends Model
 {
@@ -47,7 +48,10 @@ class Task extends Model
 
     protected $table = 'tasks';
 
-    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility', 'status'];
+    // #4861/#4883 (audit 2026-08-17) : conserver une seule déclaration
+    // $fillable ; status et performance_score sont des champs sensibles et
+    // sont assignés explicitement par TaskController après validation serveur.
+    protected $fillable = ['company_id', 'title', 'description', 'created_by', 'assigned_to', 'project_id', 'due_date', 'priority', 'estimated_minutes', 'completed_minutes', 'completed_at', 'completion_note', 'recurrence_rule', 'template_key', 'category', 'checklist', 'visibility'];
 
     protected $casts = ['assigned_to' => 'array', 'checklist' => 'array', 'due_date' => 'datetime', 'completed_at' => 'datetime', 'performance_score' => 'decimal:2', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 

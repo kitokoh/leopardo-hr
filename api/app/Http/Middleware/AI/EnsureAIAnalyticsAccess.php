@@ -13,7 +13,8 @@ class EnsureAIAnalyticsAccess
         $user = $request->user();
 
         if (! $user || ! method_exists($user, 'hasManagerRole') || ! $user->hasManagerRole('principal', 'rh')) {
-            abort(403, 'AI analytics access requires Principal or RH manager role.');
+            // #4812 : message localisé ×4 (avant : EN en dur).
+            abort(403, __('errors.AI_ANALYTICS_ACCESS_REQUIRED'));
         }
 
         /** @var Response $response */

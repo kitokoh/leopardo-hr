@@ -49,6 +49,37 @@ class VehicleControllerTest extends TestCase
         $response->assertJsonCount(1, 'data');
     }
 
+    public function test_delete_message_is_localized(): void
+    {
+        // #4812 (audit 2026-08-17) : littéral EN « Vehicle deleted. » déplacé
+        // au catalogue errors.* — la réponse suit la locale (Accept-Language).
+        // Locale résolue par SetLocale : pour un utilisateur authentifié,
+        // c'est la langue de l'entreprise qui gagne (pas le header).
+        /** @var Company $company */
+        $company = Company::factory()->create(['language' => 'en']);
+        /** @var Employee $manager */
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        $vehicle = Vehicle::create([
+            'company_id' => $company->id,
+            'plate_number' => 'DZ-9999-Z',
+            'brand' => 'Renault',
+            'model' => 'Kangoo',
+            'year' => 2022,
+            'type' => 'van',
+            'status' => 'active',
+        ]);
+
+        Sanctum::actingAs($manager);
+
+        $this->withHeader('Accept-Language', 'en')
+            ->deleteJson("/api/v1/vehicles/{$vehicle->id}")
+            ->assertOk()
+            ->assertJsonPath('message', __('errors.VEHICLE_DELETED', [], 'en'));
+
+        $this->assertDatabaseMissing('vehicles', ['id' => $vehicle->id]);
+    }
+
     public function test_per_page_is_capped_at_100(): void
     {
         /** @var Company $company */
@@ -179,6 +210,7 @@ class VehicleControllerTest extends TestCase
             'type' => 'spaceship',
         ])->assertStatus(422);
     }
+
     public function test_assign_rejects_employee_from_another_company(): void
     {
         /** @var Company $companyA */

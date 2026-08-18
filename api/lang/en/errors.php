@@ -121,6 +121,13 @@ return [
     'ABSENCE_END_DATE_AFTER_START' => 'The end date must be after or equal to the start date.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manual checkout requires a check-in time.',
     'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'The checkout time must be after the check-in time.',
+    // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
+    'VEHICLE_DELETED' => 'Vehicle deleted.',
+    'SCHEDULE_DELETED' => 'Schedule deleted successfully.',
+    'KIOSK_SESSION_REQUIRED' => 'Kiosk session required.',
+    'AI_COMPANY_CONTEXT_REQUIRED' => 'AI requires a valid company context.',
+    'EXPORT_FILE_NOT_FOUND' => 'Export file not found.',
+    'PAYMENT_DOCUMENT_MISSING' => 'Payment document is missing.',
     'TRIAL_STEP_LOGIN' => 'Log in with your email and the password above.',
     'TRIAL_STEP_CHANGE_PASSWORD' => 'Change your password on first login.',
     'TRIAL_STEP_ADD_EMPLOYEES' => 'Add your first employees via QR or manually.',
@@ -166,12 +173,11 @@ return [
     'CONTACT_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
-    'MANAGER_REQUIRED' => 'A manager access is required.',
-    'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
-    'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
-    'INVALID_TOKEN' => 'Invalid or expired token.',
-    'CAMERA_NOT_FOUND' => 'Camera not found.',
-    'SELF_DISABLE_FORBIDDEN' => 'You cannot disable your own account.',
+
+    // Manager roles (audit SWEQA-3, #4812)
+    'MANAGER_ROLE_REQUIRED' => 'Manager access required.',
+    'MANAGER_ROLE_INSUFFICIENT' => 'Insufficient manager role.',
+    'AI_ANALYTICS_ACCESS_REQUIRED' => 'AI analytics access requires Principal or RH manager role.',
     'MANAGER_REQUIRED' => 'A manager access is required.',
     'INSUFFICIENT_ROLE' => 'Insufficient role for this action.',
     'EMPLOYEE_NOT_FOUND' => 'Employee not found.',
@@ -187,6 +193,10 @@ return [
     'INVALID_KIOSK_TOKEN' => 'Invalid or expired kiosk token.',
     'BIOMETRIC_NOT_APPROVED' => 'Biometric access is not approved for this employee.',
     // Company / Tenant
+
+    // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
+    'EMPLOYEE_INACTIVE' => 'Inactive account.',
+    'COMPANY_SUSPENDED_EXPIRED' => 'Company suspended or expired.',
     'COMPANY_SUSPENDED' => 'Your company has been suspended. Contact support.',
     // Payroll / Advance / Loan
     'ADVANCE_CONFIRM_FORBIDDEN' => 'Only the advance owner can confirm reception.',
@@ -209,4 +219,5 @@ return [
     'JOB_POSTING_DRAFT_ONLY_DELETE' => 'Only draft postings can be deleted.',
     'JOB_POSTING_DELETED' => 'Job posting deleted.',
     'TASK_DELETED' => 'Task deleted.',
+    'TRIAL_SIGNUP_UNAVAILABLE' => 'The trial signup service is temporarily unavailable. Please try again shortly.',
 ];

@@ -171,5 +171,5 @@ return [
     'cert_position_fallback' => 'Employé',
 
     'payslip_regularization_banner' => 'BULLETIN DE RÉGULARISATION — corrige le run #:run',
-        'payslip_regularization_banner_slip' => 'BULLETIN DE RÉGULARISATION — corrige le bulletin #:slip',
+    'payslip_regularization_banner_slip' => 'BULLETIN DE RÉGULARISATION — corrige le bulletin #:slip',
 ];
