@@ -29,6 +29,7 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
 
         $user = User::query()->forceCreate([
             'first_name' => 'John', // NOT NULL users.first_name (#5034)
+            'last_name' => 'Doe', // NOT NULL users.last_name
             'email' => 'john.doe@example.com',
             'password_hash' => Hash::make('password123'),
         ]);
@@ -63,6 +64,7 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
 
         $user = User::query()->forceCreate([
             'first_name' => 'Jane', // NOT NULL users.first_name (#5034)
+            'last_name' => 'Doe', // NOT NULL users.last_name
             'email' => 'jane.doe@example.com',
             'password_hash' => Hash::make('password123'),
         ]);
