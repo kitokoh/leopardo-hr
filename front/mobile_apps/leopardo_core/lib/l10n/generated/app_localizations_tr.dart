@@ -4168,4 +4168,89 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String settingsBiometricError(Object error) => 'Biyometrik hata: $error';
 
+
+
+  @override
+  String get teamTitle => 'Ekip';
+  @override
+  String get teamSubtitle => 'Çalışanlar ve davetler';
+  @override
+  String get teamManagerRequired => 'Yönetici/İK erişimi gerekli';
+  @override
+  String get teamManagerRequiredHint => 'Sadece baş yöneticiler ve İK ekibi mobilde yönetebilir.';
+  @override
+  String get teamEmployeesTab => 'Çalışanlar';
+  @override
+  String get teamInvitationsTab => 'Davetler';
+  @override
+  String get teamAdd => 'Ekle';
+  @override
+  String get teamAddCollaborator => 'İşbirlikçi ekle';
+  @override
+  String get teamAddManualForm => 'Klasik form';
+  @override
+  String get teamAddManualHint => 'Tam manuel giriş';
+  @override
+  String get teamAddFromQr => 'Çalışan QR kodundan';
+  @override
+  String get teamAddFromQrHint => 'Sağlanan kodu yapıştır';
+  @override
+  String get teamLoading => 'Ekip yükleniyor';
+  @override
+  String get teamEmpty => 'İşbirlikçi yok';
+  @override
+  String get teamEmptyHint => 'Aşağıdaki düğmeyle ekibinizi eklemeye başlayın.';
+  @override
+  String get teamEmployeeLabel => 'Çalışan';
+  @override
+  String get teamManagerLabel => 'Yönetici';
+  @override
+  String get teamViewProfile => 'Profili görüntüle';
+  @override
+  String get teamViewProfileHint => 'İletişim bilgileri, pozisyon, maaş, program';
+  @override
+  String get teamEditProfile => 'Profili düzenle';
+  @override
+  String get teamEditProfileHint => 'Temel İK alanlarını güncelleyin';
+  @override
+  String get teamViewAttendance => 'Devam istatistikleri';
+  @override
+  String get teamViewAttendanceHint => 'Varlık, anormallikler, geçmiş';
+  @override
+  String get teamViewTasks => 'Görevler';
+  @override
+  String get teamViewTasksHint => 'Saha görevlerini görüntüle veya ata';
+  @override
+  String get teamMakeHr => 'İK Ata';
+  @override
+  String get teamRevokeHr => 'İK İptal';
+  @override
+  String get teamMakeHrHint => 'Bu işbirlikçiye İK izinleri ver';
+  @override
+  String get teamRevokeHrHint => 'Bu hesaptan İK izinlerini kaldır';
+  @override
+  String get teamArchive => 'Arşivle';
+  @override
+  String get teamMakeHrConfirmTitle => 'İK Atansın mı?';
+  @override
+  String get teamRevokeHrConfirmTitle => 'İK İptal edilsin mi?';
+  @override
+  String get teamArchiveConfirmTitle => 'Bu çalışan arşivlensin mi?';
+  @override
+  String get teamConfirmCancel => 'İptal';
+  @override
+  String get teamMakeHrConfirmAction => 'İK Ata';
+  @override
+  String get teamRevokeHrConfirmAction => 'İptal';
+  @override
+  String get teamArchiveConfirmAction => 'Arşivle';
+  @override
+  String get teamMakeHrSuccess => 'İK atandı.';
+  @override
+  String get teamRevokeHrSuccess => 'İK izinleri kaldırıldı.';
+  @override
+  String get teamArchiveSuccess => 'Çalışan arşivlendi.';
+  @override
+  String teamActionError(Object error) => 'Hata: $error';
+
 }

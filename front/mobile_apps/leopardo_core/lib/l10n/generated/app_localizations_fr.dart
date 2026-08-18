@@ -4214,4 +4214,89 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String settingsBiometricError(Object error) => 'Erreur biométrie : $error';
 
+
+
+  @override
+  String get teamTitle => 'Équipe';
+  @override
+  String get teamSubtitle => 'Collaborateurs et invitations';
+  @override
+  String get teamManagerRequired => 'Accès manager/RH requis';
+  @override
+  String get teamManagerRequiredHint => 'Seuls les managers principaux et RH peuvent gérer l\\'équipe depuis le mobile.';
+  @override
+  String get teamEmployeesTab => 'Employés';
+  @override
+  String get teamInvitationsTab => 'Invitations';
+  @override
+  String get teamAdd => 'Ajouter';
+  @override
+  String get teamAddCollaborator => 'Ajouter un collaborateur';
+  @override
+  String get teamAddManualForm => 'Formulaire classique';
+  @override
+  String get teamAddManualHint => 'Saisie manuelle complète';
+  @override
+  String get teamAddFromQr => 'Depuis QR employé';
+  @override
+  String get teamAddFromQrHint => 'Coller le code fourni';
+  @override
+  String get teamLoading => 'Chargement de l\\'équipe';
+  @override
+  String get teamEmpty => 'Aucun collaborateur';
+  @override
+  String get teamEmptyHint => 'Commencez par ajouter votre équipe avec le bouton ci-dessous.';
+  @override
+  String get teamEmployeeLabel => 'Employé';
+  @override
+  String get teamManagerLabel => 'Manager';
+  @override
+  String get teamViewProfile => 'Voir la fiche';
+  @override
+  String get teamViewProfileHint => 'Coordonnées, poste, salaire, horaire';
+  @override
+  String get teamEditProfile => 'Modifier la fiche';
+  @override
+  String get teamEditProfileHint => 'Mettre à jour les champs RH essentiels';
+  @override
+  String get teamViewAttendance => 'Statistiques et pointages';
+  @override
+  String get teamViewAttendanceHint => 'Présence, anomalies, historique';
+  @override
+  String get teamViewTasks => 'Tâches';
+  @override
+  String get teamViewTasksHint => 'Voir ou assigner des tâches terrain';
+  @override
+  String get teamMakeHr => 'Nommer RH';
+  @override
+  String get teamRevokeHr => 'Révoquer RH';
+  @override
+  String get teamMakeHrHint => 'Donner les permissions RH à ce collaborateur';
+  @override
+  String get teamRevokeHrHint => 'Retirer les permissions RH de ce compte';
+  @override
+  String get teamArchive => 'Archiver';
+  @override
+  String get teamMakeHrConfirmTitle => 'Nommer RH ?';
+  @override
+  String get teamRevokeHrConfirmTitle => 'Révoquer RH ?';
+  @override
+  String get teamArchiveConfirmTitle => 'Archiver cet employé ?';
+  @override
+  String get teamConfirmCancel => 'Annuler';
+  @override
+  String get teamMakeHrConfirmAction => 'Nommer RH';
+  @override
+  String get teamRevokeHrConfirmAction => 'Révoquer';
+  @override
+  String get teamArchiveConfirmAction => 'Archiver';
+  @override
+  String get teamMakeHrSuccess => 'RH nommé.';
+  @override
+  String get teamRevokeHrSuccess => 'Permissions RH retirées.';
+  @override
+  String get teamArchiveSuccess => 'Employé archivé.';
+  @override
+  String teamActionError(Object error) => 'Échec : $error';
+
 }

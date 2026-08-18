@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **feat(mobile/i18n): dette #4194 vague 4 — 41 clés team ×4 locales + team_screen manager/hr migrés (Refs #4194 #2755).** 41 clés teamTitle/teamAdd/teamViewProfile/teamMakeHr/teamArchive… ×4 locales + générés Dart. team_screen.dart ×2 apps : 34 chaînes chacun → context.l10n.*.
 - **feat(mobile/i18n): dette #4194 vague 3 — 59 clés settings + 3 param ×4 locales ; manager/hr settings migrés (Refs #4194 #2755).** 62 nouvelles clés ARB (settingsMyProfile, settingsFirstName, settingsBiometric*, settingsJourney*, settingsPassword*, settingsLanguageSaved…) ×4 locales + générés Dart. Settings screens leopardo_manager/hr : 36+20 chaînes migrées. Salary advance screens leopardo_manager/hr : 26 chaînes chacun.
 - **feat(payroll/SN): Sénégal production — validation experte #1912 (Closes #1912).** confidenceLevel() pilot → production. Déclencheur IPRES T2 corrigé : conditionné à ipres_category="cadre" via calculateSocialChargesWithCategory(). 15+ nouveaux golden tests (catégorie T2, net salary complet, boundaries TRIMF, CSS plafonds). Fiche docs/payroll/SN_VALIDATION.md créée. Registre VALIDATION_EXPERTE.md + SN_COMPLIANCE.md mis à jour.
 - **feat(mobile/i18n): dette #4194 vague 2 — 40 clés attendance ×4 locales + manager/hr attendance_screen migrés (Refs #4194 #2755).** 40 nouvelles clés ARB (attendanceThisWeek, attendanceToday, checkin/checkout labels, statuts, labels menu, fingerprint, correction sheet, rôles) ×4 locales + générés Dart. leopardo_manager/leopardo_hr attendance_screen.dart : ~30 chaînes P1 migrées vers context.l10n.*.

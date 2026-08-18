@@ -4135,4 +4135,89 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String settingsBiometricError(Object error) => 'خطأ بيومتري: $error';
 
+
+
+  @override
+  String get teamTitle => 'الفريق';
+  @override
+  String get teamSubtitle => 'الموظفون والدعوات';
+  @override
+  String get teamManagerRequired => 'يلزم وصول المدير/الموارد البشرية';
+  @override
+  String get teamManagerRequiredHint => 'المديرون الرئيسيون وموظفو الموارد البشرية فقط يمكنهم إدارة الفريق من الهاتف.';
+  @override
+  String get teamEmployeesTab => 'الموظفون';
+  @override
+  String get teamInvitationsTab => 'الدعوات';
+  @override
+  String get teamAdd => 'إضافة';
+  @override
+  String get teamAddCollaborator => 'إضافة متعاون';
+  @override
+  String get teamAddManualForm => 'نموذج كلاسيكي';
+  @override
+  String get teamAddManualHint => 'إدخال يدوي كامل';
+  @override
+  String get teamAddFromQr => 'من رمز QR للموظف';
+  @override
+  String get teamAddFromQrHint => 'ألصق الرمز المقدم';
+  @override
+  String get teamLoading => 'تحميل الفريق';
+  @override
+  String get teamEmpty => 'لا يوجد متعاون';
+  @override
+  String get teamEmptyHint => 'ابدأ بإضافة فريقك باستخدام الزر أدناه.';
+  @override
+  String get teamEmployeeLabel => 'موظف';
+  @override
+  String get teamManagerLabel => 'مدير';
+  @override
+  String get teamViewProfile => 'عرض الملف';
+  @override
+  String get teamViewProfileHint => 'معلومات الاتصال والمنصب والراتب والجدول';
+  @override
+  String get teamEditProfile => 'تعديل الملف';
+  @override
+  String get teamEditProfileHint => 'تحديث الحقول الأساسية للموارد البشرية';
+  @override
+  String get teamViewAttendance => 'إحصائيات الحضور';
+  @override
+  String get teamViewAttendanceHint => 'الحضور والشذوذات والسجل';
+  @override
+  String get teamViewTasks => 'المهام';
+  @override
+  String get teamViewTasksHint => 'عرض أو تعيين مهام ميدانية';
+  @override
+  String get teamMakeHr => 'تعيين موارد بشرية';
+  @override
+  String get teamRevokeHr => 'إلغاء موارد بشرية';
+  @override
+  String get teamMakeHrHint => 'منح صلاحيات الموارد البشرية لهذا المتعاون';
+  @override
+  String get teamRevokeHrHint => 'إزالة صلاحيات الموارد البشرية من هذا الحساب';
+  @override
+  String get teamArchive => 'أرشفة';
+  @override
+  String get teamMakeHrConfirmTitle => 'تعيين موارد بشرية؟';
+  @override
+  String get teamRevokeHrConfirmTitle => 'إلغاء موارد بشرية؟';
+  @override
+  String get teamArchiveConfirmTitle => 'أرشفة هذا الموظف؟';
+  @override
+  String get teamConfirmCancel => 'إلغاء';
+  @override
+  String get teamMakeHrConfirmAction => 'تعيين موارد بشرية';
+  @override
+  String get teamRevokeHrConfirmAction => 'إلغاء';
+  @override
+  String get teamArchiveConfirmAction => 'أرشفة';
+  @override
+  String get teamMakeHrSuccess => 'تم تعيين موارد بشرية.';
+  @override
+  String get teamRevokeHrSuccess => 'تمت إزالة صلاحيات الموارد البشرية.';
+  @override
+  String get teamArchiveSuccess => 'تمت أرشفة الموظف.';
+  @override
+  String teamActionError(Object error) => 'فشل: $error';
+
 }

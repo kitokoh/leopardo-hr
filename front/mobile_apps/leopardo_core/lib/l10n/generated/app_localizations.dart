@@ -7234,6 +7234,91 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   /// No description provided for @settingsBiometricError.
   String settingsBiometricError(Object error);
 
+
+  /// No description provided for @teamTitle.
+  String get teamTitle;
+  /// No description provided for @teamSubtitle.
+  String get teamSubtitle;
+  /// No description provided for @teamManagerRequired.
+  String get teamManagerRequired;
+  /// No description provided for @teamManagerRequiredHint.
+  String get teamManagerRequiredHint;
+  /// No description provided for @teamEmployeesTab.
+  String get teamEmployeesTab;
+  /// No description provided for @teamInvitationsTab.
+  String get teamInvitationsTab;
+  /// No description provided for @teamAdd.
+  String get teamAdd;
+  /// No description provided for @teamAddCollaborator.
+  String get teamAddCollaborator;
+  /// No description provided for @teamAddManualForm.
+  String get teamAddManualForm;
+  /// No description provided for @teamAddManualHint.
+  String get teamAddManualHint;
+  /// No description provided for @teamAddFromQr.
+  String get teamAddFromQr;
+  /// No description provided for @teamAddFromQrHint.
+  String get teamAddFromQrHint;
+  /// No description provided for @teamLoading.
+  String get teamLoading;
+  /// No description provided for @teamEmpty.
+  String get teamEmpty;
+  /// No description provided for @teamEmptyHint.
+  String get teamEmptyHint;
+  /// No description provided for @teamEmployeeLabel.
+  String get teamEmployeeLabel;
+  /// No description provided for @teamManagerLabel.
+  String get teamManagerLabel;
+  /// No description provided for @teamViewProfile.
+  String get teamViewProfile;
+  /// No description provided for @teamViewProfileHint.
+  String get teamViewProfileHint;
+  /// No description provided for @teamEditProfile.
+  String get teamEditProfile;
+  /// No description provided for @teamEditProfileHint.
+  String get teamEditProfileHint;
+  /// No description provided for @teamViewAttendance.
+  String get teamViewAttendance;
+  /// No description provided for @teamViewAttendanceHint.
+  String get teamViewAttendanceHint;
+  /// No description provided for @teamViewTasks.
+  String get teamViewTasks;
+  /// No description provided for @teamViewTasksHint.
+  String get teamViewTasksHint;
+  /// No description provided for @teamMakeHr.
+  String get teamMakeHr;
+  /// No description provided for @teamRevokeHr.
+  String get teamRevokeHr;
+  /// No description provided for @teamMakeHrHint.
+  String get teamMakeHrHint;
+  /// No description provided for @teamRevokeHrHint.
+  String get teamRevokeHrHint;
+  /// No description provided for @teamArchive.
+  String get teamArchive;
+  /// No description provided for @teamMakeHrConfirmTitle.
+  String get teamMakeHrConfirmTitle;
+  /// No description provided for @teamRevokeHrConfirmTitle.
+  String get teamRevokeHrConfirmTitle;
+  /// No description provided for @teamArchiveConfirmTitle.
+  String get teamArchiveConfirmTitle;
+  /// No description provided for @teamConfirmCancel.
+  String get teamConfirmCancel;
+  /// No description provided for @teamMakeHrConfirmAction.
+  String get teamMakeHrConfirmAction;
+  /// No description provided for @teamRevokeHrConfirmAction.
+  String get teamRevokeHrConfirmAction;
+  /// No description provided for @teamArchiveConfirmAction.
+  String get teamArchiveConfirmAction;
+  /// No description provided for @teamMakeHrSuccess.
+  String get teamMakeHrSuccess;
+  /// No description provided for @teamRevokeHrSuccess.
+  String get teamRevokeHrSuccess;
+  /// No description provided for @teamArchiveSuccess.
+  String get teamArchiveSuccess;
+
+  /// No description provided for @teamActionError.
+  String teamActionError(Object error);
+
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
       'an issue with the localizations generation tool. Please file an issue '

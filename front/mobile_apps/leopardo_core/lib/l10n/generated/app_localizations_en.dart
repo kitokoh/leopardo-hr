@@ -4167,4 +4167,89 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String settingsBiometricError(Object error) => 'Biometric error: $error';
 
+
+
+  @override
+  String get teamTitle => 'Team';
+  @override
+  String get teamSubtitle => 'Employees and invitations';
+  @override
+  String get teamManagerRequired => 'Manager/HR access required';
+  @override
+  String get teamManagerRequiredHint => 'Only principal managers and HR can manage the team from mobile.';
+  @override
+  String get teamEmployeesTab => 'Employees';
+  @override
+  String get teamInvitationsTab => 'Invitations';
+  @override
+  String get teamAdd => 'Add';
+  @override
+  String get teamAddCollaborator => 'Add a collaborator';
+  @override
+  String get teamAddManualForm => 'Classic form';
+  @override
+  String get teamAddManualHint => 'Complete manual entry';
+  @override
+  String get teamAddFromQr => 'From employee QR';
+  @override
+  String get teamAddFromQrHint => 'Paste the provided code';
+  @override
+  String get teamLoading => 'Loading team';
+  @override
+  String get teamEmpty => 'No collaborator';
+  @override
+  String get teamEmptyHint => 'Start by adding your team with the button below.';
+  @override
+  String get teamEmployeeLabel => 'Employee';
+  @override
+  String get teamManagerLabel => 'Manager';
+  @override
+  String get teamViewProfile => 'View profile';
+  @override
+  String get teamViewProfileHint => 'Contact details, position, salary, schedule';
+  @override
+  String get teamEditProfile => 'Edit profile';
+  @override
+  String get teamEditProfileHint => 'Update essential HR fields';
+  @override
+  String get teamViewAttendance => 'Attendance stats';
+  @override
+  String get teamViewAttendanceHint => 'Presence, anomalies, history';
+  @override
+  String get teamViewTasks => 'Tasks';
+  @override
+  String get teamViewTasksHint => 'View or assign field tasks';
+  @override
+  String get teamMakeHr => 'Appoint HR';
+  @override
+  String get teamRevokeHr => 'Revoke HR';
+  @override
+  String get teamMakeHrHint => 'Grant HR permissions to this collaborator';
+  @override
+  String get teamRevokeHrHint => 'Remove HR permissions from this account';
+  @override
+  String get teamArchive => 'Archive';
+  @override
+  String get teamMakeHrConfirmTitle => 'Appoint HR?';
+  @override
+  String get teamRevokeHrConfirmTitle => 'Revoke HR?';
+  @override
+  String get teamArchiveConfirmTitle => 'Archive this employee?';
+  @override
+  String get teamConfirmCancel => 'Cancel';
+  @override
+  String get teamMakeHrConfirmAction => 'Appoint HR';
+  @override
+  String get teamRevokeHrConfirmAction => 'Revoke';
+  @override
+  String get teamArchiveConfirmAction => 'Archive';
+  @override
+  String get teamMakeHrSuccess => 'HR appointed.';
+  @override
+  String get teamRevokeHrSuccess => 'HR permissions removed.';
+  @override
+  String get teamArchiveSuccess => 'Employee archived.';
+  @override
+  String teamActionError(Object error) => 'Error: $error';
+
 }
