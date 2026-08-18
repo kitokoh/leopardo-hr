@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **feat(api/ops): balayage des trial provisionings bloqués — fail-loud (issue #4948, volet code).** Quand le worker de queue (Render/Redis) ne consomme pas la file, `ProvisionDemoTenantJob` n'est jamais exécuté et le statut reste `pending`/`provisioning_sandbox` indéfiniment (prospect poll sans état terminal, funnel KO). Nouvelle commande `trial-provisionings:sweep` (planifiée toutes les 15 min) : marque `failed` (erreur `SWEEP_TIMEOUT`, log d'alerte) toute demande plus vieille que `--max-age-minutes` (défaut 30 min ≫ backoff max ~8,5 min), `--dry-run` supporté. Tests : stale→failed, fresh préservé, ready/failed préservés, dry-run sans écriture. Le diagnostic worker/Redis côté Render reste l'action ops (#4948).
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032).**
 - **feat(web/portail): workflow de clôture paie 2 étapes + verrouillage dans l'onglet Cycles (Closes #5017, EXIG-37/FLOW 6).** Le portail expose désormais le cycle complet sur les `payroll-runs` : **Calculer** (draft/calculating/processing/error), **Valider (RH)** (calculated → `POST /validate`, `PayrollClosingService::validateRh`), **Verrouiller** (validated → `POST /lock`, clôture comptable) et **Déverrouiller** (locked), avec modal de confirmation, feedback localisé et rafraîchissement. Statuts localisés ×4 (brouillon/calculé/validé/verrouillé).
