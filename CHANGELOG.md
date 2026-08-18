@@ -6,6 +6,8 @@
 
 
 ## [Unreleased]
+- **fix(ci/api): la gate requise « Backend Coverage » ne masque plus les échecs PHPUnit + extraction des erreurs causales JUnit (Closes #4978).** `coverage-gate.yml` : `set -o pipefail` sur l'étape `php artisan test | tee` (sans lui, `tee` avalait le code de sortie de PHPUnit et la gate restait verte avec 178 tests en échec — constat #4980), `--log-junit` + étape d'extraction des premières erreurs par testsuite, artefact JUnit conservé. `tests.yml` : extraction des erreurs causales des JUnit unit/feature dans le résumé du job. `setup-backend-db` : `DB_SEARCH_PATH` du `.env` aligné sur phpunit.xml et les jobs (`public,shared_tenants`, fin du split-brain #1597).
+
 - **fix(mobile/i18n): long-tail FR leopardo_employee migré vers ARB (Closes #4843).** `settings_screen` (parcours/statistiques — clés `settingsJourneyLoadError`/`settingsStatsLoadError` ajoutées ×4 + fichiers générés), `monthly_summary_screen` (`retry`), `notification_list_screen` (marquage lu/tout lu/suppression + succès suppression + tooltip retour — clés `notifications*` ×4), `attendance_screen` (heure future — clé `attendanceFutureTimeError` ×4). Les écrans smart_attendance étaient déjà migrés (post-#4837). `flutter analyze` à valider en CI ; le reste des chaînes en dur reste suivi par l'épic #4194.
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032).**
