@@ -833,7 +833,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (_isTimeFuture(picked)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(context.l10n.attendanceFutureTimeError),
           backgroundColor: AppColors.danger,
         ),
@@ -855,7 +855,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
 
     if (widget.canDirectEdit && widget.logId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
             context.l10n.attendanceCorrectionNoLogWarning,
           ),
