@@ -200,7 +200,7 @@ class _SalaryAdvanceListScreenState
           child: TextButton.icon(
             onPressed: () => _confirmCancelAdvance(context, advance.id),
             icon: const Icon(Icons.close_rounded, size: 16),
-            label: const Text(context.l10n.salaryAdvanceCancelRequest),
+            label: Text(context.l10n.salaryAdvanceCancelRequest),
           ),
         ),
       ],
@@ -223,7 +223,7 @@ class _SalaryAdvanceListScreenState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.attach_file_rounded, size: 16),
-        label: const Text(context.l10n.salaryAdvanceViewProof),
+        label: Text(context.l10n.salaryAdvanceViewProof),
       ),
     );
   }
