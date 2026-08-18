@@ -6,20 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-<<<<<<< HEAD
     "lint": "eslint src e2e --max-warnings 0",
-=======
-    "lint": "eslint src --max-warnings 0",
     "lint:e2e": "eslint e2e --max-warnings 0",
->>>>>>> 572c7fd9a (fix(web): purge CSS orphelins vitrine + lint e2e (Closes #4943, #4945))
     "check:mojibake": "node scripts/check-mojibake.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "lint:src": "eslint src --max-warnings 0"
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
@@ -31,7 +26,8 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.85.0",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -50,7 +46,8 @@
     "jest-environment-jsdom": "^30.4.1",
     "tailwindcss": "^4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "@types/qrcode": "^1.5.6"
   },
   "overrides": {
     "postcss": "^8.5.23",

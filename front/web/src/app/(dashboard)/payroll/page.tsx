@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import ComplianceBadge, { type ComplianceBlock } from '@/components/payroll/ComplianceBadge';
+import { Button } from '@/components/ui/Button';
 import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 import { PaySlipDetailModal, type PaySlipDetail } from './_components/PaySlipDetailModal';
 import {
@@ -239,8 +240,8 @@ export default function PayrollPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => downloadPdf(slip.id)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.downloadPdf}><Download className="h-4 w-4" /></button>
-                          <button onClick={() => openDetail(slip)} className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-emerald-600" title={labels.viewDetail} aria-label={labels.viewDetail}><Eye className="h-4 w-4" /></button>
+                          <Button variant="ghost" size="sm" onClick={() => downloadPdf(slip.id)} title={labels.downloadPdf} aria-label={labels.downloadPdf} icon={<Download className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-600" />
+                          <Button variant="ghost" size="sm" onClick={() => openDetail(slip)} title={labels.viewDetail} aria-label={labels.viewDetail} icon={<Eye className="h-4 w-4" />} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-emerald-600" />
                         </div>
                       </td>
                     </tr>
