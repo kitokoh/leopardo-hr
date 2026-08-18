@@ -6,6 +6,9 @@
 
 
 ## [Unreleased]
+
+- **fix(ci/api): stabiliser la baseline PostgreSQL de l’issue #4978.** La création du manager d’essai persiste désormais `password_hash` avant l’insertion, les calculs Attendance utilisent UTC comme fallback lorsque `companies.timezone` est nul, et les bornes biométriques enregistrent la méthode canonique `biometric` acceptée par la contrainte PostgreSQL.
+
 - **feat(mobile/i18n): dette #4194 vague 2 — 40 clés attendance ×4 locales + manager/hr attendance_screen migrés (Refs #4194 #2755).** 40 nouvelles clés ARB (attendanceThisWeek, attendanceToday, checkin/checkout labels, statuts, labels menu, fingerprint, correction sheet, rôles) ×4 locales + générés Dart. leopardo_manager/leopardo_hr attendance_screen.dart : ~30 chaînes P1 migrées vers context.l10n.*.
 - **fix(web/seo): vitrine case-studies ogType article + redéploiement canonicals/hreflang (Closes #4867).** ogType corrigé `article` pour les études de cas individuelles (cohérence OpenGraph). Le correctif canonical/hreflang par article (#3435) était déjà sur main — ce redéploiement fait converger le live avec le code courant.
 - **feat(mobile/marketing): écrans social posts + création post (Closes #3910).** App leopardo_marketing : home hub de navigation, SocialPostsScreen (liste avec filtres statut, publication rapide), CreatePostScreen (sélection plateformes, planification, publier maintenant/brouillon). Modèle SocialPost, SocialPostRepository (listPosts/createPost/publishPost/deletePost), routes GoRouter /posts + /create-post.
