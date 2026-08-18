@@ -4854,6 +4854,24 @@ paths:
                     type: string
         "422":
           $ref: "#/components/responses/Validation422"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une correction de pointage (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /attendance/corrections/{correction}/reject:
     post:
@@ -4879,6 +4897,24 @@ paths:
                     type: string
         "422":
           $ref: "#/components/responses/Validation422"
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une correction de pointage (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /attendance/today:
     get:
@@ -8271,6 +8307,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une absence (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /absences/{absence}/reject:
     post:
@@ -8308,6 +8362,25 @@ paths:
           $ref: "#/components/responses/Error403"
 
   # --- Salary Advances ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une absence (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /salary-advances:
     get:
       tags: ["Salary Advances"]
@@ -8439,6 +8512,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une avance sur salaire (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /salary-advances/{salaryAdvance}/reject:
     post:
@@ -8471,6 +8562,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une avance sur salaire (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /salary-advances/{salaryAdvance}/manager-approve:
     post:
@@ -8495,6 +8604,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Validation manager d'une avance (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /salary-advances/{salaryAdvance}/mark-paid:
     put:
@@ -13290,6 +13417,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver un prêt (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /loans/{employeeLoan}/disburse:
     post:
@@ -13307,6 +13452,25 @@ paths:
           $ref: "#/components/responses/Error401"
 
   # --- Expense Claims ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Décaisser un prêt (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /expense-claims:
     get:
       tags: ["Expenses"]
@@ -13477,6 +13641,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une note de frais (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /expense-claims/{expenseClaim}/reject:
     post:
@@ -13508,6 +13690,25 @@ paths:
   # =============================================
 
   # --- Approvals ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une note de frais (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /approval-workflows:
     get:
       tags: ["Approvals"]
@@ -16144,6 +16345,24 @@ paths:
       responses:
         "200": { description: "Étape marquée complète" }
         "404": { description: "Étape inconnue" }
+    patch:
+      tags: ["Deprecated"]
+      summary: "Marquer une étape complète (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: stepKey
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /onboarding-setup/{stepKey}/skip:
     post:
@@ -16163,6 +16382,25 @@ paths:
   # SmartAttendance — Pointage GPS automatique par géofencing
   # Ajouté dans v4.18.0
   # ─────────────────────────────────────────────────────────────────────────
+    patch:
+      tags: ["Deprecated"]
+      summary: "Passer une étape (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: stepKey
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /smart-attendance/mode-settings:
     get:
       tags: ["SmartAttendance"]
@@ -16296,6 +16534,24 @@ paths:
           description: "Non-manager"
         "404":
           description: "Hors société"
+    put:
+      tags: ["Deprecated"]
+      summary: "Valider un run de paie (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /positions/{position}:
     patch:
