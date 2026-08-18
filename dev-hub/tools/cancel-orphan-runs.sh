@@ -13,7 +13,11 @@
 #
 # Issue #2540 : option `--superseded` — en plus des orphelins, annule les runs
 # `queued` SUPERSÉDÉS : pour chaque couple (branche, workflow), tous les runs
-# queued sauf le plus récent sont annulés. Complète le `concurrency` natif des
+# queued sauf le plus récent sont annulés.
+# Issue #5032 : garde appliquée comme en mode orphan — les runs de `main`, de
+# toute branche présente sur le remote et de toute tête de PR ouverte ne sont
+# JAMAIS annulés ; seuls les doublons supersédés des branches supprimées (ou
+# sans PR) le sont. Complète le `concurrency` natif des
 # workflows (qui n'annule les runs que lorsque le NOUVEAU run démarre — les
 # runs queued d'un push précédent restent sinon dans la file).
 #
