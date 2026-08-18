@@ -25,7 +25,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.24.0  → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.24.0    → Version globale du projet/pilotage (ce fichier fait foi — alignée sur PROGRAM_VERSION, 2026-08-17)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)

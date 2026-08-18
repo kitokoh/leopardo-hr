@@ -6,6 +6,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\SlackAlertNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
 
@@ -80,6 +82,8 @@ class QueueHealthCheck extends Command
             'queues' => $queueStats,
         ];
 
+        $this->notifyIfDegraded($result);
+
         $this->outputResult($result);
 
         return self::SUCCESS;
@@ -88,6 +92,51 @@ class QueueHealthCheck extends Command
     private function outputResult(array $data): void
     {
         $this->line(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Plan 63 / audit PM 2026-08-17 — alerte Slack opt-in sur dégradation
+     * observée (Redis injoignable, queue en erreur, failed_jobs au-dessus du
+     * seuil). Ne fait rien tant que SLACK_MONITORING_WEBHOOK_URL n'est pas
+     * configuré (le défaut reste silencieux, comme avant).
+     */
+    private function notifyIfDegraded(array $result): void
+    {
+        $webhook = (string) config('services.slack.monitoring_webhook');
+
+        if ($webhook === '') {
+            return;
+        }
+
+        $redisOk = (bool) ($result['redis_ok'] ?? true);
+        $failedRaw = $result['failed_jobs'] ?? 0;
+        $failedJobs = is_int($failedRaw) || is_numeric($failedRaw) ? (int) $failedRaw : 0;
+        $threshold = (int) config('services.slack.failed_jobs_threshold', 10);
+
+        $queuesInError = [];
+
+        /** @var array<string, array{status?: string}> $queues */
+        $queues = (array) ($result['queues'] ?? []);
+        foreach ($queues as $name => $stats) {
+            if (($stats['status'] ?? 'ok') === 'error') {
+                $queuesInError[] = (string) $name;
+            }
+        }
+
+        if ($redisOk && $queuesInError === [] && $failedJobs <= $threshold) {
+            return;
+        }
+
+        Notification::route('slack', $webhook)->notify(new SlackAlertNotification(
+            message: 'Queue/Redis health dégradé (queue:health-check)',
+            severity: 'critical',
+            context: [
+                'redis_ok' => $redisOk,
+                'queues_en_erreur' => $queuesInError,
+                'failed_jobs' => $failedJobs,
+                'failed_jobs_threshold' => $threshold,
+            ],
+        ));
     }
 
     private function failedJobsCount(): ?int

@@ -2,7 +2,7 @@
 
 > Mis à jour le 2026-07-19 (audit doc) | Phase 5 en cours — nettoyage legacy (PR #824)
 
-## 1. Tableau de l'état DDD — 19 modules actifs
+## 1. Tableau de l'état DDD — 18 modules actifs
 
 | Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
@@ -24,11 +24,11 @@
 | **Platform** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 | **Recruitment** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **SmartAttendance** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
-| **Training** 🆕 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ |
 
 > ⚠️ = Module créé dans Phase 3–4 ou ajouté depuis, tests Feature à completer/verifier en Phase 5.
 > — = Non applicable (module `EdgeSync` suit une structure specialisee synchro/offline, pas le squelette DDD standard Contracts/Exceptions/DTOs).
-> Corrige lors de l'audit doc du 2026-07-19 : ce tableau omettait `EdgeSync` et `Marketing`, deux modules reellement presents sous `api/app/Modules/` (19 au total, pas 16).
+> Corrige lors de l'audit doc du 2026-07-19 : ce tableau omettait `EdgeSync` et `Marketing` (19 au total, pas 16).
+> Corrige le 2026-08-18 (#4936) : le module `Training` listé ici n'a jamais eu de dossier sous `api/app/Modules/` (supprimé lors du nettoyage legacy) → 18 modules actifs réels.
 
 ---
 
