@@ -142,6 +142,37 @@ class AbsenceController extends Controller
         ]));
     }
 
+    public function update(Request $request, Absence $absence): AbsenceResource
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        if ($absence->company_id !== $actor->company_id) {
+            abort(404);
+        }
+
+        if (! $actor->isManager() && $absence->employee_id !== $actor->id) {
+            abort(403);
+        }
+
+        // #4933 : seule une demande en attente est modifiable (approuvée /
+        // rejetée = état terminal). L'approbation reste le seul chemin après.
+        abort_if($absence->status !== 'pending', 422, 'ABSENCE_NOT_EDITABLE');
+
+        $validated = $request->validate([
+            'start_date' => ['sometimes', 'required', 'date_format:Y-m-d'],
+            'end_date' => ['sometimes', 'required', 'date_format:Y-m-d'],
+            'reason' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $absence = $this->absenceService->update($absence, $validated);
+
+        return new AbsenceResource($absence->load([
+            'absenceType:id,name,code,deducts_leave',
+            'employee:id,first_name,last_name,email,company_id',
+        ]));
+    }
+
     public function destroy(Request $request, Absence $absence): AbsenceResource
     {
         /** @var Employee $actor */

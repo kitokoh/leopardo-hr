@@ -16,6 +16,7 @@ import {
   X,
 } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
+import { Button } from '@/components/ui/Button';
 import { trackClientEvent } from '@/lib/client-analytics';
 import {
   applyDocumentLocale,
@@ -441,14 +442,14 @@ function LoginInner() {
                 </Link>
               </div>
 
-              <button
+              <Button
                 type="submit"
-                disabled={submitting}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 transition hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                loading={submitting}
+                fullWidth
+                className="h-12 rounded-2xl bg-emerald-600 px-4 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand-500/20 hover:bg-emerald-500 focus:ring-emerald-500 focus:ring-offset-2"
               >
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <LockKeyhole className="h-4 w-4" aria-hidden="true" />}
                 {submitting ? labels.login.loading : labels.login.submit}
-              </button>
+              </Button>
 
               <a
                 href={googleAuthHref()}
