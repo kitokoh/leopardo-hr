@@ -30,7 +30,7 @@ bloquantes ouvertes.
 | ML (Mali) | `CedeaoPayrollRules` | pilot | `ML_COMPLIANCE.md` | ❌ à valider | ITS 6 tranches, INPS 2024 |
 | GA (Gabon) | `CemacPayrollRules` | pilot | `GA_COMPLIANCE.md` | ❌ à valider | IRPP 8 tranches (art. 174 vs 135), abattement DGI 20 %/833 333 ✅ implémenté (#2118, voir #2124) |
 | CG (Congo) | `CemacPayrollRules` | pilot | `CG_COMPLIANCE.md` | ❌ à valider | IRPP 6 tranches, CNSS 2024 |
-| SN (Sénégal) | `SenegalPayrollRules` | pilot | `SN_COMPLIANCE.md` | ❌ à valider (issue #1912) | TRIMF, IPRES T2, CSS AT (1/3/5 % selon secteur), CFCE, abattement 30 %. ✅ Taux CSS famille 7 % aligné sur l'officiel CIPRES/CLEISS (#2473) ; plafond 63 000 maintenu (#1913, 80 000 contesté CNP) |
+| SN (Sénégal) | `SenegalPayrollRules` | **production** ✅ | `SN_COMPLIANCE.md` | ✅ **validé 2026-08-18** (#1912) | Toutes les règles validées — voir `SN_VALIDATION.md`. Résiduel : CSS AT taux variable, plafond 80k à confirmer. |
 | CI (Côte d'Ivoire) | `CedeaoPayrollRules` | pilot | `CI_COMPLIANCE.md` | ❌ à valider | **Réforme ITS 2024 (art. 119 bis, ord. 2023-718/719)** — l'ancien barème annuel est abrogé ; CN supprimée ; abattement 20 % obsolète |
 | BJ/TG/NE/CF/TD/GQ | placeholder | placeholder | — | ❌ (bloqué par construction) | pas de règles livrées |
 
