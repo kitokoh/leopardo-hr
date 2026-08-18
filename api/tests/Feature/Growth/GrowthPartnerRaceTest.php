@@ -31,6 +31,8 @@ class GrowthPartnerRaceTest extends TestCase
 
     private Employee $employee;
 
+    private User $adminUser;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -122,13 +124,13 @@ class GrowthPartnerRaceTest extends TestCase
         ]);
 
         // Transition valide : pending → paid
-        $service->updatePayoutStatus($payout, 'paid', (int) $this->employee->id, 'Paiement effectue');
+        $service->updatePayoutStatus($payout, 'paid', (int) $this->adminUser->id, 'Paiement effectue');
         $payout->refresh();
         $this->assertSame('paid', $payout->status);
 
         // Transition invalide : paid → pending → DomainException propre
         try {
-            $service->updatePayoutStatus($payout, 'pending', (int) $this->employee->id, 'Reouverture');
+            $service->updatePayoutStatus($payout, 'pending', (int) $this->adminUser->id, 'Reouverture');
             $this->fail('La transition paid -> pending doit etre refusee.');
         } catch (DomainException $e) {
             $this->assertSame(422, $e->statusCode());
@@ -151,6 +153,7 @@ class GrowthPartnerRaceTest extends TestCase
             'email' => 'partner-'.uniqid().'@test.hr',
             'password_hash' => Hash::make('password123'),
         ]);
+        $this->adminUser = $user;
         $partner = Partner::create([
             'user_id' => $user->id,
             'referral_code' => 'QA-'.strtoupper(substr(uniqid(), -6)),
