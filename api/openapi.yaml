@@ -1176,6 +1176,289 @@ paths:
           description: "Non autorisé"
 
 
+  /auth/google:
+    get:
+      tags: ["Auth"]
+      summary: "Redirection vers le flux OAuth Google (state anti-CSRF en session, #2619)"
+      responses:
+        "302":
+          description: "Redirection vers la page de consentement Google"
+        "500":
+          description: "Erreur de configuration OAuth"
+
+  /auth/google/callback:
+    get:
+      tags: ["Auth"]
+      summary: "Callback OAuth Google — échange le code contre une session"
+      parameters:
+        - name: code
+          in: query
+          schema: { type: string }
+        - name: state
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Authentification réussie (session ou token)"
+        "400":
+          description: "State invalide ou code manquant"
+        "401":
+          description: "Email inconnu (EMPLOYEE_NOT_FOUND, plus d'auto-création tenantless #2998)"
+
+  /webhooks/stripe:
+    post:
+      tags: ["Webhooks"]
+      summary: "Webhook Stripe (événements de paiement/abonnement)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: "Payload signé Stripe (stripe-signature)"
+      responses:
+        "200":
+          description: "Événement traité (retry Stripe si erreur, #2668)"
+        "400":
+          description: "Signature invalide"
+        "503":
+          description: "Traitement indisponible — l'erreur doit être renvoyée pour retry Stripe"
+
+  /webhooks/chargily:
+    post:
+      tags: ["Webhooks"]
+      summary: "Webhook Chargily Pay (paiements CEMAC)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Événement traité"
+        "400":
+          description: "Payload invalide"
+
+  /webhooks/email-bounce:
+    post:
+      tags: ["Webhooks"]
+      summary: "Webhook de bounce email (SES/SendGrid) — fail-closed si secret absent"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Bounce enregistré"
+        "503":
+          description: "Secret non configuré (fail-closed, #2616/#2667)"
+
+  /public/careers/{companySlug}:
+    get:
+      tags: ["Careers"]
+      summary: "Offres d'emploi publiques d'une entreprise"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Liste des offres publiques"
+        "404":
+          description: "Entreprise inconnue ou sans page carrières"
+
+  /public/careers/{companySlug}/feed.xml:
+    get:
+      tags: ["Careers"]
+      summary: "Flux XML des offres (agrégateurs)"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Flux XML"
+          content:
+            application/xml:
+              schema:
+                type: string
+
+  /public/careers/{companySlug}/jobs/{jobPosting}:
+    get:
+      tags: ["Careers"]
+      summary: "Détail d'une offre publique"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Détail de l'offre"
+        "404":
+          description: "Offre introuvable ou non publiée"
+
+  /public/careers/{companySlug}/jobs/{jobPosting}/apply:
+    post:
+      tags: ["Careers"]
+      summary: "Postuler à une offre publique (anti-doublon par email, #3860)"
+      parameters:
+        - name: companySlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: jobPosting
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [first_name, last_name, email]
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                last_name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                phone:
+                  type: string
+                  maxLength: 20
+                cover_letter:
+                  type: string
+                  maxLength: 5000
+                resume_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
+                resume:
+                  type: string
+                  format: binary
+                  description: "CV (pdf/doc/docx, 5 Mo max)"
+                source:
+                  type: string
+                  enum: [website, linkedin, referral, agency, other]
+      responses:
+        "201":
+          description: "Candidature créée"
+        "409":
+          description: "ALREADY_APPLIED (déjà postulé)"
+        "422":
+          description: "Validation"
+
+  /onboarding/invitation/{token}:
+    get:
+      tags: ["Onboarding"]
+      summary: "Consulter une invitation d'onboarding (token public)"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Invitation valide"
+        "404":
+          description: "INVITATION_NOT_FOUND"
+
+  /onboarding/invitation/{token}/activate:
+    post:
+      tags: ["Onboarding"]
+      summary: "Activer une invitation (définir le mot de passe)"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                password_confirmation:
+                  type: string
+      responses:
+        "200":
+          description: "Compte activé"
+        "404":
+          description: "INVITATION_NOT_FOUND"
+        "422":
+          description: "Validation (mot de passe trop court / non confirmé)"
+
+  /onboarding/checklist:
+    get:
+      tags: ["Onboarding"]
+      summary: "Checklist d'onboarding de l'employé authentifié"
+      responses:
+        "200":
+          description: "Progression de l'onboarding"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /company-requests:
+    get:
+      tags: ["Billing"]
+      summary: "Demandes de création d'entreprise de l'utilisateur"
+      responses:
+        "200":
+          description: "Demandes"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Billing"]
+      summary: "Soumettre une demande de création d'entreprise"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [company_name]
+              properties:
+                company_name:
+                  type: string
+                  maxLength: 200
+                sector:
+                  type: string
+                  maxLength: 100
+                country:
+                  type: string
+                  maxLength: 100
+                city:
+                  type: string
+                  maxLength: 100
+      responses:
+        "201":
+          description: "Demande créée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Validation"
+
   /auth/login:
     post:
       tags: ["Auth"]
@@ -1920,6 +2203,113 @@ paths:
                     type: string
                     example: "ok"
 
+  /platform/auth/profile:
+    patch:
+      tags: ["Platform Admin"]
+      summary: "Mettre à jour le profil du super-admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                email:
+                  type: string
+                  format: email
+                  maxLength: 150
+      responses:
+        "200":
+          description: "Profil mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/auth/change-password:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Changer le mot de passe du super-admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, new_password]
+              properties:
+                current_password:
+                  type: string
+                new_password:
+                  type: string
+                  format: password
+                  minLength: 8
+                new_password_confirmation:
+                  type: string
+      responses:
+        "200":
+          description: "Mot de passe changé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Validation / mot de passe actuel incorrect"
+
+  /platform/auth/2fa/setup:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Démarrer la configuration 2FA (secret TOTP)"
+      responses:
+        "200":
+          description: "Secret TOTP (qrcode/secret) — à confirmer via enable"
+        "409":
+          description: "2FA déjà configurée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /platform/auth/2fa/enable:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Activer la 2FA avec le code de confirmation"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        "200":
+          description: "2FA activée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Code invalide"
+
+  /platform/auth/2fa/disable:
+    post:
+      tags: ["Platform Admin"]
+      summary: "Désactiver la 2FA (mot de passe requis)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: "2FA désactivée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "422":
+          description: "Mot de passe incorrect"
   /platform/country-defaults:
     get:
       tags: ["Platform"]
@@ -13505,6 +13895,156 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /api-tokens:
+    get:
+      tags: ["Tokens"]
+      summary: "Lister les tokens API du manager (self-service)"
+      responses:
+        "200":
+          description: "Tokens (id, name, abilities, last_used_at, created_at)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+    post:
+      tags: ["Tokens"]
+      summary: "Creer un token API (renvoye une seule fois en clair)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+      responses:
+        "201":
+          description: "Token cree (plainTextToken inclus)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+
+  /api-tokens/{tokenId}:
+    delete:
+      tags: ["Tokens"]
+      summary: "Revoquer un token API"
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Token revoque"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/unread:
+    get:
+      tags: ["Notifications"]
+      summary: "Notifications non lues de l'employe"
+      responses:
+        "200":
+          description: "Notifications non lues"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/mark-all-read:
+    post:
+      tags: ["Notifications"]
+      summary: "Marquer toutes les notifications comme lues"
+      responses:
+        "200":
+          description: "Notifications marquees lues"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/admin:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard admin (principal)"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/rh:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard RH"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/comptable:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard comptable"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/marketing:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard marketing"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /company/team-roles:
+    get:
+      tags: ["Employees"]
+      summary: "Roles de l'equipe (principal uniquement)"
+      responses:
+        "200":
+          description: "Employes avec leurs roles"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-principal"
+
+  /employees/{employee}/assign-role:
+    post:
+      tags: ["Employees"]
+      summary: "Assigner un role manager a un employe (principal)"
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                manager_role:
+                  type: string
+                  nullable: true
+                  enum: [rh, comptable, marketing, dept, principal]
+      responses:
+        "200":
+          description: "Role assigne (audit trail dispatching)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-principal"
+        "404":
+          description: "Employe hors societe"
+
   # --- Exports ---
   /export/employees:
     get:
@@ -14727,6 +15267,238 @@ paths:
         "200": { description: "Liste des paiements partenaires" }
 
   # ── Marketing (Ayrshare / reseaux sociaux) ─────────────────────────────────────
+  /ai/actions/{pendingActionId}/confirm:
+    post:
+      tags: ["AI"]
+      summary: "Confirmer une action IA en attente"
+      parameters:
+        - name: pendingActionId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action exécutée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Feature IA non active (AIFeatureCheck)"
+
+  /ai/actions/{pendingActionId}/reject:
+    post:
+      tags: ["AI"]
+      summary: "Rejeter une action IA en attente"
+      parameters:
+        - name: pendingActionId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action rejetée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Feature IA non active"
+
+  /ai/voice/transcribe:
+    post:
+      tags: ["AI"]
+      summary: "Transcrire un audio (commande vocale)"
+      responses:
+        "200":
+          description: "Transcription"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/voice/synthesize:
+    post:
+      tags: ["AI"]
+      summary: "Synthétiser un texte en audio"
+      responses:
+        "200":
+          description: "Audio généré"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/voice/command:
+    post:
+      tags: ["AI"]
+      summary: "Exécuter une commande vocale"
+      responses:
+        "200":
+          description: "Résultat de la commande"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/agent/run:
+    post:
+      tags: ["AI"]
+      summary: "Lancer l'agent IA sur une requête"
+      responses:
+        "200":
+          description: "Réponse de l'agent"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/agent/workflows:
+    get:
+      tags: ["AI"]
+      summary: "Lister les workflows d'agent disponibles"
+      responses:
+        "200":
+          description: "Workflows"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/workflows/prepare-payroll:
+    post:
+      tags: ["AI"]
+      summary: "Workflow IA de préparation de paie"
+      responses:
+        "200":
+          description: "Préparation effectuée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/workflows/weekly-report:
+    get:
+      tags: ["AI"]
+      summary: "Rapport hebdomadaire généré par l'IA"
+      responses:
+        "200":
+          description: "Rapport"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/social-accounts:
+    get:
+      tags: ["Marketing"]
+      summary: "Comptes sociaux connectés (alias pluriel de /social-account)"
+      responses:
+        "200":
+          description: "Comptes sociaux"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/social-accounts/connect:
+    post:
+      tags: ["Marketing"]
+      summary: "Connecter un compte social (alias pluriel)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Compte connecté"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/social-accounts/disconnect:
+    post:
+      tags: ["Marketing"]
+      summary: "Déconnecter un compte social (alias pluriel)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Compte déconnecté"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/posts:
+    get:
+      tags: ["Marketing"]
+      summary: "Lister les publications (alias court de /social-posts)"
+      responses:
+        "200":
+          description: "Publications"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Marketing"]
+      summary: "Créer une publication (alias court de /social-posts)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: "Publication créée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/posts/{socialPost}:
+    get:
+      tags: ["Marketing"]
+      summary: "Détail d'une publication (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Publication"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Marketing"]
+      summary: "Mettre à jour une publication (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Publication mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Marketing"]
+      summary: "Supprimer une publication (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Publication supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/posts/{socialPost}/publish:
+    post:
+      tags: ["Marketing"]
+      summary: "Publier une publication planifiée (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Publication envoyée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /marketing/leads:
     post:
       tags: ["Marketing"]
@@ -15023,6 +15795,387 @@ paths:
   # SmartAttendance — Pointage GPS automatique par géofencing
   # Ajouté dans v4.18.0
   # ─────────────────────────────────────────────────────────────────────────
+  /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Parametres du mode de pointage de l'entreprise"
+      responses:
+        "200":
+          description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Configurer le mode de pointage (principal)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forced_mode:
+                  type: string
+                  enum: [gps_auto, qr, manual, mixed]
+                punch_photo_mode:
+                  type: string
+                  enum: [kiosk, photo_required]
+                gps_enabled:
+                  type: boolean
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                radius_meters:
+                  type: integer
+                  minimum: 10
+                  maximum: 5000
+                allow_employee_override:
+                  type: boolean
+      responses:
+        "200":
+          description: "Configuration mise a jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /payrolls/{payroll}:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Détail d'un run de paie"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Run de paie"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Hors société"
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un run de paie (manager)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Run mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour partiellement un run de paie (manager)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Run mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer un run de paie (manager)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Run supprimé"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /payrolls/{payroll}/validate:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Valider un run de paie (manager, même société)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Run validé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+        "404":
+          description: "Hors société"
+
+  /positions/{position}:
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un poste (manager)"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Poste mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /sites/{site}:
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un site (manager)"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Site mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /schedules/{schedule}:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Détail d'un planning"
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Planning"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un planning (manager — sécurité #2217)"
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Planning mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+
+  /notifications/stream:
+    get:
+      tags: ["Notifications"]
+      summary: "Flux SSE temps réel des notifications (employee/manager)"
+      responses:
+        "200":
+          description: "Flux Server-Sent Events"
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/sse-token:
+    post:
+      tags: ["Notifications"]
+      summary: "Émettre un token SSE temporaire pour le flux temps réel"
+      responses:
+        "200":
+          description: "Token SSE"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /tasks/{task}/comments:
+    get:
+      tags: ["Tasks"]
+      summary: "Commentaires d'une tâche (auteur + employés liés)"
+      parameters:
+        - name: task
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Commentaires"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé (hors périmètre)"
+
+  /me/contract:
+    get:
+      tags: ["Me"]
+      summary: "Contrat actif de l'employé connecté"
+      responses:
+        "200":
+          description: "Contrat actif"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Aucun contrat actif"
+
+  /recruitment/jobs/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une offre d'emploi (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/applicants/{id}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Détail d'une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/applicants/{id}/status:
+    patch:
+      tags: ["Recruitment"]
+      summary: "Changer le statut d'une candidature (principal/rh)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [new, screening, interview, offer, hired, rejected, withdrawn]
+      responses:
+        "200":
+          description: "Statut mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Rôle requis (principal/rh)"
+
+  /recruitment/interviews/{id}/feedback:
+    patch:
+      tags: ["Recruitment"]
+      summary: "Saisir le feedback d'un entretien (le clôture)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [feedback]
+              properties:
+                feedback:
+                  type: string
+                  maxLength: 5000
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien clôturé (status=completed)"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/interviews/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer un entretien (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entretien supprimé"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /smart-attendance/config:
     get:
       tags: ["SmartAttendance"]
