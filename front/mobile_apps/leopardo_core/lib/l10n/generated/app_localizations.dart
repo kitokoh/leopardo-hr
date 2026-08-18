@@ -6624,6 +6624,412 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
 
   String get trainingTitleplaceholder;
 
+
+  /// No description provided for @attendanceFutureTimeError.
+  String get attendanceFutureTimeError;
+
+  /// No description provided for @notificationsMarkAllReadError.
+  String get notificationsMarkAllReadError;
+
+  /// No description provided for @notificationsMarkReadError.
+  String get notificationsMarkReadError;
+
+  /// No description provided for @notificationsDeleteError.
+  String get notificationsDeleteError;
+
+  /// No description provided for @notificationsDeleted.
+  String get notificationsDeleted;
+
+  /// No description provided for @settingsJourneyLoadError.
+  String get settingsJourneyLoadError;
+
+  /// No description provided for @settingsStatsLoadError.
+  String get settingsStatsLoadError;
+
+  /// No description provided for @emptyAbsences.
+  String get emptyAbsences;
+
+  /// No description provided for @cancelRequest.
+  String get cancelRequest;
+
+  /// No description provided for @emptySessions.
+  String get emptySessions;
+
+  /// No description provided for @emptyHistory.
+  String get emptyHistory;
+
+  /// No description provided for @emptyPayslips.
+  String get emptyPayslips;
+
+  /// No description provided for @emptyAdvances.
+  String get emptyAdvances;
+
+  /// No description provided for @noReason.
+  String get noReason;
+
+  /// No description provided for @confirmReceipt.
+  String get confirmReceipt;
+
+  /// No description provided for @saveProfile.
+  String get saveProfile;
+
+  /// No description provided for @savingProfile.
+  String get savingProfile;
+
+  /// No description provided for @loadError.
+  String get loadError;
+
+  /// No description provided for @noData.
+  String get noData;
+
+  /// No description provided for @noTasksToday.
+  String get noTasksToday;
+
+  /// No description provided for @salaryAdvanceListTitle.
+  String get salaryAdvanceListTitle;
+
+  /// No description provided for @salaryAdvanceListSubtitle.
+  String get salaryAdvanceListSubtitle;
+
+  /// No description provided for @salaryAdvanceRequest.
+  String get salaryAdvanceRequest;
+
+  /// No description provided for @salaryAdvancesEmpty.
+  String get salaryAdvancesEmpty;
+
+  /// No description provided for @salaryAdvancesEmptyHint.
+  String get salaryAdvancesEmptyHint;
+
+  /// No description provided for @salaryAdvanceNoReason.
+  String get salaryAdvanceNoReason;
+
+  /// No description provided for @salaryAdvancesLoading.
+  String get salaryAdvancesLoading;
+
+  /// No description provided for @salaryAdvancePaymentDeclared.
+  String get salaryAdvancePaymentDeclared;
+
+  /// No description provided for @salaryAdvanceConfirmReceived.
+  String get salaryAdvanceConfirmReceived;
+
+  /// No description provided for @salaryAdvanceCancelRequest.
+  String get salaryAdvanceCancelRequest;
+
+  /// No description provided for @salaryAdvanceViewProof.
+  String get salaryAdvanceViewProof;
+
+  /// No description provided for @salaryAdvanceProofDownloaded.
+  String salaryAdvanceProofDownloaded(Object path);
+
+  /// No description provided for @salaryAdvanceError.
+  String salaryAdvanceError(Object error);
+
+  /// No description provided for @salaryAdvanceCancelTitle.
+  String get salaryAdvanceCancelTitle;
+
+  /// No description provided for @salaryAdvanceCancelBody.
+  String get salaryAdvanceCancelBody;
+
+  /// No description provided for @salaryAdvanceKeep.
+  String get salaryAdvanceKeep;
+
+  /// No description provided for @salaryAdvanceCancelAction.
+  String get salaryAdvanceCancelAction;
+
+  /// No description provided for @salaryAdvanceCancelled.
+  String get salaryAdvanceCancelled;
+
+  /// No description provided for @salaryAdvanceMonths.
+  String salaryAdvanceMonths(Object reason, Object months);
+
+  /// No description provided for @salaryAdvanceSemantics.
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status);
+
+  /// No description provided for @salaryStatusValidated.
+  String get salaryStatusValidated;
+
+  /// No description provided for @salaryStatusToConfirm.
+  String get salaryStatusToConfirm;
+
+  /// No description provided for @salaryStatusReceived.
+  String get salaryStatusReceived;
+
+  /// No description provided for @salaryStatusActive.
+  String get salaryStatusActive;
+
+  /// No description provided for @salaryStatusApproved.
+  String get salaryStatusApproved;
+
+  /// No description provided for @salaryStatusPending.
+  String get salaryStatusPending;
+
+  /// No description provided for @salaryStatusRejected.
+  String get salaryStatusRejected;
+
+  /// No description provided for @salaryStatusCancelled.
+  String get salaryStatusCancelled;
+
+  /// No description provided for @salaryAdvanceConfirmReceivedTitle.
+  String get salaryAdvanceConfirmReceivedTitle;
+
+  /// No description provided for @salaryAdvanceConfirmReceivedBody.
+  String get salaryAdvanceConfirmReceivedBody;
+
+  /// No description provided for @salaryAdvanceConfirmAction.
+  String get salaryAdvanceConfirmAction;
+
+  /// No description provided for @salaryAdvanceRequestTitle.
+  String get salaryAdvanceRequestTitle;
+
+  /// No description provided for @salaryAdvanceAttachmentLabel.
+  String get salaryAdvanceAttachmentLabel;
+
+  /// No description provided for @salaryAdvanceAttachHint.
+  String get salaryAdvanceAttachHint;
+
+  /// No description provided for @salaryAdvanceSubmitted.
+  String get salaryAdvanceSubmitted;
+
+  /// No description provided for @absencesListTitle.
+  String get absencesListTitle;
+
+  /// No description provided for @absencesListSubtitle.
+  String get absencesListSubtitle;
+
+  /// No description provided for @absenceRequest.
+  String get absenceRequest;
+
+  /// No description provided for @absencesEmpty.
+  String get absencesEmpty;
+
+  /// No description provided for @absenceLabel.
+  String get absenceLabel;
+
+  /// No description provided for @absencesDaysCount.
+  String absencesDaysCount(Object date, Object days);
+
+  /// No description provided for @absenceViewProof.
+  String get absenceViewProof;
+
+  /// No description provided for @absenceCancelRequest.
+  String get absenceCancelRequest;
+
+  /// No description provided for @absenceProofDownloaded.
+  String absenceProofDownloaded(Object path);
+
+  /// No description provided for @absenceCancelTitle.
+  String get absenceCancelTitle;
+
+  /// No description provided for @absenceCancelBody.
+  String get absenceCancelBody;
+
+  /// No description provided for @absenceCancelled.
+  String get absenceCancelled;
+
+  /// No description provided for @absenceNewTitle.
+  String get absenceNewTitle;
+
+  /// No description provided for @absenceNewHint.
+  String get absenceNewHint;
+
+  /// No description provided for @absenceNoType.
+  String get absenceNoType;
+
+  /// No description provided for @attendanceRoleEmployee.
+  String get attendanceRoleEmployee;
+
+  /// No description provided for @attendanceWeekUnavailable.
+  String get attendanceWeekUnavailable;
+
+  /// No description provided for @attendanceWorkTypeTitle.
+  String get attendanceWorkTypeTitle;
+
+  /// No description provided for @attendanceBreakTitle.
+  String get attendanceBreakTitle;
+
+  /// No description provided for @attendanceBreakHint.
+  String get attendanceBreakHint;
+
+  /// No description provided for @attendanceBreakLoading.
+  String get attendanceBreakLoading;
+
+  /// No description provided for @attendanceBreakSuccess.
+  String get attendanceBreakSuccess;
+
+  /// No description provided for @attendanceBreakFailure.
+  String get attendanceBreakFailure;
+
+  /// No description provided for @attendanceResumeTitle.
+  String get attendanceResumeTitle;
+
+  /// No description provided for @attendanceResumeHint.
+  String get attendanceResumeHint;
+
+  /// No description provided for @attendanceResumeLoading.
+  String get attendanceResumeLoading;
+
+  /// No description provided for @attendanceResumeSuccess.
+  String get attendanceResumeSuccess;
+
+  /// No description provided for @attendanceResumeFailure.
+  String get attendanceResumeFailure;
+
+  /// No description provided for @attendanceOvertimeTitle.
+  String get attendanceOvertimeTitle;
+
+  /// No description provided for @attendanceOvertimeHint.
+  String get attendanceOvertimeHint;
+
+  /// No description provided for @attendanceOvertimeLoading.
+  String get attendanceOvertimeLoading;
+
+  /// No description provided for @attendanceOvertimeSuccess.
+  String get attendanceOvertimeSuccess;
+
+  /// No description provided for @attendanceOvertimeFailure.
+  String get attendanceOvertimeFailure;
+
+  /// No description provided for @attendanceMissionTitle.
+  String get attendanceMissionTitle;
+
+  /// No description provided for @attendanceMissionHint.
+  String get attendanceMissionHint;
+
+  /// No description provided for @attendanceMissionLoading.
+  String get attendanceMissionLoading;
+
+  /// No description provided for @attendanceMissionSuccess.
+  String get attendanceMissionSuccess;
+
+  /// No description provided for @attendanceMissionFailure.
+  String get attendanceMissionFailure;
+
+  /// No description provided for @attendanceTravelTitle.
+  String get attendanceTravelTitle;
+
+  /// No description provided for @attendanceTravelHint.
+  String get attendanceTravelHint;
+
+  /// No description provided for @attendanceTravelLoading.
+  String get attendanceTravelLoading;
+
+  /// No description provided for @attendanceTravelSuccess.
+  String get attendanceTravelSuccess;
+
+  /// No description provided for @attendanceTravelFailure.
+  String get attendanceTravelFailure;
+
+  /// No description provided for @attendanceTasksTitle.
+  String get attendanceTasksTitle;
+
+  /// No description provided for @attendanceHistoryTitle.
+  String get attendanceHistoryTitle;
+
+  /// No description provided for @attendancePreferencesTitle.
+  String get attendancePreferencesTitle;
+
+  /// No description provided for @attendanceSettingsTitle.
+  String get attendanceSettingsTitle;
+
+  /// No description provided for @attendanceSyncTitle.
+  String get attendanceSyncTitle;
+
+  /// No description provided for @attendanceSaving.
+  String get attendanceSaving;
+
+  /// No description provided for @attendancePressToCheckout.
+  String get attendancePressToCheckout;
+
+  /// No description provided for @attendancePressToCheckin.
+  String get attendancePressToCheckin;
+
+  /// No description provided for @attendanceOvertimeShort.
+  String get attendanceOvertimeShort;
+
+  /// No description provided for @attendancePauseLabel.
+  String get attendancePauseLabel;
+
+  /// No description provided for @attendanceTrainingLabel.
+  String get attendanceTrainingLabel;
+
+  /// No description provided for @attendanceOtherLabel.
+  String get attendanceOtherLabel;
+
+  /// No description provided for @settingsEdgeSaved.
+  String get settingsEdgeSaved;
+
+  /// No description provided for @settingsAccountTitle.
+  String get settingsAccountTitle;
+
+  /// No description provided for @settingsAccountSubtitle.
+  String get settingsAccountSubtitle;
+
+  /// No description provided for @settingsEmployeeProfileHint.
+  String get settingsEmployeeProfileHint;
+
+  /// No description provided for @settingsSaving.
+  String get settingsSaving;
+
+  /// No description provided for @settingsSaveProfile.
+  String get settingsSaveProfile;
+
+  /// No description provided for @settingsKioskBiometricTitle.
+  String get settingsKioskBiometricTitle;
+
+  /// No description provided for @settingsNotificationsTitle.
+  String get settingsNotificationsTitle;
+
+  /// No description provided for @settingsAccountPortableHint.
+  String get settingsAccountPortableHint;
+
+  /// No description provided for @settingsNoJourney.
+  String get settingsNoJourney;
+
+  /// No description provided for @settingsNoCompanyQr.
+  String get settingsNoCompanyQr;
+
+  /// No description provided for @settingsLanguageTitle.
+  String get settingsLanguageTitle;
+
+  /// No description provided for @settingsPreferredLanguage.
+  String get settingsPreferredLanguage;
+
+  /// No description provided for @settingsSecurityTitle.
+  String get settingsSecurityTitle;
+
+  /// No description provided for @settingsCurrentPassword.
+  String get settingsCurrentPassword;
+
+  /// No description provided for @settingsSaveEnrollment.
+  String get settingsSaveEnrollment;
+
+  /// No description provided for @settingsSave.
+  String get settingsSave;
+
+  /// No description provided for @settingsLogout.
+  String get settingsLogout;
+
+  /// No description provided for @approvalsTitle.
+  String get approvalsTitle;
+
+  /// No description provided for @approvalsRejectReasonLabel.
+  String get approvalsRejectReasonLabel;
+
+  /// No description provided for @approvalsRejectReasonHint.
+  String get approvalsRejectReasonHint;
+
+  /// No description provided for @approvalsLoading.
+  String get approvalsLoading;
+
+  /// No description provided for @actionApprove.
+  String get actionApprove;
+
+  /// No description provided for @actionReject.
+  String get actionReject;
+
+  /// No description provided for @actionCancel.
+  String get actionCancel;
+
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
       'an issue with the localizations generation tool. Please file an issue '

@@ -718,6 +718,11 @@
     "overtime": "Overtime hours",
     "time": {
       "range": "from {from} to {to}"
+    },
+    "future": {
+      "time": {
+        "error": "Cannot enter a future time"
+      }
     }
   },
   "emails": {
@@ -1410,7 +1415,21 @@
     "category_product_tips": "Product tips",
     "categories_title": "Categories",
     "save_error": "Unable to save preferences right now.",
-    "channel_inapp_desc": "Web and mobile notification center."
+    "channel_inapp_desc": "Web and mobile notification center.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Unable to mark notifications as read."
+        }
+      },
+      "read": {
+        "error": "Unable to mark notification as read."
+      }
+    },
+    "delete": {
+      "error": "Unable to delete the notification."
+    },
+    "deleted": "Notification deleted."
   },
   "employees": {
     "load_error": "Unable to load employees.",
@@ -2000,5 +2019,17 @@
     "submit_to_hr": "Submit to HR",
     "submitted_snack": "Absence request sent to HR.",
     "days_available": " day(s) available"
+  },
+  "settings": {
+    "journey": {
+      "load": {
+        "error": "Unable to load your journey."
+      }
+    },
+    "stats": {
+      "load": {
+        "error": "Unable to load statistics."
+      }
+    }
   }
 }

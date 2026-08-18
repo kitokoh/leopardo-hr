@@ -65,7 +65,7 @@ class NotificationListScreen extends ConsumerWidget {
                   children: [
                     EmptyState(
                       icon: Icons.notifications_none,
-                      title: 'Aucune notification',
+                      title: context.l10n.shellNonotifications,
                       description:
                           'Vous etes a jour. Cette page se rafraichit automatiquement.',
                     ),

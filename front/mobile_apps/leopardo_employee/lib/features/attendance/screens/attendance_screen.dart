@@ -107,7 +107,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             children: [
               _buildHeader(
                 firstName: employee?.firstName ?? 'Leo',
-                roleLabel: 'Employe',
+                roleLabel: context.l10n.attendanceRoleEmployee,
                 tasksAsync: tasksAsync,
               ),
               const SizedBox(height: 22),
@@ -134,7 +134,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               const SizedBox(height: 10),
               if (weekAsync.hasError)
                 _buildNoticeGlassCard(
-                  'Semaine indisponible pour l instant. Le pointage reste utilisable.',
+                  context.l10n.attendanceWeekUnavailable,
                   AppColors.warning,
                 ),
               ...week.map(
@@ -224,49 +224,49 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     List<AttendanceLog> sessions,
   ) {
     final choices = isCheckedIn
-        ? const [
+        ? [
             _PunchChoice.firstDeparture,
             _PunchChoice(
               workType: 'break',
-              title: 'Partir en pause',
-              subtitle: 'Ferme la session et marque une pause',
-              loadingLabel: 'Envoi de la pause',
-              successLabel: 'Pause confirmee.',
-              failureLabel: 'Pause non confirmee',
+              title: context.l10n.attendanceBreakTitle,
+              subtitle: context.l10n.attendanceBreakHint,
+              loadingLabel: context.l10n.attendanceBreakLoading,
+              successLabel: context.l10n.attendanceBreakSuccess,
+              failureLabel: context.l10n.attendanceBreakFailure,
             ),
           ]
         : [
             _PunchChoice(
               workType: 'resume',
-              title: 'Reprise',
-              subtitle: 'Reprendre apres une pause ou une sortie',
-              loadingLabel: 'Envoi reprise',
-              successLabel: 'Reprise confirmee.',
-              failureLabel: 'Reprise non confirmee',
+              title: context.l10n.attendanceResumeTitle,
+              subtitle: context.l10n.attendanceResumeHint,
+              loadingLabel: context.l10n.attendanceResumeLoading,
+              successLabel: context.l10n.attendanceResumeSuccess,
+              failureLabel: context.l10n.attendanceResumeFailure,
             ),
-            const _PunchChoice(
+            _PunchChoice(
               workType: 'overtime',
-              title: 'Heures supplementaires',
-              subtitle: 'Demarrer une session d heures supp',
-              loadingLabel: 'Envoi heures supplementaires',
-              successLabel: 'Heures supplementaires demarrees.',
-              failureLabel: 'Heures supplementaires non confirmees',
+              title: context.l10n.attendanceOvertimeTitle,
+              subtitle: context.l10n.attendanceOvertimeHint,
+              loadingLabel: context.l10n.attendanceOvertimeLoading,
+              successLabel: context.l10n.attendanceOvertimeSuccess,
+              failureLabel: context.l10n.attendanceOvertimeFailure,
             ),
-            const _PunchChoice(
+            _PunchChoice(
               workType: 'mission',
-              title: 'Mission',
-              subtitle: 'Temps de travail hors site habituel',
-              loadingLabel: 'Envoi mission',
-              successLabel: 'Mission demarree.',
-              failureLabel: 'Mission non confirmee',
+              title: context.l10n.attendanceMissionTitle,
+              subtitle: context.l10n.attendanceMissionHint,
+              loadingLabel: context.l10n.attendanceMissionLoading,
+              successLabel: context.l10n.attendanceMissionSuccess,
+              failureLabel: context.l10n.attendanceMissionFailure,
             ),
-            const _PunchChoice(
+            _PunchChoice(
               workType: 'travel',
-              title: 'Deplacement',
-              subtitle: 'Temps de deplacement professionnel',
-              loadingLabel: 'Envoi deplacement',
-              successLabel: 'Deplacement demarre.',
-              failureLabel: 'Deplacement non confirme',
+              title: context.l10n.attendanceTravelTitle,
+              subtitle: context.l10n.attendanceTravelHint,
+              loadingLabel: context.l10n.attendanceTravelLoading,
+              successLabel: context.l10n.attendanceTravelSuccess,
+              failureLabel: context.l10n.attendanceTravelFailure,
             ),
           ];
 
@@ -290,10 +290,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Type de pointage',
+                context.l10n.attendanceWorkTypeTitle,
                 style: TextStyle(
                   color: _text,
                   fontSize: 16,
@@ -419,28 +419,28 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               value: 'tasks',
               child: _MenuItem(
                 icon: Icons.task_alt_outlined,
-                label: 'Taches du jour',
+                label: context.l10n.attendanceTasksTitle,
               ),
             ),
             PopupMenuItem(
               value: 'history',
               child: _MenuItem(
                 icon: Icons.history_outlined,
-                label: 'Historique',
+                label: context.l10n.attendanceHistoryTitle,
               ),
             ),
             PopupMenuItem(
               value: 'preferences',
               child: _MenuItem(
                 icon: Icons.tune_outlined,
-                label: 'Preferences',
+                label: context.l10n.attendancePreferencesTitle,
               ),
             ),
             PopupMenuItem(
               value: 'settings',
               child: _MenuItem(
                 icon: Icons.settings_outlined,
-                label: 'Parametres',
+                label: context.l10n.attendanceSettingsTitle,
               ),
             ),
           ],
@@ -467,7 +467,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             loading: () => const _TasksSheetFrame(
               child: _SheetMessage(
                 icon: Icons.sync,
-                title: 'Synchronisation',
+                title: context.l10n.attendanceSyncTitle,
                 body: 'Chargement des taches du jour...',
               ),
             ),
@@ -492,7 +492,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const _SheetHeader(
-                          title: 'Taches du jour',
+                          title: context.l10n.attendanceTasksTitle,
                           subtitle:
                               'Cloturez ce qui est realise avant votre depart.',
                         ),
@@ -560,10 +560,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         const SizedBox(height: 12),
         Text(
           isLoading
-              ? 'Enregistrement en cours...'
+              ? context.l10n.attendanceSaving
               : isCheckedIn
-                  ? 'Appuyez pour enregistrer votre depart'
-                  : 'Appuyez pour enregistrer votre arrivee',
+                  ? context.l10n.attendancePressToCheckout
+                  : context.l10n.attendancePressToCheckin,
           style: const TextStyle(color: _secondary, fontSize: 12),
           textAlign: TextAlign.center,
         ),
@@ -1563,7 +1563,7 @@ class _SessionDetailTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Session ${session.sessionNumber} - ${_workTypeLabel(session.workType)}',
+                  'Session ${session.sessionNumber} - ${_workTypeLabel(context.l10n, session.workType)}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -1611,22 +1611,22 @@ class _SessionDetailTile extends StatelessWidget {
     );
   }
 
-  static String _workTypeLabel(String raw) {
+  static String _workTypeLabel(AppLocalizations l10n, String raw) {
     switch (raw) {
       case 'overtime':
-        return 'Heure supp';
+        return l10n.attendanceOvertimeShort;
       case 'break':
-        return 'Pause';
+        return l10n.attendancePauseLabel;
       case 'resume':
-        return 'Reprise';
+        return context.l10n.attendanceResumeTitle;
       case 'mission':
-        return 'Mission';
+        return context.l10n.attendanceMissionTitle;
       case 'travel':
-        return 'Deplacement';
+        return context.l10n.attendanceTravelTitle;
       case 'training':
-        return 'Formation';
+        return l10n.attendanceTrainingLabel;
       case 'other':
-        return 'Autre';
+        return l10n.attendanceOtherLabel;
       default:
         return 'Normal';
     }
