@@ -4,19 +4,10 @@
 # fait échouer la CI. Ajouter une route ici UNIQUEMENT avec justification
 # (issue de suivi, alias documenté ailleurs, surface hors contrat public).
 # Entrées devenues documentées à purger (issue #3596) : le checker échoue
-# avec --strict-staleness. Régénéré le 2026-08-17 (revue PM, lots 2+3).
+# avec --strict-staleness. Régénéré le 2026-08-17 (revue PM, lots 2-5).
+# Les 10 gaps restants (absence/cabinet/integrations) sont documentés dans
+# la PR #4962 (lot 1) — après merge des deux PRs OpenAPI, coverage 724/724.
 
-
-## ai.php — 9 route(s)
-GET /v1/ai/agent/workflows
-GET /v1/ai/workflows/weekly-report
-POST /v1/ai/actions/{param}/confirm
-POST /v1/ai/actions/{param}/reject
-POST /v1/ai/agent/run
-POST /v1/ai/voice/command
-POST /v1/ai/voice/synthesize
-POST /v1/ai/voice/transcribe
-POST /v1/ai/workflows/prepare-payroll
 
 ## modules/absence.php — 1 route(s)
 GET /v1/absences/{param}/proof
@@ -27,43 +18,9 @@ GET /v1/cabinet/shared/{param}
 GET /v1/cabinet/shares
 POST /v1/cabinet/shares
 
-## modules/hr_extended.php — 7 route(s)
-DELETE /v1/recruitment/applicants/{param}
-DELETE /v1/recruitment/interviews/{param}
-DELETE /v1/recruitment/jobs/{param}
-GET /v1/me/contract
-GET /v1/recruitment/applicants/{param}
-PATCH /v1/recruitment/applicants/{param}/status
-PATCH /v1/recruitment/interviews/{param}/feedback
-
 ## modules/integrations.php — 5 route(s)
 DELETE /v1/calendar/disconnect/{param}
 GET /v1/calendar/connections
 GET /v1/calendar/events
 POST /v1/calendar/connect
 POST /v1/calendar/sync
-
-## modules/marketing.php — 9 route(s)
-DELETE /v1/marketing/posts/{param}
-GET /v1/marketing/posts
-GET /v1/marketing/posts/{param}
-GET /v1/marketing/social-accounts
-PATCH /v1/marketing/posts/{param}
-POST /v1/marketing/posts
-POST /v1/marketing/posts/{param}/publish
-POST /v1/marketing/social-accounts/connect
-POST /v1/marketing/social-accounts/disconnect
-
-## modules/rh.php — 12 route(s)
-DELETE /v1/payrolls/{param}
-GET /v1/notifications/stream
-GET /v1/payrolls/{param}
-GET /v1/schedules/{param}
-GET /v1/tasks/{param}/comments
-PATCH /v1/payrolls/{param}
-PATCH /v1/positions/{param}
-PATCH /v1/schedules/{param}
-PATCH /v1/sites/{param}
-POST /v1/notifications/sse-token
-PUT /v1/payrolls/{param}
-PUT /v1/payrolls/{param}/validate

@@ -15267,6 +15267,238 @@ paths:
         "200": { description: "Liste des paiements partenaires" }
 
   # ── Marketing (Ayrshare / reseaux sociaux) ─────────────────────────────────────
+  /ai/actions/{pendingActionId}/confirm:
+    post:
+      tags: ["AI"]
+      summary: "Confirmer une action IA en attente"
+      parameters:
+        - name: pendingActionId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action exécutée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Feature IA non active (AIFeatureCheck)"
+
+  /ai/actions/{pendingActionId}/reject:
+    post:
+      tags: ["AI"]
+      summary: "Rejeter une action IA en attente"
+      parameters:
+        - name: pendingActionId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action rejetée"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Feature IA non active"
+
+  /ai/voice/transcribe:
+    post:
+      tags: ["AI"]
+      summary: "Transcrire un audio (commande vocale)"
+      responses:
+        "200":
+          description: "Transcription"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/voice/synthesize:
+    post:
+      tags: ["AI"]
+      summary: "Synthétiser un texte en audio"
+      responses:
+        "200":
+          description: "Audio généré"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/voice/command:
+    post:
+      tags: ["AI"]
+      summary: "Exécuter une commande vocale"
+      responses:
+        "200":
+          description: "Résultat de la commande"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/agent/run:
+    post:
+      tags: ["AI"]
+      summary: "Lancer l'agent IA sur une requête"
+      responses:
+        "200":
+          description: "Réponse de l'agent"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/agent/workflows:
+    get:
+      tags: ["AI"]
+      summary: "Lister les workflows d'agent disponibles"
+      responses:
+        "200":
+          description: "Workflows"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/workflows/prepare-payroll:
+    post:
+      tags: ["AI"]
+      summary: "Workflow IA de préparation de paie"
+      responses:
+        "200":
+          description: "Préparation effectuée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /ai/workflows/weekly-report:
+    get:
+      tags: ["AI"]
+      summary: "Rapport hebdomadaire généré par l'IA"
+      responses:
+        "200":
+          description: "Rapport"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/social-accounts:
+    get:
+      tags: ["Marketing"]
+      summary: "Comptes sociaux connectés (alias pluriel de /social-account)"
+      responses:
+        "200":
+          description: "Comptes sociaux"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/social-accounts/connect:
+    post:
+      tags: ["Marketing"]
+      summary: "Connecter un compte social (alias pluriel)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Compte connecté"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/social-accounts/disconnect:
+    post:
+      tags: ["Marketing"]
+      summary: "Déconnecter un compte social (alias pluriel)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Compte déconnecté"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/posts:
+    get:
+      tags: ["Marketing"]
+      summary: "Lister les publications (alias court de /social-posts)"
+      responses:
+        "200":
+          description: "Publications"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Marketing"]
+      summary: "Créer une publication (alias court de /social-posts)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "201":
+          description: "Publication créée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/posts/{socialPost}:
+    get:
+      tags: ["Marketing"]
+      summary: "Détail d'une publication (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Publication"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Marketing"]
+      summary: "Mettre à jour une publication (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Publication mise à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Marketing"]
+      summary: "Supprimer une publication (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Publication supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /marketing/posts/{socialPost}/publish:
+    post:
+      tags: ["Marketing"]
+      summary: "Publier une publication planifiée (alias court)"
+      parameters:
+        - name: socialPost
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Publication envoyée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /marketing/leads:
     post:
       tags: ["Marketing"]
@@ -15607,6 +15839,340 @@ paths:
       responses:
         "200":
           description: "Configuration mise a jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /payrolls/{payroll}:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Détail d'un run de paie"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Run de paie"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Hors société"
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un run de paie (manager)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Run mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour partiellement un run de paie (manager)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Run mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Payroll Engine"]
+      summary: "Supprimer un run de paie (manager)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Run supprimé"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /payrolls/{payroll}/validate:
+    put:
+      tags: ["Payroll Engine"]
+      summary: "Valider un run de paie (manager, même société)"
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Run validé"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+        "404":
+          description: "Hors société"
+
+  /positions/{position}:
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un poste (manager)"
+      parameters:
+        - name: position
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Poste mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /sites/{site}:
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un site (manager)"
+      parameters:
+        - name: site
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Site mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /schedules/{schedule}:
+    get:
+      tags: ["Payroll Engine"]
+      summary: "Détail d'un planning"
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Planning"
+        "401":
+          $ref: "#/components/responses/Error401"
+    patch:
+      tags: ["Payroll Engine"]
+      summary: "Mettre à jour un planning (manager — sécurité #2217)"
+      parameters:
+        - name: schedule
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Planning mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+
+  /notifications/stream:
+    get:
+      tags: ["Notifications"]
+      summary: "Flux SSE temps réel des notifications (employee/manager)"
+      responses:
+        "200":
+          description: "Flux Server-Sent Events"
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/sse-token:
+    post:
+      tags: ["Notifications"]
+      summary: "Émettre un token SSE temporaire pour le flux temps réel"
+      responses:
+        "200":
+          description: "Token SSE"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /tasks/{task}/comments:
+    get:
+      tags: ["Tasks"]
+      summary: "Commentaires d'une tâche (auteur + employés liés)"
+      parameters:
+        - name: task
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Commentaires"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé (hors périmètre)"
+
+  /me/contract:
+    get:
+      tags: ["Me"]
+      summary: "Contrat actif de l'employé connecté"
+      responses:
+        "200":
+          description: "Contrat actif"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          description: "Aucun contrat actif"
+
+  /recruitment/jobs/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une offre d'emploi (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Offre supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/applicants/{id}:
+    get:
+      tags: ["Recruitment"]
+      summary: "Détail d'une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature"
+        "401":
+          $ref: "#/components/responses/Error401"
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer une candidature (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Candidature supprimée"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/applicants/{id}/status:
+    patch:
+      tags: ["Recruitment"]
+      summary: "Changer le statut d'une candidature (principal/rh)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [new, screening, interview, offer, hired, rejected, withdrawn]
+      responses:
+        "200":
+          description: "Statut mis à jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Rôle requis (principal/rh)"
+
+  /recruitment/interviews/{id}/feedback:
+    patch:
+      tags: ["Recruitment"]
+      summary: "Saisir le feedback d'un entretien (le clôture)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [feedback]
+              properties:
+                feedback:
+                  type: string
+                  maxLength: 5000
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        "200":
+          description: "Entretien clôturé (status=completed)"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /recruitment/interviews/{id}:
+    delete:
+      tags: ["Recruitment"]
+      summary: "Supprimer un entretien (manager)"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Entretien supprimé"
         "401":
           $ref: "#/components/responses/Error401"
 
