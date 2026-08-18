@@ -26,6 +26,12 @@ return [
                 'body' => 'The product opens what is useful today first, then keeps Finance, Security, and Leo on a readable path.',
             ],
         ],
+        'leaves' => 'Leave',
+        'my' => [
+            'team' => 'My team',
+        ],
+        'presences' => 'Attendance',
+        'tasks' => 'Tasks',
     ],
     'auth' => [
         'login' => [
