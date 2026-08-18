@@ -782,6 +782,9 @@ String _localizeSaError(BuildContext context, String code) {
   if (code == 'sa.startMonitoringError') {
     return context.l10n.saStartMonitoringError;
   }
+  if (code == 'sa.permissionDenied') {
+    return context.l10n.saPermissionDenied;
+  }
   return code;
 }
 
