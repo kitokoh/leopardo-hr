@@ -166,6 +166,18 @@ export type CopyTree = {
     statusValidated: string;
     statusDraft: string;
     statusCompleted: string;
+    runDraft: string;
+    runCalculated: string;
+    runValidated: string;
+    runLocked: string;
+    runCalculate: string;
+    runValidate: string;
+    runLock: string;
+    runUnlock: string;
+    runConfirmLock: string;
+    runConfirmUnlock: string;
+    runActionError: string;
+    runCancel: string;
     downloadPdf: string;
     viewDetail: string;
     resultsCount: string;
@@ -180,6 +192,12 @@ export type CopyTree = {
     detailDaysWorked: string;
     detailOvertimeHours: string;
     detailSalaryBreakdown: string;
+    salaryDecompTitle: string;
+    salaryMonthly: string;
+    salaryDailyRate: string;
+    salaryHourlyRate: string;
+    salaryCompositionDays: string;
+    salaryCompositionHours: string;
   };
   smartAttendancePage: {
     title: string;
@@ -457,6 +475,16 @@ export type CopyTree = {
   };
   absencesPage: {
     loadError: string;
+    approve: string;
+    reject: string;
+    rejectTitle: string;
+    rejectReasonPlaceholder: string;
+    reasonRequired: string;
+    cancel: string;
+    confirmReject: string;
+    approveSuccess: string;
+    rejectSuccess: string;
+    actionError: string;
   };
   attendancePage: {
     loadError: string;
@@ -493,7 +521,7 @@ const copy: Record<AppLocale, CopyTree> = {
   fr: {
     login: {
       title: 'Connexion a Leopardo RH',
-      subtitle: 'Accedez a votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
+      subtitle: 'Accédez à votre espace RH, suivez vos équipes et pilotez les modules actifs de votre entreprise.',
       clientSpace: 'Espace client',
       heroTitle: 'Un acces RH clair pour chaque manager, chaque pays et chaque équipe.',
       heroCopy: 'Votre portail client reste connecte a l API Leopardo RH, avec permissions, langue et contexte tenant appliques des la connexion.',
@@ -515,7 +543,7 @@ const copy: Record<AppLocale, CopyTree> = {
       demoAccess: 'Tester avec un compte demo',
     accountCreatedFree: 'Compte créé ! Connectez-vous pour accéder à votre espace gratuit.',
     accountCreatedPaid: 'Inscription reçue ! Connectez-vous pour continuer.',
-      demoTitle: 'Choisir un compte demo',
+      demoTitle: 'Choisir un compte démo',
       demoSubtitle: 'Selectionnez un role pour pre-remplir le formulaire, puis lancez la connexion.',
       close: 'Fermer',
       supportCopy: 'Besoin d aide pour recuperer un accès ?',
@@ -634,7 +662,7 @@ const copy: Record<AppLocale, CopyTree> = {
       statPayslips: 'Bulletins',
       tabSlips: 'Bulletins de paie',
       tabRuns: 'Cycles de paie',
-      searchPlaceholder: 'Rechercher par nom ou periode...',
+      searchPlaceholder: 'Rechercher par nom ou période…',
       columnEmployee: 'Employé',
       columnPeriod: 'Période',
       columnGross: 'Brut',
@@ -646,11 +674,23 @@ const copy: Record<AppLocale, CopyTree> = {
       columnTotalGross: 'Total Brut',
       columnTotalNet: 'Total Net',
       loading: 'Chargement...',
-      noPayslips: 'Aucun bulletin trouve.',
+      noPayslips: 'Aucun bulletin trouvé.',
       noRuns: 'Aucun cycle de paie.',
       statusValidated: 'Valide',
       statusDraft: 'Brouillon',
       statusCompleted: 'Termine',
+      runDraft: 'Brouillon',
+      runCalculated: 'Calculé',
+      runValidated: 'Validé',
+      runLocked: 'Verrouillé',
+      runCalculate: 'Calculer',
+      runValidate: 'Valider (RH)',
+      runLock: 'Verrouiller',
+      runUnlock: 'Déverrouiller',
+      runConfirmLock: 'Verrouiller la clôture de ce cycle ?',
+      runConfirmUnlock: 'Déverrouiller la clôture de ce cycle ?',
+      runActionError: "Impossible d'exécuter l'action sur ce cycle de paie.",
+      runCancel: 'Annuler',
       downloadPdf: 'Télécharger PDF',
       viewDetail: 'Voir detail',
       resultsCount: 'resultats',
@@ -660,11 +700,17 @@ const copy: Record<AppLocale, CopyTree> = {
       detailError: 'Detail indisponible pour le moment — affichage des données de la liste.',
       detailDeductions: 'Deductions',
       detailEmployerContributions: 'Charges patronales',
-      detailTotalCost: 'Cout total employeur',
+      detailTotalCost: 'Coût total employeur',
       detailWorkingDays: 'Jours ouvres',
       detailDaysWorked: 'Jours travailles',
       detailOvertimeHours: 'Heures supplementaires',
       detailSalaryBreakdown: 'Composition du salaire',
+      salaryDecompTitle: 'Décomposition du salaire',
+      salaryMonthly: 'Salaire mensuel',
+      salaryDailyRate: 'Taux journalier',
+      salaryHourlyRate: 'Taux horaire',
+      salaryCompositionDays: 'Ce mois : {days} jours × {rate} = {total}',
+      salaryCompositionHours: 'Ce mois : {hours} h × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
@@ -812,11 +858,11 @@ const copy: Record<AppLocale, CopyTree> = {
       subtitle: 'Gerez vos cles API et vos webhooks pour integrer Leopardo RH a vos outils.',
       loadTokensError: 'Impossible de charger les cles API.',
       loadWebhooksError: 'Impossible de charger les webhooks.',
-      createTokenError: 'Impossible de creer la cle API.',
+      createTokenError: 'Impossible de créer la clé API.',
       deleteTokenError: 'Impossible de revoquer la cle API.',
-      createWebhookError: 'Impossible de creer le webhook.',
+      createWebhookError: 'Impossible de créer le webhook.',
       deleteWebhookError: 'Impossible de supprimer le webhook.',
-      updateWebhookError: 'Impossible de mettre a jour le webhook.',
+      updateWebhookError: 'Impossible de mettre à jour le webhook.',
       revokeTokenConfirm: "Revoquer cette cle API ? Les integrations qui l'utilisent cesseront de fonctionner.",
       deleteWebhookConfirm: 'Supprimer cet endpoint webhook ?',
       revealedTokenNotice: 'Cle "{name}" creee — copiez-la maintenant, elle ne sera plus jamais affichee :',
@@ -831,10 +877,10 @@ const copy: Record<AppLocale, CopyTree> = {
       revoke: 'Revoquer',
       tokenNamePlaceholder: 'Nom de la cle (ex: Production)',
       webhooksTitle: 'Webhooks',
-      noWebhooks: 'Aucun endpoint webhook configure.',
+      noWebhooks: 'Aucun endpoint webhook configuré.',
       eventsCount: '{count} evenement(s)',
-      failuresCount: '{count} echec(s)',
-      noFailures: 'aucun echec',
+      failuresCount: '{count} échec(s)',
+      noFailures: 'aucun échec',
       active: 'Actif',
       inactive: 'Inactif',
       triggeredOn: 'Declenche le {date}',
@@ -849,7 +895,7 @@ const copy: Record<AppLocale, CopyTree> = {
       eventsToListenLabel: 'Événements a ecouter',
       cancel: 'Annuler',
       creating: 'Creation...',
-      create: 'Creer',
+      create: 'Créer',
     },
     partnerPage: {
       loading: 'Chargement de votre espace...',
@@ -907,7 +953,7 @@ const copy: Record<AppLocale, CopyTree> = {
       title: 'Pas de connexion Internet',
       body: "Vous etes actuellement hors ligne. Si un Edge node Leopardo est disponible sur votre reseau local, l'application continue de fonctionner normalement.",
       edgeModeTitle: 'Mode Edge actif ?',
-      edgeModeBody: "Accedez a l'interface locale via :",
+      edgeModeBody: "Accédez à l'interface locale via :",
       retry: 'Reessayer',
     },
 
@@ -940,7 +986,19 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'Terminé',
     statusDraft: 'Brouillon',
   },
-  absencesPage: { loadError: 'Impossible de charger les absences.' },
+  absencesPage: {
+    loadError: 'Impossible de charger les absences.',
+    approve: 'Approuver',
+    reject: 'Refuser',
+    rejectTitle: 'Refuser la demande',
+    rejectReasonPlaceholder: 'Motif du refus (obligatoire)',
+    reasonRequired: 'Le motif du refus est obligatoire.',
+    cancel: 'Annuler',
+    confirmReject: 'Confirmer le refus',
+    approveSuccess: 'Demande approuvée.',
+    rejectSuccess: 'Demande refusée.',
+    actionError: "Impossible d'effectuer l'action.",
+  },
   attendancePage: { loadError: 'Impossible de charger le pointage.' },
   socialPage: {
     title: 'Réseaux sociaux',
@@ -1131,6 +1189,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'معتمد',
       statusDraft: 'مسودة',
       statusCompleted: 'مكتمل',
+      runDraft: 'مسودة',
+      runCalculated: 'تم الحساب',
+      runValidated: 'تم الاعتماد',
+      runLocked: 'مقفل',
+      runCalculate: 'احسب',
+      runValidate: 'اعتماد (موارد بشرية)',
+      runLock: 'قفل',
+      runUnlock: 'فتح القفل',
+      runConfirmLock: 'قفل إقفال دورة الرواتب هذه؟',
+      runConfirmUnlock: 'فتح إقفال دورة الرواتب هذه؟',
+      runActionError: 'تعذر تنفيذ الإجراء على دورة الرواتب.',
+      runCancel: 'إلغاء',
       downloadPdf: 'تحميل PDF',
       viewDetail: 'عرض التفاصيل',
       resultsCount: 'نتائج',
@@ -1145,6 +1215,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'أيام العمل الفعلية',
       detailOvertimeHours: 'ساعات العمل الإضافي',
       detailSalaryBreakdown: 'تفاصيل الراتب',
+      salaryDecompTitle: 'تفاصيل الراتب',
+      salaryMonthly: 'الراتب الشهري',
+      salaryDailyRate: 'الأجر اليومي',
+      salaryHourlyRate: 'الأجر بالساعة',
+      salaryCompositionDays: 'هذا الشهر: {days} يومًا × {rate} = {total}',
+      salaryCompositionHours: 'هذا الشهر: {hours} ساعة × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'الحضور الذكي',
@@ -1420,7 +1496,19 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'منتهي',
     statusDraft: 'مسودة',
   },
-  absencesPage: { loadError: 'تعذر تحميل حالات الغياب.' },
+  absencesPage: {
+    loadError: 'تعذر تحميل حالات الغياب.',
+    approve: 'موافقة',
+    reject: 'رفض',
+    rejectTitle: 'رفض الطلب',
+    rejectReasonPlaceholder: 'سبب الرفض (إلزامي)',
+    reasonRequired: 'سبب الرفض إلزامي.',
+    cancel: 'إلغاء',
+    confirmReject: 'تأكيد الرفض',
+    approveSuccess: 'تمت الموافقة على الطلب.',
+    rejectSuccess: 'تم رفض الطلب.',
+    actionError: 'تعذر تنفيذ الإجراء.',
+  },
   attendancePage: { loadError: 'تعذر تحميل الحضور.' },
   socialPage: {
     title: 'وسائل التواصل',
@@ -1611,6 +1699,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'Onaylandi',
       statusDraft: 'Taslak',
       statusCompleted: 'Tamamlandi',
+      runDraft: 'Taslak',
+      runCalculated: 'Hesaplandı',
+      runValidated: 'Onaylandı',
+      runLocked: 'Kilitli',
+      runCalculate: 'Hesapla',
+      runValidate: 'Onayla (İK)',
+      runLock: 'Kilitle',
+      runUnlock: 'Kilidi aç',
+      runConfirmLock: 'Bu maaş döneminin kapanışı kilitlensin mi?',
+      runConfirmUnlock: 'Bu maaş döneminin kapanış kilidi açılsın mı?',
+      runActionError: 'Maaş döneminde işlem gerçekleştirilemedi.',
+      runCancel: 'İptal',
       downloadPdf: 'PDF indir',
       viewDetail: 'Detayi gor',
       resultsCount: 'sonuc',
@@ -1625,6 +1725,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'Filii calisilan gunler',
       detailOvertimeHours: 'Fazla mesai saatleri',
       detailSalaryBreakdown: 'Maas detayi',
+      salaryDecompTitle: 'Maaş dökümü',
+      salaryMonthly: 'Aylık maaş',
+      salaryDailyRate: 'Günlük ücret',
+      salaryHourlyRate: 'Saatlik ücret',
+      salaryCompositionDays: 'Bu ay: {days} gün × {rate} = {total}',
+      salaryCompositionHours: 'Bu ay: {hours} saat × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'Akilli Devam',
@@ -1900,7 +2006,19 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'Sonlandırıldı',
     statusDraft: 'Taslak',
   },
-  absencesPage: { loadError: 'Devamsızlıklar yüklenemedi.' },
+  absencesPage: {
+    loadError: 'Devamsızlıklar yüklenemedi.',
+    approve: 'Onayla',
+    reject: 'Reddet',
+    rejectTitle: 'Talebi reddet',
+    rejectReasonPlaceholder: 'Reddetme nedeni (zorunlu)',
+    reasonRequired: 'Reddetme nedeni zorunludur.',
+    cancel: 'İptal',
+    confirmReject: 'Reddi onayla',
+    approveSuccess: 'Talep onaylandı.',
+    rejectSuccess: 'Talep reddedildi.',
+    actionError: 'İşlem gerçekleştirilemedi.',
+  },
   attendancePage: { loadError: 'Yoklama yüklenemedi.' },
   socialPage: {
     title: 'Sosyal medya',
@@ -2091,6 +2209,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'Validated',
       statusDraft: 'Draft',
       statusCompleted: 'Completed',
+      runDraft: 'Draft',
+      runCalculated: 'Calculated',
+      runValidated: 'Validated',
+      runLocked: 'Locked',
+      runCalculate: 'Calculate',
+      runValidate: 'Validate (HR)',
+      runLock: 'Lock',
+      runUnlock: 'Unlock',
+      runConfirmLock: 'Lock this payroll run closure?',
+      runConfirmUnlock: 'Unlock this payroll run closure?',
+      runActionError: 'Unable to perform this action on the payroll run.',
+      runCancel: 'Cancel',
       downloadPdf: 'Download PDF',
       viewDetail: 'View detail',
       resultsCount: 'results',
@@ -2105,6 +2235,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'Actual days worked',
       detailOvertimeHours: 'Overtime hours',
       detailSalaryBreakdown: 'Salary breakdown',
+      salaryDecompTitle: 'Salary breakdown',
+      salaryMonthly: 'Monthly salary',
+      salaryDailyRate: 'Daily rate',
+      salaryHourlyRate: 'Hourly rate',
+      salaryCompositionDays: 'This month: {days} days × {rate} = {total}',
+      salaryCompositionHours: 'This month: {hours} h × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
@@ -2380,7 +2516,19 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'Terminated',
     statusDraft: 'Draft',
   },
-  absencesPage: { loadError: 'Unable to load absences.' },
+  absencesPage: {
+    loadError: 'Unable to load absences.',
+    approve: 'Approve',
+    reject: 'Reject',
+    rejectTitle: 'Reject request',
+    rejectReasonPlaceholder: 'Reason for rejection (required)',
+    reasonRequired: 'A rejection reason is required.',
+    cancel: 'Cancel',
+    confirmReject: 'Confirm rejection',
+    approveSuccess: 'Request approved.',
+    rejectSuccess: 'Request rejected.',
+    actionError: 'Unable to perform this action.',
+  },
   attendancePage: { loadError: 'Unable to load attendance.' },
   socialPage: {
     title: 'Social media',

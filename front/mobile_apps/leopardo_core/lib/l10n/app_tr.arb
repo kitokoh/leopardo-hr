@@ -10,6 +10,10 @@
   "welcomeStoryFieldBody": "Telefon calisanin ana yuzeyidir. Puantajiniz, izinleriniz ve belgeleriniz burada yasar.",
   "welcomeStoryModulesTitle": "Aktif moduller, gorunur yol haritasi",
   "welcomeStoryModulesBody": "Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar.",
+  "welcomeLeaves": "İzinler",
+  "welcomeMyTeam": "Ekibim",
+  "welcomePresences": "Yoklamalar",
+  "welcomeTasks": "Görevler",
   "login": "Giris yap",
   "employeeInvitationAccess": "Calisan erisimi (davet)",
   "createPersonalAccount": "Kisisel hesap olustur",
@@ -38,7 +42,7 @@
   "commonLanguageVariantsFrCa": "Fransizca (Kanada)",
   "commonLanguageVariantsArSa": "Arapca (Suudi Arabistan)",
   "commonLanguageVariantsArMa": "Arapca (Fas)",
-  "commonLanguageVariantsTrTr": "Turkce (Turkiye)",
+  "commonLanguageVariantsTrTr": "Türkçe (Türkiye)",
   "commonLanguageVariantsEnUs": "Ingilizce (Amerika Birlesik Devletleri)",
   "commonLanguageVariantsEnGb": "Ingilizce (Birlesik Krallik)",
   "commonOr": "veya",
@@ -345,6 +349,16 @@
   "marketingPostcontentplaceholder": "Gönderi içeriği...",
   "attendanceSendingToServer": "{label} sunucuya gönderiliyor...",
   "attendanceRetryAfterFailure": "{label}. Lütfen tekrar deneyin.",
+  "attendanceAbsent": "yok",
+  "attendanceDaySummary": "{date} günü, durum {status}, {range}, {hours}.",
+  "attendanceHourWorked": "çalışılan saat",
+  "attendanceHoursWorked": "çalışılan saatler",
+  "attendanceInProgress": "devam ediyor",
+  "attendanceLate": "geç",
+  "attendanceNoClock": "kayıt yok",
+  "attendanceOnTime": "zamanında",
+  "attendanceOvertime": "Fazla mesai",
+  "attendanceTimeRange": "{from} - {to}",
   "holidaysPageTitle": "Ülkeye göre resmî tatiller",
   "holidaysPageSubtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.",
   "holidaysCountry": "Ülke",
@@ -502,7 +516,6 @@
   "taxSlabsSimulatorTitle": "Etki simülatörü",
   "taxSlabsSimulatorSubtitle": "Brüt maaş girin: hesaplama (katkılar, matrah, dilim başına vergi, net, işveren maliyeti) gerçek maaş motoruyla çalışır — hiçbir şey kaydedilmez.",
   "taxSlabsSimGross": "Brüt maaş",
-  "taxSlabsSimCompare": "Karşılaştırılacak maaş",
   "taxSlabsSimRun": "Simüle et",
   "taxSlabsSimRunning": "Hesaplanıyor…",
   "taxSlabsSimSocial": "Katkılar (çalışan)",
@@ -745,6 +758,8 @@
   "shellLevel": "Seviye:",
   "shellFallbackpollingtitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
   "shellTenantonly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
+  "shellSettings": "Ayarlar",
+  "shellTeam": "Ekip",
   "exportsReportemployees": "Calisanlar",
   "exportsReportemployeesdesc": "Pozisyonlar, sozlesmeler ve departmanlarla tam liste.",
   "exportsReportattendance": "Yoklama",
@@ -993,155 +1008,78 @@
   "trainingDurationplaceholder": "Süre (saat)",
   "trainingMaxparticipantsplaceholder": "Maks. katılımcı",
   "trainingOnline": "Çevrimiçi",
-  "retry": "Yeniden dene",
-  "featureComingSoon": "Özellik yakında",
-  "backToHome": "Ana sayfaya dön",
-  "pageNotFound": "İstenen sayfa bulunamadı veya gezinme başarısız oldu.",
-  "registerCreateAccount": "Hesabınızı oluşturun",
-  "registerFirstName": "Ad",
-  "registerRequired": "Zorunlu",
-  "registerPassword": "Şifre",
-  "registerMinChars": "En az 8 karakter",
-  "registerCreating": "Hesap oluşturuluyor...",
-  "registerSubmit": "Hesabımı oluştur",
-  "accessDeniedTitle": "Erişim reddedildi",
   "accessDeniedBody": "Hesabınız bu uygulama için gerekli Yönetici rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, İK…) veya yöneticinizle iletişime geçin.",
   "accessDeniedLogout": "Çıkış yap",
+  "accessDeniedTitle": "Erişim reddedildi",
   "accessDeniedBodyHr": "Hesabınız bu uygulama için gerekli İK rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, Yönetici…) veya yöneticinizle iletişime geçin.",
-  "evaluationsTitle": "Değerlendirmelerim",
-  "evaluationsEmpty": "Değerlendirme yok",
-  "evaluationsEmptyHint": "Henüz kayıtlı bir değerlendirmeniz yok.",
-  "evaluationPeriod": "Dönem: {period}",
-  "@evaluationPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceOnTime": "zamanında",
-  "attendanceLate": "geç",
-  "attendanceAbsent": "yok",
-  "attendanceInProgress": "devam ediyor",
-  "attendanceNoClock": "kayıt yok",
-  "attendanceTimeRange": "{from} - {to}",
-  "@attendanceTimeRange": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceHourWorked": "çalışılan saat",
-  "attendanceHoursWorked": "çalışılan saatler",
-  "attendanceDaySummary": "{date} günü, durum {status}, {range}, {hours}.",
-  "@attendanceDaySummary": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "range": {
-        "type": "String"
-      },
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionApproved": "Oturum onaylandı ✓",
-  "sessionRejected": "Oturum reddedildi",
-  "pendingSessionsToValidate": "Onaylanacak",
-  "pendingSessionsUpToDate": "Her şey güncel",
-  "pendingSessionsEmpty": "Onay bekleyen GPS oturumu yok.",
-  "employeeNumber": "Çalışan #{id}",
-  "@employeeNumber": {
-    "placeholders": {
-      "id": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionEntryAt": "Giriş: {time}",
-  "@sessionEntryAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionsToValidate": "Onaylanacak oturumlar",
-  "errorPrefix": "Hata: {message}",
-  "@errorPrefix": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "saDashboardTitle": "GPS yoklama — ekip paneli",
-  "saDetected": "Algılanan",
-  "saApproved": "Onaylanan",
-  "saRejected": "Reddedilen",
-  "saRecentSessions": "Son oturumlar",
-  "saForced": "Zorunlu",
-  "saPresenceInProgress": "{time} itibarıyla devam eden katılım",
-  "@saPresenceInProgress": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "saGpsZoneNotConfigured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı.",
-  "saDisableAutoGps": "Otomatik GPS'i kapat",
-  "saStatusApproved": "Onaylandı",
-  "saStatusDetected": "Algılandı",
-  "saStatusRejected": "Reddedildi",
-  "saStatusCancelled": "İptal edildi",
-  "saStatusPending": "Onay bekleniyor",
-  "saEnableAutoGps": "Otomatik GPS'i aç",
-  "attendanceOvertime": "Fazla mesai",
-  "approvalsUpToDate": "Her şey güncel",
-  "approvalsEmpty": "Bekleyen onay yok.",
-  "saConfigLoadError": "Yapılandırma yüklenemedi.\n{error}",
-  "@saConfigLoadError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "ampAutoDetectDesc": "Şirket bölgesine girdiğinizde varlığınız otomatik algılanır. Sizden hiçbir işlem gerekmez.",
-  "ampRecommended": "Önerilen",
-  "ampQrScanDesc": "Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın.",
   "ampManualDesc": "Yoklama ekranındaki Giriş ve Çıkış butonlarına basarak manuel kayıt yapın.",
+  "ampModeTitle": "Kayıt modu",
+  "ampQrScanDesc": "Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın.",
+  "ampRecommended": "Önerilen",
   "ampSaveError": "Tercihiniz kaydedilemedi. Bağlantınızı kontrol edin.",
   "ampTitle": "Her gün katılımınızı nasıl kaydetmek istediğinizi seçin.",
-  "ampModeTitle": "Kayıt modu",
-  "back": "Geri",
-  "refresh": "Yenile",
-  "saSessionsLoadError": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin.",
-  "saStartMonitoringError": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin.",
-  "shellTeam": "Ekip",
-  "shellSettings": "Ayarlar",
-  "homeCompleteOnboarding": "İşe alıştırmamı tamamla",
-  "homeOnboardingHint": "Çalışma alanınızı birkaç adımda kurun.",
-  "welcomeMyTeam": "Ekibim",
-  "welcomePresences": "Yoklamalar",
-  "welcomeTasks": "Görevler",
-  "welcomeLeaves": "İzinler",
-  "monthlySummaryLoading": "Aylık özet yükleniyor...",
-  "orgChartEmpty": "Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.",
-  "orgChartCollapse": "Daralt",
-  "orgChartExpand": "Genişlet",
-  "errorUnexpected": "Bir hata oluştu",
   "approvalApproved": "Talep onaylandı",
   "approvalRejected": "Talep reddedildi",
-  "saPermissionDenied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin."
+  "approvalsEmpty": "Bekleyen onay yok.",
+  "approvalsUpToDate": "Her şey güncel",
+  "back": "Geri",
+"notificationsMarkAllReadError": "Bildirimler okundu olarak işaretlenemedi.",
+"notificationsMarkReadError": "Bildirim okundu olarak işaretlenemedi.",
+"notificationsDeleteError": "Bildirim silinemedi.",
+"notificationsDeleted": "Bildirim silindi.",
+"attendanceFutureTimeError": "Gelecekteki bir saat girilemez",
+  "employeeNumber": "Çalışan #{id}",
+  "errorPrefix": "Hata: {message}",
+  "errorUnexpected": "Bir hata oluştu",
+  "evaluationPeriod": "Dönem: {period}",
+  "evaluationsEmpty": "Değerlendirme yok",
+  "evaluationsTitle": "Değerlendirmelerim",
+  "evaluationsEmptyHint": "Henüz kayıtlı bir değerlendirmeniz yok.",
+  "featureComingSoon": "Özellik yakında",
+  "homeCompleteOnboarding": "İşe alıştırmamı tamamla",
+  "homeOnboardingHint": "Çalışma alanınızı birkaç adımda kurun.",
+  "monthlySummaryLoading": "Aylık özet yükleniyor...",
+  "orgChartCollapse": "Daralt",
+  "orgChartEmpty": "Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.",
+  "orgChartExpand": "Genişlet",
+  "pageNotFound": "İstenen sayfa bulunamadı veya gezinme başarısız oldu.",
+  "pendingSessionsEmpty": "Onay bekleyen GPS oturumu yok.",
+  "pendingSessionsToValidate": "Onaylanacak",
+  "pendingSessionsUpToDate": "Her şey güncel",
+  "refresh": "Yenile",
+  "registerCreateAccount": "Hesabınızı oluşturun",
+  "registerCreating": "Hesap oluşturuluyor...",
+  "registerFirstName": "Ad",
+  "registerMinChars": "En az 8 karakter",
+  "registerPassword": "Şifre",
+  "registerRequired": "Zorunlu",
+  "registerSubmit": "Hesabımı oluştur",
+  "retry": "Yeniden dene",
+  "settingsJourneyLoadError": "Yolculuğunuz yüklenemedi.",
+  "settingsStatsLoadError": "İstatistikler yüklenemedi.",
+  "saApproved": "Onaylanan",
+  "saConfigLoadError": "Yapılandırma yüklenemedi.\n{error}",
+  "saDashboardTitle": "GPS yoklama — ekip paneli",
+  "saDetected": "Algılanan",
+  "saDisableAutoGps": "Otomatik GPS'i kapat",
+  "saEnableAutoGps": "Otomatik GPS'i aç",
+  "saForced": "Zorunlu",
+  "saGpsZoneNotConfigured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı.",
+  "saPermissionDenied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin.",
+  "saPresenceInProgress": "{time} itibarıyla devam eden katılım",
+  "saRecentSessions": "Son oturumlar",
+  "saRejected": "Reddedilen",
+  "saSessionsLoadError": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin.",
+  "saStartMonitoringError": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin.",
+  "saStatusApproved": "Onaylandı",
+  "saStatusCancelled": "İptal edildi",
+  "saStatusDetected": "Algılandı",
+  "saStatusPending": "Onay bekleniyor",
+  "saStatusRejected": "Reddedildi",
+  "sessionApproved": "Oturum onaylandı ✓",
+  "sessionEntryAt": "Giriş: {time}",
+  "sessionRejected": "Oturum reddedildi",
+  "sessionsToValidate": "Onaylanacak oturumlar",
+  "backToHome": "Ana sayfaya dön"
 }

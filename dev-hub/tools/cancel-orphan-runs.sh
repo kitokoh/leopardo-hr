@@ -13,7 +13,11 @@
 #
 # Issue #2540 : option `--superseded` — en plus des orphelins, annule les runs
 # `queued` SUPERSÉDÉS : pour chaque couple (branche, workflow), tous les runs
-# queued sauf le plus récent sont annulés. Complète le `concurrency` natif des
+# queued sauf le plus récent sont annulés.
+# Issue #5032 : garde appliquée comme en mode orphan — les runs de `main`, de
+# toute branche présente sur le remote et de toute tête de PR ouverte ne sont
+# JAMAIS annulés ; seuls les doublons supersédés des branches supprimées (ou
+# sans PR) le sont. Complète le `concurrency` natif des
 # workflows (qui n'annule les runs que lorsque le NOUVEAU run démarre — les
 # runs queued d'un push précédent restent sinon dans la file).
 #
@@ -53,14 +57,19 @@ strip_ansi() {
 # jamais annulés ici.
 DEFAULT_BRANCH=$(gh api "repos/${REPO}" | strip_ansi | jq -r '.default_branch')
 
-# Seule la branche par défaut et les têtes de PR ouvertes sont considérées
-# comme actives. Une branche distante sans PR peut être abandonnée et ne doit
-# pas garder des runs queued/in_progress indéfiniment.
+# 1. Branches vivantes : existent encore sur le remote.
+mapfile -t LIVE_BRANCHES < <(
+    gh api "repos/${REPO}/branches?per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].name'
+)
+# 2. Têtes de branches des PRs ouvertes (une PR ouverte = travail en cours,
+# ses runs doivent tourner même si la branche a été supprimée par erreur).
 mapfile -t OPEN_PR_HEADS < <(
     gh api "repos/${REPO}/pulls?state=open&per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].head.ref'
 )
 
-PROTECTED_BRANCHES=$(printf '%s\n%s\n' "${DEFAULT_BRANCH}" "${OPEN_PR_HEADS[@]}" | sort -u)
+# Branches présentes sur le remote = branches vivantes (même sans PR ouverte)
+# et têtes de PR ouvertes : toutes restent protégées en mode --superseded.
+PROTECTED_BRANCHES=$(printf '%s\n%s\n%s\n' "${DEFAULT_BRANCH}" "${LIVE_BRANCHES[@]}" "${OPEN_PR_HEADS[@]}" | sort -u)
 
 is_protected() {
   local branch="$1"
@@ -96,9 +105,7 @@ for STATUS in queued pending in_progress; do
 done
 
 # Issue #2540 — runs QUEUED supersédés : pour chaque (branche, workflow),
-# tous les runs queued sauf le plus récent. Cette règle s’applique aussi à main
-# afin de supprimer les doublons E2E/ZAP du même déploiement ; le run récent
-# reste toujours conservé.
+# tous les runs queued sauf le plus récent. Ne touche jamais main.
 SUPERSEDED_CANCELLED=0
 if [[ "${SUPERSEDED}" -eq 1 ]]; then
   # [run_id, branch, workflow_name, created_at] pour les runs queued.
@@ -117,17 +124,22 @@ if [[ "${SUPERSEDED}" -eq 1 ]]; then
   done < <(
     gh api "repos/${REPO}/actions/runs?status=queued&per_page=100" --paginate \
       | strip_ansi \
-      | jq -s -r 'map(.workflow_runs[])[] | [.id, .head_branch, .name, .created_at] | @tsv'
+      | jq -s -r 'map(.workflow_runs[])[] | select(.head_branch != "main") | [.id, .head_branch, .name, .created_at] | @tsv'
   )
   for run_id in "${!RUN_BRANCH[@]}"; do
     branch="${RUN_BRANCH["${run_id}"]}"
     wf="${RUN_WF["${run_id}"]}"
     key="${branch}\u0001${wf}"
     if [[ "${RUN_TS["${run_id}"]}" != "${NEWEST_TS["${key}"]}" ]]; then
-      # Garde : le run le plus récent de chaque couple branche/workflow reste actif,
-      # y compris sur main ; seuls les doublons plus anciens sont annulés.
+      # Garde #5032 : ne jamais annuler les runs d'une branche vivante (main,
+      # branche distante présente, tête de PR ouverte) — la même règle que le
+      # mode orphan. Seuls les doublons plus anciens des branches supprimées /
+      # sans PR sont annulés ; le run le plus récent reste toujours conservé.
+      if is_protected "${branch}"; then
+        continue
+      fi
       SUPERSEDED_CANCELLED=$((SUPERSEDED_CANCELLED + 1))
-      echo "superseded queued run ${run_id} (branch '${branch}', workflow '${wf}')"
+      echo "superseded queued orphan run ${run_id} (branch '${branch}', workflow '${wf}')"
       if [[ "${DRY_RUN}" -eq 0 ]]; then
         gh api -X POST "repos/${REPO}/actions/runs/${run_id}/cancel" --silent || true
       fi

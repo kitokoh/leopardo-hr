@@ -176,7 +176,7 @@ export default function ContractsPage() {
               {loading ? (
                 <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Chargement des contrats...</td></tr>
               ) : filtered.length === 0 ? (
-                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Aucun contrat trouve.</td></tr>
+                <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">Aucun contrat trouvé.</td></tr>
               ) : filtered.map(c => (
                 <tr key={c.id} className="transition-colors hover:bg-transparent/60">
                   <td className="px-6 py-4 font-bold text-slate-950">{c.employee_name}</td>

@@ -10,6 +10,10 @@
   "welcomeStoryFieldBody": "الهاتف هو الواجهة الاساسية للموظف. الحضور، الغيابات، والمستندات كلها هنا.",
   "welcomeStoryModulesTitle": "وحدات نشطة وخارطة طريق واضحة",
   "welcomeStoryModulesBody": "يفتح المنتج اولا ما يفيد اليوم، ثم يحافظ على مسار واضح للمالية، الامان، وليو.",
+  "welcomeLeaves": "الإجازات",
+  "welcomeMyTeam": "فريقي",
+  "welcomePresences": "الحضور",
+  "welcomeTasks": "المهام",
   "login": "تسجيل الدخول",
   "employeeInvitationAccess": "دخول الموظف (بدعوة)",
   "createPersonalAccount": "انشاء حساب شخصي",
@@ -345,6 +349,16 @@
   "marketingPostcontentplaceholder": "محتوى المنشور...",
   "attendanceSendingToServer": "جار إرسال {label} إلى الخادم...",
   "attendanceRetryAfterFailure": "{label}. حاول مرة أخرى.",
+  "attendanceAbsent": "غائب",
+  "attendanceDaySummary": "يوم {date}، الحالة {status}، {range}، {hours}.",
+  "attendanceHourWorked": "ساعة عمل",
+  "attendanceHoursWorked": "ساعات عمل",
+  "attendanceInProgress": "قيد التقدم",
+  "attendanceLate": "متأخر",
+  "attendanceNoClock": "لا يوجد تسجيل حضور",
+  "attendanceOnTime": "في الموعد",
+  "attendanceOvertime": "ساعات إضافية",
+  "attendanceTimeRange": "من {from} إلى {to}",
   "holidaysPageTitle": "الأعياد الرسمية حسب البلد",
   "holidaysPageSubtitle": "تقويم الأعياد الذي يستخدمه محرك الرواتب لحساب أيام العمل الفعلية. الأعياد الثابتة (1811) والأعياد الإسلامية المتحركة (1812) تُغذي كشوف رواتب جميع البلدان المعنية تلقائياً.",
   "holidaysCountry": "البلد",
@@ -502,7 +516,6 @@
   "taxSlabsSimulatorTitle": "محاكي الأثر",
   "taxSlabsSimulatorSubtitle": "أدخل الراتب الإجمالي: الحساب (الاشتراكات، الأساس، الضريبة لكل شريحة، الصافي، تكلفة صاحب العمل) ينفذه محرك الرواتب الفعلي — دون حفظ.",
   "taxSlabsSimGross": "الراتب الإجمالي",
-  "taxSlabsSimCompare": "راتب للمقارنة",
   "taxSlabsSimRun": "محاكاة",
   "taxSlabsSimRunning": "جارٍ الحساب…",
   "taxSlabsSimSocial": "الاشتراكات (الموظف)",
@@ -745,6 +758,8 @@
   "shellLevel": "المستوى:",
   "shellFallbackpollingtitle": "الإشعارات عبر الاستطلاع الاحتياطي (الدفع غير متاح)",
   "shellTenantonly": "ميزة المؤسسات — مخصصة لمساحات العملاء",
+  "shellSettings": "الإعدادات",
+  "shellTeam": "الفريق",
   "exportsReportemployees": "الموظفون",
   "exportsReportemployeesdesc": "قائمة كاملة بالمناصب والعقود والأقسام.",
   "exportsReportattendance": "تسجيل الحضور",
@@ -993,155 +1008,78 @@
   "trainingDurationplaceholder": "المدة (ساعة)",
   "trainingMaxparticipantsplaceholder": "الحد الأقصى للمشاركين",
   "trainingOnline": "عبر الإنترنت",
-  "retry": "إعادة المحاولة",
-  "featureComingSoon": "الميزة قريبًا",
-  "backToHome": "العودة إلى الرئيسية",
-  "pageNotFound": "الصفحة المطلوبة غير موجودة أو فشل التنقل.",
-  "registerCreateAccount": "أنشئ حسابك",
-  "registerFirstName": "الاسم الأول",
-  "registerRequired": "مطلوب",
-  "registerPassword": "كلمة المرور",
-  "registerMinChars": "8 أحرف على الأقل",
-  "registerCreating": "جارٍ إنشاء الحساب...",
-  "registerSubmit": "أنشئ حسابي",
-  "accessDeniedTitle": "تم رفض الوصول",
   "accessDeniedBody": "لا يملك حسابك دور المدير المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، موارد بشرية…) أو تواصل مع المسؤول.",
   "accessDeniedLogout": "تسجيل الخروج",
+  "accessDeniedTitle": "تم رفض الوصول",
   "accessDeniedBodyHr": "لا يملك حسابك دور الموارد البشرية المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، مدير…) أو تواصل مع المسؤول.",
-  "evaluationsTitle": "تقييماتي",
-  "evaluationsEmpty": "لا توجد تقييمات",
-  "evaluationsEmptyHint": "ليس لديك أي تقييم مسجل بعد.",
-  "evaluationPeriod": "الفترة: {period}",
-  "@evaluationPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceOnTime": "في الموعد",
-  "attendanceLate": "متأخر",
-  "attendanceAbsent": "غائب",
-  "attendanceInProgress": "قيد التقدم",
-  "attendanceNoClock": "لا يوجد تسجيل حضور",
-  "attendanceTimeRange": "من {from} إلى {to}",
-  "@attendanceTimeRange": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceHourWorked": "ساعة عمل",
-  "attendanceHoursWorked": "ساعات عمل",
-  "attendanceDaySummary": "يوم {date}، الحالة {status}، {range}، {hours}.",
-  "@attendanceDaySummary": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "range": {
-        "type": "String"
-      },
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionApproved": "تمت الموافقة على الجلسة ✓",
-  "sessionRejected": "تم رفض الجلسة",
-  "pendingSessionsToValidate": "للموافقة",
-  "pendingSessionsUpToDate": "كل شيء محدث",
-  "pendingSessionsEmpty": "لا توجد جلسة GPS بانتظار الموافقة.",
-  "employeeNumber": "الموظف #{id}",
-  "@employeeNumber": {
-    "placeholders": {
-      "id": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionEntryAt": "الدخول: {time}",
-  "@sessionEntryAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionsToValidate": "جلسات للموافقة",
-  "errorPrefix": "خطأ: {message}",
-  "@errorPrefix": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "saDashboardTitle": "حضور GPS — لوحة تحكم الفريق",
-  "saDetected": "تم الكشف",
-  "saApproved": "تمت الموافقة",
-  "saRejected": "مرفوضة",
-  "saRecentSessions": "الجلسات الأخيرة",
-  "saForced": "مفروض",
-  "saPresenceInProgress": "حضور قيد التقدم منذ {time}",
-  "@saPresenceInProgress": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "saGpsZoneNotConfigured": "لم يتم إعداد منطقة GPS لشركتك بعد.",
-  "saDisableAutoGps": "تعطيل GPS التلقائي",
-  "saStatusApproved": "تمت الموافقة",
-  "saStatusDetected": "تم الكشف",
-  "saStatusRejected": "مرفوضة",
-  "saStatusCancelled": "ملغاة",
-  "saStatusPending": "قيد التحقق",
-  "saEnableAutoGps": "تفعيل GPS التلقائي",
-  "attendanceOvertime": "ساعات إضافية",
-  "approvalsUpToDate": "كل شيء محدث",
-  "approvalsEmpty": "لا توجد موافقات معلقة.",
-  "saConfigLoadError": "تعذر تحميل الإعدادات.\n{error}",
-  "@saConfigLoadError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "ampAutoDetectDesc": "يتم اكتشاف حضورك تلقائيًا عند دخولك منطقة الشركة. لا حاجة لأي إجراء منك.",
-  "ampRecommended": "موصى به",
-  "ampQrScanDesc": "امسح رمز QR المعروض عند مدخل الشركة لتسجيل دخولك وخروجك.",
   "ampManualDesc": "سجل يدويًا بالضغط على زرّي الوصول والمغادرة في شاشة الحضور.",
+  "ampModeTitle": "وضع التسجيل",
+  "ampQrScanDesc": "امسح رمز QR المعروض عند مدخل الشركة لتسجيل دخولك وخروجك.",
+  "ampRecommended": "موصى به",
   "ampSaveError": "تعذر حفظ تفضيلاتك. تحقق من اتصالك.",
   "ampTitle": "اختر كيف تريد تسجيل حضورك كل يوم.",
-  "ampModeTitle": "وضع التسجيل",
-  "back": "رجوع",
-  "refresh": "تحديث",
-  "saSessionsLoadError": "تعذر تحميل جلسات GPS. تحقق من اتصالك.",
-  "saStartMonitoringError": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة.",
-  "shellTeam": "الفريق",
-  "shellSettings": "الإعدادات",
-  "homeCompleteOnboarding": "إكمال تأهيلي",
-  "homeOnboardingHint": "هيئ مساحة عملك في بضع خطوات.",
-  "welcomeMyTeam": "فريقي",
-  "welcomePresences": "الحضور",
-  "welcomeTasks": "المهام",
-  "welcomeLeaves": "الإجازات",
-  "monthlySummaryLoading": "جارٍ تحميل الملخص الشهري...",
-  "orgChartEmpty": "سيتوفر الهيكل التنظيمي بمجرد إعداد الموظفين.",
-  "orgChartCollapse": "طي",
-  "orgChartExpand": "توسيع",
-  "errorUnexpected": "حدث خطأ",
   "approvalApproved": "تمت الموافقة على الطلب",
   "approvalRejected": "تم رفض الطلب",
-  "saPermissionDenied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة."
+  "approvalsEmpty": "لا توجد موافقات معلقة.",
+  "approvalsUpToDate": "كل شيء محدث",
+  "back": "رجوع",
+"notificationsMarkAllReadError": "تعذر وضع علامة مقروء على جميع الإشعارات.",
+"notificationsMarkReadError": "تعذر وضع علامة مقروء على الإشعار.",
+"notificationsDeleteError": "تعذر حذف الإشعار.",
+"notificationsDeleted": "تم حذف الإشعار.",
+"attendanceFutureTimeError": "لا يمكن إدخال وقت في المستقبل",
+  "employeeNumber": "الموظف #{id}",
+  "errorPrefix": "خطأ: {message}",
+  "errorUnexpected": "حدث خطأ",
+  "evaluationPeriod": "الفترة: {period}",
+  "evaluationsEmpty": "لا توجد تقييمات",
+  "evaluationsTitle": "تقييماتي",
+  "evaluationsEmptyHint": "ليس لديك أي تقييم مسجل بعد.",
+  "featureComingSoon": "الميزة قريبًا",
+  "homeCompleteOnboarding": "إكمال تأهيلي",
+  "homeOnboardingHint": "هيئ مساحة عملك في بضع خطوات.",
+  "monthlySummaryLoading": "جارٍ تحميل الملخص الشهري...",
+  "orgChartCollapse": "طي",
+  "orgChartEmpty": "سيتوفر الهيكل التنظيمي بمجرد إعداد الموظفين.",
+  "orgChartExpand": "توسيع",
+  "pageNotFound": "الصفحة المطلوبة غير موجودة أو فشل التنقل.",
+  "pendingSessionsEmpty": "لا توجد جلسة GPS بانتظار الموافقة.",
+  "pendingSessionsToValidate": "للموافقة",
+  "pendingSessionsUpToDate": "كل شيء محدث",
+  "refresh": "تحديث",
+  "registerCreateAccount": "أنشئ حسابك",
+  "registerCreating": "جارٍ إنشاء الحساب...",
+  "registerFirstName": "الاسم الأول",
+  "registerMinChars": "8 أحرف على الأقل",
+  "registerPassword": "كلمة المرور",
+  "registerRequired": "مطلوب",
+  "registerSubmit": "أنشئ حسابي",
+  "retry": "إعادة المحاولة",
+  "settingsJourneyLoadError": "تعذر تحميل مسارك.",
+  "settingsStatsLoadError": "تعذر تحميل الإحصائيات.",
+  "saApproved": "تمت الموافقة",
+  "saConfigLoadError": "تعذر تحميل الإعدادات.\n{error}",
+  "saDashboardTitle": "حضور GPS — لوحة تحكم الفريق",
+  "saDetected": "تم الكشف",
+  "saDisableAutoGps": "تعطيل GPS التلقائي",
+  "saEnableAutoGps": "تفعيل GPS التلقائي",
+  "saForced": "مفروض",
+  "saGpsZoneNotConfigured": "لم يتم إعداد منطقة GPS لشركتك بعد.",
+  "saPermissionDenied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.",
+  "saPresenceInProgress": "حضور قيد التقدم منذ {time}",
+  "saRecentSessions": "الجلسات الأخيرة",
+  "saRejected": "مرفوضة",
+  "saSessionsLoadError": "تعذر تحميل جلسات GPS. تحقق من اتصالك.",
+  "saStartMonitoringError": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة.",
+  "saStatusApproved": "تمت الموافقة",
+  "saStatusCancelled": "ملغاة",
+  "saStatusDetected": "تم الكشف",
+  "saStatusPending": "قيد التحقق",
+  "saStatusRejected": "مرفوضة",
+  "sessionApproved": "تمت الموافقة على الجلسة ✓",
+  "sessionEntryAt": "الدخول: {time}",
+  "sessionRejected": "تم رفض الجلسة",
+  "sessionsToValidate": "جلسات للموافقة",
+  "backToHome": "العودة إلى الرئيسية"
 }

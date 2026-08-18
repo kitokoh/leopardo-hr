@@ -3081,6 +3081,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retry => 'إعادة المحاولة';
 
   @override
+  String get settingsJourneyLoadError => 'تعذر تحميل مسارك.';
+
+  @override
+  String get settingsStatsLoadError => 'تعذر تحميل الإحصائيات.';
+
+  @override
   String get featureComingSoon => 'الميزة قريبًا';
 
   @override
@@ -3290,6 +3296,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get back => 'رجوع';
+  @override
+  String get notificationsMarkAllReadError => 'تعذر وضع علامة مقروء على جميع الإشعارات.';
+
+  @override
+  String get notificationsMarkReadError => 'تعذر وضع علامة مقروء على الإشعار.';
+
+  @override
+  String get notificationsDeleteError => 'تعذر حذف الإشعار.';
+
+  @override
+  String get notificationsDeleted => 'تم حذف الإشعار.';
+
+  @override
+  String get attendanceFutureTimeError => 'لا يمكن إدخال وقت في المستقبل';
 
   @override
   String get refresh => 'تحديث';

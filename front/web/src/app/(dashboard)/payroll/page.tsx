@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo, useCallback, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
-import { apiFetch } from '@/lib/api-client';
+import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
 import ComplianceBadge, { type ComplianceBlock } from '@/components/payroll/ComplianceBadge';
 import { Button } from '@/components/ui/Button';
@@ -54,6 +54,58 @@ export default function PayrollPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [tab, setTab] = useState<'slips' | 'runs'>('slips');
   const itemsPerPage = 10;
+
+  // #5017 (FLOW 6 / EXIG-37) — workflow de clôture : préparer → calculer →
+  // valider RH → verrouiller (comptable).
+  const [actingRun, setActingRun] = useState<number | null>(null);
+  const [runFeedback, setRunFeedback] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ run: PayrollRun; action: 'lock' | 'unlock' } | null>(null);
+
+  const runAction = async (run: PayrollRun, action: 'calculate' | 'validate' | 'lock' | 'unlock') => {
+    setActingRun(run.id);
+    setRunFeedback(null);
+    try {
+      await apiFetch(`/payroll-runs/${run.id}/${action}`, { method: 'POST' });
+      setConfirmAction(null);
+      const res = await apiFetch('/payroll-runs').then(r => r.json()).catch(() => ({ data: [] }));
+      setRuns(res.data || []);
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : labels.runActionError;
+      setRunFeedback({ kind: 'error', text: msg });
+    } finally {
+      setActingRun(null);
+    }
+  };
+
+  const runStatusLabel = (status: string) => {
+    switch (status) {
+      case 'draft':
+      case 'calculating':
+      case 'processing':
+        return labels.runDraft;
+      case 'calculated':
+        return labels.runCalculated;
+      case 'validated':
+        return labels.runValidated;
+      case 'locked':
+        return labels.runLocked;
+      case 'paid':
+      case 'completed':
+        return labels.statusCompleted;
+      default:
+        return status;
+    }
+  };
+
+  const runStatusTone = (status: string) => {
+    if (status === 'locked' || status === 'paid' || status === 'completed') {
+      return 'bg-emerald-50 text-emerald-700';
+    }
+    if (status === 'validated' || status === 'calculated') {
+      return 'bg-sky-50 text-sky-700';
+    }
+    return 'bg-amber-50 text-amber-700';
+  };
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -264,41 +316,110 @@ export default function PayrollPage() {
       )}
 
       {tab === 'runs' && (
-        <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-app-border bg-transparent/50">
-                  <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
-                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployees}</th>
-                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalGross}</th>
-                  <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalNet}</th>
-                  <th className="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-app-border">
-                {loading ? (
-                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{labels.loading}</td></tr>
-                ) : runs.length === 0 ? (
-                  <tr><td colSpan={5} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noRuns}</td></tr>
-                ) : runs.map(run => (
-                  <tr key={run.id} className="transition-colors hover:bg-transparent/60">
-                    <td className="px-6 py-4 font-bold text-slate-950">{run.period}</td>
-                    <td className="px-4 py-4 text-right text-slate-600">{run.employee_count}</td>
-                    <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(run.total_gross)}</td>
-                    <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(run.total_net)}</td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${run.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
-                        {run.status === 'completed' ? labels.statusCompleted : run.status}
-                      </span>
-                    </td>
+        <>
+          {runFeedback ? (
+            <div className={`mb-4 rounded-2xl border px-4 py-3 text-sm ${
+              runFeedback.kind === 'success'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                : 'border-red-200 bg-red-50 text-red-700'
+            }`}>
+              {runFeedback.text}
+            </div>
+          ) : null}
+
+          <section className="overflow-hidden rounded-3xl border border-app-border bg-white shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-app-border bg-transparent/50">
+                    <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnPeriod}</th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnEmployees}</th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalGross}</th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnTotalNet}</th>
+                    <th className="px-6 py-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnStatus}</th>
+                    <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-500">{labels.columnActions}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody className="divide-y divide-app-border">
+                  {loading ? (
+                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.loading}</td></tr>
+                  ) : runs.length === 0 ? (
+                    <tr><td colSpan={6} className="px-6 py-10 text-center text-sm text-slate-500">{labels.noRuns}</td></tr>
+                  ) : runs.map(run => (
+                    <tr key={run.id} className="transition-colors hover:bg-transparent/60">
+                      <td className="px-6 py-4 font-bold text-slate-950">{run.period}</td>
+                      <td className="px-4 py-4 text-right text-slate-600">{run.employee_count}</td>
+                      <td className="px-4 py-4 text-right tabular-nums text-slate-900">{formatCurrency(run.total_gross)}</td>
+                      <td className="px-4 py-4 text-right tabular-nums font-bold text-emerald-600">{formatCurrency(run.total_net)}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${runStatusTone(run.status)}`}>
+                          {runStatusLabel(run.status)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {(run.status === 'draft' || run.status === 'calculating' || run.status === 'processing' || run.status === 'error') && (
+                            <Button variant="outline" size="sm" disabled={actingRun === run.id} onClick={() => void runAction(run, 'calculate')}>
+                              {labels.runCalculate}
+                            </Button>
+                          )}
+                          {run.status === 'calculated' && (
+                            <Button variant="outline" size="sm" disabled={actingRun === run.id} onClick={() => void runAction(run, 'validate')}>
+                              {labels.runValidate}
+                            </Button>
+                          )}
+                          {run.status === 'validated' && (
+                            <Button variant="outline" size="sm" disabled={actingRun === run.id} onClick={() => setConfirmAction({ run, action: 'lock' })}>
+                              {labels.runLock}
+                            </Button>
+                          )}
+                          {run.status === 'locked' && (
+                            <Button variant="ghost" size="sm" disabled={actingRun === run.id} onClick={() => setConfirmAction({ run, action: 'unlock' })}>
+                              {labels.runUnlock}
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </>
       )}
+
+      {confirmAction ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="w-full max-w-sm rounded-3xl border border-app-border bg-white p-6 shadow-xl">
+            <h3 className="text-base font-bold text-slate-950">
+              {confirmAction.action === 'lock' ? labels.runConfirmLock : labels.runConfirmUnlock}
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">
+              {labels.columnPeriod} : {confirmAction.run.period}
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmAction(null)}
+                className="rounded-full bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-200"
+              >
+                {labels.runCancel}
+              </button>
+              <button
+                type="button"
+                disabled={actingRun === confirmAction.run.id}
+                onClick={() => void runAction(confirmAction.run, confirmAction.action)}
+                className={`rounded-full px-4 py-2 text-xs font-bold text-white transition disabled:opacity-50 ${
+                  confirmAction.action === 'lock' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-700 hover:bg-slate-800'
+                }`}
+              >
+                {confirmAction.action === 'lock' ? labels.runLock : labels.runUnlock}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <PaySlipDetailModal
         slip={detailSlip}

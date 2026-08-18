@@ -6,6 +6,8 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_employee/features/notifications/providers/notification_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+
 
 class NotificationListScreen extends ConsumerWidget {
   const NotificationListScreen({super.key});
@@ -37,9 +39,9 @@ class NotificationListScreen extends ConsumerWidget {
               } catch (_) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                        'Impossible de marquer les notifications comme lues.'),
+                  SnackBar(
+              content: Text(
+                context.l10n.notificationsMarkAllReadError),
                   ),
                 );
               }
@@ -47,7 +49,7 @@ class NotificationListScreen extends ConsumerWidget {
           ),
         ],
         leading: IconButton(
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -89,9 +91,9 @@ class NotificationListScreen extends ConsumerWidget {
                           } catch (_) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    'Impossible de marquer la notification comme lue.'),
+                              SnackBar(
+              content: Text(
+                context.l10n.notificationsMarkReadError),
                               ),
                             );
                           }
@@ -106,15 +108,14 @@ class NotificationListScreen extends ConsumerWidget {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Notification supprimee.'),
+                              content: Text(context.l10n.notificationsDeleted),
                             ),
                           );
                         } catch (_) {
                           if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text('Impossible de supprimer la notification.'),
+                            SnackBar(
+                              content: Text(context.l10n.notificationsDeleteError),
                             ),
                           );
                         }

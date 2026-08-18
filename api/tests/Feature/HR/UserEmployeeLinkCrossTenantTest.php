@@ -31,6 +31,7 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
             // #5034 : users.first_name/last_name sont NOT NULL (public 000002).
             'first_name' => 'John',
             'last_name' => 'Doe',
+
             'email' => 'john.doe@example.com',
             'password_hash' => Hash::make('password123'),
         ]);
@@ -67,6 +68,7 @@ class UserEmployeeLinkCrossTenantTest extends TestCase
             // #5034 : users.first_name/last_name sont NOT NULL (public 000002).
             'first_name' => 'Jane',
             'last_name' => 'Doe',
+
             'email' => 'jane.doe@example.com',
             'password_hash' => Hash::make('password123'),
         ]);
