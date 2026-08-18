@@ -51,6 +51,8 @@ Route::middleware(['throttle:kiosk-punch', 'kiosk.search_path'])->group(function
 });
 
 Route::middleware(['throttle:api'])->group(function (): void {
-    Route::post('/zkteco/heartbeat/{serialNumber}', [ZktecoController::class, 'heartbeat']);
-    Route::post('/zkteco/sync-attendance/{serialNumber}', [ZktecoController::class, 'syncAttendance']);
+    Route::post('/zkteco/heartbeat/{serialNumber}', [ZktecoController::class, 'heartbeat'])
+        ->middleware('zkteco.device');
+    Route::post('/zkteco/sync-attendance/{serialNumber}', [ZktecoController::class, 'syncAttendance'])
+        ->middleware('zkteco.device');
 });
