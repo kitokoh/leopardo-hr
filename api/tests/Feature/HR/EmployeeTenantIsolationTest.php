@@ -40,9 +40,13 @@ class EmployeeTenantIsolationTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => $email,
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
     }
 
@@ -133,7 +137,7 @@ class EmployeeTenantIsolationTest extends TestCase
 
         $this->assertDatabaseHas('employees', [
             'id' => $seed['employeeB']->id,
-            'first_name' => '',
+            'first_name' => 'Employe',
         ]);
     }
 
