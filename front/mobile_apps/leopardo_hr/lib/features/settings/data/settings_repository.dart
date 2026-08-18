@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/api/api_payload.dart';
 import 'package:leopardo_core/core/storage/app_preferences.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/models/notification_preferences.dart';
-import 'package:leopardo_hr/features/settings/data/biometric_enrollment.dart';
+import 'package:leopardo_core/features/settings/data/biometric_enrollment.dart';
 
 class SettingsRepository {
   SettingsRepository(this._apiClient, this._preferences);

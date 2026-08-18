@@ -14,7 +14,7 @@ import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_manager/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/login_screen.dart';
 import 'package:leopardo_manager/features/auth/screens/register_screen.dart';
-import 'package:leopardo_manager/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/attendance_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/history_screen.dart';
 import 'package:leopardo_manager/features/attendance/screens/monthly_summary_screen.dart';
