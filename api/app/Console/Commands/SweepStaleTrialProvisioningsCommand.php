@@ -37,7 +37,7 @@ class SweepStaleTrialProvisioningsCommand extends Command
         $cutoff = now()->subMinutes($maxAge);
         $dryRun = (bool) $this->option('dry-run');
 
-        $stuck = DB::table('trial_provisionings')
+        $stuck = DB::table($this->provisioningTable())
             ->whereIn('status', ['pending', 'provisioning_sandbox'])
             ->where('updated_at', '<', $cutoff)
             ->get(['id', 'email', 'provisioning_token', 'status', 'updated_at']);
@@ -64,7 +64,7 @@ class SweepStaleTrialProvisioningsCommand extends Command
                 continue;
             }
 
-            DB::table('trial_provisionings')
+            DB::table($this->provisioningTable())
                 ->where('id', $row->id)
                 ->update([
                     'status' => 'failed',
@@ -86,5 +86,10 @@ class SweepStaleTrialProvisioningsCommand extends Command
         $this->info(sprintf('Terminé : %d provisioning(s) marqué(s) failed.', $stuck->count()));
 
         return self::SUCCESS;
+    }
+
+    private function provisioningTable(): string
+    {
+        return DB::getDriverName() === 'pgsql' ? 'public.trial_provisionings' : 'trial_provisionings';
     }
 }

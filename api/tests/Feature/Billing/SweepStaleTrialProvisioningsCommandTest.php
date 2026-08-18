@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Billing;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\PendingCommand;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -17,11 +18,12 @@ use Tests\TestCase;
  */
 class SweepStaleTrialProvisioningsCommandTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshTenantDatabase;
 
+    /** @param array<string, mixed> $overrides */
     private function insertProvisioning(array $overrides = []): void
     {
-        DB::table('trial_provisionings')->insert(array_merge([
+        DB::table('public.trial_provisionings')->insert(array_merge([
             'email' => 'prospect@example.dz',
             'provisioning_token' => str_repeat('a', 64),
             'status' => 'pending',
@@ -34,13 +36,19 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     {
         $this->insertProvisioning();
 
-        $this->artisan('trial-provisionings:sweep')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep --max-age-minutes=30');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
-        $this->assertDatabaseHas('trial_provisionings', [
+        $this->assertDatabaseHas('public.trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'failed',
         ]);
-        $row = DB::table('trial_provisionings')->where('email', 'prospect@example.dz')->first();
+        $row = DB::table('public.trial_provisionings')->where('email', 'prospect@example.dz')->first();
+        self::assertNotNull($row);
         $this->assertStringContainsString('SWEEP_TIMEOUT', (string) $row->error);
     }
 
@@ -48,9 +56,14 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     {
         $this->insertProvisioning(['updated_at' => now()->subMinutes(5)]);
 
-        $this->artisan('trial-provisionings:sweep')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
-        $this->assertDatabaseHas('trial_provisionings', [
+        $this->assertDatabaseHas('public.trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'pending',
         ]);
@@ -61,19 +74,29 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
         $this->insertProvisioning(['status' => 'ready', 'provisioning_token' => str_repeat('b', 64)]);
         $this->insertProvisioning(['status' => 'failed', 'provisioning_token' => str_repeat('c', 64)]);
 
-        $this->artisan('trial-provisionings:sweep')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
-        $this->assertDatabaseHas('trial_provisionings', ['provisioning_token' => str_repeat('b', 64), 'status' => 'ready']);
-        $this->assertDatabaseHas('trial_provisionings', ['provisioning_token' => str_repeat('c', 64), 'status' => 'failed']);
+        $this->assertDatabaseHas('public.trial_provisionings', ['provisioning_token' => str_repeat('b', 64), 'status' => 'ready']);
+        $this->assertDatabaseHas('public.trial_provisionings', ['provisioning_token' => str_repeat('c', 64), 'status' => 'failed']);
     }
 
     public function test_dry_run_does_not_write(): void
     {
         $this->insertProvisioning();
 
-        $this->artisan('trial-provisionings:sweep --dry-run')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep --dry-run');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
-        $this->assertDatabaseHas('trial_provisionings', [
+        $this->assertDatabaseHas('public.trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'pending',
         ]);
