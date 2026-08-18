@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\TenantManager;
+use App\Exceptions\MissingCheckInException;
 use App\Modules\Attendance\Application\DTOs\CheckInDTO;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\TenantManager;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
-use App\Exceptions\MissingCheckInException;
 
 class KioskAttendanceService
 {
@@ -104,6 +104,7 @@ class KioskAttendanceService
 
                 if ($identifier === '') {
                     $skip('IDENTIFIER_REQUIRED');
+
                     continue;
                 }
 
@@ -119,11 +120,13 @@ class KioskAttendanceService
 
                 if (! $employee) {
                     $skip('EMPLOYEE_NOT_FOUND');
+
                     continue;
                 }
 
                 if (! $employee->biometric_fingerprint_enabled && ! $employee->biometric_face_enabled) {
                     $skip('BIOMETRIC_NOT_APPROVED');
+
                     continue;
                 }
 
@@ -144,6 +147,7 @@ class KioskAttendanceService
                     // Rejet métier borné à CET événement (#3588) : un check_out
                     // sans session ouverte ne doit plus faire échouer le batch.
                     $skip('NO_OPEN_SESSION');
+
                     continue;
                 }
 
@@ -162,4 +166,3 @@ class KioskAttendanceService
         });
     }
 }
-
