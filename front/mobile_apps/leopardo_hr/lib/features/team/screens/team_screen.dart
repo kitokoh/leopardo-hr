@@ -386,7 +386,7 @@ class _EmployeesTab extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.edit_note_rounded),
               title: Text(context.l10n.teamEditProfile),
-              subtitle: const Text(
+              subtitle: Text(
                 context.l10n.teamEditProfileHint,
               ),
               onTap: () {
