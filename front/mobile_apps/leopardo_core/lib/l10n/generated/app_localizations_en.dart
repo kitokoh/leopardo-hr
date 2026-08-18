@@ -4043,4 +4043,128 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get attendanceNone => 'None';
 
+
+
+  @override
+  String get settingsMobileAccess => 'Mobile access';
+  @override
+  String get settingsManagerProfileHint => 'HR/Manager profile: access to team monitoring and history.';
+  @override
+  String get settingsTeamDrive => 'Team drive';
+  @override
+  String get settingsTeamDriveHint => 'Profile, role and permissions remain readable for HR actions.';
+  @override
+  String get settingsSessionTitle => 'Session';
+  @override
+  String get settingsSessionSubtitle => 'Logout is intentionally at the bottom of the page.';
+  @override
+  String get settingsOverview => 'Overview';
+  @override
+  String get settingsManagerAccountHint => 'A manager account must remain clear, secure and ready for field decisions.';
+  @override
+  String get settingsMyProfile => 'My profile';
+  @override
+  String get settingsFirstName => 'First name';
+  @override
+  String get settingsLastNameLabel => 'Last name';
+  @override
+  String get settingsEmailLabel => 'Email';
+  @override
+  String get settingsEmailRequired => 'Email is required';
+  @override
+  String get settingsEmailInvalid => 'Invalid email';
+  @override
+  String get settingsFirstNameRequired => 'First name is required';
+  @override
+  String get settingsLastNameRequired => 'Last name is required';
+  @override
+  String get settingsPersonalContacts => 'Personal contacts';
+  @override
+  String get settingsPersonalEmail => 'Personal email (optional)';
+  @override
+  String get settingsRecoveryEmail => 'Recovery email (optional)';
+  @override
+  String get settingsPersonalPhone => 'Personal phone (optional)';
+  @override
+  String get settingsNewPassword => 'New password';
+  @override
+  String get settingsConfirmPassword => 'Confirm password';
+  @override
+  String get settingsPasswordMinLength => 'Minimum 8 characters';
+  @override
+  String get settingsPasswordMismatch => 'Passwords do not match';
+  @override
+  String get settingsPasswordChanged => 'Password changed.';
+  @override
+  String get settingsShareProfile => 'Share your profile or scan a company QR.';
+  @override
+  String get settingsMyQrManager => 'My manager QR';
+  @override
+  String get settingsMyQrEmployee => 'My QR code';
+  @override
+  String get settingsQrManagerHint => 'A colleague or HR can scan it to pre-fill an invitation.';
+  @override
+  String get settingsQrCopyToken => 'Also copy the token';
+  @override
+  String get settingsPasteQr => 'Paste the QR provided by the manager or HR';
+  @override
+  String get settingsJourneyTitle => 'Professional journey';
+  @override
+  String get settingsJourneyUnknownDate => 'Unknown date';
+  @override
+  String get settingsJourneyToday => 'Today';
+  @override
+  String get settingsJourneyInProgress => 'In progress';
+  @override
+  String get settingsJourneyUnknownPosition => 'Position not specified';
+  @override
+  String get settingsJourneyUnknownCompany => 'Company';
+  @override
+  String get settingsNotificationsSubtitle => 'Channels, quiet hours and manager operational alerts.';
+  @override
+  String get settingsLanguageSubtitle => 'The chosen language also drives future notifications and texts.';
+  @override
+  String get settingsProfileSaved => 'Profile saved.';
+  @override
+  String get settingsBiometricManagerHint => 'Reserved for employee profiles in this manager app.';
+  @override
+  String get settingsBiometricTerminalHint => 'Finger and face preparation for field terminals.';
+  @override
+  String get settingsBiometricNote => 'Note (optional)';
+  @override
+  String get settingsBiometricDevice => 'Reference device (optional)';
+  @override
+  String get settingsBiometricFace => 'Face';
+  @override
+  String get settingsBiometricFingerprint => 'Fingerprint';
+  @override
+  String get settingsBiometricConsent => 'I consent to the processing of my biometric data.';
+  @override
+  String get settingsBiometricSaved => 'Biometric enrollment saved.';
+  @override
+  String get settingsBiometricEnrollmentStatus => 'Enrollment status';
+  @override
+  String get settingsBiometricNone => 'No enrollment';
+  @override
+  String get settingsBiometricPending => 'Pending';
+  @override
+  String get settingsBiometricApproved => 'Approved';
+  @override
+  String get settingsBiometricRejected => 'Rejected';
+  @override
+  String get settingsPreferredLanguageLabel => 'Preferred language';
+  @override
+  String get settingsLanguageSaved => 'Language saved.';
+  @override
+  String get settingsPortableAccountHint => 'Your personal information remains linked to your account.';
+
+
+
+  @override
+  String settingsPasswordError(Object error) => 'Password error: $error';
+  @override
+  String settingsProfileError(Object error) => 'Profile error: $error';
+  @override
+  String settingsBiometricError(Object error) => 'Biometric error: $error';
+
 }

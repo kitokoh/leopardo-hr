@@ -4044,4 +4044,128 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get attendanceNone => 'Hiçbiri';
 
+
+
+  @override
+  String get settingsMobileAccess => 'Mobil erişim';
+  @override
+  String get settingsManagerProfileHint => 'İK/Yönetici profili: ekip takibi ve geçmişe erişim.';
+  @override
+  String get settingsTeamDrive => 'Ekip yönetimi';
+  @override
+  String get settingsTeamDriveHint => 'Profil, rol ve izinler İK işlemleri için okunabilir kalır.';
+  @override
+  String get settingsSessionTitle => 'Oturum';
+  @override
+  String get settingsSessionSubtitle => 'Çıkış sayfanın altında kasıtlı olarak yer alır.';
+  @override
+  String get settingsOverview => 'Genel bakış';
+  @override
+  String get settingsManagerAccountHint => 'Yönetici hesabı net, güvenli ve saha kararları için hazır olmalıdır.';
+  @override
+  String get settingsMyProfile => 'Profilim';
+  @override
+  String get settingsFirstName => 'Ad';
+  @override
+  String get settingsLastNameLabel => 'Soyad';
+  @override
+  String get settingsEmailLabel => 'E-posta';
+  @override
+  String get settingsEmailRequired => 'E-posta gereklidir';
+  @override
+  String get settingsEmailInvalid => 'Geçersiz e-posta';
+  @override
+  String get settingsFirstNameRequired => 'Ad gereklidir';
+  @override
+  String get settingsLastNameRequired => 'Soyad gereklidir';
+  @override
+  String get settingsPersonalContacts => 'Kişisel iletişim';
+  @override
+  String get settingsPersonalEmail => 'Kişisel e-posta (isteğe bağlı)';
+  @override
+  String get settingsRecoveryEmail => 'Kurtarma e-postası (isteğe bağlı)';
+  @override
+  String get settingsPersonalPhone => 'Kişisel telefon (isteğe bağlı)';
+  @override
+  String get settingsNewPassword => 'Yeni şifre';
+  @override
+  String get settingsConfirmPassword => 'Şifreyi onayla';
+  @override
+  String get settingsPasswordMinLength => 'En az 8 karakter';
+  @override
+  String get settingsPasswordMismatch => 'Şifreler eşleşmiyor';
+  @override
+  String get settingsPasswordChanged => 'Şifre değiştirildi.';
+  @override
+  String get settingsShareProfile => 'Profilinizi paylaşın veya bir şirket QR kodunu tarayın.';
+  @override
+  String get settingsMyQrManager => 'Yönetici QR kodum';
+  @override
+  String get settingsMyQrEmployee => 'QR kodum';
+  @override
+  String get settingsQrManagerHint => 'Bir meslektaş veya İK daveti önceden doldurmak için tarayabilir.';
+  @override
+  String get settingsQrCopyToken => 'Jetonu da kopyala';
+  @override
+  String get settingsPasteQr => 'Yönetici veya İK tarafından sağlanan QR kodu yapıştırın';
+  @override
+  String get settingsJourneyTitle => 'Profesyonel yolculuk';
+  @override
+  String get settingsJourneyUnknownDate => 'Bilinmeyen tarih';
+  @override
+  String get settingsJourneyToday => 'Bugün';
+  @override
+  String get settingsJourneyInProgress => 'Devam ediyor';
+  @override
+  String get settingsJourneyUnknownPosition => 'Pozisyon belirtilmemiş';
+  @override
+  String get settingsJourneyUnknownCompany => 'Şirket';
+  @override
+  String get settingsNotificationsSubtitle => 'Kanallar, sessiz saatler ve yönetici operasyonel uyarıları.';
+  @override
+  String get settingsLanguageSubtitle => 'Seçilen dil gelecekteki bildirimleri ve metinleri de etkiler.';
+  @override
+  String get settingsProfileSaved => 'Profil kaydedildi.';
+  @override
+  String get settingsBiometricManagerHint => 'Bu yönetici uygulamasındaki çalışan profilleri için ayrılmıştır.';
+  @override
+  String get settingsBiometricTerminalHint => 'Saha terminalleri için parmak ve yüz hazırlığı.';
+  @override
+  String get settingsBiometricNote => 'Not (isteğe bağlı)';
+  @override
+  String get settingsBiometricDevice => 'Referans cihaz (isteğe bağlı)';
+  @override
+  String get settingsBiometricFace => 'Yüz';
+  @override
+  String get settingsBiometricFingerprint => 'Parmak izi';
+  @override
+  String get settingsBiometricConsent => 'Biyometrik verilerimin işlenmesine onay veriyorum.';
+  @override
+  String get settingsBiometricSaved => 'Biyometrik kayıt tamamlandı.';
+  @override
+  String get settingsBiometricEnrollmentStatus => 'Kayıt durumu';
+  @override
+  String get settingsBiometricNone => 'Kayıt yok';
+  @override
+  String get settingsBiometricPending => 'Beklemede';
+  @override
+  String get settingsBiometricApproved => 'Onaylandı';
+  @override
+  String get settingsBiometricRejected => 'Reddedildi';
+  @override
+  String get settingsPreferredLanguageLabel => 'Tercih edilen dil';
+  @override
+  String get settingsLanguageSaved => 'Dil kaydedildi.';
+  @override
+  String get settingsPortableAccountHint => 'Kişisel bilgileriniz hesabınıza bağlı kalır.';
+
+
+
+  @override
+  String settingsPasswordError(Object error) => 'Şifre hatası: $error';
+  @override
+  String settingsProfileError(Object error) => 'Profil hatası: $error';
+  @override
+  String settingsBiometricError(Object error) => 'Biyometrik hata: $error';
+
 }

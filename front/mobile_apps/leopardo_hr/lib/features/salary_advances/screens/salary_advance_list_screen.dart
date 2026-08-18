@@ -19,6 +19,7 @@ import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class SalaryAdvanceListScreen extends ConsumerStatefulWidget {
   const SalaryAdvanceListScreen({super.key});
@@ -40,8 +41,8 @@ class _SalaryAdvanceListScreenState
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Avances',
-        subtitle: 'Demandes, statuts et remboursement',
+        title: context.l10n.salaryAdvanceListTitle,
+        subtitle: context.l10n.salaryAdvanceListSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
@@ -51,7 +52,7 @@ class _SalaryAdvanceListScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRequestSheet(context),
         icon: const Icon(Icons.add_card_outlined),
-        label: const Text('Demander'),
+        label: const Text(context.l10n.salaryAdvanceRequest),
       ),
       body: RefreshIndicator(
         color: AppColors.rh,
@@ -68,9 +69,9 @@ class _SalaryAdvanceListScreenState
                 children: const [
                   EmptyState(
                     icon: Icons.payments,
-                    title: 'Aucune avance',
+                    title: context.l10n.salaryAdvancesEmpty,
                     description:
-                        'Demandez une avance en quelques secondes, puis suivez la decision RH ici.',
+                        context.l10n.salaryAdvancesEmptyHint,
                   ),
                 ],
               );
@@ -86,7 +87,7 @@ class _SalaryAdvanceListScreenState
                 final amount = _formatMoney(advance.amount, advance.currency);
                 final reason = advance.reason?.trim().isNotEmpty == true
                     ? advance.reason!
-                    : 'Aucun motif';
+                    : context.l10n.salaryAdvanceNoReason;
                 final months = advance.repaymentMonths;
                 final requester =
                     advance.employeeName?.trim().isNotEmpty == true
@@ -117,7 +118,7 @@ class _SalaryAdvanceListScreenState
             );
           },
           loading: () =>
-              const MobileEmptyLoading(label: 'Chargement des avances'),
+              const MobileEmptyLoading(label: context.l10n.salaryAdvancesLoading),
           error: (e, _) => ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
@@ -201,7 +202,7 @@ class _SalaryAdvanceListScreenState
           child: TextButton.icon(
             onPressed: () => _confirmCancelAdvance(context, advance.id),
             icon: const Icon(Icons.close_rounded, size: 16),
-            label: const Text('Annuler la demande'),
+            label: const Text(context.l10n.salaryAdvanceCancelRequest),
           ),
         ),
       ],
@@ -224,7 +225,7 @@ class _SalaryAdvanceListScreenState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.attach_file_rounded, size: 16),
-        label: const Text('Voir la piece jointe'),
+        label: const Text(context.l10n.salaryAdvanceViewProof),
       ),
     );
   }
@@ -317,18 +318,18 @@ class _SalaryAdvanceListScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Annuler cette avance ?'),
+        title: const Text(context.l10n.salaryAdvanceCancelTitle),
         content: const Text(
-          'La demande en attente sera retiree avant decision RH.',
+          context.l10n.salaryAdvanceCancelBody,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Garder'),
+            child: const Text(context.l10n.salaryAdvanceKeep),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Annuler'),
+            child: const Text(context.l10n.salaryAdvanceCancelAction),
           ),
         ],
       ),
@@ -340,7 +341,7 @@ class _SalaryAdvanceListScreenState
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande d avance annulee.')),
+        const SnackBar(content: Text(context.l10n.salaryAdvanceCancelled)),
       );
     } catch (error) {
       if (!context.mounted) return;
@@ -415,7 +416,7 @@ class _SalaryAdvanceListScreenState
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirmer'),
+            child: const Text(context.l10n.salaryAdvanceConfirmAction),
           ),
         ],
       ),
@@ -481,21 +482,21 @@ class _SalaryAdvanceListScreenState
 
   static String _getStatusLabel(SalaryAdvance advance) {
     final validation = advance.validationStatus;
-    if (validation == 'manager_approved') return 'validee';
+    if (validation == 'manager_approved') return context.l10n.salaryStatusValidated;
     if (validation == 'payment_declared') return 'envoyee';
-    if (validation == 'employee_confirmed') return 'recue';
+    if (validation == 'employee_confirmed') return context.l10n.salaryStatusReceived;
 
     switch (advance.status) {
-      case 'active':
-        return 'active';
+      case context.l10n.salaryStatusActive:
+        return context.l10n.salaryStatusActive;
       case 'approved':
-        return 'approuvee';
+        return context.l10n.salaryStatusApproved;
       case 'pending':
-        return 'en attente';
+        return context.l10n.salaryStatusPending;
       case 'rejected':
-        return 'rejetee';
+        return context.l10n.salaryStatusRejected;
       case 'cancelled':
-        return 'annulee';
+        return context.l10n.salaryStatusCancelled;
       default:
         return advance.status;
     }
@@ -510,10 +511,10 @@ class _SalaryAdvanceListScreenState
       case 'employee_confirmed':
         return 'reception confirmee par l employe';
       case 'rejected':
-        return 'rejetee';
+        return context.l10n.salaryStatusRejected;
       case 'pending':
       case null:
-        return 'en attente';
+        return context.l10n.salaryStatusPending;
       default:
         return status;
     }
@@ -521,7 +522,7 @@ class _SalaryAdvanceListScreenState
 
   static Color _getStatusColor(String status) {
     switch (status) {
-      case 'active':
+      case context.l10n.salaryStatusActive:
       case 'approved':
         return AppColors.rh;
       case 'pending':
@@ -598,7 +599,7 @@ class _SalaryAdvanceRequestSheetState
             ),
             const SizedBox(height: 18),
             Text(
-              'Demande d avance',
+              context.l10n.salaryAdvanceRequestTitle,
               style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 4),
@@ -663,8 +664,8 @@ class _SalaryAdvanceRequestSheetState
               icon: const Icon(Icons.attach_file_rounded, size: 18),
               label: Text(
                 _proofFile == null
-                    ? 'Joindre une piece (optionnel)'
-                    : 'Piece jointe',
+                    ? context.l10n.salaryAdvanceAttachHint
+                    : context.l10n.salaryAdvanceAttachmentLabel,
               ),
             ),
             const SizedBox(height: 12),
@@ -701,7 +702,7 @@ class _SalaryAdvanceRequestSheetState
       if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande d avance transmise au RH.')),
+        const SnackBar(content: Text(context.l10n.salaryAdvanceSubmitted)),
       );
     } catch (e) {
       if (!context.mounted) return;

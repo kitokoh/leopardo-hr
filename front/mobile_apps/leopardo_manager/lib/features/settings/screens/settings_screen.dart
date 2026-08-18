@@ -149,11 +149,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Compte',
-        subtitle: 'Profil, langue et securite',
+        title: context.l10n.settingsAccountTitle,
+        subtitle: context.l10n.settingsAccountSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           onPressed: () => context.pop(),
         ),
       ),
@@ -197,14 +197,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Acces mobile',
+            context.l10n.settingsMobileAccess,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
           Text(
             role == 'manager'
-                ? 'Profil RH / manager: acces au suivi de l equipe et a l historique.'
-                : 'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
+                ? context.l10n.settingsManagerProfileHint
+                : context.l10n.settingsEmployeeProfileHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -219,43 +219,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       (
         icon: Icons.admin_panel_settings_outlined,
         color: AppColors.rh,
-        title: isManager ? 'Pilotage equipe' : 'Identite portable',
+        title: isManager ? context.l10n.settingsTeamDrive : context.l10n.settingsAccountTitle,
         subtitle: isManager
-            ? 'Profil, role et permissions restent lisibles pour les actions RH.'
-            : 'Vos informations personnelles restent attachees au compte.',
+            ? context.l10n.settingsTeamDriveHint
+            : context.l10n.settingsPortableAccountHint,
       ),
       (
         icon: Icons.lock_outline_rounded,
         color: AppColors.info,
-        title: 'Securite',
+        title: context.l10n.settingsSecurityTitle,
         subtitle:
-            'Mot de passe, session et preferences sensibles sont regroupees.',
+            context.l10n.settingsSessionSubtitle,
       ),
       (
         icon: Icons.language_outlined,
         color: AppColors.warning,
-        title: 'Langue et RTL',
-        subtitle: 'La langue choisie pilote aussi les notifications et textes futurs.',
+        title: context.l10n.settingsLanguageTitle,
+        subtitle: context.l10n.settingsLanguageSubtitle,
       ),
       (
         icon: Icons.notifications_active_outlined,
         color: AppColors.danger,
-        title: 'Notifications',
-        subtitle: 'Canaux, heures calmes et alertes manager operationnelles.',
+        title: context.l10n.settingsNotificationsTitle,
+        subtitle: context.l10n.settingsNotificationsSubtitle,
       ),
       (
         icon: Icons.fingerprint_rounded,
         color: AppColors.rhDark,
-        title: 'Biometrie',
+        title: context.l10n.settingsKioskBiometricTitle,
         subtitle: isManager
-            ? 'Reservee aux profils employes dans cette app manager.'
-            : 'Preparation doigt et visage pour les bornes terrain.',
+            ? context.l10n.settingsBiometricManagerHint
+            : context.l10n.settingsBiometricTerminalHint,
       ),
       (
         icon: Icons.logout_rounded,
         color: AppColors.danger,
-        title: 'Session',
-        subtitle: 'La deconnexion reste volontairement en bas de page.',
+        title: context.l10n.settingsSessionTitle,
+        subtitle: context.l10n.settingsSessionSubtitle,
       ),
     ];
 
@@ -265,14 +265,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Vue d ensemble',
+            context.l10n.settingsOverview,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 6),
           Text(
             isManager
-                ? 'Un compte manager doit rester clair, securise et pret pour les decisions terrain.'
-                : 'Votre compte reste personnel meme quand vous changez d entreprise.',
+                ? context.l10n.settingsManagerAccountHint
+                : context.l10n.settingsPortableAccountHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -301,41 +301,41 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Mon profil',
+              context.l10n.settingsMyProfile,
               style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration: const InputDecoration(labelText: 'Prenom'),
+              decoration: const InputDecoration(labelText: context.l10n.settingsFirstName),
               validator: (value) => (value == null || value.trim().isEmpty)
-                  ? 'Prenom requis'
+                  ? context.l10n.settingsFirstNameRequired
                   : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _lastNameController,
-              decoration: const InputDecoration(labelText: 'Nom'),
+              decoration: const InputDecoration(labelText: context.l10n.settingsLastNameLabel),
               validator: (value) =>
-                  (value == null || value.trim().isEmpty) ? 'Nom requis' : null,
+                  (value == null || value.trim().isEmpty) ? context.l10n.settingsLastNameRequired : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: context.l10n.settingsEmailLabel),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
-                if (trimmed.isEmpty) return 'Email requis';
+                if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
                 if (!trimmed.contains('@') || !trimmed.contains('.')) {
-                  return 'Email invalide';
+                  return context.l10n.settingsEmailInvalid;
                 }
                 return null;
               },
             ),
             const SizedBox(height: 16),
             Text(
-              'Contacts personnels',
+              context.l10n.settingsPersonalContacts,
               style: AppTypography.bodySmall.copyWith(
                 color: MobileSurface.secondary,
                 fontWeight: FontWeight.w700,
@@ -346,7 +346,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _personalEmailController,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
-                labelText: 'Email personnel (optionnel)',
+                labelText: context.l10n.settingsPersonalEmail,
               ),
               validator: _optionalEmailValidator,
             ),
@@ -355,7 +355,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _recoveryEmailController,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
-                labelText: 'Email de secours (optionnel)',
+                labelText: context.l10n.settingsRecoveryEmail,
               ),
               validator: _optionalEmailValidator,
             ),
@@ -364,7 +364,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _personalPhoneController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
-                labelText: 'Telephone personnel (optionnel)',
+                labelText: context.l10n.settingsPersonalPhone,
               ),
             ),
             const SizedBox(height: 16),
@@ -379,7 +379,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             FilledButton(
               onPressed: _profileSaving ? null : _saveProfile,
               child: Text(
-                _profileSaving ? 'Enregistrement...' : 'Enregistrer le profil',
+                _profileSaving ? context.l10n.settingsSaving : context.l10n.settingsSaveProfile,
               ),
             ),
           ],
@@ -392,7 +392,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final trimmed = value?.trim() ?? '';
     if (trimmed.isEmpty) return null;
     if (!trimmed.contains('@') || !trimmed.contains('.')) {
-      return 'Email invalide';
+      return context.l10n.settingsEmailInvalid;
     }
     return null;
   }
@@ -422,7 +422,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ),
                     ),
                     Text(
-                      'Partagez votre profil ou scannez le QR d une entreprise.',
+                      context.l10n.settingsShareProfile,
                       style: AppTypography.caption.copyWith(
                         color: MobileSurface.secondary,
                       ),
@@ -456,10 +456,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   LeopardoQrCard(
                     data: qr.token,
-                    title: 'Mon QR manager',
-                    subtitle: 'Un collegue ou un RH peut le scanner pour pre-remplir une invitation.',
+                    title: context.l10n.settingsMyQrManager,
+                    subtitle: context.l10n.settingsQrManagerHint,
                     expiresAt: qr.expiresAt,
-                    copyLabel: 'Copier aussi le jeton',
+                    copyLabel: context.l10n.settingsQrCopyToken,
                   ),
                 ],
               );
@@ -475,7 +475,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                      'Aucun QR entreprise dans le presse-papiers.',
+                      context.l10n.settingsNoCompanyQr,
                     ),
                   ),
                 );
@@ -494,7 +494,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: const TextStyle(color: MobileSurface.text),
             decoration: const InputDecoration(
               labelText: 'QR entreprise',
-              hintText: 'Coller le QR fourni par le manager ou le RH',
+              hintText: context.l10n.settingsPasteQr,
               alignLabelWithHint: true,
             ),
           ),
@@ -511,7 +511,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Widget _buildCareerRow(EmployeeCareerEntry entry) {
     final period =
-        '${entry.startDate ?? 'Date inconnue'} - ${entry.endDate ?? (entry.current ? 'Aujourd hui' : 'En cours')}';
+        '${entry.startDate ?? context.l10n.settingsJourneyUnknownDate} - ${entry.endDate ?? (entry.current ? context.l10n.settingsJourneyToday : context.l10n.settingsJourneyInProgress)}';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -537,7 +537,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.jobTitle ?? 'Poste non renseigne',
+                  entry.jobTitle ?? context.l10n.settingsJourneyUnknownPosition,
                   style: AppTypography.body.copyWith(
                     color: MobileSurface.text,
                     fontWeight: FontWeight.w700,
@@ -545,7 +545,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${entry.companyName ?? 'Entreprise'} - $period',
+                  '${entry.companyName ?? context.l10n.settingsJourneyUnknownCompany} - $period',
                   style: AppTypography.caption.copyWith(
                     color: MobileSurface.secondary,
                   ),
@@ -564,7 +564,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return _buildSectionError(
-            title: 'Parcours professionnel',
+            title: context.l10n.settingsJourneyTitle,
             message: 'Impossible de charger votre parcours.',
           );
         }
@@ -858,7 +858,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _newPasswordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Nouveau mot de passe',
+                labelText: context.l10n.settingsNewPassword,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) return 'Champ requis';
@@ -1078,7 +1078,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               context.go('/login');
             },
             icon: const Icon(Icons.logout_rounded),
-            label: const Text('Deconnexion'),
+            label: Text(context.l10n.settingsLogout),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
               side: BorderSide(color: AppColors.danger.withValues(alpha: 0.45)),

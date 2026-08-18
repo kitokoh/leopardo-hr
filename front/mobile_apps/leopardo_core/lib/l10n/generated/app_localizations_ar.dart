@@ -4011,4 +4011,128 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get attendanceNone => 'لا شيء';
 
+
+
+  @override
+  String get settingsMobileAccess => 'الوصول المحمول';
+  @override
+  String get settingsManagerProfileHint => 'ملف RH/مدير: الوصول إلى مراقبة الفريق والسجل.';
+  @override
+  String get settingsTeamDrive => 'إدارة الفريق';
+  @override
+  String get settingsTeamDriveHint => 'يبقى الملف الشخصي والدور والصلاحيات مرئية لإجراءات الموارد البشرية.';
+  @override
+  String get settingsSessionTitle => 'الجلسة';
+  @override
+  String get settingsSessionSubtitle => 'يظل تسجيل الخروج عمداً في أسفل الصفحة.';
+  @override
+  String get settingsOverview => 'نظرة عامة';
+  @override
+  String get settingsManagerAccountHint => 'يجب أن يظل حساب المدير واضحاً وآمناً وجاهزاً لقرارات الميدان.';
+  @override
+  String get settingsMyProfile => 'ملفي الشخصي';
+  @override
+  String get settingsFirstName => 'الاسم الأول';
+  @override
+  String get settingsLastNameLabel => 'اسم العائلة';
+  @override
+  String get settingsEmailLabel => 'البريد الإلكتروني';
+  @override
+  String get settingsEmailRequired => 'البريد الإلكتروني مطلوب';
+  @override
+  String get settingsEmailInvalid => 'بريد إلكتروني غير صالح';
+  @override
+  String get settingsFirstNameRequired => 'الاسم الأول مطلوب';
+  @override
+  String get settingsLastNameRequired => 'اسم العائلة مطلوب';
+  @override
+  String get settingsPersonalContacts => 'جهات الاتصال الشخصية';
+  @override
+  String get settingsPersonalEmail => 'البريد الإلكتروني الشخصي (اختياري)';
+  @override
+  String get settingsRecoveryEmail => 'بريد الاسترداد (اختياري)';
+  @override
+  String get settingsPersonalPhone => 'الهاتف الشخصي (اختياري)';
+  @override
+  String get settingsNewPassword => 'كلمة المرور الجديدة';
+  @override
+  String get settingsConfirmPassword => 'تأكيد كلمة المرور';
+  @override
+  String get settingsPasswordMinLength => '8 أحرف كحد أدنى';
+  @override
+  String get settingsPasswordMismatch => 'كلمات المرور غير متطابقة';
+  @override
+  String get settingsPasswordChanged => 'تم تغيير كلمة المرور.';
+  @override
+  String get settingsShareProfile => 'شارك ملفك أو امسح رمز QR الشركة.';
+  @override
+  String get settingsMyQrManager => 'رمز QR المدير';
+  @override
+  String get settingsMyQrEmployee => 'رمز QR الخاص بي';
+  @override
+  String get settingsQrManagerHint => 'يمكن لزميل أو موارد بشرية مسحه لملء دعوة مسبقاً.';
+  @override
+  String get settingsQrCopyToken => 'نسخ الرمز أيضاً';
+  @override
+  String get settingsPasteQr => 'ألصق رمز QR المقدم من المدير أو الموارد البشرية';
+  @override
+  String get settingsJourneyTitle => 'المسار المهني';
+  @override
+  String get settingsJourneyUnknownDate => 'تاريخ غير معروف';
+  @override
+  String get settingsJourneyToday => 'اليوم';
+  @override
+  String get settingsJourneyInProgress => 'جارٍ';
+  @override
+  String get settingsJourneyUnknownPosition => 'المنصب غير محدد';
+  @override
+  String get settingsJourneyUnknownCompany => 'الشركة';
+  @override
+  String get settingsNotificationsSubtitle => 'القنوات وساعات الهدوء وتنبيهات المدير التشغيلية.';
+  @override
+  String get settingsLanguageSubtitle => 'تؤثر اللغة المختارة أيضاً على الإشعارات والنصوص المستقبلية.';
+  @override
+  String get settingsProfileSaved => 'تم حفظ الملف الشخصي.';
+  @override
+  String get settingsBiometricManagerHint => 'محجوزة لملفات الموظفين في تطبيق المدير هذا.';
+  @override
+  String get settingsBiometricTerminalHint => 'تحضير الإصبع والوجه للمحطات الميدانية.';
+  @override
+  String get settingsBiometricNote => 'ملاحظة (اختياري)';
+  @override
+  String get settingsBiometricDevice => 'جهاز مرجعي (اختياري)';
+  @override
+  String get settingsBiometricFace => 'الوجه';
+  @override
+  String get settingsBiometricFingerprint => 'بصمة الإصبع';
+  @override
+  String get settingsBiometricConsent => 'أوافق على معالجة بياناتي البيومترية.';
+  @override
+  String get settingsBiometricSaved => 'تم حفظ التسجيل البيومتري.';
+  @override
+  String get settingsBiometricEnrollmentStatus => 'حالة التسجيل';
+  @override
+  String get settingsBiometricNone => 'لا يوجد تسجيل';
+  @override
+  String get settingsBiometricPending => 'قيد الانتظار';
+  @override
+  String get settingsBiometricApproved => 'معتمد';
+  @override
+  String get settingsBiometricRejected => 'مرفوض';
+  @override
+  String get settingsPreferredLanguageLabel => 'اللغة المفضلة';
+  @override
+  String get settingsLanguageSaved => 'تم حفظ اللغة.';
+  @override
+  String get settingsPortableAccountHint => 'تبقى معلوماتك الشخصية مرتبطة بحسابك.';
+
+
+
+  @override
+  String settingsPasswordError(Object error) => 'خطأ في كلمة المرور: $error';
+  @override
+  String settingsProfileError(Object error) => 'خطأ في الملف الشخصي: $error';
+  @override
+  String settingsBiometricError(Object error) => 'خطأ بيومتري: $error';
+
 }

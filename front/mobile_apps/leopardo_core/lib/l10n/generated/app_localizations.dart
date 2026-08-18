@@ -7112,6 +7112,128 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   /// No description provided for @attendanceNone.
   String get attendanceNone;
 
+
+  /// No description provided for @settingsMobileAccess.
+  String get settingsMobileAccess;
+  /// No description provided for @settingsManagerProfileHint.
+  String get settingsManagerProfileHint;
+  /// No description provided for @settingsTeamDrive.
+  String get settingsTeamDrive;
+  /// No description provided for @settingsTeamDriveHint.
+  String get settingsTeamDriveHint;
+  /// No description provided for @settingsSessionTitle.
+  String get settingsSessionTitle;
+  /// No description provided for @settingsSessionSubtitle.
+  String get settingsSessionSubtitle;
+  /// No description provided for @settingsOverview.
+  String get settingsOverview;
+  /// No description provided for @settingsManagerAccountHint.
+  String get settingsManagerAccountHint;
+  /// No description provided for @settingsMyProfile.
+  String get settingsMyProfile;
+  /// No description provided for @settingsFirstName.
+  String get settingsFirstName;
+  /// No description provided for @settingsLastNameLabel.
+  String get settingsLastNameLabel;
+  /// No description provided for @settingsEmailLabel.
+  String get settingsEmailLabel;
+  /// No description provided for @settingsEmailRequired.
+  String get settingsEmailRequired;
+  /// No description provided for @settingsEmailInvalid.
+  String get settingsEmailInvalid;
+  /// No description provided for @settingsFirstNameRequired.
+  String get settingsFirstNameRequired;
+  /// No description provided for @settingsLastNameRequired.
+  String get settingsLastNameRequired;
+  /// No description provided for @settingsPersonalContacts.
+  String get settingsPersonalContacts;
+  /// No description provided for @settingsPersonalEmail.
+  String get settingsPersonalEmail;
+  /// No description provided for @settingsRecoveryEmail.
+  String get settingsRecoveryEmail;
+  /// No description provided for @settingsPersonalPhone.
+  String get settingsPersonalPhone;
+  /// No description provided for @settingsNewPassword.
+  String get settingsNewPassword;
+  /// No description provided for @settingsConfirmPassword.
+  String get settingsConfirmPassword;
+  /// No description provided for @settingsPasswordMinLength.
+  String get settingsPasswordMinLength;
+  /// No description provided for @settingsPasswordMismatch.
+  String get settingsPasswordMismatch;
+  /// No description provided for @settingsPasswordChanged.
+  String get settingsPasswordChanged;
+  /// No description provided for @settingsShareProfile.
+  String get settingsShareProfile;
+  /// No description provided for @settingsMyQrManager.
+  String get settingsMyQrManager;
+  /// No description provided for @settingsMyQrEmployee.
+  String get settingsMyQrEmployee;
+  /// No description provided for @settingsQrManagerHint.
+  String get settingsQrManagerHint;
+  /// No description provided for @settingsQrCopyToken.
+  String get settingsQrCopyToken;
+  /// No description provided for @settingsPasteQr.
+  String get settingsPasteQr;
+  /// No description provided for @settingsJourneyTitle.
+  String get settingsJourneyTitle;
+  /// No description provided for @settingsJourneyUnknownDate.
+  String get settingsJourneyUnknownDate;
+  /// No description provided for @settingsJourneyToday.
+  String get settingsJourneyToday;
+  /// No description provided for @settingsJourneyInProgress.
+  String get settingsJourneyInProgress;
+  /// No description provided for @settingsJourneyUnknownPosition.
+  String get settingsJourneyUnknownPosition;
+  /// No description provided for @settingsJourneyUnknownCompany.
+  String get settingsJourneyUnknownCompany;
+  /// No description provided for @settingsNotificationsSubtitle.
+  String get settingsNotificationsSubtitle;
+  /// No description provided for @settingsLanguageSubtitle.
+  String get settingsLanguageSubtitle;
+  /// No description provided for @settingsProfileSaved.
+  String get settingsProfileSaved;
+  /// No description provided for @settingsBiometricManagerHint.
+  String get settingsBiometricManagerHint;
+  /// No description provided for @settingsBiometricTerminalHint.
+  String get settingsBiometricTerminalHint;
+  /// No description provided for @settingsBiometricNote.
+  String get settingsBiometricNote;
+  /// No description provided for @settingsBiometricDevice.
+  String get settingsBiometricDevice;
+  /// No description provided for @settingsBiometricFace.
+  String get settingsBiometricFace;
+  /// No description provided for @settingsBiometricFingerprint.
+  String get settingsBiometricFingerprint;
+  /// No description provided for @settingsBiometricConsent.
+  String get settingsBiometricConsent;
+  /// No description provided for @settingsBiometricSaved.
+  String get settingsBiometricSaved;
+  /// No description provided for @settingsBiometricEnrollmentStatus.
+  String get settingsBiometricEnrollmentStatus;
+  /// No description provided for @settingsBiometricNone.
+  String get settingsBiometricNone;
+  /// No description provided for @settingsBiometricPending.
+  String get settingsBiometricPending;
+  /// No description provided for @settingsBiometricApproved.
+  String get settingsBiometricApproved;
+  /// No description provided for @settingsBiometricRejected.
+  String get settingsBiometricRejected;
+  /// No description provided for @settingsPreferredLanguageLabel.
+  String get settingsPreferredLanguageLabel;
+  /// No description provided for @settingsLanguageSaved.
+  String get settingsLanguageSaved;
+  /// No description provided for @settingsPortableAccountHint.
+  String get settingsPortableAccountHint;
+
+
+  /// No description provided for @settingsPasswordError.
+  String settingsPasswordError(Object error);
+  /// No description provided for @settingsProfileError.
+  String settingsProfileError(Object error);
+  /// No description provided for @settingsBiometricError.
+  String settingsBiometricError(Object error);
+
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
       'an issue with the localizations generation tool. Please file an issue '
