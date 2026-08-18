@@ -123,14 +123,6 @@
       "title": "Edit user",
       "status": "Status",
       "save": "Update"
-    },
-    "csv": {
-      "name": "Name",
-      "email": "Email",
-      "status": "Status",
-      "company": "Company",
-      "signup": "Signup",
-      "lastLogin": "Last login"
     }
   },
   "signup": {
@@ -427,25 +419,7 @@
     "managerEmail": "Primary manager email *",
     "activateNow": "Activate immediately",
     "activateClientNow": "Activate the client immediately",
-    "activateClientHint": "Otherwise the client stays on trial.",
-    "portfolioSub": "Adoption, risk, recurring revenue and next action per company.",
-    "newClient": "New Client",
-    "refresh": "Refresh",
-    "statsFollowed": "Tracked Clients",
-    "statsActive": "Active Clients",
-    "statsGlobalMrr": "Global MRR",
-    "statsRiskAlert": "Risk Alert",
-    "noPlan": "NO PLAN",
-    "logsUnit": "logs",
-    "activeUnit": "active",
-    "ras": "N/A",
-    "open": "Open",
-    "provisioningTitle": "Client Provisioning",
-    "provisioning": "Provisioning...",
-    "createClient": "Create client",
-    "loadError": "Unable to load the client cockpit.",
-    "createError": "Unable to create this client.",
-    "created": "Client created and manager invitation sent."
+    "activateClientHint": "Otherwise the client stays on trial."
   },
   "subscriptions": {
     "title": "Subscriptions",
@@ -504,25 +478,6 @@
       "schema_isolation": "Schema isolation"
     },
     "trialUnit": "d"
-  },
-  "time": {
-    "justNow": "just now",
-    "minutesAgo": "{count} min ago",
-    "hoursAgo": "{count} h ago",
-    "minutesShort": "{count}m",
-    "hoursShort": "{count}h",
-    "never": "never",
-    "loadingData": "Loading data...",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "inProgress": "In progress…",
-    "valid": "Valid",
-    "invalid": "Invalid",
-    "statusActive": "Active",
-    "statusInactive": "Inactive",
-    "statusSuspended": "Suspended",
-    "statusPending": "Pending",
-    "exportCsv": "Export CSV"
   },
   "_version": "1.0.0",
   "_updated_at": "2026-08-17T00:00:00Z",
@@ -698,11 +653,7 @@
       "TG": "Togo",
       "US": "United States"
     },
-    "required": "Required",
-    "noResults": "No results found.",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "busy": "In progress…"
+    "required": "Required"
   },
   "_locale": "en",
   "attendance": {
@@ -800,8 +751,7 @@
       "password": {
         "visibility": "Show or hide password"
       }
-    },
-    "access_key_required": "The access key is required."
+    }
   },
   "marketing": {
     "oauth": {
@@ -959,24 +909,7 @@
     "platform_dashboard_hint": "Available in the platform dashboard.",
     "searchPlaceholder": "Search...",
     "modulesActiveSentence": "{active} modules active, {locked} to activate based on your plan.",
-    "yourCompany": "Your company",
-    "activeCompanies": "Active companies",
-    "platformMrr": "Platform MRR",
-    "pendingRequestsTitle": "Pending requests",
-    "criticalAlerts": "Critical alerts",
-    "details": "Details",
-    "processRequests": "Process requests",
-    "badgeTenants": ":count tenants",
-    "badgeToProcess": ":count to process",
-    "badgeRisks": ":count risks",
-    "cards": {
-      "createClientDesc": "Qualify a company, open its tenant and check its launch status.",
-      "processRequestsDesc": "Track trial requests, prioritize leads and avoid stuck prospects.",
-      "monitorAtRiskDesc": "Identify accounts weak in adoption, check-ins or operational health.",
-      "manageSubscriptionsDesc": "Monitor MRR, overdue payments, active plans and the platform's commercial trajectory.",
-      "checkSystemDesc": "Monitor API health, configuration, logs, backups and incident signals.",
-      "prepareIntegrationsDesc": "Track webhooks, exports, reports and API surfaces required by integrators."
-    }
+    "yourCompany": "Your company"
   },
   "payroll": {
     "confidence": {
@@ -1207,8 +1140,7 @@
     "criticalAlerts": "Critical alerts",
     "level": "Level:",
     "fallbackPollingTitle": "Notifications via fallback polling (push unavailable)",
-    "tenantOnly": "Enterprise feature — reserved for client workspaces",
-    "noCriticalAlerts": "No critical alerts"
+    "tenantOnly": "Enterprise feature — reserved for client workspaces"
   },
   "exports": {
     "reportEmployees": "Employees",
@@ -1242,16 +1174,7 @@
     "downloading": "Downloading...",
     "historyClientOnly": "Export history available in the client space",
     "clientSpaceNote": "Available in the client space",
-    "historyError": "Unable to load export history.",
-    "colType": "Type",
-    "colFormat": "Format",
-    "colRequestedBy": "Requested by",
-    "colDate": "Date",
-    "colStatus": "Status",
-    "historySearchPlaceholder": "Search history...",
-    "historyEmpty": "No recent export.",
-    "downloadError": "Error while downloading the report",
-    "hrReportUnavailable": "Unable to generate the HR report (endpoint unavailable)."
+    "historyError": "Unable to load export history."
   },
   "companyDetail": {
     "analyzing": "Analyzing client data...",
@@ -1277,48 +1200,7 @@
     "slug": "Slug",
     "countryCurrency": "Country / Currency",
     "registeredOn": "Registered on",
-    "lastActivity": "Last activity",
-    "backToPortfolio": "Back to portfolio",
-    "loading": "Loading...",
-    "subtitle": "Operational health, subscription and module configuration.",
-    "refresh": "Refresh",
-    "scoreHealth": "Health Score",
-    "teamActive": "Active Team",
-    "revenueMrr": "Revenue (MRR)",
-    "riskLevel": "Risk level:",
-    "priorityActions": "Priority Actions",
-    "moduleActive": "Module Active",
-    "moduleDisabled": "Module Disabled",
-    "modulesConfigHint": "Enable or disable the specific features for this client.",
-    "updating": "Updating...",
-    "saveConfig": "Save configuration",
-    "subscription": "Subscription",
-    "endDate": "End",
-    "notesPlaceholder": "Details on negotiation, discounts, etc.",
-    "saving": "Saving...",
-    "updateSubscription": "Update subscription",
-    "activateClient": "Activate client",
-    "support": "Support",
-    "openSingular": "open",
-    "openPlural": "open",
-    "viewAllTickets": "View all tickets",
-    "messageSingular": "message",
-    "messagePlural": "messages",
-    "loadFailed": "Unable to load company details. Check that the UUID is valid.",
-    "subscriptionUpdated": "Subscription updated successfully.",
-    "featuresSaved": "Module configuration saved.",
-    "planMissing": "Client plan missing.",
-    "noPunch": "No check-in",
-    "features": {
-      "rh": "Human Resources",
-      "finance": "Finance & Management",
-      "ai": "Artificial Intelligence",
-      "cameras": "Video Surveillance",
-      "tracking": "Fleet Tracking",
-      "planning": "Planning & Team",
-      "training": "Training Center",
-      "cabinet": "Digital Locker"
-    }
+    "lastActivity": "Last activity"
   },
   "support": {
     "title": "Client Requests",
@@ -1358,10 +1240,7 @@
     "showingSuffix": "requests",
     "loadError": "Unable to sync client requests.",
     "toastApproved": "Request approved. Provisioning started.",
-    "toastRejected": "Request rejected.",
-    "noTicket": "No ticket",
-    "selectTicket": "Select a ticket to view the conversation",
-    "loadConversationError": "Unable to load the conversation."
+    "toastRejected": "Request rejected."
   },
   "reports": {
     "attendance_title": "Attendance Summary",
@@ -1411,35 +1290,6 @@
     "recent_collaborators": "Recent collaborators",
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
-  },
-  "user_auth": {
-    "company_request": {
-      "title": "Request submitted!",
-      "body": "An administrator will review your request. You will receive a notification once it is processed.",
-      "info": "Fill in your company information. An administrator will validate your request."
-    },
-    "back_to_home": "Back to home",
-    "create_company": "Create a company",
-    "company_name": "Company name",
-    "company_email": "Company email",
-    "sector": "Business sector",
-    "country": "Country",
-    "city": "City",
-    "phone": "Phone",
-    "description": "Description",
-    "submit_request": "Submit request",
-    "submit_error": "Error submitting request",
-    "already_account": "Already have an account? Sign in",
-    "first_name": "First name",
-    "google_error": "Google error: {error}",
-    "last_name": "Last name",
-    "login_subtitle": "Access your workspace, documents and requests.",
-    "no_account": "No account yet? Sign up",
-    "personal_login": "Personal login",
-    "phone_optional": "Phone (optional)",
-    "register_button": "Create my account",
-    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
-    "register_title": "Create my account"
   },
   "partnerPage": {
     "loading": "Loading your workspace...",
@@ -1492,6 +1342,35 @@
       "copied": "Copied!",
       "copyError": "Unable to copy the link. Copy it manually."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
   },
   "api": {
     "sessionExpired": "Session expired. Reconnecting...",
@@ -1578,69 +1457,6 @@
     "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
     "title": "System Administration"
   },
-  "crm": {
-    "subtitle": "Track leads from entry to paid conversion.",
-    "leadsTotal": "Total leads",
-    "leadToTrialRate": "Lead -> trial rate",
-    "leadToClientRate": "Lead -> paying client rate",
-    "loading": "Loading pipeline...",
-    "leadsIncoming": "Incoming Leads",
-    "noLead": "No lead",
-    "noTrial": "No ongoing trial",
-    "noClient": "No converted active client",
-    "noHistory": "No history",
-    "title": "Sales Pipeline",
-    "refresh": "Refresh",
-    "columnTrials": "In Trial",
-    "columnActive": "Active Clients",
-    "columnRejected": "Rejected / Expired",
-    "activeBadge": "Active",
-    "daysLeft": "d left",
-    "sourceSignup": "Sign-up",
-    "sourceDemo": "Demo request",
-    "sourceContact": "Contact",
-    "sourceNewsletter": "Newsletter",
-    "sourceSelfService": "Self-service trial",
-    "sourceManager": "Manager request",
-    "sourceDirect": "Direct",
-    "loadError": "Unable to load the CRM pipeline."
-  },
-  "edge": {
-    "title": "Edge Nodes",
-    "nodesTotal": "Total nodes",
-    "licensesExpired": "Expired licenses",
-    "loading": "Loading nodes…",
-    "empty": "No Edge node registered",
-    "colNode": "Node",
-    "colStatus": "Status",
-    "colLicense": "License",
-    "colLastSync": "Last sync",
-    "colActions": "Actions",
-    "syncing": "Syncing…",
-    "sync": "Sync",
-    "subtitle": "Leopardo Edge node management — offline-first synchronization",
-    "refresh": "Refresh",
-    "online": "Online",
-    "offline": "Offline",
-    "emptyHint": "Nodes appear here once registered via the Edge API.",
-    "lastSeenPrefix": "Seen",
-    "expiresPrefix": "Exp.",
-    "details": "Details",
-    "loadError": "Error while loading Edge nodes.",
-    "syncError": "Error while triggering the synchronization.",
-    "syncStarted": "Synchronization started for :name",
-    "licenseValid": "Valid",
-    "licenseInvalid": "Invalid",
-    "justNow": "just now",
-    "minutesAgo": ":count min ago",
-    "hoursAgo": ":count h ago"
-  },
-  "notFound": {
-    "backToDashboard": "Back to dashboard",
-    "usefulLinks": "Useful links",
-    "system": "System",
-    "systemConfig": "System configuration"
-  },
   "billing": {
     "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
     "no_active_period": "No active period",
@@ -1654,71 +1470,5 @@
     "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
     "searchPlaceholder": "Search for an employee or contract type...",
     "allStatuses": "All statuses"
-  },
-  "growth": {
-    "title": "Growth Administration",
-    "subtitle": "Manage the partner program and Leopardo RH commissions.",
-    "tabPartners": "Partners",
-    "tabPayouts": "Payouts",
-    "tabAudit": "Audit Log",
-    "syncing": "Syncing data...",
-    "retry": "Retry",
-    "colPartner": "Partner",
-    "colRate": "Rate (excl. tax) (%)",
-    "colReferred": "Referred",
-    "colStatus": "Status",
-    "colActions": "Actions",
-    "colAmount": "Amount",
-    "colDate": "Date",
-    "approve": "Approve",
-    "noPartners": "No partner found.",
-    "noPayouts": "No payout request.",
-    "markPaid": "Mark Paid",
-    "noAuditLogs": "No Growth audit log yet.",
-    "statusPending": "Pending",
-    "statusApproved": "Approved",
-    "statusRejected": "Rejected",
-    "payoutNoteTitle": "Payment note (Audit)",
-    "payoutNotePlaceholder": "Reason / audit reference...",
-    "validate": "Validate",
-    "approveDialogTitle": "Approve application",
-    "approveDialogBody": "Do you want to approve the application of",
-    "loadError": "Error while loading Growth data.",
-    "payoutUpdated": "Payment updated",
-    "errorPrefix": "Error: "
-  },
-  "supportTickets": {
-    "title": "Client support center",
-    "subtitle": "Conversations opened by client companies, sorted by priority.",
-    "refresh": "Refresh",
-    "filterPrefix": "Filter:",
-    "companySelected": "Selected company",
-    "statsOpen": "Open",
-    "statsPendingClient": "Awaiting client",
-    "statsResolved": "Resolved",
-    "statsClosed": "Closed",
-    "filterAll": "All",
-    "filterOpen": "Open",
-    "filterPending": "Pending",
-    "filterResolved": "Resolved",
-    "filterClosed": "Closed",
-    "filterAllPriorities": "All priorities",
-    "priorityUrgent": "Urgent",
-    "priorityHigh": "High",
-    "priorityNormal": "Normal",
-    "priorityLow": "Low",
-    "companyUnknown": "Unknown company",
-    "contactUnknown": "Unknown contact",
-    "teamLeopardo": "Leopardo Team",
-    "client": "Client",
-    "replyPlaceholder": "Reply to client...",
-    "loadError": "Unable to load support tickets.",
-    "replyError": "Unable to send the reply.",
-    "ticketUpdated": "Ticket updated.",
-    "triageError": "Unable to update the ticket.",
-    "statusOpen": "Open",
-    "statusPending": "Pending",
-    "statusResolved": "Resolved",
-    "statusClosed": "Closed"
   }
 }

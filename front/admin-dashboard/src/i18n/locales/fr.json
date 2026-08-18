@@ -88,8 +88,7 @@
       "password": {
         "visibility": "Afficher ou masquer le mot de passe"
       }
-    },
-    "access_key_required": "La clé d'accès est requise."
+    }
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -318,43 +317,7 @@
     "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
     "searchPlaceholder": "Rechercher...",
     "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
-    "yourCompany": "Votre entreprise",
-    "activeCompanies": "Entreprises actives",
-    "platformMrr": "MRR Plateforme",
-    "pendingRequestsTitle": "Demandes en attente",
-    "criticalAlerts": "Alertes critiques",
-    "details": "Détails",
-    "processRequests": "Traiter les demandes",
-    "badgeTenants": ":count tenants",
-    "badgeToProcess": ":count à traiter",
-    "badgeRisks": ":count risques",
-    "cards": {
-      "createClientDesc": "Qualifier une entreprise, ouvrir son tenant et vérifier son statut de lancement.",
-      "processRequestsDesc": "Suivre les demandes d’essai, prioriser les leads et éviter les prospects bloqués.",
-      "monitorAtRiskDesc": "Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.",
-      "manageSubscriptionsDesc": "Contrôler MRR, impayés, plans actifs et trajectoire commerciale de la plateforme.",
-      "checkSystemDesc": "Contrôler santé API, configuration, logs, sauvegardes et signaux d’incident.",
-      "prepareIntegrationsDesc": "Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs."
-    }
-  },
-  "time": {
-    "justNow": "à l'instant",
-    "minutesAgo": "il y a {count} min",
-    "hoursAgo": "il y a {count} h",
-    "minutesShort": "{count} m",
-    "hoursShort": "{count} h",
-    "never": "jamais",
-    "loadingData": "Chargement des données...",
-    "confirm": "Confirmer",
-    "cancel": "Annuler",
-    "inProgress": "En cours…",
-    "valid": "Valide",
-    "invalid": "Invalide",
-    "statusActive": "Actif",
-    "statusInactive": "Inactif",
-    "statusSuspended": "Suspendu",
-    "statusPending": "Attente",
-    "exportCsv": "Export CSV"
+    "yourCompany": "Votre entreprise"
   },
   "_version": "1.0.0",
   "signup": {
@@ -503,13 +466,13 @@
     "language": {
       "label": "Langue",
       "variants": {
-        "fr-FR": "Francais (France)",
+        "fr-FR": "Français (France)",
         "en-US": "Anglais (Etats-Unis)",
         "en-GB": "Anglais (Royaume-Uni)",
-        "fr-CA": "Francais (Canada)",
+        "fr-CA": "Français (Canada)",
         "tr-TR": "Turc (Turquie)",
         "ar-SA": "Arabe (Arabie saoudite)",
-        "fr-BE": "Francais (Belgique)",
+        "fr-BE": "Français (Belgique)",
         "ar-MA": "Arabe (Maroc)"
       }
     },
@@ -537,11 +500,7 @@
       "TR": "Turquie"
     },
     "or": "ou",
-    "required": "Requis",
-    "noResults": "Aucun résultat trouvé.",
-    "confirm": "Confirmer",
-    "cancel": "Annuler",
-    "busy": "En cours…"
+    "required": "Requis"
   },
   "seo": {
     "pricing": {
@@ -661,25 +620,7 @@
     "managerEmail": "Email Manager Principal *",
     "activateNow": "Activer immediatement",
     "activateClientNow": "Activer le client immediatement",
-    "activateClientHint": "Sinon le client reste en essai (trial).",
-    "portfolioSub": "Adoption, risque, revenus récurrents et prochaine action par entreprise.",
-    "newClient": "Nouveau Client",
-    "refresh": "Actualiser",
-    "statsFollowed": "Clients Suivis",
-    "statsActive": "Clients Actifs",
-    "statsGlobalMrr": "MRR Global",
-    "statsRiskAlert": "Alerte Risque",
-    "noPlan": "SANS PLAN",
-    "logsUnit": "logs",
-    "activeUnit": "actifs",
-    "ras": "RAS",
-    "open": "Ouvrir",
-    "provisioningTitle": "Provisionnement Client",
-    "provisioning": "Provisionnement...",
-    "createClient": "Créer le client",
-    "loadError": "Impossible de charger le cockpit clients.",
-    "createError": "Impossible de creer ce client.",
-    "created": "Client créé et invitation manager envoyée."
+    "activateClientHint": "Sinon le client reste en essai (trial)."
   },
   "subscriptions": {
     "title": "Abonnements",
@@ -1126,14 +1067,6 @@
       "title": "Modifier l'utilisateur",
       "status": "Statut",
       "save": "Mettre à jour"
-    },
-    "csv": {
-      "name": "Nom",
-      "email": "Email",
-      "status": "Statut",
-      "company": "Entreprise",
-      "signup": "Inscription",
-      "lastLogin": "Dernière connexion"
     }
   },
   "adminChat": {
@@ -1207,8 +1140,7 @@
     "criticalAlerts": "Alertes critiques",
     "level": "Niveau :",
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
-    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
-    "noCriticalAlerts": "Aucune alerte critique"
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
   },
   "exports": {
     "reportEmployees": "Employes",
@@ -1242,16 +1174,7 @@
     "downloading": "Telechargement...",
     "historyClientOnly": "Historique des exports disponible dans l'espace client",
     "clientSpaceNote": "Disponible dans l'espace client",
-    "historyError": "Impossible de charger l'historique des exports.",
-    "colType": "Type",
-    "colFormat": "Format",
-    "colRequestedBy": "Demande par",
-    "colDate": "Date",
-    "colStatus": "Statut",
-    "historySearchPlaceholder": "Rechercher dans l'historique...",
-    "historyEmpty": "Aucun export recent.",
-    "downloadError": "Erreur lors du téléchargement du rapport",
-    "hrReportUnavailable": "Impossible de générer le rapport HR (endpoint indisponible)."
+    "historyError": "Impossible de charger l'historique des exports."
   },
   "companyDetail": {
     "analyzing": "Analyse des donnees client...",
@@ -1277,48 +1200,7 @@
     "slug": "Slug",
     "countryCurrency": "Pays / Devise",
     "registeredOn": "Inscrit le",
-    "lastActivity": "Derniere Activite",
-    "backToPortfolio": "Retour au portefeuille",
-    "loading": "Chargement...",
-    "subtitle": "Santé opérationnelle, abonnement et configuration des modules.",
-    "refresh": "Actualiser",
-    "scoreHealth": "Score Santé",
-    "teamActive": "Équipe Active",
-    "revenueMrr": "Revenu (MRR)",
-    "riskLevel": "Niveau de risque :",
-    "priorityActions": "Actions Prioritaires",
-    "moduleActive": "Module Actif",
-    "moduleDisabled": "Module Désactivé",
-    "modulesConfigHint": "Activez ou désactivez les fonctionnalités spécifiques pour ce client.",
-    "updating": "Mise à jour...",
-    "saveConfig": "Sauvegarder la configuration",
-    "subscription": "Abonnement",
-    "endDate": "Fin",
-    "notesPlaceholder": "Détails sur la négociation, remises, etc.",
-    "saving": "Enregistrement...",
-    "updateSubscription": "Mettre à jour l'abonnement",
-    "activateClient": "Activer client",
-    "support": "Support",
-    "openSingular": "ouvert",
-    "openPlural": "ouverts",
-    "viewAllTickets": "Voir tous les tickets",
-    "messageSingular": "message",
-    "messagePlural": "messages",
-    "loadFailed": "Impossible de charger le detail entreprise. Verifiez que l'UUID est valide.",
-    "subscriptionUpdated": "Abonnement mis à jour avec succès.",
-    "featuresSaved": "Configuration des modules enregistrée.",
-    "planMissing": "Plan client manquant.",
-    "noPunch": "Aucun pointage",
-    "features": {
-      "rh": "Ressources Humaines",
-      "finance": "Finance & Gestion",
-      "ai": "Intelligence Artificielle",
-      "cameras": "Surveillance Vidéo",
-      "tracking": "Suivi de Flotte",
-      "planning": "Planning & Equipe",
-      "training": "Centre de Formation",
-      "cabinet": "Placard Numérique"
-    }
+    "lastActivity": "Derniere Activite"
   },
   "support": {
     "title": "Demandes clients",
@@ -1358,10 +1240,7 @@
     "showingSuffix": "demandes",
     "loadError": "Impossible de synchroniser les demandes clients.",
     "toastApproved": "Demande approuvée. Provisionnement lancé.",
-    "toastRejected": "Demande rejetée.",
-    "noTicket": "Aucun ticket",
-    "selectTicket": "Sélectionnez un ticket pour voir la conversation",
-    "loadConversationError": "Impossible de charger la conversation."
+    "toastRejected": "Demande rejetée."
   },
   "reports": {
     "attendance_title": "Résumé Présences",
@@ -1411,35 +1290,6 @@
     "recent_collaborators": "Collaborateurs récents",
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
-  },
-  "user_auth": {
-    "company_request": {
-      "title": "Demande soumise !",
-      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
-      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
-    },
-    "back_to_home": "À l'accueil",
-    "create_company": "Créer une entreprise",
-    "company_name": "Nom de l'entreprise",
-    "company_email": "Email entreprise",
-    "sector": "Secteur d'activité",
-    "country": "Pays",
-    "city": "Ville",
-    "phone": "Téléphone",
-    "description": "Description",
-    "submit_request": "Soumettre la demande",
-    "submit_error": "Erreur lors de la soumission",
-    "already_account": "Deja un compte ? Se connecter",
-    "first_name": "Prenom",
-    "google_error": "Erreur Google : {error}",
-    "last_name": "Nom",
-    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
-    "no_account": "Pas encore de compte ? S'inscrire",
-    "personal_login": "Connexion personnelle",
-    "phone_optional": "Telephone (optionnel)",
-    "register_button": "Creer mon compte",
-    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
-    "register_title": "Creer mon compte"
   },
   "partnerPage": {
     "loading": "Chargement de votre espace...",
@@ -1492,6 +1342,35 @@
       "copied": "Copié !",
       "copyError": "Impossible de copier le lien. Copiez-le manuellement."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
   },
   "api": {
     "sessionExpired": "Session expirée. Reconnexion en cours...",
@@ -1578,69 +1457,6 @@
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
     "title": "Administration Système"
   },
-  "crm": {
-    "subtitle": "Suivi des leads de l'entrée jusqu'à la conversion payante.",
-    "leadsTotal": "Leads totaux",
-    "leadToTrialRate": "Taux lead -> essai",
-    "leadToClientRate": "Taux lead -> client payant",
-    "loading": "Chargement du pipeline...",
-    "leadsIncoming": "Leads Entrants",
-    "noLead": "Aucun lead",
-    "noTrial": "Aucun essai en cours",
-    "noClient": "Aucun client actif converti",
-    "noHistory": "Aucun historique",
-    "title": "Pipeline Commercial",
-    "refresh": "Actualiser",
-    "columnTrials": "En Essai (Trial)",
-    "columnActive": "Clients Actifs",
-    "columnRejected": "Rejetés / Expirés",
-    "activeBadge": "Actif",
-    "daysLeft": "j restants",
-    "sourceSignup": "Inscription",
-    "sourceDemo": "Demande de démo",
-    "sourceContact": "Contact",
-    "sourceNewsletter": "Newsletter",
-    "sourceSelfService": "Essai self-service",
-    "sourceManager": "Demande manager",
-    "sourceDirect": "Direct",
-    "loadError": "Impossible de charger le pipeline CRM."
-  },
-  "edge": {
-    "title": "Nodes Edge",
-    "nodesTotal": "Nodes total",
-    "licensesExpired": "Licences expirées",
-    "loading": "Chargement des nodes…",
-    "empty": "Aucun node Edge enregistré",
-    "colNode": "Node",
-    "colStatus": "Statut",
-    "colLicense": "Licence",
-    "colLastSync": "Dernière sync",
-    "colActions": "Actions",
-    "syncing": "Sync…",
-    "sync": "Sync",
-    "subtitle": "Gestion des nodes Edge Leopardo — synchronisation offline-first",
-    "refresh": "Actualiser",
-    "online": "En ligne",
-    "offline": "Hors ligne",
-    "emptyHint": "Les nodes apparaissent ici une fois enregistrés via l'API Edge.",
-    "lastSeenPrefix": "Vu",
-    "expiresPrefix": "Exp.",
-    "details": "Détails",
-    "loadError": "Erreur lors du chargement des nodes Edge.",
-    "syncError": "Erreur lors du déclenchement de la synchronisation.",
-    "syncStarted": "Synchronisation lancée pour :name",
-    "licenseValid": "Valide",
-    "licenseInvalid": "Invalide",
-    "justNow": "à l'instant",
-    "minutesAgo": "il y a :count min",
-    "hoursAgo": "il y a :count h"
-  },
-  "notFound": {
-    "backToDashboard": "Retour au tableau de bord",
-    "usefulLinks": "Liens utiles",
-    "system": "Système",
-    "systemConfig": "Configuration système"
-  },
   "billing": {
     "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
     "no_active_period": "Aucune période active",
@@ -1654,71 +1470,5 @@
     "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
     "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
     "allStatuses": "Tous les statuts"
-  },
-  "growth": {
-    "title": "Administration Growth",
-    "subtitle": "Pilotez le programme partenaire et les commissions Leopardo RH.",
-    "tabPartners": "Partenaires",
-    "tabPayouts": "Paiements",
-    "tabAudit": "Audit Log",
-    "syncing": "Synchronisation des données...",
-    "retry": "Réessayer",
-    "colPartner": "Partenaire",
-    "colRate": "Taux HT (%)",
-    "colReferred": "Référés",
-    "colStatus": "Statut",
-    "colActions": "Actions",
-    "colAmount": "Montant",
-    "colDate": "Date",
-    "approve": "Approuver",
-    "noPartners": "Aucun partenaire trouvé.",
-    "noPayouts": "Aucune demande de paiement.",
-    "markPaid": "Marquer Payé",
-    "noAuditLogs": "Zéro log d'audit Growth pour le moment.",
-    "statusPending": "En attente",
-    "statusApproved": "Approuvé",
-    "statusRejected": "Rejeté",
-    "payoutNoteTitle": "Note de paiement (Audit)",
-    "payoutNotePlaceholder": "Motif / référence de l'audit...",
-    "validate": "Valider",
-    "approveDialogTitle": "Approuver la candidature",
-    "approveDialogBody": "Voulez-vous approuver la candidature de",
-    "loadError": "Erreur lors du chargement des données Growth.",
-    "payoutUpdated": "Paiement mis à jour",
-    "errorPrefix": "Erreur : "
-  },
-  "supportTickets": {
-    "title": "Centre support client",
-    "subtitle": "Conversations ouvertes par les entreprises clientes, triées par priorité.",
-    "refresh": "Actualiser",
-    "filterPrefix": "Filtre :",
-    "companySelected": "Entreprise sélectionnée",
-    "statsOpen": "Ouverts",
-    "statsPendingClient": "En attente client",
-    "statsResolved": "Résolus",
-    "statsClosed": "Fermés",
-    "filterAll": "Tous",
-    "filterOpen": "Ouverts",
-    "filterPending": "En attente",
-    "filterResolved": "Résolus",
-    "filterClosed": "Fermés",
-    "filterAllPriorities": "Toutes priorités",
-    "priorityUrgent": "Urgent",
-    "priorityHigh": "Haute",
-    "priorityNormal": "Normale",
-    "priorityLow": "Basse",
-    "companyUnknown": "Entreprise inconnue",
-    "contactUnknown": "Contact inconnu",
-    "teamLeopardo": "Équipe Leopardo",
-    "client": "Client",
-    "replyPlaceholder": "Répondre au client...",
-    "loadError": "Impossible de charger les tickets de support.",
-    "replyError": "Envoi de la réponse impossible.",
-    "ticketUpdated": "Ticket mis à jour.",
-    "triageError": "Mise à jour du ticket impossible.",
-    "statusOpen": "Ouvert",
-    "statusPending": "En attente",
-    "statusResolved": "Résolu",
-    "statusClosed": "Fermé"
   }
 }
