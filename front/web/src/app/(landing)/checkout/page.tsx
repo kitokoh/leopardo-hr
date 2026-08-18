@@ -630,6 +630,8 @@ function StepPayment({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  // #4952 : tunnel de paiement indisponible (CHECKOUT_UNAVAILABLE) → CTA essai.
+  const [unavailable, setUnavailable] = useState(false);
   const [sandboxFilled, setSandboxFilled] = useState(false);
 
   const isSandboxCard = cardNumber.replace(/\s/g, '') === '4242424242424242';
@@ -691,6 +693,11 @@ function StepPayment({
 
       if (data.success && data.checkout_url) {
         router.push(data.checkout_url);
+      } else if (data.error === 'CHECKOUT_UNAVAILABLE') {
+        // #4952 : fail-closed voulu (#2628/#2665) mais tunnel mort — on
+        // propose le parcours d'essai sans carte au lieu d'un cul-de-sac.
+        setUnavailable(true);
+        setError(data.message || copy.payment.errors.generic);
       } else {
         setError(data.message || copy.payment.errors.generic);
       }
@@ -825,6 +832,23 @@ function StepPayment({
             className={inputBase}
           />
         </div>
+
+        {/* #4952 : paiement indisponible — fallback essai gratuit */}
+        {unavailable && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-sm rounded-xl px-4 py-3 mb-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50"
+          >
+            <p className="text-amber-800 dark:text-amber-300 font-medium">{error}</p>
+            <Link
+              href="/signup?source=checkout_unavailable"
+              className="mt-2 inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+            >
+              {copy.free.cta} →
+            </Link>
+          </motion.div>
+        )}
 
         {/* Error */}
         {error && (

@@ -671,8 +671,11 @@ export default function PricingPage() {
     if (plan.planCode === 'free') return '/signup?plan=free&source=pricing_free';
     // Enterprise → contact commercial
     if (!showsCurrency(plan.price)) return '/contact?topic=enterprise';
-    // Plans payants : checkout avec paiement
-    if (plan.planCode === 'operations') return '/checkout?plan=operations';
+    // #4952 : tunnel de paiement indisponible en prod (CHECKOUT_UNAVAILABLE —
+    // Stripe non branché, fail-closed #2628/#2665) : les plans payants mènent
+    // au parcours d'essai sans carte au lieu d'un checkout mort. Réactiver
+    // `/checkout?plan=operations` quand Stripe est live (#4630).
+    if (plan.planCode === 'operations') return '/signup?plan=operations&source=pricing_operations';
     // Pilot → essai guidé 14 jours (pas de CB à l'inscription — #2649)
     return `/signup?plan=${plan.planCode}&source=pricing_pilot`;
   }

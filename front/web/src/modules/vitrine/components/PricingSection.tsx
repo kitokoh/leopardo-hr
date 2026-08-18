@@ -27,8 +27,11 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   if (planNameToCheckoutKey(planName) === 'pilot') return `/signup?source=home_pilot`
   // #3883 : le plan Free (0 €) suit le même funnel sans carte que l'essai guidé
   // (#2907 : ne jamais mener « Start for free » vers le paywall du checkout).
+  // #4952 : tunnel de paiement indisponible en prod (CHECKOUT_UNAVAILABLE) —
+  // les plans payants mènent à l'essai sans carte. Réactiver /checkout
+  // quand Stripe est branché (#4630).
   const planKey = planNameToCheckoutKey(planName)
-  return `/checkout?plan=${planKey}&billing=${billing}`
+  return `/signup?source=home_${planKey}`
 }
 
 const freePlanLabel: Record<string, string> = {
