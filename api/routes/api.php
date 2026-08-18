@@ -200,6 +200,8 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/support-tickets', [SupportTicketController::class, 'store']);
         Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->whereNumber('supportTicket');
         Route::post('/support-tickets/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->whereNumber('supportTicket');
+        // #4933 : clôture par l'auteur ou un manager du tenant.
+        Route::post('/support-tickets/{supportTicket}/close', [SupportTicketController::class, 'close'])->whereNumber('supportTicket');
 
         // DEPRECATED (#4929) : endpoint de « go-live readiness » calculé (8
         // étapes auto-détectées) — distinct de la checklist pilotée par la
