@@ -6311,6 +6311,31 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Retour'**
   String get back;
+  String get cabinetScreenAddDocument;
+  String get cabinetScreenAddDocumentSubtitle;
+  String get cabinetScreenCancel;
+  String get cabinetScreenCreate;
+  String get cabinetScreenCreateShareLink;
+  String get cabinetScreenDelete;
+  String cabinetScreenDeleteBody(Object name);
+  String get cabinetScreenDeleteTitle;
+
+  String cabinetScreenDocumentsCount(num count);  String get cabinetScreenDocumentAdded;
+  String get cabinetScreenDocuments;
+  String get cabinetScreenEmailHint;
+  String get cabinetScreenEmptyDescription;
+  String get cabinetScreenEmptyTitle;
+  String get cabinetScreenFolderNameHint;
+  String get cabinetScreenFolders;
+  String cabinetScreenLinkCopied(Object url);
+  String get cabinetScreenNewFolder;
+  String get cabinetScreenSend;
+  String get cabinetScreenShareByEmail;
+  String cabinetScreenShareSent(Object email);
+  String cabinetScreenShareTitle(Object name);
+  String get cabinetScreenTitleRoot;
+  String get cabinetScreenUploadFailed;
+  String get cabinetScreenUploading;
 
   /// No description provided for @notificationsMarkAllReadError.
   String get notificationsMarkAllReadError;

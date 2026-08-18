@@ -2031,5 +2031,34 @@
         "error": "Impossible de charger les statistiques."
       }
     }
+  },
+  "cabinet": {
+    "screen": {
+      "title_root": "Mon placard",
+      "empty_title": "Placard vide",
+      "empty_description": "Ajoutez des dossiers et documents pour organiser votre espace.",
+      "folders": "Dossiers",
+      "documents": "Documents",
+      "new_folder": "Nouveau dossier",
+      "add_document": "Ajouter un document",
+      "add_document_subtitle": "Depuis vos fichiers ou la camera",
+      "folder_name_hint": "Nom du dossier",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "uploading": "Envoi en cours...",
+      "document_added": "Document ajouté avec succès",
+      "upload_failed": "Échec de l'envoi du document. Réessayez.",
+      "share_title": "Partager « {name} »",
+      "create_share_link": "Créer un lien de partage",
+      "link_copied": "Lien copié : {url}",
+      "share_by_email": "Partager par email",
+      "email_hint": "Email du destinataire",
+      "send": "Envoyer",
+      "share_sent": "Partage envoyé à {email}",
+      "delete_title": "Supprimer le document ?",
+      "delete_body": "Le document « {name} » sera supprimé définitivement.",
+      "delete": "Supprimer",
+      "documents_count": "{count, plural, =1{1 doc} other{{count} docs}}"
+    }
   }
 }

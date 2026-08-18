@@ -2031,5 +2031,34 @@
         "error": "İstatistikler yüklenemedi."
       }
     }
+  },
+  "cabinet": {
+    "screen": {
+      "title_root": "Dolabım",
+      "empty_title": "Dolap boş",
+      "empty_description": "Alanınızı düzenlemek için klasörler ve belgeler ekleyin.",
+      "folders": "Klasörler",
+      "documents": "Belgeler",
+      "new_folder": "Yeni klasör",
+      "add_document": "Belge ekle",
+      "add_document_subtitle": "Dosyalarınızdan veya kameradan",
+      "folder_name_hint": "Klasör adı",
+      "cancel": "İptal",
+      "create": "Oluştur",
+      "uploading": "Yükleniyor...",
+      "document_added": "Belge başarıyla eklendi",
+      "upload_failed": "Belge yüklenemedi. Tekrar deneyin.",
+      "share_title": "\"{name}\" paylaş",
+      "create_share_link": "Paylaşım bağlantısı oluştur",
+      "link_copied": "Bağlantı kopyalandı: {url}",
+      "share_by_email": "E-posta ile paylaş",
+      "email_hint": "Alıcı e-postası",
+      "send": "Gönder",
+      "share_sent": "Paylaşım {email} adresine gönderildi",
+      "delete_title": "Bu belge silinsin mi?",
+      "delete_body": "\"{name}\" belgesi kalıcı olarak silinecek.",
+      "delete": "Sil",
+      "documents_count": "{count, plural, =1{1 belge} other{{count} belge}}"
+    }
   }
 }

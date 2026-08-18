@@ -1543,5 +1543,34 @@
         "error": "Unable to load statistics."
       }
     }
+  },
+  "cabinet": {
+    "screen": {
+      "title_root": "My cabinet",
+      "empty_title": "Empty cabinet",
+      "empty_description": "Add folders and documents to organize your space.",
+      "folders": "Folders",
+      "documents": "Documents",
+      "new_folder": "New folder",
+      "add_document": "Add a document",
+      "add_document_subtitle": "From your files or camera",
+      "folder_name_hint": "Folder name",
+      "cancel": "Cancel",
+      "create": "Create",
+      "uploading": "Uploading...",
+      "document_added": "Document added successfully",
+      "upload_failed": "Failed to upload the document. Try again.",
+      "share_title": "Share \"{name}\"",
+      "create_share_link": "Create a share link",
+      "link_copied": "Link copied: {url}",
+      "share_by_email": "Share by email",
+      "email_hint": "Recipient email",
+      "send": "Send",
+      "share_sent": "Share sent to {email}",
+      "delete_title": "Delete this document?",
+      "delete_body": "The document \"{name}\" will be permanently deleted.",
+      "delete": "Delete",
+      "documents_count": "{count, plural, =1{1 doc} other{{count} docs}}"
+    }
   }
 }

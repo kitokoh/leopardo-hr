@@ -3296,6 +3296,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get back => 'رجوع';
+
+  String get cabinetScreenAddDocument => 'إضافة مستند';
+  String get cabinetScreenAddDocumentSubtitle => 'من ملفاتك أو الكاميرا';
+  String get cabinetScreenCancel => 'إلغاء';
+  String get cabinetScreenCreate => 'إنشاء';
+  String get cabinetScreenCreateShareLink => 'إنشاء رابط مشاركة';
+  String get cabinetScreenDelete => 'حذف';
+  String cabinetScreenDeleteBody(Object name) => 'سيتم حذف المستند «${name}» نهائيًا.';
+  String get cabinetScreenDeleteTitle => 'حذف هذا المستند؟';
+
+  String cabinetScreenDocumentsCount(num count) {
+    if (count == 1) return 'مستند واحد';
+    return '${count} مستندات';
+  }  String get cabinetScreenDocumentAdded => 'تمت إضافة المستند بنجاح';
+  String get cabinetScreenDocuments => 'المستندات';
+  String get cabinetScreenEmailHint => 'بريد المستلم الإلكتروني';
+  String get cabinetScreenEmptyDescription => 'أضف مجلدات ومستندات لتنظيم مساحتك.';
+  String get cabinetScreenEmptyTitle => 'الخزانة فارغة';
+  String get cabinetScreenFolderNameHint => 'اسم المجلد';
+  String get cabinetScreenFolders => 'المجلدات';
+  String cabinetScreenLinkCopied(Object url) => 'تم نسخ الرابط: ${url}';
+  String get cabinetScreenNewFolder => 'مجلد جديد';
+  String get cabinetScreenSend => 'إرسال';
+  String get cabinetScreenShareByEmail => 'المشاركة عبر البريد الإلكتروني';
+  String cabinetScreenShareSent(Object email) => 'تم إرسال المشاركة إلى ${email}';
+  String cabinetScreenShareTitle(Object name) => 'مشاركة «${name}»';
+  String get cabinetScreenTitleRoot => 'خزانتي';
+  String get cabinetScreenUploadFailed => 'فشل رفع المستند. حاول مرة أخرى.';
+  String get cabinetScreenUploading => 'جارٍ الرفع...';
+
+
   @override
   String get notificationsMarkAllReadError => 'تعذر وضع علامة مقروء على جميع الإشعارات.';
 

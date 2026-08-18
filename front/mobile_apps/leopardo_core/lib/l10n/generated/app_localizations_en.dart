@@ -3326,6 +3326,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get back => 'Back';
+
+  String get cabinetScreenAddDocument => 'Add a document';
+  String get cabinetScreenAddDocumentSubtitle => 'From your files or camera';
+  String get cabinetScreenCancel => 'Cancel';
+  String get cabinetScreenCreate => 'Create';
+  String get cabinetScreenCreateShareLink => 'Create a share link';
+  String get cabinetScreenDelete => 'Delete';
+  String cabinetScreenDeleteBody(Object name) => 'The document "${name}" will be permanently deleted.';
+  String get cabinetScreenDeleteTitle => 'Delete this document?';
+
+  String cabinetScreenDocumentsCount(num count) {
+    if (count == 1) return '1 doc';
+    return '${count} docs';
+  }  String get cabinetScreenDocumentAdded => 'Document added successfully';
+  String get cabinetScreenDocuments => 'Documents';
+  String get cabinetScreenEmailHint => 'Recipient email';
+  String get cabinetScreenEmptyDescription => 'Add folders and documents to organize your space.';
+  String get cabinetScreenEmptyTitle => 'Empty cabinet';
+  String get cabinetScreenFolderNameHint => 'Folder name';
+  String get cabinetScreenFolders => 'Folders';
+  String cabinetScreenLinkCopied(Object url) => 'Link copied: ${url}';
+  String get cabinetScreenNewFolder => 'New folder';
+  String get cabinetScreenSend => 'Send';
+  String get cabinetScreenShareByEmail => 'Share by email';
+  String cabinetScreenShareSent(Object email) => 'Share sent to ${email}';
+  String cabinetScreenShareTitle(Object name) => 'Share "${name}"';
+  String get cabinetScreenTitleRoot => 'My cabinet';
+  String get cabinetScreenUploadFailed => 'Failed to upload the document. Try again.';
+  String get cabinetScreenUploading => 'Uploading...';
+
+
   @override
   String get notificationsMarkAllReadError => 'Unable to mark notifications as read.';
 

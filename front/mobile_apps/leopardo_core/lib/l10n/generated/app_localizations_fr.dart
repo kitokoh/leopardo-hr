@@ -3372,6 +3372,37 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get back => 'Retour';
+
+  String get cabinetScreenAddDocument => 'Ajouter un document';
+  String get cabinetScreenAddDocumentSubtitle => 'Depuis vos fichiers ou la camera';
+  String get cabinetScreenCancel => 'Annuler';
+  String get cabinetScreenCreate => 'Créer';
+  String get cabinetScreenCreateShareLink => 'Créer un lien de partage';
+  String get cabinetScreenDelete => 'Supprimer';
+  String cabinetScreenDeleteBody(Object name) => 'Le document « ${name} » sera supprimé définitivement.';
+  String get cabinetScreenDeleteTitle => 'Supprimer le document ?';
+
+  String cabinetScreenDocumentsCount(num count) {
+    if (count == 1) return '1 doc';
+    return '${count} docs';
+  }  String get cabinetScreenDocumentAdded => 'Document ajouté avec succès';
+  String get cabinetScreenDocuments => 'Documents';
+  String get cabinetScreenEmailHint => 'Email du destinataire';
+  String get cabinetScreenEmptyDescription => 'Ajoutez des dossiers et documents pour organiser votre espace.';
+  String get cabinetScreenEmptyTitle => 'Placard vide';
+  String get cabinetScreenFolderNameHint => 'Nom du dossier';
+  String get cabinetScreenFolders => 'Dossiers';
+  String cabinetScreenLinkCopied(Object url) => 'Lien copié : ${url}';
+  String get cabinetScreenNewFolder => 'Nouveau dossier';
+  String get cabinetScreenSend => 'Envoyer';
+  String get cabinetScreenShareByEmail => 'Partager par email';
+  String cabinetScreenShareSent(Object email) => 'Partage envoyé à ${email}';
+  String cabinetScreenShareTitle(Object name) => 'Partager « ${name} »';
+  String get cabinetScreenTitleRoot => 'Mon placard';
+  String get cabinetScreenUploadFailed => 'Échec de l'envoi du document. Réessayez.';
+  String get cabinetScreenUploading => 'Envoi en cours...';
+
+
   @override
   String get notificationsMarkAllReadError => 'Impossible de marquer les notifications comme lues.';
 
