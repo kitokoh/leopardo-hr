@@ -54,17 +54,16 @@ class ApiClient {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          options.headers['Accept-Language'] =
-              preferredLanguage.isNotEmpty
-                  ? preferredLanguage
-                  : PlatformDispatcher.instance.locale.languageCode
-                      .toLowerCase();
+          options.headers['Accept-Language'] = preferredLanguage.isNotEmpty
+              ? preferredLanguage
+              : PlatformDispatcher.instance.locale.languageCode.toLowerCase();
 
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            final useUserSession = e.requestOptions.headers['X-User-Session'] == 'true';
+            final useUserSession =
+                e.requestOptions.headers['X-User-Session'] == 'true';
             if (useUserSession) {
               await _storage.deleteUserToken();
             } else {
@@ -74,7 +73,13 @@ class ApiClient {
               }
             }
           }
-          return handler.next(_handleError(e));
+          // #4960 : on ne convertit PAS ici (l'ancien `_handleError` jetait
+          // une ApiException, ce qui neutralisait la classification et donc
+          // le retry de `requestWithRetry` — les 502/503/timeouts n'étaient
+          // jamais re-tentés). La DioException originale circule ; la
+          // conversion en ApiException localisée se fait après épuisement
+          // des tentatives (fin de requestWithRetry/downloadWithRetry).
+          return handler.next(e);
         },
       ),
     );
@@ -83,7 +88,8 @@ class ApiClient {
     // compiled with --dart-define=API_BASE_URL=mock (misconfigured CI, demo
     // build distributed by mistake) must not silently serve fake data in
     // production. See issue #1470 / audit T14 (2026-04-22).
-    if (!kReleaseMode && const String.fromEnvironment('API_BASE_URL') == 'mock') {
+    if (!kReleaseMode &&
+        const String.fromEnvironment('API_BASE_URL') == 'mock') {
       importMockInterceptor();
     }
   }
@@ -151,8 +157,13 @@ class ApiClient {
     // duplicate accounts, AI charges or published content. Only methods with
     // HTTP idempotency semantics keep the automatic transient-error retry.
     final normalizedMethod = method.toUpperCase();
-    final isIdempotentMethod = const {'GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE'}
-        .contains(normalizedMethod);
+    final isIdempotentMethod = const {
+      'GET',
+      'HEAD',
+      'OPTIONS',
+      'PUT',
+      'DELETE',
+    }.contains(normalizedMethod);
     final maxRetries =
         maxRetriesOverride ??
         (isIdempotentMethod
@@ -220,7 +231,10 @@ class ApiClient {
     }
 
     if (lastError is DioException) {
-      throw lastError;
+      // Conversion en ApiException localisée uniquement après épuisement
+      // des tentatives (la classification isColdStart/timeout/network se
+      // fait sur la DioException originale, cf. interceptor onError #4960).
+      throw _handleError(lastError);
     }
     throw ApiException('Request failed after retries');
   }
@@ -300,11 +314,16 @@ class ApiClient {
         }
 
         await _deleteDownload(savePath);
-        rethrow;
+        // Conversion en ApiException localisée (cf. #4960) — le retry a déjà
+        // été tenté au-dessus si l'erreur était transitoire.
+        throw _handleError(e);
       }
     }
 
     await _deleteDownload(savePath);
+    if (lastError is DioException) {
+      throw _handleError(lastError);
+    }
     throw lastError ?? ApiException(localizedErrorCode('DOWNLOAD_FAILED'));
   }
 
@@ -339,7 +358,8 @@ class ApiClient {
       // Issue #2743 — un 403 n'est pas toujours une suspension : on distingue
       // la suspension explicite (payload) du simple défaut de permission.
       final data = e.response?.data;
-      final isSuspended = data is Map &&
+      final isSuspended =
+          data is Map &&
           (data['suspended'] == true || data['error'] == 'ACCOUNT_SUSPENDED');
       message = localizedErrorCode(
         isSuspended ? 'ACCOUNT_SUSPENDED' : 'FORBIDDEN',
