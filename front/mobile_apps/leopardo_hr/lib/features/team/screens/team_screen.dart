@@ -237,8 +237,8 @@ class _EmployeesTab extends ConsumerWidget {
         data: (employees) {
           if (employees.isEmpty) {
             return ListView(
-              children: const [
-                SizedBox(height: 80),
+              children: [
+                const SizedBox(height: 80),
                 EmptyState(
                   icon: Icons.group_add,
                   title: context.l10n.teamEmpty,
@@ -259,7 +259,7 @@ class _EmployeesTab extends ConsumerWidget {
               final e = employees[employeeIndex];
               final subtitle = [
                 e.email,
-                _roleLabel(e),
+                _roleLabel(e, context.l10n),
                 e.workStateLabel,
                 if (_employmentLine(e) != null) _employmentLine(e)!,
               ].join(' - ');
@@ -290,11 +290,11 @@ class _EmployeesTab extends ConsumerWidget {
     return parts.join();
   }
 
-  String _roleLabel(Employee e) {
+  String _roleLabel(Employee e, AppLocalizations l10n) {
     if (e.role == 'manager') {
       return 'Manager ${e.managerRole ?? ''}'.trim();
     }
-    return context.l10n.teamEmployeeLabel;
+    return l10n.teamEmployeeLabel;
   }
 
   String? _employmentLine(Employee e) {
@@ -366,7 +366,7 @@ class _EmployeesTab extends ConsumerWidget {
                   color: _workStateColor(employee.workState),
                 ),
                 MobileStatusPill(
-                  label: _roleLabel(employee),
+                  label: _roleLabel(employee, context.l10n),
                   color: employee.isHr || employee.isPrincipal
                       ? AppColors.info
                       : MobileSurface.disabled,
