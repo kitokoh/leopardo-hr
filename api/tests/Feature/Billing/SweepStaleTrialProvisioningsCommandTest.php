@@ -42,7 +42,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep --max-age-minutes=30');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
@@ -62,7 +62,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
@@ -80,7 +80,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
@@ -95,7 +95,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep --dry-run');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
