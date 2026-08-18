@@ -1646,7 +1646,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 initialValue: _role,
                 dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Role'),
-                items: const [
+                items: [
                   DropdownMenuItem(
                       value: 'employee',
                       child: Text(context.l10n.teamEmployeeLabel)),
