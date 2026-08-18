@@ -19,7 +19,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('employees')) {
+        if (schemaTableExists('employees')) {
             return;
         }
 

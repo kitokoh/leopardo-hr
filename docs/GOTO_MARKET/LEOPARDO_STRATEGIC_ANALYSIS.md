@@ -40,7 +40,7 @@ Leopardo HR est un **Mobile-First Company OS** conçu pour les PME (5-250 employ
 | Force | Impact | Preuve |
 |-------|--------|--------|
 | **Mobile-first natif** | Élevé | Architecture Flutter, offline-first, UI conçue pour smartphone dès jour 1 |
-| **Stack technique moderne** | Élevé | Laravel 11, Flutter 3, PostgreSQL 16, Redis, Firebase — scalable et maintenable |
+| **Stack technique moderne** | Élevé | Laravel 12, Flutter 3, PostgreSQL 16, Redis, Firebase — scalable et maintenable |
 | **Features complètes** | Moyen-Élevé | 8 modules core (présence, paie, workflow, docs, tâches, notifications, perf, kiosque) |
 | **Multi-tenant schema** | Élevé | Isolation client native, sécurisé, prêt pour enterprise |
 | **Conformité RGPD + lois locales** | Élevé | Chiffrement AES-256, support multi-pays (DZ, MA, FR, TR) |
@@ -669,7 +669,7 @@ APPS TIERS : 20-30% commission sur ventes marketplace
 
 1. **Mobile-first natif** — Architecture conçue pour mobile dès jour 1, pas adaptation desktop
 2. **Offline-first véritable** — Fonctionne sans connexion permanente, critical pour terrain
-3. **Stack technique moderne** — Laravel 11 + Flutter 3 + PostgreSQL 16 = scalable et maintenable
+3. **Stack technique moderne** — Laravel 12 + Flutter 3 + PostgreSQL 16 = scalable et maintenable
 4. **Positionnement Company OS** — Intelligent, évite comparaison avec outils RH commoditisés
 5. **Multi-pays émergents** — Compliance DZ, MA, FR, TR = avantage compétitif régional
 6. **8 modules intégrés** — Écosystème cohérent, switching cost élevé pour clients

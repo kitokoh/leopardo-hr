@@ -203,6 +203,60 @@ if (Test-Path "CHANGELOG.md") {
     Pass "CHANGELOG.md section headers are not duplicated."
 }
 
+# Session 2026-08-17 — consolidation CHANGELOG (audit doc chef de projet).
+# Garde DIFF-AWARE : on compare la structure de CHANGELOG.md entre la base et
+# la tête de la PR. Une PR ne doit JAMAIS AJOUTER un header "## [Unreleased]"
+# (il en existe déjà un) ni dupliquer un header de version. L'état absolu de
+# main (dette préexistante) ne bloque aucune PR — seul le diff compte.
+# Plafond dur de taille anti-régression (CONVENTIONS §4.3).
+$changelogTouched = $false
+foreach ($line in $changed) {
+    if ($line -eq "CHANGELOG.md") { $changelogTouched = $true; break }
+}
+if ($changelogTouched -and (Test-Path "CHANGELOG.md")) {
+    $chg = Get-Content "CHANGELOG.md" -Raw
+    $baseChg = ""
+    try {
+        $baseChg = git show "${BaseRef}:CHANGELOG.md"
+    } catch {
+        $baseChg = ""
+    }
+
+    $unrelRegex = '(?m)^## \[Unreleased\]$'
+    $headUnrel = ([regex]::Matches($chg, $unrelRegex)).Count
+    $baseUnrel = if ($baseChg) { ([regex]::Matches($baseChg, $unrelRegex)).Count } else { 1 }
+    if ($headUnrel -gt $baseUnrel) {
+        Fail "CHANGELOG.md ajoute $($headUnrel - $baseUnrel) header(s) '## [Unreleased]' par rapport à la base ($baseUnrel → $headUnrel) — une PR ne doit jamais en ajouter (fusionner les blocs avant merge)."
+    }
+    Pass "CHANGELOG.md [Unreleased] headers not increased by this PR."
+
+    $verRegex = '(?m)^## \[(4\.[0-9]+\.[0-9]+[a-z0-9-]*)\](?: - .*)?$'
+    $headVers = [regex]::Matches($chg, $verRegex) | ForEach-Object { $_.Groups[1].Value }
+    $baseVers = if ($baseChg) { [regex]::Matches($baseChg, $verRegex) | ForEach-Object { $_.Groups[1].Value } } else { @() }
+    $headDups = $headVers | Group-Object | ForEach-Object {
+        $g = $_
+        [pscustomobject]@{
+            Name      = $g.Name
+            Count     = $g.Count
+            BaseCount = @($baseVers | Where-Object { $_ -eq $g.Name }).Count
+        }
+    }
+    $addedDups = $headDups | Where-Object { $_.Count -gt $_.BaseCount }
+    if ($addedDups) {
+        Fail "CHANGELOG.md duplique des headers de version par rapport à la base: $(($addedDups | ForEach-Object { $_.Name + 'x' + $_.Count + ' (base: ' + $_.BaseCount + ')' }) -join ', ') — fusionner avant merge."
+    }
+    Pass "CHANGELOG.md version headers not duplicated by this PR."
+
+    $size = (Get-Item "CHANGELOG.md").Length
+    if ($size -gt 1.2MB) {
+        Fail "CHANGELOG.md dépasse le plafond dur 1,2 Mo ($([math]::Round($size/1MB,2)) Mo) — consolider/archiver (règle CONVENTIONS §4.3)."
+    }
+    if ($size -gt 300KB) {
+        Write-Host "WARN: CHANGELOG.md = $([math]::Round($size/1KB,0)) Ko (> 300 Ko) — prévoir une release pour condenser [Unreleased] actif." -ForegroundColor Yellow
+    }
+    Pass "CHANGELOG.md size within hard ceiling."
+}
+
 # Garde .claude/ : le scratch de planification des agents ne doit jamais
 # être commité (fichiers locaux, cf. issue #2494 / session 2026-08-15).
 foreach ($line in $changedList) {

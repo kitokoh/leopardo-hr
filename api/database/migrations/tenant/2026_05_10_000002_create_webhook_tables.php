@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('webhook_endpoints')) {
+        if (! schemaTableExists('webhook_endpoints')) {
             Schema::create('webhook_endpoints', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -24,7 +24,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('webhook_deliveries')) {
+        if (! schemaTableExists('webhook_deliveries')) {
             Schema::create('webhook_deliveries', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('webhook_endpoint_id');

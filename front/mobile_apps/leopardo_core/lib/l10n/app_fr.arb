@@ -1142,5 +1142,6 @@
   "orgChartExpand": "Développer",
   "errorUnexpected": "Une erreur est survenue",
   "approvalApproved": "Demande approuvée",
-  "approvalRejected": "Demande refusée"
+  "approvalRejected": "Demande refusée",
+  "saPermissionDenied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
 }

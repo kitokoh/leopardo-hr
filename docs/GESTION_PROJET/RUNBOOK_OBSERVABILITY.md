@@ -51,7 +51,7 @@ Les evenements Sentry seront taggues par tenant sans exposer de PII.
 
 ### 2.4 Exclure les exceptions metier attendues
 
-Dans `bootstrap/app.php` (Laravel 11) :
+Dans `bootstrap/app.php` (Laravel 12) :
 
 ```php
 ->withExceptions(function (Exceptions $exceptions) {
@@ -82,7 +82,7 @@ dependencies:
 ```
 
 ```bash
-cd front/mobile && flutter pub get
+cd front/mobile_apps/leopardo_employee && flutter pub get
 ```
 
 ### 3.2 Initialisation

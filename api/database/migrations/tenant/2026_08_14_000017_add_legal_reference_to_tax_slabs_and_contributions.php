@@ -18,7 +18,7 @@ return new class extends Migration
     public function up(): void
     {
         foreach (['tax_slabs', 'social_contributions'] as $table) {
-            if (! Schema::hasTable($table)) {
+            if (! schemaTableExists($table)) {
                 continue;
             }
             Schema::table($table, function (Blueprint $table): void {
@@ -30,7 +30,7 @@ return new class extends Migration
     public function down(): void
     {
         foreach (['tax_slabs', 'social_contributions'] as $table) {
-            if (! Schema::hasTable($table)) {
+            if (! schemaTableExists($table)) {
                 continue;
             }
             Schema::table($table, function (Blueprint $table): void {
