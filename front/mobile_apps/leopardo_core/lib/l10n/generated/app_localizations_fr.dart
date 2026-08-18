@@ -3601,4 +3601,410 @@ class AppLocalizationsFr extends AppLocalizations {
   String get trainingOnline => 'En ligne';
   @override
   String get trainingTitleplaceholder => 'Titre *';
+
+  @override
+  String get attendanceFutureTimeError => 'Impossible de saisir une heure future';
+
+  @override
+  String get notificationsMarkAllReadError => 'Impossible de marquer les notifications comme lues.';
+
+  @override
+  String get notificationsMarkReadError => 'Impossible de marquer la notification comme lue.';
+
+  @override
+  String get notificationsDeleteError => 'Impossible de supprimer la notification.';
+
+  @override
+  String get notificationsDeleted => 'Notification supprimée.';
+
+  @override
+  String get settingsJourneyLoadError => 'Impossible de charger votre parcours.';
+
+  @override
+  String get settingsStatsLoadError => 'Impossible de charger les statistiques.';
+
+  @override
+  String get emptyAbsences => 'Aucune absence';
+
+  @override
+  String get cancelRequest => 'Annuler la demande';
+
+  @override
+  String get emptySessions => 'Aucune session';
+
+  @override
+  String get emptyHistory => 'Aucun historique';
+
+  @override
+  String get emptyPayslips => 'Aucune fiche de paie';
+
+  @override
+  String get emptyAdvances => 'Aucune avance';
+
+  @override
+  String get noReason => 'Aucun motif';
+
+  @override
+  String get confirmReceipt => 'Confirmer la réception';
+
+  @override
+  String get saveProfile => 'Enregistrer le profil';
+
+  @override
+  String get savingProfile => 'Enregistrement…';
+
+  @override
+  String get loadError => 'Erreur de chargement';
+
+  @override
+  String get noData => 'Aucune donnée';
+
+  @override
+  String get noTasksToday => '{\'fr\': "Aucune tâche aujourd\'hui", \'en\': \'No tasks today\', \'tr\': \'Bugün görev yok\', \'ar\': \'لا توجد مهام اليوم\'}';
+
+  @override
+  String get salaryAdvanceListTitle => 'Avances';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Demandes, statuts et remboursement';
+
+  @override
+  String get salaryAdvanceRequest => 'Demander';
+
+  @override
+  String get salaryAdvancesEmpty => 'Aucune avance';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'Demandez une avance en quelques secondes, puis suivez la décision RH ici.';
+
+  @override
+  String get salaryAdvanceNoReason => 'Aucun motif';
+
+  @override
+  String get salaryAdvancesLoading => 'Chargement des avances';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'Le manager a déclaré le paiement. Confirmez uniquement après réception effective.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'Confirmer réception';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Annuler la demande';
+
+  @override
+  String get salaryAdvanceViewProof => 'Voir la pièce jointe';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) => 'Pièce jointe téléchargée: $path';
+
+  @override
+  String salaryAdvanceError(Object error) => 'Échec : $error';
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Annuler cette avance ?';
+
+  @override
+  String get salaryAdvanceCancelBody => 'La demande en attente sera retirée avant décision RH.';
+
+  @override
+  String get salaryAdvanceKeep => 'Garder';
+
+  @override
+  String get salaryAdvanceCancelAction => 'Annuler';
+
+  @override
+  String get salaryAdvanceCancelled => 'Demande d\'avance annulée.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) => '$reason - $months mois';
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) => 'Avance de $amount, motif : $reason, statut $status.';
+
+  @override
+  String get salaryStatusValidated => 'validée';
+
+  @override
+  String get salaryStatusToConfirm => 'à confirmer';
+
+  @override
+  String get salaryStatusReceived => 'reçue';
+
+  @override
+  String get salaryStatusActive => 'active';
+
+  @override
+  String get salaryStatusApproved => 'approuvée';
+
+  @override
+  String get salaryStatusPending => 'en attente';
+
+  @override
+  String get salaryStatusRejected => 'rejetée';
+
+  @override
+  String get salaryStatusCancelled => 'annulée';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'Confirmer la réception ?';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'Confirmez seulement si le montant est effectivement arrivé. Cette action sera historisée.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'Confirmer';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Demande d\'avance';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'Pièce jointe';
+
+  @override
+  String get salaryAdvanceAttachHint => 'Joindre une pièce (optionnel)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Demande d\'avance transmise au RH.';
+
+  @override
+  String get absencesListTitle => 'Mes Absences';
+
+  @override
+  String get absencesListSubtitle => 'Demandes, soldes et décisions RH';
+
+  @override
+  String get absenceRequest => 'Demander';
+
+  @override
+  String get absencesEmpty => 'Aucune absence';
+
+  @override
+  String get absenceLabel => 'Absence';
+
+  @override
+  String absencesDaysCount(Object date, Object days) => '$date - $days j';
+
+  @override
+  String get absenceViewProof => 'Voir le justificatif';
+
+  @override
+  String get absenceCancelRequest => 'Annuler la demande';
+
+  @override
+  String absenceProofDownloaded(Object path) => 'Justificatif téléchargé: $path';
+
+  @override
+  String get absenceCancelTitle => 'Annuler cette demande ?';
+
+  @override
+  String get absenceCancelBody => 'La demande en attente sera retirée et le RH verra le statut annulé.';
+
+  @override
+  String get absenceCancelled => 'Demande d\'absence annulée.';
+
+  @override
+  String get absenceNewTitle => 'Nouvelle absence';
+
+  @override
+  String get absenceNewHint => 'Choisissez le type de solde et la période à transmettre au RH.';
+
+  @override
+  String get absenceNoType => 'Aucun type d\'absence disponible pour ce compte. Contactez le RH pour configurer les soldes.';
+
+  @override
+  String get attendanceRoleEmployee => 'Employé';
+
+  @override
+  String get attendanceWeekUnavailable => 'Semaine indisponible pour l\'instant. Le pointage reste utilisable.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Type de pointage';
+
+  @override
+  String get attendanceBreakTitle => 'Partir en pause';
+
+  @override
+  String get attendanceBreakHint => 'Ferme la session et marque une pause';
+
+  @override
+  String get attendanceBreakLoading => 'Envoi de la pause';
+
+  @override
+  String get attendanceBreakSuccess => 'Pause confirmée.';
+
+  @override
+  String get attendanceBreakFailure => 'Pause non confirmée';
+
+  @override
+  String get attendanceResumeTitle => 'Reprise';
+
+  @override
+  String get attendanceResumeHint => 'Reprendre après une pause ou une sortie';
+
+  @override
+  String get attendanceResumeLoading => 'Envoi reprise';
+
+  @override
+  String get attendanceResumeSuccess => 'Reprise confirmée.';
+
+  @override
+  String get attendanceResumeFailure => 'Reprise non confirmée';
+
+  @override
+  String get attendanceOvertimeTitle => 'Heures supplémentaires';
+
+  @override
+  String get attendanceOvertimeHint => 'Démarrer une session d\'heures supp';
+
+  @override
+  String get attendanceOvertimeLoading => 'Envoi heures supplémentaires';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Heures supplémentaires démarrées.';
+
+  @override
+  String get attendanceOvertimeFailure => 'Heures supplémentaires non confirmées';
+
+  @override
+  String get attendanceMissionTitle => 'Mission';
+
+  @override
+  String get attendanceMissionHint => 'Temps de travail hors site habituel';
+
+  @override
+  String get attendanceMissionLoading => 'Envoi mission';
+
+  @override
+  String get attendanceMissionSuccess => 'Mission démarrée.';
+
+  @override
+  String get attendanceMissionFailure => 'Mission non confirmée';
+
+  @override
+  String get attendanceTravelTitle => 'Déplacement';
+
+  @override
+  String get attendanceTravelHint => 'Temps de déplacement professionnel';
+
+  @override
+  String get attendanceTravelLoading => 'Envoi déplacement';
+
+  @override
+  String get attendanceTravelSuccess => 'Déplacement démarré.';
+
+  @override
+  String get attendanceTravelFailure => 'Déplacement non confirmé';
+
+  @override
+  String get attendanceTasksTitle => 'Tâches du jour';
+
+  @override
+  String get attendanceHistoryTitle => 'Historique';
+
+  @override
+  String get attendancePreferencesTitle => 'Préférences';
+
+  @override
+  String get attendanceSettingsTitle => 'Paramètres';
+
+  @override
+  String get attendanceSyncTitle => 'Synchronisation';
+
+  @override
+  String get attendanceSaving => 'Enregistrement en cours...';
+
+  @override
+  String get attendancePressToCheckout => 'Appuyez pour enregistrer votre départ';
+
+  @override
+  String get attendancePressToCheckin => 'Appuyez pour enregistrer votre arrivée';
+
+  @override
+  String get attendanceOvertimeShort => 'Heure supp';
+
+  @override
+  String get attendancePauseLabel => 'Pause';
+
+  @override
+  String get attendanceTrainingLabel => 'Formation';
+
+  @override
+  String get attendanceOtherLabel => 'Autre';
+
+  @override
+  String get settingsEdgeSaved => 'Paramètres Edge enregistrés.';
+
+  @override
+  String get settingsAccountTitle => 'Compte';
+
+  @override
+  String get settingsAccountSubtitle => 'Profil, langue et sécurité';
+
+  @override
+  String get settingsEmployeeProfileHint => 'Profil employé : accès au pointage, à l\'historique personnel et aux paramètres de préparation biométrie.';
+
+  @override
+  String get settingsSaving => 'Enregistrement...';
+
+  @override
+  String get settingsSaveProfile => 'Enregistrer le profil';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Biométrie kiosk';
+
+  @override
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get settingsAccountPortableHint => 'Votre compte reste utile même quand vous changez d\'entreprise.';
+
+  @override
+  String get settingsNoJourney => 'Aucun parcours enregistré pour le moment.';
+
+  @override
+  String get settingsNoCompanyQr => 'Aucun QR entreprise dans le presse-papiers.';
+
+  @override
+  String get settingsLanguageTitle => 'Langue';
+
+  @override
+  String get settingsPreferredLanguage => 'Langue préférée';
+
+  @override
+  String get settingsSecurityTitle => 'Sécurité';
+
+  @override
+  String get settingsCurrentPassword => 'Mot de passe actuel';
+
+  @override
+  String get settingsSaveEnrollment => 'Enregistrer la préparation';
+
+  @override
+  String get settingsSave => 'Enregistrer';
+
+  @override
+  String get settingsLogout => 'Déconnexion';
+
+  @override
+  String get approvalsTitle => 'Approbations';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Motif du refus';
+
+  @override
+  String get approvalsRejectReasonHint => 'Expliquez la raison...';
+
+  @override
+  String get approvalsLoading => 'Chargement des approbations...';
+
+  @override
+  String get actionApprove => 'Approuver';
+
+  @override
+  String get actionReject => 'Refuser';
+
+  @override
+  String get actionCancel => 'Annuler';
+
 }

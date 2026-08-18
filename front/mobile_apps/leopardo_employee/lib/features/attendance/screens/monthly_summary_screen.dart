@@ -316,7 +316,7 @@ class _HeroPanel extends StatelessWidget {
               const MobileIconBubble(icon: Icons.payments, color: AppColors.rh),
               const Spacer(),
               MobileStatusPill(
-                label: summary.hours > 0 ? 'Actif' : 'Aucune donnee',
+                label: summary.hours > 0 ? 'Actif' : context.l10n.noData,
                 color: summary.hours > 0 ? AppColors.rh : MobileSurface.muted,
                 icon: summary.hours > 0 ? Icons.check_circle : Icons.info,
               ),
@@ -461,7 +461,7 @@ class _EmptyMonthPanel extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           const Text(
-            'Aucun pointage sur ce mois',
+            context.l10n.noData,
             style: TextStyle(
               color: MobileSurface.text,
               fontSize: 17,

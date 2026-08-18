@@ -3554,4 +3554,410 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingOnline => 'Online';
   @override
   String get trainingTitleplaceholder => 'Title *';
+
+  @override
+  String get attendanceFutureTimeError => 'Cannot enter a future time';
+
+  @override
+  String get notificationsMarkAllReadError => 'Unable to mark notifications as read.';
+
+  @override
+  String get notificationsMarkReadError => 'Unable to mark notification as read.';
+
+  @override
+  String get notificationsDeleteError => 'Unable to delete the notification.';
+
+  @override
+  String get notificationsDeleted => 'Notification deleted.';
+
+  @override
+  String get settingsJourneyLoadError => 'Unable to load your journey.';
+
+  @override
+  String get settingsStatsLoadError => 'Unable to load statistics.';
+
+  @override
+  String get emptyAbsences => 'No absences';
+
+  @override
+  String get cancelRequest => 'Cancel request';
+
+  @override
+  String get emptySessions => 'No sessions';
+
+  @override
+  String get emptyHistory => 'No history';
+
+  @override
+  String get emptyPayslips => 'No payslips';
+
+  @override
+  String get emptyAdvances => 'No advances';
+
+  @override
+  String get noReason => 'No reason';
+
+  @override
+  String get confirmReceipt => 'Confirm receipt';
+
+  @override
+  String get saveProfile => 'Save profile';
+
+  @override
+  String get savingProfile => 'Saving…';
+
+  @override
+  String get loadError => 'Loading error';
+
+  @override
+  String get noData => 'No data';
+
+  @override
+  String get noTasksToday => 'No tasks today';
+
+  @override
+  String get salaryAdvanceListTitle => 'Advances';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Requests, statuses and repayment';
+
+  @override
+  String get salaryAdvanceRequest => 'Request';
+
+  @override
+  String get salaryAdvancesEmpty => 'No advances';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'Request an advance in seconds, then track the HR decision here.';
+
+  @override
+  String get salaryAdvanceNoReason => 'No reason';
+
+  @override
+  String get salaryAdvancesLoading => 'Loading advances';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'The manager declared the payment. Confirm only after you actually received it.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'Confirm receipt';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Cancel request';
+
+  @override
+  String get salaryAdvanceViewProof => 'View attachment';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) => 'Attachment downloaded: $path';
+
+  @override
+  String salaryAdvanceError(Object error) => 'Failed: $error';
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Cancel this advance?';
+
+  @override
+  String get salaryAdvanceCancelBody => 'The pending request will be removed before the HR decision.';
+
+  @override
+  String get salaryAdvanceKeep => 'Keep';
+
+  @override
+  String get salaryAdvanceCancelAction => 'Cancel';
+
+  @override
+  String get salaryAdvanceCancelled => 'Advance request cancelled.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) => '$reason - $months months';
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) => 'Advance of $amount, reason: $reason, status $status.';
+
+  @override
+  String get salaryStatusValidated => 'validated';
+
+  @override
+  String get salaryStatusToConfirm => 'to confirm';
+
+  @override
+  String get salaryStatusReceived => 'received';
+
+  @override
+  String get salaryStatusActive => 'active';
+
+  @override
+  String get salaryStatusApproved => 'approved';
+
+  @override
+  String get salaryStatusPending => 'pending';
+
+  @override
+  String get salaryStatusRejected => 'rejected';
+
+  @override
+  String get salaryStatusCancelled => 'cancelled';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'Confirm receipt?';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'Confirm only if the amount actually arrived. This action will be recorded.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'Confirm';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Advance request';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'Attachment';
+
+  @override
+  String get salaryAdvanceAttachHint => 'Attach a file (optional)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Advance request sent to HR.';
+
+  @override
+  String get absencesListTitle => 'My absences';
+
+  @override
+  String get absencesListSubtitle => 'Requests, balances and HR decisions';
+
+  @override
+  String get absenceRequest => 'Request';
+
+  @override
+  String get absencesEmpty => 'No absences';
+
+  @override
+  String get absenceLabel => 'Absence';
+
+  @override
+  String absencesDaysCount(Object date, Object days) => '$date - $days d';
+
+  @override
+  String get absenceViewProof => 'View proof';
+
+  @override
+  String get absenceCancelRequest => 'Cancel request';
+
+  @override
+  String absenceProofDownloaded(Object path) => 'Proof downloaded: $path';
+
+  @override
+  String get absenceCancelTitle => 'Cancel this request?';
+
+  @override
+  String get absenceCancelBody => 'The pending request will be removed and HR will see the cancelled status.';
+
+  @override
+  String get absenceCancelled => 'Absence request cancelled.';
+
+  @override
+  String get absenceNewTitle => 'New absence';
+
+  @override
+  String get absenceNewHint => 'Choose the balance type and the period to send to HR.';
+
+  @override
+  String get absenceNoType => 'No absence type available for this account. Contact HR to configure balances.';
+
+  @override
+  String get attendanceRoleEmployee => 'Employee';
+
+  @override
+  String get attendanceWeekUnavailable => 'Week temporarily unavailable. Clock-in remains usable.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Clock type';
+
+  @override
+  String get attendanceBreakTitle => 'Take a break';
+
+  @override
+  String get attendanceBreakHint => 'Closes the session and starts a break';
+
+  @override
+  String get attendanceBreakLoading => 'Sending break';
+
+  @override
+  String get attendanceBreakSuccess => 'Break confirmed.';
+
+  @override
+  String get attendanceBreakFailure => 'Break not confirmed';
+
+  @override
+  String get attendanceResumeTitle => 'Resume';
+
+  @override
+  String get attendanceResumeHint => 'Resume after a break or leave';
+
+  @override
+  String get attendanceResumeLoading => 'Sending resume';
+
+  @override
+  String get attendanceResumeSuccess => 'Resume confirmed.';
+
+  @override
+  String get attendanceResumeFailure => 'Resume not confirmed';
+
+  @override
+  String get attendanceOvertimeTitle => 'Overtime';
+
+  @override
+  String get attendanceOvertimeHint => 'Start an overtime session';
+
+  @override
+  String get attendanceOvertimeLoading => 'Sending overtime';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Overtime started.';
+
+  @override
+  String get attendanceOvertimeFailure => 'Overtime not confirmed';
+
+  @override
+  String get attendanceMissionTitle => 'Mission';
+
+  @override
+  String get attendanceMissionHint => 'Work time outside the usual site';
+
+  @override
+  String get attendanceMissionLoading => 'Sending mission';
+
+  @override
+  String get attendanceMissionSuccess => 'Mission started.';
+
+  @override
+  String get attendanceMissionFailure => 'Mission not confirmed';
+
+  @override
+  String get attendanceTravelTitle => 'Travel';
+
+  @override
+  String get attendanceTravelHint => 'Professional travel time';
+
+  @override
+  String get attendanceTravelLoading => 'Sending travel';
+
+  @override
+  String get attendanceTravelSuccess => 'Travel started.';
+
+  @override
+  String get attendanceTravelFailure => 'Travel not confirmed';
+
+  @override
+  String get attendanceTasksTitle => 'Today\'s tasks';
+
+  @override
+  String get attendanceHistoryTitle => 'History';
+
+  @override
+  String get attendancePreferencesTitle => 'Preferences';
+
+  @override
+  String get attendanceSettingsTitle => 'Settings';
+
+  @override
+  String get attendanceSyncTitle => 'Synchronization';
+
+  @override
+  String get attendanceSaving => 'Saving...';
+
+  @override
+  String get attendancePressToCheckout => 'Tap to record your checkout';
+
+  @override
+  String get attendancePressToCheckin => 'Tap to record your check-in';
+
+  @override
+  String get attendanceOvertimeShort => 'OT';
+
+  @override
+  String get attendancePauseLabel => 'Break';
+
+  @override
+  String get attendanceTrainingLabel => 'Training';
+
+  @override
+  String get attendanceOtherLabel => 'Other';
+
+  @override
+  String get settingsEdgeSaved => 'Edge settings saved.';
+
+  @override
+  String get settingsAccountTitle => 'Account';
+
+  @override
+  String get settingsAccountSubtitle => 'Profile, language and security';
+
+  @override
+  String get settingsEmployeeProfileHint => 'Employee profile: access to clock-in, personal history and biometric setup settings.';
+
+  @override
+  String get settingsSaving => 'Saving...';
+
+  @override
+  String get settingsSaveProfile => 'Save profile';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Kiosk biometrics';
+
+  @override
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get settingsAccountPortableHint => 'Your account stays useful even when you change company.';
+
+  @override
+  String get settingsNoJourney => 'No journey recorded yet.';
+
+  @override
+  String get settingsNoCompanyQr => 'No company QR in the clipboard.';
+
+  @override
+  String get settingsLanguageTitle => 'Language';
+
+  @override
+  String get settingsPreferredLanguage => 'Preferred language';
+
+  @override
+  String get settingsSecurityTitle => 'Security';
+
+  @override
+  String get settingsCurrentPassword => 'Current password';
+
+  @override
+  String get settingsSaveEnrollment => 'Save enrollment';
+
+  @override
+  String get settingsSave => 'Save';
+
+  @override
+  String get settingsLogout => 'Log out';
+
+  @override
+  String get approvalsTitle => 'Approvals';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Rejection reason';
+
+  @override
+  String get approvalsRejectReasonHint => 'Explain the reason...';
+
+  @override
+  String get approvalsLoading => 'Loading approvals...';
+
+  @override
+  String get actionApprove => 'Approve';
+
+  @override
+  String get actionReject => 'Reject';
+
+  @override
+  String get actionCancel => 'Cancel';
+
 }

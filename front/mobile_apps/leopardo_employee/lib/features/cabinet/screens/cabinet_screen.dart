@@ -12,6 +12,8 @@ import 'package:leopardo_employee/features/cabinet/providers/cabinet_provider.da
 import 'package:leopardo_core/models/cabinet_document.dart';
 import 'package:leopardo_core/models/cabinet_folder.dart';
 import 'package:leopardo_employee/core/providers/core_providers.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+
 
 class CabinetScreen extends ConsumerStatefulWidget {
   final int? folderId;
@@ -116,7 +118,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           foldersAsync.error?.toString() ?? documentsAsync.error?.toString();
       return Center(
         child: Text(
-          error ?? 'Erreur de chargement',
+          error ?? context.l10n.loadError,
           style: AppTypography.bodySmall.copyWith(color: muted),
         ),
       );

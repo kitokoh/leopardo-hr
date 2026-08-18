@@ -12,6 +12,7 @@ import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_employee/features/salary_advances/providers/salary_advance_provider.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/models/salary_advance.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
@@ -36,18 +37,18 @@ class _SalaryAdvanceListScreenState
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Avances',
-        subtitle: 'Demandes, statuts et remboursement',
+        title: context.l10n.salaryAdvanceListTitle,
+        subtitle: context.l10n.salaryAdvanceListSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           onPressed: () => context.pop(),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRequestSheet(context),
         icon: const Icon(Icons.add_card_outlined),
-        label: const Text('Demander'),
+        label: Text(context.l10n.salaryAdvanceRequest),
       ),
       body: RefreshIndicator(
         color: AppColors.rh,
@@ -64,9 +65,9 @@ class _SalaryAdvanceListScreenState
                 children: const [
                   EmptyState(
                     icon: Icons.payments,
-                    title: 'Aucune avance',
+                    title: context.l10n.salaryAdvancesEmpty,
                     description:
-                        'Demandez une avance en quelques secondes, puis suivez la decision RH ici.',
+                        context.l10n.salaryAdvancesEmptyHint,
                   ),
                 ],
               );
@@ -82,12 +83,12 @@ class _SalaryAdvanceListScreenState
                 final amount = _formatMoney(advance.amount, advance.currency);
                 final reason = advance.reason?.trim().isNotEmpty == true
                     ? advance.reason!
-                    : 'Aucun motif';
+                    : context.l10n.salaryAdvanceNoReason;
                 final months = advance.repaymentMonths;
 
                 return Semantics(
                   label:
-                      'Avance de $amount, motif : $reason, statut ${_getStatusLabel(advance)}.',
+                      context.l10n.salaryAdvanceSemantics(amount, reason, _getStatusLabel(context.l10n, advance)),
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListGlassCard(
@@ -96,9 +97,9 @@ class _SalaryAdvanceListScreenState
                       title: amount,
                       subtitle: months == null
                           ? reason
-                          : '$reason - $months mois',
+                          : context.l10n.salaryAdvanceMonths(reason, months),
                       trailing: MobileStatusPill(
-                        label: _getStatusLabel(advance),
+                        label: _getStatusLabel(context.l10n, advance),
                         color: color,
                       ),
                       footer: _advanceFooter(context, advance),
@@ -109,7 +110,7 @@ class _SalaryAdvanceListScreenState
             );
           },
           loading: () =>
-              const MobileEmptyLoading(label: 'Chargement des avances'),
+              MobileEmptyLoading(label: context.l10n.salaryAdvancesLoading),
           error: (e, _) => ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
@@ -135,7 +136,7 @@ class _SalaryAdvanceListScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Le manager a declare le paiement. Confirmez uniquement apres reception effective.',
+            context.l10n.salaryAdvancePaymentDeclared,
             style: AppTypography.caption.copyWith(
               color: MobileSurface.secondary,
               height: 1.35,
@@ -148,7 +149,7 @@ class _SalaryAdvanceListScreenState
             child: FilledButton.icon(
               onPressed: () => _confirmReceived(context, advance.id),
               icon: const Icon(Icons.verified_user_outlined, size: 16),
-              label: const Text('Confirmer reception'),
+              label: Text(context.l10n.salaryAdvanceConfirmReceived),
             ),
           ),
         ],
@@ -168,7 +169,7 @@ class _SalaryAdvanceListScreenState
           child: TextButton.icon(
             onPressed: () => _confirmCancelAdvance(context, advance.id),
             icon: const Icon(Icons.close_rounded, size: 16),
-            label: const Text('Annuler la demande'),
+            label: Text(context.l10n.salaryAdvanceCancelRequest),
           ),
         ),
       ],
@@ -191,7 +192,7 @@ class _SalaryAdvanceListScreenState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.attach_file_rounded, size: 16),
-        label: const Text('Voir la piece jointe'),
+        label: Text(context.l10n.salaryAdvanceViewProof),
       ),
     );
   }
@@ -212,14 +213,14 @@ class _SalaryAdvanceListScreenState
         await launchUrl(uri);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Piece jointe telechargee: $path')),
+          SnackBar(content: Text(context.l10n.salaryAdvanceProofDownloaded(path))),
         );
       }
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -244,18 +245,18 @@ class _SalaryAdvanceListScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Annuler cette avance ?'),
+        title: Text(context.l10n.salaryAdvanceCancelTitle),
         content: const Text(
-          'La demande en attente sera retiree avant decision RH.',
+          context.l10n.salaryAdvanceCancelBody,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Garder'),
+            child: Text(context.l10n.salaryAdvanceKeep),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Annuler'),
+            child: Text(context.l10n.salaryAdvanceCancelAction),
           ),
         ],
       ),
@@ -267,13 +268,13 @@ class _SalaryAdvanceListScreenState
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande d avance annulee.')),
+        SnackBar(content: Text(context.l10n.salaryAdvanceCancelled)),
       );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
     }
   }
 
@@ -281,18 +282,18 @@ class _SalaryAdvanceListScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Confirmer la reception ?'),
+        title: Text(context.l10n.salaryAdvanceConfirmReceivedTitle),
         content: const Text(
-          'Confirmez seulement si le montant est effectivement arrive. Cette action sera historisee.',
+          context.l10n.salaryAdvanceConfirmReceivedBody,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Retour'),
+            child: Text(context.l10n.back),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirmer'),
+            child: Text(context.l10n.salaryAdvanceConfirmAction),
           ),
         ],
       ),
@@ -312,31 +313,31 @@ class _SalaryAdvanceListScreenState
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
     }
   }
 
-  static String _getStatusLabel(SalaryAdvance advance) {
+  static String _getStatusLabel(AppLocalizations l10n, SalaryAdvance advance) {
     switch (advance.validationStatus) {
       case 'manager_approved':
-        return 'validee';
+        return l10n.salaryStatusValidated;
       case 'payment_declared':
-        return 'a confirmer';
+        return l10n.salaryStatusToConfirm;
       case 'employee_confirmed':
-        return 'recue';
+        return l10n.salaryStatusReceived;
     }
 
     switch (advance.status) {
       case 'active':
-        return 'active';
+        return l10n.salaryStatusActive;
       case 'approved':
-        return 'approuvee';
+        return l10n.salaryStatusApproved;
       case 'pending':
-        return 'en attente';
+        return l10n.salaryStatusPending;
       case 'rejected':
-        return 'rejetee';
+        return l10n.salaryStatusRejected;
       case 'cancelled':
-        return 'annulee';
+        return l10n.salaryStatusCancelled;
       default:
         return advance.status;
     }
@@ -421,7 +422,7 @@ class _SalaryAdvanceRequestSheetState
             ),
             const SizedBox(height: 18),
             Text(
-              'Demande d avance',
+              context.l10n.salaryAdvanceRequestTitle,
               style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 4),
@@ -486,8 +487,8 @@ class _SalaryAdvanceRequestSheetState
               icon: const Icon(Icons.attach_file_rounded, size: 18),
               label: Text(
                 _proofFile == null
-                    ? 'Joindre une piece (optionnel)'
-                    : 'Piece jointe',
+                    ? context.l10n.salaryAdvanceAttachHint
+                    : context.l10n.salaryAdvanceAttachmentLabel,
               ),
             ),
             const SizedBox(height: 12),
@@ -524,14 +525,14 @@ class _SalaryAdvanceRequestSheetState
       if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande d avance transmise au RH.')),
+        SnackBar(content: Text(context.l10n.salaryAdvanceSubmitted)),
       );
     } catch (e) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(e))));
     }
   }
 

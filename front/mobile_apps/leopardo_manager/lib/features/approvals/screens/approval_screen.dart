@@ -62,7 +62,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            'Motif du refus',
+            context.l10n.approvalsRejectReasonLabel,
             style: AppTypography.subtitle.copyWith(
               color: MobileSurface.text,
               fontWeight: FontWeight.w600,
@@ -74,7 +74,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
             maxLines: 3,
             onChanged: (_) => setDialogState(() {}),
             decoration: InputDecoration(
-              hintText: 'Expliquez la raison...',
+              hintText: context.l10n.approvalsRejectReasonHint,
               hintStyle: AppTypography.body.copyWith(
                 color: MobileSurface.muted,
               ),
@@ -94,7 +94,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: Text(
-                'Annuler',
+                context.l10n.actionCancel,
                 style: AppTypography.body.copyWith(color: MobileSurface.text),
               ),
             ),
@@ -113,7 +113,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                 ),
                 elevation: 0,
               ),
-              child: const Text('Refuser'),
+              child: Text(context.l10n.actionReject),
             ),
           ],
         ),
@@ -147,7 +147,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
     final approvalsAsync = ref.watch(pendingApprovalsProvider);
 
     return MobilePage(
-      title: 'Approbations',
+      title: context.l10n.approvalsTitle,
       showBackButton: true,
       onBack: () => context.pop(),
       children: [
@@ -284,7 +284,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                           vertical: 14,
                                         ),
                                       ),
-                                      child: const Text('Refuser'),
+                                      child: Text(context.l10n.actionReject),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -304,7 +304,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                                           vertical: 14,
                                         ),
                                       ),
-                                      child: const Text('Approuver'),
+                                      child: Text(context.l10n.actionApprove),
                                     ),
                                   ),
                                 ],
@@ -320,7 +320,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
               child: Center(
                 child: CircularProgressIndicator(
                   color: AppColors.rh,
-                  semanticsLabel: 'Chargement des approbations...',
+                  semanticsLabel: context.l10n.approvalsLoading,
                 ),
               ),
             ),

@@ -3555,4 +3555,410 @@ class AppLocalizationsTr extends AppLocalizations {
   String get trainingOnline => 'Çevrimiçi';
   @override
   String get trainingTitleplaceholder => 'Başlık *';
+
+  @override
+  String get attendanceFutureTimeError => 'Gelecekteki bir saat girilemez';
+
+  @override
+  String get notificationsMarkAllReadError => 'Bildirimler okundu olarak işaretlenemedi.';
+
+  @override
+  String get notificationsMarkReadError => 'Bildirim okundu olarak işaretlenemedi.';
+
+  @override
+  String get notificationsDeleteError => 'Bildirim silinemedi.';
+
+  @override
+  String get notificationsDeleted => 'Bildirim silindi.';
+
+  @override
+  String get settingsJourneyLoadError => 'Yolculuğunuz yüklenemedi.';
+
+  @override
+  String get settingsStatsLoadError => 'İstatistikler yüklenemedi.';
+
+  @override
+  String get emptyAbsences => 'Devamsızlık yok';
+
+  @override
+  String get cancelRequest => 'Talebi iptal et';
+
+  @override
+  String get emptySessions => 'Oturum yok';
+
+  @override
+  String get emptyHistory => 'Geçmiş yok';
+
+  @override
+  String get emptyPayslips => 'Maaş bordrosu yok';
+
+  @override
+  String get emptyAdvances => 'Avans yok';
+
+  @override
+  String get noReason => 'Gerekçe yok';
+
+  @override
+  String get confirmReceipt => 'Teslim alındığını onayla';
+
+  @override
+  String get saveProfile => 'Profili kaydet';
+
+  @override
+  String get savingProfile => 'Kaydediliyor…';
+
+  @override
+  String get loadError => 'Yükleme hatası';
+
+  @override
+  String get noData => 'Veri yok';
+
+  @override
+  String get noTasksToday => 'Bugün görev yok';
+
+  @override
+  String get salaryAdvanceListTitle => 'Avanslar';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Talepler, durumlar ve geri ödeme';
+
+  @override
+  String get salaryAdvanceRequest => 'Talep Et';
+
+  @override
+  String get salaryAdvancesEmpty => 'Avans yok';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'Saniyeler içinde avans talep edin, ardından İK kararını buradan takip edin.';
+
+  @override
+  String get salaryAdvanceNoReason => 'Gerekçe yok';
+
+  @override
+  String get salaryAdvancesLoading => 'Avanslar yükleniyor';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'Yönetici ödemeyi onayladı. Yalnızca fiilen aldıktan sonra onaylayın.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'Teslim alındığını onayla';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Talebi iptal et';
+
+  @override
+  String get salaryAdvanceViewProof => 'Eki görüntüle';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) => 'Ek indirildi: $path';
+
+  @override
+  String salaryAdvanceError(Object error) => 'Başarısız: $error';
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Bu avans iptal edilsin mi?';
+
+  @override
+  String get salaryAdvanceCancelBody => 'Bekleyen talep, İK kararından önce kaldırılacaktır.';
+
+  @override
+  String get salaryAdvanceKeep => 'Tut';
+
+  @override
+  String get salaryAdvanceCancelAction => 'İptal';
+
+  @override
+  String get salaryAdvanceCancelled => 'Avans talebi iptal edildi.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) => '$reason - $months ay';
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) => '$amount avans, gerekçe: $reason, durum $status.';
+
+  @override
+  String get salaryStatusValidated => 'doğrulandı';
+
+  @override
+  String get salaryStatusToConfirm => 'onaylanacak';
+
+  @override
+  String get salaryStatusReceived => 'alındı';
+
+  @override
+  String get salaryStatusActive => 'aktif';
+
+  @override
+  String get salaryStatusApproved => 'onaylandı';
+
+  @override
+  String get salaryStatusPending => 'beklemede';
+
+  @override
+  String get salaryStatusRejected => 'reddedildi';
+
+  @override
+  String get salaryStatusCancelled => 'iptal edildi';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'Teslim alındığını onayla?';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'Yalnızca tutar gerçekten ulaştıysa onaylayın. Bu işlem kaydedilecektir.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'Onayla';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Avans talebi';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'Ek';
+
+  @override
+  String get salaryAdvanceAttachHint => 'Dosya ekle (isteğe bağlı)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Avans talebi İK\'ya iletildi.';
+
+  @override
+  String get absencesListTitle => 'İzinlerim';
+
+  @override
+  String get absencesListSubtitle => 'Talepler, bakiyeler ve İK kararları';
+
+  @override
+  String get absenceRequest => 'Talep Et';
+
+  @override
+  String get absencesEmpty => 'İzin yok';
+
+  @override
+  String get absenceLabel => 'İzin';
+
+  @override
+  String absencesDaysCount(Object date, Object days) => '$date - $days g';
+
+  @override
+  String get absenceViewProof => 'Kanıtı görüntüle';
+
+  @override
+  String get absenceCancelRequest => 'Talebi iptal et';
+
+  @override
+  String absenceProofDownloaded(Object path) => 'Kanıt indirildi: $path';
+
+  @override
+  String get absenceCancelTitle => 'Bu talep iptal edilsin mi?';
+
+  @override
+  String get absenceCancelBody => 'Bekleyen talep kaldırılacak ve İK iptal edilmiş durumu görecek.';
+
+  @override
+  String get absenceCancelled => 'İzin talebi iptal edildi.';
+
+  @override
+  String get absenceNewTitle => 'Yeni izin';
+
+  @override
+  String get absenceNewHint => 'İK\'ya iletilecek bakiye türünü ve dönemi seçin.';
+
+  @override
+  String get absenceNoType => 'Bu hesap için kullanılabilir izin türü yok. Bakiyeleri yapılandırmak için İK ile iletişime geçin.';
+
+  @override
+  String get attendanceRoleEmployee => 'Çalışan';
+
+  @override
+  String get attendanceWeekUnavailable => 'Hafta şu anda kullanılamıyor. Giriş yine de kullanılabilir.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Giriş türü';
+
+  @override
+  String get attendanceBreakTitle => 'Molaya çık';
+
+  @override
+  String get attendanceBreakHint => 'Oturumu kapatır ve molayı başlatır';
+
+  @override
+  String get attendanceBreakLoading => 'Mola gönderiliyor';
+
+  @override
+  String get attendanceBreakSuccess => 'Mola onaylandı.';
+
+  @override
+  String get attendanceBreakFailure => 'Mola onaylanmadı';
+
+  @override
+  String get attendanceResumeTitle => 'Devam et';
+
+  @override
+  String get attendanceResumeHint => 'Moladan veya çıkıştan sonra devam et';
+
+  @override
+  String get attendanceResumeLoading => 'Devam gönderiliyor';
+
+  @override
+  String get attendanceResumeSuccess => 'Devam onaylandı.';
+
+  @override
+  String get attendanceResumeFailure => 'Devam onaylanmadı';
+
+  @override
+  String get attendanceOvertimeTitle => 'Fazla mesai';
+
+  @override
+  String get attendanceOvertimeHint => 'Fazla mesai oturumu başlat';
+
+  @override
+  String get attendanceOvertimeLoading => 'Fazla mesai gönderiliyor';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Fazla mesai başladı.';
+
+  @override
+  String get attendanceOvertimeFailure => 'Fazla mesai onaylanmadı';
+
+  @override
+  String get attendanceMissionTitle => 'Görev';
+
+  @override
+  String get attendanceMissionHint => 'Her zamanki saha dışında çalışma süresi';
+
+  @override
+  String get attendanceMissionLoading => 'Görev gönderiliyor';
+
+  @override
+  String get attendanceMissionSuccess => 'Görev başladı.';
+
+  @override
+  String get attendanceMissionFailure => 'Görev onaylanmadı';
+
+  @override
+  String get attendanceTravelTitle => 'Seyahat';
+
+  @override
+  String get attendanceTravelHint => 'Mesleki seyahat süresi';
+
+  @override
+  String get attendanceTravelLoading => 'Seyahat gönderiliyor';
+
+  @override
+  String get attendanceTravelSuccess => 'Seyahat başladı.';
+
+  @override
+  String get attendanceTravelFailure => 'Seyahat onaylanmadı';
+
+  @override
+  String get attendanceTasksTitle => 'Bugünün görevleri';
+
+  @override
+  String get attendanceHistoryTitle => 'Geçmiş';
+
+  @override
+  String get attendancePreferencesTitle => 'Tercihler';
+
+  @override
+  String get attendanceSettingsTitle => 'Ayarlar';
+
+  @override
+  String get attendanceSyncTitle => 'Senkronizasyon';
+
+  @override
+  String get attendanceSaving => 'Kaydediliyor...';
+
+  @override
+  String get attendancePressToCheckout => 'Çıkışınızı kaydetmek için dokunun';
+
+  @override
+  String get attendancePressToCheckin => 'Girişinizi kaydetmek için dokunun';
+
+  @override
+  String get attendanceOvertimeShort => 'F. mesai';
+
+  @override
+  String get attendancePauseLabel => 'Mola';
+
+  @override
+  String get attendanceTrainingLabel => 'Eğitim';
+
+  @override
+  String get attendanceOtherLabel => 'Diğer';
+
+  @override
+  String get settingsEdgeSaved => 'Edge ayarları kaydedildi.';
+
+  @override
+  String get settingsAccountTitle => 'Hesap';
+
+  @override
+  String get settingsAccountSubtitle => 'Profil, dil ve güvenlik';
+
+  @override
+  String get settingsEmployeeProfileHint => 'Çalışan profili: giriş, kişisel geçmiş ve biyometrik hazırlık ayarlarına erişim.';
+
+  @override
+  String get settingsSaving => 'Kaydediliyor...';
+
+  @override
+  String get settingsSaveProfile => 'Profili kaydet';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Kiosk biyometrisi';
+
+  @override
+  String get settingsNotificationsTitle => 'Bildirimler';
+
+  @override
+  String get settingsAccountPortableHint => 'Şirket değiştirseniz bile hesabınız kullanışlı kalır.';
+
+  @override
+  String get settingsNoJourney => 'Henüz kayıtlı yolculuk yok.';
+
+  @override
+  String get settingsNoCompanyQr => 'Panoda şirket QR\'ı yok.';
+
+  @override
+  String get settingsLanguageTitle => 'Dil';
+
+  @override
+  String get settingsPreferredLanguage => 'Tercih edilen dil';
+
+  @override
+  String get settingsSecurityTitle => 'Güvenlik';
+
+  @override
+  String get settingsCurrentPassword => 'Mevcut şifre';
+
+  @override
+  String get settingsSaveEnrollment => 'Kaydı kaydet';
+
+  @override
+  String get settingsSave => 'Kaydet';
+
+  @override
+  String get settingsLogout => 'Çıkış yap';
+
+  @override
+  String get approvalsTitle => 'Onaylar';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Ret gerekçesi';
+
+  @override
+  String get approvalsRejectReasonHint => 'Gerekçeyi açıklayın...';
+
+  @override
+  String get approvalsLoading => 'Onaylar yükleniyor...';
+
+  @override
+  String get actionApprove => 'Onayla';
+
+  @override
+  String get actionReject => 'Reddet';
+
+  @override
+  String get actionCancel => 'İptal';
+
 }

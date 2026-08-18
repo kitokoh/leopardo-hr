@@ -164,7 +164,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   SizedBox(height: 80),
                   EmptyState(
                     icon: Icons.history_toggle_off,
-                    title: 'Aucun historique',
+                    title: context.l10n.emptyHistory,
                     description: 'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
                   ),
                 ],

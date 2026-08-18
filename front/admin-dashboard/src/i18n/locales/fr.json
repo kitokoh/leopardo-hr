@@ -451,6 +451,11 @@
     "overtime": "Heures supplémentaires",
     "time": {
       "range": "de {from} à {to}"
+    },
+    "future": {
+      "time": {
+        "error": "Impossible de saisir une heure future"
+      }
     }
   },
   "tax_slabs": {
@@ -1410,7 +1415,21 @@
     "category_product_tips": "Conseils produit",
     "categories_title": "Catégories",
     "save_error": "Impossible d'enregistrer les préférences pour le moment.",
-    "channel_inapp_desc": "Centre de notifications web et mobile."
+    "channel_inapp_desc": "Centre de notifications web et mobile.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Impossible de marquer les notifications comme lues."
+        }
+      },
+      "read": {
+        "error": "Impossible de marquer la notification comme lue."
+      }
+    },
+    "delete": {
+      "error": "Impossible de supprimer la notification."
+    },
+    "deleted": "Notification supprimée."
   },
   "employees": {
     "load_error": "Impossible de charger les employés.",
@@ -2000,5 +2019,17 @@
     "submit_to_hr": "Soumettre au RH",
     "submitted_snack": "Demande d'absence transmise au RH.",
     "days_available": " j disponibles"
+  },
+  "settings": {
+    "journey": {
+      "load": {
+        "error": "Impossible de charger votre parcours."
+      }
+    },
+    "stats": {
+      "load": {
+        "error": "Impossible de charger les statistiques."
+      }
+    }
   }
 }

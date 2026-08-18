@@ -358,6 +358,11 @@
     "overtime": "Fazla mesai",
     "time": {
       "range": "{from} - {to}"
+    },
+    "future": {
+      "time": {
+        "error": "Gelecekteki bir saat girilemez"
+      }
     }
   },
   "_version": "1.0.0",
@@ -1410,7 +1415,21 @@
     "category_product_tips": "Ürün ipuçları",
     "categories_title": "Kategoriler",
     "save_error": "Tercihler şu anda kaydedilemiyor.",
-    "channel_inapp_desc": "Web ve mobil bildirim merkezi."
+    "channel_inapp_desc": "Web ve mobil bildirim merkezi.",
+    "mark": {
+      "all": {
+        "read": {
+          "error": "Bildirimler okundu olarak işaretlenemedi."
+        }
+      },
+      "read": {
+        "error": "Bildirim okundu olarak işaretlenemedi."
+      }
+    },
+    "delete": {
+      "error": "Bildirim silinemedi."
+    },
+    "deleted": "Bildirim silindi."
   },
   "employees": {
     "load_error": "Çalışanlar yüklenemedi.",
@@ -2000,5 +2019,17 @@
     "submit_to_hr": "İK'ya gönder",
     "submitted_snack": "İzin talebi İK'ya iletildi.",
     "days_available": " gün kullanılabilir"
+  },
+  "settings": {
+    "journey": {
+      "load": {
+        "error": "Yolculuğunuz yüklenemedi."
+      }
+    },
+    "stats": {
+      "load": {
+        "error": "İstatistikler yüklenemedi."
+      }
+    }
   }
 }
