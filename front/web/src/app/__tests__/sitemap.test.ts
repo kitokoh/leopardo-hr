@@ -64,6 +64,9 @@ describe('sitemap integrity (#3807)', () => {
   });
 
   it("ne publie pas /blog quand NEXT_PUBLIC_ENABLE_BLOG est off (#4467 — régression #2647/#2904)", () => {
+    // NB : ce test mock enableBlog: false. Le comportement par défaut
+    // (sans var d'env) est désormais enableBlog: true (#2906) —
+    // testé via les routes blog directement (blog/layout.test.ts).
     expect(urls.some((url) => url.includes('/blog'))).toBe(false);
   });
 

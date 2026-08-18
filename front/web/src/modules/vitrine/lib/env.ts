@@ -47,6 +47,8 @@ export function getEnvConfig(): EnvironmentConfig {
     // Feature flags
     enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true",
     enableForms: process.env.NEXT_PUBLIC_ENABLE_FORMS === "true",
-    enableBlog: process.env.NEXT_PUBLIC_ENABLE_BLOG === "true",
+    // #2906 : blog activé par défaut — contenu prêt, sitemap existant.
+    // Pour désactiver explicitement : NEXT_PUBLIC_ENABLE_BLOG=false.
+    enableBlog: process.env.NEXT_PUBLIC_ENABLE_BLOG !== "false",
   };
 }
