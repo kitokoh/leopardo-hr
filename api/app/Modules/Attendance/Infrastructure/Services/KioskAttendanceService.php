@@ -56,7 +56,9 @@ class KioskAttendanceService
             }
 
             return $this->attendanceService->checkIn($employee, new CheckInDTO(
-                method: 'kiosk_'.$kiosk->biometric_mode,
+                // Persist the canonical method accepted by attendance_logs;
+                // biometric_mode remains available as biometric_type/metadata.
+                method: 'biometric',
                 work_type: $workType,
             ));
         });
