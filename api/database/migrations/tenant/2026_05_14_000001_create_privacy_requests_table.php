@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('privacy_requests')) {
+        if (schemaTableExists('privacy_requests')) {
             return;
         }
 

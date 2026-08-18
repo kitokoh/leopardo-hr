@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('leave_policies')) {
+        if (! schemaTableExists('leave_policies')) {
             Schema::create('leave_policies', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -33,7 +33,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('leave_accruals')) {
+        if (! schemaTableExists('leave_accruals')) {
             Schema::create('leave_accruals', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -52,7 +52,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('leave_balances')) {
+        if (! schemaTableExists('leave_balances')) {
             Schema::create('leave_balances', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -70,7 +70,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('approval_workflows')) {
+        if (! schemaTableExists('approval_workflows')) {
             Schema::create('approval_workflows', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -86,7 +86,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('approval_requests')) {
+        if (! schemaTableExists('approval_requests')) {
             Schema::create('approval_requests', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -104,7 +104,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('approval_decisions')) {
+        if (! schemaTableExists('approval_decisions')) {
             Schema::create('approval_decisions', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('approval_request_id');

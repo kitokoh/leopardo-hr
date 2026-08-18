@@ -11,7 +11,6 @@ export default [
       "node_modules/**",
       ".git/**",
       "dist/**",
-      "e2e/**",
       "public/**",
     ],
   },

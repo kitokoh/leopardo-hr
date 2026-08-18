@@ -15,19 +15,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('cabinet_documents')) {
+        if (! schemaTableExists('cabinet_documents')) {
             return;
         }
 
         Schema::table('cabinet_documents', function (Blueprint $table): void {
-            if (! Schema::hasColumn('cabinet_documents', 'read_only')) {
+            if (! schemaHasColumn('cabinet_documents', 'read_only')) {
                 $table->boolean('read_only')->default(false);
             }
-            if (! Schema::hasColumn('cabinet_documents', 'document_type')) {
+            if (! schemaHasColumn('cabinet_documents', 'document_type')) {
                 $table->string('document_type', 30)->nullable()->index();
             }
             // Lien fiable bulletin → document (notes est TEXT, pas JSONB).
-            if (! Schema::hasColumn('cabinet_documents', 'source_id')) {
+            if (! schemaHasColumn('cabinet_documents', 'source_id')) {
                 $table->unsignedBigInteger('source_id')->nullable()->index();
             }
         });
@@ -35,18 +35,18 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('cabinet_documents')) {
+        if (! schemaTableExists('cabinet_documents')) {
             return;
         }
 
         Schema::table('cabinet_documents', function (Blueprint $table): void {
-            if (Schema::hasColumn('cabinet_documents', 'read_only')) {
+            if (schemaHasColumn('cabinet_documents', 'read_only')) {
                 $table->dropColumn('read_only');
             }
-            if (Schema::hasColumn('cabinet_documents', 'document_type')) {
+            if (schemaHasColumn('cabinet_documents', 'document_type')) {
                 $table->dropColumn('document_type');
             }
-            if (Schema::hasColumn('cabinet_documents', 'source_id')) {
+            if (schemaHasColumn('cabinet_documents', 'source_id')) {
                 $table->dropColumn('source_id');
             }
         });

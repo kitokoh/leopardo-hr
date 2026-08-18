@@ -22,7 +22,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('post_publications')) {
+        if (schemaTableExists('post_publications')) {
             return;
         }
 

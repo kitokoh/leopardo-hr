@@ -11,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         // ── Employee Loans ──────────────────────────────────────────────────
-        if (! Schema::hasTable('employee_loans')) {
+        if (! schemaTableExists('employee_loans')) {
             Schema::create('employee_loans', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -35,7 +35,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('loan_repayments')) {
+        if (! schemaTableExists('loan_repayments')) {
             Schema::create('loan_repayments', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('employee_loan_id');
@@ -55,7 +55,7 @@ return new class extends Migration
         }
 
         // ── Expense Claims ──────────────────────────────────────────────────
-        if (! Schema::hasTable('expense_claims')) {
+        if (! schemaTableExists('expense_claims')) {
             Schema::create('expense_claims', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -78,7 +78,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('expense_items')) {
+        if (! schemaTableExists('expense_items')) {
             Schema::create('expense_items', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('expense_claim_id');

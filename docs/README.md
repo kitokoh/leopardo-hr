@@ -138,6 +138,21 @@ Index de la documentation technique et stratégique du projet.
 | [`archive/PLAN_ACTION/`](archive/PLAN_ACTION/) | Plans d'action historiques (01-72), tous livrés |
 | [`archive/PLAN_ACTION2/`](archive/PLAN_ACTION2/) | Backlog atomique PA2 historique (00-27), remplacé par les GitHub Issues |
 | [`PLAN_ACTION2/`](PLAN_ACTION2/) | Plans d'action post-audit 2026 (130 tickets PA2, actif du 2026-06-13 au 2026-07-26) — **clos/obsolète depuis le 2026-07-26** ; ne contient plus qu'un `README.md` de redirection vers les GitHub Issues |
+
+---
+
+## 🗂️ Dossiers spécialisés
+
+| Doc | Contenu |
+|---|---|
+| [`focus/`](focus/) | Programme FOCUS 2026 (plan, ADR-0012, statut, référentiel paie DZ) |
+| [`payroll/`](payroll/) | Documentation paie (règles pays, benchmark, chiffrement au repos) |
+| [`qa/`](qa/) | Sessions QA (constats, triage, audit 360°) — source de vérité de l'état courant |
+| [`ops/`](ops/) | Opérations & domaines (état précis de l'infrastructure déployée) |
+| [`client/`](client/) | Documentation espace client / portail |
+| [`design/`](design/) | Design system et assets de conception |
+| [`contributing/`](contributing/) | Guides de contribution complémentaires |
+| [`notes/`](notes/) | Notes techniques et archives ponctuelles |
 | [`notes/`](notes/) | Notes et archives de contexte (non-source-de-vérité) |
 
 > ⚠️ Les dossiers `PROMPTS_EXECUTION/` et `PLAN_ACTION*/`/`archive/PLAN_ACTION*/` sont des archives de référence.
