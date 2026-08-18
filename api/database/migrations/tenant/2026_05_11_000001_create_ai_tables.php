@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('ai_conversations')) {
+        if (! schemaTableExists('ai_conversations')) {
             Schema::create('ai_conversations', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -26,7 +26,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('ai_audit_logs')) {
+        if (! schemaTableExists('ai_audit_logs')) {
             Schema::create('ai_audit_logs', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -50,7 +50,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('ai_tool_registry')) {
+        if (! schemaTableExists('ai_tool_registry')) {
             Schema::create('ai_tool_registry', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('name', 100)->unique();

@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('device_tokens')) {
+        if (schemaTableExists('device_tokens')) {
             return;
         }
 

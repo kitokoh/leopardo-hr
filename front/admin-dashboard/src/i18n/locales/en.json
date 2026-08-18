@@ -505,25 +505,6 @@
     },
     "trialUnit": "d"
   },
-  "time": {
-    "justNow": "just now",
-    "minutesAgo": "{count} min ago",
-    "hoursAgo": "{count} h ago",
-    "minutesShort": "{count}m",
-    "hoursShort": "{count}h",
-    "never": "never",
-    "loadingData": "Loading data...",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "inProgress": "In progress…",
-    "valid": "Valid",
-    "invalid": "Invalid",
-    "statusActive": "Active",
-    "statusInactive": "Inactive",
-    "statusSuspended": "Suspended",
-    "statusPending": "Pending",
-    "exportCsv": "Export CSV"
-  },
   "_version": "1.0.0",
   "_updated_at": "2026-08-17T00:00:00Z",
   "holidays": {
@@ -1412,35 +1393,6 @@
     "list_loading": "Loading team list...",
     "empty_list": "No employee visible for this account."
   },
-  "user_auth": {
-    "company_request": {
-      "title": "Request submitted!",
-      "body": "An administrator will review your request. You will receive a notification once it is processed.",
-      "info": "Fill in your company information. An administrator will validate your request."
-    },
-    "back_to_home": "Back to home",
-    "create_company": "Create a company",
-    "company_name": "Company name",
-    "company_email": "Company email",
-    "sector": "Business sector",
-    "country": "Country",
-    "city": "City",
-    "phone": "Phone",
-    "description": "Description",
-    "submit_request": "Submit request",
-    "submit_error": "Error submitting request",
-    "already_account": "Already have an account? Sign in",
-    "first_name": "First name",
-    "google_error": "Google error: {error}",
-    "last_name": "Last name",
-    "login_subtitle": "Access your workspace, documents and requests.",
-    "no_account": "No account yet? Sign up",
-    "personal_login": "Personal login",
-    "phone_optional": "Phone (optional)",
-    "register_button": "Create my account",
-    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
-    "register_title": "Create my account"
-  },
   "partnerPage": {
     "loading": "Loading your workspace...",
     "applyErrorPrefix": "Error while applying: ",
@@ -1492,6 +1444,35 @@
       "copied": "Copied!",
       "copyError": "Unable to copy the link. Copy it manually."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
   },
   "api": {
     "sessionExpired": "Session expired. Reconnecting...",
@@ -1578,6 +1559,39 @@
     "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
     "title": "System Administration"
   },
+  "billing": {
+    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
+    "no_active_period": "No active period",
+    "no_active_subscription": "No active subscription",
+    "period_label": "Period",
+    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
+    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
+    "checkout_failed": "Unable to create the payment session."
+  },
+  "contracts": {
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count} h ago",
+    "minutesShort": "{count}m",
+    "hoursShort": "{count}h",
+    "never": "never",
+    "loadingData": "Loading data...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "inProgress": "In progress…",
+    "valid": "Valid",
+    "invalid": "Invalid",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "statusSuspended": "Suspended",
+    "statusPending": "Pending",
+    "exportCsv": "Export CSV"
+  },
   "crm": {
     "subtitle": "Track leads from entry to paid conversion.",
     "leadsTotal": "Total leads",
@@ -1640,20 +1654,6 @@
     "usefulLinks": "Useful links",
     "system": "System",
     "systemConfig": "System configuration"
-  },
-  "billing": {
-    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
-    "no_active_period": "No active period",
-    "no_active_subscription": "No active subscription",
-    "period_label": "Period",
-    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
-    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
-    "checkout_failed": "Unable to create the payment session."
-  },
-  "contracts": {
-    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
-    "searchPlaceholder": "Search for an employee or contract type...",
-    "allStatuses": "All statuses"
   },
   "growth": {
     "title": "Growth Administration",

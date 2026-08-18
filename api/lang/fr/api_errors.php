@@ -40,7 +40,7 @@ return [
     'INVALID_CURRENT_PASSWORD' => 'Le mot de passe actuel est incorrect.',
     'INVALID_PASSWORD' => 'Le mot de passe est invalide.',
     'SETUP_REQUIRED' => 'La configuration initiale est requise.',
-    'RATE_LIMITED' => 'Trop de requetes. Veuillez reessayer plus tard.',
+    'RATE_LIMITED' => 'Trop de requêtes. Veuillez réessayer plus tard.',
     'INTERNAL_ERROR' => 'Une erreur interne est survenue.',
     'SERVICE_UNAVAILABLE' => 'Service temporairement indisponible.',
     'PDF_GENERATION_FAILED' => 'La generation du PDF a echoue.',

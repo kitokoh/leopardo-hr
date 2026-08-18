@@ -25,18 +25,18 @@
 
 ## 📊 Project Stats
 
-> Mesuré sur `main`, 2026-08-17 (revue PM) — méthodologie : voir [docs/audits/AUDIT.md](docs/audits/AUDIT.md).
+> Measured on `main`, 2026-08-17 — see the [full audit](docs/audits/AUDIT.md) for methodology.
 
 | Metric | Value |
 | :--- | :--- |
 | 🧪 **Backend tests passing** | **1 917** (dernier run complet 2026-08-15 · 462 fichiers `*Test.php` sur main au 17/08) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
 | 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
-| 🔌 **API endpoints** (OpenAPI spec) | **517** (paths dans `api/openapi.yaml`) |
-| 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package (`leopardo_core`) |
-| ⚙️ **CI/CD pipelines** | **40** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
+| 🔌 **API endpoints** (OpenAPI spec) | **517** |
+| 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
+| ⚙️ **CI/CD pipelines** | **41** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
 | 📚 **Documentation files** | **685** (architecture, security, specs, runbooks, GTM) |
-| 🕒 **Commit history** | **5 206 commits** since Sept 2025 |
+| 🕒 **Commit history** | **5 216 commits** since 2026-03-28 |
 | 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇹🇳 🇫🇷 🇹🇷 🇨🇲 🇬🇦 🇨🇬 🇨🇮 🇸🇳 🇧🇫 🇲🇱 (+ 19 codes au catalogue, voir `docs/payroll/`) |
 | 📦 **License** | MIT — open source, self-hostable or SaaS |
 
@@ -103,6 +103,13 @@ graph TB
 ---
 
 ## 🚀 Live ecosystem
+
+> ⚠️ **Stabilisation production en cours** — le domaine `leopardo-rh.com` est en NXDOMAIN
+> ([#3452](https://github.com/kitokoh/leopardo-hr/issues/3452)) et la migration vers les
+> services gratuits Render/Vercel est planifiée ([#3765](https://github.com/kitokoh/leopardo-hr/issues/3765),
+> [#3766](https://github.com/kitokoh/leopardo-hr/issues/3766)) ; la vitrine déployée peut être en retard
+> sur `main` ([#4867](https://github.com/kitokoh/leopardo-hr/issues/4867)). Les URLs ci-dessous sont les
+> endpoints **actifs** au 2026-08-17 mais non contractuels tant que la stabilisation n'est pas terminée.
 
 | Layer | Access | Stack |
 | :--- | :--- | :--- |

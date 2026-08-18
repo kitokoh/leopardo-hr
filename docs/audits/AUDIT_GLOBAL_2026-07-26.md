@@ -167,7 +167,7 @@ Par souci de non-duplication, les domaines suivants ont des documents d'audit d�
 - **XSS/CSRF admin dashboard** → `docs/security/ADMIN_CSRF_XSS_AUDIT.md` (bon état, risque résiduel documenté : token en `localStorage`)
 - **Injection SQL** → `docs/security/SQL_INJECTION_AUDIT.md` (aucune injection trouvée, garde-fous documentés)
 - **Accessibilité WCAG** → `docs/security/WCAG_ACCESSIBILITY_AUDIT.md`
-- **Architecture modules DDD / dette technique** → `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`, `09_AUDIT_MODULES_API_STRUCTURE.md`
+- **Architecture modules DDD / dette technique** → `docs/archive/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`, `docs/archive/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md`
 - **CI/CD bugs fonctionnels (paths filters, doublons)** → `docs/audits/AUDIT_CICD_2026-07-19.md` (déjà corrigé d'après vérification code)
 
 ---

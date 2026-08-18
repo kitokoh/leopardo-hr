@@ -69,9 +69,9 @@ return [
         'language' => [
             'label' => 'Langue',
             'variants' => [
-                'fr-FR' => 'Francais (France)',
-                'fr-BE' => 'Francais (Belgique)',
-                'fr-CA' => 'Francais (Canada)',
+                'fr-FR' => 'Français (France)',
+                'fr-BE' => 'Français (Belgique)',
+                'fr-CA' => 'Français (Canada)',
                 'ar-SA' => 'Arabe (Arabie saoudite)',
                 'ar-MA' => 'Arabe (Maroc)',
                 'tr-TR' => 'Turc (Turquie)',

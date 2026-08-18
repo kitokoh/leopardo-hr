@@ -17,7 +17,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('employee_attendance_preferences')) {
+        if (! schemaTableExists('employee_attendance_preferences')) {
             Schema::create('employee_attendance_preferences', function (Blueprint $table) {
                 $table->increments('id');
 

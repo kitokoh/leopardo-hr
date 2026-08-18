@@ -1,3 +1,8 @@
+> ⚠️ **OBSOLÈTE — voir [QUICKSTART.md](QUICKSTART.md)** (corrigé le 2026-08-17)
+> Ce document décrit l'état du démarrage en avril-mai 2026 (Laravel 11, dashboard Blade). Le démarrage
+> rapide canonique et à jour est `QUICKSTART.md` (Laravel 12, `leopardo:migrate`, multi-tenant).
+> Conservé pour historique.
+
 # 🚀 LEOPARDO RH — GUIDE DE DÉMARRAGE RAPIDE
 
 Ce guide explique comment lancer les trois composantes du projet **Leopardo RH** en environnement local.
@@ -14,7 +19,7 @@ Ce guide explique comment lancer les trois composantes du projet **Leopardo RH**
 
 ## 1. 🖥️ Backend (API) & Base de Données
 
-Le backend utilise Laravel 11 et PostgreSQL, orchestrés avec Docker.
+Le backend utilise Laravel 12 et PostgreSQL, orchestrés avec Docker.
 
 1.  Ouvrez un terminal dans le dossier `api/`.
 2.  Lancez le script de démarrage (PowerShell) :
@@ -73,7 +78,7 @@ Utilisez ces comptes pour tester les différentes fonctionnalités du MVP. Le mo
 
 ## 📂 Structure du Projet
 
-- `/api` : Backend Laravel 11.
+- `/api` : Backend Laravel 12.
 - `/front/mobile_apps` : Applications Flutter (employee, manager, HR, platform admin, package `leopardo_core` partagé).
 - `/docs` : Documentation complète du projet (specs, ADR, contrats API).
 - `PILOTAGE.md` : **Source de vérité** de l'état actuel du projet.

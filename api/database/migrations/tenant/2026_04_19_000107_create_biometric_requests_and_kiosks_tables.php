@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('biometric_enrollment_requests')) {
+        if (! schemaTableExists('biometric_enrollment_requests')) {
             Schema::create('biometric_enrollment_requests', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->uuid('company_id')->index();
@@ -33,7 +33,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('attendance_kiosks')) {
+        if (! schemaTableExists('attendance_kiosks')) {
             Schema::create('attendance_kiosks', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->uuid('company_id')->index();
