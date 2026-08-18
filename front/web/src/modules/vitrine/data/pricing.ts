@@ -404,6 +404,8 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
   ],
 }
 
+export const pricing = pricingByLocale
+
 export function getPricingPlans(locale: AppLocale): PricingPlan[] {
   return pricingByLocale[locale] ?? pricingByLocale.fr
 }
