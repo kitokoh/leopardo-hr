@@ -27,6 +27,9 @@ class BiometricWorkflowTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         DB::statement('SET search_path TO shared_tenants,public');
@@ -98,6 +101,9 @@ class BiometricWorkflowTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         DB::statement('SET search_path TO shared_tenants,public');
@@ -165,6 +171,9 @@ class BiometricWorkflowTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         DB::statement('SET search_path TO shared_tenants,public');
@@ -265,6 +274,9 @@ class BiometricWorkflowTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         DB::statement('SET search_path TO shared_tenants,public');
@@ -332,20 +344,6 @@ class BiometricWorkflowTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
         ])->save();
-
-        if (! \Illuminate\Support\Facades\Schema::hasTable('leave_balances')) {
-            \Illuminate\Support\Facades\Schema::create('leave_balances', function (\Illuminate\Database\Schema\Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedInteger('employee_id')->index();
-                $table->unsignedInteger('absence_type_id')->nullable();
-                $table->decimal('balance', 6, 2)->default(0);
-                $table->decimal('used', 6, 2)->default(0);
-                $table->decimal('pending', 6, 2)->default(0);
-                $table->unsignedSmallInteger('year');
-                $table->timestampTz('updated_at')->nullable();
-            });
-        }
 
         DB::statement('SET search_path TO public');
 
