@@ -5,7 +5,7 @@ import type { AppLocale } from '@/lib/i18n'
  * et PlanCode.php (ADR-0014 · 2026-08-15).
  *
  * Plans canoniques :
- *   free        0 €/mois · 5 employés max · 30 jours d'essai (freemium)
+ *   free        0 €/mois · 5 employés max · 14 jours d'essai (freemium)
  *   pilot      29 €/mois (24,17 €/mois annuel = 290 €/an) · 30 employés max · 14j
  *   operations 79 €/mois (65,83 €/mois annuel = 790 €/an) · 200 employés max · 14j
  *   enterprise  sur devis · illimité · 14j
@@ -43,7 +43,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/mois',
       annualPeriod: '/mois',
       description: 'Pour démarrer sans engagement — idéal pour les équipes de 5 personnes',
-      priceNote: '30 jours d\'essai. Jusqu\'à 5 employés.',
+      priceNote: '14 jours d\'essai. Jusqu\'à 5 employés.',
       employeeLimit: 'Jusqu\'à 5 employés',
       features: [
         'Pointage web et mobile basique',
@@ -135,7 +135,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/month',
       annualPeriod: '/month',
       description: 'Start without commitment — ideal for teams of up to 5 people',
-      priceNote: '30-day trial. Up to 5 employees.',
+      priceNote: '14-day trial. Up to 5 employees.',
       employeeLimit: 'Up to 5 employees',
       features: [
         'Basic web and mobile attendance',
@@ -227,7 +227,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/ay',
       annualPeriod: '/ay',
       description: 'Taahhütsüz başlayın — 5 kişiye kadar ekipler için ideal',
-      priceNote: '30 gün deneme. 5 çalışana kadar.',
+      priceNote: '14 gün deneme. 5 çalışana kadar.',
       employeeLimit: '5 çalışana kadar',
       features: [
         'Temel web ve mobil yoklama',
@@ -319,7 +319,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/شهر',
       annualPeriod: '/شهر',
       description: 'ابدأ بدون التزام — مثالي للفرق حتى 5 أشخاص',
-      priceNote: '30 يومًا مجانًا. حتى 5 موظفين.',
+      priceNote: '14 يومًا مجانًا. حتى 5 موظفين.',
       employeeLimit: 'حتى 5 موظفين',
       features: [
         'الحضور الأساسي عبر الويب والجوال',

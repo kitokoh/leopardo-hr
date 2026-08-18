@@ -106,7 +106,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Leopardo en Chiffres',
       footnote: 'Métriques vérifiables dans le dépôt public du produit — aucun chiffre client inventé.',
       items: [
-        { value: '6', label: 'Pays avec règles de paie dédiées' },
+        { value: '19', label: 'Pays avec règles de paie dédiées' },
         { value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
         { value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
         { value: '1200+', label: 'Tests automatisés backend' },
