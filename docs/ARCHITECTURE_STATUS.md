@@ -89,7 +89,7 @@
 | Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | 🔧 En cours |
 | Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ⏳ À faire |
 | Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ✅ Fait — voir `api/ARCHITECTURE.md` «Nettoyage complet» et `api/app/Core/Tenant/README.md` |
-| Tests Feature pour Growth, Platform, Onboarding, Training | P1 | Moyen | ⏳ À faire |
+| Tests Feature pour Growth, Platform, Onboarding | P1 | Moyen | ⏳ À faire |
 | PHPStan level 5+ via `phpstan-baseline.neon` | P2 | Moyen | ⏳ À faire |
 | OpenAPI/Swagger (`dedoc/scramble`) | P2 | Faible | ⏳ À faire |
 | routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible | ⏳ À faire |
@@ -102,6 +102,6 @@
 
 ✅ 90 controllers `app/Http/Controllers/Api/V1/` supprimés
 ✅ 26 services `app/Services/` supprimés (26 doublons Infrastructure)
-✅ 4 couches `Infrastructure/` créées (Growth, Platform, Onboarding, Training)
+✅ 4 couches `Infrastructure/` créées (Growth, Platform, Onboarding)
 ✅ 17 shims `app/Services/` supprimés (2026-08-11, #1728) — répertoire vide/supprimé, consommateurs sur les canoniques
 ✅ 51 fichiers consommateurs mis à jour (imports redirigés vers modules)
