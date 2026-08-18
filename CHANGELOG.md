@@ -6,6 +6,8 @@
 
 
 ## [Unreleased]
+- **feat(mobile/i18n): dette #4194 vague 2 — 40 clés attendance ×4 locales + manager/hr attendance_screen migrés (Refs #4194 #2755).** 40 nouvelles clés ARB (attendanceThisWeek, attendanceToday, checkin/checkout labels, statuts, labels menu, fingerprint, correction sheet, rôles) ×4 locales + générés Dart. leopardo_manager/leopardo_hr attendance_screen.dart : ~30 chaînes P1 migrées vers context.l10n.*.
+- **fix(web/seo): vitrine case-studies ogType article + redéploiement canonicals/hreflang (Closes #4867).** ogType corrigé `article` pour les études de cas individuelles (cohérence OpenGraph). Le correctif canonical/hreflang par article (#3435) était déjà sur main — ce redéploiement fait converger le live avec le code courant.
 - **feat(mobile/marketing): écrans social posts + création post (Closes #3910).** App leopardo_marketing : home hub de navigation, SocialPostsScreen (liste avec filtres statut, publication rapide), CreatePostScreen (sélection plateformes, planification, publier maintenant/brouillon). Modèle SocialPost, SocialPostRepository (listPosts/createPost/publishPost/deletePost), routes GoRouter /posts + /create-post.
 - **fix(api): PayrollCycleController::employeeBalance — forme de réponse canonique \`{data:{...}}\` (Closes #4500).** Test \`test_manager_employee_balance_uses_standard_data_envelope\` + 3 scénarios RBAC (manager ≠ autre employé, employé propre, cross-tenant 404) ajoutés.
 - **feat(mobile/platform_admin): screens support tickets + nœuds Edge (Closes #3912).** 2 nouveaux écrans : liste/détail/réponse/triage tickets support client, liste nœuds Edge on-premise avec sync forcée. Modèles PlatformSupportTicket, PlatformEdgeNode + méthodes repository + routes GoRouter + navigation dashboard.

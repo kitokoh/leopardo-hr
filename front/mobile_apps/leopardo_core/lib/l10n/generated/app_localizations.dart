@@ -7030,6 +7030,88 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   /// No description provided for @actionCancel.
   String get actionCancel;
 
+
+  /// No description provided for @attendanceThisWeek.
+  String get attendanceThisWeek;
+  /// No description provided for @attendanceToday.
+  String get attendanceToday;
+  /// No description provided for @attendanceCheckinLabel.
+  String get attendanceCheckinLabel;
+  /// No description provided for @attendanceCheckoutLabel.
+  String get attendanceCheckoutLabel;
+  /// No description provided for @attendanceDailyEstimate.
+  String get attendanceDailyEstimate;
+  /// No description provided for @attendanceWeekHours.
+  String get attendanceWeekHours;
+  /// No description provided for @attendanceWeekEarnings.
+  String get attendanceWeekEarnings;
+  /// No description provided for @attendanceWeekLate.
+  String get attendanceWeekLate;
+  /// No description provided for @attendanceMenuEdit.
+  String get attendanceMenuEdit;
+  /// No description provided for @attendanceMenuMonthly.
+  String get attendanceMenuMonthly;
+  /// No description provided for @attendanceMenuProfile.
+  String get attendanceMenuProfile;
+  /// No description provided for @attendanceCheckoutSending.
+  String get attendanceCheckoutSending;
+  /// No description provided for @attendanceCheckinSending.
+  String get attendanceCheckinSending;
+  /// No description provided for @attendanceCheckoutSuccess.
+  String get attendanceCheckoutSuccess;
+  /// No description provided for @attendanceCheckoutFailure.
+  String get attendanceCheckoutFailure;
+  /// No description provided for @attendanceCheckinSuccess.
+  String get attendanceCheckinSuccess;
+  /// No description provided for @attendanceCheckinFailure.
+  String get attendanceCheckinFailure;
+  /// No description provided for @attendanceFingerprintEnabled.
+  String get attendanceFingerprintEnabled;
+  /// No description provided for @attendanceFingerprintEnable.
+  String get attendanceFingerprintEnable;
+  /// No description provided for @attendanceAbsent.
+  String get attendanceAbsent;
+  /// No description provided for @attendanceStatusPointer.
+  String get attendanceStatusPointer;
+  /// No description provided for @attendanceStatusInProgress.
+  String get attendanceStatusInProgress;
+  /// No description provided for @attendanceStatusLate.
+  String get attendanceStatusLate;
+  /// No description provided for @attendanceStatusComplete.
+  String get attendanceStatusComplete;
+  /// No description provided for @attendanceCorrectionTitle.
+  String get attendanceCorrectionTitle;
+  /// No description provided for @attendanceCorrectionDirectHint.
+  String get attendanceCorrectionDirectHint;
+  /// No description provided for @attendanceCorrectionRequestHint.
+  String get attendanceCorrectionRequestHint;
+  /// No description provided for @attendanceCorrectionCheckinLabel.
+  String get attendanceCorrectionCheckinLabel;
+  /// No description provided for @attendanceCorrectionCheckoutLabel.
+  String get attendanceCorrectionCheckoutLabel;
+  /// No description provided for @attendanceCorrectionReasonHint.
+  String get attendanceCorrectionReasonHint;
+  /// No description provided for @attendanceCorrectionReasonRequired.
+  String get attendanceCorrectionReasonRequired;
+  /// No description provided for @attendanceCorrectionNoLogWarning.
+  String get attendanceCorrectionNoLogWarning;
+  /// No description provided for @attendanceCorrectionSubmitDirect.
+  String get attendanceCorrectionSubmitDirect;
+  /// No description provided for @attendanceCorrectionSubmitRequest.
+  String get attendanceCorrectionSubmitRequest;
+  /// No description provided for @attendanceRoleEmployee2.
+  String get attendanceRoleEmployee2;
+  /// No description provided for @attendanceRolePrincipal.
+  String get attendanceRolePrincipal;
+  /// No description provided for @attendanceRoleHr.
+  String get attendanceRoleHr;
+  /// No description provided for @attendanceRoleFinance.
+  String get attendanceRoleFinance;
+  /// No description provided for @attendanceRoleManager.
+  String get attendanceRoleManager;
+  /// No description provided for @attendanceNone.
+  String get attendanceNone;
+
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
       'an issue with the localizations generation tool. Please file an issue '

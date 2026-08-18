@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/widgets/pulse_button.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_hr/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/models/attendance_log.dart';
@@ -125,11 +126,11 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 _buildNoticeCard(attState.notice!, AppColors.warning),
               ],
               const SizedBox(height: 24),
-              _buildSectionTitle('CETTE SEMAINE'),
+              _buildSectionTitle(context.l10n.attendanceThisWeek),
               const SizedBox(height: 10),
               if (weekAsync.hasError)
                 _buildNoticeCard(
-                  'Semaine indisponible pour l instant. Le pointage reste utilisable.',
+                  context.l10n.attendanceWeekUnavailable,
                   AppColors.warning,
                 ),
               ...week.map(
@@ -155,13 +156,14 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     if (ref.read(attendanceProvider).isPunching) return;
     HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).clearSnackBars();
+    final l10n = context.l10n;
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
       SnackBar(
         content: Text(
           isCheckedIn
-              ? 'Envoi du depart vers le serveur...'
-              : 'Envoi de l arrivee vers le serveur...',
+              ? l10n.attendanceCheckoutSending
+              : l10n.attendanceCheckinSending,
         ),
         duration: const Duration(seconds: 2),
         backgroundColor: AppColors.rhDark,
@@ -178,9 +180,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         SnackBar(
           content: Text(
             success
-                ? 'Depart confirme.'
+                ? l10n.attendanceCheckoutSuccess
                 : ref.read(attendanceProvider).error ??
-                    'Depart non confirme. Reessayez.',
+                    l10n.attendanceCheckoutFailure,
           ),
           backgroundColor: success ? AppColors.rh : AppColors.danger,
         ),
@@ -190,9 +192,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         SnackBar(
           content: Text(
             success
-                ? 'Arrivee confirmee.'
+                ? l10n.attendanceCheckinSuccess
                 : ref.read(attendanceProvider).error ??
-                    'Arrivee non confirmee. Reessayez.',
+                    l10n.attendanceCheckinFailure,
           ),
           backgroundColor: success ? AppColors.rh : AppColors.danger,
         ),
@@ -295,26 +297,26 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 break;
             }
           },
-          itemBuilder: (_) => const [
+          itemBuilder: (ctx) => [
             PopupMenuItem(
               value: 'correction',
               child: _MenuItem(
                 icon: Icons.edit_calendar_outlined,
-                label: 'Modifier',
+                label: ctx.l10n.attendanceMenuEdit,
               ),
             ),
             PopupMenuItem(
               value: 'monthly',
               child: _MenuItem(
                 icon: Icons.calendar_month_outlined,
-                label: 'Mon mois complet',
+                label: ctx.l10n.attendanceMenuMonthly,
               ),
             ),
             PopupMenuItem(
               value: 'profile',
               child: _MenuItem(
                 icon: Icons.person_outline,
-                label: 'Mon profil',
+                label: ctx.l10n.attendanceMenuProfile,
               ),
             ),
           ],
@@ -376,10 +378,10 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         const SizedBox(height: 12),
         Text(
           isLoading
-              ? 'Enregistrement en cours...'
+              ? context.l10n.attendanceSaving
               : isCheckedIn
-                  ? 'Appuyez pour enregistrer votre depart'
-                  : 'Appuyez pour enregistrer votre arrivee',
+                  ? context.l10n.attendancePressToCheckout
+                  : context.l10n.attendancePressToCheckin,
           style: const TextStyle(color: _secondary, fontSize: 12),
           textAlign: TextAlign.center,
         ),
@@ -399,8 +401,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 const SizedBox(width: 5),
                 Text(
                   _fingerprintEnabled
-                      ? 'Empreinte activee (optionnel)'
-                      : 'Activer l\'empreinte (optionnel)',
+                      ? context.l10n.attendanceFingerprintEnabled
+                      : context.l10n.attendanceFingerprintEnable,
                   style: TextStyle(
                     fontSize: 11,
                     color:
@@ -438,7 +440,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           Row(
             children: [
               const Text(
-                'AUJOURD\'HUI',
+                context.l10n.attendanceToday,
                 style: TextStyle(
                   color: _secondary,
                   fontSize: 12,
@@ -453,9 +455,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _TimeChip(label: 'Arrivee', value: checkIn)),
+              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckinLabel, value: checkIn)),
               const SizedBox(width: 10),
-              Expanded(child: _TimeChip(label: 'Depart', value: checkOut)),
+              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckoutLabel, value: checkOut)),
             ],
           ),
           const SizedBox(height: 14),
@@ -464,7 +466,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           Row(
             children: [
               const Text(
-                'Gain estime du jour',
+                context.l10n.attendanceDailyEstimate,
                 style: TextStyle(color: _muted, fontSize: 12),
               ),
               const Spacer(),
@@ -547,7 +549,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         const SizedBox(height: 2),
                         Text(
                           day.isAbsent
-                              ? 'Absent'
+                              ? context.l10n.attendanceAbsent
                               : '${day.checkInFormatted} -> ${day.checkOutFormatted}'
                                   '${day.lateMinutes > 0 ? ' · +${day.lateMinutes} min' : ''}',
                           style: const TextStyle(fontSize: 10, color: _soft),
@@ -642,17 +644,17 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         children: [
           _WeekStat(
             value: '${hours}h${mins.toString().padLeft(2, '0')}',
-            label: 'Heures semaine',
+            label: context.l10n.attendanceWeekHours,
             color: AppColors.mobileDarkTextSoft,
           ),
           _WeekStat(
             value: '${totalEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
-            label: 'Gain estime',
+            label: context.l10n.attendanceWeekEarnings,
             color: AppColors.rh,
           ),
           _WeekStat(
-            value: totalLate > 0 ? '$totalLate min' : 'Aucun',
-            label: 'Retard cumule',
+            value: totalLate > 0 ? '$totalLate min' : context.l10n.attendanceNone,
+            label: context.l10n.attendanceWeekLate,
             color: totalLate > 0 ? AppColors.warning : AppColors.rh,
           ),
         ],
@@ -728,23 +730,23 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
 
   static double _estimatedEarnings(double hours) => hours * 550;
 
-  static String _roleLabel(String? role, String? managerRole) {
+  String _roleLabel(String? role, String? managerRole) {
     if (role == 'manager') {
       return switch (managerRole) {
-        'principal' => 'Manager principal',
-        'rh' => 'Responsable RH',
+        'principal' => context.l10n.attendanceRolePrincipal,
+        'rh' => context.l10n.attendanceRoleHr,
         'finance' => 'Finance',
-        _ => 'Manager',
+        _ => context.l10n.attendanceRoleManager,
       };
     }
-    return 'Employe';
+    return context.l10n.attendanceRoleEmployee2;
   }
 
-  static String _statusLabel(AttendanceLog? log) {
-    if (log == null || log.checkIn == null) return 'A pointer';
-    if (log.checkOut == null) return 'En cours';
-    if ((log.lateMinutes ?? 0) > 0) return 'Retard';
-    return 'Complet';
+  String _statusLabel(AttendanceLog? log) {
+    if (log == null || log.checkIn == null) return context.l10n.attendanceStatusPointer;
+    if (log.checkOut == null) return context.l10n.attendanceStatusInProgress;
+    if ((log.lateMinutes ?? 0) > 0) return context.l10n.attendanceStatusLate;
+    return context.l10n.attendanceStatusComplete;
   }
 
   static Color _statusColor(AttendanceLog? log) {
@@ -821,7 +823,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Impossible de saisir une heure future'),
+          content: Text(context.l10n.attendanceFutureTimeError),
           backgroundColor: AppColors.danger,
         ),
       );
@@ -844,7 +846,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Aucune ligne de pointage existante a modifier pour ce jour.',
+            context.l10n.attendanceCorrectionNoLogWarning,
           ),
           backgroundColor: AppColors.warning,
         ),
@@ -940,8 +942,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
             const SizedBox(height: 4),
             Text(
               widget.canDirectEdit
-                  ? 'La correction sera appliquee au dossier de pointage.'
-                  : 'La demande sera transmise au RH pour validation.',
+                  ? context.l10n.attendanceCorrectionDirectHint
+                  : context.l10n.attendanceCorrectionRequestHint,
               style: const TextStyle(fontSize: 12, color: AppColors.mobileDarkMuted),
             ),
             const SizedBox(height: 18),
@@ -949,7 +951,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               children: [
                 Expanded(
                   child: _TimeTile(
-                    label: 'Arrivee reelle *',
+                    label: context.l10n.attendanceCorrectionCheckinLabel,
                     value: _checkIn,
                     onTap: () => _pickTime(isCheckIn: true),
                   ),
@@ -957,7 +959,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: _TimeTile(
-                    label: 'Depart reel',
+                    label: context.l10n.attendanceCorrectionCheckoutLabel,
                     value: _checkOut,
                     onTap: () => _pickTime(isCheckIn: false),
                   ),
@@ -971,7 +973,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               maxLength: 200,
               style: const TextStyle(fontSize: 13, color: AppColors.mobileDarkText),
               decoration: InputDecoration(
-                hintText: 'Motif (ex: oubli de pointage a 8h)',
+                hintText: context.l10n.attendanceCorrectionReasonHint,
                 hintStyle: const TextStyle(
                   fontSize: 13,
                   color: AppColors.mobileDarkMuted,
@@ -988,7 +990,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
-                  ? 'Motif obligatoire'
+                  ? context.l10n.attendanceCorrectionReasonRequired
                   : null,
             ),
             const SizedBox(height: 16),
@@ -1015,8 +1017,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                       )
                     : Text(
                         widget.canDirectEdit
-                            ? 'Modifier'
-                            : 'Demander une modification',
+                            ? context.l10n.attendanceCorrectionSubmitDirect
+                            : context.l10n.attendanceCorrectionSubmitRequest,
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
               ),
