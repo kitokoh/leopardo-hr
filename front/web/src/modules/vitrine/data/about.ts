@@ -106,7 +106,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Leopardo en Chiffres',
       footnote: 'Métriques vérifiables dans le dépôt public du produit — aucun chiffre client inventé.',
       items: [
-        { value: '6', label: 'Pays avec règles de paie dédiées' },
+        { value: '19', label: 'Pays avec règles de paie dédiées' },
         { value: '4', label: 'Langues produit (FR/EN/TR/AR)' },
         { value: '7', label: 'Surfaces produit (web, mobile, kiosk)' },
         { value: '1200+', label: 'Tests automatisés backend' },
@@ -167,7 +167,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Leopardo in Numbers',
       footnote: 'Metrics verifiable in the public product repository — no invented customer figures.',
       items: [
-        { value: '6', label: 'Countries with dedicated payroll rules' },
+        { value: '19', label: 'Countries with dedicated payroll rules' },
         { value: '4', label: 'Product languages (FR/EN/TR/AR)' },
         { value: '7', label: 'Product surfaces (web, mobile, kiosk)' },
         { value: '1200+', label: 'Automated backend tests' },
@@ -228,7 +228,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'Rakamlarla Leopardo',
       footnote: 'Ürünün herkese açık deposunda doğrulanabilir metrikler — uydurma müşteri verisi yok.',
       items: [
-        { value: '6', label: 'Özel maaş kuralları olan ülke' },
+        { value: '19', label: 'Özel maaş kuralları olan ülke' },
         { value: '4', label: 'Ürün dili (FR/EN/TR/AR)' },
         { value: '7', label: 'Ürün yüzeyi (web, mobil, kiosk)' },
         { value: '1200+', label: 'Otomatikleştirilmiş backend testi' },
@@ -289,7 +289,7 @@ const aboutByLocale: Record<AppLocale, AboutContent> = {
       title: 'ليوباردو بالأرقام',
       footnote: 'مقاييس يمكن التحقق منها في المستودع العام للمنتج — لا أرقام عملاء مختلقة.',
       items: [
-        { value: '6', label: 'دول بقواعد رواتب مخصصة' },
+        { value: '19', label: 'دول بقواعد رواتب مخصصة' },
         { value: '4', label: 'لغات المنتج (FR/EN/TR/AR)' },
         { value: '7', label: 'أسطح المنتج (ويب، موبايل، كشك)' },
         { value: '1200+', label: 'اختبار آلي للخلفية' },
