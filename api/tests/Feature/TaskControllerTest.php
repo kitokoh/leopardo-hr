@@ -31,7 +31,9 @@ class TaskControllerTest extends TestCase
     {
         $company = Company::factory()->create();
         $otherCompany = Company::factory()->create();
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $foreignEmployee */
         $foreignEmployee = Employee::factory()->create(['company_id' => $otherCompany->id]);
 
         Sanctum::actingAs($manager);
@@ -49,6 +51,7 @@ class TaskControllerTest extends TestCase
     public function test_employee_can_complete_own_today_task_with_performance_score(): void
     {
         $company = Company::factory()->create(['timezone' => 'UTC']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $task = Task::query()->create([
             'company_id' => $company->id,
@@ -84,6 +87,7 @@ class TaskControllerTest extends TestCase
         // #4861 (audit 2026-08-17) : `status` était absent du $fillable →
         // PATCH /tasks/{id} l'écartait silencieusement (mass-assignment).
         $company = Company::factory()->create(['timezone' => 'UTC']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $task = Task::query()->create([
             'company_id' => $company->id,
@@ -113,7 +117,9 @@ class TaskControllerTest extends TestCase
     public function test_assigned_employee_cannot_reassign_task_when_completing_it(): void
     {
         $company = Company::factory()->create(['timezone' => 'UTC']);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
+        /** @var Employee $colleague */
         $colleague = Employee::factory()->create(['company_id' => $company->id]);
         $task = Task::query()->create([
             'company_id' => $company->id,
@@ -143,7 +149,9 @@ class TaskControllerTest extends TestCase
     public function test_assigned_employee_can_post_and_list_task_comments(): void
     {
         $company = Company::factory()->create(['timezone' => 'UTC']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $employee */
         $employee = Employee::factory()->create(['company_id' => $company->id]);
         $task = Task::query()->create([
             'company_id' => $company->id,
@@ -185,7 +193,9 @@ class TaskControllerTest extends TestCase
     public function test_comment_author_is_not_notified_and_unrelated_employee_cannot_access_comments(): void
     {
         $company = Company::factory()->create(['timezone' => 'UTC']);
+        /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        /** @var Employee $outsider */
         $outsider = Employee::factory()->create(['company_id' => $company->id]);
         $task = Task::query()->create([
             'company_id' => $company->id,
