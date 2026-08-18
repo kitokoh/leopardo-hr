@@ -260,7 +260,7 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page).toHaveURL(/\/attendance$/);
     await expect(page.locator('body')).toContainText('Manager');
     await expect(page.locator('body')).toContainText('Nadia Kaci');
-    await expect(page.locator('body')).toContainText('present');
+    await expect(page.locator('body')).toContainText(/Présents|present/i);
 
     await page.locator('aside a[href="/absences"]').click();
     await expect(page).toHaveURL(/\/absences$/);
@@ -268,7 +268,7 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page.locator('body')).toContainText('Conges payes');
     await expect(page.locator('body')).toContainText('pending');
 
-    await page.getByRole('button', { name: /Deconnexion|Logout/i }).click();
+    await page.getByRole('button', { name: /Déconnexion|Deconnexion|Logout/i }).click();
     await expect(page).toHaveURL(/\/auth\/login$/, { timeout: 10000 });
   });
 });

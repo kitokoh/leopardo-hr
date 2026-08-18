@@ -45,7 +45,7 @@ describe('portal API route messages i18n (#4863)', () => {
       'src/app/api/v1/auth/login/route.ts',
       'src/app/api/billing/checkout/route.ts',
     ]
-    const frPattern = /['"][^'"]*[àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ][^'"]*['"]/g
+    const frPattern = /['"][^'"]*[àâäéèêëîïôöùûüçÀ\u00C2\u00C4ÉÈÊËÎÏÔÖÙÛÜÇ][^'"]*['"]/g
     for (const r of routes) {
       const src = fs.readFileSync(path.join(process.cwd(), r), 'utf8')
       const code = src

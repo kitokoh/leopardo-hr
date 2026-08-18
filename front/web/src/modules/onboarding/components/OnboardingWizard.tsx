@@ -1,125 +1,169 @@
-﻿'use client';
+'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, ChevronRight, X, Users, Building, ShieldCheck } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Building2,
+  CalendarClock,
+  CheckCircle2,
+  ChevronRight,
+  Fingerprint,
+  Loader2,
+  MapPin,
+  ScanLine,
+  SkipForward,
+  Users,
+  Wallet,
+  X,
+} from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
-import { type StoredAuthUser, storeAuthSession } from '@/lib/i18n';
+import { getCopy, normalizeLocale, storeAuthSession, type StoredAuthUser } from '@/lib/i18n';
 
-// Issue #2642 (QA 2026-08-15) : l'onboarding était 100 % en français pour
-// tous les dashboards — localisé FR/EN/TR/AR (fallback FR).
-const onboardingCopy: Record<string, { steps: Array<{ title: string; desc: string }>; validating: string; finish: string; next: string }> = {
-  fr: {
-    steps: [
-      { title: 'Bienvenue sur Leopardo', desc: 'Découvrez votre nouvel espace RH en quelques étapes.' },
-      { title: 'Ajoutez vos équipes', desc: 'Invitez vos employés pour commencer à pointer.' },
-      { title: 'Finalisez la configuration', desc: 'Vos plannings et règles d\'entreprise sont prêts.' },
-    ],
-    validating: 'Validation...',
-    finish: 'Terminer',
-    next: 'Suivant',
-  },
-  en: {
-    steps: [
-      { title: 'Welcome to Leopardo', desc: 'Discover your new HR workspace in a few steps.' },
-      { title: 'Add your teams', desc: 'Invite your employees to start clocking in.' },
-      { title: 'Finish the setup', desc: 'Your schedules and company rules are ready.' },
-    ],
-    validating: 'Validating...',
-    finish: 'Finish',
-    next: 'Next',
-  },
-  tr: {
-    steps: [
-      { title: 'Leopardo\'ya hoş geldiniz', desc: 'Yeni İK alanınızı birkaç adımda keşfedin.' },
-      { title: 'Ekiplerinizi ekleyin', desc: 'Çalışanlarınızı davet ederek puantaja başlayın.' },
-      { title: 'Kurulumu tamamlayın', desc: 'Planlarınız ve şirket kurallarınız hazır.' },
-    ],
-    validating: 'Doğrulanıyor...',
-    finish: 'Bitir',
-    next: 'İleri',
-  },
-  ar: {
-    steps: [
-      { title: 'مرحباً بك في Leopardo', desc: 'اكتشف مساحة الموارد البشرية الجديدة في خطوات قليلة.' },
-      { title: 'أضف فرقك', desc: 'ادعُ موظفيك لبدء تسجيل الحضور.' },
-      { title: 'أكمل الإعداد', desc: 'جداولك وقواعد شركتك جاهزة.' },
-    ],
-    validating: 'جارٍ التحقق...',
-    finish: 'إنهاء',
-    next: 'التالي',
-  },
+/**
+ * Wizard d'onboarding piloté par la VRAIE checklist backend
+ * (`GET /onboarding-setup/checklist`). La checklist expose la shape canonique
+ *   data: { completed_steps, total_steps, progress_percent, go_live_ready,
+ *          steps: [{ step_key, title, description, status, order, required }] }
+ *
+ * Historique des correctifs :
+ * - #3325 : on seedait via le checklist avant de marquer une étape complétée
+ *   (table `onboarding_steps` vide au provisioning → 404 sinon).
+ * - Audit web client 2026-08-17 : le wizard lisait `payload.data` comme un
+ *   tableau alors que l'API renvoie un objet → `payload.data.filter` plantait
+ *   (TypeError) et l'onboarding ne pouvait jamais être complété. Le wizard est
+ *   désormais data-driven : il affiche les étapes réelles (titre localisé,
+ *   fallback titre backend), complète/saute chaque étape via les endpoints
+ *   PATCH dédiés (jamais de complétion fictive en un clic), rend le badge
+ *   « Étape X sur Y » localisé ×4 et ajoute les aria-labels manquants.
+ */
+
+type ChecklistStep = {
+  step_key: string;
+  title: string;
+  description?: string | null;
+  status: 'pending' | 'completed' | 'skipped';
+  order: number;
+  required?: boolean;
 };
 
-export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; onComplete: () => void }) {
+type ChecklistData = {
+  completed_steps?: number;
+  total_steps?: number;
+  progress_percent?: number;
+  go_live_ready?: boolean;
+  steps?: ChecklistStep[];
+};
+
+const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  add_employees: Users,
+  configure_payroll: Wallet,
+  setup_schedules: CalendarClock,
+  setup_geofence: MapPin,
+  setup_kiosk: ScanLine,
+  first_checkin: Fingerprint,
+};
+
+export function OnboardingWizard({
+  user,
+  onComplete,
+}: {
+  user: StoredAuthUser;
+  onComplete: () => void;
+}) {
+  const { locale } = useVitrineLocale();
+  const appLocale = normalizeLocale(locale ?? 'fr');
+  const labels = getCopy(appLocale);
+  const onboarding = labels.onboarding;
+
   const [isOpen, setIsOpen] = useState(true);
-  const [step, setStep] = useState(1);
+  const [steps, setSteps] = useState<ChecklistStep[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [actionKey, setActionKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const locale = useVitrineLocale().locale ?? 'fr';
-  const copy = onboardingCopy[locale] ?? onboardingCopy.fr;
-
-  const steps = copy.steps.map((stepCopy, index) => ({
-    id: index + 1,
-    title: stepCopy.title,
-    desc: stepCopy.desc,
-    icon: [Building, Users, ShieldCheck][index] ?? Building,
-  }));
-
-  const handleNext = async () => {
-    if (step < steps.length) {
-      setStep((s) => s + 1);
-      return;
-    }
-
-    setLoading(true);
+  const loadChecklist = useCallback(async () => {
     setError(null);
+    setLoading(true);
     try {
-      // Issue #3325 : `onboarding_steps` n'est seedé nulle part au
-      // provisioning — seul `GET /onboarding-setup/checklist` seede les
-      // étapes par défaut. Sans appel préalable, le PATCH ci-dessous
-      // répondait 404 (table vide) et l'erreur était avalée → l'onboarding
-      // backend restait à 0 % alors que le wizard se fermait. On seede
-      // d'abord via le checklist, puis on complète la dernière étape
-      // requise servie par le backend.
-      const checklistRes = await apiFetch('/onboarding-setup/checklist');
-      const payload = (await checklistRes.json()) as {
-        data?: Array<{ step_key?: string; required?: boolean; order?: number }>;
-      };
-      const stepsData = payload.data ?? [];
-      const requiredSteps = stepsData
-        .filter((s) => s.required)
-        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-      const targetStepKey =
-        requiredSteps.length > 0
-          ? requiredSteps[requiredSteps.length - 1].step_key
-          : 'configure_schedules';
-
-      if (!targetStepKey) {
-        throw new Error("Impossible de déterminer l'étape à compléter.");
-      }
-
-      await apiFetch(`/onboarding-setup/${targetStepKey}/complete`, {
-        method: 'PATCH',
-      });
-
-      // Update local user
-      const updatedUser = { ...user, company: { ...user.company, metadata: { ...user.company?.metadata, onboarding_completed: true } } };
-      storeAuthSession(null, updatedUser);
-
-      setIsOpen(false);
-      onComplete();
+      const response = await apiFetch('/onboarding-setup/checklist');
+      const payload = (await response.json()) as { data?: ChecklistData };
+      const list = Array.isArray(payload.data?.steps) ? payload.data.steps : [];
+      setSteps(list.sort((a, b) => a.order - b.order));
     } catch (e) {
-      // Issue #3325 : plus d'échec silencieux — on affiche l'erreur et on
-      // laisse le wizard ouvert ; l'onboarding backend n'est pas marqué
-      // terminé à tort.
       console.error(e);
-      setError(e instanceof Error ? e.message : 'Une erreur est survenue.');
+      setError(onboarding.errorGeneric);
     } finally {
       setLoading(false);
     }
+  }, [onboarding.errorGeneric]);
+
+  useEffect(() => {
+    void loadChecklist();
+  }, [loadChecklist]);
+
+  const pendingSteps = useMemo(
+    () => (steps ?? []).filter((s) => s.status === 'pending'),
+    [steps],
+  );
+  const currentStep = pendingSteps[0] ?? null;
+  const done = steps !== null && pendingSteps.length === 0;
+  const progress = useMemo(() => {
+    if (!steps || steps.length === 0) return 0;
+    const completed = steps.filter((s) => s.status !== 'pending').length;
+    return Math.round((completed / steps.length) * 100);
+  }, [steps]);
+
+  const stepMeta = (step: ChecklistStep) => {
+    const localized = onboarding.steps[step.step_key];
+    if (localized) return localized;
+    return { title: step.title, desc: step.description ?? '' };
+  };
+
+  const applyStepResult = (stepKey: string, status: 'pending' | 'completed' | 'skipped') => {
+    setSteps((prev) =>
+      prev?.map((s) => (s.step_key === stepKey ? { ...s, status } : s)) ?? null,
+    );
+  };
+
+  const mutateStep = async (step: ChecklistStep, status: 'completed' | 'skipped') => {
+    if (status === 'skipped' && step.required) {
+      return;
+    }
+    setActionKey(step.step_key);
+    setError(null);
+    try {
+      // Routes backend : PATCH /onboarding-setup/{stepKey}/complete | /skip.
+      const action = status === 'completed' ? 'complete' : 'skip';
+      await apiFetch(`/onboarding-setup/${step.step_key}/${action}`, {
+        method: 'PATCH',
+      });
+      applyStepResult(step.step_key, status);
+    } catch (e) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : onboarding.errorGeneric);
+    } finally {
+      setActionKey(null);
+    }
+  };
+
+  const completeLocalOnboarding = () => {
+    // Complétion locale uniquement : le backend connaît déjà l'état réel des
+    // étapes (completed/skipped). On synchronise le profil local pour ne plus
+    // ré-afficher le wizard au prochain chargement.
+    const updatedUser = {
+      ...user,
+      company: {
+        ...user.company,
+        metadata: {
+          ...(user.company?.metadata ?? {}),
+          onboarding_completed: true,
+        },
+      },
+    };
+    storeAuthSession(null, updatedUser);
+    setIsOpen(false);
+    onComplete();
   };
 
   const handleDismiss = () => {
@@ -127,69 +171,181 @@ export function OnboardingWizard({ user, onComplete }: { user: StoredAuthUser; o
     onComplete();
   };
 
+  const handlePrimary = async () => {
+    if (done) {
+      completeLocalOnboarding();
+      return;
+    }
+    if (!currentStep) {
+      return;
+    }
+    await mutateStep(currentStep, 'completed');
+  };
+
+  const badgeText = onboarding.stepBadge
+    .replace('{current}', String(done ? (steps?.length ?? 0) : (steps?.length ?? 0) - pendingSteps.length + 1))
+    .replace('{total}', String(steps?.length ?? 0));
+
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl"
+          role="dialog"
+          aria-modal="true"
+          aria-label={onboarding.close}
         >
-          <button onClick={handleDismiss} className="absolute right-4 top-4 rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition">
+          <button
+            onClick={handleDismiss}
+            aria-label={onboarding.close}
+            className="absolute right-4 top-4 z-10 rounded-full p-2 text-white/80 transition hover:bg-white/20 hover:text-white"
+          >
             <X className="h-5 w-5" />
           </button>
-          
+
           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 text-white">
             <div className="mb-4 flex items-center justify-between">
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                Étape {step} sur {steps.length}
+                {badgeText}
               </span>
+              <span className="text-xs font-semibold text-emerald-50">{progress}%</span>
             </div>
-            <h2 className="text-2xl font-black">{steps[step - 1].title}</h2>
-            <p className="mt-2 text-emerald-50">{steps[step - 1].desc}</p>
+            <h2 className="text-2xl font-black">
+              {done
+                ? onboarding.allStepsDone
+                : currentStep
+                  ? stepMeta(currentStep).title
+                  : ''}
+            </h2>
+            <p className="mt-2 text-emerald-50">
+              {done || !currentStep ? '' : stepMeta(currentStep).desc}
+            </p>
+            <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-white/20">
+              <div
+                className="h-full rounded-full bg-white transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
 
           <div className="p-8">
             <div className="space-y-6">
-              {steps.map((s, idx) => {
-                const isActive = step === s.id;
-                const isPast = step > s.id;
+              {(steps ?? []).map((s) => {
+                const meta = stepMeta(s);
+                const isCompleted = s.status === 'completed';
+                const isSkipped = s.status === 'skipped';
+                const isActive = currentStep?.step_key === s.step_key;
+                const Icon = STEP_ICONS[s.step_key] ?? Building2;
                 return (
-                  <div key={s.id} className={`flex items-center gap-4 transition-opacity ${!isActive && !isPast ? 'opacity-40' : 'opacity-100'}`}>
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${isPast ? 'bg-emerald-100 text-emerald-600' : isActive ? 'bg-teal-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400'}`}>
-                      {isPast ? <CheckCircle2 className="h-5 w-5" /> : <s.icon className="h-5 w-5" />}
+                  <div
+                    key={s.step_key}
+                    className={`flex items-center gap-4 transition-opacity ${
+                      isActive ? 'opacity-100' : 'opacity-60'
+                    }`}
+                  >
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+                        isCompleted
+                          ? 'bg-emerald-100 text-emerald-600'
+                          : isSkipped
+                            ? 'bg-slate-100 text-slate-400'
+                            : isActive
+                              ? 'bg-teal-600 text-white shadow-lg'
+                              : 'bg-slate-100 text-slate-400'
+                      }`}
+                    >
+                      {isCompleted ? (
+                        <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+                      ) : isSkipped ? (
+                        <SkipForward className="h-5 w-5" aria-hidden="true" />
+                      ) : (
+                        <Icon className="h-5 w-5" aria-hidden="true" />
+                      )}
                     </div>
-                    <div>
-                      <p className={`font-bold ${isActive ? 'text-slate-900' : 'text-slate-500'}`}>{s.title}</p>
-                      {isActive && <p className="text-xs text-slate-500">{s.desc}</p>}
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className={`font-bold ${
+                          isActive || isCompleted ? 'text-slate-900' : 'text-slate-500'
+                        }`}
+                      >
+                        {meta.title}
+                      </p>
+                      {(isActive || isCompleted) && (
+                        <p className="truncate text-xs text-slate-500">{meta.desc}</p>
+                      )}
                     </div>
+                    {isSkipped && (
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        {onboarding.skip}
+                      </span>
+                    )}
                   </div>
                 );
               })}
             </div>
 
-            <div className="mt-8 flex flex-col items-end gap-2">
-              {error && (
-                <p className="w-full rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700" role="alert">
-                  {error}
-                </p>
-              )}
-              <button
-                onClick={handleNext}
-                disabled={loading}
-                className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
+            {error && (
+              <p
+                role="alert"
+                className="mt-6 w-full rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700"
               >
-                {loading ? copy.validating : step === steps.length ? copy.finish : copy.next}
-                {!loading && step < steps.length && <ChevronRight className="h-4 w-4" />}
-              </button>
-            </div>
+                {error}
+              </p>
+            )}
+
+            {steps === null ? (
+              <div className="mt-8 flex flex-col items-end gap-2">
+                <button
+                  onClick={() => void loadChecklist()}
+                  disabled={loading}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : (
+                    onboarding.retry
+                  )}
+                </button>
+              </div>
+            ) : (
+              <div className="mt-8 flex flex-col items-end gap-2">
+                {currentStep && !currentStep.required && (
+                  <button
+                    onClick={() => void mutateStep(currentStep, 'skipped')}
+                    disabled={actionKey === currentStep.step_key}
+                    className="text-xs font-semibold text-slate-400 transition hover:text-slate-600 disabled:opacity-50"
+                  >
+                    {onboarding.skip}
+                  </button>
+                )}
+                <button
+                  onClick={() => void handlePrimary()}
+                  disabled={loading || actionKey !== null}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-bold text-white transition hover:bg-slate-800 disabled:opacity-50"
+                >
+                  {actionKey !== null ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  ) : done ? (
+                    onboarding.finish
+                  ) : pendingSteps.length === 1 ? (
+                    onboarding.finish
+                  ) : (
+                    onboarding.next
+                  )}
+                  {!actionKey && pendingSteps.length > 1 && (
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
     </AnimatePresence>
   );
 }
-

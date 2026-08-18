@@ -26,7 +26,8 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), "Aptos", "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Domaines Leopardo RH */
   --color-rh: #10b981;
@@ -109,6 +110,19 @@ html {
 ::selection {
   background: rgba(16, 185, 129, 0.2);
   color: inherit;
+}
+
+/* Décor d'arrière-plan des pages d'auth (motif pointillé + halos) — extrait
+   des styles inline pour éviter les littéraux techniques en dur (PA2-I18N-014). */
+.auth-surface-dots {
+  background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px);
+  background-size: 24px 24px;
+}
+
+.auth-surface-glow {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(45, 212, 191, 0.2), transparent 32%),
+    radial-gradient(circle at 84% 20%, rgba(56, 189, 248, 0.18), transparent 30%);
 }
 
 /* Scrollbar */

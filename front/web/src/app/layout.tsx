@@ -10,6 +10,7 @@ import { PWAProvider } from "@/components/PWAProvider";
 import { DarkModeProvider } from "@/components/DarkModeProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 
+import { inter } from '@/lib/fonts';
 import { SITE_URL as siteUrl } from '@/lib/site-url';
 import { t } from '@/lib/i18n/locale-catalog';
 import { pageMetadataI18n, rootSeoL10n } from '@/modules/vitrine/lib/seo';
@@ -191,7 +192,7 @@ export default async function RootLayout({
   const mixpanelToken = analyticsEnabled ? process.env.NEXT_PUBLIC_MIXPANEL_TOKEN : undefined;
 
   return (
-    <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} suppressHydrationWarning>
+    <html lang={ssrLang} dir={resolveSsrDir(ssrLang)} className={inter.variable} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#10b981" />
         <meta name="mobile-web-app-capable" content="yes" />

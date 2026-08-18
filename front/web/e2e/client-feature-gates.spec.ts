@@ -188,7 +188,7 @@ test.describe('Client web feature gates', () => {
 
     await expect(page.getByTestId('feature-locked-panel')).toBeVisible();
     await expect(page.getByText('Module non inclus').first()).toBeVisible();
-    await expect(page.locator('body')).toContainText("Votre role actuel ne permet pas d'acceder a ce module.");
+    await expect(page.locator('body')).toContainText("Votre rôle actuel ne permet pas d'accéder à ce module.");
     const events = await analyticsEvents(page);
     expect(events.find((event) => event.name === 'feature_blocked')?.properties.reason).toBe('role_locked');
   });

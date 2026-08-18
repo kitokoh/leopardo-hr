@@ -436,7 +436,7 @@ function LoginInner() {
                   {labels.login.remember}
                 </label>
 
-                <Link href="/contact?topic=password" className="text-sm font-semibold text-teal-700 transition hover:text-teal-900">
+                <Link href="/auth/forgot-password" className="text-sm font-semibold text-teal-700 transition hover:text-teal-900">
                   {labels.login.forgot}
                 </Link>
               </div>
