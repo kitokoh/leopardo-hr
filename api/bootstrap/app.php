@@ -172,11 +172,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            return new JsonResponse([
+            $response = new JsonResponse([
                 'error' => 'TOO_MANY_REQUESTS',
                 'message' => 'TOO_MANY_REQUESTS',
                 'localized_message' => __('errors.TOO_MANY_REQUESTS'),
             ], 429);
+
+            // Issue #1774 / #5034 : préserver les headers du throttling
+            // (Retry-After, X-RateLimit-*) posés par ThrottleRequestsException —
+            // sans eux, le 429 est inexploitable côté client (retry).
+            foreach ($exception->getHeaders() as $headerName => $headerValue) {
+                $response->headers->set($headerName, $headerValue);
+            }
+
+            return $response;
         });
 
         // Handle oversized file uploads gracefully (PHP rejects them before Laravel

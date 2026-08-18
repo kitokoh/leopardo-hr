@@ -56,10 +56,13 @@ class HttpErrorLocalizedMessageTest extends TestCase
 
     public function test_429_response_has_localized_message(): void
     {
+        // #4955 : tout 429 (y compris abort(429)) sert désormais le code
+        // stable TOO_MANY_REQUESTS + message localisé — le message brut
+        // « Too Many Requests. » n'est plus exposé.
         $this->getJson('/api/_test/err-429')
             ->assertStatus(429)
-            ->assertJsonPath('error', 'Too Many Requests')
-            ->assertJsonPath('message', 'Too Many Requests')
+            ->assertJsonPath('error', 'TOO_MANY_REQUESTS')
+            ->assertJsonPath('message', 'TOO_MANY_REQUESTS')
             ->assertJsonPath('localized_message', __('errors.TOO_MANY_REQUESTS'));
     }
 
