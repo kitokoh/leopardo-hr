@@ -203,6 +203,8 @@ class ResilientThrottleRequests extends ThrottleRequests
         // localized_message via le catalogue errors.* (cf. renderer #3810/#4689).
         return new JsonResponse(
             [
+                // Code distinct pour l'observabilité (stockage du compteur KO,
+                // pas un vrai dépassement de quota) — message localisé quand même.
                 'error' => 'TOO_MANY_REQUESTS_DEGRADED',
                 'message' => 'TOO_MANY_REQUESTS_DEGRADED',
                 'localized_message' => __('errors.TOO_MANY_REQUESTS', [], $request->getLocale()),
