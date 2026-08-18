@@ -10,7 +10,6 @@ import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
-
 class MonthlySummaryScreen extends ConsumerStatefulWidget {
   const MonthlySummaryScreen({super.key});
 
@@ -460,7 +459,7 @@ class _EmptyMonthPanel extends StatelessWidget {
             color: MobileSurface.muted,
           ),
           const SizedBox(height: 14),
-          const Text(
+          Text(
             context.l10n.noData,
             style: TextStyle(
               color: MobileSurface.text,
