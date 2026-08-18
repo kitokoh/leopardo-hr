@@ -131,6 +131,14 @@ export type CopyTree = {
     retry: string;
     errorGeneric: string;
     allStepsDone: string;
+    quickStart: string;
+    later: string;
+    firstCheckinHint: string;
+    qrShow: string;
+    qrHide: string;
+    qrHint: string;
+    qrError: string;
+    qrLoading: string;
     steps: Record<string, { title: string; desc: string }>;
   };
   payrollPage: {
@@ -583,6 +591,14 @@ const copy: Record<AppLocale, CopyTree> = {
       retry: 'Réessayer',
       errorGeneric: 'Impossible de charger les étapes de configuration.',
       allStepsDone: 'Configuration terminée !',
+      quickStart: 'Quick Start',
+      later: 'Recommandé plus tard',
+      firstCheckinHint: "Effectuez un premier pointage depuis l'app mobile ou le kiosque, puis marquez cette étape comme terminée.",
+      qrShow: "Afficher le QR de l'entreprise",
+      qrHide: 'Masquer le QR',
+      qrHint: "Scannez ce QR avec l'app mobile Leopardo pour rejoindre l'entreprise.",
+      qrError: 'Impossible de charger le QR.',
+      qrLoading: 'Chargement du QR...',
       steps: {
         add_employees: {
           title: 'Ajoutez vos équipes',
@@ -1055,6 +1071,14 @@ const copy: Record<AppLocale, CopyTree> = {
       retry: 'إعادة المحاولة',
       errorGeneric: 'تعذر تحميل خطوات الإعداد.',
       allStepsDone: 'اكتمل الإعداد!',
+      quickStart: 'بداية سريعة',
+      later: 'موصى به لاحقًا',
+      firstCheckinHint: 'قم بأول تسجيل حضور من تطبيق الجوال أو الكشك، ثم ضع علامة على هذه الخطوة كمكتملة.',
+      qrShow: 'إظهار رمز QR للشركة',
+      qrHide: 'إخفاء رمز QR',
+      qrHint: 'امسح رمز QR هذا بتطبيق Leopardo للجوال للانضمام إلى الشركة.',
+      qrError: 'تعذر تحميل رمز QR.',
+      qrLoading: 'جارٍ تحميل رمز QR...',
       steps: {
         add_employees: {
           title: 'أضف فرقك',
@@ -1527,6 +1551,14 @@ const copy: Record<AppLocale, CopyTree> = {
       retry: 'Tekrar dene',
       errorGeneric: 'Kurulum adımları yüklenemedi.',
       allStepsDone: 'Kurulum tamamlandı!',
+      quickStart: 'Hızlı Başlangıç',
+      later: 'Daha sonra önerilir',
+      firstCheckinHint: 'Mobil uygulamadan veya kiosktan ilk girişinizi yapın, ardından bu adımı tamamlandı olarak işaretleyin.',
+      qrShow: "Şirketin QR kodunu göster",
+      qrHide: 'QR kodunu gizle',
+      qrHint: "Şirkete katılmak için bu QR kodunu Leopardo mobil uygulamasıyla tarayın.",
+      qrError: 'QR kodu yüklenemedi.',
+      qrLoading: 'QR kodu yükleniyor...',
       steps: {
         add_employees: {
           title: 'Ekiplerinizi ekleyin',
@@ -1999,6 +2031,14 @@ const copy: Record<AppLocale, CopyTree> = {
       retry: 'Retry',
       errorGeneric: 'Unable to load the setup steps.',
       allStepsDone: 'Setup complete!',
+      quickStart: 'Quick Start',
+      later: 'Recommended later',
+      firstCheckinHint: "Run a first check-in from the mobile app or the kiosk, then mark this step as done.",
+      qrShow: "Show the company QR code",
+      qrHide: 'Hide the QR code',
+      qrHint: "Scan this QR code with the Leopardo mobile app to join the company.",
+      qrError: 'Unable to load the QR code.',
+      qrLoading: 'Loading QR code...',
       steps: {
         add_employees: {
           title: 'Add your teams',
