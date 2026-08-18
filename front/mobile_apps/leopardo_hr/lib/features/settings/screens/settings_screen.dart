@@ -280,8 +280,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration: const InputDecoration(
-                  labelText: context.l10n.settingsFirstName),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsFirstName),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -289,7 +289,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _lastNameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                   labelText: context.l10n.settingsLastNameLabel),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsLastNameRequired
@@ -299,8 +299,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                  labelText: context.l10n.settingsEmailLabel),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
