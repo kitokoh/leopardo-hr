@@ -90,6 +90,48 @@ export type CopyTree = {
     featureLockedPlanRoleTitle: string;
     featureLockedPlanRoleBody: string;
     featureLockedCta: string;
+    recent_activity: string;
+    noNotifications: string;
+    managePreferences: string;
+  };
+  passwordReset: {
+    title: string;
+    subtitle: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    submit: string;
+    submitting: string;
+    successTitle: string;
+    successBody: string;
+    backToLogin: string;
+    newPasswordLabel: string;
+    newPasswordPlaceholder: string;
+    confirmPasswordLabel: string;
+    confirmPasswordPlaceholder: string;
+    submitReset: string;
+    submittingReset: string;
+    resetSuccessTitle: string;
+    resetSuccessBody: string;
+    invalidEmail: string;
+    invalidPassword: string;
+    passwordMismatch: string;
+    missingTokenTitle: string;
+    missingTokenBody: string;
+    genericError: string;
+    showPassword: string;
+    hidePassword: string;
+  };
+  onboarding: {
+    stepBadge: string;
+    next: string;
+    finish: string;
+    validating: string;
+    skip: string;
+    close: string;
+    retry: string;
+    errorGeneric: string;
+    allStepsDone: string;
+    steps: Record<string, { title: string; desc: string }>;
   };
   payrollPage: {
     title: string;
@@ -479,27 +521,94 @@ const copy: Record<AppLocale, CopyTree> = {
     dashboard: {
       heading: 'Tableau de bord',
       employees: 'Employés actifs',
-      present: 'presents',
+      present: 'Présents',
       live: 'En direct',
       late: 'Retards',
-      activity: 'Activité recente',
+      activity: 'Activité récente',
       team: 'Employés',
       attendance: 'Pointages',
       payroll: 'Paie',
-      settings: 'Parametres',
-      logout: 'Deconnexion',
+      settings: 'Paramètres',
+      logout: 'Déconnexion',
       language: 'Langue',
-      presentBadge: 'Present',
+      presentBadge: 'Présent',
       employeeLabel: 'Employé',
-      checkInAt: 'Check-in a',
-      featureLockedRole: "Votre role actuel ne permet pas d'acceder a ce module.",
+      checkInAt: 'Check-in à',
+      featureLockedRole: "Votre rôle actuel ne permet pas d'accéder à ce module.",
       featureLockedPlan: "Ce module n'est pas inclus dans votre plan actuel.",
       featureLockedBadge: 'Module non inclus',
-      featureLockedExplanation: "Leopardo RH garde l'interface explicite afin d'eviter les 404 confuses et les erreurs API inutiles.",
-      featureLockedAdminHint: "Demandez l activation au super administrateur de la plateforme ou passez sur un plan incluant ce module.",
-      featureLockedPlanRoleTitle: 'Plan & role',
-      featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calcules depuis les droits, le plan de l entreprise et le role utilisateur.",
-      featureLockedCta: 'Demander l activation',
+      featureLockedExplanation: "Leopardo RH garde l'interface explicite afin d'éviter les 404 confuses et les erreurs API inutiles.",
+      featureLockedAdminHint: "Demandez l'activation au super administrateur de la plateforme ou passez sur un plan incluant ce module.",
+      featureLockedPlanRoleTitle: 'Plan & rôle',
+      featureLockedPlanRoleBody: "Les modules visibles dans cet espace sont calculés depuis les droits, le plan de l'entreprise et le rôle utilisateur.",
+      featureLockedCta: "Demander l'activation",
+      recent_activity: 'Activité récente',
+      noNotifications: 'Aucune notification récente.',
+      managePreferences: 'Gérer mes préférences',
+    },
+    passwordReset: {
+      title: 'Mot de passe oublié',
+      subtitle: "Saisissez l'adresse email de votre compte : nous vous enverrons un lien de réinitialisation sécurisé.",
+      emailLabel: 'Adresse email',
+      emailPlaceholder: 'vous@entreprise.com',
+      submit: 'Envoyer le lien',
+      submitting: 'Envoi...',
+      successTitle: 'Email envoyé',
+      successBody: "Si un compte existe avec cette adresse, un lien de réinitialisation vient d'être envoyé. Pensez à vérifier vos spams.",
+      backToLogin: 'Retour à la connexion',
+      newPasswordLabel: 'Nouveau mot de passe',
+      newPasswordPlaceholder: '8 caractères minimum',
+      confirmPasswordLabel: 'Confirmer le mot de passe',
+      confirmPasswordPlaceholder: 'Répétez le mot de passe',
+      submitReset: 'Réinitialiser le mot de passe',
+      submittingReset: 'Réinitialisation...',
+      resetSuccessTitle: 'Mot de passe réinitialisé',
+      resetSuccessBody: 'Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.',
+      invalidEmail: 'Adresse email invalide.',
+      invalidPassword: 'Le mot de passe doit contenir au moins 8 caractères.',
+      passwordMismatch: 'Les deux mots de passe ne correspondent pas.',
+      missingTokenTitle: 'Lien invalide ou expiré',
+      missingTokenBody: 'Le lien de réinitialisation est invalide ou a expiré. Relancez une demande de réinitialisation.',
+      genericError: 'Une erreur est survenue. Réessayez dans quelques instants.',
+      showPassword: 'Afficher le mot de passe',
+      hidePassword: 'Masquer le mot de passe',
+    },
+    onboarding: {
+      stepBadge: 'Étape {current} sur {total}',
+      next: 'Suivant',
+      finish: 'Terminer',
+      validating: 'Validation...',
+      skip: 'Passer cette étape',
+      close: "Fermer l'assistant de configuration",
+      retry: 'Réessayer',
+      errorGeneric: 'Impossible de charger les étapes de configuration.',
+      allStepsDone: 'Configuration terminée !',
+      steps: {
+        add_employees: {
+          title: 'Ajoutez vos équipes',
+          desc: 'Créez ou importez vos employés (CSV) pour commencer à pointer.',
+        },
+        configure_payroll: {
+          title: 'Configurez la paie',
+          desc: 'Renseignez la structure salariale et les paramètres de paie de votre entreprise.',
+        },
+        setup_schedules: {
+          title: 'Définissez les horaires',
+          desc: 'Créez vos plannings et règles de présence.',
+        },
+        setup_geofence: {
+          title: 'Configurez la géolocalisation',
+          desc: 'Délimitez les zones de pointage autorisées (optionnel).',
+        },
+        setup_kiosk: {
+          title: 'Activez le kiosque biométrique',
+          desc: 'Branchez votre kiosque ZKTeco pour le pointage sur site (optionnel).',
+        },
+        first_checkin: {
+          title: 'Premier pointage',
+          desc: "Effectuez un premier pointage de test pour valider le dispositif.",
+        },
+      },
     },
     payrollPage: {
       title: 'Paie',
@@ -905,6 +1014,73 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'الخطة والدور',
       featureLockedPlanRoleBody: 'تُحسب الوحدات الظاهرة في هذه المساحة بناءً على الصلاحيات وخطة الشركة ودور المستخدم.',
       featureLockedCta: 'طلب التفعيل',
+      recent_activity: 'النشاط الأخير',
+      noNotifications: 'لا توجد إشعارات حديثة.',
+      managePreferences: 'إدارة تفضيلاتي',
+    },
+    passwordReset: {
+      title: 'نسيت كلمة المرور؟',
+      subtitle: 'أدخل البريد الإلكتروني لحسابك وسنرسل لك رابط إعادة تعيين آمنًا.',
+      emailLabel: 'البريد الإلكتروني',
+      emailPlaceholder: 'you@company.com',
+      submit: 'إرسال الرابط',
+      submitting: 'جارٍ الإرسال...',
+      successTitle: 'تم إرسال البريد الإلكتروني',
+      successBody: 'إذا كان هناك حساب بهذا العنوان، فقد تم إرسال رابط إعادة التعيين للتو. لا تنسَ التحقق من مجلد الرسائل غير المرغوب فيها.',
+      backToLogin: 'العودة إلى تسجيل الدخول',
+      newPasswordLabel: 'كلمة المرور الجديدة',
+      newPasswordPlaceholder: '8 أحرف على الأقل',
+      confirmPasswordLabel: 'تأكيد كلمة المرور',
+      confirmPasswordPlaceholder: 'أعد إدخال كلمة المرور',
+      submitReset: 'إعادة تعيين كلمة المرور',
+      submittingReset: 'جارٍ إعادة التعيين...',
+      resetSuccessTitle: 'تمت إعادة تعيين كلمة المرور',
+      resetSuccessBody: 'يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.',
+      invalidEmail: 'عنوان بريد إلكتروني غير صالح.',
+      invalidPassword: 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.',
+      passwordMismatch: 'كلمتا المرور غير متطابقتين.',
+      missingTokenTitle: 'رابط غير صالح أو منتهي الصلاحية',
+      missingTokenBody: 'رابط إعادة التعيين هذا غير صالح أو انتهت صلاحيته. يرجى طلب رابط جديد.',
+      genericError: 'حدث خطأ ما. يرجى المحاولة مرة أخرى بعد قليل.',
+      showPassword: 'إظهار كلمة المرور',
+      hidePassword: 'إخفاء كلمة المرور',
+    },
+    onboarding: {
+      stepBadge: 'الخطوة {current} من {total}',
+      next: 'التالي',
+      finish: 'إنهاء',
+      validating: 'جارٍ التحقق...',
+      skip: 'تخطي هذه الخطوة',
+      close: 'إغلاق مساعد الإعداد',
+      retry: 'إعادة المحاولة',
+      errorGeneric: 'تعذر تحميل خطوات الإعداد.',
+      allStepsDone: 'اكتمل الإعداد!',
+      steps: {
+        add_employees: {
+          title: 'أضف فرقك',
+          desc: 'أنشئ موظفيك أو استوردهم (CSV) لبدء تسجيل الحضور.',
+        },
+        configure_payroll: {
+          title: 'اضبط إعدادات الرواتب',
+          desc: 'أدخل هيكل الرواتب وإعدادات الدفع لشركتك.',
+        },
+        setup_schedules: {
+          title: 'حدد الجداول الزمنية',
+          desc: 'أنشئ جداولك وقواعد الحضور.',
+        },
+        setup_geofence: {
+          title: 'اضبط تحديد المواقع',
+          desc: 'حدد مناطق تسجيل الحضور المسموحة (اختياري).',
+        },
+        setup_kiosk: {
+          title: 'فعّل كشك القياسات الحيوية',
+          desc: 'اربط كشك ZKTeco لتسجيل الحضور في الموقع (اختياري).',
+        },
+        first_checkin: {
+          title: 'أول تسجيل حضور',
+          desc: 'قم بتسجيل حضور تجريبي للتحقق من الإعداد.',
+        },
+      },
     },
     payrollPage: {
       title: 'الرواتب',
@@ -1310,6 +1486,73 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan ve rol',
       featureLockedPlanRoleBody: 'Bu alanda gorunen moduller, haklara, sirket planina ve kullanici rolune gore hesaplanir.',
       featureLockedCta: 'Aktivasyon iste',
+      recent_activity: 'Son etkinlik',
+      noNotifications: 'Yeni bildirim yok.',
+      managePreferences: 'Tercihlerimi yönet',
+    },
+    passwordReset: {
+      title: 'Şifrenizi mi unuttunuz?',
+      subtitle: 'Hesabınızın e-posta adresini girin, size güvenli bir sıfırlama bağlantısı gönderelim.',
+      emailLabel: 'E-posta adresi',
+      emailPlaceholder: 'siz@sirket.com',
+      submit: 'Bağlantıyı gönder',
+      submitting: 'Gönderiliyor...',
+      successTitle: 'E-posta gönderildi',
+      successBody: 'Bu adresle bir hesap varsa, az önce bir sıfırlama bağlantısı gönderildi. Spam klasörünüzü kontrol etmeyi unutmayın.',
+      backToLogin: 'Girişe dön',
+      newPasswordLabel: 'Yeni şifre',
+      newPasswordPlaceholder: 'En az 8 karakter',
+      confirmPasswordLabel: 'Şifreyi onayla',
+      confirmPasswordPlaceholder: 'Şifrenizi tekrar girin',
+      submitReset: 'Şifreyi sıfırla',
+      submittingReset: 'Sıfırlanıyor...',
+      resetSuccessTitle: 'Şifre sıfırlandı',
+      resetSuccessBody: 'Artık yeni şifrenizle giriş yapabilirsiniz.',
+      invalidEmail: 'Geçersiz e-posta adresi.',
+      invalidPassword: 'Şifre en az 8 karakter olmalıdır.',
+      passwordMismatch: 'İki şifre birbiriyle eşleşmiyor.',
+      missingTokenTitle: 'Geçersiz veya süresi dolmuş bağlantı',
+      missingTokenBody: 'Bu sıfırlama bağlantısı geçersiz veya süresi dolmuş. Lütfen yeni bir tane isteyin.',
+      genericError: 'Bir hata oluştu. Lütfen birkaç dakika sonra tekrar deneyin.',
+      showPassword: 'Şifreyi göster',
+      hidePassword: 'Şifreyi gizle',
+    },
+    onboarding: {
+      stepBadge: 'Adım {current} / {total}',
+      next: 'İleri',
+      finish: 'Bitir',
+      validating: 'Doğrulanıyor...',
+      skip: 'Bu adımı atla',
+      close: 'Kurulum asistanını kapat',
+      retry: 'Tekrar dene',
+      errorGeneric: 'Kurulum adımları yüklenemedi.',
+      allStepsDone: 'Kurulum tamamlandı!',
+      steps: {
+        add_employees: {
+          title: 'Ekiplerinizi ekleyin',
+          desc: 'Puantaja başlamak için çalışanlarınızı oluşturun veya içe aktarın (CSV).',
+        },
+        configure_payroll: {
+          title: 'Maaş yapısını kurun',
+          desc: 'Maaş yapınızı ve bordro ayarlarınızı doldurun.',
+        },
+        setup_schedules: {
+          title: 'Çalışma saatlerini tanımlayın',
+          desc: 'Programlarınızı ve devam kurallarınızı oluşturun.',
+        },
+        setup_geofence: {
+          title: 'Coğrafi sınırları kurun',
+          desc: 'İzin verilen giriş alanlarını belirleyin (isteğe bağlı).',
+        },
+        setup_kiosk: {
+          title: 'Biyometrik kiosku etkinleştirin',
+          desc: 'Sahada giriş için ZKTeco kioskunuzu bağlayın (isteğe bağlı).',
+        },
+        first_checkin: {
+          title: 'İlk giriş',
+          desc: 'Kurulumu doğrulamak için bir test girişi yapın.',
+        },
+      },
     },
     payrollPage: {
       title: 'Bordro',
@@ -1715,6 +1958,73 @@ const copy: Record<AppLocale, CopyTree> = {
       featureLockedPlanRoleTitle: 'Plan & role',
       featureLockedPlanRoleBody: 'The modules visible in this space are computed from permissions, the company plan and the user role.',
       featureLockedCta: 'Request activation',
+      recent_activity: 'Recent activity',
+      noNotifications: 'No recent notifications.',
+      managePreferences: 'Manage my preferences',
+    },
+    passwordReset: {
+      title: 'Forgot your password?',
+      subtitle: 'Enter the email address of your account and we will send you a secure reset link.',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'you@company.com',
+      submit: 'Send the link',
+      submitting: 'Sending...',
+      successTitle: 'Email sent',
+      successBody: "If an account exists with this address, a reset link has just been sent. Don't forget to check your spam folder.",
+      backToLogin: 'Back to login',
+      newPasswordLabel: 'New password',
+      newPasswordPlaceholder: 'At least 8 characters',
+      confirmPasswordLabel: 'Confirm password',
+      confirmPasswordPlaceholder: 'Repeat your password',
+      submitReset: 'Reset password',
+      submittingReset: 'Resetting...',
+      resetSuccessTitle: 'Password reset',
+      resetSuccessBody: 'You can now sign in with your new password.',
+      invalidEmail: 'Invalid email address.',
+      invalidPassword: 'Password must be at least 8 characters.',
+      passwordMismatch: 'The two passwords do not match.',
+      missingTokenTitle: 'Invalid or expired link',
+      missingTokenBody: 'This reset link is invalid or has expired. Please request a new one.',
+      genericError: 'Something went wrong. Please try again in a few moments.',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
+    },
+    onboarding: {
+      stepBadge: 'Step {current} of {total}',
+      next: 'Next',
+      finish: 'Finish',
+      validating: 'Validating...',
+      skip: 'Skip this step',
+      close: 'Close the setup assistant',
+      retry: 'Retry',
+      errorGeneric: 'Unable to load the setup steps.',
+      allStepsDone: 'Setup complete!',
+      steps: {
+        add_employees: {
+          title: 'Add your teams',
+          desc: 'Create or import your employees (CSV) to start clocking in.',
+        },
+        configure_payroll: {
+          title: 'Set up payroll',
+          desc: 'Fill in your salary structure and payroll settings.',
+        },
+        setup_schedules: {
+          title: 'Define schedules',
+          desc: 'Create your schedules and attendance rules.',
+        },
+        setup_geofence: {
+          title: 'Set up geolocation',
+          desc: 'Define authorized check-in areas (optional).',
+        },
+        setup_kiosk: {
+          title: 'Enable the biometric kiosk',
+          desc: 'Connect your ZKTeco kiosk for on-site clock-in (optional).',
+        },
+        first_checkin: {
+          title: 'First check-in',
+          desc: 'Run a test check-in to validate the setup.',
+        },
+      },
     },
     payrollPage: {
       title: 'Payroll',

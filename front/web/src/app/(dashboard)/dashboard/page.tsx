@@ -500,7 +500,7 @@ export default function DashboardPage() {
                   <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity', 'Activité recente')}</h3>
+                  <h3 className="font-bold text-slate-950">{i18nT(locale, 'dashboard.recent_activity')}</h3>
                   <p className="text-sm text-slate-500">{i18nT(locale, 'dashboard.recent_activity_hint', 'Dernières actions de votre équipe')}</p>
                 </div>
               </div>
