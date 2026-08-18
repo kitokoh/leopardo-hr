@@ -95,7 +95,7 @@ git push --force --tags
 1. **Aucun secret dans le repo** : `google-services.json` → généré en CI depuis des secrets (install-mobile-firebase-configs.ps1 existe).
 2. `.secrets.baseline` bloquant en CI (#1503) + TruffleHog fetch-depth 0 (déjà en place).
 3. Rotation planifiée : secrets de production ≥ 1×/an, immédiate en cas de suspicion.
-4. Docs `docs/security/CI_CD_SECRETS.md` tenue à jour (vérification automatisée à ajouter).
+4. Docs `docs/CI_CD_SECRETS.md` tenue à jour (vérification automatisée à ajouter).
 
 ## Chronologie recommandée
 

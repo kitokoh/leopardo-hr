@@ -37,7 +37,6 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Platform` | Super-admin plateforme, gestion tenants |
 | `Recruitment` | Offres, candidats, entretiens |
 | `SmartAttendance` | Pointage intelligent / variantes avancées d'Attendance |
-| `Training` | Formations, sessions, suivis |
 
 > Liste vivante — voir `docs/ARCHITECTURE_STATUS.md` section 1 pour l'état de complétude
 > (Domain/Contracts/Application/Infra/Interfaces/Tests) de chaque module.

@@ -1,3 +1,6 @@
+> ⚠️ **DOCUMENT HISTORIQUE (MAJ 2026-08-17)** — rapport de CI d'avril 2026 ; l'arborescence
+> `front/mobile/` citée ci-dessous a été supprimée (PR #754), remplacée par `front/mobile_apps/*`.
+
 # RAPPORT QA CI — 2026-04-18
 
 > ⚠️ **MAJ 2026-08-17** : document historique (2026-04-18). Les références à `front/mobile/`
