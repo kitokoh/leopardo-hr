@@ -6477,4 +6477,109 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       'an issue with the localizations generation tool. Please file an issue '
       'on GitHub with a reproducible sample app and the gen-l10n configuration '
       'that was used.');
+
+  /// No description provided for @salaryAdvanceListTitle.
+  String get salaryAdvanceListTitle;
+
+  /// No description provided for @salaryAdvanceListSubtitle.
+  String get salaryAdvanceListSubtitle;
+
+  /// No description provided for @salaryAdvanceRequest.
+  String get salaryAdvanceRequest;
+
+  /// No description provided for @salaryAdvancesEmpty.
+  String get salaryAdvancesEmpty;
+
+  /// No description provided for @salaryAdvancesEmptyHint.
+  String get salaryAdvancesEmptyHint;
+
+  /// No description provided for @salaryAdvanceNoReason.
+  String get salaryAdvanceNoReason;
+
+  /// No description provided for @salaryAdvancesLoading.
+  String get salaryAdvancesLoading;
+
+  /// No description provided for @salaryAdvancePaymentDeclared.
+  String get salaryAdvancePaymentDeclared;
+
+  /// No description provided for @salaryAdvanceConfirmReceived.
+  String get salaryAdvanceConfirmReceived;
+
+  /// No description provided for @salaryAdvanceCancelRequest.
+  String get salaryAdvanceCancelRequest;
+
+  /// No description provided for @salaryAdvanceViewProof.
+  String get salaryAdvanceViewProof;
+
+  /// No description provided for @salaryAdvanceProofDownloaded.
+  String salaryAdvanceProofDownloaded(Object path);
+
+  /// No description provided for @salaryAdvanceError.
+  String salaryAdvanceError(Object error);
+
+  /// No description provided for @salaryAdvanceCancelTitle.
+  String get salaryAdvanceCancelTitle;
+
+  /// No description provided for @salaryAdvanceCancelBody.
+  String get salaryAdvanceCancelBody;
+
+  /// No description provided for @salaryAdvanceKeep.
+  String get salaryAdvanceKeep;
+
+  /// No description provided for @salaryAdvanceCancelAction.
+  String get salaryAdvanceCancelAction;
+
+  /// No description provided for @salaryAdvanceCancelled.
+  String get salaryAdvanceCancelled;
+
+  /// No description provided for @salaryAdvanceMonths.
+  String salaryAdvanceMonths(Object reason, Object months);
+
+  /// No description provided for @salaryAdvanceSemantics.
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status);
+
+  /// No description provided for @salaryStatusValidated.
+  String get salaryStatusValidated;
+
+  /// No description provided for @salaryStatusToConfirm.
+  String get salaryStatusToConfirm;
+
+  /// No description provided for @salaryStatusReceived.
+  String get salaryStatusReceived;
+
+  /// No description provided for @salaryStatusActive.
+  String get salaryStatusActive;
+
+  /// No description provided for @salaryStatusApproved.
+  String get salaryStatusApproved;
+
+  /// No description provided for @salaryStatusPending.
+  String get salaryStatusPending;
+
+  /// No description provided for @salaryStatusRejected.
+  String get salaryStatusRejected;
+
+  /// No description provided for @salaryStatusCancelled.
+  String get salaryStatusCancelled;
+
+  /// No description provided for @salaryAdvanceConfirmReceivedTitle.
+  String get salaryAdvanceConfirmReceivedTitle;
+
+  /// No description provided for @salaryAdvanceConfirmReceivedBody.
+  String get salaryAdvanceConfirmReceivedBody;
+
+  /// No description provided for @salaryAdvanceConfirmAction.
+  String get salaryAdvanceConfirmAction;
+
+  /// No description provided for @salaryAdvanceRequestTitle.
+  String get salaryAdvanceRequestTitle;
+
+  /// No description provided for @salaryAdvanceAttachmentLabel.
+  String get salaryAdvanceAttachmentLabel;
+
+  /// No description provided for @salaryAdvanceAttachHint.
+  String get salaryAdvanceAttachHint;
+
+  /// No description provided for @salaryAdvanceSubmitted.
+  String get salaryAdvanceSubmitted;
 }

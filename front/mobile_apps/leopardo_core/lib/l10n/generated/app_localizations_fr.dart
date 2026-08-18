@@ -3448,4 +3448,117 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.';
+
+  @override
+  String get salaryAdvanceListTitle => 'Avances';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Demandes, statuts et remboursement';
+
+  @override
+  String get salaryAdvanceRequest => 'Demander';
+
+  @override
+  String get salaryAdvancesEmpty => 'Aucune avance';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'Demandez une avance en quelques secondes, puis suivez la décision RH ici.';
+
+  @override
+  String get salaryAdvanceNoReason => 'Aucun motif';
+
+  @override
+  String get salaryAdvancesLoading => 'Chargement des avances';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'Le manager a déclaré le paiement. Confirmez uniquement après réception effective.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'Confirmer réception';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Annuler la demande';
+
+  @override
+  String get salaryAdvanceViewProof => 'Voir la pièce jointe';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) {
+    return 'Pièce jointe téléchargée: $path';
+  }
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Échec : $error';
+  }
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Annuler cette avance ?';
+
+  @override
+  String get salaryAdvanceCancelBody => 'La demande en attente sera retirée avant décision RH.';
+
+  @override
+  String get salaryAdvanceKeep => 'Garder';
+
+  @override
+  String get salaryAdvanceCancelAction => 'Annuler';
+
+  @override
+  String get salaryAdvanceCancelled => 'Demande d\'avance annulée.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) {
+    return '$reason - $months mois';
+  }
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) {
+    return 'Avance de $amount, motif : $reason, statut $status.';
+  }
+
+  @override
+  String get salaryStatusValidated => 'validée';
+
+  @override
+  String get salaryStatusToConfirm => 'à confirmer';
+
+  @override
+  String get salaryStatusReceived => 'reçue';
+
+  @override
+  String get salaryStatusActive => 'active';
+
+  @override
+  String get salaryStatusApproved => 'approuvée';
+
+  @override
+  String get salaryStatusPending => 'en attente';
+
+  @override
+  String get salaryStatusRejected => 'rejetée';
+
+  @override
+  String get salaryStatusCancelled => 'annulée';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'Confirmer la réception ?';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'Confirmez seulement si le montant est effectivement arrivé. Cette action sera historisée.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'Confirmer';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Demande d\'avance';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'Pièce jointe';
+
+  @override
+  String get salaryAdvanceAttachHint => 'Joindre une pièce (optionnel)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Demande d\'avance transmise au RH.';
 }

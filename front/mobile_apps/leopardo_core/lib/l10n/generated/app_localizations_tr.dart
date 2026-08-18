@@ -3402,4 +3402,117 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
+
+  @override
+  String get salaryAdvanceListTitle => 'Avanslar';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Talepler, durumlar ve geri ödeme';
+
+  @override
+  String get salaryAdvanceRequest => 'Talep Et';
+
+  @override
+  String get salaryAdvancesEmpty => 'Avans yok';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'Saniyeler içinde avans talep edin, ardından İK kararını buradan takip edin.';
+
+  @override
+  String get salaryAdvanceNoReason => 'Gerekçe yok';
+
+  @override
+  String get salaryAdvancesLoading => 'Avanslar yükleniyor';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'Yönetici ödemeyi onayladı. Yalnızca fiilen aldıktan sonra onaylayın.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'Teslim alındığını onayla';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Talebi iptal et';
+
+  @override
+  String get salaryAdvanceViewProof => 'Eki görüntüle';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) {
+    return 'Ek indirildi: $path';
+  }
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Başarısız: $error';
+  }
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Bu avans iptal edilsin mi?';
+
+  @override
+  String get salaryAdvanceCancelBody => 'Bekleyen talep, İK kararından önce kaldırılacaktır.';
+
+  @override
+  String get salaryAdvanceKeep => 'Tut';
+
+  @override
+  String get salaryAdvanceCancelAction => 'İptal';
+
+  @override
+  String get salaryAdvanceCancelled => 'Avans talebi iptal edildi.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) {
+    return '$reason - $months ay';
+  }
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) {
+    return '$amount avans, gerekçe: $reason, durum $status.';
+  }
+
+  @override
+  String get salaryStatusValidated => 'doğrulandı';
+
+  @override
+  String get salaryStatusToConfirm => 'onaylanacak';
+
+  @override
+  String get salaryStatusReceived => 'alındı';
+
+  @override
+  String get salaryStatusActive => 'aktif';
+
+  @override
+  String get salaryStatusApproved => 'onaylandı';
+
+  @override
+  String get salaryStatusPending => 'beklemede';
+
+  @override
+  String get salaryStatusRejected => 'reddedildi';
+
+  @override
+  String get salaryStatusCancelled => 'iptal edildi';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'Teslim alındığını onayla?';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'Yalnızca tutar gerçekten ulaştıysa onaylayın. Bu işlem kaydedilecektir.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'Onayla';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Avans talebi';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'Ek';
+
+  @override
+  String get salaryAdvanceAttachHint => 'Dosya ekle (isteğe bağlı)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Avans talebi İK\'ya iletildi.';
 }

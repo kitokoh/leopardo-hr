@@ -3401,4 +3401,117 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String get salaryAdvanceListTitle => 'Advances';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'Requests, statuses and repayment';
+
+  @override
+  String get salaryAdvanceRequest => 'Request';
+
+  @override
+  String get salaryAdvancesEmpty => 'No advances';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'Request an advance in seconds, then track the HR decision here.';
+
+  @override
+  String get salaryAdvanceNoReason => 'No reason';
+
+  @override
+  String get salaryAdvancesLoading => 'Loading advances';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'The manager declared the payment. Confirm only after you actually received it.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'Confirm receipt';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'Cancel request';
+
+  @override
+  String get salaryAdvanceViewProof => 'View attachment';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) {
+    return 'Attachment downloaded: $path';
+  }
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'Failed: $error';
+  }
+
+  @override
+  String get salaryAdvanceCancelTitle => 'Cancel this advance?';
+
+  @override
+  String get salaryAdvanceCancelBody => 'The pending request will be removed before the HR decision.';
+
+  @override
+  String get salaryAdvanceKeep => 'Keep';
+
+  @override
+  String get salaryAdvanceCancelAction => 'Cancel';
+
+  @override
+  String get salaryAdvanceCancelled => 'Advance request cancelled.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) {
+    return '$reason - $months months';
+  }
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) {
+    return 'Advance of $amount, reason: $reason, status $status.';
+  }
+
+  @override
+  String get salaryStatusValidated => 'validated';
+
+  @override
+  String get salaryStatusToConfirm => 'to confirm';
+
+  @override
+  String get salaryStatusReceived => 'received';
+
+  @override
+  String get salaryStatusActive => 'active';
+
+  @override
+  String get salaryStatusApproved => 'approved';
+
+  @override
+  String get salaryStatusPending => 'pending';
+
+  @override
+  String get salaryStatusRejected => 'rejected';
+
+  @override
+  String get salaryStatusCancelled => 'cancelled';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'Confirm receipt?';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'Confirm only if the amount actually arrived. This action will be recorded.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'Confirm';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'Advance request';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'Attachment';
+
+  @override
+  String get salaryAdvanceAttachHint => 'Attach a file (optional)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'Advance request sent to HR.';
 }

@@ -3369,4 +3369,117 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.';
+
+  @override
+  String get salaryAdvanceListTitle => 'السلف';
+
+  @override
+  String get salaryAdvanceListSubtitle => 'الطلبات والحالات والسداد';
+
+  @override
+  String get salaryAdvanceRequest => 'طلب';
+
+  @override
+  String get salaryAdvancesEmpty => 'لا توجد سلف';
+
+  @override
+  String get salaryAdvancesEmptyHint => 'اطلب سلفة في ثوانٍ، ثم تابع قرار الموارد البشرية هنا.';
+
+  @override
+  String get salaryAdvanceNoReason => 'لا يوجد سبب';
+
+  @override
+  String get salaryAdvancesLoading => 'جارٍ تحميل السلف';
+
+  @override
+  String get salaryAdvancePaymentDeclared => 'أعلن المدير عن الدفع. أكّد فقط بعد استلامك الفعلي.';
+
+  @override
+  String get salaryAdvanceConfirmReceived => 'تأكيد الاستلام';
+
+  @override
+  String get salaryAdvanceCancelRequest => 'إلغاء الطلب';
+
+  @override
+  String get salaryAdvanceViewProof => 'عرض المرفق';
+
+  @override
+  String salaryAdvanceProofDownloaded(Object path) {
+    return 'تم تنزيل المرفق: $path';
+  }
+
+  @override
+  String salaryAdvanceError(Object error) {
+    return 'فشل: $error';
+  }
+
+  @override
+  String get salaryAdvanceCancelTitle => 'إلغاء هذه السلفة؟';
+
+  @override
+  String get salaryAdvanceCancelBody => 'ستُحذف الطلبات المعلقة قبل قرار الموارد البشرية.';
+
+  @override
+  String get salaryAdvanceKeep => 'إبقاء';
+
+  @override
+  String get salaryAdvanceCancelAction => 'إلغاء';
+
+  @override
+  String get salaryAdvanceCancelled => 'تم إلغاء طلب السلفة.';
+
+  @override
+  String salaryAdvanceMonths(Object reason, Object months) {
+    return '$reason - $months شهرًا';
+  }
+
+  @override
+  String salaryAdvanceSemantics(Object amount, Object reason, Object status) {
+    return 'سلفة $amount، السبب: $reason، الحالة $status.';
+  }
+
+  @override
+  String get salaryStatusValidated => 'تم التحقق';
+
+  @override
+  String get salaryStatusToConfirm => 'بانتظار التأكيد';
+
+  @override
+  String get salaryStatusReceived => 'تم الاستلام';
+
+  @override
+  String get salaryStatusActive => 'نشطة';
+
+  @override
+  String get salaryStatusApproved => 'معتمدة';
+
+  @override
+  String get salaryStatusPending => 'قيد الانتظار';
+
+  @override
+  String get salaryStatusRejected => 'مرفوضة';
+
+  @override
+  String get salaryStatusCancelled => 'ملغاة';
+
+  @override
+  String get salaryAdvanceConfirmReceivedTitle => 'تأكيد الاستلام؟';
+
+  @override
+  String get salaryAdvanceConfirmReceivedBody => 'أكّد فقط إذا وصل المبلغ فعليًا. سيتم تسجيل هذا الإجراء.';
+
+  @override
+  String get salaryAdvanceConfirmAction => 'تأكيد';
+
+  @override
+  String get salaryAdvanceRequestTitle => 'طلب سلفة';
+
+  @override
+  String get salaryAdvanceAttachmentLabel => 'المرفق';
+
+  @override
+  String get salaryAdvanceAttachHint => 'إرفاق ملف (اختياري)';
+
+  @override
+  String get salaryAdvanceSubmitted => 'تم إرسال طلب السلفة إلى الموارد البشرية.';
 }
