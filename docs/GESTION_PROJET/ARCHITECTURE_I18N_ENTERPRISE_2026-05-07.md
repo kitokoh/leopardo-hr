@@ -46,7 +46,7 @@ Chaque fichier locale suit ces regles:
 - `sync-web.js`
   - genere `front/admin-dashboard/src/i18n/locales/{locale}.json`
 - `sync-mobile.js`
-  - genere `front/mobile/lib/l10n/app_{locale}.arb`
+  - genere `front/mobile_apps/leopardo_core/lib/l10n/app_{locale}.arb`
 
 ## 5. Remote translation updates
 

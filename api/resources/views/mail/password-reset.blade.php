@@ -1,19 +1,19 @@
 <x-mail::message>
-# Réinitialisation de votre mot de passe
+# {{ __('emails.email_password_reset_subject') }}
 
-Vous recevez cet email suite à une demande de réinitialisation du mot de passe
-de votre compte Leopardo.
+{{ __('emails.email_password_reset_greeting', ['name' => $userName ?? $email]) }}
+
+{{ __('emails.email_password_reset_body') }}
 
 Votre code de réinitialisation (valable **60 minutes**, usage unique) :
 
 # {{ $token }}
 
-Si vous n'êtes pas à l'origine de cette demande, ignorez cet email — votre
-mot de passe actuel reste inchangé.
-
 <x-mail::button :url="config('app.url')">
-Accéder à Leopardo
+{{ __('emails.email_password_reset_button') }}
 </x-mail::button>
+
+{{ __('emails.email_password_reset_ignore') }}
 
 Cordialement,<br>
 L'équipe Leopardo RH

@@ -14,6 +14,11 @@ use Illuminate\Queue\SerializesModels;
  * Issue #2626 — email de réinitialisation de mot de passe.
  * Le token est envoyé en clair (usage unique, 60 min) ; seul son hash est
  * stocké en base.
+ *
+ * i18n (audit S-5 #1665, résiduel 2026-08-17) : sujet et corps résolus via
+ * les catalogues `emails.email_password_reset_*` (fr/en/ar/tr). La locale
+ * applicative est celle posée par SetLocale au moment de l'envoi (requête
+ * API) ; les clés existent dans les 4 catalogues.
  */
 class PasswordResetMail extends Mailable
 {
@@ -28,7 +33,7 @@ class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Réinitialisation de votre mot de passe Leopardo',
+            subject: __('emails.email_password_reset_subject'),
         );
     }
 
@@ -39,6 +44,7 @@ class PasswordResetMail extends Mailable
             with: [
                 'token' => $this->token,
                 'email' => $this->email,
+                'userName' => $this->email,
             ],
         );
     }

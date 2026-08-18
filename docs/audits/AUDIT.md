@@ -506,7 +506,15 @@ REDIS_PASSWORD=<NOUVEAU_MDP>
 [x] Signature Stripe vérifiée — StripeWebhookController + StripeService::verifyWebhookSignature()
 [x] Signature Chargily vérifiée — PaymentWebhookController (header X-Chargily-Signature)
 [x] Google Sign-In présent — leopardo_employee user_login_screen.dart (_buildGoogleButton) et login_screen.dart
-[x] Mailables créés — WelcomeEmployeeMail, InvitationMail/UserInvitationMail, SubscriptionConfirmedMail, TrialWelcomeMail, TrialDripMail, TrialExpiringMail, LicenseExpiringMail, RoleAssignmentMail, CabinetShareMail
+[~] Mailables — vérifiés le 2026-08-17 (audit PM) : **existent** InvitationMail,
+    UserInvitationMail, TrialWelcomeMail, TrialDripMail (types day1/day3/day7/expiring/expired),
+    TrialDayOneMail, TrialDayThreeMail, TrialDaySevenMail, TrialVerificationMail,
+    RoleAssignmentMail, CabinetShareMail, CommunicationMail. **N'existent pas** (décision PM
+    documentée dans le rapport 2026-08-17) : WelcomeEmployeeMail, SubscriptionConfirmedMail,
+    TrialExpiringMail, LicenseExpiringMail — les flux correspondants envoient déjà des emails
+    équivalents (UserInvitationMail au provisioning ; TrialDripMail type `expiring` ;
+    EdgeLicenseExpiringNotification pour les licences). Les blades `welcome-employee` /
+    `subscription-confirmed` (localisées ×4) restent disponibles pour un futur mailable dédié.
 [x] GOOGLE_CLIENT_ID/SECRET/REDIRECT_URL présents dans api/.env.example
 [x] FIREBASE_PROJECT_ID/SERVER_KEY/SERVICE_ACCOUNT_JSON présents dans api/.env.example
 [x] CHARGILY_API_KEY/WEBHOOK_SECRET/MODE présents dans api/.env.example
