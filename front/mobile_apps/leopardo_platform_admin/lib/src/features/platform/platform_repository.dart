@@ -263,4 +263,94 @@ class PlatformRepository {
       },
     );
   }
+
+  // -------------------------------------------------------------------------
+  // Support Tickets (#3912)
+  // -------------------------------------------------------------------------
+
+  Future<List<PlatformSupportTicket>> supportTickets({
+    String? status,
+    String? priority,
+  }) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/support-tickets',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
+      queryParameters: {
+        if (status != null) 'status': status,
+        if (priority != null) 'priority': priority,
+        'per_page': '50',
+      },
+    );
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map((item) => PlatformSupportTicket.fromJson(item.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<PlatformSupportTicketDetail> supportTicketDetail(int ticketId) async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/support-tickets/$ticketId',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
+    );
+    return PlatformSupportTicketDetail.fromJson(response.data ?? {});
+  }
+
+  Future<void> replySupportTicket({
+    required int ticketId,
+    required String message,
+  }) async {
+    await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/support-tickets/$ticketId/reply',
+      method: 'POST',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
+      data: {'message': message.trim()},
+    );
+  }
+
+  Future<void> triageSupportTicket({
+    required int ticketId,
+    required String status,
+    String? priority,
+  }) async {
+    await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/support-tickets/$ticketId/triage',
+      method: 'PATCH',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
+      data: {
+        'status': status,
+        if (priority != null) 'priority': priority,
+      },
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Edge Nodes (#3912)
+  // -------------------------------------------------------------------------
+
+  Future<List<PlatformEdgeNode>> edgeNodes() async {
+    final response = await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/edge/nodes',
+      timeoutOverride: _readTimeout,
+      maxRetriesOverride: 0,
+    );
+    final items = extractDataList(response.data);
+    return items
+        .whereType<Map>()
+        .map((item) => PlatformEdgeNode.fromJson(item.cast<String, dynamic>()))
+        .toList();
+  }
+
+  Future<void> forceEdgeNodeSync(String nodeId) async {
+    await _apiClient.requestWithRetry<Map<String, dynamic>>(
+      '/platform/edge/nodes/$nodeId/sync',
+      method: 'POST',
+      timeoutOverride: _actionTimeout,
+      maxRetriesOverride: 0,
+    );
+  }
 }

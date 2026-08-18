@@ -13,6 +13,8 @@ import 'features/companies/company_detail_screen.dart';
 import 'features/companies/company_requests_screen.dart';
 import 'features/companies/company_screen.dart';
 import 'features/dashboard/platform_dashboard_screen.dart';
+import 'features/edge/edge_nodes_screen.dart';
+import 'features/support/support_tickets_screen.dart';
 
 Locale? _resolvedLocale(WidgetRef ref) {
   final code = ref.read(appPreferencesProvider).preferredLanguage.trim();
@@ -75,6 +77,24 @@ final platformRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/platform/company-requests',
         builder: (context, state) => const CompanyRequestsScreen(),
+      ),
+      // #3912 — Support tickets
+      GoRoute(
+        path: '/platform/support-tickets',
+        builder: (context, state) => const SupportTicketsScreen(),
+      ),
+      GoRoute(
+        path: '/platform/support-tickets/:ticketId',
+        builder: (context, state) {
+          final ticketId =
+              int.tryParse(state.pathParameters['ticketId'] ?? '') ?? 0;
+          return SupportTicketDetailScreen(ticketId: ticketId);
+        },
+      ),
+      // #3912 — Edge nodes
+      GoRoute(
+        path: '/platform/edge-nodes',
+        builder: (context, state) => const EdgeNodesScreen(),
       ),
     ],
   );
