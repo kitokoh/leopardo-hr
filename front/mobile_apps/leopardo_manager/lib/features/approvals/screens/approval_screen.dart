@@ -19,6 +19,7 @@ class ApprovalScreen extends ConsumerStatefulWidget {
 
 class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
   final _commentController = TextEditingController();
+  bool _approving = false;
 
   @override
   void dispose() {
@@ -27,9 +28,15 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
   }
 
   Future<void> _approve(int id) async {
+    // #4960 : double-tap = double POST sans confirmation ni état busy.
+    if (_approving) return;
+    setState(() => _approving = true);
     try {
       await ref.read(approvalRepositoryProvider).approve(id);
       ref.invalidate(pendingApprovalsProvider);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(context.l10n.approvalApproved)));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -39,6 +46,8 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
           ),
         );
       }
+    } finally {
+      if (mounted) setState(() => _approving = false);
     }
   }
 
@@ -46,64 +55,80 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
     _commentController.clear();
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: MobileSurface.card,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Motif du refus',
-          style: AppTypography.subtitle.copyWith(
-            color: MobileSurface.text,
-            fontWeight: FontWeight.w600,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: MobileSurface.card,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ),
-        content: TextField(
-          controller: _commentController,
-          style: AppTypography.body.copyWith(color: MobileSurface.text),
-          maxLines: 3,
-          decoration: InputDecoration(
-            hintText: 'Expliquez la raison...',
-            hintStyle: AppTypography.body.copyWith(color: MobileSurface.muted),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: MobileSurface.border),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: AppColors.rh),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            filled: true,
-            fillColor: MobileSurface.surface,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              'Annuler',
-              style: AppTypography.body.copyWith(color: MobileSurface.text),
+          title: Text(
+            'Motif du refus',
+            style: AppTypography.subtitle.copyWith(
+              color: MobileSurface.text,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.danger,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+          content: TextField(
+            controller: _commentController,
+            style: AppTypography.body.copyWith(color: MobileSurface.text),
+            maxLines: 3,
+            onChanged: (_) => setDialogState(() {}),
+            decoration: InputDecoration(
+              hintText: 'Expliquez la raison...',
+              hintStyle: AppTypography.body.copyWith(
+                color: MobileSurface.muted,
               ),
-              elevation: 0,
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: MobileSurface.border),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.rh),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              filled: true,
+              fillColor: MobileSurface.surface,
             ),
-            child: const Text('Refuser'),
           ),
-        ],
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(
+                'Annuler',
+                style: AppTypography.body.copyWith(color: MobileSurface.text),
+              ),
+            ),
+            ElevatedButton(
+              // #4960 : le refus était silencieux si le commentaire était
+              // vide (dialog fermé, aucune action) — le bouton reste
+              // désactivé tant que le motif n'est pas renseigné.
+              onPressed: _commentController.text.trim().isEmpty
+                  ? null
+                  : () => Navigator.pop(ctx, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.danger,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 0,
+              ),
+              child: const Text('Refuser'),
+            ),
+          ],
+        ),
       ),
     );
-    if (confirmed == true && _commentController.text.isNotEmpty) {
+    if (confirmed == true) {
       try {
         await ref
             .read(approvalRepositoryProvider)
             .reject(id, comment: _commentController.text);
         ref.invalidate(pendingApprovalsProvider);
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.approvalRejected)));
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

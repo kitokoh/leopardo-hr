@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:leopardo_hr/features/auth/screens/access_denied_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
 
@@ -28,5 +29,37 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(HomeScreen), findsOneWidget);
+  });
+
+  testWidgets('manager principal (managerRole=principal) accède à l app RH', (
+    tester,
+  ) async {
+    // #4960 : le guard n'acceptait que manager_role == 'rh' — le manager
+    // principal (rôle attendu par le README et les écrans team/approvals)
+    // était bloqué sur /access-denied, contrairement à l'app Manager.
+    await tester.pumpWidget(
+      appRouterHarness(
+        overrides: [
+          authOverride(testEmployee(role: 'manager', managerRole: 'principal')),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.byType(AccessDeniedScreen), findsNothing);
+  });
+
+  testWidgets('employé simple est redirigé vers /access-denied', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      appRouterHarness(
+        overrides: [authOverride(testEmployee(role: 'employee'))],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AccessDeniedScreen), findsOneWidget);
   });
 }

@@ -7,7 +7,6 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 import 'package:leopardo_employee/features/smart_attendance/providers/smart_attendance_provider.dart';
-import 'package:leopardo_employee/features/smart_attendance/screens/attendance_mode_picker_screen.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Écran principal du module Pointage Intelligent.
@@ -503,7 +502,7 @@ class _GpsZoneStatusCard extends StatelessWidget {
                   color: AppColors.mobileAccentOrange.withValues(alpha: 0.3),
                 ),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(
                     Icons.warning_amber_rounded,
@@ -597,7 +596,7 @@ class _SessionCard extends StatelessWidget {
     }
   }
 
-  String get _statusLabel {
+  String _statusLabel(BuildContext context) {
     switch (session.status) {
       case 'approved':
         return context.l10n.saStatusApproved;
@@ -669,7 +668,7 @@ class _SessionCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        _statusLabel,
+                        _statusLabel(context),
                         style: TextStyle(
                           color: _statusColor,
                           fontSize: 11,
