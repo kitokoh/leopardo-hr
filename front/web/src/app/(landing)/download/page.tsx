@@ -402,7 +402,7 @@ const platformLabels: Record<AppLocale, Array<{ platform: string; title: string;
     { platform: 'Windows', title: 'Accès pilote Desktop Windows', description: 'Le client n’est pas distribué publiquement. Demandez un accès pilote.', href: '/contact?topic=download-windows' },
     { platform: 'macOS', title: 'Accès pilote Desktop macOS', description: 'Le client n’est pas distribué publiquement. Demandez un accès pilote.', href: '/contact?topic=download-macos' },
     { platform: 'Android', title: 'Leopardo Mobile Android', description: 'Pointage mobile, demandes RH et notifications employe.', href: '/download#mobile-apps'},
-    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Experience mobile managers et employes sur iPhone.', href: '/download#mobile-apps'},
+    { platform: 'iPhone', title: 'Leopardo Mobile iOS', description: 'Expérience mobile managers et employés sur iPhone.', href: '/download#mobile-apps'},
   ],
   en: [
     { platform: 'Windows', title: 'Windows desktop pilot access', description: 'The client is not publicly distributed. Request pilot access.', href: '/contact?topic=download-windows' },

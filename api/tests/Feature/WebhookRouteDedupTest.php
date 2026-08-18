@@ -20,7 +20,9 @@ class WebhookRouteDedupTest extends TestCase
             $uri = $route->uri();
             $methods = $route->methods();
 
-            return str_ends_with($uri, 'webhooks/{webhookEndpoint}/test')
+            // URI exacte : le variant super-admin /admin/webhooks/... existe
+            // aussi (surface distincte, #2634) et terminait pareil (#5034).
+            return $uri === 'api/v1/webhooks/{webhookEndpoint}/test'
                 && in_array('POST', $methods, true);
         });
 
