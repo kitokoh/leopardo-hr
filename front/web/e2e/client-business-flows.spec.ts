@@ -82,6 +82,21 @@ const slipsList = {
       overtime_hours: 0,
       status: 'calculated',
     },
+    {
+      id: 3,
+      payroll_run_id: 10,
+      employee_id: 503,
+      employee_name: 'Sofia Benaissa',
+      period: '2026-06',
+      gross_salary: 143600,
+      total_deductions: 25000,
+      net_salary: 118600,
+      currency: 'DZD',
+      working_days: 22,
+      actual_days_worked: 20,
+      overtime_hours: 3.5,
+      status: 'validated',
+    },
   ],
 };
 
@@ -102,12 +117,57 @@ const slipDetail = {
     working_days: 22,
     actual_days_worked: 20,
     overtime_hours: 3.5,
+    salary_type: 'fixed',
+    salary_base: 100000,
     status: 'validated',
     lines: [
       { label: 'Salaire de base', amount: 100000 },
       { label: 'CNAS', amount: 9000 },
       { label: 'IRG', amount: 16000 },
     ],
+  },
+};
+
+const slipDetailDaily = {
+  data: {
+    id: 2,
+    employee_id: 502,
+    employee_name: 'Karim Aouad',
+    period: '2026-06',
+    period_start: '2026-06-01',
+    period_end: '2026-06-30',
+    gross_salary: 100000,
+    total_deductions: 25000,
+    net_salary: 75000,
+    currency: 'DZD',
+    working_days: 22,
+    actual_days_worked: 20,
+    salary_type: 'daily',
+    salary_base: 5000,
+    status: 'validated',
+    lines: [],
+  },
+};
+
+const slipDetailHourly = {
+  data: {
+    id: 3,
+    employee_id: 503,
+    employee_name: 'Sofia Benaissa',
+    period: '2026-06',
+    period_start: '2026-06-01',
+    period_end: '2026-06-30',
+    gross_salary: 143600,
+    total_deductions: 25000,
+    net_salary: 118600,
+    currency: 'DZD',
+    working_days: 22,
+    actual_days_worked: 20,
+    overtime_hours: 3.5,
+    salary_type: 'hourly',
+    hourly_rate: 800,
+    status: 'validated',
+    lines: [],
   },
 };
 
@@ -197,21 +257,42 @@ test.describe('Parcours métier du portail web (baseline #4944)', () => {
     await expect(page.locator('body')).toContainText('pending');
   });
 
-  test('paie : montants brut/net affichés (baseline §10.3 — décomposition par salary_type absente du web)', async ({ page }) => {
+  test('paie : décomposition §10.3 selon salary_type (fixed/daily/hourly)', async ({ page }) => {
     await mockCommon(page);
-    await page.route('**/api/v1/pay-slips', (route) =>
-      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(slipsList) })
-    );
     await page.route('**/api/v1/payroll-runs', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payrollRuns) })
     );
+    await page.route('**/api/v1/pay-slips', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(slipsList) })
+    );
 
+    // fixed → « Salaire mensuel : X »
+    await page.route('**/api/v1/pay-slips/1', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(slipDetail) })
+    );
     await page.goto('/payroll', { waitUntil: 'domcontentloaded' });
-
-    // Baseline actuelle : brut et net par bulletin sont affichés.
+    await page.getByRole('button', { name: 'Voir detail' }).first().click();
+    await expect(page.locator('body')).toContainText('Salaire mensuel');
     await expect(page.locator('body')).toContainText('100000');
-    await expect(page.locator('body')).toContainText('75000');
-    // Écart conception #5018 : la décomposition §10.3 (Taux journalier : X —
-    // Ce mois : Y jours × X = Z) n'est PAS exposée par le portail web.
+    await page.keyboard.press('Escape');
+
+    // daily → « Taux journalier : 5000 — Ce mois : 20 jours × 5000 = 100000 »
+    await page.route('**/api/v1/pay-slips/2', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(slipDetailDaily) })
+    );
+    await page.goto('/payroll', { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: 'Voir detail' }).nth(1).click();
+    await expect(page.locator('body')).toContainText('Taux journalier');
+    await expect(page.locator('body')).toContainText('Ce mois : 20 jours × 5000 = 100000');
+
+    // hourly → « Taux horaire : 800 — Ce mois : 179.5 heures × 800 = 143600 »
+    // (heures = 22 jours × 8 + 3,5 heures sup — hypothèse documentée §10.3)
+    await page.route('**/api/v1/pay-slips/3', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(slipDetailHourly) })
+    );
+    await page.goto('/payroll', { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: 'Voir detail' }).nth(2).click();
+    await expect(page.locator('body')).toContainText('Taux horaire');
+    await expect(page.locator('body')).toContainText('Ce mois : 179.5 heures × 800 = 143600');
   });
 });

@@ -100,12 +100,21 @@ jobs:
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
         run: |
+          set -o pipefail
           mkdir -p storage/coverage
           # Issue #4976 : la suite parallèle crée des bases PostgreSQL `_test_N`
           # en concurrence et provoque des collisions `already exists`, ce qui
           # empêche PHPUnit de produire Clover. Le timeout de 75 minutes garde
           # la suite séquentielle déterministe et conserve la gate de couverture.
           php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text 2>&1 | tee storage/coverage/summary.txt
+          test_exit=${PIPESTATUS[0]}
+          if [[ "${test_exit}" -ne 0 ]]; then
+            {
+              echo "Backend coverage test suite failed with exit code ${test_exit}."
+              grep -E -m 1 'SQLSTATE\[[0-9A-Z]+\]|FAILURES!|ERRORS!|There were [0-9]+ errors' storage/coverage/summary.txt || true
+            } | tee storage/coverage/causal-error.txt
+            exit "${test_exit}"
+          fi
 
       - name: Parse coverage percentage
         id: coverage
@@ -226,6 +235,7 @@ jobs:
             api/storage/coverage/clover.xml
             api/storage/coverage/summary.txt
             api/storage/coverage/modules.md
+            api/storage/coverage/causal-error.txt
           if-no-files-found: ignore
           retention-days: 30
 
