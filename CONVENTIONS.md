@@ -9,7 +9,7 @@
 
 ```
 leopardo-hr/
-├── api/                    # Backend Laravel (PHP 8.2+)
+├── api/                    # Backend Laravel (PHP 8.4+)
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
 │   ├── web/                # Vitrine (Next.js)
