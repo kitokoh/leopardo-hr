@@ -180,6 +180,12 @@ export type CopyTree = {
     detailDaysWorked: string;
     detailOvertimeHours: string;
     detailSalaryBreakdown: string;
+    salaryDecompTitle: string;
+    salaryMonthly: string;
+    salaryDailyRate: string;
+    salaryHourlyRate: string;
+    salaryCompositionDays: string;
+    salaryCompositionHours: string;
   };
   smartAttendancePage: {
     title: string;
@@ -675,6 +681,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'Jours travailles',
       detailOvertimeHours: 'Heures supplementaires',
       detailSalaryBreakdown: 'Composition du salaire',
+      salaryDecompTitle: 'Décomposition du salaire',
+      salaryMonthly: 'Salaire mensuel',
+      salaryDailyRate: 'Taux journalier',
+      salaryHourlyRate: 'Taux horaire',
+      salaryCompositionDays: 'Ce mois : {days} jours × {rate} = {total}',
+      salaryCompositionHours: 'Ce mois : {hours} h × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',
@@ -1167,6 +1179,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'أيام العمل الفعلية',
       detailOvertimeHours: 'ساعات العمل الإضافي',
       detailSalaryBreakdown: 'تفاصيل الراتب',
+      salaryDecompTitle: 'تفاصيل الراتب',
+      salaryMonthly: 'الراتب الشهري',
+      salaryDailyRate: 'الأجر اليومي',
+      salaryHourlyRate: 'الأجر بالساعة',
+      salaryCompositionDays: 'هذا الشهر: {days} يومًا × {rate} = {total}',
+      salaryCompositionHours: 'هذا الشهر: {hours} ساعة × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'الحضور الذكي',
@@ -1659,6 +1677,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'Filii calisilan gunler',
       detailOvertimeHours: 'Fazla mesai saatleri',
       detailSalaryBreakdown: 'Maas detayi',
+      salaryDecompTitle: 'Maaş dökümü',
+      salaryMonthly: 'Aylık maaş',
+      salaryDailyRate: 'Günlük ücret',
+      salaryHourlyRate: 'Saatlik ücret',
+      salaryCompositionDays: 'Bu ay: {days} gün × {rate} = {total}',
+      salaryCompositionHours: 'Bu ay: {hours} saat × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'Akilli Devam',
@@ -2151,6 +2175,12 @@ const copy: Record<AppLocale, CopyTree> = {
       detailDaysWorked: 'Actual days worked',
       detailOvertimeHours: 'Overtime hours',
       detailSalaryBreakdown: 'Salary breakdown',
+      salaryDecompTitle: 'Salary breakdown',
+      salaryMonthly: 'Monthly salary',
+      salaryDailyRate: 'Daily rate',
+      salaryHourlyRate: 'Hourly rate',
+      salaryCompositionDays: 'This month: {days} days × {rate} = {total}',
+      salaryCompositionHours: 'This month: {hours} h × {rate} = {total}',
     },
     smartAttendancePage: {
       title: 'Smart Attendance',

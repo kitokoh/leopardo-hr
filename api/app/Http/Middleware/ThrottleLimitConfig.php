@@ -25,5 +25,6 @@ final class ThrottleLimitConfig
         public readonly int $decaySeconds,
         public readonly ?Closure $afterCallback = null,
         public readonly ?Closure $responseCallback = null,
+        public readonly bool $named = false,
     ) {}
 }
