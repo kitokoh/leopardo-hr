@@ -15,6 +15,7 @@ import 'package:leopardo_hr/features/team/data/employee_repository.dart';
 import 'package:leopardo_hr/features/team/providers/team_provider.dart';
 import 'package:leopardo_core/models/employee.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 /// Ecran "Equipe" — reserve aux managers (principal / RH).
 /// Permet de lister, creer, archiver un employe et de gerer les invitations.
@@ -48,8 +49,8 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       return Scaffold(
         backgroundColor: MobileSurface.background,
         appBar: MobileTopBar(
-          title: 'Equipe',
-          subtitle: 'Acces manager/RH requis',
+          title: context.l10n.teamTitle,
+          subtitle: context.l10n.teamManagerRequired,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
             tooltip: 'Retour',
@@ -60,7 +61,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
           child: Padding(
             padding: EdgeInsets.all(24),
             child: Text(
-              'Seuls les managers principaux et RH peuvent gerer l equipe depuis le mobile.',
+              context.l10n.teamManagerRequiredHint,
               textAlign: TextAlign.center,
             ),
           ),
@@ -71,8 +72,8 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Equipe',
-        subtitle: 'Collaborateurs et invitations',
+        title: context.l10n.teamTitle,
+        subtitle: context.l10n.teamSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: 'Retour',
@@ -98,7 +99,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
               ),
               child: TabBar(
                 controller: _tabController,
-                tabs: const [Tab(text: 'Employes'), Tab(text: 'Invitations')],
+                tabs: [Tab(text: context.l10n.teamEmployeesTab), Tab(text: context.l10n.teamInvitationsTab)],
               ),
             ),
           ),
@@ -113,7 +114,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openAddEmployeeActions(context),
         icon: const Icon(Icons.person_add),
-        label: const Text('Ajouter'),
+        label: Text(context.l10n.teamAdd),
       ),
     );
   }
@@ -133,7 +134,7 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Ajouter un collaborateur',
+                context.l10n.teamAddCollaborator,
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
@@ -141,8 +142,8 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
               const SizedBox(height: 12),
               ListTile(
                 leading: const Icon(Icons.edit_note_rounded),
-                title: const Text('Formulaire classique'),
-                subtitle: const Text('Saisie manuelle complete'),
+                title: Text(context.l10n.teamAddManualForm),
+                subtitle: Text(context.l10n.teamAddManualHint),
                 onTap: () {
                   Navigator.of(context).pop();
                   _openCreateEmployeeSheet(context);
@@ -150,8 +151,8 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
               ),
               ListTile(
                 leading: const Icon(Icons.qr_code_scanner_rounded),
-                title: const Text('Depuis QR employe'),
-                subtitle: const Text('Coller le code fourni'),
+                title: Text(context.l10n.teamAddFromQr),
+                subtitle: Text(context.l10n.teamAddFromQrHint),
                 onTap: () {
                   Navigator.of(context).pop();
                   _openEmployeeQrSheet(context);
@@ -221,7 +222,7 @@ class _EmployeesTab extends ConsumerWidget {
       },
       child: async.when(
         loading: () =>
-            const MobileEmptyLoading(label: 'Chargement de l equipe'),
+            MobileEmptyLoading(label: context.l10n.teamLoading),
         error: (err, _) => ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -238,9 +239,9 @@ class _EmployeesTab extends ConsumerWidget {
                 SizedBox(height: 80),
                 EmptyState(
                   icon: Icons.group_add,
-                  title: 'Aucun collaborateur',
+                  title: context.l10n.teamEmpty,
                   description:
-                      'Commencez par ajouter votre equipe avec le bouton ci-dessous.',
+                      context.l10n.teamEmptyHint,
                 ),
               ],
             );
@@ -292,7 +293,7 @@ class _EmployeesTab extends ConsumerWidget {
     if (e.role == 'manager') {
       return 'Manager ${e.managerRole ?? ''}'.trim();
     }
-    return 'Employe';
+    return context.l10n.teamEmployeeLabel;
   }
 
   String? _employmentLine(Employee e) {
@@ -372,8 +373,8 @@ class _EmployeesTab extends ConsumerWidget {
             const SizedBox(height: 12),
             ListTile(
               leading: const Icon(Icons.badge_outlined),
-              title: const Text('Voir la fiche'),
-              subtitle: const Text('Coordonnees, poste, salaire, horaire'),
+              title: Text(context.l10n.teamViewProfile),
+              subtitle: Text(context.l10n.teamViewProfileHint),
               onTap: () {
                 Navigator.of(context).pop();
                 _openProfileSheet(context, employee);
@@ -381,9 +382,9 @@ class _EmployeesTab extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.edit_note_rounded),
-              title: const Text('Modifier la fiche'),
+              title: Text(context.l10n.teamEditProfile),
               subtitle: const Text(
-                'Mettre a jour les champs RH essentiels',
+                context.l10n.teamEditProfileHint,
               ),
               onTap: () {
                 Navigator.of(context).pop();
@@ -392,8 +393,8 @@ class _EmployeesTab extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.query_stats_rounded),
-              title: const Text('Statistiques et pointages'),
-              subtitle: const Text('Presence, anomalies, historique'),
+              title: Text(context.l10n.teamViewAttendance),
+              subtitle: Text(context.l10n.teamViewAttendanceHint),
               onTap: () {
                 Navigator.of(context).pop();
                 context.push('/manager/attendance');
@@ -401,8 +402,8 @@ class _EmployeesTab extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.task_alt_rounded),
-              title: const Text('Taches'),
-              subtitle: const Text('Voir ou assigner des taches terrain'),
+              title: Text(context.l10n.teamViewTasks),
+              subtitle: Text(context.l10n.teamViewTasksHint),
               onTap: () {
                 Navigator.of(context).pop();
                 context.push('/tasks');
@@ -415,11 +416,11 @@ class _EmployeesTab extends ConsumerWidget {
                       ? Icons.person_remove_alt_1_outlined
                       : Icons.admin_panel_settings_outlined,
                 ),
-                title: Text(employee.isHr ? 'Revoquer RH' : 'Nommer RH'),
+                title: Text(employee.isHr ? context.l10n.teamRevokeHr : context.l10n.teamMakeHr),
                 subtitle: Text(
                   employee.isHr
-                      ? 'Retirer les permissions RH de ce compte'
-                      : 'Donner les permissions RH a ce collaborateur',
+                      ? context.l10n.teamRevokeHrHint
+                      : context.l10n.teamMakeHrHint,
                 ),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -429,7 +430,7 @@ class _EmployeesTab extends ConsumerWidget {
             if (employee.status != 'archived')
               ListTile(
                 leading: const Icon(Icons.archive_outlined),
-                title: const Text('Archiver'),
+                title: Text(context.l10n.teamArchive),
                 onTap: () async {
                   Navigator.of(context).pop();
                   await _archive(context, ref, employee);
@@ -450,7 +451,7 @@ class _EmployeesTab extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(makeHr ? 'Nommer RH ?' : 'Revoquer RH ?'),
+        title: Text(makeHr ? context.l10n.teamMakeHrConfirmTitle : context.l10n.teamRevokeHrConfirmTitle),
         content: Text(
           makeHr
               ? '${employee.fullName} pourra gerer les demandes RH et les collaborateurs.'
@@ -459,11 +460,11 @@ class _EmployeesTab extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+            child: Text(context.l10n.teamConfirmCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(makeHr ? 'Nommer RH' : 'Revoquer'),
+            child: Text(makeHr ? context.l10n.teamMakeHrConfirmAction : context.l10n.teamRevokeHrConfirmAction),
           ),
         ],
       ),
@@ -479,14 +480,14 @@ class _EmployeesTab extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(makeHr ? 'RH nomme.' : 'Permissions RH retirees.'),
+          content: Text(makeHr ? context.l10n.teamMakeHrSuccess : context.l10n.teamRevokeHrSuccess),
         ),
       );
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+      ).showSnackBar(SnackBar(content: Text(context.l10n.teamActionError(e))));
     }
   }
 
@@ -521,18 +522,18 @@ class _EmployeesTab extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Archiver cet employe ?'),
+        title: Text(context.l10n.teamArchiveConfirmTitle),
         content: Text(
           '${employee.fullName} n aura plus acces a l application.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Annuler'),
+            child: Text(context.l10n.teamConfirmCancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Archiver'),
+            child: Text(context.l10n.teamArchiveConfirmAction),
           ),
         ],
       ),
@@ -544,13 +545,13 @@ class _EmployeesTab extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Employe archive.')));
+        ).showSnackBar(const SnackBar(content: Text(context.l10n.teamArchiveSuccess)));
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.teamActionError(e))));
       }
     }
   }
@@ -773,7 +774,7 @@ class _InvitationsTab extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.teamActionError(e))));
       }
     }
   }
@@ -1429,7 +1430,7 @@ class _EditEmployeeFormState extends ConsumerState<_EditEmployeeForm> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Echec : $e')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.teamActionError(e))));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -1629,7 +1630,7 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Role'),
                 items: const [
-                  DropdownMenuItem(value: 'employee', child: Text('Employe')),
+                  DropdownMenuItem(value: 'employee', child: Text(context.l10n.teamEmployeeLabel)),
                   DropdownMenuItem(value: 'manager', child: Text('Manager')),
                 ],
                 onChanged: (v) => setState(() {

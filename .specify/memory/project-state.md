@@ -36,7 +36,7 @@
 | Pays | Code | Niveau | Golden tests | Déclaration | Remarque |
 |------|------|--------|-------------|-------------|---------|
 | Côte d'Ivoire | CI | ✅ `pilot` | ✅ 20+ cas | ✅ CNSS CSV | ITSAS + CN + plafond 1 647 315 |
-| Sénégal | SN | ✅ `pilot` | ✅ 20+ cas | ✅ IPRES/CSS CSV | TRIMF + CFCE + IPRES T2 cadres |
+| Sénégal | SN | ✅ `production` | ✅ 20+ cas | ✅ IPRES/CSS CSV | TRIMF + CFCE + IPRES T2 cadres validés expert 2026-08-18 (#1912) |
 | Burkina Faso | BF | 🟡 `pilot` | ✅ 6 cas | ✅ CNSS CSV (#2158) | IUTS |
 | Mali | ML | 🟡 `pilot` | ✅ 6 cas | ✅ INPS CSV (#2158) | ITS |
 | Togo | TG | 🔴 `placeholder` | ❌ | ❌ | **Prochain candidat CEDEAO** |

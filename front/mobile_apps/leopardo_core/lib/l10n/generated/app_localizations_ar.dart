@@ -4011,4 +4011,213 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get attendanceNone => 'لا شيء';
 
+
+
+  @override
+  String get settingsMobileAccess => 'الوصول المحمول';
+  @override
+  String get settingsManagerProfileHint => 'ملف RH/مدير: الوصول إلى مراقبة الفريق والسجل.';
+  @override
+  String get settingsTeamDrive => 'إدارة الفريق';
+  @override
+  String get settingsTeamDriveHint => 'يبقى الملف الشخصي والدور والصلاحيات مرئية لإجراءات الموارد البشرية.';
+  @override
+  String get settingsSessionTitle => 'الجلسة';
+  @override
+  String get settingsSessionSubtitle => 'يظل تسجيل الخروج عمداً في أسفل الصفحة.';
+  @override
+  String get settingsOverview => 'نظرة عامة';
+  @override
+  String get settingsManagerAccountHint => 'يجب أن يظل حساب المدير واضحاً وآمناً وجاهزاً لقرارات الميدان.';
+  @override
+  String get settingsMyProfile => 'ملفي الشخصي';
+  @override
+  String get settingsFirstName => 'الاسم الأول';
+  @override
+  String get settingsLastNameLabel => 'اسم العائلة';
+  @override
+  String get settingsEmailLabel => 'البريد الإلكتروني';
+  @override
+  String get settingsEmailRequired => 'البريد الإلكتروني مطلوب';
+  @override
+  String get settingsEmailInvalid => 'بريد إلكتروني غير صالح';
+  @override
+  String get settingsFirstNameRequired => 'الاسم الأول مطلوب';
+  @override
+  String get settingsLastNameRequired => 'اسم العائلة مطلوب';
+  @override
+  String get settingsPersonalContacts => 'جهات الاتصال الشخصية';
+  @override
+  String get settingsPersonalEmail => 'البريد الإلكتروني الشخصي (اختياري)';
+  @override
+  String get settingsRecoveryEmail => 'بريد الاسترداد (اختياري)';
+  @override
+  String get settingsPersonalPhone => 'الهاتف الشخصي (اختياري)';
+  @override
+  String get settingsNewPassword => 'كلمة المرور الجديدة';
+  @override
+  String get settingsConfirmPassword => 'تأكيد كلمة المرور';
+  @override
+  String get settingsPasswordMinLength => '8 أحرف كحد أدنى';
+  @override
+  String get settingsPasswordMismatch => 'كلمات المرور غير متطابقة';
+  @override
+  String get settingsPasswordChanged => 'تم تغيير كلمة المرور.';
+  @override
+  String get settingsShareProfile => 'شارك ملفك أو امسح رمز QR الشركة.';
+  @override
+  String get settingsMyQrManager => 'رمز QR المدير';
+  @override
+  String get settingsMyQrEmployee => 'رمز QR الخاص بي';
+  @override
+  String get settingsQrManagerHint => 'يمكن لزميل أو موارد بشرية مسحه لملء دعوة مسبقاً.';
+  @override
+  String get settingsQrCopyToken => 'نسخ الرمز أيضاً';
+  @override
+  String get settingsPasteQr => 'ألصق رمز QR المقدم من المدير أو الموارد البشرية';
+  @override
+  String get settingsJourneyTitle => 'المسار المهني';
+  @override
+  String get settingsJourneyUnknownDate => 'تاريخ غير معروف';
+  @override
+  String get settingsJourneyToday => 'اليوم';
+  @override
+  String get settingsJourneyInProgress => 'جارٍ';
+  @override
+  String get settingsJourneyUnknownPosition => 'المنصب غير محدد';
+  @override
+  String get settingsJourneyUnknownCompany => 'الشركة';
+  @override
+  String get settingsNotificationsSubtitle => 'القنوات وساعات الهدوء وتنبيهات المدير التشغيلية.';
+  @override
+  String get settingsLanguageSubtitle => 'تؤثر اللغة المختارة أيضاً على الإشعارات والنصوص المستقبلية.';
+  @override
+  String get settingsProfileSaved => 'تم حفظ الملف الشخصي.';
+  @override
+  String get settingsBiometricManagerHint => 'محجوزة لملفات الموظفين في تطبيق المدير هذا.';
+  @override
+  String get settingsBiometricTerminalHint => 'تحضير الإصبع والوجه للمحطات الميدانية.';
+  @override
+  String get settingsBiometricNote => 'ملاحظة (اختياري)';
+  @override
+  String get settingsBiometricDevice => 'جهاز مرجعي (اختياري)';
+  @override
+  String get settingsBiometricFace => 'الوجه';
+  @override
+  String get settingsBiometricFingerprint => 'بصمة الإصبع';
+  @override
+  String get settingsBiometricConsent => 'أوافق على معالجة بياناتي البيومترية.';
+  @override
+  String get settingsBiometricSaved => 'تم حفظ التسجيل البيومتري.';
+  @override
+  String get settingsBiometricEnrollmentStatus => 'حالة التسجيل';
+  @override
+  String get settingsBiometricNone => 'لا يوجد تسجيل';
+  @override
+  String get settingsBiometricPending => 'قيد الانتظار';
+  @override
+  String get settingsBiometricApproved => 'معتمد';
+  @override
+  String get settingsBiometricRejected => 'مرفوض';
+  @override
+  String get settingsPreferredLanguageLabel => 'اللغة المفضلة';
+  @override
+  String get settingsLanguageSaved => 'تم حفظ اللغة.';
+  @override
+  String get settingsPortableAccountHint => 'تبقى معلوماتك الشخصية مرتبطة بحسابك.';
+
+
+
+  @override
+  String settingsPasswordError(Object error) => 'خطأ في كلمة المرور: $error';
+  @override
+  String settingsProfileError(Object error) => 'خطأ في الملف الشخصي: $error';
+  @override
+  String settingsBiometricError(Object error) => 'خطأ بيومتري: $error';
+
+
+
+  @override
+  String get teamTitle => 'الفريق';
+  @override
+  String get teamSubtitle => 'الموظفون والدعوات';
+  @override
+  String get teamManagerRequired => 'يلزم وصول المدير/الموارد البشرية';
+  @override
+  String get teamManagerRequiredHint => 'المديرون الرئيسيون وموظفو الموارد البشرية فقط يمكنهم إدارة الفريق من الهاتف.';
+  @override
+  String get teamEmployeesTab => 'الموظفون';
+  @override
+  String get teamInvitationsTab => 'الدعوات';
+  @override
+  String get teamAdd => 'إضافة';
+  @override
+  String get teamAddCollaborator => 'إضافة متعاون';
+  @override
+  String get teamAddManualForm => 'نموذج كلاسيكي';
+  @override
+  String get teamAddManualHint => 'إدخال يدوي كامل';
+  @override
+  String get teamAddFromQr => 'من رمز QR للموظف';
+  @override
+  String get teamAddFromQrHint => 'ألصق الرمز المقدم';
+  @override
+  String get teamLoading => 'تحميل الفريق';
+  @override
+  String get teamEmpty => 'لا يوجد متعاون';
+  @override
+  String get teamEmptyHint => 'ابدأ بإضافة فريقك باستخدام الزر أدناه.';
+  @override
+  String get teamEmployeeLabel => 'موظف';
+  @override
+  String get teamManagerLabel => 'مدير';
+  @override
+  String get teamViewProfile => 'عرض الملف';
+  @override
+  String get teamViewProfileHint => 'معلومات الاتصال والمنصب والراتب والجدول';
+  @override
+  String get teamEditProfile => 'تعديل الملف';
+  @override
+  String get teamEditProfileHint => 'تحديث الحقول الأساسية للموارد البشرية';
+  @override
+  String get teamViewAttendance => 'إحصائيات الحضور';
+  @override
+  String get teamViewAttendanceHint => 'الحضور والشذوذات والسجل';
+  @override
+  String get teamViewTasks => 'المهام';
+  @override
+  String get teamViewTasksHint => 'عرض أو تعيين مهام ميدانية';
+  @override
+  String get teamMakeHr => 'تعيين موارد بشرية';
+  @override
+  String get teamRevokeHr => 'إلغاء موارد بشرية';
+  @override
+  String get teamMakeHrHint => 'منح صلاحيات الموارد البشرية لهذا المتعاون';
+  @override
+  String get teamRevokeHrHint => 'إزالة صلاحيات الموارد البشرية من هذا الحساب';
+  @override
+  String get teamArchive => 'أرشفة';
+  @override
+  String get teamMakeHrConfirmTitle => 'تعيين موارد بشرية؟';
+  @override
+  String get teamRevokeHrConfirmTitle => 'إلغاء موارد بشرية؟';
+  @override
+  String get teamArchiveConfirmTitle => 'أرشفة هذا الموظف؟';
+  @override
+  String get teamConfirmCancel => 'إلغاء';
+  @override
+  String get teamMakeHrConfirmAction => 'تعيين موارد بشرية';
+  @override
+  String get teamRevokeHrConfirmAction => 'إلغاء';
+  @override
+  String get teamArchiveConfirmAction => 'أرشفة';
+  @override
+  String get teamMakeHrSuccess => 'تم تعيين موارد بشرية.';
+  @override
+  String get teamRevokeHrSuccess => 'تمت إزالة صلاحيات الموارد البشرية.';
+  @override
+  String get teamArchiveSuccess => 'تمت أرشفة الموظف.';
+  @override
+  String teamActionError(Object error) => 'فشل: $error';
+
 }

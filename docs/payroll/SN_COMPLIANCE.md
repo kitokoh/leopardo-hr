@@ -11,17 +11,17 @@
 
 | Règle | État | Référence | Validité |
 |---|---|---|---|
-| IR (barème annuel 6 tranches) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
-| TRIMF (6 tranches forfaitaires) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
-| CFCE 3 % patronal | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
-| IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (pilot) | IPRES | à valider expert |
-| IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-2 160k) | ✅ implémentée (pilot) | IPRES | à valider expert |
-| CSS famille patronale 7 % | ✅ implémentée (pilot, taux officiel CIPRES/CLEISS #2473) | CSS | à valider expert |
-| CSS AT patronale 1 % | ✅ implémentée (pilot) | CSS — variable selon secteur | à valider expert |
-| Abattement frais pro 30 % (non plafonné) | ✅ implémentée (pilot) | CGI Sénégal | à valider expert |
-| SMIG 58 900 XOF/mois | ✅ implémentée | — | à valider |
+| IR (barème annuel 6 tranches) | ✅ implémentée (production) | CGI Sénégal art. 213 | ✅ validé expert 2026-08-18 (#1912) |
+| TRIMF (6 tranches forfaitaires) | ✅ implémentée (production) | CGI Sénégal art. 185 | ✅ validé expert 2026-08-18 (#1912) |
+| CFCE 3 % patronal | ✅ implémentée (production) | CGI Sénégal art. 150 | ✅ validé expert 2026-08-18 (#1912) |
+| IPRES T1 5,6 % / 8,4 % (plaf. 432 000) | ✅ implémentée (production) | IPRES | ✅ validé expert 2026-08-18 (#1912) |
+| IPRES T2 cadres 2,4 % / 3,6 % (tranche 432k-2 160k) | ✅ implémentée (production) | IPRES | ✅ validé expert 2026-08-18 (#1912) — déclencheur catégorie corrigé |
+| CSS famille patronale 7 % | ✅ implémentée (production, #2473) | CSS / CIPRES | ✅ validé expert 2026-08-18 (#1912) |
+| CSS AT patronale 1 % | ✅ implémentée (production) | CSS — variable selon secteur | ✅ 1 % bureau/services validé ; configurable (#1912) |
+| Abattement frais pro 30 % (non plafonné) | ✅ implémentée (production) | CGI art. 100 | ✅ validé expert 2026-08-18 (#1912) |
+| SMIG 58 900 XOF/mois | ✅ implémentée | Arrêté 2023 | ✅ validé (à revalider à chaque révision) |
 | Congés (2,1 j/mois = 25,2 j/an, +1 j/5 ans) | 📝 à documenter/test | Code du travail | — |
-| Préavis (8 j ouvriers / 1 m employés / 3 m cadres) | ✅ implémentée (pilot, par catégorie #2123) | Code du travail | à valider expert |
+| Préavis (8 j ouvriers / 1 m employés / 3 m cadres) | ✅ implémentée (production, #2123) | Code du travail | ✅ validé expert 2026-08-18 (#1912) |
 | Jours fériés fixes SN | 📝 via CRUD jours fériés (#1811) | loi | — |
 | Jours fériés islamiques (Korité, Tabaski, Gamou, Taamhrit) | 📝 via calendrier islamique (#1812) | table `islamic_calendar` | — |
 
