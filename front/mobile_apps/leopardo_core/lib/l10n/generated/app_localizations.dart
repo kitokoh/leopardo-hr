@@ -6477,4 +6477,124 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       'an issue with the localizations generation tool. Please file an issue '
       'on GitHub with a reproducible sample app and the gen-l10n configuration '
       'that was used.');
+
+  /// No description provided for @attendanceRoleEmployee.
+  String get attendanceRoleEmployee;
+
+  /// No description provided for @attendanceWeekUnavailable.
+  String get attendanceWeekUnavailable;
+
+  /// No description provided for @attendanceWorkTypeTitle.
+  String get attendanceWorkTypeTitle;
+
+  /// No description provided for @attendanceBreakTitle.
+  String get attendanceBreakTitle;
+
+  /// No description provided for @attendanceBreakHint.
+  String get attendanceBreakHint;
+
+  /// No description provided for @attendanceBreakLoading.
+  String get attendanceBreakLoading;
+
+  /// No description provided for @attendanceBreakSuccess.
+  String get attendanceBreakSuccess;
+
+  /// No description provided for @attendanceBreakFailure.
+  String get attendanceBreakFailure;
+
+  /// No description provided for @attendanceResumeTitle.
+  String get attendanceResumeTitle;
+
+  /// No description provided for @attendanceResumeHint.
+  String get attendanceResumeHint;
+
+  /// No description provided for @attendanceResumeLoading.
+  String get attendanceResumeLoading;
+
+  /// No description provided for @attendanceResumeSuccess.
+  String get attendanceResumeSuccess;
+
+  /// No description provided for @attendanceResumeFailure.
+  String get attendanceResumeFailure;
+
+  /// No description provided for @attendanceOvertimeTitle.
+  String get attendanceOvertimeTitle;
+
+  /// No description provided for @attendanceOvertimeHint.
+  String get attendanceOvertimeHint;
+
+  /// No description provided for @attendanceOvertimeLoading.
+  String get attendanceOvertimeLoading;
+
+  /// No description provided for @attendanceOvertimeSuccess.
+  String get attendanceOvertimeSuccess;
+
+  /// No description provided for @attendanceOvertimeFailure.
+  String get attendanceOvertimeFailure;
+
+  /// No description provided for @attendanceMissionTitle.
+  String get attendanceMissionTitle;
+
+  /// No description provided for @attendanceMissionHint.
+  String get attendanceMissionHint;
+
+  /// No description provided for @attendanceMissionLoading.
+  String get attendanceMissionLoading;
+
+  /// No description provided for @attendanceMissionSuccess.
+  String get attendanceMissionSuccess;
+
+  /// No description provided for @attendanceMissionFailure.
+  String get attendanceMissionFailure;
+
+  /// No description provided for @attendanceTravelTitle.
+  String get attendanceTravelTitle;
+
+  /// No description provided for @attendanceTravelHint.
+  String get attendanceTravelHint;
+
+  /// No description provided for @attendanceTravelLoading.
+  String get attendanceTravelLoading;
+
+  /// No description provided for @attendanceTravelSuccess.
+  String get attendanceTravelSuccess;
+
+  /// No description provided for @attendanceTravelFailure.
+  String get attendanceTravelFailure;
+
+  /// No description provided for @attendanceTasksTitle.
+  String get attendanceTasksTitle;
+
+  /// No description provided for @attendanceHistoryTitle.
+  String get attendanceHistoryTitle;
+
+  /// No description provided for @attendancePreferencesTitle.
+  String get attendancePreferencesTitle;
+
+  /// No description provided for @attendanceSettingsTitle.
+  String get attendanceSettingsTitle;
+
+  /// No description provided for @attendanceSyncTitle.
+  String get attendanceSyncTitle;
+
+  /// No description provided for @attendanceSaving.
+  String get attendanceSaving;
+
+  /// No description provided for @attendancePressToCheckout.
+  String get attendancePressToCheckout;
+
+  /// No description provided for @attendancePressToCheckin.
+  String get attendancePressToCheckin;
+
+  /// No description provided for @attendanceOvertimeShort.
+  String get attendanceOvertimeShort;
+
+  /// No description provided for @attendancePauseLabel.
+  String get attendancePauseLabel;
+
+  /// No description provided for @attendanceTrainingLabel.
+  String get attendanceTrainingLabel;
+
+  /// No description provided for @attendanceOtherLabel.
+  String get attendanceOtherLabel;
 }

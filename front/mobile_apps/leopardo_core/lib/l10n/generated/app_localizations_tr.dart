@@ -3402,4 +3402,124 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
+
+  @override
+  String get attendanceRoleEmployee => 'Çalışan';
+
+  @override
+  String get attendanceWeekUnavailable => 'Hafta şu anda kullanılamıyor. Giriş yine de kullanılabilir.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Giriş türü';
+
+  @override
+  String get attendanceBreakTitle => 'Molaya çık';
+
+  @override
+  String get attendanceBreakHint => 'Oturumu kapatır ve molayı başlatır';
+
+  @override
+  String get attendanceBreakLoading => 'Mola gönderiliyor';
+
+  @override
+  String get attendanceBreakSuccess => 'Mola onaylandı.';
+
+  @override
+  String get attendanceBreakFailure => 'Mola onaylanmadı';
+
+  @override
+  String get attendanceResumeTitle => 'Devam et';
+
+  @override
+  String get attendanceResumeHint => 'Moladan veya çıkıştan sonra devam et';
+
+  @override
+  String get attendanceResumeLoading => 'Devam gönderiliyor';
+
+  @override
+  String get attendanceResumeSuccess => 'Devam onaylandı.';
+
+  @override
+  String get attendanceResumeFailure => 'Devam onaylanmadı';
+
+  @override
+  String get attendanceOvertimeTitle => 'Fazla mesai';
+
+  @override
+  String get attendanceOvertimeHint => 'Fazla mesai oturumu başlat';
+
+  @override
+  String get attendanceOvertimeLoading => 'Fazla mesai gönderiliyor';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Fazla mesai başladı.';
+
+  @override
+  String get attendanceOvertimeFailure => 'Fazla mesai onaylanmadı';
+
+  @override
+  String get attendanceMissionTitle => 'Görev';
+
+  @override
+  String get attendanceMissionHint => 'Her zamanki saha dışında çalışma süresi';
+
+  @override
+  String get attendanceMissionLoading => 'Görev gönderiliyor';
+
+  @override
+  String get attendanceMissionSuccess => 'Görev başladı.';
+
+  @override
+  String get attendanceMissionFailure => 'Görev onaylanmadı';
+
+  @override
+  String get attendanceTravelTitle => 'Seyahat';
+
+  @override
+  String get attendanceTravelHint => 'Mesleki seyahat süresi';
+
+  @override
+  String get attendanceTravelLoading => 'Seyahat gönderiliyor';
+
+  @override
+  String get attendanceTravelSuccess => 'Seyahat başladı.';
+
+  @override
+  String get attendanceTravelFailure => 'Seyahat onaylanmadı';
+
+  @override
+  String get attendanceTasksTitle => 'Bugünün görevleri';
+
+  @override
+  String get attendanceHistoryTitle => 'Geçmiş';
+
+  @override
+  String get attendancePreferencesTitle => 'Tercihler';
+
+  @override
+  String get attendanceSettingsTitle => 'Ayarlar';
+
+  @override
+  String get attendanceSyncTitle => 'Senkronizasyon';
+
+  @override
+  String get attendanceSaving => 'Kaydediliyor...';
+
+  @override
+  String get attendancePressToCheckout => 'Çıkışınızı kaydetmek için dokunun';
+
+  @override
+  String get attendancePressToCheckin => 'Girişinizi kaydetmek için dokunun';
+
+  @override
+  String get attendanceOvertimeShort => 'F. mesai';
+
+  @override
+  String get attendancePauseLabel => 'Mola';
+
+  @override
+  String get attendanceTrainingLabel => 'Eğitim';
+
+  @override
+  String get attendanceOtherLabel => 'Diğer';
 }

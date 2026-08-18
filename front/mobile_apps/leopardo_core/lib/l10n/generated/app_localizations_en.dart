@@ -3401,4 +3401,124 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String get attendanceRoleEmployee => 'Employee';
+
+  @override
+  String get attendanceWeekUnavailable => 'Week temporarily unavailable. Clock-in remains usable.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Clock type';
+
+  @override
+  String get attendanceBreakTitle => 'Take a break';
+
+  @override
+  String get attendanceBreakHint => 'Closes the session and starts a break';
+
+  @override
+  String get attendanceBreakLoading => 'Sending break';
+
+  @override
+  String get attendanceBreakSuccess => 'Break confirmed.';
+
+  @override
+  String get attendanceBreakFailure => 'Break not confirmed';
+
+  @override
+  String get attendanceResumeTitle => 'Resume';
+
+  @override
+  String get attendanceResumeHint => 'Resume after a break or leave';
+
+  @override
+  String get attendanceResumeLoading => 'Sending resume';
+
+  @override
+  String get attendanceResumeSuccess => 'Resume confirmed.';
+
+  @override
+  String get attendanceResumeFailure => 'Resume not confirmed';
+
+  @override
+  String get attendanceOvertimeTitle => 'Overtime';
+
+  @override
+  String get attendanceOvertimeHint => 'Start an overtime session';
+
+  @override
+  String get attendanceOvertimeLoading => 'Sending overtime';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Overtime started.';
+
+  @override
+  String get attendanceOvertimeFailure => 'Overtime not confirmed';
+
+  @override
+  String get attendanceMissionTitle => 'Mission';
+
+  @override
+  String get attendanceMissionHint => 'Work time outside the usual site';
+
+  @override
+  String get attendanceMissionLoading => 'Sending mission';
+
+  @override
+  String get attendanceMissionSuccess => 'Mission started.';
+
+  @override
+  String get attendanceMissionFailure => 'Mission not confirmed';
+
+  @override
+  String get attendanceTravelTitle => 'Travel';
+
+  @override
+  String get attendanceTravelHint => 'Professional travel time';
+
+  @override
+  String get attendanceTravelLoading => 'Sending travel';
+
+  @override
+  String get attendanceTravelSuccess => 'Travel started.';
+
+  @override
+  String get attendanceTravelFailure => 'Travel not confirmed';
+
+  @override
+  String get attendanceTasksTitle => 'Today\'s tasks';
+
+  @override
+  String get attendanceHistoryTitle => 'History';
+
+  @override
+  String get attendancePreferencesTitle => 'Preferences';
+
+  @override
+  String get attendanceSettingsTitle => 'Settings';
+
+  @override
+  String get attendanceSyncTitle => 'Synchronization';
+
+  @override
+  String get attendanceSaving => 'Saving...';
+
+  @override
+  String get attendancePressToCheckout => 'Tap to record your checkout';
+
+  @override
+  String get attendancePressToCheckin => 'Tap to record your check-in';
+
+  @override
+  String get attendanceOvertimeShort => 'OT';
+
+  @override
+  String get attendancePauseLabel => 'Break';
+
+  @override
+  String get attendanceTrainingLabel => 'Training';
+
+  @override
+  String get attendanceOtherLabel => 'Other';
 }

@@ -3369,4 +3369,124 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.';
+
+  @override
+  String get attendanceRoleEmployee => 'موظف';
+
+  @override
+  String get attendanceWeekUnavailable => 'الأسبوع غير متاح حاليًا. يبقى تسجيل الدخول متاحًا.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'نوع تسجيل الوقت';
+
+  @override
+  String get attendanceBreakTitle => 'الذهاب في استراحة';
+
+  @override
+  String get attendanceBreakHint => 'يغلق الجلسة ويبدأ الاستراحة';
+
+  @override
+  String get attendanceBreakLoading => 'جارٍ إرسال الاستراحة';
+
+  @override
+  String get attendanceBreakSuccess => 'تم تأكيد الاستراحة.';
+
+  @override
+  String get attendanceBreakFailure => 'لم يتم تأكيد الاستراحة';
+
+  @override
+  String get attendanceResumeTitle => 'استئناف';
+
+  @override
+  String get attendanceResumeHint => 'استئناف بعد استراحة أو خروج';
+
+  @override
+  String get attendanceResumeLoading => 'جارٍ إرسال الاستئناف';
+
+  @override
+  String get attendanceResumeSuccess => 'تم تأكيد الاستئناف.';
+
+  @override
+  String get attendanceResumeFailure => 'لم يتم تأكيد الاستئناف';
+
+  @override
+  String get attendanceOvertimeTitle => 'ساعات إضافية';
+
+  @override
+  String get attendanceOvertimeHint => 'بدء جلسة ساعات إضافية';
+
+  @override
+  String get attendanceOvertimeLoading => 'جارٍ إرسال الساعات الإضافية';
+
+  @override
+  String get attendanceOvertimeSuccess => 'بدأت الساعات الإضافية.';
+
+  @override
+  String get attendanceOvertimeFailure => 'لم يتم تأكيد الساعات الإضافية';
+
+  @override
+  String get attendanceMissionTitle => 'مهمة';
+
+  @override
+  String get attendanceMissionHint => 'وقت عمل خارج الموقع المعتاد';
+
+  @override
+  String get attendanceMissionLoading => 'جارٍ إرسال المهمة';
+
+  @override
+  String get attendanceMissionSuccess => 'بدأت المهمة.';
+
+  @override
+  String get attendanceMissionFailure => 'لم يتم تأكيد المهمة';
+
+  @override
+  String get attendanceTravelTitle => 'تنقل';
+
+  @override
+  String get attendanceTravelHint => 'وقت التنقل المهني';
+
+  @override
+  String get attendanceTravelLoading => 'جارٍ إرسال التنقل';
+
+  @override
+  String get attendanceTravelSuccess => 'بدأ التنقل.';
+
+  @override
+  String get attendanceTravelFailure => 'لم يتم تأكيد التنقل';
+
+  @override
+  String get attendanceTasksTitle => 'مهام اليوم';
+
+  @override
+  String get attendanceHistoryTitle => 'السجل';
+
+  @override
+  String get attendancePreferencesTitle => 'التفضيلات';
+
+  @override
+  String get attendanceSettingsTitle => 'الإعدادات';
+
+  @override
+  String get attendanceSyncTitle => 'المزامنة';
+
+  @override
+  String get attendanceSaving => 'جارٍ الحفظ...';
+
+  @override
+  String get attendancePressToCheckout => 'اضغط لتسجيل خروجك';
+
+  @override
+  String get attendancePressToCheckin => 'اضغط لتسجيل دخولك';
+
+  @override
+  String get attendanceOvertimeShort => 'إضافي';
+
+  @override
+  String get attendancePauseLabel => 'استراحة';
+
+  @override
+  String get attendanceTrainingLabel => 'تدريب';
+
+  @override
+  String get attendanceOtherLabel => 'آخر';
 }

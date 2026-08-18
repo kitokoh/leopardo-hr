@@ -3448,4 +3448,124 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.';
+
+  @override
+  String get attendanceRoleEmployee => 'Employé';
+
+  @override
+  String get attendanceWeekUnavailable => 'Semaine indisponible pour l\'instant. Le pointage reste utilisable.';
+
+  @override
+  String get attendanceWorkTypeTitle => 'Type de pointage';
+
+  @override
+  String get attendanceBreakTitle => 'Partir en pause';
+
+  @override
+  String get attendanceBreakHint => 'Ferme la session et marque une pause';
+
+  @override
+  String get attendanceBreakLoading => 'Envoi de la pause';
+
+  @override
+  String get attendanceBreakSuccess => 'Pause confirmée.';
+
+  @override
+  String get attendanceBreakFailure => 'Pause non confirmée';
+
+  @override
+  String get attendanceResumeTitle => 'Reprise';
+
+  @override
+  String get attendanceResumeHint => 'Reprendre après une pause ou une sortie';
+
+  @override
+  String get attendanceResumeLoading => 'Envoi reprise';
+
+  @override
+  String get attendanceResumeSuccess => 'Reprise confirmée.';
+
+  @override
+  String get attendanceResumeFailure => 'Reprise non confirmée';
+
+  @override
+  String get attendanceOvertimeTitle => 'Heures supplémentaires';
+
+  @override
+  String get attendanceOvertimeHint => 'Démarrer une session d\'heures supp';
+
+  @override
+  String get attendanceOvertimeLoading => 'Envoi heures supplémentaires';
+
+  @override
+  String get attendanceOvertimeSuccess => 'Heures supplémentaires démarrées.';
+
+  @override
+  String get attendanceOvertimeFailure => 'Heures supplémentaires non confirmées';
+
+  @override
+  String get attendanceMissionTitle => 'Mission';
+
+  @override
+  String get attendanceMissionHint => 'Temps de travail hors site habituel';
+
+  @override
+  String get attendanceMissionLoading => 'Envoi mission';
+
+  @override
+  String get attendanceMissionSuccess => 'Mission démarrée.';
+
+  @override
+  String get attendanceMissionFailure => 'Mission non confirmée';
+
+  @override
+  String get attendanceTravelTitle => 'Déplacement';
+
+  @override
+  String get attendanceTravelHint => 'Temps de déplacement professionnel';
+
+  @override
+  String get attendanceTravelLoading => 'Envoi déplacement';
+
+  @override
+  String get attendanceTravelSuccess => 'Déplacement démarré.';
+
+  @override
+  String get attendanceTravelFailure => 'Déplacement non confirmé';
+
+  @override
+  String get attendanceTasksTitle => 'Tâches du jour';
+
+  @override
+  String get attendanceHistoryTitle => 'Historique';
+
+  @override
+  String get attendancePreferencesTitle => 'Préférences';
+
+  @override
+  String get attendanceSettingsTitle => 'Paramètres';
+
+  @override
+  String get attendanceSyncTitle => 'Synchronisation';
+
+  @override
+  String get attendanceSaving => 'Enregistrement en cours...';
+
+  @override
+  String get attendancePressToCheckout => 'Appuyez pour enregistrer votre départ';
+
+  @override
+  String get attendancePressToCheckin => 'Appuyez pour enregistrer votre arrivée';
+
+  @override
+  String get attendanceOvertimeShort => 'Heure supp';
+
+  @override
+  String get attendancePauseLabel => 'Pause';
+
+  @override
+  String get attendanceTrainingLabel => 'Formation';
+
+  @override
+  String get attendanceOtherLabel => 'Autre';
 }
