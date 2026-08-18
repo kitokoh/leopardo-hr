@@ -13505,6 +13505,156 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /api-tokens:
+    get:
+      tags: ["Tokens"]
+      summary: "Lister les tokens API du manager (self-service)"
+      responses:
+        "200":
+          description: "Tokens (id, name, abilities, last_used_at, created_at)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+    post:
+      tags: ["Tokens"]
+      summary: "Creer un token API (renvoye une seule fois en clair)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+      responses:
+        "201":
+          description: "Token cree (plainTextToken inclus)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-manager"
+
+  /api-tokens/{tokenId}:
+    delete:
+      tags: ["Tokens"]
+      summary: "Revoquer un token API"
+      parameters:
+        - name: tokenId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Token revoque"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/unread:
+    get:
+      tags: ["Notifications"]
+      summary: "Notifications non lues de l'employe"
+      responses:
+        "200":
+          description: "Notifications non lues"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /notifications/mark-all-read:
+    post:
+      tags: ["Notifications"]
+      summary: "Marquer toutes les notifications comme lues"
+      responses:
+        "200":
+          description: "Notifications marquees lues"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/admin:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard admin (principal)"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/rh:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard RH"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/comptable:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard comptable"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /dashboard/marketing:
+    get:
+      tags: ["Dashboard"]
+      summary: "Synthese dashboard marketing"
+      responses:
+        "200":
+          description: "Synthese"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /company/team-roles:
+    get:
+      tags: ["Employees"]
+      summary: "Roles de l'equipe (principal uniquement)"
+      responses:
+        "200":
+          description: "Employes avec leurs roles"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-principal"
+
+  /employees/{employee}/assign-role:
+    post:
+      tags: ["Employees"]
+      summary: "Assigner un role manager a un employe (principal)"
+      parameters:
+        - name: employee
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                manager_role:
+                  type: string
+                  nullable: true
+                  enum: [rh, comptable, marketing, dept, principal]
+      responses:
+        "200":
+          description: "Role assigne (audit trail dispatching)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non-principal"
+        "404":
+          description: "Employe hors societe"
+
   # --- Exports ---
   /export/employees:
     get:
@@ -15023,6 +15173,53 @@ paths:
   # SmartAttendance — Pointage GPS automatique par géofencing
   # Ajouté dans v4.18.0
   # ─────────────────────────────────────────────────────────────────────────
+  /smart-attendance/mode-settings:
+    get:
+      tags: ["SmartAttendance"]
+      summary: "Parametres du mode de pointage de l'entreprise"
+      responses:
+        "200":
+          description: "Configuration (forced_mode, punch_photo_mode, gps_enabled, latitude, longitude, radius_meters, allow_employee_override)"
+        "401":
+          $ref: "#/components/responses/Error401"
+    put:
+      tags: ["SmartAttendance"]
+      summary: "Configurer le mode de pointage (principal)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forced_mode:
+                  type: string
+                  enum: [gps_auto, qr, manual, mixed]
+                punch_photo_mode:
+                  type: string
+                  enum: [kiosk, photo_required]
+                gps_enabled:
+                  type: boolean
+                latitude:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                longitude:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                radius_meters:
+                  type: integer
+                  minimum: 10
+                  maximum: 5000
+                allow_employee_override:
+                  type: boolean
+      responses:
+        "200":
+          description: "Configuration mise a jour"
+        "401":
+          $ref: "#/components/responses/Error401"
+
   /smart-attendance/config:
     get:
       tags: ["SmartAttendance"]
