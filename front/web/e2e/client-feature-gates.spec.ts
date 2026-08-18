@@ -34,7 +34,7 @@ async function seedSession(page: Page, overrides: Record<string, unknown> = {}) 
       ? {
           ...(overrides.company as object),
           metadata: {
-            ...((overrides.company as any)?.metadata ?? {}),
+            ...((overrides.company as Record<string, unknown>)?.metadata ?? {}),
             ...companyMetadata,
           },
         }
