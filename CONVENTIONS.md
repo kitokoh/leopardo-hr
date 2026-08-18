@@ -136,6 +136,30 @@ Les modules existants (pre-sprint) gardent la structure Laravel classique.
 
 > **Derogation documentee — API Resources centralisees (PA2-ARCH-010)** : les classes `JsonResource` restent **centralisees** dans `app/Http/Resources/Api/V1/`, y compris pour les nouveaux modules, plutot que placees dans `Interfaces/Api/V1/Resources/` de chaque module. Raison : plusieurs Resources sont partagees entre modules (ex. `LoanResource` par `HR`+`Payroll`), et les placer dans le module createur forcerait les autres modules consommateurs a faire un import inter-module, ce qui viole l'interdiction §2.7/§2.3 (« un module n'importe jamais directement les classes d'un autre module »). Voir `api/ARCHITECTURE.md` pour le detail. Une Resource strictement interne a un seul module et jamais partagee peut exceptionnellement rester dans `Interfaces/Api/V1/Resources/` du module.
 
+
+### 2.9 Convention des verbes HTTP API (issue #4930)
+
+Une seule règle, appliquée partout :
+
+- **POST** → créer une ressource **et** déclencher une action métier (approve/reject/disburse/validate/activate/publish…).
+- **PUT/PATCH** → modifier une ressource (PATCH pour mise à jour partielle d'état de la ressource elle-même).
+- **GET** → lecture seule, sans effet de bord. Les générations/exports idempotents (pdf, csv) sont tolérés mais doivent être documentés comme tels.
+
+État actuel (2026-08-18, chantier de convergence en cours) :
+- Notifications harmonisées en PUT (#2674/#2955/#3635).
+- Approbations biométrie/approvals/contrats/annonces : POST ✅ ; absences/loans/expense-claims/corrections : PUT **à migrer en POST** (rétrocompatibilité clients Flutter à vérifier avant changement — cf. issue #4930).
+- `PATCH /onboarding-setup/{stepKey}/complete|skip` : actions d'état → à passer en POST avec migration client (issue #4930).
+- `PUT /payrolls/{id}/validate` (legacy) vs `POST /payroll-runs/{id}/validate` : seul `payroll-runs` est canonique.
+
+Règle de migration : ne jamais changer un verbe sans vérifier les clients (apps Flutter, admin, web) ; ajouter d'abord le nouveau verbe en parallèle, déprécier l'ancien (commentaire de route + OpenAPI), puis supprimer après transition.
+
+
+### 2.10 Unicité des routes API (issue #4932)
+
+- Un concept métier = **un seul chemin canonique** + au plus un alias de compatibilité, marqué `// DÉPRÉCIÉ` (commentaire de route) avec la cible canonique.
+- Doublons connus à déprécier (2026-08-18) : `POST /notifications/mark-all-read` (→ `POST /notifications/read-all`), `/social-account` (→ `/social-accounts`), `/posts` (→ `/social-posts`), ressource legacy `payrolls` (→ `payroll-runs`), `GET /hr/employees` (→ `GET /employees`), double namespace super-admin `/platform/*` vs `/admin/*` (décision à acter).
+- **Throttle : ne pas re-déclarer `throttle:api` dans les groupes internes** — le groupe `api` par défaut de Laravel 12 (via `withRouting(api:)`) l'applique déjà ; une re-déclaration consomme le compteur deux fois par requête (limite effective divisée par deux). Vérifier avec `php artisan route:list` avant de retirer les déclarations existantes (issue #4932, point 7).
+
 ### 2.8 i18n
 
 - **Utiliser `__()` ou `trans()`** — jamais de chaines hardcodees en francais/anglais
@@ -266,6 +290,7 @@ $this->artisan('my:command')->assertSuccessful();
 | Analytics IA | Reserve aux `principal_managers` + RH |
 | `TenantMiddleware` | Garder `try/finally` autour de `resetToPrevious()` |
 | PHPStan baseline | Diff-gate, ne jamais elargir le fichier neon |
+| `throttle:api` dans un groupe interne | Double consommation du compteur (groupe api par défaut + explicite) — retirer après vérification `route:list` (#4932) |
 | SEPA export | FR/MA uniquement ; CPA/BNA pour DZ ; CSV standard pour les autres |
 | Admin views | Consomment les vrais endpoints backend (pas de mock) |
 
