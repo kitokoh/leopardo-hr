@@ -47,7 +47,7 @@ class LeavePendingReservationTest extends TestCase
             'accrual_type' => 'yearly',
             'accrual_amount' => 10,
             'carry_forward' => true,
-            'max_carry_forward' => 30,
+            'carry_forward_max' => 30,
             'active' => true,
         ]);
 

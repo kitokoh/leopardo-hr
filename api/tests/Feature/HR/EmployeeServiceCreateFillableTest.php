@@ -37,10 +37,14 @@ class EmployeeServiceCreateFillableTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'company@acme-fillable.test',
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'currency' => 'DZD',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         /** @var Employee $principal */
@@ -110,10 +114,14 @@ class EmployeeServiceCreateFillableTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'company2@acme-fillable.test',
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'currency' => 'DZD',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         /** @var Employee $principal */
@@ -148,10 +156,14 @@ class EmployeeServiceCreateFillableTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'company3@acme-fillable.test',
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'currency' => 'DZD',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         /** @var Employee $principal */
