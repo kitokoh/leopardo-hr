@@ -630,6 +630,7 @@ function StepPayment({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [checkoutUnavailable, setCheckoutUnavailable] = useState(false);
   const [sandboxFilled, setSandboxFilled] = useState(false);
 
   const isSandboxCard = cardNumber.replace(/\s/g, '') === '4242424242424242';
@@ -692,6 +693,9 @@ function StepPayment({
       if (data.success && data.checkout_url) {
         router.push(data.checkout_url);
       } else {
+        if (data.error === 'CHECKOUT_UNAVAILABLE') {
+          setCheckoutUnavailable(true);
+        }
         setError(data.message || copy.payment.errors.generic);
       }
     } catch {
@@ -835,6 +839,27 @@ function StepPayment({
           >
             {error}
           </motion.p>
+        )}
+
+        {/* Paiement indisponible : actions alternatives (#4952) */}
+        {checkoutUnavailable && (
+          <div className="rounded-2xl border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/30 px-4 py-4 text-sm">
+            <p className="font-bold text-amber-800 dark:text-amber-300">{copy.checkoutUnavailableTitle}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href="/demo"
+                className="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-700"
+              >
+                {copy.checkoutUnavailableCtaTrial}
+              </Link>
+              <Link
+                href="/contact"
+                className="rounded-xl border border-amber-300 bg-white px-4 py-2 text-xs font-bold text-amber-800 transition hover:bg-amber-100 dark:bg-slate-900 dark:text-amber-300"
+              >
+                {copy.checkoutUnavailableCtaContact}
+              </Link>
+            </div>
+          </div>
         )}
 
         {/* Summary */}

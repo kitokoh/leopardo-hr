@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **fix(web): checkout — état CHECKOUT_UNAVAILABLE avec actions alternatives (progrès #4952)** — bloc dédié (essai gratuit / contact) quand Stripe n'est pas configuré, au lieu d'une erreur brute ; i18n ×4 (checkout.ts). Ne tranche pas la décision produit (Stripe vs masquage CTA) — améliore les deux options.
 - **fix(mobile/i18n): long-tail FR leopardo_employee migré vers ARB (Closes #4843).** `settings_screen` (parcours/statistiques — clés `settingsJourneyLoadError`/`settingsStatsLoadError` ajoutées ×4 + fichiers générés), `monthly_summary_screen` (`retry`), `notification_list_screen` (marquage lu/tout lu/suppression + succès suppression + tooltip retour — clés `notifications*` ×4), `attendance_screen` (heure future — clé `attendanceFutureTimeError` ×4). Les écrans smart_attendance étaient déjà migrés (post-#4837). `flutter analyze` à valider en CI ; le reste des chaînes en dur reste suivi par l'épic #4194.
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032, #5033).** Les runs supersédés ne sont désormais annulés que pour les branches réellement orphelines ; `main`, les branches distantes vivantes et les têtes de PR restent protégés. Les gardes baseline nécessaires aux validations ajoutent l’initialisation défensive de `existingManager` dans le signup trial et corrigent trois apostrophes TypeScript non échappées dans le web (`terms` et `i18n`).

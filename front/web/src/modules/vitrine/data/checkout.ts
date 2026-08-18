@@ -37,6 +37,9 @@ export interface CheckoutCopy {
   currencyLabel: string
   trialBadge: string // « {days} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai »
   billedAnnually: string // « Facturé annuellement — économisez EUR {savings}/an »
+  checkoutUnavailableTitle: string
+  checkoutUnavailableCtaTrial: string
+  checkoutUnavailableCtaContact: string
   monthly: string
   annual: string
   trust: {
@@ -168,6 +171,9 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     trialBadge:
       "{days} jours gratuits inclus · Aucune CB débitée avant la fin de l'essai",
     billedAnnually: 'Facturé annuellement — économisez EUR {savings}/an',
+  checkoutUnavailableTitle: 'Le paiement en ligne est temporairement indisponible.',
+  checkoutUnavailableCtaTrial: 'Démarrer l’essai gratuit',
+  checkoutUnavailableCtaContact: 'Contacter le support',
     monthly: 'Mensuel',
     annual: 'Annuel',
     trust: {
@@ -366,6 +372,9 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     currencyLabel: 'EUR',
     trialBadge: '{days} free days included · No card is charged before the trial ends',
     billedAnnually: 'Billed annually — save EUR {savings}/year',
+  checkoutUnavailableTitle: 'Online payment is temporarily unavailable.',
+  checkoutUnavailableCtaTrial: 'Start the free trial',
+  checkoutUnavailableCtaContact: 'Contact support',
     monthly: 'Monthly',
     annual: 'Annual',
     trust: {
@@ -563,6 +572,9 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     currencyLabel: 'EUR',
     trialBadge: '{days} gün ücretsiz dahil · Deneme bitmeden karttan ücret alınmaz',
     billedAnnually: 'Yıllık faturalandırılır — yılda EUR {savings} tasarruf',
+  checkoutUnavailableTitle: 'Çevrimiçi ödeme geçici olarak kullanılamıyor.',
+  checkoutUnavailableCtaTrial: 'Ücretsiz denemeyi başlat',
+  checkoutUnavailableCtaContact: 'Destek ile iletişime geçin',
     monthly: 'Aylık',
     annual: 'Yıllık',
     trust: {
@@ -758,6 +770,9 @@ export const checkoutCopyByLocale: Record<AppLocale, CheckoutCopy> = {
     currencyLabel: 'EUR',
     trialBadge: '{days} أيام مجانية مشمولة · لن يُخصم من بطاقتك قبل نهاية التجربة',
     billedAnnually: 'فوترة سنوية — وفّر EUR {savings} سنوياً',
+  checkoutUnavailableTitle: 'الدفع عبر الإنترنت غير متاح مؤقتًا.',
+  checkoutUnavailableCtaTrial: 'ابدأ النسخة التجريبية المجانية',
+  checkoutUnavailableCtaContact: 'تواصل مع الدعم',
     monthly: 'شهري',
     annual: 'سنوي',
     trust: {
