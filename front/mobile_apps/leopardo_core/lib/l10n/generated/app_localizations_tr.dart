@@ -3327,6 +3327,37 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get back => 'Geri';
+
+  String get cabinetScreenAddDocument => 'Belge ekle';
+  String get cabinetScreenAddDocumentSubtitle => 'Dosyalarınızdan veya kameradan';
+  String get cabinetScreenCancel => 'İptal';
+  String get cabinetScreenCreate => 'Oluştur';
+  String get cabinetScreenCreateShareLink => 'Paylaşım bağlantısı oluştur';
+  String get cabinetScreenDelete => 'Sil';
+  String cabinetScreenDeleteBody(Object name) => '"${name}" belgesi kalıcı olarak silinecek.';
+  String get cabinetScreenDeleteTitle => 'Bu belge silinsin mi?';
+
+  String cabinetScreenDocumentsCount(num count) {
+    if (count == 1) return '1 belge';
+    return '${count} belge';
+  }  String get cabinetScreenDocumentAdded => 'Belge başarıyla eklendi';
+  String get cabinetScreenDocuments => 'Belgeler';
+  String get cabinetScreenEmailHint => 'Alıcı e-postası';
+  String get cabinetScreenEmptyDescription => 'Alanınızı düzenlemek için klasörler ve belgeler ekleyin.';
+  String get cabinetScreenEmptyTitle => 'Dolap boş';
+  String get cabinetScreenFolderNameHint => 'Klasör adı';
+  String get cabinetScreenFolders => 'Klasörler';
+  String cabinetScreenLinkCopied(Object url) => 'Bağlantı kopyalandı: ${url}';
+  String get cabinetScreenNewFolder => 'Yeni klasör';
+  String get cabinetScreenSend => 'Gönder';
+  String get cabinetScreenShareByEmail => 'E-posta ile paylaş';
+  String cabinetScreenShareSent(Object email) => 'Paylaşım ${email} adresine gönderildi';
+  String cabinetScreenShareTitle(Object name) => '"${name}" paylaş';
+  String get cabinetScreenTitleRoot => 'Dolabım';
+  String get cabinetScreenUploadFailed => 'Belge yüklenemedi. Tekrar deneyin.';
+  String get cabinetScreenUploading => 'Yükleniyor...';
+
+
   @override
   String get notificationsMarkAllReadError => 'Bildirimler okundu olarak işaretlenemedi.';
 

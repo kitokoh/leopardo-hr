@@ -36,7 +36,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     final text = AppColors.textPrimaryFor(context);
     final muted = AppColors.textSecondaryFor(context);
     final isRoot = widget.folderId == null;
-    final title = widget.folderName ?? 'Mon Placard';
+    final title = widget.folderName ?? context.l10n.cabinetScreenTitleRoot;
 
     return Scaffold(
       backgroundColor: background,
@@ -62,7 +62,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: text),
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           onPressed: () => context.pop(),
         ),
       ),
@@ -130,12 +130,12 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     if (folders.isEmpty && documents.isEmpty) {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
-          SizedBox(height: 80),
+        children: [
+          const SizedBox(height: 80),
           EmptyState(
             icon: Icons.door_sliding_outlined,
-            title: 'Placard vide',
-            description: 'Ajoutez des dossiers et documents pour organiser votre espace.',
+            title: context.l10n.cabinetScreenEmptyTitle,
+            description: context.l10n.cabinetScreenEmptyDescription,
           ),
         ],
       );
@@ -147,7 +147,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       children: [
         if (folders.isNotEmpty) ...[
           Text(
-            'Dossiers',
+            context.l10n.cabinetScreenFolders,
             style: AppTypography.caption.copyWith(
               color: muted,
               fontWeight: FontWeight.w600,
@@ -159,7 +159,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
         ],
         if (documents.isNotEmpty) ...[
           Text(
-            'Documents',
+            context.l10n.cabinetScreenDocuments,
             style: AppTypography.caption.copyWith(
               color: muted,
               fontWeight: FontWeight.w600,
@@ -212,7 +212,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 Icons.create_new_folder_outlined,
                 color: AppColors.cabinet,
               ),
-              title: const Text('Nouveau dossier'),
+              title: Text(context.l10n.cabinetScreenNewFolder),
               onTap: () {
                 Navigator.pop(ctx);
                 _showCreateFolderDialog();
@@ -223,8 +223,8 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 Icons.upload_file_outlined,
                 color: AppColors.cabinet,
               ),
-              title: const Text('Ajouter un document'),
-              subtitle: const Text('Depuis vos fichiers ou la camera'),
+              title: Text(context.l10n.cabinetScreenAddDocument),
+              subtitle: Text(context.l10n.cabinetScreenAddDocumentSubtitle),
               onTap: () {
                 Navigator.pop(ctx);
                 _pickAndUploadDocument();
@@ -242,19 +242,19 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nouveau dossier'),
+        title: Text(context.l10n.cabinetScreenNewFolder),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Nom du dossier',
+          decoration: InputDecoration(
+            hintText: context.l10n.cabinetScreenFolderNameHint,
             prefixIcon: Icon(Icons.folder_outlined),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
+            child: Text(context.l10n.cabinetScreenCancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -265,7 +265,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               await repo.createFolder(name: name, parentId: widget.folderId);
               ref.invalidate(cabinetFoldersProvider(widget.folderId));
             },
-            child: const Text('Creer'),
+            child: Text(context.l10n.cabinetScreenCreate),
           ),
         ],
       ),
@@ -278,7 +278,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
 
     if (!mounted) return;
     ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Envoi en cours...')));
+        .showSnackBar(SnackBar(content: Text(context.l10n.cabinetScreenUploading)));
 
     final repo = ref.read(cabinetRepositoryProvider);
     try {
@@ -292,7 +292,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Document ajoute avec succes')),
+        SnackBar(content: Text(context.l10n.cabinetScreenDocumentAdded)),
       );
     } catch (_) {
       // Issue #4407 : timeout/401/5xx → erreur visible + snackbar « Envoi en
@@ -301,7 +301,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Echec de l\'envoi du document. Reessayez.'),
+          content: Text(context.l10n.cabinetScreenUploadFailed),
         ),
       );
     }
@@ -326,12 +326,12 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Partager "${doc.name}"', style: AppTypography.subtitle),
+            Text(context.l10n.cabinetScreenShareTitle(doc.name), style: AppTypography.subtitle),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.link, color: AppColors.cabinet),
-              title: const Text('Creer un lien de partage'),
+              title: Text(context.l10n.cabinetScreenCreateShareLink),
               onTap: () async {
                 Navigator.pop(ctx);
                 final repo = ref.read(cabinetRepositoryProvider);
@@ -344,17 +344,17 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                 await Clipboard.setData(ClipboardData(text: url));
                 if (!mounted) return;
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text('Lien copié : $url')));
+                    .showSnackBar(SnackBar(content: Text(context.l10n.cabinetScreenLinkCopied(url))));
               },
             ),
             const Divider(),
-            const Text('Partager par email'),
+            Text(context.l10n.cabinetScreenShareByEmail),
             const SizedBox(height: 8),
             TextField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                hintText: 'Email du destinataire',
+              decoration: InputDecoration(
+                hintText: context.l10n.cabinetScreenEmailHint,
                 prefixIcon: Icon(Icons.email_outlined),
               ),
             ),
@@ -363,7 +363,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               width: double.infinity,
               child: FilledButton.icon(
                 icon: const Icon(Icons.send),
-                label: const Text('Envoyer'),
+                label: Text(context.l10n.cabinetScreenSend),
                 onPressed: () async {
                   final email = emailController.text.trim();
                   if (email.isEmpty) return;
@@ -376,7 +376,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
                   );
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Partage envoye a $email')),
+                    SnackBar(content: Text(context.l10n.cabinetScreenShareSent(email))),
                   );
                 },
               ),
@@ -392,14 +392,14 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer le document ?'),
+        title: Text(context.l10n.cabinetScreenDeleteTitle),
         content: Text(
-          'Le document "${doc.name}" sera supprime definitivement.',
+          context.l10n.cabinetScreenDeleteBody(doc.name),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annuler'),
+            child: Text(context.l10n.cabinetScreenCancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
@@ -409,7 +409,7 @@ class _CabinetScreenState extends ConsumerState<CabinetScreen> {
               await repo.deleteDocument(doc.id);
               ref.invalidate(cabinetDocumentsProvider(widget.folderId));
             },
-            child: const Text('Supprimer'),
+            child: Text(context.l10n.cabinetScreenDelete),
           ),
         ],
       ),
@@ -476,7 +476,9 @@ class _FolderTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${folder.documentsCount} doc${folder.documentsCount != 1 ? 's' : ''}',
+                        context.l10n.cabinetScreenDocumentsCount(
+                          folder.documentsCount,
+                        ),
                         style: AppTypography.caption.copyWith(color: muted),
                       ),
                     ],
@@ -569,13 +571,13 @@ class _DocumentTile extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.share_outlined, size: 20),
               color: AppColors.cabinet,
-              tooltip: 'Partager',
+              tooltip: context.l10n.cabinetScreenShareByEmail,
               onPressed: onShare,
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline, size: 20),
               color: AppColors.danger,
-              tooltip: 'Supprimer',
+              tooltip: context.l10n.cabinetScreenDelete,
               onPressed: onDelete,
             ),
           ],

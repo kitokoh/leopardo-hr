@@ -1543,5 +1543,34 @@
         "error": "تعذر تحميل الإحصائيات."
       }
     }
+  },
+  "cabinet": {
+    "screen": {
+      "title_root": "خزانتي",
+      "empty_title": "الخزانة فارغة",
+      "empty_description": "أضف مجلدات ومستندات لتنظيم مساحتك.",
+      "folders": "المجلدات",
+      "documents": "المستندات",
+      "new_folder": "مجلد جديد",
+      "add_document": "إضافة مستند",
+      "add_document_subtitle": "من ملفاتك أو الكاميرا",
+      "folder_name_hint": "اسم المجلد",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "uploading": "جارٍ الرفع...",
+      "document_added": "تمت إضافة المستند بنجاح",
+      "upload_failed": "فشل رفع المستند. حاول مرة أخرى.",
+      "share_title": "مشاركة «{name}»",
+      "create_share_link": "إنشاء رابط مشاركة",
+      "link_copied": "تم نسخ الرابط: {url}",
+      "share_by_email": "المشاركة عبر البريد الإلكتروني",
+      "email_hint": "بريد المستلم الإلكتروني",
+      "send": "إرسال",
+      "share_sent": "تم إرسال المشاركة إلى {email}",
+      "delete_title": "حذف هذا المستند؟",
+      "delete_body": "سيتم حذف المستند «{name}» نهائيًا.",
+      "delete": "حذف",
+      "documents_count": "{count, plural, =1{مستند واحد} other{{count} مستندات}}"
+    }
   }
 }
