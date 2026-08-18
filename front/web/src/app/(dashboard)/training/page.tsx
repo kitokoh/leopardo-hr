@@ -126,7 +126,7 @@ export default function TrainingPage() {
       setNewCourse({ title: '', description: '', category: '', type: 'internal', provider: '', duration_hours: '', max_participants: '' });
       await loadCourses();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Impossible de creer la formation.');
+      setError(err instanceof ApiError ? err.message : 'Impossible de créer la formation.');
     } finally {
       setCreating(false);
     }
