@@ -3961,4 +3961,87 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get actionCancel => 'İptal';
 
+
+
+  @override
+  String get attendanceThisWeek => 'BU HAFTA';
+  @override
+  String get attendanceToday => 'BUGÜN';
+  @override
+  String get attendanceCheckinLabel => 'Giriş';
+  @override
+  String get attendanceCheckoutLabel => 'Çıkış';
+  @override
+  String get attendanceDailyEstimate => 'Tahmini günlük kazanç';
+  @override
+  String get attendanceWeekHours => 'Haftalık saatler';
+  @override
+  String get attendanceWeekEarnings => 'Tahmini kazanç';
+  @override
+  String get attendanceWeekLate => 'Birikimli gecikme';
+  @override
+  String get attendanceMenuEdit => 'Düzenle';
+  @override
+  String get attendanceMenuMonthly => 'Tam ayım';
+  @override
+  String get attendanceMenuProfile => 'Profilim';
+  @override
+  String get attendanceCheckoutSending => 'Çıkış sunucuya gönderiliyor...';
+  @override
+  String get attendanceCheckinSending => 'Giriş sunucuya gönderiliyor...';
+  @override
+  String get attendanceCheckoutSuccess => 'Çıkış onaylandı.';
+  @override
+  String get attendanceCheckoutFailure => 'Çıkış onaylanmadı. Tekrar deneyin.';
+  @override
+  String get attendanceCheckinSuccess => 'Giriş onaylandı.';
+  @override
+  String get attendanceCheckinFailure => 'Giriş onaylanmadı. Tekrar deneyin.';
+  @override
+  String get attendanceFingerprintEnabled => 'Parmak izi etkin (isteğe bağlı)';
+  @override
+  String get attendanceFingerprintEnable => 'Parmak izini etkinleştir (isteğe bağlı)';
+  @override
+  String get attendanceAbsent => 'Devamsız';
+  @override
+  String get attendanceStatusPointer => 'Giriş yapılacak';
+  @override
+  String get attendanceStatusInProgress => 'Devam ediyor';
+  @override
+  String get attendanceStatusLate => 'Geç';
+  @override
+  String get attendanceStatusComplete => 'Tamamlandı';
+  @override
+  String get attendanceCorrectionTitle => 'Devam kaydını düzenle';
+  @override
+  String get attendanceCorrectionDirectHint => 'Düzeltme, devam kaydına uygulanacak.';
+  @override
+  String get attendanceCorrectionRequestHint => 'Talep, onay için İK\'ya iletilecek.';
+  @override
+  String get attendanceCorrectionCheckinLabel => 'Gerçek giriş saati *';
+  @override
+  String get attendanceCorrectionCheckoutLabel => 'Gerçek çıkış saati';
+  @override
+  String get attendanceCorrectionReasonHint => 'Gerekçe (örn: saat 8\'de giriş yapmayı unuttum)';
+  @override
+  String get attendanceCorrectionReasonRequired => 'Gerekçe zorunludur';
+  @override
+  String get attendanceCorrectionNoLogWarning => 'Bu gün için düzenlenecek mevcut devam girişi yok.';
+  @override
+  String get attendanceCorrectionSubmitDirect => 'Düzenle';
+  @override
+  String get attendanceCorrectionSubmitRequest => 'Düzeltme talep et';
+  @override
+  String get attendanceRoleEmployee2 => 'Çalışan';
+  @override
+  String get attendanceRolePrincipal => 'Baş Yönetici';
+  @override
+  String get attendanceRoleHr => 'İK Yöneticisi';
+  @override
+  String get attendanceRoleFinance => 'Finans';
+  @override
+  String get attendanceRoleManager => 'Yönetici';
+  @override
+  String get attendanceNone => 'Hiçbiri';
+
 }

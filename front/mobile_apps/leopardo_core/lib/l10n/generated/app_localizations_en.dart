@@ -3960,4 +3960,87 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get actionCancel => 'Cancel';
 
+
+
+  @override
+  String get attendanceThisWeek => 'THIS WEEK';
+  @override
+  String get attendanceToday => 'TODAY';
+  @override
+  String get attendanceCheckinLabel => 'Check-in';
+  @override
+  String get attendanceCheckoutLabel => 'Check-out';
+  @override
+  String get attendanceDailyEstimate => 'Estimated daily earnings';
+  @override
+  String get attendanceWeekHours => 'Week hours';
+  @override
+  String get attendanceWeekEarnings => 'Estimated earnings';
+  @override
+  String get attendanceWeekLate => 'Cumulated delay';
+  @override
+  String get attendanceMenuEdit => 'Edit';
+  @override
+  String get attendanceMenuMonthly => 'My full month';
+  @override
+  String get attendanceMenuProfile => 'My profile';
+  @override
+  String get attendanceCheckoutSending => 'Sending checkout to server...';
+  @override
+  String get attendanceCheckinSending => 'Sending check-in to server...';
+  @override
+  String get attendanceCheckoutSuccess => 'Checkout confirmed.';
+  @override
+  String get attendanceCheckoutFailure => 'Checkout not confirmed. Try again.';
+  @override
+  String get attendanceCheckinSuccess => 'Check-in confirmed.';
+  @override
+  String get attendanceCheckinFailure => 'Check-in not confirmed. Try again.';
+  @override
+  String get attendanceFingerprintEnabled => 'Fingerprint enabled (optional)';
+  @override
+  String get attendanceFingerprintEnable => 'Enable fingerprint (optional)';
+  @override
+  String get attendanceAbsent => 'Absent';
+  @override
+  String get attendanceStatusPointer => 'To clock in';
+  @override
+  String get attendanceStatusInProgress => 'In progress';
+  @override
+  String get attendanceStatusLate => 'Late';
+  @override
+  String get attendanceStatusComplete => 'Complete';
+  @override
+  String get attendanceCorrectionTitle => 'Edit attendance';
+  @override
+  String get attendanceCorrectionDirectHint => 'The correction will be applied to the attendance record.';
+  @override
+  String get attendanceCorrectionRequestHint => 'The request will be sent to HR for validation.';
+  @override
+  String get attendanceCorrectionCheckinLabel => 'Actual check-in *';
+  @override
+  String get attendanceCorrectionCheckoutLabel => 'Actual check-out';
+  @override
+  String get attendanceCorrectionReasonHint => 'Reason (e.g. forgot to clock in at 8h)';
+  @override
+  String get attendanceCorrectionReasonRequired => 'Reason is required';
+  @override
+  String get attendanceCorrectionNoLogWarning => 'No existing attendance entry to edit for this day.';
+  @override
+  String get attendanceCorrectionSubmitDirect => 'Edit';
+  @override
+  String get attendanceCorrectionSubmitRequest => 'Request a correction';
+  @override
+  String get attendanceRoleEmployee2 => 'Employee';
+  @override
+  String get attendanceRolePrincipal => 'Principal Manager';
+  @override
+  String get attendanceRoleHr => 'HR Manager';
+  @override
+  String get attendanceRoleFinance => 'Finance';
+  @override
+  String get attendanceRoleManager => 'Manager';
+  @override
+  String get attendanceNone => 'None';
+
 }
