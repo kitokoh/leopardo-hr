@@ -52,7 +52,7 @@ class _SalaryAdvanceListScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRequestSheet(context),
         icon: const Icon(Icons.add_card_outlined),
-        label: const Text(context.l10n.salaryAdvanceRequest),
+        label: Text(context.l10n.salaryAdvanceRequest),
       ),
       body: RefreshIndicator(
         color: AppColors.rh,
@@ -66,12 +66,11 @@ class _SalaryAdvanceListScreenState
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
-                children: const [
+                children: [
                   EmptyState(
                     icon: Icons.payments,
                     title: context.l10n.salaryAdvancesEmpty,
-                    description:
-                        context.l10n.salaryAdvancesEmptyHint,
+                    description: context.l10n.salaryAdvancesEmptyHint,
                   ),
                 ],
               );
@@ -91,8 +90,8 @@ class _SalaryAdvanceListScreenState
                 final months = advance.repaymentMonths;
                 final requester =
                     advance.employeeName?.trim().isNotEmpty == true
-                    ? advance.employeeName!
-                    : 'Employe #${advance.employeeId}';
+                        ? advance.employeeName!
+                        : 'Employe #${advance.employeeId}';
 
                 return Semantics(
                   label:
@@ -118,7 +117,7 @@ class _SalaryAdvanceListScreenState
             );
           },
           loading: () =>
-              const MobileEmptyLoading(label: context.l10n.salaryAdvancesLoading),
+              MobileEmptyLoading(label: context.l10n.salaryAdvancesLoading),
           error: (e, _) => ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
@@ -140,9 +139,8 @@ class _SalaryAdvanceListScreenState
     required Employee? actor,
   }) {
     final details = _advanceContext(advance);
-    final proofButton = advance.hasProof
-        ? _proofButton(context, advance.id)
-        : null;
+    final proofButton =
+        advance.hasProof ? _proofButton(context, advance.id) : null;
 
     final canManage = _canDecideAdvance(actor, advance);
 
@@ -378,9 +376,7 @@ class _SalaryAdvanceListScreenState
     if (confirmed != true) return;
 
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .approveAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).approveAdvance(
             advanceId: advance.id,
             repaymentMonths: advance.repaymentMonths,
           );
@@ -482,9 +478,11 @@ class _SalaryAdvanceListScreenState
 
   static String _getStatusLabel(SalaryAdvance advance) {
     final validation = advance.validationStatus;
-    if (validation == 'manager_approved') return context.l10n.salaryStatusValidated;
+    if (validation == 'manager_approved')
+      return context.l10n.salaryStatusValidated;
     if (validation == 'payment_declared') return 'envoyee';
-    if (validation == 'employee_confirmed') return context.l10n.salaryStatusReceived;
+    if (validation == 'employee_confirmed')
+      return context.l10n.salaryStatusReceived;
 
     switch (advance.status) {
       case context.l10n.salaryStatusActive:
@@ -689,9 +687,7 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .requestAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,
