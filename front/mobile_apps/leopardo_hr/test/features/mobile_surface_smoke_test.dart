@@ -4,7 +4,7 @@ import 'package:leopardo_hr/features/absences/providers/absence_provider.dart';
 import 'package:leopardo_hr/features/absences/screens/absence_list_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/login_screen.dart';
 import 'package:leopardo_hr/features/auth/screens/register_screen.dart';
-import 'package:leopardo_hr/features/auth/screens/welcome_screen.dart';
+import 'package:leopardo_core/features/auth/screens/welcome_screen.dart';
 import 'package:leopardo_hr/features/home/screens/home_screen.dart';
 import 'package:leopardo_hr/features/home/screens/modules_hub_screen.dart';
 import 'package:leopardo_hr/features/notifications/providers/notification_provider.dart';

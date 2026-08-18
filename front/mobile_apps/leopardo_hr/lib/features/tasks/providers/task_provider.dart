@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_core/models/project_task.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/tasks/data/task_repository.dart';
+import 'package:leopardo_core/features/tasks/data/task_repository.dart';
 
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {
   return TaskRepository(ref.watch(apiClientProvider));

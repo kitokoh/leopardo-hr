@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_manager/core/providers/core_providers.dart';
 import 'package:leopardo_manager/features/smart_attendance/data/smart_attendance_repository.dart';
-import 'package:leopardo_manager/features/smart_attendance/data/models/geo_attendance_session.dart';
+import 'package:leopardo_core/features/smart_attendance/data/models/geo_attendance_session.dart';
 
 final managerSmartAttendanceRepositoryProvider =
     Provider<ManagerSmartAttendanceRepository>((ref) {

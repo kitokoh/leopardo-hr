@@ -14,7 +14,7 @@ import 'package:leopardo_core/core/widgets/leopardo_qr_card.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
 import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_manager/features/auth/providers/auth_provider.dart';
-import 'package:leopardo_manager/features/settings/data/biometric_enrollment.dart';
+import 'package:leopardo_core/features/settings/data/biometric_enrollment.dart';
 import 'package:leopardo_manager/features/settings/data/settings_repository.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
