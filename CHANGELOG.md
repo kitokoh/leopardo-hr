@@ -6,6 +6,8 @@
 
 
 ## [Unreleased]
+
+- **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032).**
 - **feat(api/web): décomposition du salaire par `salary_type` affichée sur les bulletins (Closes #5018, §10.3).** `PaySlipResource` expose `salary_type` / `salary_base` / `hourly_rate` (employé, lazy) ; le modal bulletin du portail affiche : fixed → « Salaire mensuel : X », daily → « Taux journalier : X — Ce mois : Y jours × X = Z » (salary_base = taux journalier, cf. `PayrollCycleService::fallbackGrossDue`), hourly → « Taux horaire : X — Ce mois : Y h × X = Z » (heures = jours × 8 + heures sup). i18n ×4 (fr/en/tr/ar).
 - **feat(web/portail): approbation/refus de congés avec motif obligatoire depuis le portail web (Closes #5019, EXIG FLOW 4).** La page `/absences` du portail (baseline lecture seule #4944) expose désormais les actions Approuver / Refuser sur les demandes `pending` : refus via modal avec motif **requis** (`rejected_reason`, déjà validé côté API par `RejectAbsenceRequest`), feedback succès/erreur localisé, rafraîchissement de la liste après action. i18n ×4 (fr/en/tr/ar) ajoutée au copy tree `absencesPage`.
 - **docs(api): openapi.yaml — restauration des 10 opérations du lot 1 #4842 (calendar/cabinet/absences) + path mort /onboarding/steps retiré.** Le merge #4981 (branche « merge main » gardant main) avait écrasé les paths du lot 1 déjà mergés via #4962 ; restaurés depuis le commit pré-merge. Checker : 0 gap nouveau, 0 drift inverse (les 14 gaps restants = verbes d'action convention #4930, suivis par #5010/#5020).
