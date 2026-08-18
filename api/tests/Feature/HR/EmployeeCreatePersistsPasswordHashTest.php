@@ -82,7 +82,7 @@ class EmployeeCreatePersistsPasswordHashTest extends TestCase
             'last_name' => 'Haddad',
             'email' => 'sofiane.haddad@example.dz',
             'role' => 'employee',
-            'send_invitation' => false,
+            'send_invitation' => true,
         ]);
 
         $response->assertCreated();
