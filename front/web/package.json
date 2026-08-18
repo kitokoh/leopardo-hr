@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src --max-warnings 0",
+    "lint": "eslint src e2e --max-warnings 0",
     "lint:e2e": "eslint e2e --max-warnings 0",
     "check:mojibake": "node scripts/check-mojibake.mjs",
     "test": "jest",

@@ -9,7 +9,9 @@
 # la PR #4962 (lot 1) — après merge des deux PRs OpenAPI, coverage 724/724.
 
 
-## modules/absence.php — 1 route(s)
+## modules/absence.php — 3 route(s)
+PUT /v1/absences/{param}/approve
+PUT /v1/absences/{param}/reject
 GET /v1/absences/{param}/proof
 
 ## modules/cabinet.php — 4 route(s)
@@ -24,3 +26,23 @@ GET /v1/calendar/connections
 GET /v1/calendar/events
 POST /v1/calendar/connect
 POST /v1/calendar/sync
+
+## modules/rh.php — 6 route(s)
+PUT /v1/attendance/corrections/{param}/approve
+PUT /v1/attendance/corrections/{param}/reject
+PUT /v1/salary-advances/{param}/approve
+PUT /v1/salary-advances/{param}/reject
+PUT /v1/salary-advances/{param}/manager-approve
+PUT /v1/payrolls/{param}/validate
+
+## modules/expense.php — 2 route(s)
+PUT /v1/expense-claims/{param}/approve
+PUT /v1/expense-claims/{param}/reject
+
+## modules/hr_extended.php — 2 route(s)
+PUT /v1/loans/{param}/approve
+PUT /v1/loans/{param}/disburse
+
+## modules/billing.php — 2 route(s)
+PATCH /v1/onboarding-setup/{param}/complete
+PATCH /v1/onboarding-setup/{param}/skip

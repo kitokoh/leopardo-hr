@@ -131,20 +131,29 @@ class EmployeeImportController extends Controller
                 $status = $fillData['status'] ?? 'active';
                 unset($fillData['status']);
 
-                // Issue #4496 : password_hash n'est plus mass-assignable —
-                // extrait du tableau de création, posé explicitement après.
-                // (Le unset est défensif : la colonne ne figure pas dans
-                // $allowedColumns — un CSV malveillant ne peut pas l'injecter.)
+                // Issue #4947 : `password_hash` est NOT NULL sans défaut dans le
+                // schéma tenant — `Employee::create($fillData)` sans password_hash
+                // échouait en 500 (SQLSTATE 23502) avant l'assignation explicite.
+                // On persiste en un seul INSERT via forceFill (pattern #3677).
+                // Issue #4947 (suite) : PostgreSQL ABORTE la transaction courante
+                // dès qu'une requête échoue, même catchée — après un 23505, le
+                // `continue` laissait la transaction morte (25P02) et le commit
+                // final ne persistait RIEN. Chaque ligne est insérée dans un
+                // `DB::transaction` imbriqué = SAVEPOINT Postgres : un conflit
+                // n'abîme que la ligne courante, les suivantes restent valides.
                 /** @var array<string, mixed> $fillData */
                 $passwordHash = Hash::make(Str::random(32));
-                unset($fillData['password_hash']);
 
                 try {
-                    $employee = Employee::create($fillData);
-                    $employee->company_id = $companyId;
-                    $employee->status = $status;
-                    $employee->password_hash = $passwordHash;
-                    $employee->save();
+                    DB::transaction(function () use ($fillData, $companyId, $status, $passwordHash): void {
+                        $employee = new Employee;
+                        $employee->forceFill(array_merge($fillData, [
+                            'company_id' => $companyId,
+                            'status' => $status,
+                            'password_hash' => $passwordHash,
+                        ]));
+                        $employee->save();
+                    });
                     $imported++;
                 } catch (QueryException $e) {
                     // Issue #3726 : course entre le check exists() (ligne 110) et
