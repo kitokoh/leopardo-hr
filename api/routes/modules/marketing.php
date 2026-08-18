@@ -20,6 +20,9 @@ use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialAccountController;
 use App\Modules\Marketing\Interfaces\Api\V1\Controllers\SocialPostController;
 use Illuminate\Support\Facades\Route;
 
+// DEPRECATED (#4932) : les routes /posts et /social-accounts sont des
+// alias historiques de /social-posts et /social-account(s) — un seul jeu
+// de routes sera conservé après migration des clients (audit 2026-08-17).
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'api.manager:marketing,principal'])
     ->prefix('marketing')
     ->group(function (): void {
