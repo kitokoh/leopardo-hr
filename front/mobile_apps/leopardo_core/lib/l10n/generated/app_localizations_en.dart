@@ -3106,6 +3106,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get settingsJourneyLoadError => 'Unable to load your journey.';
+
+  @override
+  String get settingsStatsLoadError => 'Unable to load statistics.';
+
+  @override
   String get featureComingSoon => 'Feature coming soon';
 
   @override
@@ -3320,6 +3326,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get back => 'Back';
+  @override
+  String get notificationsMarkAllReadError => 'Unable to mark notifications as read.';
+
+  @override
+  String get notificationsMarkReadError => 'Unable to mark notification as read.';
+
+  @override
+  String get notificationsDeleteError => 'Unable to delete the notification.';
+
+  @override
+  String get notificationsDeleted => 'Notification deleted.';
+
+  @override
+  String get attendanceFutureTimeError => 'Cannot enter a future time';
 
   @override
   String get refresh => 'Refresh';
