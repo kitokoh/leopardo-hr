@@ -169,7 +169,7 @@ class SelfServiceTrialController extends Controller
         // JAMAIS devenir un 500 brut : on répond 503 SERVICE_UNAVAILABLE
         // avec un message localisé, le client peut réessayer.
         try {
-            $this->requestTrialSignup->execute($validated);
+            $sent = $this->requestTrialSignup->execute($validated);
         } catch (\Throwable $e) {
             Log::error('trial.signup_legacy_failed', [
                 'email' => $email,
@@ -179,6 +179,19 @@ class SelfServiceTrialController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'error' => 'TRIAL_SIGNUP_UNAVAILABLE',
+                'message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+                'localized_message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+            ], 503);
+        }
+
+        // Issue #3057 / #4949 : `execute()` retourne `false` quand l'envoi de
+        // l'email OTP a échoué (mailer KO) — la CompanyRequest est conservée
+        // mais on ne doit JAMAIS répondre « code envoyé » pour un code jamais
+        // parti (état honnête, pas d'écran OTP pour un mail perdu).
+        if (! $sent) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'TRIAL_OTP_SEND_FAILED',
                 'message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
                 'localized_message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
             ], 503);
