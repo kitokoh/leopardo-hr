@@ -231,7 +231,8 @@ Route::prefix('v1')->group(function (): void {
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
 
-    // IA Module — routes separees /api/ai/*
+    // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
+    // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';
 
     // Platform (super-admin, hors module)
