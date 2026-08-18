@@ -29,6 +29,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\PostTooLargeException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -210,6 +211,30 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'FORBIDDEN',
                 'localized_message' => __('errors.FORBIDDEN'),
             ], 403);
+        });
+
+        // Issue #4955 (audit PM 2026-08-17) : le 429 de throttle (Laravel
+        // « Too Many Attempts. » brut) doit suivre le contrat API standard
+        // (error/message/localized_message) comme toutes les autres erreurs.
+        // Render dédié AVANT le générique HttpExceptionInterface : on
+        // normalise le code stable + message localisé ×4 locales, et on
+        // préserve les headers de throttling (Retry-After, X-RateLimit-*).
+        $exceptions->render(function (ThrottleRequestsException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            $response = new JsonResponse([
+                'error' => 'TOO_MANY_REQUESTS',
+                'message' => 'TOO_MANY_REQUESTS',
+                'localized_message' => __('errors.TOO_MANY_REQUESTS', [], $request->getLocale()),
+            ], 429);
+
+            foreach ($exception->getHeaders() as $headerName => $headerValue) {
+                $response->headers->set($headerName, $headerValue);
+            }
+
+            return $response;
         });
 
         $exceptions->render(function (HttpExceptionInterface $exception, Request $request) {

@@ -201,7 +201,8 @@ class ResilientThrottleRequests extends ThrottleRequests
         return new JsonResponse(
             [
                 'error' => 'TOO_MANY_REQUESTS_DEGRADED',
-                'message' => 'Too Many Requests',
+                'message' => __('errors.TOO_MANY_REQUESTS'),
+                'localized_message' => __('errors.TOO_MANY_REQUESTS'),
             ],
             429,
             ['Retry-After' => 60]
