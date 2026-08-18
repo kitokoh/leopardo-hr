@@ -44,7 +44,7 @@ leopardo-hr/
 ├── front/
 │   ├── admin-dashboard/    # Vue.js 3.4 + Pinia + Tailwind (plateforme admin)
 │   ├── web/                # Next.js 16 (vitrine + blog + SEO)
-│   └── mobile_apps/        # Apps Flutter (leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_platform_admin)
+│   └── mobile_apps/        # Apps Flutter (leopardo_core, leopardo_employee, leopardo_manager, leopardo_hr, leopardo_marketing, leopardo_platform_admin)
 ├── docker-compose.yml
 ├── Makefile
 ├── .devcontainer/          # VS Code DevContainer
@@ -149,7 +149,7 @@ Content here...
 ## Mobile (Flutter)
 
 Voir [`front/mobile_apps/README.md`](front/mobile_apps/README.md) pour le detail par app
-(`leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`).
+(`leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_platform_admin`).
 
 ```bash
 cd front/mobile_apps/leopardo_employee

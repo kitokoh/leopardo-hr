@@ -23,7 +23,7 @@ Check [SUPPORT.md](SUPPORT.md) for the right channel (bugs, ideas, security, doc
 
 1.  **Explore:** Read our [System Architecture](docs/architecture/ARCHITECTURE.md) to understand the project structure.
 2.  **Environment Setup:** Follow the [Development Guide](DEVELOPMENT.md) for local setup (Docker Compose, `.env`, migrations). For production/worker deployment topics, see the separate [Deployment Guide](docs/deployment/DEPLOYMENT_GUIDE.md).
-3.  **Find an Issue:** Look for issues labeled `good first issue` or `enterprise-ready`.
+3.  **Find an Issue:** Look for issues labeled `good first issue` or `Agent-Ready` (le label `enterprise-ready` n'existe pas dans le repo — revue PM 2026-08-17).
 4.  **Branching:** Use descriptive branch names: `feat/xxx`, `fix/xxx`, `docs/xxx`.
 5.  **Quality Gate:** Ensure all tests pass (`php artisan test`) and linting is clean.
 6.  **Submit PR:** Use our [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md).

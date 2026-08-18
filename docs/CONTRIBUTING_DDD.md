@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `api/app/Services/` (reste TenantManager.php shim + Cache/Communication/Payroll/SSO/Security/Tracking) | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (19 modules)
+## Modules existants (18 modules)
 
 | Module | Domaine couvert |
 |---|---|

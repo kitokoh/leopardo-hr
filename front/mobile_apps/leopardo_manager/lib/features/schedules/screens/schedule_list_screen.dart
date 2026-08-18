@@ -51,8 +51,7 @@ class ScheduleListScreen extends ConsumerWidget {
                   EmptyState(
                     icon: Icons.schedule_outlined,
                     title: 'Aucune regle entreprise',
-                    description:
-                        'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
+                    description: 'Creez la premiere regle pour cadrer horaires, repos, conges, pauses et heures supplementaires.',
                   ),
                 ],
               );
@@ -320,9 +319,8 @@ class _ScheduleAssignSheetState extends ConsumerState<_ScheduleAssignSheet> {
       );
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -465,10 +463,11 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       text: (schedule?.overtimeThresholdWeekly ?? 40).toStringAsFixed(0),
     );
     _leaveDaysCtrl = TextEditingController(
-      text: (schedule?.leaveRules.isNotEmpty == true
-              ? schedule!.leaveRules.first.daysPerYear ?? 21
-              : 21)
-          .toStringAsFixed(0),
+      text:
+          (schedule?.leaveRules.isNotEmpty == true
+                  ? schedule!.leaveRules.first.daysPerYear ?? 21
+                  : 21)
+              .toStringAsFixed(0),
     );
     _notesCtrl = TextEditingController(text: schedule?.assignmentNotes ?? '');
     _startTime = _parseTime(schedule?.startTime ?? '08:00');
@@ -666,8 +665,7 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
                 style: AppTypography.body.copyWith(color: MobileSurface.text),
                 decoration: InputDecoration(
                   labelText: 'Regles internes',
-                  hintText:
-                      'Repos, consignes de pause, conges, exceptions terrain...',
+                  hintText: 'Repos, consignes de pause, conges, exceptions terrain...',
                   prefixIcon: const Icon(
                     Icons.rule_folder_outlined,
                     color: MobileSurface.secondary,
@@ -744,14 +742,12 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
       ref.invalidate(schedulesProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Horaire enregistre.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Horaire enregistre.')));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -761,20 +757,47 @@ class _ScheduleFormSheetState extends ConsumerState<_ScheduleFormSheet> {
     final schedule = widget.schedule;
     if (schedule == null || schedule.isDefault) return;
 
+    // #4960 : suppression sans confirmation — un appui sur la corbeille
+    // effaçait directement le planning de toute l'équipe affectée.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: MobileSurface.card,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Supprimer cet horaire ?'),
+        content: const Text(
+          'Les employés affectés perdront cet horaire. Cette action est irréversible.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.danger,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     setState(() => _submitting = true);
     try {
       await ref.read(scheduleRepositoryProvider).delete(schedule.id);
       ref.invalidate(schedulesProvider);
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Horaire supprime.')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Horaire supprime.')));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Echec : $error')));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -925,4 +948,3 @@ class _TimeButton extends StatelessWidget {
     );
   }
 }
-
