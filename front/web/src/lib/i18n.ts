@@ -689,7 +689,7 @@ const copy: Record<AppLocale, CopyTree> = {
       runUnlock: 'Déverrouiller',
       runConfirmLock: 'Verrouiller la clôture de ce cycle ?',
       runConfirmUnlock: 'Déverrouiller la clôture de ce cycle ?',
-      runActionError: 'Impossible d'exécuter l'action sur ce cycle de paie.',
+      runActionError: "Impossible d'exécuter l'action sur ce cycle de paie.",
       runCancel: 'Annuler',
       downloadPdf: 'Télécharger PDF',
       viewDetail: 'Voir detail',
@@ -997,7 +997,7 @@ const copy: Record<AppLocale, CopyTree> = {
     confirmReject: 'Confirmer le refus',
     approveSuccess: 'Demande approuvée.',
     rejectSuccess: 'Demande refusée.',
-    actionError: 'Impossible d'effectuer l'action.',
+    actionError: "Impossible d'effectuer l'action.",
   },
   attendancePage: { loadError: 'Impossible de charger le pointage.' },
   socialPage: {
