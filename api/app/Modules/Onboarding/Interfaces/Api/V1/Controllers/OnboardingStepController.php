@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\HR\Domain\Models\OnboardingStep;
-use Illuminate\Database\Eloquent\Collection;
+use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -32,7 +32,13 @@ class OnboardingStepController extends Controller
             ->get();
 
         if ($steps->isEmpty()) {
-            $steps = $this->seedDefaultSteps($user->company_id);
+            // #4929 : seed paresseux via l'action canonique (source de vérité
+            // unique des 10 étapes) — couvre les sociétés créées avant le
+            // correctif provisioning.
+            app(SeedDefaultSteps::class)->execute($user->company_id);
+            $steps = OnboardingStep::where('company_id', $user->company_id)
+                ->orderBy('order')
+                ->get();
         }
 
         $total = $steps->count();
@@ -98,6 +104,14 @@ class OnboardingStepController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
+        // #4929 : le PATCH ne doit pas dépendre de l'ordre des appels client —
+        // si la société n'a aucune étape seedée (provisioning antérieur au
+        // correctif), on seede avant de résoudre. Une clé inconnue reste 404.
+        $hasSteps = OnboardingStep::where('company_id', $user->company_id)->exists();
+        if (! $hasSteps) {
+            app(SeedDefaultSteps::class)->execute($user->company_id);
+        }
+
         $step = OnboardingStep::where('company_id', $user->company_id)
             ->where('step_key', $stepKey)
             ->firstOrFail();
@@ -116,6 +130,14 @@ class OnboardingStepController extends Controller
         /** @var Employee $user */
         $user = $request->user();
 
+        // #4929 : le PATCH ne doit pas dépendre de l'ordre des appels client —
+        // si la société n'a aucune étape seedée (provisioning antérieur au
+        // correctif), on seede avant de résoudre. Une clé inconnue reste 404.
+        $hasSteps = OnboardingStep::where('company_id', $user->company_id)->exists();
+        if (! $hasSteps) {
+            app(SeedDefaultSteps::class)->execute($user->company_id);
+        }
+
         $step = OnboardingStep::where('company_id', $user->company_id)
             ->where('step_key', $stepKey)
             ->firstOrFail();
@@ -129,32 +151,4 @@ class OnboardingStepController extends Controller
         return (new OnboardingStepResource($step->fresh()))->response();
     }
 
-    /**
-     * @return Collection<int, OnboardingStep>
-     */
-    private function seedDefaultSteps(string $companyId): Collection
-    {
-        $defaults = [
-            ['step_key' => 'company_info', 'title' => 'Renseigner les informations entreprise', 'order' => 1, 'required' => true],
-            ['step_key' => 'first_department', 'title' => 'Creer le premier departement', 'order' => 2, 'required' => true],
-            ['step_key' => 'first_employee', 'title' => 'Ajouter le premier employe', 'order' => 3, 'required' => true],
-            ['step_key' => 'first_attendance', 'title' => 'Effectuer le premier pointage', 'order' => 4, 'required' => true],
-            ['step_key' => 'invite_manager', 'title' => 'Inviter un manager', 'order' => 5, 'required' => false],
-            ['step_key' => 'configure_schedules', 'title' => 'Configurer les horaires', 'order' => 6, 'required' => true],
-            ['step_key' => 'first_report', 'title' => 'Generer le premier rapport mensuel', 'order' => 7, 'required' => false],
-            ['step_key' => 'configure_payroll', 'title' => 'Configurer la paie', 'order' => 8, 'required' => false],
-            ['step_key' => 'install_kiosk', 'title' => 'Installer un kiosk', 'order' => 9, 'required' => false],
-            ['step_key' => 'activate_geofence', 'title' => 'Activer le geofence', 'order' => 10, 'required' => false],
-        ];
-
-        foreach ($defaults as $step) {
-            OnboardingStep::create(array_merge($step, [
-                'company_id' => $companyId,
-                'status' => 'pending',
-            ]));
-        }
-
-        return OnboardingStep::where('company_id', $companyId)->orderBy('order')->get();
-    }
 }
-

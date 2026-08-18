@@ -7,6 +7,7 @@ namespace App\Modules\Platform\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
+use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use App\Core\Tenant\TenantManager;
 use App\Modules\HR\Infrastructure\Services\SectorTemplateService;
 use App\Modules\HR\Infrastructure\Services\UserInvitationService;
@@ -104,6 +105,13 @@ class CompanyProvisioningService
 
                 // P1.3: Apply sectorial template
                 $this->sectorTemplateService->applyTemplate($company);
+
+                // #4929 : seed des 10 étapes d'onboarding AU PROVISIONING
+                // (avant : différé à la première lecture de la checklist —
+                // le PATCH complete/skip pouvait tomber sur un 404 si le
+                // client sautait le GET). Le seed est idempotent (dédup par
+                // step_key) et s'exécute dans le contexte tenant du company.
+                app(SeedDefaultSteps::class)->execute($company->id);
             } finally {
                 $this->tenantManager->resetToPrevious();
             }
