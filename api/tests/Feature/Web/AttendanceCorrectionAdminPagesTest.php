@@ -119,9 +119,13 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'contact@'.$domain,
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
             'currency' => 'DZD',
         ]);
