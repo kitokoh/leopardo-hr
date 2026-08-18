@@ -7086,6 +7086,30 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /support-tickets/{supportTicket}/close:
+    post:
+      tags: ["Support"]
+      summary: "Clore un ticket de support"
+      parameters:
+        - name: supportTicket
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Ticket clos"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+
   /support-tickets/{supportTicket}/reply:
     post:
       tags: ["Platform"]
@@ -8130,6 +8154,38 @@ paths:
 
   /absences/{absence}:
     get:
+    put:
+      tags: ["Absences"]
+      summary: "Modifier une absence (employe proprietaire ou manager)"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start_date: { type: string, format: date, description: "Nouvelle date de debut" }
+                end_date: { type: string, format: date, description: "Nouvelle date de fin" }
+                reason: { type: string, nullable: true }
+      responses:
+        "200":
+          description: "Absence mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Absence"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
       tags: ["Absences"]
       summary: "Voir une absence"
       parameters:
@@ -12828,6 +12884,21 @@ paths:
 
   /training/courses/{trainingCourse}:
     get:
+    delete:
+      tags: ["Training"]
+      summary: "Supprimer un cours"
+      parameters:
+        - name: trainingCourse
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Cours supprime"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
       tags: ["Training"]
       summary: "Voir une formation"
       parameters:
@@ -12979,6 +13050,21 @@ paths:
 
   /training/sessions/{trainingSession}:
     put:
+    delete:
+      tags: ["Training"]
+      summary: "Supprimer une session de formation"
+      parameters:
+        - name: trainingSession
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Session supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
       tags: ["Training"]
       summary: "Modifier une session"
       parameters:
@@ -13037,6 +13123,21 @@ paths:
 
   /training/enrollments/{trainingEnrollment}:
     put:
+    delete:
+      tags: ["Training"]
+      summary: "Desinscrire un employe d'une formation"
+      parameters:
+        - name: trainingEnrollment
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Inscription supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
       tags: ["Training"]
       summary: "Modifier une inscription"
       parameters:
@@ -13229,6 +13330,53 @@ paths:
 
   /expense-claims/{expenseClaim}:
     get:
+    put:
+      tags: ["Expenses"]
+      summary: "Modifier une note de frais (brouillon ou en attente)"
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description: { type: string, nullable: true }
+                amount: { type: number, description: "Montant en unite de base" }
+                incurred_on: { type: string, format: date, nullable: true }
+      responses:
+        "200":
+          description: "Note de frais mise a jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
+    delete:
+      tags: ["Expenses"]
+      summary: "Supprimer une note de frais"
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: "Note de frais supprimee"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "404":
+          $ref: "#/components/responses/Error404"
       tags: ["Expenses"]
       summary: "Voir une note de frais"
       parameters:

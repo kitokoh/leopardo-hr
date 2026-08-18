@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **docs(api): openapi.yaml — 6 opérations CRUD manquantes documentées (progrès #3885)** — PUT /absences/{absence}, PUT+DELETE /expense-claims/{expenseClaim}, DELETE /training/{courses|sessions|enrollments}/{id}, POST /support-tickets/{ticket}/close (routes #5015). Checker : 0 drift, 0 inverse — 730/744 couvertes, 14 gaps volontaires (verbes PUT dépréciés #4930).
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032).**
 - **feat(web/portail): workflow de clôture paie 2 étapes + verrouillage dans l'onglet Cycles (Closes #5017, EXIG-37/FLOW 6).** Le portail expose désormais le cycle complet sur les `payroll-runs` : **Calculer** (draft/calculating/processing/error), **Valider (RH)** (calculated → `POST /validate`, `PayrollClosingService::validateRh`), **Verrouiller** (validated → `POST /lock`, clôture comptable) et **Déverrouiller** (locked), avec modal de confirmation, feedback localisé et rafraîchissement. Statuts localisés ×4 (brouillon/calculé/validé/verrouillé).
