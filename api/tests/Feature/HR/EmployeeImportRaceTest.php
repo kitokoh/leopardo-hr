@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -24,19 +24,7 @@ use Tests\TestCase;
  */
 class EmployeeImportRaceTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     private function makeCompany(): Company
     {
@@ -46,6 +34,8 @@ class EmployeeImportRaceTest extends TestCase
     private function makeManager(Company $company): Employee
     {
         $sensitiveEmployee1 = new Employee([
+            'first_name' => 'Manager',
+            'last_name' => 'Import',
             'email' => 'manager-'.uniqid().'@test.local',
         ]);
         $sensitiveEmployee1->forceFill(['password_hash' => Hash::make('password123')])->save();
@@ -151,6 +141,8 @@ class EmployeeImportRaceTest extends TestCase
 
         $conflictEmail = 'existing-'.uniqid().'@example.com';
         $sensitiveEmployee0 = new Employee([
+            'first_name' => 'Employe',
+            'last_name' => 'Import',
             'email' => $conflictEmail,
         ]);
         $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('x')])->save();
