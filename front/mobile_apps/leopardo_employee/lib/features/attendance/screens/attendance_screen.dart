@@ -465,7 +465,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
           child: tasksAsync.when(
-            loading: () => const _TasksSheetFrame(
+            loading: () => _TasksSheetFrame(
               child: _SheetMessage(
                 icon: Icons.sync,
                 title: context.l10n.attendanceSyncTitle,
@@ -492,7 +492,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const _SheetHeader(
+                        _SheetHeader(
                           title: context.l10n.attendanceTasksTitle,
                           subtitle:
                               'Cloturez ce qui est realise avant votre depart.',
