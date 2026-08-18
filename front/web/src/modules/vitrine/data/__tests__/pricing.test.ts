@@ -15,7 +15,7 @@ describe('pricing trial duration consistency (#4951)', () => {
 
     for (const locale of locales) {
       for (const plan of pricing[locale]) {
-        const note = plan.priceNote;
+        const note = plan.priceNote ?? '';
         // extrait la durée annoncée (14-day / 14 jours / 30-day / 30 jours…)
         const m = note.match(/(\d+)[- ]?(day|jours|gün|يوم)/i);
         expect(m).not.toBeNull();
