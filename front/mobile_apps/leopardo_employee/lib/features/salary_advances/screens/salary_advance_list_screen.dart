@@ -62,12 +62,11 @@ class _SalaryAdvanceListScreenState
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
-                children: const [
+                children: [
                   EmptyState(
                     icon: Icons.payments,
                     title: context.l10n.salaryAdvancesEmpty,
-                    description:
-                        context.l10n.salaryAdvancesEmptyHint,
+                    description: context.l10n.salaryAdvancesEmptyHint,
                   ),
                 ],
               );
@@ -87,8 +86,8 @@ class _SalaryAdvanceListScreenState
                 final months = advance.repaymentMonths;
 
                 return Semantics(
-                  label:
-                      context.l10n.salaryAdvanceSemantics(amount, reason, _getStatusLabel(context.l10n, advance)),
+                  label: context.l10n.salaryAdvanceSemantics(
+                      amount, reason, _getStatusLabel(context.l10n, advance)),
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListGlassCard(
@@ -127,9 +126,8 @@ class _SalaryAdvanceListScreenState
   }
 
   Widget? _advanceFooter(BuildContext context, SalaryAdvance advance) {
-    final proofButton = advance.hasProof
-        ? _proofButton(context, advance.id)
-        : null;
+    final proofButton =
+        advance.hasProof ? _proofButton(context, advance.id) : null;
 
     if (advance.validationStatus == 'payment_declared') {
       return Column(
@@ -213,14 +211,16 @@ class _SalaryAdvanceListScreenState
         await launchUrl(uri);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.salaryAdvanceProofDownloaded(path))),
+          SnackBar(
+              content: Text(context.l10n.salaryAdvanceProofDownloaded(path))),
         );
       }
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -274,7 +274,8 @@ class _SalaryAdvanceListScreenState
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
     }
   }
 
@@ -313,7 +314,8 @@ class _SalaryAdvanceListScreenState
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
     }
   }
 
@@ -512,9 +514,7 @@ class _SalaryAdvanceRequestSheetState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
-      await ref
-          .read(salaryAdvanceRepositoryProvider)
-          .requestAdvance(
+      await ref.read(salaryAdvanceRepositoryProvider).requestAdvance(
             amount: _parseAmount(_amountCtrl.text) ?? 0,
             repaymentMonths: _repaymentMonths,
             reason: _reasonCtrl.text,
@@ -532,7 +532,8 @@ class _SalaryAdvanceRequestSheetState
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(e))));
+      ).showSnackBar(
+          SnackBar(content: Text(context.l10n.salaryAdvanceError(e))));
     }
   }
 
@@ -540,4 +541,3 @@ class _SalaryAdvanceRequestSheetState
     return double.tryParse(value.trim().replaceAll(',', '.'));
   }
 }
-
