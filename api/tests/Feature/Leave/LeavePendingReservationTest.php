@@ -11,7 +11,7 @@ use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Support\Facades\DB;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -21,18 +21,11 @@ use Tests\TestCase;
  */
 class LeavePendingReservationTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     /**
