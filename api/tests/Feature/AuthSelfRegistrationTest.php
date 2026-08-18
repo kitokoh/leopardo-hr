@@ -49,11 +49,19 @@ class AuthSelfRegistrationTest extends TestCase
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'DZ', 'currency' => 'DZD']);
 
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            'email' => $email,
+            'role' => 'ordinary',
+            'status' => 'pending',
+        ]);
+
         DB::table('public.user_invitations')->insert([
             'id' => (string) Str::uuid(),
             'company_id' => $company->id,
             'schema_name' => 'shared_tenants',
-            'employee_id' => 0,
+            'employee_id' => $employee->id,
             'email' => $email,
             'role' => 'ordinary',
             'manager_role' => null,
