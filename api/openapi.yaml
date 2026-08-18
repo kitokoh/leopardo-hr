@@ -12376,7 +12376,7 @@ paths:
           description: "Stripe non configure sur cet environnement"
 
   /billing/portal:
-    get:
+    post:
       tags: ["Billing"]
       summary: "Creer une session Stripe Customer Portal pour gerer l'abonnement (manager)"
       operationId: createBillingPortalSession
@@ -15499,6 +15499,190 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /calendar/connections:
+    get:
+      tags: ["Calendar"]
+      summary: "Lister les connexions calendrier de l'employe"
+      responses:
+        "200":
+          description: "Connexions calendrier"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/connect:
+    post:
+      tags: ["Calendar"]
+      summary: "Connecter un calendrier (google, outlook, caldav)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, access_token]
+              properties:
+                provider:
+                  type: string
+                  enum: [google, outlook, caldav]
+                access_token:
+                  type: string
+                refresh_token:
+                  type: string
+                calendar_id:
+                  type: string
+                  maxLength: 255
+                expires_in:
+                  type: integer
+                sync_leaves:
+                  type: boolean
+                sync_training:
+                  type: boolean
+      responses:
+        "201":
+          description: "Connexion creee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/disconnect/{provider}:
+    delete:
+      tags: ["Calendar"]
+      summary: "Deconnecter un calendrier"
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, outlook, caldav]
+      responses:
+        "200":
+          description: "Calendrier deconnecte"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/sync:
+    post:
+      tags: ["Calendar"]
+      summary: "Synchroniser conges et formations vers le calendrier"
+      responses:
+        "200":
+          description: "Synchronisation effectuee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/events:
+    get:
+      tags: ["Calendar"]
+      summary: "Lister les evenements calendrier sur une periode"
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Evenements"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/shared/{token}:
+    get:
+      tags: ["Cabinet"]
+      summary: "Acceder a un partage par jeton (lien public)"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Contenu partage"
+        "404":
+          description: "Partage introuvable ou expire"
+
+  /cabinet/shares:
+    get:
+      tags: ["Cabinet"]
+      summary: "Lister les partages du cabinet"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+      responses:
+        "200":
+          description: "Partages (data + meta)"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Cabinet"]
+      summary: "Creer un partage de dossier ou document"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [shareable_type, shareable_id, shared_via]
+              properties:
+                shareable_type:
+                  type: string
+                  enum: [folder, document]
+                shareable_id:
+                  type: integer
+                shared_via:
+                  type: string
+                  enum: [email, link]
+                shared_with_email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: "Partage cree"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/shares/{cabinetShare}:
+    delete:
+      tags: ["Cabinet"]
+      summary: "Revoquer un partage"
+      parameters:
+        - name: cabinetShare
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Partage revoque"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /absences/{absence}/proof:
+    get:
+      tags: ["Absences"]
+      summary: "Telecharger la piece jointe d'une demande d'absence"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
   /marketing/leads:
     post:
       tags: ["Marketing"]
