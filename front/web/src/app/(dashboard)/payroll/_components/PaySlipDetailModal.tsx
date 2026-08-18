@@ -36,6 +36,10 @@ export type PaySlipDetail = {
   working_days?: number;
   actual_days_worked?: number;
   overtime_hours?: number;
+  // #5018 (dossierdeConception §10.3) — décomposition du salaire par type.
+  salary_type?: string;
+  salary_base?: number;
+  hourly_rate?: number;
   lines?: PaySlipDetailLine[];
   created_at?: string;
 };
@@ -57,6 +61,12 @@ export type PaySlipDetailModalLabels = {
   detailDaysWorked: string;
   detailOvertimeHours: string;
   detailSalaryBreakdown: string;
+  salaryDecompTitle: string;
+  salaryMonthly: string;
+  salaryDailyRate: string;
+  salaryHourlyRate: string;
+  salaryCompositionDays: string;
+  salaryCompositionHours: string;
   statusValidated: string;
   statusDraft: string;
 };
@@ -134,6 +144,42 @@ export function PaySlipDetailModal({ slip, loading, error, labels, formatCurrenc
     details.push({ label: labels.detailOvertimeHours, value: slip.overtime_hours });
   }
 
+  // #5018 (§10.3) — décomposition du salaire selon salary_type.
+  // - fixed  → « Salaire mensuel : base »
+  // - daily  → « Taux journalier : X — Ce mois : Y jours × X = Z » (salary_base
+  //            EST le taux journalier pour ce type, cf. PayrollCycleService::fallbackGrossDue)
+  // - hourly → « Taux horaire : X — Ce mois : Y heures × X = Z » (heures =
+  //            jours travaillés × 8 + heures sup — hypothèse documentée)
+  const salaryDecomp = (() => {
+    const rate = (value: number) => formatCurrency(value);
+
+    if (slip.salary_type === 'hourly' && typeof slip.hourly_rate === 'number' && slip.hourly_rate > 0) {
+      const baseHours = (typeof slip.working_days === 'number' ? slip.working_days : 0) * 8;
+      const overtime = typeof slip.overtime_hours === 'number' ? slip.overtime_hours : 0;
+      const hours = baseHours + overtime;
+      const composition = labels.salaryCompositionHours
+        .replace('{hours}', String(hours))
+        .replace('{rate}', rate(slip.hourly_rate))
+        .replace('{total}', rate(slip.gross_salary));
+      return { label: labels.salaryHourlyRate, value: `${rate(slip.hourly_rate)} — ${composition}` };
+    }
+
+    if (slip.salary_type === 'daily' && typeof slip.salary_base === 'number' && slip.salary_base > 0) {
+      const days = typeof slip.actual_days_worked === 'number' ? slip.actual_days_worked : 0;
+      const composition = labels.salaryCompositionDays
+        .replace('{days}', String(days))
+        .replace('{rate}', rate(slip.salary_base))
+        .replace('{total}', rate(slip.gross_salary));
+      return { label: labels.salaryDailyRate, value: `${rate(slip.salary_base)} — ${composition}` };
+    }
+
+    if (slip.salary_type === 'fixed' && typeof slip.salary_base === 'number' && slip.salary_base > 0) {
+      return { label: labels.salaryMonthly, value: rate(slip.salary_base) };
+    }
+
+    return null;
+  })();
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
@@ -208,6 +254,16 @@ export function PaySlipDetailModal({ slip, loading, error, labels, formatCurrenc
                   </div>
                 </div>
               )}
+
+              {salaryDecomp ? (
+                <div className="mt-5">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">{labels.salaryDecompTitle}</h3>
+                  <div className="mt-2 flex items-center justify-between rounded-2xl border border-app-border px-4 py-2.5 text-sm">
+                    <span className="text-slate-600">{salaryDecomp.label}</span>
+                    <span className="text-right font-bold tabular-nums text-slate-950">{salaryDecomp.value}</span>
+                  </div>
+                </div>
+              ) : null}
 
               {Array.isArray(slip.lines) && slip.lines.length > 0 && (
                 <div className="mt-5">

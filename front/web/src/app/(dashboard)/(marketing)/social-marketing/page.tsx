@@ -157,7 +157,7 @@ export default function MarketingPage() {
       setScheduledAt('');
       await loadPosts(1, false);
     } catch (err) {
-      setActionError(err instanceof ApiError ? err.message : 'Impossible de creer la publication.');
+      setActionError(err instanceof ApiError ? err.message : 'Impossible de créer la publication.');
     } finally {
       setSubmitting(false);
     }

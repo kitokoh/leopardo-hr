@@ -47,6 +47,12 @@ class PaySlipResource extends JsonResource
             'currency' => currentCompany()?->currency ?? 'DZD',
             'employer_contributions' => $this->employer_contributions,
             'total_cost' => $this->total_cost,
+            // #5018 (dossierdeConception §10.3) : décomposition du salaire selon
+            // `salary_type` (fixed → mensuel ; daily → taux journalier ;
+            // hourly → taux horaire) pour l'affichage UX du portail web.
+            'salary_type' => $this->employee?->salary_type,
+            'salary_base' => $this->employee?->salary_base !== null ? (float) $this->employee->salary_base : null,
+            'hourly_rate' => $this->employee?->hourly_rate !== null ? (float) $this->employee->hourly_rate : null,
             'working_days' => $this->working_days,
             'actual_days_worked' => $this->actual_days_worked,
             'overtime_hours' => $this->overtime_hours,
