@@ -6526,6 +6526,7 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   String get absencesDateMissing;
 
   String get absencesDaysAvailable;
+  String get absencesDaysShort;
 
   String get absencesEmployeeLabel;
 

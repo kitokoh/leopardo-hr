@@ -10,12 +10,12 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_employee/features/absences/providers/absence_provider.dart';import 'package:leopardo_core/l10n/l10n.dart';
-
+import 'package:leopardo_employee/features/absences/providers/absence_provider.dart';
 import 'package:leopardo_core/models/absence.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:leopardo_core/core/widgets/mobile_list_glass_card.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 
 class AbsenceListScreen extends ConsumerStatefulWidget {
   const AbsenceListScreen({super.key});
@@ -34,8 +34,8 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: context.l10n.absencesListTitle,
-        subtitle: context.l10n.absencesListSubtitle,
+        title: context.l10n.absencesTitle,
+        subtitle: context.l10n.absencesSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: context.l10n.back,
@@ -45,7 +45,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAbsenceRequestSheet(context),
         icon: const Icon(Icons.event_available_outlined),
-        label: Text(context.l10n.absenceRequest),
+        label: Text(context.l10n.absencesRequest),
       ),
       body: RefreshIndicator(
         color: AppColors.rh,
@@ -57,12 +57,11 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
-                children: const [
+                children: [
                   EmptyState(
                     icon: Icons.calendar_today,
-                    title: context.l10n.absencesEmpty,
-                    description:
-                        context.l10n.absencesEmptyHint,
+                    title: context.l10n.absencesEmptyTitle,
+                    description: context.l10n.absencesEmptyHint,
                   ),
                 ],
               );
@@ -80,11 +79,11 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                 return MobileListGlassCard(
                   icon: Icons.event_available_outlined,
                   iconColor: color,
-                  title: absence.absenceTypeName ?? context.l10n.absenceLabel,
+                  title: absence.absenceTypeName ?? context.l10n.absencesTypeFallback,
                   subtitle:
-                      context.l10n.absencesDaysCount(dateLabel, absence.daysCount.toStringAsFixed(1)),
+                      '$dateLabel - ${absence.daysCount.toStringAsFixed(1)}${context.l10n.absencesDaysShort}',
                   trailing: MobileStatusPill(
-                    label: _statusLabel(context.l10n, absence.status),
+                    label: _statusLabel(absence.status, context.l10n),
                     color: color,
                   ),
                   footer: _absenceFooter(context, absence),
@@ -153,13 +152,13 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.attach_file_rounded, size: 16),
-                label: Text(context.l10n.absenceViewProof),
+                label: Text(context.l10n.absencesViewProof),
               ),
             if (absence.status == 'pending')
               TextButton.icon(
                 onPressed: () => _confirmCancelAbsence(context, absence.id),
                 icon: const Icon(Icons.close_rounded, size: 16),
-                label: Text(context.l10n.absenceCancelRequest),
+                label: Text(context.l10n.absencesCancelRequest),
               ),
           ],
         ),
@@ -183,14 +182,16 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
         await launchUrl(uri);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.absenceProofDownloaded(path))),
+          SnackBar(
+            content: Text('${context.l10n.absencesProofDownloaded}$path'),
+          ),
         );
       }
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(context.l10n.salaryAdvanceError(error))));
+      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
     } finally {
       if (mounted) setState(() => _downloadingProofId = null);
     }
@@ -203,18 +204,16 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(context.l10n.absenceCancelTitle),
-        content: const Text(
-          context.l10n.absenceCancelBody,
-        ),
+        title: Text(context.l10n.absencesCancelTitle),
+        content: Text(context.l10n.absencesCancelBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text(context.l10n.salaryAdvanceKeep),
+            child: Text(context.l10n.absencesKeep),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text(context.l10n.salaryAdvanceCancelAction),
+            child: Text(context.l10n.absencesCancel),
           ),
         ],
       ),
@@ -227,13 +226,13 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
       ref.invalidate(leaveBalancesProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.absenceCancelled)),
+        SnackBar(content: Text(context.l10n.absencesCancelledSnack)),
       );
     } catch (error) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
     }
   }
 
@@ -241,13 +240,14 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
     return DateFormat('d MMM', deviceIntlDateLocale).format(date);
   }
 
-  static String _statusLabel(AppLocalizations l10n, String status) => switch (status) {
-    'approved' => l10n.salaryStatusApproved,
-    'pending' => l10n.salaryStatusPending,
-    'rejected' => l10n.salaryStatusRejected,
-    'cancelled' => l10n.salaryStatusCancelled,
-    _ => status,
-  };
+  static String _statusLabel(String status, AppLocalizations l10n) =>
+      switch (status) {
+        'approved' => l10n.absencesStatusApproved,
+        'pending' => l10n.absencesStatusPending,
+        'rejected' => l10n.absencesStatusRejected,
+        'cancelled' => l10n.absencesStatusCancelled,
+        _ => status,
+      };
 
   static Color _getStatusColor(String status) {
     switch (status) {
@@ -324,14 +324,14 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
               ),
               const SizedBox(height: 18),
               Text(
-                context.l10n.absenceNewTitle,
+                context.l10n.absencesNewAbsence,
                 style: AppTypography.subtitle.copyWith(
                   color: MobileSurface.text,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                context.l10n.absenceNewHint,
+                context.l10n.absencesNewAbsenceHint,
                 style: AppTypography.bodySmall.copyWith(
                   color: MobileSurface.secondary,
                 ),
@@ -340,7 +340,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
               balances.when(
                 data: (rawBalances) {
                   final options = rawBalances
-                      .map(_AbsenceTypeOption.fromBalance)
+                      .map((b) => _AbsenceTypeOption.fromBalance(b, context.l10n))
                       .where((option) => option != null)
                       .cast<_AbsenceTypeOption>()
                       .toList();
@@ -348,8 +348,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
 
                   if (options.isEmpty) {
                     return MobileErrorPanel(
-                      message:
-                          context.l10n.absenceNoType,
+                      message: context.l10n.absencesNoTypeAvailable,
                       onRetry: () => ref.invalidate(leaveBalancesProvider),
                     );
                   }
@@ -359,7 +358,9 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                         ? _selectedType
                         : options.first,
                     dropdownColor: MobileSurface.surface,
-                    decoration: const InputDecoration(labelText: 'Type'),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.absencesType,
+                    ),
                     items: options
                         .map(
                           (option) => DropdownMenuItem(
@@ -368,13 +369,15 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                           ),
                         )
                         .toList(),
-                    validator: (value) =>
-                        value == null ? 'Type d absence requis' : null,
+                    validator: (value) => value == null
+                        ? context.l10n.absencesTypeRequired
+                        : null,
                     onChanged: (value) => setState(() => _selectedType = value),
                   );
                 },
-                loading: () =>
-                    const MobileEmptyLoading(label: 'Chargement des soldes'),
+                loading: () => MobileEmptyLoading(
+                  label: context.l10n.absencesBalancesLoading,
+                ),
                 error: (error, _) => MobileErrorPanel(
                   message: error.toString(),
                   onRetry: () => ref.invalidate(leaveBalancesProvider),
@@ -385,7 +388,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                 children: [
                   Expanded(
                     child: _DateTile(
-                      label: 'Debut',
+                      label: context.l10n.absencesStart,
                       value: _startDate,
                       onTap: () => _pickDate(isStart: true),
                     ),
@@ -393,7 +396,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: _DateTile(
-                      label: 'Fin',
+                      label: context.l10n.absencesEnd,
                       value: _endDate,
                       onTap: () => _pickDate(isStart: false),
                     ),
@@ -406,12 +409,12 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                 maxLines: 3,
                 maxLength: 180,
                 style: const TextStyle(color: MobileSurface.text),
-                decoration: const InputDecoration(
-                  labelText: 'Motif',
-                  hintText: 'Ex: rendez-vous medical, conge familial...',
+                decoration: InputDecoration(
+                  labelText: context.l10n.absencesReason,
+                  hintText: context.l10n.absencesReasonhint,
                 ),
                 validator: (value) => value == null || value.trim().length < 4
-                    ? 'Motif obligatoire'
+                    ? context.l10n.absencesReasonrequired
                     : null,
               ),
               const SizedBox(height: 12),
@@ -420,8 +423,8 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                 icon: const Icon(Icons.attach_file_rounded, size: 18),
                 label: Text(
                   _proofFile == null
-                      ? 'Joindre un justificatif (optionnel)'
-                      : 'Justificatif joint',
+                      ? context.l10n.absencesAttachProof
+                      : context.l10n.absencesProofAttached,
                 ),
               ),
               const SizedBox(height: 12),
@@ -433,7 +436,7 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                         height: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Soumettre au RH'),
+                    : Text(context.l10n.absencesSubmitToHr),
               ),
             ],
           ),
@@ -484,14 +487,14 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
       if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Demande d absence transmise au RH.')),
+        SnackBar(content: Text(context.l10n.absencesSubmittedSnack)),
       );
     } catch (error) {
       if (!context.mounted) return;
       setState(() => _submitting = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Echec : $error')));
+      ).showSnackBar(SnackBar(content: Text('${context.l10n.absencesFailure}$error')));
     }
   }
 }
@@ -548,7 +551,10 @@ class _AbsenceTypeOption {
   final int id;
   final String label;
 
-  static _AbsenceTypeOption? fromBalance(Map<String, dynamic> balance) {
+  static _AbsenceTypeOption? fromBalance(
+    Map<String, dynamic> balance,
+    AppLocalizations l10n,
+  ) {
     final rawType = balance['absence_type'] ?? balance['absenceType'];
     if (rawType is! Map) return null;
     final type = rawType.cast<String, dynamic>();
@@ -563,12 +569,11 @@ class _AbsenceTypeOption {
         balance['available_days'];
     final suffix = remaining == null
         ? ''
-        : ' - ${remaining.toString()} j disponibles';
+        : ' - ${remaining.toString()}${l10n.absencesDaysAvailable}';
 
     return _AbsenceTypeOption(
       id: id,
-      label: '${name == null || name.isEmpty ? 'Absence' : name}$suffix',
+      label: '${name == null || name.isEmpty ? l10n.absencesTypeFallback : name}$suffix',
     );
   }
 }
-

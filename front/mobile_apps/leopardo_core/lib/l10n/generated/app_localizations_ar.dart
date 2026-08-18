@@ -3431,6 +3431,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get absencesDateMissing => 'لم يُحدد تاريخ الطلب';
   @override
   String get absencesDaysAvailable => ' أيام متاحة';
+  String get absencesDaysShort => ' ي';
   @override
   String get absencesEmployeeLabel => 'موظف';
   @override
