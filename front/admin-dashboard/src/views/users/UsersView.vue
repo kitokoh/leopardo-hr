@@ -251,7 +251,6 @@ const filters = reactive({
 
 // Issue #2269 : plus de mocks — données réelles depuis GET /admin/users.
 const users = ref([])
-const companies = ref([])
 
 // Pagination (server-side)
 const paginatedUsers = computed(() => users.value)
@@ -284,7 +283,7 @@ const usersSummary = computed(() => {
 })
 
 onMounted(async () => {
-  await Promise.all([loadUsers(), loadCompanies()])
+  await loadUsers()
 })
 
 // La recherche recharge la page 1 (debounce 300ms)
@@ -351,17 +350,6 @@ async function loadUsers() {
   }
 }
 
-async function loadCompanies() {
-  try {
-    // QA #2238 : liste réelle des sociétés de la plateforme (filtre).
-    const res = await api.get('/platform/companies', { params: { per_page: 100 } })
-    const items = res.data?.data ?? []
-    companies.value = items.map(c => ({ id: c.id, name: c.name }))
-  } catch (error) {
-    console.error('Failed to load companies:', error)
-    companies.value = []
-  }
-}
 
 function handleUserSelect(userId, checked) {
   if (checked) {

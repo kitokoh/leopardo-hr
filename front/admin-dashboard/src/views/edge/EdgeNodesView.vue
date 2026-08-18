@@ -112,6 +112,27 @@
                 <button @click="viewNode(node)" class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 font-medium">
                   Détails
                 </button>
+                <!-- #4935 : bouton « Révoquer licence » branché sur le store
+                     (endpoint POST /admin/edge-nodes/{id}/revoke existant) —
+                     confirmation en 2 clics, réservé aux licences valides. -->
+                <template v-if="node.license_valid">
+                  <span class="text-gray-300 dark:text-gray-600">|</span>
+                  <button
+                    v-if="confirmRevokeId === node.id"
+                    @click="revokeLicense(node)"
+                    :disabled="revokingNodeId === node.id"
+                    class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 font-medium disabled:opacity-30"
+                  >
+                    {{ revokingNodeId === node.id ? 'Révoquer…' : 'Confirmer la révocation ?' }}
+                  </button>
+                  <button
+                    v-else
+                    @click="confirmRevokeId = node.id"
+                    class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 font-medium"
+                  >
+                    Révoquer
+                  </button>
+                </template>
               </div>
             </td>
           </tr>
@@ -145,6 +166,8 @@ const localeStore = useLocaleStore();
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback);
 const loading = ref(false);
 const syncingNodeId = ref(null);
+const revokingNodeId = ref(null);
+const confirmRevokeId = ref(null);
 // QA 2026-08-15 (#2658) : état d'erreur visible (avant : rejections non
 // gérées, aucun retour utilisateur).
 const loadError = ref(null);
@@ -194,6 +217,25 @@ async function triggerSync(node) {
 
 function viewNode(node) {
   selectedNode.value = node;
+}
+
+// #4935 : révocation de licence edge node (store → POST /admin/edge-nodes/{id}/revoke).
+async function revokeLicense(node) {
+  revokingNodeId.value = node.id;
+  loadError.value = null;
+  try {
+    await store.revokeLicense(node.id);
+    await refresh();
+    confirmRevokeId.value = null;
+    toast.success(`Licence révoquée pour ${node.name || node.id}`);
+  } catch (err) {
+    loadError.value = err?.response?.data?.localized_message
+      || err?.message
+      || 'Erreur lors de la révocation de la licence.';
+    toast.error(loadError.value);
+  } finally {
+    revokingNodeId.value = null;
+  }
 }
 
 function licenseClass(valid) {

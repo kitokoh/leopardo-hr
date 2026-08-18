@@ -3,7 +3,6 @@ import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
 import NProgress from 'nprogress'
-import { useToast } from 'vue-toastification'
 import 'nprogress/nprogress.css'
 
 // Configuration NProgress
@@ -303,18 +302,6 @@ router.beforeEach(async (to, from, next) => {
 
   // Rediriger vers dashboard si déjà connecté et tentative d'accès au login
   if (to.name === 'login' && authStore.isAuthenticated) {
-    next('/')
-    return
-  }
-
-  // Vues tenant-scopées (issue #2272) : la console super-admin n'a pas de
-  // contexte tenant — un token super-admin reçoit un 401 systématique sur
-  // ces endpoints. Accès direct par URL → redirection propre vers le
-  // dashboard, jamais une page qui échoue en 401 muet.
-  if (to.matched.some((record) => record.meta.requiresTenant)) {
-    const toast = useToast()
-    const localeStore = useLocaleStore()
-    toast.warning(translate(localeStore.current, 'shell.tenantOnly', ''))
     next('/')
     return
   }
