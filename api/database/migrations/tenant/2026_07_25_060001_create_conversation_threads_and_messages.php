@@ -26,7 +26,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('conversation_threads')) {
+        if (! schemaTableExists('conversation_threads')) {
             Schema::create('conversation_threads', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -48,7 +48,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('conversation_messages')) {
+        if (! schemaTableExists('conversation_messages')) {
             Schema::create('conversation_messages', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();

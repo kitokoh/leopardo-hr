@@ -46,7 +46,7 @@ class ResilientThrottleRequests extends ThrottleRequests
         } catch (\Throwable $e) {
             report($e);
 
-            return $this->degradedTooManyRequestsResponse();
+            return $this->degradedTooManyRequestsResponse($request);
         }
 
         if ($limits instanceof Response) {
@@ -83,7 +83,7 @@ class ResilientThrottleRequests extends ThrottleRequests
         } catch (\Throwable $e) {
             report($e);
 
-            return $this->degradedTooManyRequestsResponse();
+            return $this->degradedTooManyRequestsResponse($request);
         }
 
         // ── Pipeline applicatif : les exceptions du contrôleur remontent
@@ -196,15 +196,18 @@ class ResilientThrottleRequests extends ThrottleRequests
      * 429 dégradé : le stockage du compteur est indisponible, on ne peut pas
      * vérifier le quota — on limite (fail-closed) plutôt que de planter en 500.
      */
-    private function degradedTooManyRequestsResponse(): JsonResponse
+    private function degradedTooManyRequestsResponse(Request $request): JsonResponse
     {
+        // Issue #4955 : le 429 dégradé (panne du stockage du compteur) doit
+        // suivre le même contrat que le reste de l'API — code stable +
+        // localized_message via le catalogue errors.* (cf. renderer #3810/#4689).
         return new JsonResponse(
             [
                 // Code distinct pour l'observabilité (stockage du compteur KO,
                 // pas un vrai dépassement de quota) — message localisé quand même.
                 'error' => 'TOO_MANY_REQUESTS_DEGRADED',
                 'message' => 'TOO_MANY_REQUESTS_DEGRADED',
-                'localized_message' => __('errors.TOO_MANY_REQUESTS'),
+                'localized_message' => __('errors.TOO_MANY_REQUESTS', [], $request->getLocale()),
             ],
             429,
             ['Retry-After' => 60]

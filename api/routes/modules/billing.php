@@ -25,13 +25,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
     // #3430 : écritures d'état company-level réservées aux managers (api.manager) —
     // un employé simple ne peut plus falsifier le progrès d'onboarding de l'entreprise.
+    Route::post('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete'])
+        ->middleware('api.manager');
+    // #4930 : action métier → POST ; PATCH déprécié conservé (rétrocompatibilité).
     Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete'])
+        ->middleware('api.manager');
+    Route::post('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
         ->middleware('api.manager');
     Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
         ->middleware('api.manager');
 
-    // Alias expected by mobile/web clients: list onboarding steps.
-    Route::get('/onboarding/steps', [OnboardingStepController::class, 'checklist']);
+
 
     // Feature Flags — read for all (la mise à jour de la matrice est réservée à
     // l'administration plateforme ; l'endpoint PUT #3892 n'a jamais été implémenté
@@ -47,10 +51,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/billing/subscription/renew', [BillingController::class, 'renew']);
         Route::get('/billing/invoices', [BillingController::class, 'invoices']);
         Route::get('/billing/invoices/{id}', [BillingController::class, 'showInvoice'])->whereNumber('id');
+        // #4931 : GET idempotent accepté — génération PDF pure (aucune écriture).
         Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'invoicePdf'])->whereNumber('id');
 
         // Stripe Checkout & Portal
         Route::post('/billing/checkout', [BillingController::class, 'createCheckoutSession']);
-        Route::get('/billing/portal', [BillingController::class, 'customerPortal']);
+        // #4931 : customerPortal CRÉE une session Stripe (effet de bord) →
+        // POST, jamais GET. La réponse reste la même (URL du portal).
+        Route::post('/billing/portal', [BillingController::class, 'customerPortal']);
     });
 });

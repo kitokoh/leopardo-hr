@@ -52,6 +52,10 @@ jobs:
         working-directory: front/web
         run: npm run lint
 
+      - name: Run ESLint on Playwright specs (e2e/)
+        working-directory: front/web
+        run: npm run lint:e2e
+
       - name: Check for double-encoded UTF-8 (mojibake)
         working-directory: front/web
         run: npm run check:mojibake

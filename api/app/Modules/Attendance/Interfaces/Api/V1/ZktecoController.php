@@ -11,7 +11,6 @@ use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Infrastructure\Services\ZktecoIntegrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -163,7 +162,9 @@ class ZktecoController extends Controller
 
     public function heartbeat(Request $request, string $serialNumber): JsonResponse
     {
-        $device = $this->resolveAuthorizedDevice($request, $serialNumber);
+        // #4934 : le device est authentifié par le middleware `zkteco.device`.
+        /** @var ZktecoDevice $device */
+        $device = $request->attributes->get('zkteco_device');
 
         $company = $device->company;
         abort_unless($company !== null, 404, 'RESOURCE_NOT_FOUND');
@@ -193,7 +194,9 @@ class ZktecoController extends Controller
             'records.*.badge_number' => ['nullable', 'string'],
         ]);
 
-        $device = $this->resolveAuthorizedDevice($request, $serialNumber);
+        // #4934 : le device est authentifié par le middleware `zkteco.device`.
+        /** @var ZktecoDevice $device */
+        $device = $request->attributes->get('zkteco_device');
 
         $company = $device->company;
         abort_unless($company !== null, 404, 'RESOURCE_NOT_FOUND');
@@ -212,66 +215,6 @@ class ZktecoController extends Controller
                 'status' => $syncLog->status,
             ],
         ], 201);
-    }
-
-    /**
-     * Sécurité #2216 — résout le device par serial PUIS vérifie le token
-     * X-Device-Token (hashé au repos). Fail-closed : un device sans token
-     * configuré est rejeté (DEVICE_TOKEN_NOT_SET) jusqu'à rotation par le
-     * manager. Les échecs sont journalisés sur le canal 'audit'.
-     *
-     * #4787 — le search_path PostgreSQL est réinitialisé avant le lookup
-     * (pattern KioskController::resolveAuthorizedKiosk, issue #2689) : sur un
-     * worker persistant, la requête précédente peut avoir basculé le
-     * search_path vers le schéma d'un tenant → lookup cross-tenant ou 500
-     * « table introuvable ». Restauration systématique en finally.
-     */
-    private function resolveAuthorizedDevice(Request $request, string $serialNumber): ZktecoDevice
-    {
-        // #4787 : lecture du search_path courant (variante nullsafe refusée par
-        // PHPStan strict — garde is_object + property_exists, cf. #2973).
-        $previous = 'public,shared_tenants';
-        try {
-            $searchPathRow = DB::selectOne('SHOW search_path');
-            if (is_object($searchPathRow) && property_exists($searchPathRow, 'search_path')) {
-                $previous = (string) $searchPathRow->search_path;
-            }
-        } catch (\Throwable) {
-            // défaut conservé
-        }
-        DB::statement('SET search_path TO shared_tenants,public');
-
-        try {
-            $device = ZktecoDevice::query()
-                ->where('serial_number', $serialNumber)
-                ->firstOrFail();
-
-            $token = (string) $request->header('X-Device-Token', '');
-
-            if (empty($device->sync_token_hash)) {
-                Log::channel('audit')->warning('zkteco_auth.not_configured', [
-                    'serial_number' => $serialNumber,
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
-
-                abort(401, 'DEVICE_TOKEN_NOT_SET');
-            }
-
-            if ($token === '' || ! Hash::check($token, (string) $device->sync_token_hash)) {
-                Log::channel('audit')->warning('zkteco_auth.failed', [
-                    'serial_number' => $serialNumber,
-                    'ip' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
-
-                abort(401, 'INVALID_DEVICE_TOKEN');
-            }
-
-            return $device;
-        } finally {
-            DB::statement('SET search_path TO '.$previous);
-        }
     }
 
     public function pushUsers(Request $request, string $serialNumber): JsonResponse

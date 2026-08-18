@@ -55,6 +55,9 @@ jobs:
       - name: Mobile Firebase stubs guard (issue #3152)
         run: bash dev-hub/tools/check-mobile-firebase-configs.sh
 
+      - name: Migrations tenant — convention #1613 (search_path, audit PM 2026-08-17)
+        run: bash dev-hub/tools/check-migrations-tenant-schema.sh
+
   phpstan-modules:
     timeout-minutes: 45
     name: PHPStan — Modules Architecture

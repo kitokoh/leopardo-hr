@@ -115,7 +115,11 @@ class EmployeeMailResilienceTest extends TestCase
             'email' => 'resend@example.dz',
         ]);
 
-        $invitation = UserInvitation::query()->create([
+        // Fixture : company_id/role ne sont pas mass-assignables ($fillable) —
+        // `UserInvitation::query()->create()` sans company_id violait la
+        // contrainte NOT NULL (issue #4947 famille). ForceFill en un seul save.
+        $invitation = new UserInvitation;
+        $invitation->forceFill([
             'employee_id' => $employee->id,
             'email' => $employee->email,
             'schema_name' => $this->company->schema_name,
@@ -123,10 +127,10 @@ class EmployeeMailResilienceTest extends TestCase
             'invited_by_email' => $this->manager->email,
             'token_hash' => hash('sha256', 'some-token'),
             'expires_at' => now()->addDays(7),
+            'company_id' => $this->company->id,
+            'role' => $employee->role,
         ]);
-            $invitation->company_id = $this->company->id;
-            $invitation->role = $employee->role;
-            $invitation->save();
+        $invitation->save();
 
 
         $this->postJson("/api/v1/invitations/{$invitation->id}/resend")

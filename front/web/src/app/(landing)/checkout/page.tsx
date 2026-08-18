@@ -99,9 +99,14 @@ const PLAN_ALIASES: Record<string, PlanKey> = {
 
 /* ─────────────────────────────────────────────
    CHECKOUT MODE (sandbox = explicit opt-in via NEXT_PUBLIC_CHECKOUT_SANDBOX=true)
+
+   #4950 : le mode sandbox (carte de test 4242) est STRUCTURELLEMENT interdit
+   en production — NODE_ENV=production le désactive même si l'env var a été
+   mal configurée sur Vercel (régression #2628/#2665 : UI test visible en
+   prod). Le opt-in reste possible en dev/preview uniquement.
    In production the test card UI is never shown: payment must be real (#2628).
 ───────────────────────────────────────────── */
-const CHECKOUT_SANDBOX = process.env.NEXT_PUBLIC_CHECKOUT_SANDBOX === 'true';
+const CHECKOUT_SANDBOX = process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_CHECKOUT_SANDBOX === 'true';
 
 /* ─────────────────────────────────────────────
    SANDBOX TEST CARD

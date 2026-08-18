@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('cabinet_folders')) {
+        if (! schemaTableExists('cabinet_folders')) {
             Schema::create('cabinet_folders', function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('company_id')->index();
@@ -24,7 +24,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('cabinet_documents')) {
+        if (! schemaTableExists('cabinet_documents')) {
             Schema::create('cabinet_documents', function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('company_id')->index();
@@ -44,7 +44,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('cabinet_shares')) {
+        if (! schemaTableExists('cabinet_shares')) {
             Schema::create('cabinet_shares', function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedBigInteger('company_id')->index();

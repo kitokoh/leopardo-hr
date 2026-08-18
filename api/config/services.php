@@ -22,6 +22,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
         'monitoring_webhook' => env('SLACK_MONITORING_WEBHOOK_URL'),
+        'failed_jobs_threshold' => (int) env('SLACK_FAILED_JOBS_THRESHOLD', 10),
     ],
 
     'google' => [

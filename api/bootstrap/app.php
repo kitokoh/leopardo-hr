@@ -122,6 +122,9 @@ return Application::configure(basePath: dirname(__DIR__))
             // #3368 : restaure le search_path après chaque requête kiosque
             // (les handlers basculent vers le schéma tenant sans try/finally).
             'kiosk.search_path' => EnsureKioskSearchPathReset::class,
+            // #4934 (audit web client 2026-08-17) : auth device ZKTeco
+            // (heartbeat / sync-attendance) — fail-closed, search_path-safe.
+            'zkteco.device' => \App\Http\Middleware\AuthenticateZktecoDevice::class,
             // Issue #1774 : variante résiliente du middleware de throttling —
             // un échec du stockage du compteur répond 429 dégradé (au lieu d'un
             // 500) et les exceptions du pipeline en aval ne sont jamais masquées.
@@ -271,7 +274,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 $rawMessage
             );
 
-            if ($leakSignature === 1 || trim($rawMessage) === '') {
+            // #4955 (audit web client 2026-08-17) : le 429 de ThrottleRequests
+            // porte toujours le message Laravel brut ("Too Many Attempts.") qui
+            // n'est PAS un message statique volontaire. On sert systématiquement
+            // le code stable + message localisé (headers Retry-After conservés).
+            if ($statusCode === 429 || $leakSignature === 1 || trim($rawMessage) === '') {
 
                 Log::warning('HTTP exception rendered with sanitized message (issue #3810)', [
                     'status' => $statusCode,

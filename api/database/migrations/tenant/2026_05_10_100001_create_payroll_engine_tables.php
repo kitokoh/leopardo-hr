@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('salary_structures')) {
+        if (! schemaTableExists('salary_structures')) {
             Schema::create('salary_structures', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -26,7 +26,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('salary_components')) {
+        if (! schemaTableExists('salary_components')) {
             Schema::create('salary_components', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -50,7 +50,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('tax_slabs')) {
+        if (! schemaTableExists('tax_slabs')) {
             Schema::create('tax_slabs', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -68,7 +68,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('social_contributions')) {
+        if (! schemaTableExists('social_contributions')) {
             Schema::create('social_contributions', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -86,7 +86,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('payroll_runs')) {
+        if (! schemaTableExists('payroll_runs')) {
             Schema::create('payroll_runs', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -112,7 +112,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('pay_slips')) {
+        if (! schemaTableExists('pay_slips')) {
             Schema::create('pay_slips', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('payroll_run_id');
@@ -141,7 +141,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('pay_slip_lines')) {
+        if (! schemaTableExists('pay_slip_lines')) {
             Schema::create('pay_slip_lines', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('pay_slip_id');
@@ -160,7 +160,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('bank_exports')) {
+        if (! schemaTableExists('bank_exports')) {
             Schema::create('bank_exports', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('payroll_run_id');

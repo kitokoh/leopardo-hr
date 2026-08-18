@@ -25,7 +25,7 @@
 ## CONVENTION DE VERSIONING
 
 ```
-VERSION  = 4.16.250  → Version globale du projet/pilotage (ce fichier fait foi)
+VERSION  = 4.24.0    → Version globale du projet/pilotage (ce fichier fait foi — alignée sur PROGRAM_VERSION, 2026-08-17)
 
                               Doit rester synchrone avec :
                                 - CHANGELOG.md (dernière entrée)
@@ -54,11 +54,11 @@ Règle :
 ## ÉTAT ACTUEL
 
 ```
-Date MAJ       : 2026-07-19
-Version        : 4.23.5
+Date MAJ       : 2026-08-17 (revue PM — réconciliation des compteurs)
+Version        : 4.24.0
 Phase active   : LOT P0/P1/P3 — Solidification & Scale (clés à configurer sur Render)
-Dernière release: 2026-07-19 — [4.23.5] (voir CHANGELOG.md) ; des changements docs-only postérieurs
-                  non tagués vivent sous `## [Unreleased]` en tête de CHANGELOG.md au 2026-07-20/21
+Dernière release: 2026-08-11 — [4.24.0] (voir CHANGELOG.md) ; des changements docs-only postérieurs
+                  non tagués vivent sous `## [Unreleased]` en tête de CHANGELOG.md
 Accomplis      :
   ✅ Exports comptables CSV (Journal, Livre de paie, OD)
   ✅ Templates sectoriels BTP + Sécurité (ApplySectorTemplate)
@@ -102,7 +102,7 @@ BDD           : PostgreSQL 16 (Render managed)
 Cache/Queues  : Upstash Redis (TLS) — queues: default, pdf, notifications, payroll, webhooks
 Push          : Firebase Cloud Messaging (HTTP v1)
 Distribution  : Firebase App Distribution (3 apps)
-CI/CD         : GitHub Actions (25 workflows)
+CI/CD         : GitHub Actions (40 workflows)
 Auth          : Sanctum (tokens opaques) + 2FA super-admin
 Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 ```
@@ -113,17 +113,17 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 
 | Composant | Quantité |
 |-----------|----------|
-| Modèles Eloquent | 87 |
-| Contrôleurs API V1 | 93 |
+| Modèles Eloquent | 111 (vérifié `Domain/Models`, 17/08/2026) |
+| Contrôleurs API V1 | 0 (supprimés — PR #824, 2026-07-01) |
 | Services métier | 43 |
 | Jobs asynchrones | 9 |
 | Migrations (tenant + public) | 59 |
-| Tests Feature | 99+ |
-| OpenAPI spec | 332 KB |
-| Workflows CI/CD | 25 |
+| Tests Feature | 462 fichiers (1 917 tests au dernier run 15/08/2026) |
+| OpenAPI spec | 632 KB |
+| Workflows CI/CD | 40 |
 | Plans d'action livrés | 72 |
 | Scripts de validation | 27 |
-| Couverture backend | 60%+ |
+| Couverture backend | 71,11 % (gate bloquante ≥ 65 %) |
 
 ---
 
@@ -223,13 +223,13 @@ Multitenancy  : Shared schema PostgreSQL (shared_tenants)
 | # | Document | Usage |
 |---|----------|-------|
 | 1 | `PILOTAGE.md` (ce fichier) | État projet, priorités, règles |
-| 2 | `AGENTS.md` | Règles opérationnelles agents (123 KB) |
-| 3 | `CHANGELOG.md` | Historique des changements (121 KB) |
+| 2 | `AGENTS.md` | Règles opérationnelles agents (156 KB) |
+| 3 | `CHANGELOG.md` | Historique des changements (1,8 MB — à archiver selon règle < 150 Ko, issue #1729) |
 | 4 | `docs/GOTO_MARKET/LEOPARDO_STRATEGIC_ANALYSIS.md` | Analyse stratégique complète |
 | 5 | `docs/CONTEXT/` | Contexte produit/technique/opérationnel |
 | 6 | `docs/archive/PLAN_ACTION/` | 72 plans d'action livrés |
 | 7 | `docs/GOTO_MARKET/` | Stratégie commerciale |
-| 8 | `api/openapi.yaml` | Spécification API (332 KB) |
+| 8 | `api/openapi.yaml` | Spécification API (632 KB) |
 
 ---
 

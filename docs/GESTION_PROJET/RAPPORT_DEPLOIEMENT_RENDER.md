@@ -8,7 +8,7 @@
 
 ## 1. 🎯 Résumé Exécutif
 
-Le backend **Leopardo RH** (API Laravel 11 / FrankenPHP) est désormais hébergé sur le cloud
+Le backend **Leopardo RH** (API Laravel 12 / FrankenPHP) est désormais hébergé sur le cloud
 via le couple **Render.com (Web Service) + Neon.tech (PostgreSQL)**.
 
 | Composant | Avant | Après |
@@ -230,3 +230,4 @@ Les testeurs doivent valider ces parcours utilisateur en priorité :
 - [ ] **Distribuer aux testeurs** : Partager ce document (section 4 + 6) avec l'équipe de test.
 - [ ] **Passer en plan payant** : Quand l'équipe est prête pour la Beta, passer Render en `Starter ($7/mois)` pour supprimer la mise en veille automatique.
 - [ ] **Configurer un domaine custom** : Pointer `api.leopardo-rh.com` vers le service Render.
+  > ⚠️ (maj 2026-08-17) `*.leopardo-rh.com` est **NXDOMAIN** (jamais acheté — issue #3452). Le registre canonique est `docs/ops/DOMAINS.md`.
