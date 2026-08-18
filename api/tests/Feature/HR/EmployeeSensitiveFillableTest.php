@@ -27,6 +27,9 @@ class EmployeeSensitiveFillableTest extends TestCase
             'name' => 'Sensitive QA',
             'sector' => 'tech',
             'country' => 'DZ',
+            // #5034 + #3677 : companies.city est NOT NULL sur le vrai schéma.
+            'city' => 'Alger',
+
         ]);
 
         $employee = new Employee([
@@ -68,6 +71,9 @@ class EmployeeSensitiveFillableTest extends TestCase
             'name' => 'Explicit QA',
             'sector' => 'tech',
             'country' => 'DZ',
+            // #5034 : companies.city est NOT NULL sur le vrai schéma.
+            'city' => 'Alger',
+
         ]);
 
         // F-13 : employees.password_hash est NOT NULL sur les vraies
