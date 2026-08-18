@@ -94,6 +94,7 @@ jobs:
 
       - name: Run tests with coverage
         working-directory: ./api
+        shell: bash
         env:
           DB_CONNECTION: pgsql
           DB_HOST: 127.0.0.1
@@ -102,6 +103,12 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p storage/coverage
+          # Issue #4978 : `set -o pipefail` OBLIGATOIRE — sans lui, le pipe vers
+          # `tee` avale le code de sortie de PHPUnit (tee sort en 0) et la gate
+          # requise « Backend Coverage » reste verte même avec des centaines de
+          # tests en échec (constat #4980 : 178 échecs masqués sur main).
+          set -o pipefail
+          mkdir -p storage/coverage storage/test-results
           # Issue #4976 : la suite parallèle crée des bases PostgreSQL `_test_N`
           # en concurrence et provoque des collisions `already exists`, ce qui
           # empêche PHPUnit de produire Clover. Le timeout de 75 minutes garde
@@ -115,6 +122,50 @@ jobs:
             } | tee storage/coverage/causal-error.txt
             exit "${test_exit}"
           fi
+          php artisan test --coverage-clover=storage/coverage/clover.xml --coverage-text \
+            --log-junit=storage/test-results/coverage.xml 2>&1 | tee storage/coverage/summary.txt
+
+      - name: Extract first test failures (causal errors)
+        if: always()
+        working-directory: ./api
+        shell: bash
+        run: |
+          # Issue #4978 : extraire la PREMIÈRE erreur de chaque testsuite JUnit
+          # pour rendre la cause racine visible sans ouvrir les artefacts.
+          set -uo pipefail
+          JUNIT="storage/test-results/coverage.xml"
+          if [[ ! -f "${JUNIT}" ]]; then
+            echo "No JUnit file — skipping causal error extraction."
+            exit 0
+          fi
+          python3 - "${JUNIT}" <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+
+          tree = ET.parse(sys.argv[1])
+          failures = []
+          for suite in tree.iter('testsuite'):
+              n = int(suite.get('failures', '0')) + int(suite.get('errors', '0'))
+              if n == 0:
+                  continue
+              for case in suite.iter('testcase'):
+                  for kind in ('failure', 'error'):
+                      node = case.find(kind)
+                      if node is None:
+                          continue
+                      name = case.get('classname', '') + '::' + case.get('name', '')
+                      msg = (node.get('message') or node.text or '')[:600]
+                      failures.append(f"- `{name}` ({kind})\n  {msg}")
+                      break
+              if len(failures) >= 8:
+                  break
+
+          if failures:
+              print('### Premières erreurs causales (extraction JUnit)')
+              print('\n'.join(failures[:8]))
+          else:
+              print('Aucun échec détecté dans le JUnit.')
+          PY
 
       - name: Parse coverage percentage
         id: coverage
@@ -236,6 +287,7 @@ jobs:
             api/storage/coverage/summary.txt
             api/storage/coverage/modules.md
             api/storage/coverage/causal-error.txt
+            api/storage/test-results/coverage.xml
           if-no-files-found: ignore
           retention-days: 30
 

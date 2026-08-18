@@ -166,6 +166,40 @@ jobs:
           echo "Backend feature tests failed."
           exit 1
 
+      - name: Extract first test failures (causal errors)
+        if: always()
+        working-directory: ./api
+        shell: bash
+        run: |
+          # Issue #4978 : extraire la PREMIÈRE erreur de chaque testsuite JUnit
+          # (unit + feature) pour rendre la cause racine visible dans le résumé
+          # du job, sans avoir à télécharger les artefacts.
+          set -uo pipefail
+          python3 - <<'PY'
+          import glob
+          import xml.etree.ElementTree as ET
+
+          for path in sorted(glob.glob('storage/test-results/*.xml')):
+              try:
+                  tree = ET.parse(path)
+              except ET.ParseError:
+                  print(f"({path}: JUnit illisible)")
+                  continue
+              for suite in tree.iter('testsuite'):
+                  n = int(suite.get('failures', '0')) + int(suite.get('errors', '0'))
+                  if n == 0:
+                      continue
+                  for case in suite.iter('testcase'):
+                      for kind in ('failure', 'error'):
+                          node = case.find(kind)
+                          if node is None:
+                              continue
+                          name = case.get('classname', '') + '::' + case.get('name', '')
+                          msg = (node.get('message') or node.text or '')[:400]
+                          print(f"- {path} : `{name}` ({kind})\n  {msg}")
+                          break
+          PY
+
   backend-security:
     timeout-minutes: 45
     name: Backend Security (Composer Audit)
