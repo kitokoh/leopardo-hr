@@ -3510,6 +3510,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get absencesDateMissing => 'Date de demande non renseignée';
   @override
   String get absencesDaysAvailable => ' j disponibles';
+  String get absencesDaysShort => ' j';
   @override
   String get absencesEmployeeLabel => 'Employé';
   @override

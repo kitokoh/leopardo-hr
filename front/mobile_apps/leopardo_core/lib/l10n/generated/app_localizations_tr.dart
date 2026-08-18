@@ -3464,6 +3464,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get absencesDateMissing => 'Talep tarihi belirtilmedi';
   @override
   String get absencesDaysAvailable => ' gün kullanılabilir';
+  String get absencesDaysShort => ' g';
   @override
   String get absencesEmployeeLabel => 'Çalışan';
   @override

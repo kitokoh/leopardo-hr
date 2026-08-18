@@ -1530,7 +1530,8 @@
     "proof_attached": "Supporting document attached",
     "submit_to_hr": "Submit to HR",
     "submitted_snack": "Absence request sent to HR.",
-    "days_available": " day(s) available"
+    "days_available": " day(s) available",
+    "days_short": " d"
   },
   "settings": {
     "journey": {

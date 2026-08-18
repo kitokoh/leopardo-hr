@@ -1530,7 +1530,8 @@
     "proof_attached": "Belge eklendi",
     "submit_to_hr": "İK'ya gönder",
     "submitted_snack": "İzin talebi İK'ya iletildi.",
-    "days_available": " gün kullanılabilir"
+    "days_available": " gün kullanılabilir",
+    "days_short": " g"
   },
   "settings": {
     "journey": {

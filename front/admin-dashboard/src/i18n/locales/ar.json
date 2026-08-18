@@ -2018,7 +2018,8 @@
     "proof_attached": "تم إرفاق المستند",
     "submit_to_hr": "إرسال إلى الموارد البشرية",
     "submitted_snack": "تم إرسال طلب الغياب إلى الموارد البشرية.",
-    "days_available": " أيام متاحة"
+    "days_available": " أيام متاحة",
+    "days_short": " ي"
   },
   "settings": {
     "journey": {

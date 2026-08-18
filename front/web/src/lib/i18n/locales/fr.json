@@ -1530,7 +1530,8 @@
     "proof_attached": "Justificatif joint",
     "submit_to_hr": "Soumettre au RH",
     "submitted_snack": "Demande d'absence transmise au RH.",
-    "days_available": " j disponibles"
+    "days_available": " j disponibles",
+    "days_short": " j"
   },
   "settings": {
     "journey": {

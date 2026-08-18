@@ -3463,6 +3463,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get absencesDateMissing => 'No request date';
   @override
   String get absencesDaysAvailable => ' day(s) available';
+  String get absencesDaysShort => ' d';
   @override
   String get absencesEmployeeLabel => 'Employee';
   @override
