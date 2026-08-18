@@ -330,25 +330,6 @@
     "sending_to_server": "{label} sunucuya gönderiliyor...",
     "retry_after_failure": "{label}. Lütfen tekrar deneyin."
   },
-  "time": {
-    "justNow": "şimdi",
-    "minutesAgo": "{count} dk önce",
-    "hoursAgo": "{count} sa önce",
-    "minutesShort": "{count} dk",
-    "hoursShort": "{count} sa",
-    "never": "hiç",
-    "loadingData": "Veriler yükleniyor...",
-    "confirm": "Onayla",
-    "cancel": "İptal",
-    "inProgress": "Sürüyor…",
-    "valid": "Geçerli",
-    "invalid": "Geçersiz",
-    "statusActive": "Aktif",
-    "statusInactive": "Pasif",
-    "statusSuspended": "Askıya alındı",
-    "statusPending": "Beklemede",
-    "exportCsv": "CSV Dışa Aktar"
-  },
   "_version": "1.0.0",
   "tax_slabs": {
     "delete_confirm": "«{name}» dilimi silinsin mi?",
@@ -762,7 +743,7 @@
         "fr-BE": "Fransizca (Belcika)",
         "fr-CA": "Fransizca (Kanada)",
         "ar-SA": "Arapca (Suudi Arabistan)",
-        "tr-TR": "Turkce (Turkiye)",
+        "tr-TR": "Türkçe (Türkiye)",
         "en-GB": "Ingilizce (Birlesik Krallik)",
         "en-US": "Ingilizce (Amerika Birlesik Devletleri)",
         "ar-MA": "Arapca (Fas)"
@@ -1412,35 +1393,6 @@
     "list_loading": "Ekip listesi yükleniyor...",
     "empty_list": "Bu hesap için görünür çalışan yok."
   },
-  "user_auth": {
-    "company_request": {
-      "title": "Talep gönderildi!",
-      "body": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
-      "info": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak."
-    },
-    "back_to_home": "Ana sayfaya dön",
-    "create_company": "Şirket oluştur",
-    "company_name": "Şirket adı",
-    "company_email": "Şirket e-postası",
-    "sector": "İş sektörü",
-    "country": "Ülke",
-    "city": "Şehir",
-    "phone": "Telefon",
-    "description": "Açıklama",
-    "submit_request": "Talep gönder",
-    "submit_error": "Talep gönderme hatası",
-    "already_account": "Zaten hesabiniz var mi? Giris yapin",
-    "first_name": "Ad",
-    "google_error": "Google hatasi: {error}",
-    "last_name": "Soyad",
-    "login_subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
-    "no_account": "Henuz hesabınız yok mu? Kayit olun",
-    "personal_login": "Kisisel giris",
-    "phone_optional": "Telefon (opsiyonel)",
-    "register_button": "Hesabimi olustur",
-    "register_subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
-    "register_title": "Hesabimi olustur"
-  },
   "partnerPage": {
     "loading": "Alanınız yükleniyor...",
     "applyErrorPrefix": "Başvuru sırasında hata: ",
@@ -1492,6 +1444,35 @@
       "copied": "Kopyalandı!",
       "copyError": "Bağlantı kopyalanamadı. Lütfen elle kopyalayın."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Talep gönderildi!",
+      "body": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
+      "info": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak."
+    },
+    "back_to_home": "Ana sayfaya dön",
+    "create_company": "Şirket oluştur",
+    "company_name": "Şirket adı",
+    "company_email": "Şirket e-postası",
+    "sector": "İş sektörü",
+    "country": "Ülke",
+    "city": "Şehir",
+    "phone": "Telefon",
+    "description": "Açıklama",
+    "submit_request": "Talep gönder",
+    "submit_error": "Talep gönderme hatası",
+    "already_account": "Zaten hesabiniz var mi? Giris yapin",
+    "first_name": "Ad",
+    "google_error": "Google hatasi: {error}",
+    "last_name": "Soyad",
+    "login_subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
+    "no_account": "Henuz hesabınız yok mu? Kayit olun",
+    "personal_login": "Kisisel giris",
+    "phone_optional": "Telefon (opsiyonel)",
+    "register_button": "Hesabimi olustur",
+    "register_subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
+    "register_title": "Hesabimi olustur"
   },
   "api": {
     "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
@@ -1578,6 +1559,39 @@
     "subtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
     "title": "Sistem Yönetimi"
   },
+  "billing": {
+    "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
+    "no_active_period": "Aktif dönem yok",
+    "no_active_subscription": "Aktif abonelik yok",
+    "period_label": "Dönem",
+    "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
+    "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
+    "checkout_failed": "Ödeme oturumu oluşturulamadı."
+  },
+  "contracts": {
+    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
+    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
+    "allStatuses": "Tüm durumlar"
+  },
+  "time": {
+    "justNow": "şimdi",
+    "minutesAgo": "{count} dk önce",
+    "hoursAgo": "{count} sa önce",
+    "minutesShort": "{count} dk",
+    "hoursShort": "{count} sa",
+    "never": "hiç",
+    "loadingData": "Veriler yükleniyor...",
+    "confirm": "Onayla",
+    "cancel": "İptal",
+    "inProgress": "Sürüyor…",
+    "valid": "Geçerli",
+    "invalid": "Geçersiz",
+    "statusActive": "Aktif",
+    "statusInactive": "Pasif",
+    "statusSuspended": "Askıya alındı",
+    "statusPending": "Beklemede",
+    "exportCsv": "CSV Dışa Aktar"
+  },
   "crm": {
     "subtitle": "Potansiyel müşterileri girişten ücretli dönüşüme kadar takip edin",
     "leadsTotal": "Toplam potansiyel müşteri",
@@ -1640,20 +1654,6 @@
     "usefulLinks": "Faydalı bağlantılar",
     "system": "Sistem",
     "systemConfig": "Sistem yapılandırması"
-  },
-  "billing": {
-    "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
-    "no_active_period": "Aktif dönem yok",
-    "no_active_subscription": "Aktif abonelik yok",
-    "period_label": "Dönem",
-    "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
-    "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
-    "checkout_failed": "Ödeme oturumu oluşturulamadı."
-  },
-  "contracts": {
-    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
-    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
-    "allStatuses": "Tüm durumlar"
   },
   "growth": {
     "title": "Growth Yönetimi",

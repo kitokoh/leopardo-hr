@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
 
 export type RejectSessionModalLabels = {
   rejectModalTitle: string;
@@ -55,22 +56,12 @@ export function RejectSessionModal({ employeeName, onConfirm, onCancel, loading 
         </div>
 
         <div className="mt-5 flex gap-3 justify-end">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={loading}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-transparent disabled:opacity-50"
-          >
+          <Button variant="outline" onClick={onCancel} disabled={loading} className="bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-transparent">
             {labels.cancel}
-          </button>
-          <button
-            type="button"
-            onClick={() => { if (isValid) onConfirm(reason.trim()); }}
-            disabled={loading || !isValid}
-            className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          </Button>
+          <Button variant="danger" onClick={() => { if (isValid) onConfirm(reason.trim()); }} disabled={loading || !isValid} loading={loading} className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-500">
             {loading ? labels.rejectModalInProgress : labels.rejectModalConfirm}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

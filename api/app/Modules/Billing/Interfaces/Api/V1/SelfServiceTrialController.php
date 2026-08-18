@@ -62,9 +62,21 @@ class SelfServiceTrialController extends Controller
         // « compte déjà existant » est déplacée à l'étape verify, où le
         // client a prouvé la possession de la boîte mail (OTP valide).
         // L'existence est simplement loggée côté serveur ici.
-        $existingManager = $this->requestTrialSignup->findExistingManager($email);
-        if ($existingManager) {
-            Log::info('trial.signup_duplicate_email_uniform_response', ['email' => $email]);
+        // Issue #4949 : l'existence d'un manager ne doit JAMAIS produire un
+        // 500 brut — une erreur DB/schéma (ex. search_path prod) est convertie
+        // en 503 localisé réessayable (même contrat que #4866/#4874). La
+        // détection d'email existant est purement informative ici : la réponse
+        // reste uniforme (anti-énumération #3945).
+        try {
+            $existingManager = $this->requestTrialSignup->findExistingManager($email);
+            if ($existingManager) {
+                Log::info('trial.signup_duplicate_email_uniform_response', ['email' => $email]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('trial.signup_duplicate_check_failed', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
@@ -217,12 +229,25 @@ class SelfServiceTrialController extends Controller
      */
     public function status(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'token' => ['required', 'string', 'size:64'],
-        ]);
+        // #4931 : le provisioning_token ne doit plus voyager en query string.
+        // Header X-Token privilégié (la vitrine passe par le proxy same-origin
+        // /api/forms/trial-status qui le positionne) ; ?token= reste accepté
+        // en fallback pour les clients déjà déployés (dépréciation).
+        $token = trim((string) $request->header('X-Token', ''));
+        if ($token === '') {
+            $token = trim((string) $request->query('token', ''));
+        }
+
+        if ($token === '' || strlen($token) !== 64) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'PROVISIONING_TOKEN_INVALID',
+                'message' => __('billing.trial_status_token_invalid'),
+            ], 404);
+        }
 
         $row = DB::table('trial_provisionings')
-            ->where('provisioning_token', $validated['token'])
+            ->where('provisioning_token', $token)
             ->first();
 
         if ($row === null) {

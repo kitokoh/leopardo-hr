@@ -1,5 +1,9 @@
 # Enterprise Multilingual Infrastructure - Leopardo RH
 
+> ⚠️ **MAJ 2026-08-17** : document historique (2026-05-07). Les chemins `front/mobile/`
+> cités plus bas sont obsolètes (supprimés par la PR #754) — voir `front/mobile_apps/` et
+> `shared/i18n/` pour l'architecture i18n actuelle.
+
 ## 1. Architecture finale
 
 Le systeme multilingue passe d une logique dispersee a une logique centralisee:
@@ -42,7 +46,7 @@ Chaque fichier locale suit ces regles:
 - `sync-web.js`
   - genere `front/admin-dashboard/src/i18n/locales/{locale}.json`
 - `sync-mobile.js`
-  - genere `front/mobile/lib/l10n/app_{locale}.arb`
+  - genere `front/mobile_apps/leopardo_core/lib/l10n/app_{locale}.arb`
 
 ## 5. Remote translation updates
 

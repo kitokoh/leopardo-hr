@@ -6,6 +6,7 @@ import { isValidProvisioningToken } from '../_lib/provisioning-token';
 
 /**
  * GET /api/forms/trial-status?token=<provisioning_token>
+ * Le token est relayé au backend via l'en-tête X-Token (#4931 : plus jamais en query string).
  *
  * #2469 — proxy same-origin vers GET /api/v1/trial/status du backend.
  * Permet à la vitrine de suivre l'état du provisioning du guided trial
@@ -55,9 +56,10 @@ export async function GET(request: NextRequest) {
 
   try {
     const backendResponse = await fetch(
-      `${LEOPARDO_API_URL}/api/v1/trial/status?token=${encodeURIComponent(token)}`,
+      `${LEOPARDO_API_URL}/api/v1/trial/status`,
       {
         method: 'GET',
+        headers: { 'X-Token': token },
         headers: {
           Accept: 'application/json',
         },

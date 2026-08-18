@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src --max-warnings 0",
+    "lint": "eslint src e2e --max-warnings 0",
+    "lint:e2e": "eslint e2e --max-warnings 0",
     "check:mojibake": "node scripts/check-mojibake.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -21,10 +22,12 @@
     "gsap": "^3.15.0",
     "lucide-react": "^1.30.0",
     "next": "16.3.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.85.0",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -34,6 +37,7 @@
     "@testing-library/user-event": "^14.6.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^26",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^10",
@@ -42,7 +46,8 @@
     "jest-environment-jsdom": "^30.4.1",
     "tailwindcss": "^4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "@types/qrcode": "^1.5.6"
   },
   "overrides": {
     "postcss": "^8.5.23",

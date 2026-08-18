@@ -7,10 +7,10 @@
 
 ## 1. Diagnostic (résumé des audits)
 
-Leopardo RH est un monolithe modulaire DDD (19 modules), Laravel 12 + 6 apps Flutter + Next.js 16 + Vue 3, avec une gouvernance par issues remarquable et une CI riche (31 workflows). Les audits (2026-08-07, 24 issues #1483–#1506) montrent :
+Leopardo RH est un monolithe modulaire DDD (18 modules — le squelette `Training` a été supprimé, #3622), Laravel 12 + 6 apps Flutter + Next.js 16 + Vue 3, avec une gouvernance par issues remarquable et une CI riche (31 workflows). Les audits (2026-08-07, 24 issues #1483–#1506) montrent :
 
 - **Force** : architecture modulaire saine, multi-tenant `search_path` PG solide, discipline de gouvernance réelle.
-- **Fragilité** : largeur > profondeur (19 modules, 6 apps), moteur de paie multi-pays peu testé (**2 fichiers de test**), sécurité de confiance à consolider (P0 #1472 : rotation Redis + purge git), dette de test (schéma manuel 2 150 l. vs 99 migrations, 20 interfaces orphelines), P0 mobiles récurrents.
+- **Fragilité** : largeur > profondeur (18 modules, 6 apps), moteur de paie multi-pays peu testé (**2 fichiers de test**), sécurité de confiance à consolider (P0 #1472 : rotation Redis + purge git), dette de test (schéma manuel 2 150 l. vs 99 migrations, 20 interfaces orphelines), P0 mobiles récurrents.
 - **Opportunité** : la paie est le vrai moat — c'est la zone la moins approfondie alors que c'est le contrat de confiance qui vend.
 
 **Conclusion** : le projet a besoin d'une **profondeur ciblée**, pas d'une réduction. Ce plan définit ce qu'on approfondit (le noyau), ce qui reste vivant en mode maintenance assumé (le périphérique), et les issues pour y arriver.

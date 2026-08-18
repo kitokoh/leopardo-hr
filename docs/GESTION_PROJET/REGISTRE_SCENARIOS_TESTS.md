@@ -1,4 +1,12 @@
+> ⚠️ **MAJ 2026-08-17** : l'arborescence mobile historique `front/mobile/` a été supprimée (PR #754).
+> Les apps vivent sous `front/mobile_apps/*` ; les jobs mobile de CI sont gérés par `mobile-apps-ci.yml`.
+> Les mentions `front/mobile_apps/**` ci-dessous (ex-`front/mobile/**`) sont historiques et ne peuvent plus se déclencher.
+
 # REGISTRE DES SCENARIOS DE TESTS
+
+> ⚠️ **MAJ 2026-08-17** : les références à `front/mobile/` ci-dessous sont obsolètes
+> (chemin supprimé par la PR #754 du 2026-06-13). Le chemin actuel est `front/mobile_apps/`
+> (`leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_platform_admin`, `leopardo_marketing`).
 
 ## Objectif 
   
@@ -14,7 +22,7 @@ Fournir une source de verite unique  pour savoir:
 Toute nouvelle fonctionnalite, extension de parcours critique ou changement de comportement dans:
 
 - `api/`
-- `front/mobile/`
+- `front/mobile_apps/`
 - `front/admin-dashboard/`
 
 doit mettre a jour:
@@ -29,8 +37,8 @@ Le workflow `Governance Gates` bloque la PR si la surface fonctionnelle change s
 | Domaine | Base de scenarios | Workflow source de verite | Artefacts minimums | Gate de deploiement |
 |---|---|---|---|---|
 | API backend | `docs/GESTION_PROJET/SCENARIOS_TEST_API_GITHUB_ACTIONS.md` | `Tests - Leopardo RH` | JUnit unit/feature, logs, quality summary, coverage clover + HTML | Obligatoire |
-| Mobile Flutter | `docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md` | `Tests - Leopardo RH` | `test-results.json`, `lcov.info`, quality summary, smoke APK | Obligatoire si `front/mobile/**` change |
-| Web admin | `docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md` | `Web CI - Leopardo Admin` | rapport Playwright HTML, JUnit Playwright, traces, screenshots, videos en echec | Obligatoire si `front/front/admin-dashboard/**` change |
+| Mobile Flutter | `docs/GESTION_PROJET/SCENARIOS_TEST_MOBILE_FLUTTER.md` | `Tests - Leopardo RH` | `test-results.json`, `lcov.info`, quality summary, smoke APK | Obligatoire si `front/mobile_apps/**` change |
+| Web admin | `docs/GESTION_PROJET/SCENARIOS_TEST_WEB_ADMIN_GITHUB_ACTIONS.md` | `Web CI - Leopardo Admin` | rapport Playwright HTML, JUnit Playwright, traces, screenshots, videos en echec | Obligatoire si `front/admin-dashboard/**` change |
 | Web vitrine / manager | `front/web/src/modules/vitrine/` + `CHANGELOG.md` | `Web Marketing CI - Leopardo Public` | lint Next.js, build Next.js, locale rail valide, metadata stables | Obligatoire si `front/web/**` change |
 | Gouvernance repo | `tools/check-governance.ps1` + ce registre | `Tests - Leopardo RH` | journal CI, verifications changelog/scenarios | Obligatoire |
 | Deploiement main | `docs/GESTION_PROJET/RUNBOOK_DEPLOY.md` | `Deploy - Leopardo RH` | healthcheck post-deploy, rollback hook si echec | Strictement bloque tant que les workflows requis ne sont pas verts |
@@ -41,7 +49,7 @@ Le workflow `Governance Gates` bloque la PR si la surface fonctionnelle change s
 Un SHA est deployable seulement si:
 
 1. `Tests - Leopardo RH` est `success`
-2. `Web CI - Leopardo Admin` est `success` si le SHA touche `front/front/admin-dashboard/**`
+2. `Web CI - Leopardo Admin` est `success` si le SHA touche `front/admin-dashboard/**`
 3. `Web Marketing CI - Leopardo Public` est `success` si le SHA touche `front/web/**`
 4. les artefacts minimums du domaine existent
 5. aucun job critique n'est `failure`, `cancelled` ou `timed_out`
@@ -123,7 +131,7 @@ Quand un domaine gagne une feature significative, ajouter:
 
 ## Notes 2026-05-08
 
-- Le workflow `Tests - Leopardo RH` ne doit pas lancer le job mobile uniquement parce que `.github/workflows/tests.yml` change. La dette mobile historique doit rester visible, mais elle ne doit bloquer une PR backend/admin/web que si `front/mobile/**` bouge vraiment.
+- Le workflow `Tests - Leopardo RH` ne doit pas lancer le job mobile uniquement parce que `.github/workflows/tests.yml` change. La dette mobile historique doit rester visible, mais elle ne doit bloquer une PR backend/admin/web que si `front/mobile_apps/**` bouge vraiment.
 - La gate `Backend Quality` doit rester veridique sur le code PHP touche par la PR. Tant que tout l'historique PHPStan n'est pas resorbe, privilegier un scope diff-aware plutot qu'un faux vert global ou un blocage hors perimetre.
 - Le contrat d'auth plateforme (`/api/v1/platform/auth/*`, `role=super_admin`, `two_fa_enabled`, `202 TWO_FA_REQUIRED`) fait maintenant partie du perimetre admin critique et doit rester documente et teste.
 - Les extensions attendance qui rendent la valeur terrain visible (impact business des anomalies, actions manager recommandees, rapport mensuel avec estimation paie, checklist go-live) font partie des scenarios API critiques et doivent rester couvertes par `Tests - Leopardo RH`.
@@ -131,7 +139,7 @@ Quand un domaine gagne une feature significative, ajouter:
 - La vue portefeuille health (`/api/v1/platform/companies/health`) est critique pour le pilotage commercial : elle doit garder MRR, repartition des risques et next action par client dans la CI backend.
 - Le contrat abonnement plateforme (`/api/v1/platform/companies/{company}/subscription`) est critique pour la commercialisation : il doit rester fournisseur-agnostique et valider plan, statut et dates avant toute integration paiement.
 - Le catalogue plans plateforme (`/api/v1/platform/plans`) doit rester teste afin que l'admin-dashboard ne hardcode jamais les `plan_id` ou les limites de packaging.
-- Le cockpit admin v5.0 doit afficher les donnees reelles du portefeuille, du detail health, des abonnements et des plans. Toute regression `front/front/admin-dashboard/**` sur ces vues doit rester couverte par build/Playwright.
+- Le cockpit admin v5.0 doit afficher les donnees reelles du portefeuille, du detail health, des abonnements et des plans. Toute regression `front/admin-dashboard/**` sur ces vues doit rester couverte par build/Playwright.
 - L'intake demandes clients de l'admin-dashboard doit rester branche sur `/api/v1/platform/company-requests` : filtres statut, compteurs et actions approuver/rejeter font partie du parcours commercial critique.
 - L'accueil admin v5.0 ne doit plus dependre d'endpoints mockes `/admin/dashboard/*`; il synthetise les contrats plateforme existants pour garder un premier ecran exploitable.
 - L'approbation d'une demande client doit verifier le provisioning complet : company publique, manager principal tenant, invitation et `approved_company_id`.

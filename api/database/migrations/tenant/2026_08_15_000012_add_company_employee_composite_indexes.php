@@ -27,9 +27,9 @@ return new class extends Migration
     public function up(): void
     {
         foreach (self::INDEXES as $table => $index) {
-            if (! Schema::hasTable($table)
-                || ! Schema::hasColumn($table, 'company_id')
-                || ! Schema::hasColumn($table, 'employee_id')) {
+            if (! schemaTableExists($table)
+                || ! schemaHasColumn($table, 'company_id')
+                || ! schemaHasColumn($table, 'employee_id')) {
                 continue;
             }
 

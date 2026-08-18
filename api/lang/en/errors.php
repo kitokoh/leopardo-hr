@@ -45,6 +45,7 @@ return [
     'CONFLICT' => 'A data conflict prevents this operation.',
     'VALIDATION_FAILED' => 'Some fields are incorrect.',
     'TOO_MANY_REQUESTS' => 'Too many requests. Try again later.',
+    'AI_QUOTA_EXCEEDED' => 'Monthly AI quota reached. Try again next month.',
     'SERVICE_UNAVAILABLE' => 'Service temporarily unavailable.',
     'HTTP_ERROR' => 'An error occurred. Please try again.',
     'UNSUPPORTED_API_VERSION' => 'Unsupported API version.',

@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('contracts')) {
+        if (! schemaTableExists('contracts')) {
             Schema::create('contracts', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -45,7 +45,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('contract_amendments')) {
+        if (! schemaTableExists('contract_amendments')) {
             Schema::create('contract_amendments', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('contract_id');

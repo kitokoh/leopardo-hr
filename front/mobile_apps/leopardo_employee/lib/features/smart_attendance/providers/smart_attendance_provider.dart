@@ -191,8 +191,15 @@ class ActiveGeoSessionNotifier extends StateNotifier<ActiveGeoSessionState> {
     if (state.isMonitoring) return;
 
     try {
-      await _backgroundService.startMonitoring(config);
-      state = state.copyWith(isMonitoring: true, clearError: true);
+      // #4960 : le service retourne désormais un booléen — un refus de
+      // permission (ou une config GPS absente) ne doit plus afficher
+      // « Surveillance active » alors que rien ne tourne.
+      final started = await _backgroundService.startMonitoring(config);
+      state = state.copyWith(
+        isMonitoring: started,
+        clearError: started,
+        error: started ? null : 'sa.permissionDenied',
+      );
     } catch (_) {
       state = state.copyWith(
         isMonitoring: false,
