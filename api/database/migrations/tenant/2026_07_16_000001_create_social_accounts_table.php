@@ -20,7 +20,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('social_accounts')) {
+        if (schemaTableExists('social_accounts')) {
             return;
         }
 

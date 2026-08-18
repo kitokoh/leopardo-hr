@@ -11,7 +11,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('notification_preferences')) {
+        if (! schemaTableExists('notification_preferences')) {
             Schema::create('notification_preferences', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -31,7 +31,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('communication_events')) {
+        if (! schemaTableExists('communication_events')) {
             Schema::create('communication_events', function (Blueprint $table): void {
                 $table->id();
                 $table->uuid('company_id')->index();

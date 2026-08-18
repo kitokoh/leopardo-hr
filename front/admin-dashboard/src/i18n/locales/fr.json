@@ -337,25 +337,6 @@
       "prepareIntegrationsDesc": "Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs."
     }
   },
-  "time": {
-    "justNow": "à l'instant",
-    "minutesAgo": "il y a {count} min",
-    "hoursAgo": "il y a {count} h",
-    "minutesShort": "{count} m",
-    "hoursShort": "{count} h",
-    "never": "jamais",
-    "loadingData": "Chargement des données...",
-    "confirm": "Confirmer",
-    "cancel": "Annuler",
-    "inProgress": "En cours…",
-    "valid": "Valide",
-    "invalid": "Invalide",
-    "statusActive": "Actif",
-    "statusInactive": "Inactif",
-    "statusSuspended": "Suspendu",
-    "statusPending": "Attente",
-    "exportCsv": "Export CSV"
-  },
   "_version": "1.0.0",
   "signup": {
     "roleHr": "RH",
@@ -503,13 +484,13 @@
     "language": {
       "label": "Langue",
       "variants": {
-        "fr-FR": "Francais (France)",
+        "fr-FR": "Français (France)",
         "en-US": "Anglais (Etats-Unis)",
         "en-GB": "Anglais (Royaume-Uni)",
-        "fr-CA": "Francais (Canada)",
+        "fr-CA": "Français (Canada)",
         "tr-TR": "Turc (Turquie)",
         "ar-SA": "Arabe (Arabie saoudite)",
-        "fr-BE": "Francais (Belgique)",
+        "fr-BE": "Français (Belgique)",
         "ar-MA": "Arabe (Maroc)"
       }
     },
@@ -1412,35 +1393,6 @@
     "list_loading": "Chargement de la liste équipe...",
     "empty_list": "Aucun employé visible pour ce compte."
   },
-  "user_auth": {
-    "company_request": {
-      "title": "Demande soumise !",
-      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
-      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
-    },
-    "back_to_home": "À l'accueil",
-    "create_company": "Créer une entreprise",
-    "company_name": "Nom de l'entreprise",
-    "company_email": "Email entreprise",
-    "sector": "Secteur d'activité",
-    "country": "Pays",
-    "city": "Ville",
-    "phone": "Téléphone",
-    "description": "Description",
-    "submit_request": "Soumettre la demande",
-    "submit_error": "Erreur lors de la soumission",
-    "already_account": "Deja un compte ? Se connecter",
-    "first_name": "Prenom",
-    "google_error": "Erreur Google : {error}",
-    "last_name": "Nom",
-    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
-    "no_account": "Pas encore de compte ? S'inscrire",
-    "personal_login": "Connexion personnelle",
-    "phone_optional": "Telephone (optionnel)",
-    "register_button": "Creer mon compte",
-    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
-    "register_title": "Creer mon compte"
-  },
   "partnerPage": {
     "loading": "Chargement de votre espace...",
     "applyErrorPrefix": "Erreur lors de la candidature : ",
@@ -1492,6 +1444,35 @@
       "copied": "Copié !",
       "copyError": "Impossible de copier le lien. Copiez-le manuellement."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
   },
   "api": {
     "sessionExpired": "Session expirée. Reconnexion en cours...",
@@ -1578,6 +1559,39 @@
     "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
     "title": "Administration Système"
   },
+  "billing": {
+    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
+    "no_active_period": "Aucune période active",
+    "no_active_subscription": "Aucun abonnement active",
+    "period_label": "Période",
+    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
+    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+    "checkout_failed": "Impossible de créer la session de paiement."
+  },
+  "contracts": {
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts"
+  },
+  "time": {
+    "justNow": "à l'instant",
+    "minutesAgo": "il y a {count} min",
+    "hoursAgo": "il y a {count} h",
+    "minutesShort": "{count} m",
+    "hoursShort": "{count} h",
+    "never": "jamais",
+    "loadingData": "Chargement des données...",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "inProgress": "En cours…",
+    "valid": "Valide",
+    "invalid": "Invalide",
+    "statusActive": "Actif",
+    "statusInactive": "Inactif",
+    "statusSuspended": "Suspendu",
+    "statusPending": "Attente",
+    "exportCsv": "Export CSV"
+  },
   "crm": {
     "subtitle": "Suivi des leads de l'entrée jusqu'à la conversion payante.",
     "leadsTotal": "Leads totaux",
@@ -1640,20 +1654,6 @@
     "usefulLinks": "Liens utiles",
     "system": "Système",
     "systemConfig": "Configuration système"
-  },
-  "billing": {
-    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
-    "no_active_period": "Aucune période active",
-    "no_active_subscription": "Aucun abonnement active",
-    "period_label": "Période",
-    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
-    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
-    "checkout_failed": "Impossible de créer la session de paiement."
-  },
-  "contracts": {
-    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
-    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
-    "allStatuses": "Tous les statuts"
   },
   "growth": {
     "title": "Administration Growth",

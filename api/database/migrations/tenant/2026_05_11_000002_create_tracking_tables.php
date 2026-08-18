@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('vehicles')) {
+        if (! schemaTableExists('vehicles')) {
             Schema::create('vehicles', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -38,7 +38,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('vehicle_assignments')) {
+        if (! schemaTableExists('vehicle_assignments')) {
             Schema::create('vehicle_assignments', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('vehicle_id');
@@ -56,7 +56,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('vehicle_trips')) {
+        if (! schemaTableExists('vehicle_trips')) {
             Schema::create('vehicle_trips', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('vehicle_id');
@@ -84,7 +84,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('vehicle_alerts')) {
+        if (! schemaTableExists('vehicle_alerts')) {
             Schema::create('vehicle_alerts', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('vehicle_id');
@@ -105,7 +105,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('vehicle_maintenances')) {
+        if (! schemaTableExists('vehicle_maintenances')) {
             Schema::create('vehicle_maintenances', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('vehicle_id');

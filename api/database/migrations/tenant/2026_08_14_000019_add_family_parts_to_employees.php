@@ -22,11 +22,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('employees')) {
+        if (! schemaTableExists('employees')) {
             return;
         }
 
-        if (! Schema::hasColumn('employees', 'family_parts')) {
+        if (! schemaHasColumn('employees', 'family_parts')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->decimal('family_parts', 3, 1)->nullable();
             });
@@ -35,11 +35,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('employees')) {
+        if (! schemaTableExists('employees')) {
             return;
         }
 
-        if (Schema::hasColumn('employees', 'family_parts')) {
+        if (schemaHasColumn('employees', 'family_parts')) {
             Schema::table('employees', function (Blueprint $blueprint): void {
                 $blueprint->dropColumn('family_parts');
             });

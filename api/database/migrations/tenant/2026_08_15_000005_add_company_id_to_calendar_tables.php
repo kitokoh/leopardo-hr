@@ -16,11 +16,11 @@ return new class extends Migration
     public function up(): void
     {
         foreach (['calendar_connections', 'calendar_events'] as $table) {
-            if (! Schema::hasTable($table)) {
+            if (! schemaTableExists($table)) {
                 continue;
             }
 
-            if (! Schema::hasColumn($table, 'company_id')) {
+            if (! schemaHasColumn($table, 'company_id')) {
                 Schema::table($table, function ($table): void {
                     $table->uuid('company_id')->nullable()->after('employee_id');
                     $table->index('company_id');
@@ -32,7 +32,7 @@ return new class extends Migration
     public function down(): void
     {
         foreach (['calendar_connections', 'calendar_events'] as $table) {
-            if (Schema::hasTable($table) && Schema::hasColumn($table, 'company_id')) {
+            if (schemaTableExists($table) && schemaHasColumn($table, 'company_id')) {
                 Schema::table($table, function ($table): void {
                     $table->dropIndex(['company_id']);
                     $table->dropColumn('company_id');

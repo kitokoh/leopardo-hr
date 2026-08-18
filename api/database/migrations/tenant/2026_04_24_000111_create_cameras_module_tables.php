@@ -18,7 +18,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('cameras')) {
+        if (! schemaTableExists('cameras')) {
             Schema::create('cameras', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->uuid('company_id')->index();
@@ -39,7 +39,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('camera_access_tokens')) {
+        if (! schemaTableExists('camera_access_tokens')) {
             Schema::create('camera_access_tokens', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->uuid('company_id')->index();
@@ -63,7 +63,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('camera_permissions')) {
+        if (! schemaTableExists('camera_permissions')) {
             Schema::create('camera_permissions', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->uuid('company_id')->index();
@@ -82,7 +82,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('camera_access_logs')) {
+        if (! schemaTableExists('camera_access_logs')) {
             Schema::create('camera_access_logs', function (Blueprint $table): void {
                 $table->increments('id');
                 $table->uuid('company_id')->index();

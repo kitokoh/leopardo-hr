@@ -21,7 +21,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('audit_logs') || ! Schema::hasColumn('audit_logs', 'auditable_id')) {
+        if (! schemaTableExists('audit_logs') || ! schemaHasColumn('audit_logs', 'auditable_id')) {
             return;
         }
 
