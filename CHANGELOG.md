@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **docs(spec): #5017 — clôture de paie en 2 étapes (RH puis comptable) + verrouillage tracé (progrès #5017)** — spec complète (statuts, 5 endpoints, audit trail, UI web, e2e) ; implémentation backend bloquée sandbox (PHP requis).
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032).**
 - **feat(web/portail): workflow de clôture paie 2 étapes + verrouillage dans l'onglet Cycles (Closes #5017, EXIG-37/FLOW 6).** Le portail expose désormais le cycle complet sur les `payroll-runs` : **Calculer** (draft/calculating/processing/error), **Valider (RH)** (calculated → `POST /validate`, `PayrollClosingService::validateRh`), **Verrouiller** (validated → `POST /lock`, clôture comptable) et **Déverrouiller** (locked), avec modal de confirmation, feedback localisé et rafraîchissement. Statuts localisés ×4 (brouillon/calculé/validé/verrouillé).
