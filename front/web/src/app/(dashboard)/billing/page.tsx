@@ -173,7 +173,7 @@ export default function BillingPage() {
     try {
       const origin = window.location.origin;
       const returnUrl = encodeURIComponent(`${origin}/billing`);
-      const res = await apiFetch(`/billing/portal?return_url=${returnUrl}`);
+      const res = await apiFetch(`/billing/portal?return_url=${returnUrl}`, { method: 'POST' });
       const data = await res.json() as { data?: { portal_url?: string } };
       if (data.data?.portal_url) {
         window.location.href = data.data.portal_url;

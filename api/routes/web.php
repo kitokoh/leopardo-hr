@@ -28,7 +28,13 @@ Route::get('/p/{code}', function () {
 })->middleware('throttle:60,1')->name('partner.link');
 
 // Issue #2253 — magic link d'accès au sandbox de démo (jeton à usage unique).
+// #4931 : /demo-login CONSOMME un jeton à usage unique (effet de bord).
+// Le GET est CONSERVÉ volontairement : un magic link dans un email doit
+// rester cliquable (un navigateur ne fait pas de POST depuis un lien
+// email) — exception documentée, token single-use + expiration déjà en
+// place. Un alias POST est ajouté pour les clients API/JSON.
 Route::middleware('throttle:auth-sensitive')->get('/demo-login/{token}', DemoLoginController::class);
+Route::middleware('throttle:auth-sensitive')->post('/demo-login/{token}', DemoLoginController::class);
 
 Route::get('/docs', function () {
     return view('docs.openapi');

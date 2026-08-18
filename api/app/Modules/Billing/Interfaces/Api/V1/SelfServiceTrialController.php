@@ -204,12 +204,25 @@ class SelfServiceTrialController extends Controller
      */
     public function status(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'token' => ['required', 'string', 'size:64'],
-        ]);
+        // #4931 : le provisioning_token ne doit plus voyager en query string.
+        // Header X-Token privilégié (la vitrine passe par le proxy same-origin
+        // /api/forms/trial-status qui le positionne) ; ?token= reste accepté
+        // en fallback pour les clients déjà déployés (dépréciation).
+        $token = trim((string) $request->header('X-Token', ''));
+        if ($token === '') {
+            $token = trim((string) $request->query('token', ''));
+        }
+
+        if ($token === '' || strlen($token) !== 64) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'PROVISIONING_TOKEN_INVALID',
+                'message' => __('billing.trial_status_token_invalid'),
+            ], 404);
+        }
 
         $row = DB::table('trial_provisionings')
-            ->where('provisioning_token', $validated['token'])
+            ->where('provisioning_token', $token)
             ->first();
 
         if ($row === null) {
