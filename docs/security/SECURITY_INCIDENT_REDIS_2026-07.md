@@ -10,13 +10,13 @@ Documentation nettoyée le : 2026-07-19
 ## 1. Résumé
 
 Un mot de passe Redis Upstash réel a été committé en clair dans plusieurs fichiers Markdown
-du dépôt (`docs/audits/AUDIT.md`, `docs/PLAN_ACTION/POST_AUDIT_2026/08_SCALABILITE_REDIS.md`,
-`docs/PLAN_ACTION/POST_AUDIT_2026/01_ROADMAP_30J.md`, `docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`).
+du dépôt (`docs/audits/AUDIT.md`, `docs/archive/PLAN_ACTION/POST_AUDIT_2026/08_SCALABILITE_REDIS.md`,
+`docs/archive/PLAN_ACTION/POST_AUDIT_2026/01_ROADMAP_30J.md`, `docs/archive/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md`).
 Le dépôt GitHub `kitokoh/leopardo-hr` est **public** (5 étoiles, 1 fork au moment de cet audit) :
 n'importe qui pouvant lire l'historique git a accès à ce mot de passe depuis sa date de commit.
 
 Ce document a été détecté lors de plusieurs audits précédents (`docs/audits/AUDIT.md` section 2.3,
-`docs/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md` section 4) mais la case de remédiation
+`docs/archive/PLAN_ACTION2/08_AUDIT_ARCHITECTURE_TECH.md` section 4) mais la case de remédiation
 restait **non cochée** sans preuve de rotation effective.
 
 ## 2. Ce qui a été fait
