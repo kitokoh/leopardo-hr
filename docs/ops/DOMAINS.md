@@ -14,6 +14,7 @@
 | API Laravel | `https://gestionemployerbackend.onrender.com` | API, santé, documentation et clients web/mobile/kiosque |
 | API versionnée | `https://gestionemployerbackend.onrender.com/api/v1` | Base URL des consommateurs API |
 | Portail web Vercel | `https://gestionemployer-backend.vercel.app` | Vitrine et parcours web actuellement déployés |
+| Admin plateforme (super-admin) | `https://leo-admin.pages.dev` | Back-office super-admin (Cloudflare Pages, #3766) |
 
 Ces valeurs correspondent aux defaults exécutables et au backend Render vérifié
 joignable (HTTP 200). Elles doivent rester la référence pour les builds tant que
@@ -37,6 +38,7 @@ reste une responsabilité d'infrastructure distincte (#3452).
 |---|---|---|---|
 | `gestionemployerbackend.onrender.com` | API backend (base `/api/v1`) — service Render | `live` | Backend effectivement joint par la prod. |
 | `gestionemployer-backend.vercel.app` | Vitrine/Web frontend (Vercel) | `live` | HTTP 200 vérifié le 2026-08-15. |
+| `leo-admin.pages.dev` | Admin plateforme super-admin (Cloudflare Pages) | `live` | `CORS_ALLOWED_ORIGINS` + `SANCTUM_STATEFUL_DOMAINS` de référence (#3766). |
 | `api.leopardo-rh.com` | API backend cible (`APP_URL`) | `target` | NXDOMAIN — #3452. |
 | `app.leopardo-rh.com` | Web app cible (`FRONTEND_URL`, CORS, SANCTUM) | `target` | NXDOMAIN — #3452. |
 | `leopardo-rh.com` | Vitrine cible | `target` | NXDOMAIN — vitrine DOWN (#3452). |
