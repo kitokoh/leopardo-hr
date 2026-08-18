@@ -316,18 +316,18 @@ class _SalaryAdvanceListScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text(context.l10n.salaryAdvanceCancelTitle),
-        content: const Text(
+        title: Text(context.l10n.salaryAdvanceCancelTitle),
+        content: Text(
           context.l10n.salaryAdvanceCancelBody,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text(context.l10n.salaryAdvanceKeep),
+            child: Text(context.l10n.salaryAdvanceKeep),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(context.l10n.salaryAdvanceCancelAction),
+            child: Text(context.l10n.salaryAdvanceCancelAction),
           ),
         ],
       ),
@@ -339,7 +339,7 @@ class _SalaryAdvanceListScreenState
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(context.l10n.salaryAdvanceCancelled)),
+        SnackBar(content: Text(context.l10n.salaryAdvanceCancelled)),
       );
     } catch (error) {
       if (!context.mounted) return;
