@@ -32,6 +32,12 @@ concurrency:
 
 jobs:
   should-run:
+    # #5032 : un parent CANCELLED/skipped (déploiement supersédé par un push
+    # plus récent) ne doit pas consommer de runner juste pour laisser le
+    # deploy-gate le dire. On ne filtre QUE ces conclusions : un parent failed
+    # reste traité (le gate vérifie deploy-api précisément — un échec mobile
+    # ne doit pas bloquer le smoke API).
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
     timeout-minutes: 45
     name: Check deployment status
     runs-on: ubuntu-latest

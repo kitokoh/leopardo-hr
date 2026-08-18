@@ -11,7 +11,7 @@ use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Support\Facades\DB;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -21,19 +21,7 @@ use Tests\TestCase;
  */
 class LeavePendingReservationTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     /**
      * @return array{0: \App\Core\Tenant\Domain\Models\Company, 1: \App\Core\Auth\Domain\Models\Employee, 2: AbsenceType, 3: LeavePolicy}
@@ -59,7 +47,7 @@ class LeavePendingReservationTest extends TestCase
             'accrual_type' => 'yearly',
             'accrual_amount' => 10,
             'carry_forward' => true,
-            'max_carry_forward' => 30,
+            'carry_forward_max' => 30,
             'active' => true,
         ]);
 

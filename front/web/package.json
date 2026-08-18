@@ -6,20 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-<<<<<<< HEAD
     "lint": "eslint src e2e --max-warnings 0",
-=======
-    "lint": "eslint src --max-warnings 0",
     "lint:e2e": "eslint e2e --max-warnings 0",
->>>>>>> 572c7fd9a (fix(web): purge CSS orphelins vitrine + lint e2e (Closes #4943, #4945))
     "check:mojibake": "node scripts/check-mojibake.mjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug",
-    "lint:src": "eslint src --max-warnings 0"
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",

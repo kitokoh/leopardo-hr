@@ -1,48 +1,8 @@
 # openapi-coverage-allowlist.txt — gaps documentés (exclusions volontaires)
 #
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier
-# fait échouer la CI. Ajouter une route ici UNIQUEMENT avec justification
-# (issue de suivi, alias documenté ailleurs, surface hors contrat public).
-# Entrées devenues documentées à purger (issue #3596) : le checker échoue
-# avec --strict-staleness. Régénéré le 2026-08-17 (revue PM, lots 2-5).
-# Les 10 gaps restants (absence/cabinet/integrations) sont documentés dans
-# la PR #4962 (lot 1) — après merge des deux PRs OpenAPI, coverage 724/724.
+# fait échouer la CI. Ajouter une route ici UNIQUEMENT avec justification.
+# ÉTAT 2026-08-18 : 744/744 routes couvertes — allowlist VIDE.
+# Les verbes d'action PUT/PATCH dépréciés (#4930) sont désormais documentés
+# dans openapi.yaml avec `deprecated: true` (tags [Deprecated]).
 
-
-## modules/absence.php — 3 route(s)
-PUT /v1/absences/{param}/approve
-PUT /v1/absences/{param}/reject
-GET /v1/absences/{param}/proof
-
-## modules/cabinet.php — 4 route(s)
-DELETE /v1/cabinet/shares/{param}
-GET /v1/cabinet/shared/{param}
-GET /v1/cabinet/shares
-POST /v1/cabinet/shares
-
-## modules/integrations.php — 5 route(s)
-DELETE /v1/calendar/disconnect/{param}
-GET /v1/calendar/connections
-GET /v1/calendar/events
-POST /v1/calendar/connect
-POST /v1/calendar/sync
-
-## modules/rh.php — 6 route(s)
-PUT /v1/attendance/corrections/{param}/approve
-PUT /v1/attendance/corrections/{param}/reject
-PUT /v1/salary-advances/{param}/approve
-PUT /v1/salary-advances/{param}/reject
-PUT /v1/salary-advances/{param}/manager-approve
-PUT /v1/payrolls/{param}/validate
-
-## modules/expense.php — 2 route(s)
-PUT /v1/expense-claims/{param}/approve
-PUT /v1/expense-claims/{param}/reject
-
-## modules/hr_extended.php — 2 route(s)
-PUT /v1/loans/{param}/approve
-PUT /v1/loans/{param}/disburse
-
-## modules/billing.php — 2 route(s)
-PATCH /v1/onboarding-setup/{param}/complete
-PATCH /v1/onboarding-setup/{param}/skip

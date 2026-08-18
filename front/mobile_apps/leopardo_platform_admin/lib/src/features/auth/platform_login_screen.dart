@@ -167,7 +167,7 @@ class _PlatformLoginScreenState extends ConsumerState<PlatformLoginScreen> {
                       onPressed: auth.isSubmitting ? null : _submit,
                     ),
                     const SizedBox(height: 12),
-                    OutlinedButton.icon(
+                    if (kDebugMode) OutlinedButton.icon(
                       onPressed: auth.isSubmitting ? null : _fillDemoAccount,
                       icon: const Icon(Icons.science_rounded),
                       label: Text(l10n.platformLoginUseDemoAccount),

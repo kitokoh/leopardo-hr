@@ -26,8 +26,10 @@ class OnboardingStepController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+        $companyId = $user->company_id;
+        abort_if($companyId === null, 403, 'A company context is required.');
 
-        $steps = OnboardingStep::where('company_id', $user->company_id)
+        $steps = OnboardingStep::where('company_id', $companyId)
             ->orderBy('order')
             ->get();
 
@@ -35,8 +37,8 @@ class OnboardingStepController extends Controller
             // #4929 : seed paresseux via l'action canonique (source de vérité
             // unique des 10 étapes) — couvre les sociétés créées avant le
             // correctif provisioning.
-            app(SeedDefaultSteps::class)->execute($user->company_id);
-            $steps = OnboardingStep::where('company_id', $user->company_id)
+            app(SeedDefaultSteps::class)->execute($companyId);
+            $steps = OnboardingStep::where('company_id', $companyId)
                 ->orderBy('order')
                 ->get();
         }
@@ -71,8 +73,10 @@ class OnboardingStepController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+        $companyId = $user->company_id;
+        abort_if($companyId === null, 403, 'A company context is required.');
 
-        $steps = OnboardingStep::where('company_id', $user->company_id)->get();
+        $steps = OnboardingStep::where('company_id', $companyId)->get();
         $total = $steps->count();
 
         if ($total === 0) {
@@ -103,16 +107,18 @@ class OnboardingStepController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+        $companyId = $user->company_id;
+        abort_if($companyId === null, 403, 'A company context is required.');
 
         // #4929 : le PATCH ne doit pas dépendre de l'ordre des appels client —
         // si la société n'a aucune étape seedée (provisioning antérieur au
         // correctif), on seede avant de résoudre. Une clé inconnue reste 404.
-        $hasSteps = OnboardingStep::where('company_id', $user->company_id)->exists();
+        $hasSteps = OnboardingStep::where('company_id', $companyId)->exists();
         if (! $hasSteps) {
-            app(SeedDefaultSteps::class)->execute($user->company_id);
+            app(SeedDefaultSteps::class)->execute($companyId);
         }
 
-        $step = OnboardingStep::where('company_id', $user->company_id)
+        $step = OnboardingStep::where('company_id', $companyId)
             ->where('step_key', $stepKey)
             ->firstOrFail();
 
@@ -129,16 +135,18 @@ class OnboardingStepController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+        $companyId = $user->company_id;
+        abort_if($companyId === null, 403, 'A company context is required.');
 
         // #4929 : le PATCH ne doit pas dépendre de l'ordre des appels client —
         // si la société n'a aucune étape seedée (provisioning antérieur au
         // correctif), on seede avant de résoudre. Une clé inconnue reste 404.
-        $hasSteps = OnboardingStep::where('company_id', $user->company_id)->exists();
+        $hasSteps = OnboardingStep::where('company_id', $companyId)->exists();
         if (! $hasSteps) {
-            app(SeedDefaultSteps::class)->execute($user->company_id);
+            app(SeedDefaultSteps::class)->execute($companyId);
         }
 
-        $step = OnboardingStep::where('company_id', $user->company_id)
+        $step = OnboardingStep::where('company_id', $companyId)
             ->where('step_key', $stepKey)
             ->firstOrFail();
 

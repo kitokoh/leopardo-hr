@@ -7,12 +7,11 @@ namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -35,12 +34,17 @@ use Illuminate\Validation\Rule;
  */
 class HrController extends Controller
 {
+    public function __construct(
+        private readonly EmployeeService $employeeService,
+    ) {}
+
     /**
      * GET /api/v1/hr/dashboard
      * HR-specific dashboard with team stats.
      */
     public function dashboard(Request $request): JsonResponse
     {
+        /** @var Employee $employee */
         $employee = $request->user();
 
         $company_id = $employee->company_id;
@@ -88,6 +92,7 @@ class HrController extends Controller
      */
     public function employees(Request $request): AnonymousResourceCollection
     {
+        /** @var Employee $employee */
         $employee = $request->user();
 
         $query = Employee::where('company_id', $employee->company_id)
@@ -123,6 +128,7 @@ class HrController extends Controller
      */
     public function addEmployee(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $validated = $request->validate([
@@ -144,25 +150,35 @@ class HrController extends Controller
             'schedule_id'     => 'nullable|integer|exists:schedules,id',
         ]);
 
-        // Issue #3597 : role/manager_role/status/company_id/salary_base ne sont
-        // plus mass-assignables — assignation explicite (défense en profondeur).
-        $validatedForCreate = Arr::except($validated, ['company_id', 'role', 'manager_role', 'status', 'salary_base']);
-        $employee = Employee::create([
-            ...$validatedForCreate,
-            'preferred_language' => 'fr',
-        ]);
-        // Issue #4496 : password_hash non mass-assignable — posé explicitement
-        // (temporaire — sera remplacé à l'acceptation d'invitation).
-        $employee->password_hash = Hash::make(Str::random(32));
-        $employee->company_id = $actor->company_id;
-        $employee->role = 'employee'; // HR can only create regular employees
-        $employee->manager_role = null; // Only principal can assign manager roles
-        $employee->status = 'active';
-        if (array_key_exists('salary_base', $validated)) {
-            $employee->salary_base = $validated['salary_base'];
-        }
-        $employee->save();
+        /** @var array{first_name: string, last_name: string, email: string, personal_phone?: string|null, gender?: string|null, date_of_birth?: string|null, contract_type?: string|null, contract_start?: string|null, salary_type?: string|null, salary_base?: int|float|string|null, hourly_rate?: int|float|string|null, schedule_id?: int|null} $validated */
 
+        // #3245 : délégation à EmployeeService::create — suppression de la
+        // logique dupliquée (HrController réimplémentait EmployeeService) et
+        // du bug #4947 : le create() mass-assignment échouait sur
+        // password_hash NOT NULL avant de pouvoir poser les champs sensibles.
+        // Contraintes HR préservées : role=employee, manager_role=null,
+        // status=active, company_id=acteur, langue par défaut fr.
+        $employee = $this->employeeService->create(
+            new CreateEmployeeDTO(
+                first_name: $validated['first_name'],
+                last_name: $validated['last_name'],
+                email: $validated['email'],
+                phone: $validated['personal_phone'] ?? null,
+                gender: $validated['gender'] ?? null,
+                date_of_birth: $validated['date_of_birth'] ?? null,
+                contract_type: $validated['contract_type'] ?? null,
+                contract_start: $validated['contract_start'] ?? null,
+                salary_type: $validated['salary_type'] ?? 'fixed',
+                salary_base: (float) ($validated['salary_base'] ?? 0.0),
+                hourly_rate: isset($validated['hourly_rate']) ? (float) $validated['hourly_rate'] : null,
+                schedule_id: $validated['schedule_id'] ?? null,
+                role: 'employee',
+                manager_role: null,
+                status: 'active',
+                company_id: (string) $actor->company_id,
+            ),
+            $actor,
+        );
         return response()->json([
             'message' => 'Employee created successfully.',
             'data'    => new EmployeeResource($employee),
@@ -175,6 +191,7 @@ class HrController extends Controller
      */
     public function showEmployee(Request $request, Employee $employee): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
@@ -194,6 +211,7 @@ class HrController extends Controller
      */
     public function updateEmployee(Request $request, Employee $employee): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         if ($actor->company_id !== $employee->company_id) {
@@ -216,6 +234,8 @@ class HrController extends Controller
             'status'         => ['sometimes', Rule::in(['active', 'inactive', 'on_leave', 'suspended'])],
         ]);
 
+        /** @var array<string, mixed> $validated */
+
         // Ensure HR cannot escalate roles
         unset($validated['role'], $validated['manager_role']);
 
@@ -233,6 +253,7 @@ class HrController extends Controller
      */
     public function teamOverview(Request $request): JsonResponse
     {
+        /** @var Employee $actor */
         $actor = $request->user();
 
         $employees = Employee::where('company_id', $actor->company_id)
@@ -242,7 +263,7 @@ class HrController extends Controller
             ->get(['id', 'first_name', 'last_name', 'email', 'role', 'manager_role', 'status', 'photo_path', 'contract_type', 'department_id', 'position_id']);
 
         return response()->json([
-            'data' => $employees->map(fn (Employee $e) => [
+            'data' => $employees->map(fn (Employee $e): array => [
                 'id'            => $e->id,
                 'name'          => trim("{$e->first_name} {$e->last_name}"),
                 'email'         => $e->email,

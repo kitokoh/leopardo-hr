@@ -7,24 +7,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class AttendanceCorrectionAdminPagesTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_manager_can_list_and_approve_pending_correction_from_web(): void
     {
@@ -131,9 +119,13 @@ class AttendanceCorrectionAdminPagesTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'contact@'.$domain,
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
             'timezone' => 'UTC',
             'currency' => 'DZD',
         ]);

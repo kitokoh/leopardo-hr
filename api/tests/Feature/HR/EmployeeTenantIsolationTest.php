@@ -7,7 +7,7 @@ namespace Tests\Feature\HR;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -29,19 +29,7 @@ use Tests\TestCase;
  */
 class EmployeeTenantIsolationTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     private function makeCompany(string $slug, string $email): Company
     {
@@ -52,15 +40,21 @@ class EmployeeTenantIsolationTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => $email,
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
     }
 
     private function makeManager(Company $company, string $email, string $managerRole): Employee
     {
         $sensitiveEmployee1 = new Employee([
+            'first_name' => 'Manager',
+            'last_name' => ucfirst(str_replace(['@', '-'], ' ', $email)),
             'email' => $email,
         ]);
         $sensitiveEmployee1->forceFill(['password_hash' => Hash::make('password123')])->save();
@@ -76,6 +70,8 @@ class EmployeeTenantIsolationTest extends TestCase
     private function makeEmployee(Company $company, string $email): Employee
     {
         $sensitiveEmployee0 = new Employee([
+            'first_name' => 'Employe',
+            'last_name' => ucfirst(str_replace(['@', '-'], ' ', $email)),
             'email' => $email,
         ]);
         $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('password123')])->save();
@@ -141,7 +137,7 @@ class EmployeeTenantIsolationTest extends TestCase
 
         $this->assertDatabaseHas('employees', [
             'id' => $seed['employeeB']->id,
-            'first_name' => '',
+            'first_name' => 'Employe',
         ]);
     }
 

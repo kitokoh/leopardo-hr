@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -25,19 +25,7 @@ use Tests\TestCase;
  */
 class EmployeePasswordProvisioningTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_can_login_with_password_provided_at_creation(): void
     {
@@ -50,10 +38,14 @@ class EmployeePasswordProvisioningTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'company@acme-qa.test',
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'currency' => 'DZD',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         /** @var Employee $manager */

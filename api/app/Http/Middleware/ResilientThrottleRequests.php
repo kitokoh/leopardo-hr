@@ -25,7 +25,10 @@ use Symfony\Component\HttpFoundation\Response;
  * Comportement :
  *  - échec du stockage pendant la PHASE LIMITER (lecture/écriture du compteur)
  *    → `report()` (Sentry/logs) + **429 dégradé** avec `Retry-After` (au lieu
- *    d'un 500). La requête n'atteint pas le contrôleur.
+ *    d'un 500) pour les limiters NOMÉS (politiques métier fail-closed) ;
+ *    → fail-open (pass-through, 200) pour les limites ANONYMES `throttle:X,Y`
+ *    (anti-abus générique best-effort, ex. /health — les sondes doivent
+ *    répondre 200/503 même pendant la panne du compteur, cf. #1774/#5034).
  *  - échec pendant la pose des headers `X-RateLimit-*` (phase post-`$next()`)
  *    → `report()` non bloquant, la réponse du contrôleur est conservée.
  *  - dépassement réel du quota → 429 normal (`ThrottleRequestsException`
@@ -83,6 +86,26 @@ class ResilientThrottleRequests extends ThrottleRequests
         } catch (\Throwable $e) {
             report($e);
 
+            // Panne du stockage du compteur sur une limite ANONYME (throttle:X,Y
+            // générique, ex. /health) : fail-open — la politique ne peut de toute
+            // façon pas être appliquée, et 429-er les sondes/probes amplifierait
+            // la panne (déploiements Render, supervision externe). Les limiters
+            // NOMÉS (auth-sensitive, payroll-sensitive, platform-sensitive...)
+            // restent fail-closed : 429 dégradé (voir #1774/#4955).
+            $namedOnly = true;
+            foreach ($limits as $limit) {
+                if (! $limit->named) {
+                    $namedOnly = false;
+                    break;
+                }
+            }
+
+            if (! $namedOnly) {
+                $response = $next($request);
+
+                return $response;
+            }
+
             return $this->degradedTooManyRequestsResponse($request);
         }
 
@@ -137,6 +160,8 @@ class ResilientThrottleRequests extends ThrottleRequests
                 key: $prefix.$this->resolveRequestSignature($request),
                 maxAttempts: (int) $this->resolveMaxAttempts($request, $maxAttempts),
                 decaySeconds: 60 * $decayMinutes,
+                // Limite anonyme (throttle:X,Y) : anti-abus générique best-effort.
+                named: false,
             ),
         ];
     }
@@ -174,6 +199,7 @@ class ResilientThrottleRequests extends ThrottleRequests
                 decaySeconds: (int) $limit->decaySeconds,
                 afterCallback: $limit->afterCallback instanceof Closure ? $limit->afterCallback : null,
                 responseCallback: $limit->responseCallback instanceof Closure ? $limit->responseCallback : null,
+                named: true,
             );
         }
 
@@ -203,6 +229,8 @@ class ResilientThrottleRequests extends ThrottleRequests
         // localized_message via le catalogue errors.* (cf. renderer #3810/#4689).
         return new JsonResponse(
             [
+                // Code distinct pour l'observabilité (stockage du compteur KO,
+                // pas un vrai dépassement de quota) — message localisé quand même.
                 'error' => 'TOO_MANY_REQUESTS_DEGRADED',
                 'message' => 'TOO_MANY_REQUESTS_DEGRADED',
                 'localized_message' => __('errors.TOO_MANY_REQUESTS', [], $request->getLocale()),

@@ -7,7 +7,7 @@ namespace Tests\Feature\HR;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Support\Facades\Hash;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -18,27 +18,18 @@ use Tests\TestCase;
  */
 class EmployeeSensitiveFillableTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_sensitive_fields_are_not_written_by_mass_assignment(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Sensitive QA',
-            'slug' => 'sensitive-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            // #5034 + #3677 : companies.city est NOT NULL sur le vrai schéma.
+            'city' => 'Alger',
+
         ]);
 
         $employee = new Employee([
@@ -50,12 +41,24 @@ class EmployeeSensitiveFillableTest extends TestCase
             'biometric_fingerprint_reference_path' => 'finger/attacker.jpg',
             'email_bounced_at' => now(),
         ]);
+
+        // #4496 : les champs sensibles passés au constructeur (mass
+        // assignment) sont abandonnés par le $fillable — vérifié sur le
+        // modèle AVANT le save (pattern #3597/#3677).
+        $this->assertNull($employee->password_hash, 'password_hash ne doit pas être mass-assignable.');
+        $this->assertNull($employee->company_id, 'company_id ne doit pas être mass-assignable.');
+        $this->assertNull($employee->biometric_face_reference_path, 'Référence biométrique visage non mass-assignable.');
+        $this->assertNull($employee->biometric_fingerprint_reference_path, 'Référence biométrique empreinte non mass-assignable.');
+        $this->assertNull($employee->email_bounced_at, 'email_bounced_at non mass-assignable.');
+
+        // Écriture légitime explicite (pattern #4496) — seule voie autorisée
+        // pour poser password_hash (NOT NULL sur les vraies migrations, F-13).
         $employee->forceFill(['password_hash' => Hash::make('attacker-controlled')])->save();
 
         $fresh = $employee->fresh();
         $this->assertNotNull($fresh);
 
-        $this->assertNull($fresh->password_hash, 'password_hash ne doit pas être mass-assignable.');
+        $this->assertTrue(Hash::check('attacker-controlled', (string) $fresh->password_hash));
         $this->assertNull($fresh->biometric_face_reference_path, 'Référence biométrique visage non mass-assignable.');
         $this->assertNull($fresh->biometric_fingerprint_reference_path, 'Référence biométrique empreinte non mass-assignable.');
         $this->assertNull($fresh->email_bounced_at, 'email_bounced_at non mass-assignable.');
@@ -63,24 +66,30 @@ class EmployeeSensitiveFillableTest extends TestCase
 
     public function test_sensitive_fields_can_still_be_set_explicitly(): void
     {
-        $company = Company::query()->create([
+        /** @var Company $company */
+        $company = Company::factory()->create([
             'name' => 'Explicit QA',
-            'slug' => 'explicit-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            // #5034 : companies.city est NOT NULL sur le vrai schéma.
+            'city' => 'Alger',
+
         ]);
 
-        $employee = Employee::query()->create([
+        // F-13 : employees.password_hash est NOT NULL sur les vraies
+        // migrations (pas de défaut comme dans l'ancienne fixture mvp) — on
+        // le pose explicitement au premier save (pattern #4496, hors fillable).
+        $employee = new Employee([
             'first_name' => 'Explicit',
             'last_name' => 'Writer',
             'email' => 'explicit-writer@example.test',
         ]);
+        $employee->forceFill(['password_hash' => Hash::make('legit-password')])->save();
         $employee->company_id = $company->id;
 
         // Écriture légitime hors fillable (pattern #4496 : les services
         // autorisés posent ces champs explicitement).
         $employee->forceFill([
-            'password_hash' => Hash::make('legit-password'),
             'biometric_face_reference_path' => 'face/legit.jpg',
             'biometric_fingerprint_reference_path' => 'finger/legit.jpg',
             'email_bounced_at' => now(),

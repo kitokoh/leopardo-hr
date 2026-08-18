@@ -42,16 +42,20 @@ class OrganigrammeTest extends TestCase
             'role' => 'employee',
             'status' => 'active',
             'department_id' => $department->id,
+            'manager_id' => $manager->id, // rattaché au manager → enfant dans l'arbre
         ]);
         $this->assertInstanceOf(Employee::class, $employee);
 
         $response = $this->actingAs($manager, 'sanctum')
             ->getJson("/api/v1/departments/{$department->id}/hierarchy");
 
+        // L'endpoint renvoie un ARBRE (spec mobile #2633, même forme que
+        // /org-chart) : data = liste des racines, manager du département en
+        // racine, employés du département en enfants (#5034 : le test
+        // attendait une forme {department, employee_count, employees}).
         $response->assertStatus(200)
-            ->assertJsonPath('data.department.id', $department->id)
-            ->assertJsonPath('data.employee_count', 1)
-            ->assertJsonPath('data.employees.0.id', $employee->id);
+            ->assertJsonPath('data.0.id', $manager->id)
+            ->assertJsonPath('data.0.children.0.id', $employee->id);
     }
 
     public function test_hierarchy_returns_empty_tree_for_department_without_employees(): void
@@ -74,10 +78,12 @@ class OrganigrammeTest extends TestCase
         $department->company_id = $company->id;
         $department->save();
 
+        // Arbre sans employé : la racine (manager) est présente sans enfants.
         $this->actingAs($manager, 'sanctum')
             ->getJson("/api/v1/departments/{$department->id}/hierarchy")
             ->assertStatus(200)
-            ->assertJsonPath('data.employee_count', 0);
+            ->assertJsonPath('data.0.id', $manager->id)
+            ->assertJsonPath('data.0.children', []);
     }
 
     public function test_hierarchy_is_scoped_to_tenant(): void

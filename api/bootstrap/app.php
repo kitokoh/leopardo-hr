@@ -29,6 +29,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\PostTooLargeException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('billing:check-overdue')->daily();
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
+        // Issue #4948 : trial provisionings bloqués (worker de queue jamais
+        // exécuté) → fail-loud au lieu d'un pending silencieux.
+        $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation
@@ -159,6 +163,20 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => $errorCode,
                 'localized_message' => $message,
             ], $exception->statusCode());
+        });
+
+        // 429 : ThrottleRequestsException (quota dépassé) — réponse API
+        // structurée + localisée (#4955), même contrat que les autres erreurs.
+        $exceptions->render(function (ThrottleRequestsException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            return new JsonResponse([
+                'error' => 'TOO_MANY_REQUESTS',
+                'message' => 'TOO_MANY_REQUESTS',
+                'localized_message' => __('errors.TOO_MANY_REQUESTS'),
+            ], 429);
         });
 
         // Handle oversized file uploads gracefully (PHP rejects them before Laravel

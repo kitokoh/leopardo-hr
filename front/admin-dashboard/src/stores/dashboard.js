@@ -95,17 +95,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   }
 
-  async function dismissAlert(alertId) {
-    try {
-      await api.post(`/admin/dashboard/alerts/${alertId}/dismiss`)
-      if (Array.isArray(systemAlerts.value)) {
-        systemAlerts.value = systemAlerts.value.filter(alert => alert.id !== alertId)
-      }
-    } catch (error) {
-      console.error('Erreur lors de la suppression de l\'alerte:', error)
-    }
-  }
-
   function addRealtimeActivity(activity) {
     if (!Array.isArray(recentActivities.value)) {
       recentActivities.value = []
@@ -115,11 +104,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
     if (recentActivities.value.length > 50) {
       recentActivities.value = recentActivities.value.slice(0, 50)
     }
-  }
-
-  function updateStats(newStats) {
-    stats.value = { ...stats.value, ...newStats }
-    lastUpdated.value = new Date()
   }
 
   return {
@@ -139,8 +123,6 @@ export const useDashboardStore = defineStore('dashboard', () => {
     // Actions
     fetchDashboardData,
     refreshStats,
-    dismissAlert,
     addRealtimeActivity,
-    updateStats
   }
 })

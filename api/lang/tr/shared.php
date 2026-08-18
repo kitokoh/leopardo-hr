@@ -26,6 +26,12 @@ return [
                 'body' => 'Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar.',
             ],
         ],
+        'leaves' => 'İzinler',
+        'my' => [
+            'team' => 'Ekibim',
+        ],
+        'presences' => 'Yoklamalar',
+        'tasks' => 'Görevler',
     ],
     'auth' => [
         'login' => [

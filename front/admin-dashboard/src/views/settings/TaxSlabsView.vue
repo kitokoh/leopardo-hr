@@ -47,10 +47,6 @@
           <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="sim-gross">{{ $t('tax_slabs.sim_gross') }}</label>
           <input id="sim-gross" v-model.number="grossSalary" type="number" min="0" step="1000" class="form-input" @input="debouncedSimulate">
         </div>
-        <div>
-          <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5" for="sim-compare">{{ $t('tax_slabs.sim_compare') }}</label>
-          <input id="sim-compare" v-model.number="compareSalary" type="number" min="0" step="1000" class="form-input" @input="debouncedSimulate">
-        </div>
         <div class="flex items-end">
           <button class="btn-primary w-full" :disabled="simulating" @click="runSimulate">
             {{ simulating ? $t('tax_slabs.sim_running') : $t('tax_slabs.sim_run') }}
@@ -148,7 +144,6 @@ const scope = ref('national')
 const editorRef = ref(null)
 
 const grossSalary = ref(60000)
-const compareSalary = ref(0)
 const simulating = ref(false)
 const simResult = ref(null)
 

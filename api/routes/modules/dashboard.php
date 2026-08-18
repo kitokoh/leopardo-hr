@@ -37,6 +37,9 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     // issue #2674 — un PR antérieur a tenté PUT et a été rejeté).
     // Ces alias POST/PATCH restent actifs et testes (NotificationControllerTest),
     // mais ne doivent plus etre utilises par les nouveaux clients.
+    // DEPRECATED (#4932) : doublons historiques — le contrat canonique est
+    // POST /notifications/read-all + PATCH /notifications/{id}/read
+    // (routes/modules/rh.php, #2674). Conservés pour compatibilité.
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 

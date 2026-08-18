@@ -26,7 +26,13 @@
         "title": "Modules actifs, feuille de route visible",
         "body": "Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible."
       }
-    }
+    },
+    "leaves": "Congés",
+    "my": {
+      "team": "Mon équipe"
+    },
+    "presences": "Présences",
+    "tasks": "Tâches"
   },
   "auth": {
     "login": {
@@ -268,7 +274,7 @@
       "deleted": "Utilisateur supprime",
       "deleteError": "Erreur lors de la suppression",
       "impersonating": "Connexion en tant que :name",
-      "created": "Utilisateur cree avec succes",
+      "created": "Utilisateur créé avec succès",
       "updated": "Utilisateur mis a jour",
       "exportInProgress": "Export en cours...",
       "exportDone": "Export termine",
@@ -459,7 +465,31 @@
   },
   "attendance": {
     "sending_to_server": "{label} vers le serveur...",
-    "retry_after_failure": "{label}. Reessayez."
+    "retry_after_failure": "{label}. Reessayez.",
+    "absent": "absent",
+    "day": {
+      "summary": "Journée du {date}, statut {status}, {range}, {hours}."
+    },
+    "hour": {
+      "worked": "heure travaillée"
+    },
+    "hours": {
+      "worked": "heures travaillées"
+    },
+    "in": {
+      "progress": "en cours"
+    },
+    "late": "en retard",
+    "no": {
+      "clock": "pas de pointage"
+    },
+    "on": {
+      "time": "à l'heure"
+    },
+    "overtime": "Heures supplémentaires",
+    "time": {
+      "range": "de {from} à {to}"
+    }
   },
   "holidays": {
     "page": {
@@ -662,7 +692,6 @@
     "simulator_title": "Simulateur d'impact",
     "simulator_subtitle": "Saisissez un salaire brut : le calcul (cotisations, assiette, impôt par tranche, net, coût employeur) est exécuté par le moteur de paie réel, sans rien persister.",
     "sim_gross": "Salaire brut",
-    "sim_compare": "Salaire à comparer",
     "sim_run": "Simuler",
     "sim_running": "Calcul…",
     "sim_social": "Cotisations (salariales)",
@@ -842,7 +871,7 @@
     "directory": "Repertoire des Entreprises",
     "directorySub": "Liste classee par score de sante et priorite commerciale.",
     "syncing": "Synchronisation du portefeuille...",
-    "retry": "Reessayer",
+    "retry": "Réessayer",
     "company": "Entreprise",
     "planMrr": "Plan & MRR",
     "healthOp": "Sante Oper.",
@@ -912,7 +941,7 @@
     "users": "Utilisateurs",
     "webhooks": "Webhooks",
     "login": "Connexion",
-    "logout": "Deconnexion",
+    "logout": "Déconnexion",
     "companyDetail": "Detail Entreprise",
     "contributions": "Cotisations sociales",
     "taxBrackets": "Baremes fiscaux",
@@ -940,7 +969,9 @@
     "criticalAlerts": "Alertes critiques",
     "level": "Niveau :",
     "fallbackPollingTitle": "Notifications via polling de secours (push indisponible)",
-    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client"
+    "tenantOnly": "Fonctionnalite entreprise — reservee aux espaces client",
+    "settings": "Réglages",
+    "team": "Équipe"
   },
   "exports": {
     "reportEmployees": "Employes",
@@ -974,8 +1005,8 @@
     "downloading": "Telechargement..."
   },
   "companyDetail": {
-    "analyzing": "Analyse des donnees client...",
-    "retry": "Reessayer",
+    "analyzing": "Analyse des données client...",
+    "retry": "Réessayer",
     "fieldAdoption": "Adoption Terrain",
     "onboarding": "Onboarding",
     "anomalies30d": "Anomalies 30j",
@@ -1233,5 +1264,198 @@
     "durationPlaceholder": "Duree (h)",
     "maxParticipantsPlaceholder": "Participants max",
     "online": "En ligne"
+  },
+  "access": {
+    "denied": {
+      "body": "Votre compte n'a pas le rôle Manager requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, RH…) ou contactez votre administrateur.",
+      "logout": "Se déconnecter",
+      "title": "Accès refusé",
+      "body_hr": "Votre compte n'a pas le rôle RH requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Votre présence est détectée automatiquement dès que vous entrez dans la zone de l'entreprise. Aucune action requise de votre part."
+      }
+    },
+    "manual": {
+      "desc": "Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l'écran de présence."
+    },
+    "mode": {
+      "title": "Mode de pointage"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Scannez le QR Code affiché à l'entrée de l'entreprise pour pointer votre arrivée et votre départ."
+      }
+    },
+    "recommended": "Recommandé",
+    "save": {
+      "error": "Impossible de sauvegarder votre préférence. Vérifiez votre connexion."
+    },
+    "title": "Choisissez comment vous souhaitez pointer votre présence chaque jour."
+  },
+  "approval": {
+    "approved": "Demande approuvée",
+    "rejected": "Demande refusée"
+  },
+  "approvals": {
+    "empty": "Aucune approbation en attente.",
+    "up": {
+      "to": {
+        "date": "Tout est à jour"
+      }
+    }
+  },
+  "back": "Retour",
+  "employee": {
+    "number": "Employé #{id}"
+  },
+  "error": {
+    "prefix": "Erreur : {message}",
+    "unexpected": "Une erreur est survenue"
+  },
+  "evaluation": {
+    "period": "Période : {period}"
+  },
+  "evaluations": {
+    "empty": "Aucune évaluation",
+    "title": "Mes Évaluations",
+    "empty_hint": "Vous n'avez pas encore d'évaluation enregistrée."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Fonction bientôt disponible"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "Compléter mon onboarding"
+    },
+    "onboarding": {
+      "hint": "Configurez votre espace en quelques étapes."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Chargement du résumé mensuel..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Réduire",
+      "empty": "L'organigramme sera disponible une fois les employés configurés.",
+      "expand": "Développer"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "La page demandée est introuvable ou la navigation a échoué."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "Aucune session GPS en attente de validation.",
+      "to": {
+        "validate": "À valider"
+      },
+      "up": {
+        "to": {
+          "date": "Tout est à jour"
+        }
+      }
+    }
+  },
+  "refresh": "Actualiser",
+  "register": {
+    "create": {
+      "account": "Créer votre compte"
+    },
+    "creating": "Création de compte en cours...",
+    "first": {
+      "name": "Prénom"
+    },
+    "min": {
+      "chars": "8 caractères minimum"
+    },
+    "password": "Mot de passe",
+    "required": "Obligatoire",
+    "submit": "Créer mon compte"
+  },
+  "retry": "Réessayer",
+  "sa": {
+    "approved": "Approuvées",
+    "config": {
+      "load": {
+        "error": "Impossible de charger la configuration.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "Pointage GPS — tableau de bord équipe"
+    },
+    "detected": "Détectées",
+    "disable": {
+      "auto": {
+        "gps": "Désactiver le GPS automatique"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Activer le GPS automatique"
+      }
+    },
+    "forced": "Imposé",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "La zone GPS de votre entreprise n'est pas encore configurée."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
+    },
+    "presence": {
+      "in": {
+        "progress": "Présence en cours depuis {time}"
+      }
+    },
+    "recent": {
+      "sessions": "Sessions récentes"
+    },
+    "rejected": "Rejetées",
+    "sessions": {
+      "load": {
+        "error": "Impossible de charger les sessions GPS. Vérifiez votre connexion."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez."
+      }
+    },
+    "status": {
+      "approved": "Approuvée",
+      "cancelled": "Annulée",
+      "detected": "Détectée",
+      "pending": "En validation",
+      "rejected": "Rejetée"
+    }
+  },
+  "session": {
+    "approved": "Session approuvée ✓",
+    "entry": {
+      "at": "Entrée : {time}"
+    },
+    "rejected": "Session rejetée"
+  },
+  "sessions": {
+    "to": {
+      "validate": "Sessions à valider"
+    }
+  },
+  "back_to": {
+    "home": "Retour à l'accueil"
   }
 }

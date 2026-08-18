@@ -12,7 +12,7 @@ use App\Modules\HR\Domain\Contracts\OnboardingQrInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -25,19 +25,7 @@ use Tests\TestCase;
  */
 class KioskMultiEventPunchTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_kiosk_punch_records_the_requested_work_type(): void
     {
@@ -248,6 +236,9 @@ class KioskMultiEventPunchTest extends TestCase
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         DB::statement('SET search_path TO shared_tenants,public');

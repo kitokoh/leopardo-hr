@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\HR\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Domain\Models\User;
+use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
@@ -22,7 +24,7 @@ class EmployeeService
         private readonly TenantCacheService $tenantCache,
     ) {}
 
-    public function create(CreateEmployeeDTO $dto, ?Employee $actor = null): Employee
+    public function create(CreateEmployeeDTO $dto, Employee|User|SuperAdmin|null $actor = null): Employee
     {
         /** @var array<string, mixed> $payload */
         $payload = $dto->toArray();
@@ -31,7 +33,7 @@ class EmployeeService
         $providedPassword = is_string($providedPassword) && $providedPassword !== '' ? $providedPassword : null;
 
         $companyId = $payload['company_id']
-            ?? $actor?->company_id
+            ?? ($actor instanceof Employee ? $actor->company_id : null)
             ?? (app()->bound('current_company') ? currentCompany()->id : null);
 
         $password = $providedPassword ?: Str::random(32);
@@ -48,7 +50,7 @@ class EmployeeService
         $payload['status'] = $payload['status'] ?? 'active';
         $payload['extra_data'] = $this->normalizeExtraData($this->arrayValue($payload, 'extra_data'));
 
-        if ($actor?->isManager() && empty($payload['manager_id'])) {
+        if ($actor instanceof Employee && $actor->isManager() && empty($payload['manager_id'])) {
             $payload['manager_id'] = $actor->id;
         }
 
@@ -62,14 +64,16 @@ class EmployeeService
         // EmployeeResource, company_id null → hors tenant, salary_base → 0).
         // On pose explicitement après création (pattern #3677/#4151) : l'acteur
         // est déjà autorisé (policy + FormRequest).
-        $passwordHash = (string) Arr::pull($payload, 'password_hash');
+        $rawPasswordHash = Arr::pull($payload, 'password_hash');
+        $passwordHash = is_string($rawPasswordHash) ? $rawPasswordHash : '';
 
         // `password_hash` is NOT NULL in the tenant schema. A mass-assignment
         // create() without it fails before the subsequent forceFill() can run
         // (#4947). Build the trusted, already-authorized payload explicitly and
         // persist it once; sensitive fields remain outside normal fill().
         $employee = new Employee;
-        $employee->forceFill(array_merge(
+        /** @var array<string, mixed> $trustedPayload */
+        $trustedPayload = array_merge(
             Arr::except($payload, ['role', 'manager_role', 'status', 'company_id', 'salary_base']),
             [
                 'password_hash' => $passwordHash,
@@ -79,7 +83,8 @@ class EmployeeService
                 'status' => $payload['status'],
                 'salary_base' => $payload['salary_base'] ?? 0.0,
             ],
-        ));
+        );
+        $employee->forceFill($trustedPayload);
         $employee->save();
 
         if ($employee->company_id !== null) {
@@ -160,7 +165,9 @@ class EmployeeService
         // (revoke rh jamais persisté, PATCH salary_base mobile jamais appliqué).
         $sensitiveKeys = ['role', 'manager_role', 'status', 'salary_base'];
         $sensitive = Arr::only($payload, $sensitiveKeys);
-        $employee->fill(Arr::except($payload, $sensitiveKeys));
+        /** @var array<string, mixed> $safePayload */
+        $safePayload = Arr::except($payload, $sensitiveKeys);
+        $employee->fill($safePayload);
         foreach ($sensitive as $key => $value) {
             $employee->{$key} = $value;
         }
@@ -209,7 +216,8 @@ class EmployeeService
             || ! empty($payload['biometric_fingerprint_reference_path'] ?? $employee?->biometric_fingerprint_reference_path);
 
         if ($faceEnabled || $fingerprintEnabled || $hasReferences) {
-            $payload['biometric_consent_at'] = $payload['biometric_consent_at'] ?? $employee?->biometric_consent_at ?? now();
+            $existingConsentAt = $employee === null ? null : $employee->biometric_consent_at;
+            $payload['biometric_consent_at'] = $payload['biometric_consent_at'] ?? $existingConsentAt ?? now();
         }
     }
 

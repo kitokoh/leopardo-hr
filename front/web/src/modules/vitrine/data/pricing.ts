@@ -5,7 +5,7 @@ import type { AppLocale } from '@/lib/i18n'
  * et PlanCode.php (ADR-0014 · 2026-08-15).
  *
  * Plans canoniques :
- *   free        0 €/mois · 5 employés max · 30 jours d'essai (freemium)
+ *   free        0 €/mois · 5 employés max · 14 jours d'essai (unifié #4951)
  *   pilot      29 €/mois (24,17 €/mois annuel = 290 €/an) · 30 employés max · 14j
  *   operations 79 €/mois (65,83 €/mois annuel = 790 €/an) · 200 employés max · 14j
  *   enterprise  sur devis · illimité · 14j
@@ -43,7 +43,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/mois',
       annualPeriod: '/mois',
       description: 'Pour démarrer sans engagement — idéal pour les équipes de 5 personnes',
-      priceNote: '30 jours d\'essai. Jusqu\'à 5 employés.',
+      priceNote: '14 jours d\'essai gratuits. Jusqu\'à 5 employés.',
       employeeLimit: 'Jusqu\'à 5 employés',
       features: [
         'Pointage web et mobile basique',
@@ -135,7 +135,7 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
       period: '/month',
       annualPeriod: '/month',
       description: 'Start without commitment — ideal for teams of up to 5 people',
-      priceNote: '30-day trial. Up to 5 employees.',
+      priceNote: '14-day free trial. Up to 5 employees.',
       employeeLimit: 'Up to 5 employees',
       features: [
         'Basic web and mobile attendance',
@@ -403,6 +403,8 @@ const pricingByLocale: Record<AppLocale, PricingPlan[]> = {
     },
   ],
 }
+
+export const pricing = pricingByLocale
 
 export function getPricingPlans(locale: AppLocale): PricingPlan[] {
   return pricingByLocale[locale] ?? pricingByLocale.fr

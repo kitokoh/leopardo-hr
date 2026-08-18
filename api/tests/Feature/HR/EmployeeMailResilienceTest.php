@@ -132,7 +132,6 @@ class EmployeeMailResilienceTest extends TestCase
         ]);
         $invitation->save();
 
-
         $this->postJson("/api/v1/invitations/{$invitation->id}/resend")
             ->assertOk()
             ->assertJsonPath('data.email', 'resend@example.dz');

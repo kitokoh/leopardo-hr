@@ -32,9 +32,9 @@
 | 🧪 **Backend tests passing** | **1 917** (dernier run complet 2026-08-15 · 462 fichiers `*Test.php` sur main au 17/08) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
 | 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
-| 🔌 **API endpoints** (OpenAPI spec) | **517** |
+| 🔌 **API endpoints** (OpenAPI spec) | **744** (couverture 100 %, allowlist vide au 18/08) |
 | 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
-| ⚙️ **CI/CD pipelines** | **41** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
+| ⚙️ **CI/CD pipelines** | **43** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
 | 📚 **Documentation files** | **685** (architecture, security, specs, runbooks, GTM) |
 | 🕒 **Commit history** | **5 216 commits** since 2026-03-28 |
 | 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇹🇳 🇫🇷 🇹🇷 🇨🇲 🇬🇦 🇨🇬 🇨🇮 🇸🇳 🇧🇫 🇲🇱 (+ 19 codes au catalogue, voir `docs/payroll/`) |

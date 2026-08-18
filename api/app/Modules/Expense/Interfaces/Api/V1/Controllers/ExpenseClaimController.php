@@ -54,8 +54,10 @@ class ExpenseClaimController extends Controller
             'items.*.date' => 'required|date',
         ]);
 
-        $claim = DB::transaction(function () use ($actor, $validated) {
-            $totalAmount = collect($validated['items'])->sum('amount');
+        /** @var list<array{category: string, description: string, amount: int|float|string, date: string}> $items */
+        $items = $validated['items'];
+        $claim = DB::transaction(function () use ($actor, $validated, $items): ExpenseClaim {
+            $totalAmount = collect($items)->sum('amount');
 
             // PA2-COUNTRY-003: derive the claim currency from the employee's
             // company so DZD is never shown as the actual currency for
@@ -72,7 +74,7 @@ class ExpenseClaimController extends Controller
                 'currency' => $actor->company?->currency ?? 'DZD',
             ]);
 
-            foreach ($validated['items'] as $item) {
+            foreach ($items as $item) {
                 ExpenseItem::create([
                     'expense_claim_id' => $claim->id,
                     'category' => $item['category'],
@@ -82,7 +84,7 @@ class ExpenseClaimController extends Controller
                 ]);
             }
 
-            return $claim->fresh(['items']);
+            return $claim->fresh(['items']) ?? $claim;
         });
 
         return response()->json(['data' => (new ExpenseClaimResource($claim))->resolve($request)], 201);
@@ -102,12 +104,85 @@ class ExpenseClaimController extends Controller
         return response()->json(['data' => (new ExpenseClaimResource($expenseClaim->load('items')))->resolve($request)]);
     }
 
+    public function update(Request $request, ExpenseClaim $expenseClaim): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($expenseClaim->company_id === $actor->company_id && $expenseClaim->employee_id === $actor->id, 403);
+        // #4933 : modification possible tant que la demande est un brouillon
+        // ou rejetée (resoumission après rejet) — jamais soumise/approuvée.
+        abort_if(! in_array($expenseClaim->status, ['draft', 'rejected'], true), 422, 'EXPENSE_CLAIM_NOT_EDITABLE');
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string',
+            'items' => 'required|array|min:1',
+            'items.*.category' => 'required|in:transport,meals,accommodation,office,communication,other',
+            'items.*.description' => 'required|string|max:255',
+            'items.*.amount' => 'required|numeric|min:0.01',
+            'items.*.date' => 'required|date',
+        ]);
+
+        /** @var list<array{category: string, description: string, amount: int|float|string, date: string}> $items */
+        $items = $validated['items'];
+        $claim = DB::transaction(function () use ($expenseClaim, $validated, $items): ExpenseClaim {
+            $totalAmount = collect($items)->sum('amount');
+
+            $expenseClaim->update([
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+                'total_amount' => $totalAmount,
+            ]);
+
+            // Remplacement intégral des lignes (pas de mise à jour unitaire).
+            $expenseClaim->items()->delete();
+            foreach ($items as $item) {
+                ExpenseItem::create([
+                    'expense_claim_id' => $expenseClaim->id,
+                    'category' => $item['category'],
+                    'description' => $item['description'],
+                    'amount' => $item['amount'],
+                    'date' => $item['date'],
+                ]);
+            }
+
+            // Une demande rejetée repasse en brouillon pour resoumission.
+            if ($expenseClaim->status === 'rejected') {
+                $expenseClaim->update(['status' => 'draft']);
+            }
+
+            return $expenseClaim->fresh(['items']) ?? $expenseClaim;
+        });
+
+        return response()->json(['data' => (new ExpenseClaimResource($claim))->resolve($request)], 200);
+    }
+
+    public function destroy(Request $request, ExpenseClaim $expenseClaim): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless($expenseClaim->company_id === $actor->company_id && $expenseClaim->employee_id === $actor->id, 403);
+        // #4933 : seul un brouillon est supprimable (une demande soumise est
+        // dans le circuit d'approbation).
+        abort_if($expenseClaim->status !== 'draft', 422, 'EXPENSE_CLAIM_NOT_DELETABLE');
+
+        DB::transaction(function () use ($expenseClaim): void {
+            $expenseClaim->items()->delete();
+            $expenseClaim->delete();
+        });
+
+        return response()->json(null, 204);
+    }
+
     public function submit(Request $request, ExpenseClaim $expenseClaim): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
         abort_unless($expenseClaim->company_id === $actor->company_id && $expenseClaim->employee_id === $actor->id, 403);
-        abort_if($expenseClaim->status !== 'draft', 422);
+        // #4933 : resoumission après rejet — une demande rejetée repasse
+        // par le circuit d'approbation (avant : état terminal, l'employé ne
+        // pouvait que recréer une demande).
+        abort_if(! in_array($expenseClaim->status, ['draft', 'rejected'], true), 422, 'EXPENSE_CLAIM_NOT_SUBMITTABLE');
 
         $expenseClaim->update(['status' => 'submitted', 'submitted_at' => now()]);
 

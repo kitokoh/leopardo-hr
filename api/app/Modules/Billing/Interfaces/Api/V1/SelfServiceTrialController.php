@@ -55,6 +55,7 @@ class SelfServiceTrialController extends Controller
             'requestedWorkflow' => ['nullable', 'string', 'in:guided_trial,self_service'],
         ]);
 
+        /** @var array{email: string, company: string, first_name?: string|null, last_name?: string|null, role?: string|null, employees?: string|null, country: string, phone?: string|null, plan?: string|null, source?: string|null, referral_code?: string|null, requestedWorkflow?: string|null} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Anti-énumération (#3945) : la réponse de signup est UNIFORME que
@@ -67,6 +68,7 @@ class SelfServiceTrialController extends Controller
         // en 503 localisé réessayable (même contrat que #4866/#4874). La
         // détection d'email existant est purement informative ici : la réponse
         // reste uniforme (anti-énumération #3945).
+        $existingManager = null;
         try {
             $existingManager = $this->requestTrialSignup->findExistingManager($email);
             if ($existingManager) {
@@ -181,7 +183,7 @@ class SelfServiceTrialController extends Controller
         // JAMAIS devenir un 500 brut : on répond 503 SERVICE_UNAVAILABLE
         // avec un message localisé, le client peut réessayer.
         try {
-            $this->requestTrialSignup->execute($validated);
+            $sent = $this->requestTrialSignup->execute($validated);
         } catch (\Throwable $e) {
             Log::error('trial.signup_legacy_failed', [
                 'email' => $email,
@@ -191,6 +193,19 @@ class SelfServiceTrialController extends Controller
             return new JsonResponse([
                 'success' => false,
                 'error' => 'TRIAL_SIGNUP_UNAVAILABLE',
+                'message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+                'localized_message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
+            ], 503);
+        }
+
+        // Issue #3057 / #4949 : `execute()` retourne `false` quand l'envoi de
+        // l'email OTP a échoué (mailer KO) — la CompanyRequest est conservée
+        // mais on ne doit JAMAIS répondre « code envoyé » pour un code jamais
+        // parti (état honnête, pas d'écran OTP pour un mail perdu).
+        if (! $sent) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'TRIAL_OTP_SEND_FAILED',
                 'message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
                 'localized_message' => __('errors.TRIAL_SIGNUP_UNAVAILABLE'),
             ], 503);
@@ -247,8 +262,8 @@ class SelfServiceTrialController extends Controller
 
         // #2903 : provisioned_at est stocké en string (insert DB::table) —
         // ne JAMAIS appeler ->toIso8601String() sur une string (500).
-        $provisionedAt = $row->provisioned_at
-            ? Carbon::parse($row->provisioned_at)->toIso8601String()
+        $provisionedAt = is_scalar($row->provisioned_at) && (string) $row->provisioned_at !== ''
+            ? Carbon::parse((string) $row->provisioned_at)->toIso8601String()
             : null;
 
         $payload = [
@@ -283,6 +298,7 @@ class SelfServiceTrialController extends Controller
             'code' => ['required', 'string', 'size:6'],
         ]);
 
+        /** @var array{email: string, code: string} $validated */
         $email = strtolower(trim($validated['email']));
 
         // Issue #2903 : le parcours d'essai guidé ne doit JAMAIS exposer un

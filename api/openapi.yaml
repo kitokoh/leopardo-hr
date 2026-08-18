@@ -4854,6 +4854,24 @@ paths:
                     type: string
         "422":
           $ref: "#/components/responses/Validation422"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une correction de pointage (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /attendance/corrections/{correction}/reject:
     post:
@@ -4879,6 +4897,24 @@ paths:
                     type: string
         "422":
           $ref: "#/components/responses/Validation422"
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une correction de pointage (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: correction
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /attendance/today:
     get:
@@ -7086,6 +7122,37 @@ paths:
         "404":
           $ref: "#/components/responses/Error404"
 
+  /support-tickets/{supportTicket}/close:
+    post:
+      parameters:
+      - in: path
+        name: supportTicket
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    type: object
+                type: object
+          description: Ticket clos
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+      security:
+      - BearerAuth: []
+      summary: Cloturer un ticket de support (auteur ou manager tenant)
+      tags:
+      - Platform
   /support-tickets/{supportTicket}/reply:
     post:
       tags: ["Platform"]
@@ -8129,6 +8196,49 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /absences/{absence}:
+    put:
+      parameters:
+      - in: path
+        name: absence
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                end_date:
+                  format: date
+                  type: string
+                reason:
+                  type: string
+                start_date:
+                  format: date
+                  type: string
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Absence'
+                type: object
+          description: Absence modifiee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+      summary: Modifier une demande d'absence en attente (dates/raison)
+      tags:
+      - Absences
     get:
       tags: ["Absences"]
       summary: "Voir une absence"
@@ -8197,6 +8307,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une absence (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /absences/{absence}/reject:
     post:
@@ -8234,6 +8362,25 @@ paths:
           $ref: "#/components/responses/Error403"
 
   # --- Salary Advances ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une absence (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /salary-advances:
     get:
       tags: ["Salary Advances"]
@@ -8365,6 +8512,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une avance sur salaire (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /salary-advances/{salaryAdvance}/reject:
     post:
@@ -8397,6 +8562,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une avance sur salaire (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /salary-advances/{salaryAdvance}/manager-approve:
     post:
@@ -8421,6 +8604,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Validation manager d'une avance (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: salaryAdvance
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /salary-advances/{salaryAdvance}/mark-paid:
     put:
@@ -12827,6 +13028,25 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /training/courses/{trainingCourse}:
+    delete:
+      parameters:
+      - in: path
+        name: trainingCourse
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Supprimer une formation
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+      summary: Supprimer une formation
+      tags:
+      - Training
     get:
       tags: ["Training"]
       summary: "Voir une formation"
@@ -12978,6 +13198,25 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /training/sessions/{trainingSession}:
+    delete:
+      parameters:
+      - in: path
+        name: trainingSession
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Supprimer une session
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+      summary: Supprimer une session
+      tags:
+      - Training
     put:
       tags: ["Training"]
       summary: "Modifier une session"
@@ -13036,6 +13275,25 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /training/enrollments/{trainingEnrollment}:
+    delete:
+      parameters:
+      - in: path
+        name: trainingEnrollment
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Supprimer une inscription formation
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+      summary: Supprimer une inscription formation
+      tags:
+      - Training
     put:
       tags: ["Training"]
       summary: "Modifier une inscription"
@@ -13159,6 +13417,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver un prêt (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /loans/{employeeLoan}/disburse:
     post:
@@ -13176,6 +13452,25 @@ paths:
           $ref: "#/components/responses/Error401"
 
   # --- Expense Claims ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Décaisser un prêt (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: employeeLoan
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /expense-claims:
     get:
       tags: ["Expenses"]
@@ -13228,6 +13523,72 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /expense-claims/{expenseClaim}:
+    delete:
+      parameters:
+      - in: path
+        name: expenseClaim
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Note de frais supprimee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+      summary: Supprimer une note de frais
+      tags:
+      - Expenses
+    put:
+      parameters:
+      - in: path
+        name: expenseClaim
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                amount:
+                  format: number
+                  type: number
+                currency:
+                  type: string
+                description:
+                  type: string
+                expense_date:
+                  format: date
+                  type: string
+                expense_type:
+                  type: string
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ExpenseClaim'
+                type: object
+          description: Note de frais modifiee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
+      summary: Modifier une note de frais
+      tags:
+      - Expenses
     get:
       tags: ["Expenses"]
       summary: "Voir une note de frais"
@@ -13280,6 +13641,24 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+    put:
+      tags: ["Deprecated"]
+      summary: "Approuver une note de frais (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /expense-claims/{expenseClaim}/reject:
     post:
@@ -13311,6 +13690,25 @@ paths:
   # =============================================
 
   # --- Approvals ---
+    put:
+      tags: ["Deprecated"]
+      summary: "Refuser une note de frais (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: expenseClaim
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /approval-workflows:
     get:
       tags: ["Approvals"]
@@ -15506,6 +15904,190 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
+  /calendar/connections:
+    get:
+      tags: ["Calendar"]
+      summary: "Lister les connexions calendrier de l'employe"
+      responses:
+        "200":
+          description: "Connexions calendrier"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/connect:
+    post:
+      tags: ["Calendar"]
+      summary: "Connecter un calendrier (google, outlook, caldav)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, access_token]
+              properties:
+                provider:
+                  type: string
+                  enum: [google, outlook, caldav]
+                access_token:
+                  type: string
+                refresh_token:
+                  type: string
+                calendar_id:
+                  type: string
+                  maxLength: 255
+                expires_in:
+                  type: integer
+                sync_leaves:
+                  type: boolean
+                sync_training:
+                  type: boolean
+      responses:
+        "201":
+          description: "Connexion creee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/disconnect/{provider}:
+    delete:
+      tags: ["Calendar"]
+      summary: "Deconnecter un calendrier"
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, outlook, caldav]
+      responses:
+        "200":
+          description: "Calendrier deconnecte"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/sync:
+    post:
+      tags: ["Calendar"]
+      summary: "Synchroniser conges et formations vers le calendrier"
+      responses:
+        "200":
+          description: "Synchronisation effectuee"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /calendar/events:
+    get:
+      tags: ["Calendar"]
+      summary: "Lister les evenements calendrier sur une periode"
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        "200":
+          description: "Evenements"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/shared/{token}:
+    get:
+      tags: ["Cabinet"]
+      summary: "Acceder a un partage par jeton (lien public)"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: "Contenu partage"
+        "404":
+          description: "Partage introuvable ou expire"
+
+  /cabinet/shares:
+    get:
+      tags: ["Cabinet"]
+      summary: "Lister les partages du cabinet"
+      parameters:
+        - name: per_page
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+      responses:
+        "200":
+          description: "Partages (data + meta)"
+        "401":
+          $ref: "#/components/responses/Error401"
+    post:
+      tags: ["Cabinet"]
+      summary: "Creer un partage de dossier ou document"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [shareable_type, shareable_id, shared_via]
+              properties:
+                shareable_type:
+                  type: string
+                  enum: [folder, document]
+                shareable_id:
+                  type: integer
+                shared_via:
+                  type: string
+                  enum: [email, link]
+                shared_with_email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                expires_at:
+                  type: string
+                  format: date-time
+      responses:
+        "201":
+          description: "Partage cree"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /cabinet/shares/{cabinetShare}:
+    delete:
+      tags: ["Cabinet"]
+      summary: "Revoquer un partage"
+      parameters:
+        - name: cabinetShare
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Partage revoque"
+        "401":
+          $ref: "#/components/responses/Error401"
+
+  /absences/{absence}/proof:
+    get:
+      tags: ["Absences"]
+      summary: "Telecharger la piece jointe d'une demande d'absence"
+      parameters:
+        - name: absence
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Fichier"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "#/components/responses/Error401"
   /marketing/leads:
     post:
       tags: ["Marketing"]
@@ -15709,26 +16291,6 @@ paths:
         "403": { $ref: "#/components/responses/Error403" }
 
   # ── Onboarding Setup ─────────────────────────────────────────────────────────
-  /onboarding/steps:
-    get:
-      tags: ["Onboarding"]
-      summary: "Checklist d'onboarding (alias /onboarding-setup/checklist)"
-      description: "Alias attendu par les clients mobile/web : meme reponse que GET /onboarding-setup/checklist."
-      security: [{ BearerAuth: [] }]
-      responses:
-        "200":
-          description: "Checklist avec statut de chaque étape"
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-        "401": { $ref: "#/components/responses/Error401" }
-
   /onboarding-setup/checklist:
     get:
       tags: ["Onboarding"]
@@ -15783,6 +16345,24 @@ paths:
       responses:
         "200": { description: "Étape marquée complète" }
         "404": { description: "Étape inconnue" }
+    patch:
+      tags: ["Deprecated"]
+      summary: "Marquer une étape complète (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: stepKey
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /onboarding-setup/{stepKey}/skip:
     post:
@@ -15802,6 +16382,25 @@ paths:
   # SmartAttendance — Pointage GPS automatique par géofencing
   # Ajouté dans v4.18.0
   # ─────────────────────────────────────────────────────────────────────────
+    patch:
+      tags: ["Deprecated"]
+      summary: "Passer une étape (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: stepKey
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
+
   /smart-attendance/mode-settings:
     get:
       tags: ["SmartAttendance"]
@@ -15935,6 +16534,24 @@ paths:
           description: "Non-manager"
         "404":
           description: "Hors société"
+    put:
+      tags: ["Deprecated"]
+      summary: "Valider un run de paie (déprécié — utiliser POST)"
+      deprecated: true
+      parameters:
+        - name: payroll
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: "Action effectuée (ancien verbe, déprécié #4930)"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          description: "Non autorisé"
+        "404":
+          description: "Introuvable"
 
   /positions/{position}:
     patch:
