@@ -483,25 +483,6 @@
       "lastLogin": "آخر تسجيل دخول"
     }
   },
-  "time": {
-    "justNow": "الآن",
-    "minutesAgo": "منذ {count} د",
-    "hoursAgo": "منذ {count} س",
-    "minutesShort": "{count} د",
-    "hoursShort": "{count} س",
-    "never": "أبدًا",
-    "loadingData": "جارٍ تحميل البيانات...",
-    "confirm": "تأكيد",
-    "cancel": "إلغاء",
-    "inProgress": "جارٍ التنفيذ…",
-    "valid": "صالح",
-    "invalid": "غير صالح",
-    "statusActive": "نشط",
-    "statusInactive": "غير نشط",
-    "statusSuspended": "موقوف",
-    "statusPending": "قيد الانتظار",
-    "exportCsv": "تصدير CSV"
-  },
   "_version": "1.0.0",
   "tax_slabs": {
     "load_error": "تعذّر تحميل الشريحة الضريبية.",
@@ -1412,35 +1393,6 @@
     "list_loading": "جارٍ تحميل قائمة الفريق...",
     "empty_list": "لا يوجد موظفون مرئيون لهذا الحساب."
   },
-  "user_auth": {
-    "company_request": {
-      "title": "تم إرسال الطلب!",
-      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
-      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
-    },
-    "back_to_home": "العودة إلى الرئيسية",
-    "create_company": "إنشاء شركة",
-    "company_name": "اسم الشركة",
-    "company_email": "بريد الشركة الإلكتروني",
-    "sector": "قطاع الأعمال",
-    "country": "البلد",
-    "city": "المدينة",
-    "phone": "الهاتف",
-    "description": "الوصف",
-    "submit_request": "إرسال الطلب",
-    "submit_error": "خطأ في إرسال الطلب",
-    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
-    "first_name": "الاسم الأول",
-    "google_error": "خطأ Google: {error}",
-    "last_name": "اسم العائلة",
-    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
-    "no_account": "لا حساب بعد؟ إنشاء حساب",
-    "personal_login": "تسجيل الدخول الشخصي",
-    "phone_optional": "الهاتف (اختياري)",
-    "register_button": "إنشاء حسابي",
-    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
-    "register_title": "إنشاء حسابي"
-  },
   "partnerPage": {
     "loading": "جارٍ تحميل مساحتك...",
     "applyErrorPrefix": "خطأ أثناء التقديم: ",
@@ -1492,6 +1444,35 @@
       "copied": "تم النسخ!",
       "copyError": "تعذر نسخ الرابط. انسخه يدوياً."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "تم إرسال الطلب!",
+      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
+      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
+    },
+    "back_to_home": "العودة إلى الرئيسية",
+    "create_company": "إنشاء شركة",
+    "company_name": "اسم الشركة",
+    "company_email": "بريد الشركة الإلكتروني",
+    "sector": "قطاع الأعمال",
+    "country": "البلد",
+    "city": "المدينة",
+    "phone": "الهاتف",
+    "description": "الوصف",
+    "submit_request": "إرسال الطلب",
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
   },
   "api": {
     "sessionExpired": "انتهت الجلسة. إعادة الاتصال...",
@@ -1578,6 +1559,39 @@
     "subtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
     "title": "إدارة النظام"
   },
+  "billing": {
+    "cancel_subscription_confirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
+    "no_active_period": "لا توجد فترة نشطة",
+    "no_active_subscription": "لا يوجد اشتراك نشط",
+    "period_label": "الفترة",
+    "checkout_sandbox_message": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
+    "checkout_unavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
+    "checkout_failed": "تعذر إنشاء جلسة الدفع."
+  },
+  "contracts": {
+    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
+    "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
+    "allStatuses": "كل الحالات"
+  },
+  "time": {
+    "justNow": "الآن",
+    "minutesAgo": "منذ {count} د",
+    "hoursAgo": "منذ {count} س",
+    "minutesShort": "{count} د",
+    "hoursShort": "{count} س",
+    "never": "أبدًا",
+    "loadingData": "جارٍ تحميل البيانات...",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "inProgress": "جارٍ التنفيذ…",
+    "valid": "صالح",
+    "invalid": "غير صالح",
+    "statusActive": "نشط",
+    "statusInactive": "غير نشط",
+    "statusSuspended": "موقوف",
+    "statusPending": "قيد الانتظار",
+    "exportCsv": "تصدير CSV"
+  },
   "crm": {
     "subtitle": "تتبع العملاء المحتملين من الدخول حتى التحويل المدفوع",
     "leadsTotal": "إجمالي العملاء المحتملين",
@@ -1640,20 +1654,6 @@
     "usefulLinks": "روابط مفيدة",
     "system": "النظام",
     "systemConfig": "إعدادات النظام"
-  },
-  "billing": {
-    "cancel_subscription_confirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
-    "no_active_period": "لا توجد فترة نشطة",
-    "no_active_subscription": "لا يوجد اشتراك نشط",
-    "period_label": "الفترة",
-    "checkout_sandbox_message": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
-    "checkout_unavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
-    "checkout_failed": "تعذر إنشاء جلسة الدفع."
-  },
-  "contracts": {
-    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
-    "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
-    "allStatuses": "كل الحالات"
   },
   "growth": {
     "title": "إدارة النمو",

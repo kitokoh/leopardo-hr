@@ -120,7 +120,11 @@ class SecureStorage {
   }
 
   Future<void> clearAll() async {
+    // #4960 : _cachedUserToken n'était pas purgé → après un logout via
+    // clearAll(), getUserToken() retournait encore le jeton user_api depuis
+    // le cache mémoire (session `/user/*` fantôme).
     _cachedToken = null;
+    _cachedUserToken = null;
 
     try {
       await _storage.deleteAll().timeout(_timeout);
