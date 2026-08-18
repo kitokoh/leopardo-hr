@@ -6320,7 +6320,8 @@ abstract class AppLocalizations {
   String cabinetScreenDeleteBody(Object name);
   String get cabinetScreenDeleteTitle;
 
-  String cabinetScreenDocumentsCount(num count);  String get cabinetScreenDocumentAdded;
+  String cabinetScreenDocumentsCount(num count);
+  String get cabinetScreenDocumentAdded;
   String get cabinetScreenDocuments;
   String get cabinetScreenEmailHint;
   String get cabinetScreenEmptyDescription;
