@@ -36,7 +36,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     {
         $this->insertProvisioning();
 
-        $command = $this->artisan('trial-provisionings:sweep');
+        $command = $this->artisan('trial-provisionings:sweep --max-age-minutes=30');
         if ($command instanceof PendingCommand) {
             $command->assertExitCode(0);
         } else {
