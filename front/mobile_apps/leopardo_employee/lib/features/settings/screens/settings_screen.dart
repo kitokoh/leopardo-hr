@@ -806,7 +806,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _selectedLanguage,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
                 labelText: context.l10n.settingsPreferredLanguage),
             items: _languageLabels.entries
                 .map(
@@ -867,7 +867,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _currentPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: context.l10n.settingsCurrentPassword,
               ),
               validator: (value) =>
