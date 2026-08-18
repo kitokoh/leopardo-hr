@@ -359,6 +359,7 @@
   "attendanceOnTime": "zamanında",
   "attendanceOvertime": "Fazla mesai",
   "attendanceTimeRange": "{from} - {to}",
+  "attendanceFutureTimeError": "Gelecekteki bir saat girilemez",
   "holidaysPageTitle": "Ülkeye göre resmî tatiller",
   "holidaysPageSubtitle": "Maaş motorunun gerçek iş günlerini hesaplamak için kullandığı tatil takvimi. Sabit tatiller (issue #1811) ve hareketli İslami bayramlar (issue #1812) ilgili tüm ülkelerin bordrolarını otomatik besler.",
   "holidaysCountry": "Ülke",
@@ -845,6 +846,10 @@
   "notificationsCategoriesTitle": "Kategoriler",
   "notificationsSaveError": "Tercihler şu anda kaydedilemiyor.",
   "notificationsChannelInappDesc": "Web ve mobil bildirim merkezi.",
+  "notificationsMarkAllReadError": "Bildirimler okundu olarak işaretlenemedi.",
+  "notificationsMarkReadError": "Bildirim okundu olarak işaretlenemedi.",
+  "notificationsDeleteError": "Bildirim silinemedi.",
+  "notificationsDeleted": "Bildirim silindi.",
   "employeesLoadError": "Çalışanlar yüklenemedi.",
   "employeesTitle": "Ekip",
   "employeesSubtitle": "HR API'sine bağlı yönetici görünümü: çalışan listesi, durum ve temel giriş noktaları.",
@@ -1074,5 +1079,7 @@
   "sessionEntryAt": "Giriş: {time}",
   "sessionRejected": "Oturum reddedildi",
   "sessionsToValidate": "Onaylanacak oturumlar",
-  "backToHome": "Ana sayfaya dön"
+  "backToHome": "Ana sayfaya dön",
+  "settingsJourneyLoadError": "Yolculuğunuz yüklenemedi.",
+  "settingsStatsLoadError": "İstatistikler yüklenemedi."
 }

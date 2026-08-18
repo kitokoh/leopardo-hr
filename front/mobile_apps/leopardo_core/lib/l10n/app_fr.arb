@@ -359,6 +359,7 @@
   "attendanceOnTime": "à l'heure",
   "attendanceOvertime": "Heures supplémentaires",
   "attendanceTimeRange": "de {from} à {to}",
+  "attendanceFutureTimeError": "Impossible de saisir une heure future",
   "holidaysPageTitle": "Jours fériés par pays",
   "holidaysPageSubtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812) alimentent automatiquement les bulletins de paie de tous les pays concernés.",
   "holidaysCountry": "Pays",
@@ -845,6 +846,10 @@
   "notificationsCategoriesTitle": "Catégories",
   "notificationsSaveError": "Impossible d'enregistrer les préférences pour le moment.",
   "notificationsChannelInappDesc": "Centre de notifications web et mobile.",
+  "notificationsMarkAllReadError": "Impossible de marquer les notifications comme lues.",
+  "notificationsMarkReadError": "Impossible de marquer la notification comme lue.",
+  "notificationsDeleteError": "Impossible de supprimer la notification.",
+  "notificationsDeleted": "Notification supprimée.",
   "employeesLoadError": "Impossible de charger les employés.",
   "employeesTitle": "Équipe",
   "employeesSubtitle": "Vue manager branchée à l'API RH : liste des collaborateurs, statut et points d'entrée essentiels.",
@@ -1074,5 +1079,7 @@
   "sessionEntryAt": "Entrée : {time}",
   "sessionRejected": "Session rejetée",
   "sessionsToValidate": "Sessions à valider",
-  "backToHome": "Retour à l'accueil"
+  "backToHome": "Retour à l'accueil",
+  "settingsJourneyLoadError": "Impossible de charger votre parcours.",
+  "settingsStatsLoadError": "Impossible de charger les statistiques."
 }

@@ -359,6 +359,7 @@
   "attendanceOnTime": "في الموعد",
   "attendanceOvertime": "ساعات إضافية",
   "attendanceTimeRange": "من {from} إلى {to}",
+  "attendanceFutureTimeError": "لا يمكن إدخال وقت في المستقبل",
   "holidaysPageTitle": "الأعياد الرسمية حسب البلد",
   "holidaysPageSubtitle": "تقويم الأعياد الذي يستخدمه محرك الرواتب لحساب أيام العمل الفعلية. الأعياد الثابتة (1811) والأعياد الإسلامية المتحركة (1812) تُغذي كشوف رواتب جميع البلدان المعنية تلقائياً.",
   "holidaysCountry": "البلد",
@@ -845,6 +846,10 @@
   "notificationsCategoriesTitle": "الفئات",
   "notificationsSaveError": "تعذر حفظ التفضيلات الآن.",
   "notificationsChannelInappDesc": "مركز الإشعارات للويب والجوال.",
+  "notificationsMarkAllReadError": "تعذر وضع علامة مقروء على جميع الإشعارات.",
+  "notificationsMarkReadError": "تعذر وضع علامة مقروء على الإشعار.",
+  "notificationsDeleteError": "تعذر حذف الإشعار.",
+  "notificationsDeleted": "تم حذف الإشعار.",
   "employeesLoadError": "تعذر تحميل الموظفين.",
   "employeesTitle": "الفريق",
   "employeesSubtitle": "عرض المدير المتصل بواجهة الموارد البشرية: قائمة الموظفين والحالة ونقاط الدخول الأساسية.",
@@ -1074,5 +1079,7 @@
   "sessionEntryAt": "الدخول: {time}",
   "sessionRejected": "تم رفض الجلسة",
   "sessionsToValidate": "جلسات للموافقة",
-  "backToHome": "العودة إلى الرئيسية"
+  "backToHome": "العودة إلى الرئيسية",
+  "settingsJourneyLoadError": "تعذر تحميل مسارك.",
+  "settingsStatsLoadError": "تعذر تحميل الإحصائيات."
 }

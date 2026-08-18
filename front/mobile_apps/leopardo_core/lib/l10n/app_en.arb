@@ -359,6 +359,7 @@
   "attendanceOnTime": "on time",
   "attendanceOvertime": "Overtime hours",
   "attendanceTimeRange": "from {from} to {to}",
+  "attendanceFutureTimeError": "Cannot enter a future time",
   "holidaysPageTitle": "Public holidays by country",
   "holidaysPageSubtitle": "Calendar of holidays used by the payroll engine to compute real working days. Fixed holidays (issue #1811) and mobile Islamic festivities (issue #1812) feed the payslips of all concerned countries automatically.",
   "holidaysCountry": "Country",
@@ -845,6 +846,10 @@
   "notificationsCategoriesTitle": "Categories",
   "notificationsSaveError": "Unable to save preferences right now.",
   "notificationsChannelInappDesc": "Web and mobile notification center.",
+  "notificationsMarkAllReadError": "Unable to mark notifications as read.",
+  "notificationsMarkReadError": "Unable to mark notification as read.",
+  "notificationsDeleteError": "Unable to delete the notification.",
+  "notificationsDeleted": "Notification deleted.",
   "employeesLoadError": "Unable to load employees.",
   "employeesTitle": "Team",
   "employeesSubtitle": "Manager view connected to the HR API: employee list, status and key entry points.",
@@ -1074,5 +1079,7 @@
   "sessionEntryAt": "Entry: {time}",
   "sessionRejected": "Session rejected",
   "sessionsToValidate": "Sessions to validate",
-  "backToHome": "Back to home"
+  "backToHome": "Back to home",
+  "settingsJourneyLoadError": "Unable to load your journey.",
+  "settingsStatsLoadError": "Unable to load statistics."
 }
