@@ -200,8 +200,11 @@ class ResilientThrottleRequests extends ThrottleRequests
     {
         return new JsonResponse(
             [
+                // Code distinct pour l'observabilité (stockage du compteur KO,
+                // pas un vrai dépassement de quota) — message localisé quand même.
                 'error' => 'TOO_MANY_REQUESTS_DEGRADED',
-                'message' => 'Too Many Requests',
+                'message' => 'TOO_MANY_REQUESTS_DEGRADED',
+                'localized_message' => __('errors.TOO_MANY_REQUESTS'),
             ],
             429,
             ['Retry-After' => 60]
