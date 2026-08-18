@@ -26,7 +26,8 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.85.0",
-    "zod": "^4.0.0"
+    "zod": "^4.0.0",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -45,7 +46,8 @@
     "jest-environment-jsdom": "^30.4.1",
     "tailwindcss": "^4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.0.0"
+    "typescript-eslint": "^8.0.0",
+    "@types/qrcode": "^1.5.6"
   },
   "overrides": {
     "postcss": "^8.5.23",

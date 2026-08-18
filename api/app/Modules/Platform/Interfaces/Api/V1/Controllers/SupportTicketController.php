@@ -111,6 +111,38 @@ class SupportTicketController extends Controller
         ]);
     }
 
+    /**
+     * #4933 — clôture d'un ticket par son auteur (ou un manager du tenant) :
+     * l'employé peut enfin marquer son ticket résolu/clos au lieu de devoir
+     * contacter le support. Un ticket déjà clos répond 422.
+     */
+    public function close(Request $request, PlatformSupportTicket $supportTicket): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->ensureCompanyOwnsTicket($supportTicket, $actor);
+
+        if ($supportTicket->created_by_employee_id !== $actor->id && ! $actor->isManager()) {
+            abort(403);
+        }
+
+        abort_if(
+            $supportTicket->status === PlatformSupportTicket::STATUS_CLOSED,
+            422,
+            'TICKET_ALREADY_CLOSED',
+        );
+
+        $supportTicket->update([
+            'status' => PlatformSupportTicket::STATUS_CLOSED,
+            'resolved_at' => now(),
+        ]);
+
+        return response()->json([
+            'data' => $this->detailPayload($supportTicket->refresh()->load('messages')),
+        ]);
+    }
+
     private function ensureCompanyOwnsTicket(PlatformSupportTicket $ticket, Employee $actor): void
     {
         if ($ticket->company_id !== $actor->company_id) {

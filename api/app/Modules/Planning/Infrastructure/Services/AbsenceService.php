@@ -109,6 +109,42 @@ class AbsenceService
         });
     }
 
+    /**
+     * #4933 — modification d'une demande de congé en attente (dates et/ou
+     * raison). Le nombre de jours est recalculé sur les jours ouvrés du pays
+     * (même règle que create(), #2671). La revalidation du solde en cas
+     * d'extension est laissée à approve() (verrou ligne, #2666) — la demande
+     * reste 'pending' tant qu'elle n'est pas approuvée.
+     */
+    public function update(Absence $absence, array $data): Absence
+    {
+        $startDate = Carbon::parse($data['start_date'] ?? $absence->start_date->toDateString());
+        $endDate = Carbon::parse($data['end_date'] ?? $absence->end_date->toDateString());
+
+        $daysCount = $absence->days_count;
+        if (isset($data['start_date']) || isset($data['end_date'])) {
+            $employee = $absence->employee()->first();
+            $company = $employee?->company()->first();
+            $countryCode = $company?->country ?? null;
+            $daysCount = $this->publicHolidays->workingDaysBetween(
+                $startDate,
+                $endDate,
+                (string) ($countryCode ?? ''),
+                null,
+                $absence->company_id !== null ? (string) $absence->company_id : null,
+            );
+        }
+
+        $absence->update([
+            'start_date' => $data['start_date'] ?? $absence->start_date,
+            'end_date' => $data['end_date'] ?? $absence->end_date,
+            'reason' => array_key_exists('reason', $data) ? $data['reason'] : $absence->reason,
+            'days_count' => $daysCount,
+        ]);
+
+        return $absence->fresh();
+    }
+
     public function approve(Absence $absence, Employee $approver): Absence
     {
         if ($absence->status !== 'pending') {
