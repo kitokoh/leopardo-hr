@@ -30,7 +30,7 @@ return new class extends Migration
             // Tenant : UUID du propriétaire (index (company_id, created_at)
             // couvre la requête paginée de /export/history).
             $table->uuid('company_id');
-            $table->uuid('employee_id')->nullable();
+            $table->unsignedInteger('employee_id')->nullable(); // employees.id est INTEGER (increments) — le type uuid cassait l'insert (22P02, #5034)
             // Type d'export : employees | attendance | pay_slips | absences |
             // training | contracts | vehicles | payroll_journal |
             // payroll_ledger | accounting_od.
