@@ -37,7 +37,9 @@
         "redirect_uri": "رابط إعادة التوجيه"
       },
       "saved_ok": "تم حفظ إعدادات {provider}"
-    }
+    },
+    "socialExamplePlaceholder": "مثال: Leopardo RH — وسائل التواصل الاجتماعي",
+    "postContentPlaceholder": "محتوى المنشور..."
   },
   "emails": {
     "payroll_ready": {
@@ -183,7 +185,10 @@
     "platform_health": "صحة المنصة",
     "client_requests": "طلبات العملاء",
     "tenants_at_risk": "مستأجرون معرضون للخطر",
-    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة."
+    "platform_dashboard_hint": "متاح في لوحة تحكم المنصة.",
+    "searchPlaceholder": "بحث...",
+    "modulesActiveSentence": "{active} وحدة نشطة، و{locked} لتفعيلها حسب خطتك.",
+    "yourCompany": "شركتك"
   },
   "common": {
     "language": {
@@ -222,7 +227,8 @@
       "TD": "تشاد",
       "TG": "توغو",
       "US": "الولايات المتحدة"
-    }
+    },
+    "required": "مطلوب"
   },
   "signup": {
     "otpInvalidCode": "رمز غير صالح أو منتهي الصلاحية.",
@@ -807,7 +813,15 @@
     "two_fa_invalid": "رمز 2FA المقدم غير صالح.",
     "two_fa_required_msg": "رمز التحقق مطلوب.",
     "two_fa_setup_failed": "فشل إنشاء سر 2FA.",
-    "unexpected_error": "حدث خطأ غير متوقع."
+    "unexpected_error": "حدث خطأ غير متوقع.",
+    "demo": {
+      "access": "وصول تجريبي"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "إظهار أو إخفاء كلمة المرور"
+      }
+    }
   },
   "app": {
     "title": "ليوباردو للموارد البشرية"
@@ -1063,7 +1077,11 @@
     "statusCancelled": "ملغاة",
     "statusEnrolled": "مسجّل",
     "statusDropped": "منسحب",
-    "loadError": "تعذّر تحميل بيانات التدريب."
+    "loadError": "تعذّر تحميل بيانات التدريب.",
+    "titlePlaceholder": "العنوان *",
+    "durationPlaceholder": "المدة (ساعة)",
+    "maxParticipantsPlaceholder": "الحد الأقصى للمشاركين",
+    "online": "عبر الإنترنت"
   },
   "analytics": {
     "title": "تحليلات المنصة",
@@ -1324,5 +1342,133 @@
       "copied": "تم النسخ!",
       "copyError": "تعذر نسخ الرابط. انسخه يدوياً."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "تم إرسال الطلب!",
+      "body": "سيراجع مسؤول طلبك. ستتلقى إشعارًا بمجرد معالجته.",
+      "info": "أدخل معلومات شركتك. سيتحقق مسؤول من طلبك."
+    },
+    "back_to_home": "العودة إلى الرئيسية",
+    "create_company": "إنشاء شركة",
+    "company_name": "اسم الشركة",
+    "company_email": "بريد الشركة الإلكتروني",
+    "sector": "قطاع الأعمال",
+    "country": "البلد",
+    "city": "المدينة",
+    "phone": "الهاتف",
+    "description": "الوصف",
+    "submit_request": "إرسال الطلب",
+    "submit_error": "خطأ في إرسال الطلب",
+    "already_account": "لديك حساب بالفعل؟ تسجيل الدخول",
+    "first_name": "الاسم الأول",
+    "google_error": "خطأ Google: {error}",
+    "last_name": "اسم العائلة",
+    "login_subtitle": "اعثر على مساحتك ومستنداتك وطلباتك.",
+    "no_account": "لا حساب بعد؟ إنشاء حساب",
+    "personal_login": "تسجيل الدخول الشخصي",
+    "phone_optional": "الهاتف (اختياري)",
+    "register_button": "إنشاء حسابي",
+    "register_subtitle_alt": "اعثر على مساحتك الشخصية ونظم مستنداتك.",
+    "register_title": "إنشاء حسابي"
+  },
+  "api": {
+    "sessionExpired": "انتهت الجلسة. إعادة الاتصال...",
+    "accessDenied": "تم رفض الوصول إلى :endpoint. صلاحيات غير كافية.",
+    "notFound": "الموارد غير موجودة: :endpoint",
+    "tooManyRequests": "طلبات كثيرة جدًا. يرجى الانتظار بضع ثوانٍ.",
+    "serverError": "خطأ في الخادم على :endpoint. :detail",
+    "serverErrorRetry": "حاول مرة أخرى لاحقًا.",
+    "serverUnavailable": "الخادم غير متاح مؤقتًا (:status). يرجى المحاولة مرة أخرى بعد قليل.",
+    "genericError": "خطأ :status على :endpoint.",
+    "invalidData": "بيانات غير صالحة.",
+    "connectionError": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت.",
+    "login_invalid_json": "نص الطلب غير صالح.",
+    "login_timeout": "يستغرق الخادم وقتاً طويلاً للرد. يرجى المحاولة مرة أخرى بعد قليل.",
+    "login_network_error": "تعذر الوصول إلى الخادم.",
+    "login_backend_error": "استجابة خادم غير متوقعة."
+  },
+  "settingsPage": {
+    "cancel": "إلغاء",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "disable2fa": "إيقاف المصادقة الثنائية",
+    "disabled": "معطّل",
+    "email": "عنوان البريد الإلكتروني",
+    "enable2fa": "تفعيل المصادقة الثنائية",
+    "enabled": "مفعّل",
+    "enterCodeStep": "2. أدخل الرمز المكوّن من 6 أرقام",
+    "fullName": "الاسم الكامل",
+    "generateSecret": "إنشاء رمز 2FA السري",
+    "generateSecretHint": "أنشئ رمزًا سريًا وامسحه ضوئيًا باستخدام تطبيق مصادقة (Google Authenticator أو Authy أو 1Password...).",
+    "manualSecret": "الرمز اليدوي:",
+    "minLengthHint": "8 أحرف على الأقل.",
+    "newPassword": "كلمة المرور الجديدة",
+    "password": "كلمة المرور",
+    "passwordSubtitle": "سيؤدي تغيير كلمة المرور إلى تسجيل خروج جميع جلساتك النشطة الأخرى تلقائيًا.",
+    "passwordTitle": "كلمة المرور",
+    "passwordUpdated": "تم تحديث كلمة المرور بنجاح.",
+    "passwordsMismatch": "كلمتا المرور غير متطابقتين.",
+    "profileSubtitle": "الاسم وعنوان البريد الإلكتروني المستخدمان لتسجيل الدخول.",
+    "profileTitle": "معلومات الملف الشخصي",
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح.",
+    "saveChanges": "حفظ التغييرات",
+    "scanStep": "1. امسح هذا الرابط / الرمز في تطبيق المصادقة الثنائية:",
+    "subtitle": "إدارة معلوماتك وكلمة المرور وأمان حساب المسؤول الأعلى.",
+    "title": "حسابي",
+    "twoFactorActiveHint": "المصادقة الثنائية مفعّلة. لإيقافها، أكّد كلمة المرور.",
+    "twoFactorDisabled": "تم إيقاف المصادقة الثنائية.",
+    "twoFactorEnabled": "تم تفعيل المصادقة الثنائية بنجاح.",
+    "twoFactorSubtitle": "أضف طبقة أمان إضافية إلى حساب المسؤول الأعلى.",
+    "twoFactorTitle": "المصادقة الثنائية (2FA)",
+    "updatePassword": "تحديث كلمة المرور"
+  },
+  "systemPage": {
+    "apiError": "خطأ: :error",
+    "apiOperational": "API يعمل",
+    "apiOperationalDb": "API يعمل — قاعدة البيانات :ms مللي ثانية",
+    "apiServices": "خدمات API",
+    "apiUnavailable": "غير متاح — GET /health/live",
+    "database": "قاعدة البيانات",
+    "dbError": "خطأ: :error",
+    "dbLatency": "زمن الاستجابة: :ms مللي ثانية",
+    "dbUnavailable": "غير متاح — قم بتشغيل فحص الصحة.",
+    "dbUnreachable": "تعذر الوصول إلى قاعدة البيانات",
+    "globalError": "الفحص المجمّع: تعذر الوصول إلى قاعدة البيانات.",
+    "globalHealthy": "فحص قاعدة البيانات وRedis المجمّع يعمل.",
+    "globalStatus": "الحالة العامة",
+    "globalUnavailable": "غير متاح — GET /admin/dashboard/stats",
+    "globalWarning": "الفحص المجمّع: تم اكتشاف تدهور في الأداء.",
+    "healthCheck": "فحص الصحة",
+    "healthCheckRunning": "جارٍ الفحص...",
+    "healthError": "اكتمل فحص الصحة — قاعدة البيانات في حالة خطأ",
+    "healthLiveUnreachable": "تعذر الوصول إلى فحص /health/live.",
+    "healthOk": "اكتمل فحص الصحة — قاعدة البيانات تعمل",
+    "healthUnreachable": "اكتمل فحص الصحة — تعذر الوصول إلى قاعدة البيانات",
+    "infraDetails": ":active شركة نشطة · PHP :php · قائمة الانتظار :queue",
+    "infraUnavailable": "غير متاح — GET /platform/metrics/overview",
+    "infrastructure": "البنية التحتية",
+    "metricsLoadError": "خطأ أثناء تحميل مقاييس المنصة",
+    "notifObsLoadError": "خطأ أثناء تحميل مراقبة الإشعارات",
+    "queueObsLoadError": "خطأ أثناء تحميل مراقبة الوظائف",
+    "retry": "إعادة المحاولة",
+    "serviceUnreachable": "تعذر الوصول إلى الخدمة",
+    "statsLoadError": "خطأ أثناء تحميل إحصائيات النظام",
+    "subtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
+    "title": "إدارة النظام"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
+    "no_active_period": "لا توجد فترة نشطة",
+    "no_active_subscription": "لا يوجد اشتراك نشط",
+    "period_label": "الفترة",
+    "checkout_sandbox_message": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
+    "checkout_unavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
+    "checkout_failed": "تعذر إنشاء جلسة الدفع."
+  },
+  "contracts": {
+    "list_subtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
+    "searchPlaceholder": "ابحث عن موظف أو نوع عقد...",
+    "allStatuses": "كل الحالات"
   }
 }

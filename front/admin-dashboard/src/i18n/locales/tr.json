@@ -106,7 +106,10 @@
     "platform_health": "Platform sağlığı",
     "client_requests": "Müşteri talepleri",
     "tenants_at_risk": "Risk altındaki kiracılar",
-    "platform_dashboard_hint": "Platform panelinde mevcuttur."
+    "platform_dashboard_hint": "Platform panelinde mevcuttur.",
+    "searchPlaceholder": "Ara...",
+    "modulesActiveSentence": "{active} aktif modül, planınıza göre {locked} etkinleştirilecek.",
+    "yourCompany": "Şirketiniz"
   },
   "marketing": {
     "oauth": {
@@ -139,7 +142,9 @@
       "ayrshare_info": "Bu ayarlar Ayrshare tarafından sosyal ağlarınıza gönderi yapmak için kullanılır.",
       "title": "Pazarlama OAuth Ayarları",
       "nav_title": "Pazarlama OAuth"
-    }
+    },
+    "socialExamplePlaceholder": "Örn: Leopardo RH — Sosyal medya",
+    "postContentPlaceholder": "Gönderi içeriği..."
   },
   "ai_chat": {
     "error_message": "Hata: asistana ulasilamadi.",
@@ -517,7 +522,15 @@
     "two_fa_invalid": "Sağlanan 2FA kodu geçersiz.",
     "two_fa_required_msg": "Doğrulama kodu gereklidir.",
     "two_fa_setup_failed": "2FA sırrı oluşturulamadı.",
-    "unexpected_error": "Beklenmeyen bir hata oluştu."
+    "unexpected_error": "Beklenmeyen bir hata oluştu.",
+    "demo": {
+      "access": "Demo erisimi"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Sifreyi goster veya gizle"
+      }
+    }
   },
   "social_contrib": {
     "ignore_caps": "Yasal tavan olmadan",
@@ -692,7 +705,8 @@
         "ar-MA": "Arapca (Fas)"
       },
       "label": "Dil"
-    }
+    },
+    "required": "Gerekli"
   },
   "payroll": {
     "confidence": {
@@ -1063,7 +1077,11 @@
     "statusCancelled": "İptal edildi",
     "statusEnrolled": "Kayıtlı",
     "statusDropped": "Bırakıldı",
-    "loadError": "Eğitim verileri yüklenemedi."
+    "loadError": "Eğitim verileri yüklenemedi.",
+    "titlePlaceholder": "Başlık *",
+    "durationPlaceholder": "Süre (saat)",
+    "maxParticipantsPlaceholder": "Maks. katılımcı",
+    "online": "Çevrimiçi"
   },
   "analytics": {
     "title": "Platform Analitiği",
@@ -1324,5 +1342,133 @@
       "copied": "Kopyalandı!",
       "copyError": "Bağlantı kopyalanamadı. Lütfen elle kopyalayın."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Talep gönderildi!",
+      "body": "Bir yönetici talebinizi inceleyecek. İşlendiğinde bir bildirim alacaksınız.",
+      "info": "Şirket bilgilerinizi doldurun. Bir yönetici talebinizi onaylayacak."
+    },
+    "back_to_home": "Ana sayfaya dön",
+    "create_company": "Şirket oluştur",
+    "company_name": "Şirket adı",
+    "company_email": "Şirket e-postası",
+    "sector": "İş sektörü",
+    "country": "Ülke",
+    "city": "Şehir",
+    "phone": "Telefon",
+    "description": "Açıklama",
+    "submit_request": "Talep gönder",
+    "submit_error": "Talep gönderme hatası",
+    "already_account": "Zaten hesabiniz var mi? Giris yapin",
+    "first_name": "Ad",
+    "google_error": "Google hatasi: {error}",
+    "last_name": "Soyad",
+    "login_subtitle": "Alanınıza, belgelerinize ve taleplerinize erisin.",
+    "no_account": "Henuz hesabınız yok mu? Kayit olun",
+    "personal_login": "Kisisel giris",
+    "phone_optional": "Telefon (opsiyonel)",
+    "register_button": "Hesabimi olustur",
+    "register_subtitle_alt": "Kisisel alanınıza erisin ve belgelerinizi duzenleyin.",
+    "register_title": "Hesabimi olustur"
+  },
+  "api": {
+    "sessionExpired": "Oturum süresi doldu. Yeniden bağlanılıyor...",
+    "accessDenied": ":endpoint üzerinde erişim reddedildi. Yetersiz izinler.",
+    "notFound": "Kaynak bulunamadı: :endpoint",
+    "tooManyRequests": "Çok fazla istek. Lütfen birkaç saniye bekleyin.",
+    "serverError": ":endpoint üzerinde sunucu hatası. :detail",
+    "serverErrorRetry": "Daha sonra tekrar deneyin.",
+    "serverUnavailable": "Sunucu geçici olarak kullanılamıyor (:status). Lütfen kısa süre sonra tekrar deneyin.",
+    "genericError": ":endpoint üzerinde :status hatası.",
+    "invalidData": "Geçersiz veri.",
+    "connectionError": "Bağlantı hatası. İnternet bağlantınızı kontrol edin.",
+    "login_invalid_json": "Geçersiz istek gövdesi.",
+    "login_timeout": "Sunucu yanıt vermekte çok yavaş. Lütfen kısa süre sonra tekrar deneyin.",
+    "login_network_error": "Sunucuya ulaşılamıyor.",
+    "login_backend_error": "Beklenmeyen sunucu yanıtı."
+  },
+  "settingsPage": {
+    "cancel": "İptal",
+    "confirmPassword": "Parolayı doğrula",
+    "currentPassword": "Mevcut parola",
+    "disable2fa": "2FA'yı devre dışı bırak",
+    "disabled": "Devre dışı",
+    "email": "E-posta adresi",
+    "enable2fa": "2FA'yı etkinleştir",
+    "enabled": "Etkin",
+    "enterCodeStep": "2. Üretilen 6 haneli kodu girin",
+    "fullName": "Ad soyad",
+    "generateSecret": "2FA sırrı oluştur",
+    "generateSecretHint": "Bir sır üretin ve bir kimlik doğrulama uygulamasıyla (Google Authenticator, Authy, 1Password...) tarayın.",
+    "manualSecret": "Manuel sır:",
+    "minLengthHint": "En az 8 karakter.",
+    "newPassword": "Yeni parola",
+    "password": "Parola",
+    "passwordSubtitle": "Parolanızı değiştirmek, diğer tüm aktif oturumlarınızı otomatik olarak sonlandırır.",
+    "passwordTitle": "Parola",
+    "passwordUpdated": "Parola başarıyla güncellendi.",
+    "passwordsMismatch": "Parolalar eşleşmiyor.",
+    "profileSubtitle": "Oturum açmak için kullanılan ad ve e-posta adresi.",
+    "profileTitle": "Profil bilgileri",
+    "profileUpdated": "Profil başarıyla güncellendi.",
+    "saveChanges": "Değişiklikleri kaydet",
+    "scanStep": "1. Bu bağlantıyı / sırrı 2FA uygulamanızda tarayın:",
+    "subtitle": "Bilgilerinizi, parolanızı ve süper yönetici hesabınızın güvenliğini yönetin.",
+    "title": "Hesabım",
+    "twoFactorActiveHint": "2FA etkin. Devre dışı bırakmak için parolanızı doğrulayın.",
+    "twoFactorDisabled": "2FA devre dışı bırakıldı.",
+    "twoFactorEnabled": "2FA başarıyla etkinleştirildi.",
+    "twoFactorSubtitle": "Süper yönetici hesabınıza ek bir güvenlik katmanı ekleyin.",
+    "twoFactorTitle": "İki faktörlü kimlik doğrulama (2FA)",
+    "updatePassword": "Parolayı güncelle"
+  },
+  "systemPage": {
+    "apiError": "Hata: :error",
+    "apiOperational": "API çalışıyor",
+    "apiOperationalDb": "API çalışıyor — DB :ms ms",
+    "apiServices": "API Hizmetleri",
+    "apiUnavailable": "Kullanılamıyor — GET /health/live",
+    "database": "Veritabanı",
+    "dbError": "Hata: :error",
+    "dbLatency": "Gecikme: :ms ms",
+    "dbUnavailable": "Kullanılamıyor — bir Sağlık Kontrolü çalıştırın.",
+    "dbUnreachable": "veritabanına ulaşılamıyor",
+    "globalError": "Birleşik sonda: veritabanına ulaşılamıyor.",
+    "globalHealthy": "Birleşik DB + Redis sondası çalışıyor.",
+    "globalStatus": "Genel Durum",
+    "globalUnavailable": "Kullanılamıyor — GET /admin/dashboard/stats",
+    "globalWarning": "Birleşik sonda: bozulma algılandı.",
+    "healthCheck": "Sağlık Kontrolü",
+    "healthCheckRunning": "Kontrol ediliyor...",
+    "healthError": "Sağlık kontrolü tamamlandı — veritabanında hata",
+    "healthLiveUnreachable": "/health/live sondasına ulaşılamıyor.",
+    "healthOk": "Sağlık kontrolü tamamlandı — veritabanı çalışıyor",
+    "healthUnreachable": "Sağlık kontrolü tamamlandı — veritabanına ulaşılamıyor",
+    "infraDetails": ":active aktif şirket · PHP :php · kuyruk :queue",
+    "infraUnavailable": "Kullanılamıyor — GET /platform/metrics/overview",
+    "infrastructure": "Altyapı",
+    "metricsLoadError": "Platform metrikleri yüklenirken hata oluştu",
+    "notifObsLoadError": "Bildirim gözlemlenebilirliği yüklenirken hata oluştu",
+    "queueObsLoadError": "İş gözlemlenebilirliği yüklenirken hata oluştu",
+    "retry": "Yeniden dene",
+    "serviceUnreachable": "hizmete ulaşılamıyor",
+    "statsLoadError": "Sistem istatistikleri yüklenirken hata oluştu",
+    "subtitle": "Leopardo RH platformunun izlenmesi, yapılandırılması ve otomasyonu.",
+    "title": "Sistem Yönetimi"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.",
+    "no_active_period": "Aktif dönem yok",
+    "no_active_subscription": "Aktif abonelik yok",
+    "period_label": "Dönem",
+    "checkout_sandbox_message": "Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.",
+    "checkout_unavailable": "Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.",
+    "checkout_failed": "Ödeme oturumu oluşturulamadı."
+  },
+  "contracts": {
+    "list_subtitle": "Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API'sine bağlı.",
+    "searchPlaceholder": "Çalışan veya sözleşme türü ara...",
+    "allStatuses": "Tüm durumlar"
   }
 }

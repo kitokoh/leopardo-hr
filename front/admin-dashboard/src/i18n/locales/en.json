@@ -652,7 +652,8 @@
       "TD": "Chad",
       "TG": "Togo",
       "US": "United States"
-    }
+    },
+    "required": "Required"
   },
   "_locale": "en",
   "attendance": {
@@ -742,7 +743,15 @@
     "two_fa_invalid": "The 2FA code provided is invalid.",
     "two_fa_required_msg": "A verification code is required.",
     "two_fa_setup_failed": "Generating the 2FA secret failed.",
-    "unexpected_error": "An unexpected error occurred."
+    "unexpected_error": "An unexpected error occurred.",
+    "demo": {
+      "access": "Demo access"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Show or hide password"
+      }
+    }
   },
   "marketing": {
     "oauth": {
@@ -775,7 +784,9 @@
       },
       "title": "Marketing OAuth Settings",
       "subtitle": "Connect your social media accounts via Ayrshare"
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Social media",
+    "postContentPlaceholder": "Post content..."
   },
   "platform_login": {
     "email_required": "Email required",
@@ -895,7 +906,10 @@
     "platform_health": "Platform health",
     "client_requests": "Client requests",
     "tenants_at_risk": "Tenants at risk",
-    "platform_dashboard_hint": "Available in the platform dashboard."
+    "platform_dashboard_hint": "Available in the platform dashboard.",
+    "searchPlaceholder": "Search...",
+    "modulesActiveSentence": "{active} modules active, {locked} to activate based on your plan.",
+    "yourCompany": "Your company"
   },
   "payroll": {
     "confidence": {
@@ -1063,7 +1077,11 @@
     "statusCancelled": "Cancelled",
     "statusEnrolled": "Enrolled",
     "statusDropped": "Dropped",
-    "loadError": "Unable to load training data."
+    "loadError": "Unable to load training data.",
+    "titlePlaceholder": "Title *",
+    "durationPlaceholder": "Duration (h)",
+    "maxParticipantsPlaceholder": "Max participants",
+    "online": "Online"
   },
   "analytics": {
     "title": "Platform Analytics",
@@ -1324,5 +1342,133 @@
       "copied": "Copied!",
       "copyError": "Unable to copy the link. Copy it manually."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Request submitted!",
+      "body": "An administrator will review your request. You will receive a notification once it is processed.",
+      "info": "Fill in your company information. An administrator will validate your request."
+    },
+    "back_to_home": "Back to home",
+    "create_company": "Create a company",
+    "company_name": "Company name",
+    "company_email": "Company email",
+    "sector": "Business sector",
+    "country": "Country",
+    "city": "City",
+    "phone": "Phone",
+    "description": "Description",
+    "submit_request": "Submit request",
+    "submit_error": "Error submitting request",
+    "already_account": "Already have an account? Sign in",
+    "first_name": "First name",
+    "google_error": "Google error: {error}",
+    "last_name": "Last name",
+    "login_subtitle": "Access your workspace, documents and requests.",
+    "no_account": "No account yet? Sign up",
+    "personal_login": "Personal login",
+    "phone_optional": "Phone (optional)",
+    "register_button": "Create my account",
+    "register_subtitle_alt": "Access your personal workspace and organise your documents.",
+    "register_title": "Create my account"
+  },
+  "api": {
+    "sessionExpired": "Session expired. Reconnecting...",
+    "accessDenied": "Access denied on :endpoint. Insufficient permissions.",
+    "notFound": "Resource not found: :endpoint",
+    "tooManyRequests": "Too many requests. Please wait a few seconds.",
+    "serverError": "Server error on :endpoint. :detail",
+    "serverErrorRetry": "Try again later.",
+    "serverUnavailable": "The server is temporarily unavailable (:status). Please try again shortly.",
+    "genericError": "Error :status on :endpoint.",
+    "invalidData": "Invalid data.",
+    "connectionError": "Connection error. Check your internet connection.",
+    "login_invalid_json": "Invalid request body.",
+    "login_timeout": "The server is taking too long to respond. Please try again shortly.",
+    "login_network_error": "Unable to reach the server.",
+    "login_backend_error": "Unexpected server response."
+  },
+  "settingsPage": {
+    "cancel": "Cancel",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "disable2fa": "Disable 2FA",
+    "disabled": "Disabled",
+    "email": "Email address",
+    "enable2fa": "Enable 2FA",
+    "enabled": "Enabled",
+    "enterCodeStep": "2. Enter the generated 6-digit code",
+    "fullName": "Full name",
+    "generateSecret": "Generate 2FA secret",
+    "generateSecretHint": "Generate a secret and scan it with an authenticator app (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Manual secret:",
+    "minLengthHint": "Minimum 8 characters.",
+    "newPassword": "New password",
+    "password": "Password",
+    "passwordSubtitle": "Changing your password will automatically sign out all your other active sessions.",
+    "passwordTitle": "Password",
+    "passwordUpdated": "Password updated successfully.",
+    "passwordsMismatch": "Passwords do not match.",
+    "profileSubtitle": "Name and email address used to sign in.",
+    "profileTitle": "Profile information",
+    "profileUpdated": "Profile updated successfully.",
+    "saveChanges": "Save changes",
+    "scanStep": "1. Scan this link / secret in your 2FA app:",
+    "subtitle": "Manage your information, password and the security of your super-admin account.",
+    "title": "My account",
+    "twoFactorActiveHint": "2FA is active. To disable it, confirm your password.",
+    "twoFactorDisabled": "2FA disabled.",
+    "twoFactorEnabled": "2FA enabled successfully.",
+    "twoFactorSubtitle": "Add an extra layer of security to your super-admin account.",
+    "twoFactorTitle": "Two-factor authentication (2FA)",
+    "updatePassword": "Update password"
+  },
+  "systemPage": {
+    "apiError": "Error: :error",
+    "apiOperational": "API operational",
+    "apiOperationalDb": "API operational — DB :ms ms",
+    "apiServices": "API Services",
+    "apiUnavailable": "Unavailable — GET /health/live",
+    "database": "Database",
+    "dbError": "Error: :error",
+    "dbLatency": "Latency: :ms ms",
+    "dbUnavailable": "Unavailable — run a Health Check.",
+    "dbUnreachable": "database unreachable",
+    "globalError": "Aggregated probe: database unreachable.",
+    "globalHealthy": "Aggregated DB + Redis probe operational.",
+    "globalStatus": "Global Status",
+    "globalUnavailable": "Unavailable — GET /admin/dashboard/stats",
+    "globalWarning": "Aggregated probe: degradation detected.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Checking...",
+    "healthError": "Health check completed — database in error",
+    "healthLiveUnreachable": "/health/live probe unreachable.",
+    "healthOk": "Health check completed — database operational",
+    "healthUnreachable": "Health check completed — database unreachable",
+    "infraDetails": ":active active companies · PHP :php · queue :queue",
+    "infraUnavailable": "Unavailable — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Error loading platform metrics",
+    "notifObsLoadError": "Error loading notifications observability",
+    "queueObsLoadError": "Error loading jobs observability",
+    "retry": "Retry",
+    "serviceUnreachable": "service unreachable",
+    "statsLoadError": "Error loading system stats",
+    "subtitle": "Monitoring, configuration and automation of the Leopardo RH platform.",
+    "title": "System Administration"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Cancel your subscription? You will lose access to premium modules at the end of the current period.",
+    "no_active_period": "No active period",
+    "no_active_subscription": "No active subscription",
+    "period_label": "Period",
+    "checkout_sandbox_message": "Simulated payment (sandbox mode). No card is charged.",
+    "checkout_unavailable": "Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.",
+    "checkout_failed": "Unable to create the payment session."
+  },
+  "contracts": {
+    "list_subtitle": "Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.",
+    "searchPlaceholder": "Search for an employee or contract type...",
+    "allStatuses": "All statuses"
   }
 }

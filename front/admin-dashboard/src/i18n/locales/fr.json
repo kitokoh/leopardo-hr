@@ -30,7 +30,9 @@
           "description": "Connexion à l'API Facebook Graph"
         }
       }
-    }
+    },
+    "socialExamplePlaceholder": "Ex: Leopardo RH — Reseaux sociaux",
+    "postContentPlaceholder": "Contenu de la publication..."
   },
   "auth": {
     "password_required": "Mot de passe obligatoire",
@@ -78,7 +80,15 @@
     "two_fa_invalid": "Le code 2FA fourni est invalide.",
     "two_fa_required_msg": "Un code de vérification est requis.",
     "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
-    "unexpected_error": "Une erreur inattendue est survenue."
+    "unexpected_error": "Une erreur inattendue est survenue.",
+    "demo": {
+      "access": "Acces Demo"
+    },
+    "toggle": {
+      "password": {
+        "visibility": "Afficher ou masquer le mot de passe"
+      }
+    }
   },
   "webhooks": {
     "confirm_delete": "Supprimer ce webhook ?",
@@ -151,7 +161,11 @@
     "statusCancelled": "Annulée",
     "statusEnrolled": "Inscrit",
     "statusDropped": "Abandonné",
-    "loadError": "Impossible de charger les données de formation."
+    "loadError": "Impossible de charger les données de formation.",
+    "titlePlaceholder": "Titre *",
+    "durationPlaceholder": "Duree (h)",
+    "maxParticipantsPlaceholder": "Participants max",
+    "online": "En ligne"
   },
   "analytics": {
     "title": "Analytics Plateforme",
@@ -300,7 +314,10 @@
     "platform_health": "Santé plateforme",
     "client_requests": "Demandes clients",
     "tenants_at_risk": "Tenants à risque",
-    "platform_dashboard_hint": "Disponible dans le dashboard plateforme."
+    "platform_dashboard_hint": "Disponible dans le dashboard plateforme.",
+    "searchPlaceholder": "Rechercher...",
+    "modulesActiveSentence": "{active} modules actifs, {locked} a activer selon votre plan.",
+    "yourCompany": "Votre entreprise"
   },
   "_version": "1.0.0",
   "signup": {
@@ -482,7 +499,8 @@
       "BJ": "Bénin",
       "TR": "Turquie"
     },
-    "or": "ou"
+    "or": "ou",
+    "required": "Requis"
   },
   "seo": {
     "pricing": {
@@ -1324,5 +1342,133 @@
       "copied": "Copié !",
       "copyError": "Impossible de copier le lien. Copiez-le manuellement."
     }
+  },
+  "user_auth": {
+    "company_request": {
+      "title": "Demande soumise !",
+      "body": "Un administrateur examinera votre demande. Vous recevrez une notification dès qu'elle sera traitée.",
+      "info": "Remplissez les informations de votre entreprise. Un administrateur validera votre demande."
+    },
+    "back_to_home": "À l'accueil",
+    "create_company": "Créer une entreprise",
+    "company_name": "Nom de l'entreprise",
+    "company_email": "Email entreprise",
+    "sector": "Secteur d'activité",
+    "country": "Pays",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "description": "Description",
+    "submit_request": "Soumettre la demande",
+    "submit_error": "Erreur lors de la soumission",
+    "already_account": "Deja un compte ? Se connecter",
+    "first_name": "Prenom",
+    "google_error": "Erreur Google : {error}",
+    "last_name": "Nom",
+    "login_subtitle": "Retrouvez votre espace, vos documents et vos demandes.",
+    "no_account": "Pas encore de compte ? S'inscrire",
+    "personal_login": "Connexion personnelle",
+    "phone_optional": "Telephone (optionnel)",
+    "register_button": "Creer mon compte",
+    "register_subtitle_alt": "Accedez a votre espace personnel et organisez vos documents.",
+    "register_title": "Creer mon compte"
+  },
+  "api": {
+    "sessionExpired": "Session expirée. Reconnexion en cours...",
+    "accessDenied": "Accès refusé sur :endpoint. Permissions insuffisantes.",
+    "notFound": "Ressource introuvable : :endpoint",
+    "tooManyRequests": "Trop de requêtes. Veuillez patienter quelques secondes.",
+    "serverError": "Erreur serveur sur :endpoint. :detail",
+    "serverErrorRetry": "Réessayez plus tard.",
+    "serverUnavailable": "Le serveur est temporairement indisponible (:status). Réessayez dans quelques instants.",
+    "genericError": "Erreur :status sur :endpoint.",
+    "invalidData": "Données invalides.",
+    "connectionError": "Erreur de connexion. Vérifiez votre connexion internet.",
+    "login_invalid_json": "Corps de requête invalide.",
+    "login_timeout": "Le serveur met trop de temps à répondre. Réessayez dans quelques instants.",
+    "login_network_error": "Impossible de contacter le serveur.",
+    "login_backend_error": "Réponse serveur inattendue."
+  },
+  "settingsPage": {
+    "cancel": "Annuler",
+    "confirmPassword": "Confirmer le mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "disable2fa": "Désactiver le 2FA",
+    "disabled": "Désactivé",
+    "email": "Adresse email",
+    "enable2fa": "Activer le 2FA",
+    "enabled": "Activé",
+    "enterCodeStep": "2. Entrez le code à 6 chiffres généré",
+    "fullName": "Nom complet",
+    "generateSecret": "Générer un secret 2FA",
+    "generateSecretHint": "Générez un secret et scannez-le avec une application d'authentification (Google Authenticator, Authy, 1Password...).",
+    "manualSecret": "Secret manuel :",
+    "minLengthHint": "Minimum 8 caractères.",
+    "newPassword": "Nouveau mot de passe",
+    "password": "Mot de passe",
+    "passwordSubtitle": "Changer votre mot de passe déconnectera automatiquement toutes vos autres sessions actives.",
+    "passwordTitle": "Mot de passe",
+    "passwordUpdated": "Mot de passe mis à jour avec succès.",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas.",
+    "profileSubtitle": "Nom et adresse email utilisés pour vous connecter.",
+    "profileTitle": "Informations du profil",
+    "profileUpdated": "Profil mis à jour avec succès.",
+    "saveChanges": "Enregistrer les modifications",
+    "scanStep": "1. Scannez ce lien / secret dans votre application 2FA :",
+    "subtitle": "Gérez vos informations, votre mot de passe et la sécurité de votre compte super-administrateur.",
+    "title": "Mon compte",
+    "twoFactorActiveHint": "Le 2FA est actif. Pour le désactiver, confirmez votre mot de passe.",
+    "twoFactorDisabled": "2FA désactivé.",
+    "twoFactorEnabled": "2FA activé avec succès.",
+    "twoFactorSubtitle": "Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.",
+    "twoFactorTitle": "Authentification à deux facteurs (2FA)",
+    "updatePassword": "Mettre à jour le mot de passe"
+  },
+  "systemPage": {
+    "apiError": "Erreur : :error",
+    "apiOperational": "API opérationnelle",
+    "apiOperationalDb": "API opérationnelle — DB :ms ms",
+    "apiServices": "Services API",
+    "apiUnavailable": "Non disponible — GET /health/live",
+    "database": "Base de Données",
+    "dbError": "Erreur : :error",
+    "dbLatency": "Latence : :ms ms",
+    "dbUnavailable": "Non disponible — lancez un Health Check.",
+    "dbUnreachable": "base injoignable",
+    "globalError": "Sonde agrégée : base de données injoignable.",
+    "globalHealthy": "Sonde agrégée DB + Redis opérationnelle.",
+    "globalStatus": "Statut Global",
+    "globalUnavailable": "Non disponible — GET /admin/dashboard/stats",
+    "globalWarning": "Sonde agrégée : dégradation détectée.",
+    "healthCheck": "Health Check",
+    "healthCheckRunning": "Analyse...",
+    "healthError": "Health check terminé — base de données en erreur",
+    "healthLiveUnreachable": "Sonde /health/live injoignable.",
+    "healthOk": "Health check terminé — base de données opérationnelle",
+    "healthUnreachable": "Health check terminé — base de données injoignable",
+    "infraDetails": ":active compagnies actives · PHP :php · queue :queue",
+    "infraUnavailable": "Non disponible — GET /platform/metrics/overview",
+    "infrastructure": "Infrastructure",
+    "metricsLoadError": "Erreur lors du chargement des métriques plateforme",
+    "notifObsLoadError": "Erreur lors du chargement de l'observabilité des notifications",
+    "queueObsLoadError": "Erreur lors du chargement de l'observabilité des jobs",
+    "retry": "Réessayer",
+    "serviceUnreachable": "service injoignable",
+    "statsLoadError": "Erreur lors du chargement des stats système",
+    "subtitle": "Monitoring, configuration et automatisation de la plateforme Leopardo RH.",
+    "title": "Administration Système"
+  },
+  "billing": {
+    "cancel_subscription_confirm": "Annuler votre abonnement ? Vous perdrez l'accès aux modules premium à la fin de la période en cours.",
+    "no_active_period": "Aucune période active",
+    "no_active_subscription": "Aucun abonnement active",
+    "period_label": "Période",
+    "checkout_sandbox_message": "Paiement simulé (mode sandbox). Aucune carte débitée.",
+    "checkout_unavailable": "Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.",
+    "checkout_failed": "Impossible de créer la session de paiement."
+  },
+  "contracts": {
+    "list_subtitle": "Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l'API RH.",
+    "searchPlaceholder": "Rechercher un employe ou un type de contrat...",
+    "allStatuses": "Tous les statuts"
   }
 }
