@@ -1622,11 +1622,11 @@ class _SessionDetailTile extends StatelessWidget {
       case 'break':
         return l10n.attendancePauseLabel;
       case 'resume':
-        return context.l10n.attendanceResumeTitle;
+        return l10n.attendanceResumeTitle;
       case 'mission':
-        return context.l10n.attendanceMissionTitle;
+        return l10n.attendanceMissionTitle;
       case 'travel':
-        return context.l10n.attendanceTravelTitle;
+        return l10n.attendanceTravelTitle;
       case 'training':
         return l10n.attendanceTrainingLabel;
       case 'other':
