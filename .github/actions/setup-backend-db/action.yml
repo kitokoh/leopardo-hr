@@ -114,7 +114,7 @@ runs:
         DB_DATABASE=${{ inputs.db-database }}
         DB_USERNAME=${{ inputs.db-username }}
         DB_PASSWORD=${{ inputs.db-password }}
-        DB_SEARCH_PATH=shared_tenants,public
+        DB_SEARCH_PATH=public,shared_tenants
 
         CACHE_STORE=array
         QUEUE_CONNECTION=sync
