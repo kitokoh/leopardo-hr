@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
-use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -64,20 +64,23 @@ class EmployeeService
         // est déjà autorisé (policy + FormRequest).
         $passwordHash = (string) Arr::pull($payload, 'password_hash');
 
-        $employee = Employee::query()->create(Arr::except($payload, [
-            'role', 'manager_role', 'status', 'company_id', 'salary_base',
-        ]));
-        $employee->forceFill([
-            'company_id' => $companyId,
-            'role' => $payload['role'],
-            'manager_role' => $payload['manager_role'] ?? null,
-            'status' => $payload['status'],
-            'salary_base' => $payload['salary_base'] ?? 0.0,
-        ])->save();
-
-        if ($passwordHash !== '') {
-            $employee->forceFill(['password_hash' => $passwordHash])->save();
-        }
+        // `password_hash` is NOT NULL in the tenant schema. A mass-assignment
+        // create() without it fails before the subsequent forceFill() can run
+        // (#4947). Build the trusted, already-authorized payload explicitly and
+        // persist it once; sensitive fields remain outside normal fill().
+        $employee = new Employee;
+        $employee->forceFill(array_merge(
+            Arr::except($payload, ['role', 'manager_role', 'status', 'company_id', 'salary_base']),
+            [
+                'password_hash' => $passwordHash,
+                'company_id' => $companyId,
+                'role' => $payload['role'],
+                'manager_role' => $payload['manager_role'] ?? null,
+                'status' => $payload['status'],
+                'salary_base' => $payload['salary_base'] ?? 0.0,
+            ],
+        ));
+        $employee->save();
 
         if ($employee->company_id !== null) {
             $this->tenantCache->invalidateEmployees($employee->company_id);
@@ -270,4 +273,3 @@ class EmployeeService
         return is_string($value) && $value !== '' ? $value : null;
     }
 }
-

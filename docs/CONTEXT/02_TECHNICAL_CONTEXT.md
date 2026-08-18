@@ -23,7 +23,7 @@
 - `App\Http\Controllers\Api\V1\*` **supprime** (PR #824, 2026-07-01) - tout nouveau controller dans `App\Modules\<Module>\Interfaces\Api\V1\`
 - `App\Services\*` **n'est pas vide** : services legacy dupliques supprimes, mais des services specialises non-DDD restent (`Cache/`, `Communication/`, `Payroll/`, `SSO/`, `Security/`, `Tracking/`, etc.) + le shim `TenantManager.php` - tout nouveau service metier dans `App\Modules\<Module>\Infrastructure\Services\`
 - `App\Models\*` **supprime**, migration terminee - ne pas y ajouter de nouveau modele ; tout modele vit dans `App\Modules\<Module>\Domain\Models\` ou `App\Core\Tenant\Domain\Models\`
-- 19 modules actifs sous `api/app/Modules/` (voir `find api/app/Modules -maxdepth 1 -mindepth 1 -type d` pour la liste a jour)
+- 18 modules actifs sous `api/app/Modules/` (voir `find api/app/Modules -maxdepth 1 -mindepth 1 -type d` pour la liste a jour)
 - Source de verite architecture : `api/ARCHITECTURE.md`
 
 ## Commandes utiles
