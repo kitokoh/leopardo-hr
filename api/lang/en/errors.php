@@ -170,9 +170,11 @@ return [
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'The month_day must match the month and day of the date.',
     'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'Check-out time must be after check-in time.',
     'PLATFORM_ADMIN_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'No active plan is available to approve this request.',
     'CONTACT_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
 
     // Manager roles (audit SWEQA-3, #4812)

@@ -170,9 +170,11 @@ return [
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'Le mois et le jour doivent correspondre au mois et au jour de la date.',
     'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'L\'heure de départ doit être postérieure à l\'heure d\'arrivée.',
     'PLATFORM_ADMIN_ONLY' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'Aucun plan actif disponible pour approuver cette demande.',
     'CONTACT_EMAIL_REQUIRED' => 'Un email de contact est requis pour approuver cette demande.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Mode schema Enterprise gelé. Contactez le support.',
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'Mode schema Enterprise gelé. Contactez le support.',
     'AI_FEATURE_DISABLED' => 'Les fonctionnalités IA sont désactivées pour cet espace.',
 
     // Manager roles (audit SWEQA-3, #4812)
