@@ -11,7 +11,6 @@ use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -19,66 +18,6 @@ use Tests\TestCase;
 class LeavePolicyApiTest extends TestCase
 {
     use RefreshTenantDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->createLeaveSchemaIfNeeded();
-    }
-
-    private function createLeaveSchemaIfNeeded(): void
-    {
-        if (! Schema::hasTable('leave_policies')) {
-            Schema::create('leave_policies', function ($t) {
-                $t->increments('id');
-                $t->uuid('company_id');
-                $t->unsignedInteger('absence_type_id');
-                $t->string('name', 150);
-                $t->string('accrual_type', 20)->default('monthly');
-                $t->decimal('accrual_amount', 8, 2)->default(0);
-                $t->decimal('max_balance', 8, 2)->nullable();
-                $t->boolean('carry_forward')->default(false);
-                $t->decimal('carry_forward_max', 8, 2)->nullable();
-                $t->unsignedInteger('carry_forward_expiry_days')->nullable();
-                $t->boolean('requires_approval')->default(true);
-                $t->unsignedSmallInteger('approval_levels')->nullable();
-                $t->unsignedSmallInteger('min_notice_days')->nullable();
-                $t->unsignedSmallInteger('max_consecutive_days')->nullable();
-                $t->json('applicable_roles')->nullable();
-                $t->boolean('active')->default(true);
-                $t->timestamps();
-            });
-        }
-
-        if (! Schema::hasTable('leave_balances')) {
-            Schema::create('leave_balances', function ($t) {
-                $t->increments('id');
-                $t->uuid('company_id');
-                $t->unsignedInteger('employee_id');
-                $t->unsignedInteger('absence_type_id');
-                $t->decimal('balance', 8, 2)->default(0);
-                $t->decimal('used', 8, 2)->default(0);
-                $t->decimal('pending', 8, 2)->default(0);
-                $t->unsignedSmallInteger('year');
-                $t->timestamp('updated_at')->nullable();
-            });
-        }
-
-        if (! Schema::hasTable('leave_accruals')) {
-            Schema::create('leave_accruals', function ($t) {
-                $t->increments('id');
-                $t->uuid('company_id');
-                $t->unsignedInteger('employee_id');
-                $t->unsignedInteger('leave_policy_id');
-                $t->decimal('amount', 8, 2);
-                $t->string('type', 30);
-                $t->string('description')->nullable();
-                $t->date('effective_date');
-                $t->unsignedInteger('created_by')->nullable();
-                $t->timestamp('created_at')->nullable();
-            });
-        }
-    }
 
     private function makeManagerAndCompany(): array
     {
@@ -89,9 +28,13 @@ class LeavePolicyApiTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'leave@test.com',
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
 
         $manager = new Employee([

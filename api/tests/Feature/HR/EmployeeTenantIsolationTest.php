@@ -40,9 +40,13 @@ class EmployeeTenantIsolationTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => $email,
+            'plan_id' => 1,
             'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
         ]);
     }
 
@@ -50,7 +54,7 @@ class EmployeeTenantIsolationTest extends TestCase
     {
         $sensitiveEmployee1 = new Employee([
             'first_name' => 'Manager',
-            'last_name' => ucfirst(str_replace('-', ' ', $slug)),
+            'last_name' => 'Tenant',
             'email' => $email,
         ]);
         $sensitiveEmployee1->forceFill(['password_hash' => Hash::make('password123')])->save();
@@ -67,7 +71,7 @@ class EmployeeTenantIsolationTest extends TestCase
     {
         $sensitiveEmployee0 = new Employee([
             'first_name' => 'Employe',
-            'last_name' => ucfirst(str_replace('-', ' ', $slug)),
+            'last_name' => 'Tenant',
             'email' => $email,
         ]);
         $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('password123')])->save();
@@ -133,7 +137,7 @@ class EmployeeTenantIsolationTest extends TestCase
 
         $this->assertDatabaseHas('employees', [
             'id' => $seed['employeeB']->id,
-            'first_name' => '',
+            'first_name' => 'Employe',
         ]);
     }
 
