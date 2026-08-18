@@ -13,7 +13,11 @@
 #
 # Issue #2540 : option `--superseded` — en plus des orphelins, annule les runs
 # `queued` SUPERSÉDÉS : pour chaque couple (branche, workflow), tous les runs
-# queued sauf le plus récent sont annulés. Complète le `concurrency` natif des
+# queued sauf le plus récent sont annulés.
+# Issue #5032 : garde appliquée comme en mode orphan — les runs de `main`, de
+# toute branche présente sur le remote et de toute tête de PR ouverte ne sont
+# JAMAIS annulés ; seuls les doublons supersédés des branches supprimées (ou
+# sans PR) le sont. Complète le `concurrency` natif des
 # workflows (qui n'annule les runs que lorsque le NOUVEAU run démarre — les
 # runs queued d'un push précédent restent sinon dans la file).
 #
@@ -60,7 +64,13 @@ mapfile -t OPEN_PR_HEADS < <(
     gh api "repos/${REPO}/pulls?state=open&per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].head.ref'
 )
 
-PROTECTED_BRANCHES=$(printf '%s\n%s\n' "${DEFAULT_BRANCH}" "${OPEN_PR_HEADS[@]}" | sort -u)
+# Branches présentes sur le remote = branches VIVANTES (même sans PR ouverte) :
+# leurs runs doivent être conservés en mode --superseded (issue #5032).
+mapfile -t REMOTE_BRANCHES < <(
+    gh api "repos/${REPO}/branches?per_page=100" --paginate | strip_ansi | jq -s -r 'add | .[].name'
+)
+
+PROTECTED_BRANCHES=$(printf '%s\n%s\n%s\n' "${DEFAULT_BRANCH}" "${OPEN_PR_HEADS[@]}" "${REMOTE_BRANCHES[@]}" | sort -u)
 
 is_protected() {
   local branch="$1"
@@ -124,8 +134,13 @@ if [[ "${SUPERSEDED}" -eq 1 ]]; then
     wf="${RUN_WF["${run_id}"]}"
     key="${branch}\u0001${wf}"
     if [[ "${RUN_TS["${run_id}"]}" != "${NEWEST_TS["${key}"]}" ]]; then
-      # Garde : le run le plus récent de chaque couple branche/workflow reste actif,
-      # y compris sur main ; seuls les doublons plus anciens sont annulés.
+      # Garde #5032 : ne jamais annuler les runs d'une branche vivante (main,
+      # branche distante présente, tête de PR ouverte) — la même règle que le
+      # mode orphan. Seuls les doublons plus anciens des branches supprimées /
+      # sans PR sont annulés ; le run le plus récent reste toujours conservé.
+      if is_protected "${branch}"; then
+        continue
+      fi
       SUPERSEDED_CANCELLED=$((SUPERSEDED_CANCELLED + 1))
       echo "superseded queued run ${run_id} (branch '${branch}', workflow '${wf}')"
       if [[ "${DRY_RUN}" -eq 0 ]]; then
