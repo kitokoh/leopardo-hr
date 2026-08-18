@@ -31,7 +31,7 @@
 | :--- | :--- |
 | 🧪 **Backend tests passing** | **1 917** (6 909 assertions, 291 test files) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
-| 🧩 **DDD business modules** | **19** + shared core (Auth, Tenant, Feature) |
+| 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
 | 🔌 **API endpoints** (OpenAPI spec) | **424** |
 | 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
 | ⚙️ **CI/CD pipelines** | **35** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
@@ -79,7 +79,7 @@ graph TB
         Sec[RBAC & JWT Shield + SSO]
     end
 
-    subgraph "Core Business Logic — 19 DDD Modules"
+    subgraph "Core Business Logic — 18 DDD Modules"
         HRM[HR Core]
         PAY[Payroll Engine]
         ATT[Smart Attendance]
