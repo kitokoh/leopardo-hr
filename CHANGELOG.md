@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **docs(api): openapi.yaml — 14 verbes d'action PUT/PATCH dépréciés documentés (deprecated: true)** → **744/744 routes couvertes, 0 gap, 0 allowlist, 0 drift** (allowlist vidée — convention #4930 entièrement documentée).
 - **fix(mobile/i18n): long-tail FR leopardo_employee migré vers ARB (Closes #4843).** `settings_screen` (parcours/statistiques — clés `settingsJourneyLoadError`/`settingsStatsLoadError` ajoutées ×4 + fichiers générés), `monthly_summary_screen` (`retry`), `notification_list_screen` (marquage lu/tout lu/suppression + succès suppression + tooltip retour — clés `notifications*` ×4), `attendance_screen` (heure future — clé `attendanceFutureTimeError` ×4). Les écrans smart_attendance étaient déjà migrés (post-#4837). `flutter analyze` à valider en CI ; le reste des chaînes en dur reste suivi par l'épic #4194.
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032, #5033).** Les runs supersédés ne sont désormais annulés que pour les branches réellement orphelines ; `main`, les branches distantes vivantes et les têtes de PR restent protégés. Les gardes baseline nécessaires aux validations ajoutent l’initialisation défensive de `existingManager` dans le signup trial et corrigent trois apostrophes TypeScript non échappées dans le web (`terms` et `i18n`).
