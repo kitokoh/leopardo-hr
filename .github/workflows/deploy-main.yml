@@ -113,7 +113,10 @@ jobs:
           # main, and (d) ran in this same base repository (not a fork). This keeps
           # the subsequent privileged checkout scoped to code that was already
           # pushed to main by a trusted collaborator.
-          if [[ "${WR_CONCLUSION}" == "success" && "${WR_EVENT}" == "push" && "${WR_HEAD_BRANCH}" == "main" && "${WR_HEAD_REPO}" == "${BASE_REPO}" ]]; then
+          # Audit CodeQL #30 (2026-08-17) : validation stricte du format du SHA
+          # issu de l'événement workflow_run avant tout usage (injection
+          # impossible : seuls des hexadécimaux sont acceptés).
+          if [[ "${WR_HEAD_SHA}" =~ ^[0-9a-f]{40}$ && "${WR_CONCLUSION}" == "success" && "${WR_EVENT}" == "push" && "${WR_HEAD_BRANCH}" == "main" && "${WR_HEAD_REPO}" == "${BASE_REPO}" ]]; then
             {
               echo "should_deploy=pending-validation"
               echo "ref=main"
