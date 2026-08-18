@@ -1924,8 +1924,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (_isTimeFuture(picked)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Impossible de saisir une heure future'),
+        SnackBar(
+          content: Text(context.l10n.attendanceFutureTimeError),
           backgroundColor: AppColors.danger,
         ),
       );

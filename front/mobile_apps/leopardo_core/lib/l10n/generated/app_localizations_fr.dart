@@ -3151,6 +3151,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retry => 'Réessayer';
 
   @override
+  String get settingsJourneyLoadError => 'Impossible de charger votre parcours.';
+
+  @override
+  String get settingsStatsLoadError => 'Impossible de charger les statistiques.';
+
+  @override
   String get featureComingSoon => 'Fonction bientôt disponible';
 
   @override
@@ -3366,6 +3372,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get back => 'Retour';
+  @override
+  String get notificationsMarkAllReadError => 'Impossible de marquer les notifications comme lues.';
+
+  @override
+  String get notificationsMarkReadError => 'Impossible de marquer la notification comme lue.';
+
+  @override
+  String get notificationsDeleteError => 'Impossible de supprimer la notification.';
+
+  @override
+  String get notificationsDeleted => 'Notification supprimée.';
+
+  @override
+  String get attendanceFutureTimeError => 'Impossible de saisir une heure future';
 
   @override
   String get refresh => 'Actualiser';

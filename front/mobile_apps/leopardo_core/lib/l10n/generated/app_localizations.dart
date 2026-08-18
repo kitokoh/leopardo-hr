@@ -5928,6 +5928,11 @@ abstract class AppLocalizations {
   /// **'Réessayer'**
   String get retry;
 
+  /// No description provided for @settingsJourneyLoadError.
+  String get settingsJourneyLoadError;
+
+  /// No description provided for @settingsStatsLoadError.
+  String get settingsStatsLoadError;
   /// No description provided for @featureComingSoon.
   ///
   /// In fr, this message translates to:
@@ -6306,6 +6311,21 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Retour'**
   String get back;
+
+  /// No description provided for @notificationsMarkAllReadError.
+  String get notificationsMarkAllReadError;
+
+  /// No description provided for @notificationsMarkReadError.
+  String get notificationsMarkReadError;
+
+  /// No description provided for @notificationsDeleteError.
+  String get notificationsDeleteError;
+
+  /// No description provided for @notificationsDeleted.
+  String get notificationsDeleted;
+
+  /// No description provided for @attendanceFutureTimeError.
+  String get attendanceFutureTimeError;
 
   /// No description provided for @refresh.
   ///

@@ -7,7 +7,7 @@ namespace Tests\Feature\HR;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -16,14 +16,13 @@ use Tests\TestCase;
  */
 class ApiTokenControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected Company $company;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         /** @var Company $company */
         $company = Company::factory()->create();
         $this->company = $company;

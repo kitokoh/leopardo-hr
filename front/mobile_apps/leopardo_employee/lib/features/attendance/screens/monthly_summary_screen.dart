@@ -8,6 +8,8 @@ import 'package:leopardo_core/models/monthly_summary.dart';
 import 'package:leopardo_employee/features/attendance/providers/attendance_provider.dart';
 import 'package:leopardo_employee/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
+
 
 class MonthlySummaryScreen extends ConsumerStatefulWidget {
   const MonthlySummaryScreen({super.key});
@@ -43,7 +45,7 @@ class _MonthlySummaryScreenState extends ConsumerState<MonthlySummaryScreen> {
         subtitle: employee?.fullName ?? 'Suivi personnel',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           onPressed: () => context.pop(),
         ),
         actions: [
@@ -215,7 +217,7 @@ class _MonthlyErrorState extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Reessayer'),
+              label: Text(context.l10n.retry),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.rh,
                 foregroundColor: Colors.white,

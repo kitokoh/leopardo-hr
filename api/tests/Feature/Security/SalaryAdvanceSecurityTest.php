@@ -8,24 +8,12 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
 use Illuminate\Support\Str;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class SalaryAdvanceSecurityTest extends TestCase
 {
-    use CreatesMvpSchema;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->setUpMvpSchema();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
-    }
+    use RefreshTenantDatabase;
 
     public function test_employee_can_only_see_their_own_salary_advances(): void
     {

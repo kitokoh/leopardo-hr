@@ -26,7 +26,13 @@
         "title": "Aktif moduller, gorunur yol haritasi",
         "body": "Urun once bugun gerekli olani acar, sonra Finans, Guvenlik ve Leo icin okunabilir bir rota tutar."
       }
-    }
+    },
+    "leaves": "İzinler",
+    "my": {
+      "team": "Ekibim"
+    },
+    "presences": "Yoklamalar",
+    "tasks": "Görevler"
   },
   "auth": {
     "login": {
@@ -459,7 +465,31 @@
   },
   "attendance": {
     "sending_to_server": "{label} sunucuya gönderiliyor...",
-    "retry_after_failure": "{label}. Lütfen tekrar deneyin."
+    "retry_after_failure": "{label}. Lütfen tekrar deneyin.",
+    "absent": "yok",
+    "day": {
+      "summary": "{date} günü, durum {status}, {range}, {hours}."
+    },
+    "hour": {
+      "worked": "çalışılan saat"
+    },
+    "hours": {
+      "worked": "çalışılan saatler"
+    },
+    "in": {
+      "progress": "devam ediyor"
+    },
+    "late": "geç",
+    "no": {
+      "clock": "kayıt yok"
+    },
+    "on": {
+      "time": "zamanında"
+    },
+    "overtime": "Fazla mesai",
+    "time": {
+      "range": "{from} - {to}"
+    }
   },
   "holidays": {
     "page": {
@@ -939,7 +969,9 @@
     "criticalAlerts": "Kritik uyarilar",
     "level": "Seviye:",
     "fallbackPollingTitle": "Yedek polling ile bildirimler (push kullanilamiyor)",
-    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir"
+    "tenantOnly": "Kurumsal ozellik — musteri alanlarina ayrilmistir",
+    "settings": "Ayarlar",
+    "team": "Ekip"
   },
   "exports": {
     "reportEmployees": "Calisanlar",
@@ -1232,5 +1264,198 @@
     "durationPlaceholder": "Süre (saat)",
     "maxParticipantsPlaceholder": "Maks. katılımcı",
     "online": "Çevrimiçi"
+  },
+  "access": {
+    "denied": {
+      "body": "Hesabınız bu uygulama için gerekli Yönetici rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, İK…) veya yöneticinizle iletişime geçin.",
+      "logout": "Çıkış yap",
+      "title": "Erişim reddedildi",
+      "body_hr": "Hesabınız bu uygulama için gerekli İK rolüne sahip değil. Rolünüze uygun uygulamayı kullanın (Çalışan, Yönetici…) veya yöneticinizle iletişime geçin."
+    }
+  },
+  "amp": {
+    "auto": {
+      "detect": {
+        "desc": "Şirket bölgesine girdiğinizde varlığınız otomatik algılanır. Sizden hiçbir işlem gerekmez."
+      }
+    },
+    "manual": {
+      "desc": "Yoklama ekranındaki Giriş ve Çıkış butonlarına basarak manuel kayıt yapın."
+    },
+    "mode": {
+      "title": "Kayıt modu"
+    },
+    "qr": {
+      "scan": {
+        "desc": "Şirket girişinde gösterilen QR Kodu tarayarak giriş ve çıkışınızı yapın."
+      }
+    },
+    "recommended": "Önerilen",
+    "save": {
+      "error": "Tercihiniz kaydedilemedi. Bağlantınızı kontrol edin."
+    },
+    "title": "Her gün katılımınızı nasıl kaydetmek istediğinizi seçin."
+  },
+  "approval": {
+    "approved": "Talep onaylandı",
+    "rejected": "Talep reddedildi"
+  },
+  "approvals": {
+    "empty": "Bekleyen onay yok.",
+    "up": {
+      "to": {
+        "date": "Her şey güncel"
+      }
+    }
+  },
+  "back": "Geri",
+  "employee": {
+    "number": "Çalışan #{id}"
+  },
+  "error": {
+    "prefix": "Hata: {message}",
+    "unexpected": "Bir hata oluştu"
+  },
+  "evaluation": {
+    "period": "Dönem: {period}"
+  },
+  "evaluations": {
+    "empty": "Değerlendirme yok",
+    "title": "Değerlendirmelerim",
+    "empty_hint": "Henüz kayıtlı bir değerlendirmeniz yok."
+  },
+  "feature": {
+    "coming": {
+      "soon": "Özellik yakında"
+    }
+  },
+  "home": {
+    "complete": {
+      "onboarding": "İşe alıştırmamı tamamla"
+    },
+    "onboarding": {
+      "hint": "Çalışma alanınızı birkaç adımda kurun."
+    }
+  },
+  "monthly": {
+    "summary": {
+      "loading": "Aylık özet yükleniyor..."
+    }
+  },
+  "org": {
+    "chart": {
+      "collapse": "Daralt",
+      "empty": "Çalışanlar yapılandırıldığında organizasyon şeması kullanılabilir olacak.",
+      "expand": "Genişlet"
+    }
+  },
+  "page": {
+    "not": {
+      "found": "İstenen sayfa bulunamadı veya gezinme başarısız oldu."
+    }
+  },
+  "pending": {
+    "sessions": {
+      "empty": "Onay bekleyen GPS oturumu yok.",
+      "to": {
+        "validate": "Onaylanacak"
+      },
+      "up": {
+        "to": {
+          "date": "Her şey güncel"
+        }
+      }
+    }
+  },
+  "refresh": "Yenile",
+  "register": {
+    "create": {
+      "account": "Hesabınızı oluşturun"
+    },
+    "creating": "Hesap oluşturuluyor...",
+    "first": {
+      "name": "Ad"
+    },
+    "min": {
+      "chars": "En az 8 karakter"
+    },
+    "password": "Şifre",
+    "required": "Zorunlu",
+    "submit": "Hesabımı oluştur"
+  },
+  "retry": "Yeniden dene",
+  "sa": {
+    "approved": "Onaylanan",
+    "config": {
+      "load": {
+        "error": "Yapılandırma yüklenemedi.\n{error}"
+      }
+    },
+    "dashboard": {
+      "title": "GPS yoklama — ekip paneli"
+    },
+    "detected": "Algılanan",
+    "disable": {
+      "auto": {
+        "gps": "Otomatik GPS'i kapat"
+      }
+    },
+    "enable": {
+      "auto": {
+        "gps": "Otomatik GPS'i aç"
+      }
+    },
+    "forced": "Zorunlu",
+    "gps": {
+      "zone": {
+        "not": {
+          "configured": "Şirketinizin GPS bölgesi henüz yapılandırılmadı."
+        }
+      }
+    },
+    "permission": {
+      "denied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin."
+    },
+    "presence": {
+      "in": {
+        "progress": "{time} itibarıyla devam eden katılım"
+      }
+    },
+    "recent": {
+      "sessions": "Son oturumlar"
+    },
+    "rejected": "Reddedilen",
+    "sessions": {
+      "load": {
+        "error": "GPS oturumları yüklenemedi. Bağlantınızı kontrol edin."
+      }
+    },
+    "start": {
+      "monitoring": {
+        "error": "GPS izleme başlatılamadı. Konum izinlerini kontrol edip tekrar deneyin."
+      }
+    },
+    "status": {
+      "approved": "Onaylandı",
+      "cancelled": "İptal edildi",
+      "detected": "Algılandı",
+      "pending": "Onay bekleniyor",
+      "rejected": "Reddedildi"
+    }
+  },
+  "session": {
+    "approved": "Oturum onaylandı ✓",
+    "entry": {
+      "at": "Giriş: {time}"
+    },
+    "rejected": "Oturum reddedildi"
+  },
+  "sessions": {
+    "to": {
+      "validate": "Onaylanacak oturumlar"
+    }
+  },
+  "back_to": {
+    "home": "Ana sayfaya dön"
   }
 }

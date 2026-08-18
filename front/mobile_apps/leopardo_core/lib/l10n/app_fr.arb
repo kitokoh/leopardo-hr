@@ -10,6 +10,10 @@
   "welcomeStoryFieldBody": "Le telephone est la surface principale de l employe. Votre pointage, vos absences et vos documents vivent ici.",
   "welcomeStoryModulesTitle": "Modules actifs, feuille de route visible",
   "welcomeStoryModulesBody": "Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible.",
+  "welcomeLeaves": "Congés",
+  "welcomeMyTeam": "Mon équipe",
+  "welcomePresences": "Présences",
+  "welcomeTasks": "Tâches",
   "login": "Se connecter",
   "employeeInvitationAccess": "Acces employe (invitation)",
   "createPersonalAccount": "Creer un compte personnel",
@@ -33,9 +37,9 @@
   "authDemoAccess": "Acces Demo",
   "authTogglePasswordVisibility": "Afficher ou masquer le mot de passe",
   "commonLanguageLabel": "Langue",
-  "commonLanguageVariantsFrFr": "Francais (France)",
-  "commonLanguageVariantsFrBe": "Francais (Belgique)",
-  "commonLanguageVariantsFrCa": "Francais (Canada)",
+  "commonLanguageVariantsFrFr": "Français (France)",
+  "commonLanguageVariantsFrBe": "Français (Belgique)",
+  "commonLanguageVariantsFrCa": "Français (Canada)",
   "commonLanguageVariantsArSa": "Arabe (Arabie saoudite)",
   "commonLanguageVariantsArMa": "Arabe (Maroc)",
   "commonLanguageVariantsTrTr": "Turc (Turquie)",
@@ -180,7 +184,7 @@
   "usersToastDeleted": "Utilisateur supprime",
   "usersToastDeleteerror": "Erreur lors de la suppression",
   "usersToastImpersonating": "Connexion en tant que :name",
-  "usersToastCreated": "Utilisateur cree avec succes",
+  "usersToastCreated": "Utilisateur créé avec succès",
   "usersToastUpdated": "Utilisateur mis a jour",
   "usersToastExportinprogress": "Export en cours...",
   "usersToastExportdone": "Export termine",
@@ -345,6 +349,16 @@
   "marketingPostcontentplaceholder": "Contenu de la publication...",
   "attendanceSendingToServer": "{label} vers le serveur...",
   "attendanceRetryAfterFailure": "{label}. Reessayez.",
+  "attendanceAbsent": "absent",
+  "attendanceDaySummary": "Journée du {date}, statut {status}, {range}, {hours}.",
+  "attendanceHourWorked": "heure travaillée",
+  "attendanceHoursWorked": "heures travaillées",
+  "attendanceInProgress": "en cours",
+  "attendanceLate": "en retard",
+  "attendanceNoClock": "pas de pointage",
+  "attendanceOnTime": "à l'heure",
+  "attendanceOvertime": "Heures supplémentaires",
+  "attendanceTimeRange": "de {from} à {to}",
   "holidaysPageTitle": "Jours fériés par pays",
   "holidaysPageSubtitle": "Calendrier des jours fériés utilisés par le moteur de paie pour calculer les jours ouvrés réels. Les fériés fixes (issue #1811) et les fêtes islamiques mobiles (issue #1812) alimentent automatiquement les bulletins de paie de tous les pays concernés.",
   "holidaysCountry": "Pays",
@@ -502,7 +516,6 @@
   "taxSlabsSimulatorTitle": "Simulateur d'impact",
   "taxSlabsSimulatorSubtitle": "Saisissez un salaire brut : le calcul (cotisations, assiette, impôt par tranche, net, coût employeur) est exécuté par le moteur de paie réel, sans rien persister.",
   "taxSlabsSimGross": "Salaire brut",
-  "taxSlabsSimCompare": "Salaire à comparer",
   "taxSlabsSimRun": "Simuler",
   "taxSlabsSimRunning": "Calcul…",
   "taxSlabsSimSocial": "Cotisations (salariales)",
@@ -660,7 +673,7 @@
   "companiesDirectory": "Repertoire des Entreprises",
   "companiesDirectorysub": "Liste classee par score de sante et priorite commerciale.",
   "companiesSyncing": "Synchronisation du portefeuille...",
-  "companiesRetry": "Reessayer",
+  "companiesRetry": "Réessayer",
   "companiesCompany": "Entreprise",
   "companiesPlanmrr": "Plan & MRR",
   "companiesHealthop": "Sante Oper.",
@@ -722,7 +735,7 @@
   "navigationUsers": "Utilisateurs",
   "navigationWebhooks": "Webhooks",
   "navigationLogin": "Connexion",
-  "navigationLogout": "Deconnexion",
+  "navigationLogout": "Déconnexion",
   "navigationCompanydetail": "Detail Entreprise",
   "navigationContributions": "Cotisations sociales",
   "navigationTaxbrackets": "Baremes fiscaux",
@@ -745,6 +758,8 @@
   "shellLevel": "Niveau :",
   "shellFallbackpollingtitle": "Notifications via polling de secours (push indisponible)",
   "shellTenantonly": "Fonctionnalite entreprise — reservee aux espaces client",
+  "shellSettings": "Réglages",
+  "shellTeam": "Équipe",
   "exportsReportemployees": "Employes",
   "exportsReportemployeesdesc": "Liste complete avec postes, contrats, departements.",
   "exportsReportattendance": "Pointage",
@@ -774,8 +789,8 @@
   "exportsStatusfailed": "Echec",
   "exportsDownload": "Telecharger",
   "exportsDownloading": "Telechargement...",
-  "companydetailAnalyzing": "Analyse des donnees client...",
-  "companydetailRetry": "Reessayer",
+  "companydetailAnalyzing": "Analyse des données client...",
+  "companydetailRetry": "Réessayer",
   "companydetailFieldadoption": "Adoption Terrain",
   "companydetailOnboarding": "Onboarding",
   "companydetailAnomalies30d": "Anomalies 30j",
@@ -993,155 +1008,71 @@
   "trainingDurationplaceholder": "Duree (h)",
   "trainingMaxparticipantsplaceholder": "Participants max",
   "trainingOnline": "En ligne",
-  "retry": "Réessayer",
-  "featureComingSoon": "Fonction bientôt disponible",
-  "backToHome": "Retour à l'accueil",
-  "pageNotFound": "La page demandée est introuvable ou la navigation a échoué.",
-  "registerCreateAccount": "Créer votre compte",
-  "registerFirstName": "Prénom",
-  "registerRequired": "Obligatoire",
-  "registerPassword": "Mot de passe",
-  "registerMinChars": "8 caractères minimum",
-  "registerCreating": "Création de compte en cours...",
-  "registerSubmit": "Créer mon compte",
-  "accessDeniedTitle": "Accès refusé",
   "accessDeniedBody": "Votre compte n'a pas le rôle Manager requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, RH…) ou contactez votre administrateur.",
   "accessDeniedLogout": "Se déconnecter",
+  "accessDeniedTitle": "Accès refusé",
   "accessDeniedBodyHr": "Votre compte n'a pas le rôle RH requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur.",
-  "evaluationsTitle": "Mes Évaluations",
-  "evaluationsEmpty": "Aucune évaluation",
-  "evaluationsEmptyHint": "Vous n'avez pas encore d'évaluation enregistrée.",
-  "evaluationPeriod": "Période : {period}",
-  "@evaluationPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceOnTime": "à l'heure",
-  "attendanceLate": "en retard",
-  "attendanceAbsent": "absent",
-  "attendanceInProgress": "en cours",
-  "attendanceNoClock": "pas de pointage",
-  "attendanceTimeRange": "de {from} à {to}",
-  "@attendanceTimeRange": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceHourWorked": "heure travaillée",
-  "attendanceHoursWorked": "heures travaillées",
-  "attendanceDaySummary": "Journée du {date}, statut {status}, {range}, {hours}.",
-  "@attendanceDaySummary": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "range": {
-        "type": "String"
-      },
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionApproved": "Session approuvée ✓",
-  "sessionRejected": "Session rejetée",
-  "pendingSessionsToValidate": "À valider",
-  "pendingSessionsUpToDate": "Tout est à jour",
-  "pendingSessionsEmpty": "Aucune session GPS en attente de validation.",
-  "employeeNumber": "Employé #{id}",
-  "@employeeNumber": {
-    "placeholders": {
-      "id": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionEntryAt": "Entrée : {time}",
-  "@sessionEntryAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionsToValidate": "Sessions à valider",
-  "errorPrefix": "Erreur : {message}",
-  "@errorPrefix": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "saDashboardTitle": "Pointage GPS — tableau de bord équipe",
-  "saDetected": "Détectées",
-  "saApproved": "Approuvées",
-  "saRejected": "Rejetées",
-  "saRecentSessions": "Sessions récentes",
-  "saForced": "Imposé",
-  "saPresenceInProgress": "Présence en cours depuis {time}",
-  "@saPresenceInProgress": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "saGpsZoneNotConfigured": "La zone GPS de votre entreprise n'est pas encore configurée.",
-  "saDisableAutoGps": "Désactiver le GPS automatique",
-  "saStatusApproved": "Approuvée",
-  "saStatusDetected": "Détectée",
-  "saStatusRejected": "Rejetée",
-  "saStatusCancelled": "Annulée",
-  "saStatusPending": "En validation",
-  "saEnableAutoGps": "Activer le GPS automatique",
-  "attendanceOvertime": "Heures supplémentaires",
-  "approvalsUpToDate": "Tout est à jour",
-  "approvalsEmpty": "Aucune approbation en attente.",
-  "saConfigLoadError": "Impossible de charger la configuration.\n{error}",
-  "@saConfigLoadError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "ampAutoDetectDesc": "Votre présence est détectée automatiquement dès que vous entrez dans la zone de l'entreprise. Aucune action requise de votre part.",
-  "ampRecommended": "Recommandé",
-  "ampQrScanDesc": "Scannez le QR Code affiché à l'entrée de l'entreprise pour pointer votre arrivée et votre départ.",
   "ampManualDesc": "Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l'écran de présence.",
+  "ampModeTitle": "Mode de pointage",
+  "ampQrScanDesc": "Scannez le QR Code affiché à l'entrée de l'entreprise pour pointer votre arrivée et votre départ.",
+  "ampRecommended": "Recommandé",
   "ampSaveError": "Impossible de sauvegarder votre préférence. Vérifiez votre connexion.",
   "ampTitle": "Choisissez comment vous souhaitez pointer votre présence chaque jour.",
-  "ampModeTitle": "Mode de pointage",
-  "back": "Retour",
-  "refresh": "Actualiser",
-  "saSessionsLoadError": "Impossible de charger les sessions GPS. Vérifiez votre connexion.",
-  "saStartMonitoringError": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.",
-  "shellTeam": "Équipe",
-  "shellSettings": "Réglages",
-  "homeCompleteOnboarding": "Compléter mon onboarding",
-  "homeOnboardingHint": "Configurez votre espace en quelques étapes.",
-  "welcomeMyTeam": "Mon équipe",
-  "welcomePresences": "Présences",
-  "welcomeTasks": "Tâches",
-  "welcomeLeaves": "Congés",
-  "monthlySummaryLoading": "Chargement du résumé mensuel...",
-  "orgChartEmpty": "L'organigramme sera disponible une fois les employés configurés.",
-  "orgChartCollapse": "Réduire",
-  "orgChartExpand": "Développer",
-  "errorUnexpected": "Une erreur est survenue",
   "approvalApproved": "Demande approuvée",
   "approvalRejected": "Demande refusée",
-  "saPermissionDenied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
+  "approvalsEmpty": "Aucune approbation en attente.",
+  "approvalsUpToDate": "Tout est à jour",
+  "back": "Retour",
+  "employeeNumber": "Employé #{id}",
+  "errorPrefix": "Erreur : {message}",
+  "errorUnexpected": "Une erreur est survenue",
+  "evaluationPeriod": "Période : {period}",
+  "evaluationsEmpty": "Aucune évaluation",
+  "evaluationsTitle": "Mes Évaluations",
+  "evaluationsEmptyHint": "Vous n'avez pas encore d'évaluation enregistrée.",
+  "featureComingSoon": "Fonction bientôt disponible",
+  "homeCompleteOnboarding": "Compléter mon onboarding",
+  "homeOnboardingHint": "Configurez votre espace en quelques étapes.",
+  "monthlySummaryLoading": "Chargement du résumé mensuel...",
+  "orgChartCollapse": "Réduire",
+  "orgChartEmpty": "L'organigramme sera disponible une fois les employés configurés.",
+  "orgChartExpand": "Développer",
+  "pageNotFound": "La page demandée est introuvable ou la navigation a échoué.",
+  "pendingSessionsEmpty": "Aucune session GPS en attente de validation.",
+  "pendingSessionsToValidate": "À valider",
+  "pendingSessionsUpToDate": "Tout est à jour",
+  "refresh": "Actualiser",
+  "registerCreateAccount": "Créer votre compte",
+  "registerCreating": "Création de compte en cours...",
+  "registerFirstName": "Prénom",
+  "registerMinChars": "8 caractères minimum",
+  "registerPassword": "Mot de passe",
+  "registerRequired": "Obligatoire",
+  "registerSubmit": "Créer mon compte",
+  "retry": "Réessayer",
+  "saApproved": "Approuvées",
+  "saConfigLoadError": "Impossible de charger la configuration.\n{error}",
+  "saDashboardTitle": "Pointage GPS — tableau de bord équipe",
+  "saDetected": "Détectées",
+  "saDisableAutoGps": "Désactiver le GPS automatique",
+  "saEnableAutoGps": "Activer le GPS automatique",
+  "saForced": "Imposé",
+  "saGpsZoneNotConfigured": "La zone GPS de votre entreprise n'est pas encore configurée.",
+  "saPermissionDenied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.",
+  "saPresenceInProgress": "Présence en cours depuis {time}",
+  "saRecentSessions": "Sessions récentes",
+  "saRejected": "Rejetées",
+  "saSessionsLoadError": "Impossible de charger les sessions GPS. Vérifiez votre connexion.",
+  "saStartMonitoringError": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.",
+  "saStatusApproved": "Approuvée",
+  "saStatusCancelled": "Annulée",
+  "saStatusDetected": "Détectée",
+  "saStatusPending": "En validation",
+  "saStatusRejected": "Rejetée",
+  "sessionApproved": "Session approuvée ✓",
+  "sessionEntryAt": "Entrée : {time}",
+  "sessionRejected": "Session rejetée",
+  "sessionsToValidate": "Sessions à valider",
+  "backToHome": "Retour à l'accueil"
 }
