@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('training_courses')) {
+        if (! schemaTableExists('training_courses')) {
             Schema::create('training_courses', function (Blueprint $table) {
                 $table->id();
                 $table->uuid('company_id')->index();
@@ -29,7 +29,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('training_sessions')) {
+        if (! schemaTableExists('training_sessions')) {
             Schema::create('training_sessions', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('training_course_id');
@@ -47,7 +47,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('training_enrollments')) {
+        if (! schemaTableExists('training_enrollments')) {
             Schema::create('training_enrollments', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('training_session_id');

@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (! Schema::hasTable('subscriptions')) {
+        if (! schemaTableExists('subscriptions')) {
             Schema::create('subscriptions', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -30,7 +30,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('invoices')) {
+        if (! schemaTableExists('invoices')) {
             Schema::create('invoices', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -53,7 +53,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('payments')) {
+        if (! schemaTableExists('payments')) {
             Schema::create('payments', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->unsignedBigInteger('invoice_id');
@@ -70,7 +70,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('onboarding_steps')) {
+        if (! schemaTableExists('onboarding_steps')) {
             Schema::create('onboarding_steps', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('company_id')->index();
@@ -89,7 +89,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('feature_plan_matrix')) {
+        if (! schemaTableExists('feature_plan_matrix')) {
             Schema::create('feature_plan_matrix', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->string('feature_key', 50);

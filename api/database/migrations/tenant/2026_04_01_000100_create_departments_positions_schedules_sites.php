@@ -25,7 +25,7 @@ return new class extends Migration
         // ── departments ────────────────────────────────────────────────────────
         // manager_id est ajouté APRÈS employees (migration T-04) pour résoudre
         // la dépendance circulaire departments ↔ employees
-        if (! Schema::hasTable('departments')) {
+        if (! schemaTableExists('departments')) {
             Schema::create('departments', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();        // NULL en mode schema isolé
@@ -40,7 +40,7 @@ return new class extends Migration
         DB::statement("COMMENT ON COLUMN departments.company_id IS 'NULL en mode schema (isolation physique). Présent uniquement en mode shared (isolation logique)'");
 
         // ── positions ──────────────────────────────────────────────────────────
-        if (! Schema::hasTable('positions')) {
+        if (! schemaTableExists('positions')) {
             Schema::create('positions', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -52,7 +52,7 @@ return new class extends Migration
         }
 
         // ── schedules ──────────────────────────────────────────────────────────
-        if (! Schema::hasTable('schedules')) {
+        if (! schemaTableExists('schedules')) {
             Schema::create('schedules', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -72,7 +72,7 @@ return new class extends Migration
         }
 
         // ── sites ──────────────────────────────────────────────────────────────
-        if (! Schema::hasTable('sites')) {
+        if (! schemaTableExists('sites')) {
             Schema::create('sites', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();

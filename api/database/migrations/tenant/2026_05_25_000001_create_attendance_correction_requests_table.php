@@ -10,7 +10,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        if (Schema::hasTable('attendance_correction_requests')) {
+        if (schemaTableExists('attendance_correction_requests')) {
             return;
         }
 
