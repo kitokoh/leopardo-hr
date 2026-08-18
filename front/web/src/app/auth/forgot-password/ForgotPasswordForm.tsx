@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2, Loader2, LockKeyhole, Mail } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
+import { Button } from '@/components/ui/Button';
 import { getCopy, normalizeLocale, type AppLocale } from '@/lib/i18n';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 
