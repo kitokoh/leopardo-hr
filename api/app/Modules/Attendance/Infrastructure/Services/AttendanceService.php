@@ -22,6 +22,15 @@ use Illuminate\Support\Facades\Schema;
 
 class AttendanceService
 {
+    /**
+     * Company timezone is nullable for legacy records; attendance calculations
+     * must nevertheless always receive a valid Carbon timezone.
+     */
+    private function timezoneFor(Company $company): string
+    {
+        return (string) ($company->timezone ?: config('app.timezone', 'UTC'));
+    }
+
     /** @var array<int, string> */
     // Issue #2686 (QA 2026-08-15) — les types non travaillés ne doivent pas
     // compter dans hours_worked/overtime : `resume` marque la fin d'une pause
@@ -39,7 +48,7 @@ class AttendanceService
         $company = currentCompany();
 
         $nowUtc = now('UTC');
-        $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
+        $today = $nowUtc->copy()->setTimezone($this->timezoneFor($company))->toDateString();
 
         // Issue #2669 — le check-then-act était sans verrou : deux check-in
         // parallèles pouvaient créer deux sessions ouvertes. La recherche de
@@ -70,8 +79,8 @@ class AttendanceService
             $lateMinutes = 0;
 
             if ($schedule) {
-                $checkInLocal = $nowUtc->copy()->setTimezone($company->timezone);
-                $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+                $checkInLocal = $nowUtc->copy()->setTimezone($this->timezoneFor($company));
+                $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
                 $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
                 $tolerance = (int) $schedule->late_tolerance_minutes;
                 $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -109,7 +118,7 @@ class AttendanceService
         $company = currentCompany();
 
         $nowUtc = now('UTC');
-        $today = $nowUtc->copy()->setTimezone($company->timezone)->toDateString();
+        $today = $nowUtc->copy()->setTimezone($this->timezoneFor($company))->toDateString();
 
         // Issue #2669 — verrouillage de la session ouverte (deux check-out
         // parallèles fermaient la même session en last-write-wins).
@@ -168,8 +177,8 @@ class AttendanceService
         $log->punch_meta = array_merge($log->punch_meta ?? [], $punchMeta);
 
         if ($log->status === 'incomplete' && $schedule) {
-            $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $log->check_in->copy()->setTimezone($this->timezoneFor($company));
+            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -190,7 +199,7 @@ class AttendanceService
     ): AttendanceLog {
         $company = currentCompany();
         $occurredAt = Carbon::parse($dto->occurred_at ?? now('UTC'))->utc();
-        $today = $occurredAt->copy()->setTimezone($company->timezone)->toDateString();
+        $today = $occurredAt->copy()->setTimezone($this->timezoneFor($company))->toDateString();
         $action = $dto->action ?? 'check_in';
         $externalEventId = $dto->external_event_id;
 
@@ -272,8 +281,8 @@ class AttendanceService
         $lateMinutes = 0;
 
         if ($schedule) {
-            $checkInLocal = $occurredAt->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $occurredAt->copy()->setTimezone($this->timezoneFor($company));
+            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -319,7 +328,7 @@ class AttendanceService
         }
 
         $today = $log->date?->format('Y-m-d')
-            ?? $log->check_in?->copy()->setTimezone($company->timezone)->toDateString();
+            ?? $log->check_in?->copy()->setTimezone($this->timezoneFor($company))->toDateString();
 
         $log->hours_worked = null;
         $log->overtime_hours = 0;
@@ -327,8 +336,8 @@ class AttendanceService
         $log->status = 'incomplete';
 
         if ($log->check_in && $schedule && $today) {
-            $checkInLocal = $log->check_in->copy()->setTimezone($company->timezone);
-            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $company->timezone);
+            $checkInLocal = $log->check_in->copy()->setTimezone($this->timezoneFor($company));
+            $startLocal = Carbon::parse($today.' '.$schedule->start_time, $this->timezoneFor($company));
             $diffMinutes = $startLocal->diffInMinutes($checkInLocal, false);
             $tolerance = (int) $schedule->late_tolerance_minutes;
             $log->late_minutes = max(0, (int) floor($diffMinutes - $tolerance));
@@ -494,13 +503,13 @@ class AttendanceService
      */
     private function buildPunchMeta(Company $company, Employee $employee, CheckInDTO $dto, string $phase): array
     {
-        $timezone = $dto->device_timezone ?: $company->timezone;
+        $timezone = $dto->device_timezone ?: $this->timezoneFor($company);
         $geofence = $this->geofenceService->evaluate($company, $employee, $dto->gps_lat, $dto->gps_lng);
 
         return [
             'phase' => $phase,
             'device_timezone' => $timezone,
-            'server_timezone' => $company->timezone,
+            'server_timezone' => $this->timezoneFor($company),
             'gps_accuracy' => $dto->gps_accuracy,
             'geofence' => $geofence,
         ];

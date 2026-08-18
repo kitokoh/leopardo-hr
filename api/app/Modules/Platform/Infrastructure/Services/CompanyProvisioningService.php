@@ -79,7 +79,7 @@ class CompanyProvisioningService
 
             try {
                 /** @var Employee $manager */
-                $manager = Employee::query()->create([
+                $manager = new Employee([
                     'first_name' => $payload['manager_first_name'],
                     'last_name' => $payload['manager_last_name'],
                     'email' => $payload['manager_email'],
