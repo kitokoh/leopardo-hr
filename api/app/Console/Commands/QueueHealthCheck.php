@@ -24,11 +24,14 @@ class QueueHealthCheck extends Command
     protected $description = 'Check Redis connectivity and queue depths (Upstash-compatible)';
 
     /** Named queues defined in Plan 63. */
+    /** @var list<string> */
     private array $defaultQueues = ['default', 'documents', 'pdf', 'notifications', 'payroll', 'webhooks', 'audit'];
 
     public function handle(): int
     {
-        $queues = $this->option('queue') ?: $this->defaultQueues;
+        /** @var list<string>|null $requestedQueues */
+        $requestedQueues = $this->option('queue');
+        $queues = $requestedQueues ?: $this->defaultQueues;
 
         // Measure Redis round-trip latency
         $start = microtime(true);
@@ -100,6 +103,7 @@ class QueueHealthCheck extends Command
      * seuil). Ne fait rien tant que SLACK_MONITORING_WEBHOOK_URL n'est pas
      * configuré (le défaut reste silencieux, comme avant).
      */
+    /** @param array<string, mixed> $result */
     private function notifyIfDegraded(array $result): void
     {
         $webhook = (string) config('services.slack.monitoring_webhook');

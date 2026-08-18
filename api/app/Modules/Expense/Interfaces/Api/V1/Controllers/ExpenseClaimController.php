@@ -54,8 +54,10 @@ class ExpenseClaimController extends Controller
             'items.*.date' => 'required|date',
         ]);
 
-        $claim = DB::transaction(function () use ($actor, $validated) {
-            $totalAmount = collect($validated['items'])->sum('amount');
+        /** @var list<array{category: string, description: string, amount: int|float|string, date: string}> $items */
+        $items = $validated['items'];
+        $claim = DB::transaction(function () use ($actor, $validated, $items): ExpenseClaim {
+            $totalAmount = collect($items)->sum('amount');
 
             // PA2-COUNTRY-003: derive the claim currency from the employee's
             // company so DZD is never shown as the actual currency for
@@ -72,7 +74,7 @@ class ExpenseClaimController extends Controller
                 'currency' => $actor->company?->currency ?? 'DZD',
             ]);
 
-            foreach ($validated['items'] as $item) {
+            foreach ($items as $item) {
                 ExpenseItem::create([
                     'expense_claim_id' => $claim->id,
                     'category' => $item['category'],
@@ -82,7 +84,7 @@ class ExpenseClaimController extends Controller
                 ]);
             }
 
-            return $claim->fresh(['items']);
+            return $claim->fresh(['items']) ?? $claim;
         });
 
         return response()->json(['data' => (new ExpenseClaimResource($claim))->resolve($request)], 201);
@@ -121,8 +123,10 @@ class ExpenseClaimController extends Controller
             'items.*.date' => 'required|date',
         ]);
 
-        $claim = DB::transaction(function () use ($expenseClaim, $validated): ExpenseClaim {
-            $totalAmount = collect($validated['items'])->sum('amount');
+        /** @var list<array{category: string, description: string, amount: int|float|string, date: string}> $items */
+        $items = $validated['items'];
+        $claim = DB::transaction(function () use ($expenseClaim, $validated, $items): ExpenseClaim {
+            $totalAmount = collect($items)->sum('amount');
 
             $expenseClaim->update([
                 'title' => $validated['title'],
@@ -132,7 +136,7 @@ class ExpenseClaimController extends Controller
 
             // Remplacement intégral des lignes (pas de mise à jour unitaire).
             $expenseClaim->items()->delete();
-            foreach ($validated['items'] as $item) {
+            foreach ($items as $item) {
                 ExpenseItem::create([
                     'expense_claim_id' => $expenseClaim->id,
                     'category' => $item['category'],
@@ -147,7 +151,7 @@ class ExpenseClaimController extends Controller
                 $expenseClaim->update(['status' => 'draft']);
             }
 
-            return $expenseClaim->fresh(['items']);
+            return $expenseClaim->fresh(['items']) ?? $expenseClaim;
         });
 
         return response()->json(['data' => (new ExpenseClaimResource($claim))->resolve($request)], 200);
