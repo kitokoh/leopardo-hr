@@ -50,7 +50,7 @@ class AuthLoginStaleLookupRegressionTest extends TestCase
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'ghost@company.test',
-            'schema_name' => 'ghost_schema_dropped',
+            'schema_name' => 'shared_tenants',
             'tenancy_type' => 'shared',
             'status' => 'active',
         ]);
