@@ -2,30 +2,7 @@
 #
 # Règle (issue #1473) : toute route absente d'openapi.yaml ET de ce fichier
 # fait échouer la CI. Ajouter une route ici UNIQUEMENT avec justification.
-# Régénéré le 2026-08-18 (restauration lot 1 #4842).
-# Gaps restants = verbes d'action (convention #4930, PRs #5010/#5020).
+# ÉTAT 2026-08-18 : 744/744 routes couvertes — allowlist VIDE.
+# Les verbes d'action PUT/PATCH dépréciés (#4930) sont désormais documentés
+# dans openapi.yaml avec `deprecated: true` (tags [Deprecated]).
 
-
-## modules/absence.php — 2 route(s)
-PUT /v1/absences/{param}/approve
-PUT /v1/absences/{param}/reject
-
-## modules/billing.php — 2 route(s)
-PATCH /v1/onboarding-setup/{param}/complete
-PATCH /v1/onboarding-setup/{param}/skip
-
-## modules/expense.php — 2 route(s)
-PUT /v1/expense-claims/{param}/approve
-PUT /v1/expense-claims/{param}/reject
-
-## modules/hr_extended.php — 2 route(s)
-PUT /v1/loans/{param}/approve
-PUT /v1/loans/{param}/disburse
-
-## modules/rh.php — 6 route(s)
-PUT /v1/attendance/corrections/{param}/approve
-PUT /v1/attendance/corrections/{param}/reject
-PUT /v1/payrolls/{param}/validate
-PUT /v1/salary-advances/{param}/approve
-PUT /v1/salary-advances/{param}/manager-approve
-PUT /v1/salary-advances/{param}/reject
