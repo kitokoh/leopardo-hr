@@ -5,6 +5,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **docs(spec-kit): kiosque — méthodes de pointage configurables par tenant (Epic #5119).** Spec + tasks livrées (`.specify/features/5119-kiosk-punch-methods/`) : config `punch_methods` (fingerprint/face/card) par device + défaut entreprise, enforcement sync-attendance, badge employé + statut d'enrôlement, UI kiosk pilotée par la config. Issues filles #5120-#5124.
 - **fix(api/security): EdgeNode/EdgeLicense — credentials plus jamais sérialisés en clair (Closes #4687).** `$hidden = ['license_key','metadata']` sur `EdgeNode` (le metadata contient le hash SHA-256 de l'edge_token) et `$hidden = ['license_key','signed_payload']` sur `EdgeLicense` : les réponses list/show ne fuient plus les secrets. Les endpoints d'émission (`POST /api/v1/edge` et `POST /api/v1/edge/{id}/license`) ré-exposent explicitement via `makeVisible()` — le contrat d'enregistrement `license: {license_key, signed_payload}` est préservé (test dédié `EdgeCredentialVisibilityTest`).
 ## [Unreleased]
 - **fix(admin): résiduel i18n FR — Support/CRM/Edge/NotFound localisés ×4 (Closes #4840).** SupportTicketsView (« Aucun ticket », sélection, erreur de chargement), CrmPipelineView (10 libellés pipeline), EdgeNodesView (table + stats + sync), NotFoundView (liens utiles, système) passent aux catalogues fr/en/ar/tr (clés support.*, crm.*, edge.*, notFound.*). Toast script via le helper `translate` (pattern #4781), plus de chaînes FR/EN en dur dans ces 4 vues.
