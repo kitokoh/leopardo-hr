@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
       `${LEOPARDO_API_URL}/api/v1/trial/status`,
       {
         method: 'GET',
-        headers: { 'X-Token': token },
         headers: {
+          'X-Token': token,
           Accept: 'application/json',
         },
         // Timeout court : le polling reprendra au cycle suivant.

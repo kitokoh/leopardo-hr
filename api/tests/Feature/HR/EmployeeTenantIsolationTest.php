@@ -54,7 +54,7 @@ class EmployeeTenantIsolationTest extends TestCase
     {
         $sensitiveEmployee1 = new Employee([
             'first_name' => 'Manager',
-            'last_name' => 'Tenant',
+            'last_name' => ucfirst(str_replace(['@', '-'], ' ', $email)),
             'email' => $email,
         ]);
         $sensitiveEmployee1->forceFill(['password_hash' => Hash::make('password123')])->save();
@@ -71,7 +71,7 @@ class EmployeeTenantIsolationTest extends TestCase
     {
         $sensitiveEmployee0 = new Employee([
             'first_name' => 'Employe',
-            'last_name' => 'Tenant',
+            'last_name' => ucfirst(str_replace(['@', '-'], ' ', $email)),
             'email' => $email,
         ]);
         $sensitiveEmployee0->forceFill(['password_hash' => Hash::make('password123')])->save();

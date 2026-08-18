@@ -130,7 +130,7 @@ export function OnboardingWizard({
 
   useEffect(() => {
     if (qrData && qrCanvasRef.current) {
-      QRCode.toCanvas(qrCanvasRef.current, qrData, { width: 180, margin: 1 }, (err) => {
+      QRCode.toCanvas(qrCanvasRef.current, qrData, { width: 180, margin: 1 }, (err: Error | null | undefined) => {
         if (err) {
           console.error(err);
           setQrError(onboarding.qrError);

@@ -116,16 +116,17 @@ class AbsenceService
      * d'extension est laissée à approve() (verrou ligne, #2666) — la demande
      * reste 'pending' tant qu'elle n'est pas approuvée.
      */
+    /** @param array<string, mixed> $data */
     public function update(Absence $absence, array $data): Absence
     {
         $startDate = Carbon::parse($data['start_date'] ?? $absence->start_date->toDateString());
-        $endDate = Carbon::parse($data['end_date'] ?? $absence->end_date->toDateString());
+        $endDate = Carbon::parse($data['end_date'] ?? $absence->end_date?->toDateString() ?? now()->toDateString());
 
         $daysCount = $absence->days_count;
         if (isset($data['start_date']) || isset($data['end_date'])) {
-            $employee = $absence->employee()->first();
-            $company = $employee?->company()->first();
-            $countryCode = $company?->country ?? null;
+            $employee = $absence->employee()->firstOrFail();
+            $company = $employee->company()->first();
+            $countryCode = $company?->country;
             $daysCount = $this->publicHolidays->workingDaysBetween(
                 $startDate,
                 $endDate,
@@ -142,7 +143,9 @@ class AbsenceService
             'days_count' => $daysCount,
         ]);
 
-        return $absence->fresh();
+        $absence->refresh();
+
+        return $absence;
     }
 
     public function approve(Absence $absence, Employee $approver): Absence
