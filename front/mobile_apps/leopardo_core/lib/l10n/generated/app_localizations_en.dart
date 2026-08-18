@@ -3401,4 +3401,58 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String get settingsEdgeSaved => 'Edge settings saved.';
+
+  @override
+  String get settingsAccountTitle => 'Account';
+
+  @override
+  String get settingsAccountSubtitle => 'Profile, language and security';
+
+  @override
+  String get settingsEmployeeProfileHint => 'Employee profile: access to clock-in, personal history and biometric setup settings.';
+
+  @override
+  String get settingsSaving => 'Saving...';
+
+  @override
+  String get settingsSaveProfile => 'Save profile';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Kiosk biometrics';
+
+  @override
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get settingsAccountPortableHint => 'Your account stays useful even when you change company.';
+
+  @override
+  String get settingsNoJourney => 'No journey recorded yet.';
+
+  @override
+  String get settingsNoCompanyQr => 'No company QR in the clipboard.';
+
+  @override
+  String get settingsLanguageTitle => 'Language';
+
+  @override
+  String get settingsPreferredLanguage => 'Preferred language';
+
+  @override
+  String get settingsSecurityTitle => 'Security';
+
+  @override
+  String get settingsCurrentPassword => 'Current password';
+
+  @override
+  String get settingsSaveEnrollment => 'Save enrollment';
+
+  @override
+  String get settingsSave => 'Save';
+
+  @override
+  String get settingsLogout => 'Log out';
 }

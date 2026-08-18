@@ -3402,4 +3402,58 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
+
+  @override
+  String get settingsEdgeSaved => 'Edge ayarları kaydedildi.';
+
+  @override
+  String get settingsAccountTitle => 'Hesap';
+
+  @override
+  String get settingsAccountSubtitle => 'Profil, dil ve güvenlik';
+
+  @override
+  String get settingsEmployeeProfileHint => 'Çalışan profili: giriş, kişisel geçmiş ve biyometrik hazırlık ayarlarına erişim.';
+
+  @override
+  String get settingsSaving => 'Kaydediliyor...';
+
+  @override
+  String get settingsSaveProfile => 'Profili kaydet';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Kiosk biyometrisi';
+
+  @override
+  String get settingsNotificationsTitle => 'Bildirimler';
+
+  @override
+  String get settingsAccountPortableHint => 'Şirket değiştirseniz bile hesabınız kullanışlı kalır.';
+
+  @override
+  String get settingsNoJourney => 'Henüz kayıtlı yolculuk yok.';
+
+  @override
+  String get settingsNoCompanyQr => 'Panoda şirket QR\'ı yok.';
+
+  @override
+  String get settingsLanguageTitle => 'Dil';
+
+  @override
+  String get settingsPreferredLanguage => 'Tercih edilen dil';
+
+  @override
+  String get settingsSecurityTitle => 'Güvenlik';
+
+  @override
+  String get settingsCurrentPassword => 'Mevcut şifre';
+
+  @override
+  String get settingsSaveEnrollment => 'Kaydı kaydet';
+
+  @override
+  String get settingsSave => 'Kaydet';
+
+  @override
+  String get settingsLogout => 'Çıkış yap';
 }

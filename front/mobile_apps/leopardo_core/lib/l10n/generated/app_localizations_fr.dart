@@ -3448,4 +3448,58 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.';
+
+  @override
+  String get settingsEdgeSaved => 'Paramètres Edge enregistrés.';
+
+  @override
+  String get settingsAccountTitle => 'Compte';
+
+  @override
+  String get settingsAccountSubtitle => 'Profil, langue et sécurité';
+
+  @override
+  String get settingsEmployeeProfileHint => 'Profil employé : accès au pointage, à l\'historique personnel et aux paramètres de préparation biométrie.';
+
+  @override
+  String get settingsSaving => 'Enregistrement...';
+
+  @override
+  String get settingsSaveProfile => 'Enregistrer le profil';
+
+  @override
+  String get settingsKioskBiometricTitle => 'Biométrie kiosk';
+
+  @override
+  String get settingsNotificationsTitle => 'Notifications';
+
+  @override
+  String get settingsAccountPortableHint => 'Votre compte reste utile même quand vous changez d\'entreprise.';
+
+  @override
+  String get settingsNoJourney => 'Aucun parcours enregistré pour le moment.';
+
+  @override
+  String get settingsNoCompanyQr => 'Aucun QR entreprise dans le presse-papiers.';
+
+  @override
+  String get settingsLanguageTitle => 'Langue';
+
+  @override
+  String get settingsPreferredLanguage => 'Langue préférée';
+
+  @override
+  String get settingsSecurityTitle => 'Sécurité';
+
+  @override
+  String get settingsCurrentPassword => 'Mot de passe actuel';
+
+  @override
+  String get settingsSaveEnrollment => 'Enregistrer la préparation';
+
+  @override
+  String get settingsSave => 'Enregistrer';
+
+  @override
+  String get settingsLogout => 'Déconnexion';
 }

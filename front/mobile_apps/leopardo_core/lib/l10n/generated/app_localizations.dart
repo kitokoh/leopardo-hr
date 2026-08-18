@@ -6477,4 +6477,58 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       'an issue with the localizations generation tool. Please file an issue '
       'on GitHub with a reproducible sample app and the gen-l10n configuration '
       'that was used.');
+
+  /// No description provided for @settingsEdgeSaved.
+  String get settingsEdgeSaved;
+
+  /// No description provided for @settingsAccountTitle.
+  String get settingsAccountTitle;
+
+  /// No description provided for @settingsAccountSubtitle.
+  String get settingsAccountSubtitle;
+
+  /// No description provided for @settingsEmployeeProfileHint.
+  String get settingsEmployeeProfileHint;
+
+  /// No description provided for @settingsSaving.
+  String get settingsSaving;
+
+  /// No description provided for @settingsSaveProfile.
+  String get settingsSaveProfile;
+
+  /// No description provided for @settingsKioskBiometricTitle.
+  String get settingsKioskBiometricTitle;
+
+  /// No description provided for @settingsNotificationsTitle.
+  String get settingsNotificationsTitle;
+
+  /// No description provided for @settingsAccountPortableHint.
+  String get settingsAccountPortableHint;
+
+  /// No description provided for @settingsNoJourney.
+  String get settingsNoJourney;
+
+  /// No description provided for @settingsNoCompanyQr.
+  String get settingsNoCompanyQr;
+
+  /// No description provided for @settingsLanguageTitle.
+  String get settingsLanguageTitle;
+
+  /// No description provided for @settingsPreferredLanguage.
+  String get settingsPreferredLanguage;
+
+  /// No description provided for @settingsSecurityTitle.
+  String get settingsSecurityTitle;
+
+  /// No description provided for @settingsCurrentPassword.
+  String get settingsCurrentPassword;
+
+  /// No description provided for @settingsSaveEnrollment.
+  String get settingsSaveEnrollment;
+
+  /// No description provided for @settingsSave.
+  String get settingsSave;
+
+  /// No description provided for @settingsLogout.
+  String get settingsLogout;
 }

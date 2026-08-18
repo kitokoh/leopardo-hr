@@ -3369,4 +3369,58 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.';
+
+  @override
+  String get settingsEdgeSaved => 'تم حفظ إعدادات الحافة.';
+
+  @override
+  String get settingsAccountTitle => 'الحساب';
+
+  @override
+  String get settingsAccountSubtitle => 'الملف الشخصي واللغة والأمان';
+
+  @override
+  String get settingsEmployeeProfileHint => 'ملف الموظف: الوصول إلى تسجيل الوقت والسجل الشخصي وإعدادات التحضير البيومتري.';
+
+  @override
+  String get settingsSaving => 'جارٍ الحفظ...';
+
+  @override
+  String get settingsSaveProfile => 'حفظ الملف الشخصي';
+
+  @override
+  String get settingsKioskBiometricTitle => 'القياسات الحيوية لكشك';
+
+  @override
+  String get settingsNotificationsTitle => 'الإشعارات';
+
+  @override
+  String get settingsAccountPortableHint => 'يظل حسابك مفيدًا حتى عند تغيير الشركة.';
+
+  @override
+  String get settingsNoJourney => 'لا توجد رحلة مسجلة بعد.';
+
+  @override
+  String get settingsNoCompanyQr => 'لا يوجد رمز QR للشركة في الحافظة.';
+
+  @override
+  String get settingsLanguageTitle => 'اللغة';
+
+  @override
+  String get settingsPreferredLanguage => 'اللغة المفضلة';
+
+  @override
+  String get settingsSecurityTitle => 'الأمان';
+
+  @override
+  String get settingsCurrentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get settingsSaveEnrollment => 'حفظ التسجيل';
+
+  @override
+  String get settingsSave => 'حفظ';
+
+  @override
+  String get settingsLogout => 'تسجيل الخروج';
 }

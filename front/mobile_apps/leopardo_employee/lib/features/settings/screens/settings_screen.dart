@@ -123,7 +123,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       unawaited(ref.read(syncServiceProvider).syncNow());
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Parametres Edge enregistres.')),
+        SnackBar(content: Text(context.l10n.settingsEdgeSaved)),
       );
     } finally {
       if (mounted) setState(() => _edgeSaving = false);
@@ -197,8 +197,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       backgroundColor: MobileSurface.background,
       appBar: MobileTopBar(
-        title: 'Compte',
-        subtitle: 'Profil, langue et securite',
+        title: context.l10n.settingsAccountTitle,
+        subtitle: context.l10n.settingsAccountSubtitle,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
           tooltip: context.l10n.back,
@@ -250,7 +250,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Profil employe: acces au pointage, a l historique personnel et aux parametres de preparation biometrie.',
+            context.l10n.settingsEmployeeProfileHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -352,7 +352,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             FilledButton(
               onPressed: _profileSaving ? null : _saveProfile,
               child: Text(
-                _profileSaving ? 'Enregistrement...' : 'Enregistrer le profil',
+                (_profileSaving ? context.l10n.settingsSaving : context.l10n.settingsSaveProfile),
               ),
             ),
           ],
@@ -391,13 +391,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       (
         icon: Icons.fingerprint_rounded,
         color: AppColors.info,
-        title: 'Biometrie kiosk',
+        title: context.l10n.settingsKioskBiometricTitle,
         subtitle: 'Preparer doigt et visage pour les bornes terrain.',
       ),
       (
         icon: Icons.notifications_active_outlined,
         color: AppColors.danger,
-        title: 'Notifications',
+        title: context.l10n.settingsNotificationsTitle,
         subtitle: 'Canaux, heures calmes et alertes operationnelles.',
       ),
     ];
@@ -413,7 +413,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Votre compte reste utile meme quand vous changez d entreprise.',
+            context.l10n.settingsAccountPortableHint,
             style: AppTypography.bodySmall.copyWith(
               color: MobileSurface.secondary,
             ),
@@ -486,7 +486,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const LinearProgressIndicator(minHeight: 2)
               else if (timeline.isEmpty)
                 Text(
-                  'Aucun parcours enregistre pour le moment.',
+                  context.l10n.settingsNoJourney,
                   style: AppTypography.bodySmall.copyWith(
                     color: MobileSurface.secondary,
                   ),
@@ -579,7 +579,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                      'Aucun QR entreprise dans le presse-papiers.',
+                      context.l10n.settingsNoCompanyQr,
                     ),
                   ),
                 );
@@ -795,7 +795,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Langue',
+            context.l10n.settingsLanguageTitle,
             style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
           ),
           const SizedBox(height: 8),
@@ -808,7 +808,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             initialValue: _selectedLanguage,
-            decoration: const InputDecoration(labelText: 'Langue preferee'),
+            decoration: const InputDecoration(labelText: context.l10n.settingsPreferredLanguage),
             items: _languageLabels.entries
                 .map(
                   (entry) => DropdownMenuItem<String>(
@@ -854,7 +854,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Securite',
+              context.l10n.settingsSecurityTitle,
               style: AppTypography.subtitle.copyWith(color: MobileSurface.text),
             ),
             const SizedBox(height: 8),
@@ -869,7 +869,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               controller: _currentPasswordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Mot de passe actuel',
+                labelText: context.l10n.settingsCurrentPassword,
               ),
               validator: (value) =>
                   (value == null || value.isEmpty) ? 'Champ requis' : null,
@@ -1163,7 +1163,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ? null
                       : () => _saveEdgeSettings(context),
                   child: Text(
-                    _edgeSaving ? 'Enregistrement...' : 'Enregistrer',
+                    (_edgeSaving ? context.l10n.settingsSaving : context.l10n.settingsSave),
                   ),
                 ),
               ),
@@ -1205,7 +1205,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               context.go('/login');
             },
             icon: const Icon(Icons.logout_rounded),
-            label: const Text('Deconnexion'),
+            label: Text(context.l10n.settingsLogout),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.danger,
               side: BorderSide(color: AppColors.danger.withValues(alpha: 0.45)),
@@ -1242,7 +1242,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Notifications',
+                  context.l10n.settingsNotificationsTitle,
                   style: AppTypography.subtitle.copyWith(
                     color: MobileSurface.text,
                   ),
@@ -1344,7 +1344,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Notifications',
+                    context.l10n.settingsNotificationsTitle,
                     style: AppTypography.subtitle.copyWith(
                       color: MobileSurface.text,
                     ),
