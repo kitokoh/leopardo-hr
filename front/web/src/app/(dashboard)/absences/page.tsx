@@ -1,9 +1,10 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { ApiError, apiFetch } from '@/lib/api-client';
-import { getCopy, getPreferredLocale, type AppLocale } from '@/lib/i18n';
+import { getCopy, getPreferredLocale, getStoredUser, type AppLocale } from '@/lib/i18n';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { AbsenceRejectModal } from './_components/absence-reject-modal';
 
 type AbsenceRecord = {
   id: number;
@@ -11,9 +12,16 @@ type AbsenceRecord = {
   end_date?: string;
   status?: string;
   reason?: string | null;
+  rejected_reason?: string | null;
   days_count?: number | string | null;
   absence_type?: {
     name?: string;
+  } | null;
+  employee?: {
+    id?: number;
+    first_name?: string;
+    last_name?: string;
+    email?: string;
   } | null;
 };
 
@@ -23,15 +31,50 @@ type AbsencesPayload = {
 
 const emptySubscribe = () => () => {};
 
+function isManagerRole(role: string | null | undefined): boolean {
+  const value = (role ?? '').toLowerCase();
+  return value === 'super_admin' || value === 'admin' || value === 'manager';
+}
+
 export default function AbsencesPage() {
   const locale = useSyncExternalStore<AppLocale>(emptySubscribe, getPreferredLocale, () => 'fr');
   const copy = getCopy(locale);
   const [absences, setAbsences] = useState<AbsenceRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [rejectTarget, setRejectTarget] = useState<AbsenceRecord | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<number | null>(null);
+  const [manager, setManager] = useState(false);
+
+  const labels = copy.absencesPage;
+  const isPending = (a: AbsenceRecord) => (a.status ?? 'pending').toLowerCase() === 'pending';
+
+  function employeeName(a: AbsenceRecord): string {
+    const e = a.employee;
+    if (e?.first_name || e?.last_name) {
+      return `${e.first_name ?? ''} ${e.last_name ?? ''}`.trim();
+    }
+    return copy.smartAttendancePage.employeeFallback ?? 'Employé';
+  }
+
+  async function reload() {
+    try {
+      const response = await apiFetch('/absences');
+      const payload = await response.json() as AbsencesPayload;
+      setAbsences(Array.isArray(payload.data) ? payload.data : []);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : labels.loadError);
+    }
+  }
 
   useEffect(() => {
     let active = true;
+
+    const stored = getStoredUser();
+    if (stored) {
+      setManager(isManagerRole(stored.role) || isManagerRole(stored.manager_role));
+    }
 
     async function load() {
       try {
@@ -48,7 +91,7 @@ export default function AbsencesPage() {
           return;
         }
 
-        setError(err instanceof ApiError ? err.message : copy.absencesPage.loadError);
+        setError(err instanceof ApiError ? err.message : labels.loadError);
       } finally {
         if (active) {
           setLoading(false);
@@ -64,6 +107,44 @@ export default function AbsencesPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  async function handleApprove(absence: AbsenceRecord) {
+    setBusyId(absence.id);
+    setActionError(null);
+    try {
+      const response = await apiFetch(`/absences/${absence.id}/approve`, { method: 'POST' });
+      if (!response.ok) {
+        const err = await response.json().catch(() => null) as { message?: string } | null;
+        throw new Error(err?.message ?? labels.actionError);
+      }
+      await reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : labels.actionError);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleReject(absence: AbsenceRecord, reason: string) {
+    setBusyId(absence.id);
+    setActionError(null);
+    try {
+      const response = await apiFetch(`/absences/${absence.id}/reject`, {
+        method: 'POST',
+        body: JSON.stringify({ rejected_reason: reason }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => null) as { message?: string } | null;
+        throw new Error(err?.message ?? labels.actionError);
+      }
+      setRejectTarget(null);
+      await reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : labels.actionError);
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <ModulePageShell
       title="Absences"
@@ -73,6 +154,12 @@ export default function AbsencesPage() {
       {error ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
+        </div>
+      ) : null}
+
+      {actionError ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+          {actionError}
         </div>
       ) : null}
 
@@ -96,17 +183,60 @@ export default function AbsencesPage() {
                   {absence.reason ? (
                     <p className="mt-2 text-xs text-slate-500">{absence.reason}</p>
                   ) : null}
+                  {absence.rejected_reason ? (
+                    <p className="mt-2 text-xs text-red-600">{labels.rejectReasonLabel} : {absence.rejected_reason}</p>
+                  ) : null}
                 </div>
-                <div className="flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{absence.days_count ?? 0} j</span>
-                  <span className="rounded-full bg-info/15 px-3 py-1 text-info">{absence.status ?? 'pending'}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">{absence.days_count ?? 0} j</span>
+                    <span className="rounded-full bg-info/15 px-3 py-1 text-info">{absence.status ?? 'pending'}</span>
+                  </div>
+                  {manager && isPending(absence) ? (
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        disabled={busyId === absence.id}
+                        onClick={() => void handleApprove(absence)}
+                        className="rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        {labels.approveAction}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busyId === absence.id}
+                        onClick={() => setRejectTarget(absence)}
+                        className="rounded-xl border border-red-200 bg-white px-3 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                      >
+                        {labels.rejectAction}
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ))
           )}
         </div>
       </section>
+
+      {rejectTarget ? (
+        <AbsenceRejectModal
+          employeeName={employeeName(rejectTarget)}
+          onCancel={() => setRejectTarget(null)}
+          onConfirm={(reason) => void handleReject(rejectTarget, reason)}
+          loading={busyId === rejectTarget.id}
+          labels={{
+            rejectModalTitle: labels.rejectTitle,
+            rejectModalBody: labels.rejectBody,
+            rejectModalReasonLabel: labels.rejectReasonLabel,
+            rejectModalReasonPlaceholder: labels.rejectReasonPlaceholder,
+            rejectModalReasonRequired: labels.rejectReasonRequired,
+            rejectModalConfirm: labels.rejectAction,
+            rejectModalInProgress: labels.inProgress,
+            cancel: labels.cancel,
+          }}
+        />
+      ) : null}
     </ModulePageShell>
   );
 }
-

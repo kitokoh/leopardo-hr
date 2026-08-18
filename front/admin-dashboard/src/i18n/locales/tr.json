@@ -1720,5 +1720,20 @@
     "statusPending": "Beklemede",
     "statusResolved": "Çözüldü",
     "statusClosed": "Kapatıldı"
+  },
+  "absencesPage": {
+    "approveAction": "Onayla",
+    "rejectAction": "Reddet",
+    "approveSuccess": "Talep onaylandı.",
+    "rejectSuccess": "Talep reddedildi.",
+    "actionError": "Talep güncellenemedi.",
+    "rejectTitle": "Talebi reddet",
+    "rejectBody": "{name} adlı kullanıcının talebini reddedeceksiniz. Lütfen bir neden belirtin.",
+    "rejectReasonLabel": "Red nedeni",
+    "rejectReasonPlaceholder": "Zorunlu neden…",
+    "rejectReasonRequired": "Neden zorunludur.",
+    "confirm": "Onayla",
+    "cancel": "İptal",
+    "inProgress": "İşlem sürüyor…"
   }
 }

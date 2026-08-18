@@ -457,6 +457,19 @@ export type CopyTree = {
   };
   absencesPage: {
     loadError: string;
+    approveAction: string;
+    rejectAction: string;
+    approveSuccess: string;
+    rejectSuccess: string;
+    actionError: string;
+    rejectTitle: string;
+    rejectBody: string;
+    rejectReasonLabel: string;
+    rejectReasonPlaceholder: string;
+    rejectReasonRequired: string;
+    confirm: string;
+    cancel: string;
+    inProgress: string;
   };
   attendancePage: {
     loadError: string;
@@ -940,7 +953,7 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'Terminé',
     statusDraft: 'Brouillon',
   },
-  absencesPage: { loadError: 'Impossible de charger les absences.' },
+  absencesPage: { loadError: 'Impossible de charger les absences.' approveAction: 'Approuver', rejectAction: 'Refuser', approveSuccess: 'Demande approuvée.', rejectSuccess: 'Demande refusée.', actionError: 'Impossible de mettre à jour la demande.', rejectTitle: 'Refuser la demande', rejectBody: 'Vous allez refuser la demande de {name}. Veuillez indiquer une raison.', rejectReasonLabel: 'Raison du refus', rejectReasonPlaceholder: 'Raison obligatoire…', rejectReasonRequired: 'La raison est obligatoire.', confirm: 'Confirmer', cancel: 'Annuler', inProgress: 'En cours…', },
   attendancePage: { loadError: 'Impossible de charger le pointage.' },
   socialPage: {
     title: 'Réseaux sociaux',
@@ -1420,7 +1433,7 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'منتهي',
     statusDraft: 'مسودة',
   },
-  absencesPage: { loadError: 'تعذر تحميل حالات الغياب.' },
+  absencesPage: { loadError: 'تعذر تحميل حالات الغياب.' approveAction: 'موافقة', rejectAction: 'رفض', approveSuccess: 'تمت الموافقة على الطلب.', rejectSuccess: 'تم رفض الطلب.', actionError: 'تعذر تحديث الطلب.', rejectTitle: 'رفض الطلب', rejectBody: 'ستقوم برفض طلب {name}. يرجى تقديم سبب.', rejectReasonLabel: 'سبب الرفض', rejectReasonPlaceholder: 'سبب إلزامي…', rejectReasonRequired: 'السبب إلزامي.', confirm: 'تأكيد', cancel: 'إلغاء', inProgress: 'جارٍ التنفيذ…', },
   attendancePage: { loadError: 'تعذر تحميل الحضور.' },
   socialPage: {
     title: 'وسائل التواصل',
@@ -1900,7 +1913,7 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'Sonlandırıldı',
     statusDraft: 'Taslak',
   },
-  absencesPage: { loadError: 'Devamsızlıklar yüklenemedi.' },
+  absencesPage: { loadError: 'Devamsızlıklar yüklenemedi.' approveAction: 'Onayla', rejectAction: 'Reddet', approveSuccess: 'Talep onaylandı.', rejectSuccess: 'Talep reddedildi.', actionError: 'Talep güncellenemedi.', rejectTitle: 'Talebi reddet', rejectBody: '{name} adlı kullanıcının talebini reddedeceksiniz. Lütfen bir neden belirtin.', rejectReasonLabel: 'Red nedeni', rejectReasonPlaceholder: 'Zorunlu neden…', rejectReasonRequired: 'Neden zorunludur.', confirm: 'Onayla', cancel: 'İptal', inProgress: 'İşlem sürüyor…', },
   attendancePage: { loadError: 'Yoklama yüklenemedi.' },
   socialPage: {
     title: 'Sosyal medya',
@@ -2380,7 +2393,7 @@ const copy: Record<AppLocale, CopyTree> = {
     statusTerminated: 'Terminated',
     statusDraft: 'Draft',
   },
-  absencesPage: { loadError: 'Unable to load absences.' },
+  absencesPage: { loadError: 'Unable to load absences.' approveAction: 'Approve', rejectAction: 'Reject', approveSuccess: 'Request approved.', rejectSuccess: 'Request rejected.', actionError: 'Unable to update the request.', rejectTitle: 'Reject request', rejectBody: 'You are about to reject {name}\'s request. Please provide a reason.', rejectReasonLabel: 'Reason for rejection', rejectReasonPlaceholder: 'Required reason…', rejectReasonRequired: 'The reason is required.', confirm: 'Confirm', cancel: 'Cancel', inProgress: 'In progress…', },
   attendancePage: { loadError: 'Unable to load attendance.' },
   socialPage: {
     title: 'Social media',

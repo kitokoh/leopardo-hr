@@ -127,6 +127,7 @@ const absences = {
       reason: 'Vacances annuelles',
       days_count: 5,
       status: 'approved',
+      employee: { id: 5, first_name: 'Nadia', last_name: 'Kaci' },
     },
     {
       id: 2,
@@ -136,6 +137,17 @@ const absences = {
       reason: null,
       days_count: 2,
       status: 'pending',
+      employee: { id: 6, first_name: 'Karim', last_name: 'Aouad' },
+    },
+    {
+      id: 3,
+      absence_type: { name: 'Congé sans solde' },
+      start_date: '2026-08-03',
+      end_date: '2026-08-04',
+      reason: 'Démarches administratives',
+      days_count: 2,
+      status: 'pending',
+      employee: { id: 7, first_name: 'Sofia', last_name: 'Benaissa' },
     },
   ],
 };
@@ -181,7 +193,7 @@ test.describe('Parcours métier du portail web (baseline #4944)', () => {
     await expect(page.locator('body')).toContainText('Termine');
   });
 
-  test('absences : liste avec type, dates, motif et statut', async ({ page }) => {
+  test('absences : liste avec type, dates, motif et statut (baseline)', async ({ page }) => {
     await mockCommon(page);
     await page.route('**/api/v1/absences', (route) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(absences) })
@@ -195,6 +207,77 @@ test.describe('Parcours métier du portail web (baseline #4944)', () => {
     await expect(page.locator('body')).toContainText('Maladie');
     // Absence sans motif : pas de crash, statut pending affiché.
     await expect(page.locator('body')).toContainText('pending');
+  });
+
+  test('absences : approbation/refus manager avec motif obligatoire (EXIG-35, FLOW 4)', async ({ page }) => {
+    await mockCommon(page);
+
+    // GET liste initiale (2 absences : 1 approuvée, 1 pending)
+    await page.route('**/api/v1/absences', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(absences) })
+    );
+
+    // POST approve (id=1 déjà approuvée ? non — on approuve id=2)
+    let current = structuredClone(absences.data);
+    let approveCalls = 0;
+    await page.route('**/api/v1/absences/2/approve', (route) => {
+      approveCalls += 1;
+      current = current.map((a) => (a.id === 2 ? { ...a, status: 'approved' } : a));
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(current.find((a) => a.id === 2)),
+      });
+    });
+
+    let rejectCalls = 0;
+    let rejectBody: string | null = null;
+    await page.route('**/api/v1/absences/3/reject', async (route) => {
+      rejectCalls += 1;
+      rejectBody = route.request().postData();
+      current = current.map((a) => (a.id === 3 ? { ...a, status: 'rejected', rejected_reason: 'Pièce jointe manquante' } : a));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(current.find((a) => a.id === 2)),
+      });
+    });
+
+    await page.goto('/absences', { waitUntil: 'domcontentloaded' });
+
+    // Les deux demandes affichent leurs statuts ; les actions manager sont visibles sur pending.
+    await expect(page.locator('body')).toContainText('pending');
+    const approveButtons = page.getByRole('button', { name: 'Approuver' });
+    const rejectButtons = page.getByRole('button', { name: 'Refuser' });
+    await expect(approveButtons).toHaveCount(2);
+    await expect(rejectButtons).toHaveCount(2);
+
+    // GET /absences est étatique : reflète approve/reject après rechargement.
+    await page.unroute('**/api/v1/absences');
+    await page.route('**/api/v1/absences', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: current }) })
+    );
+
+    // Approbation : POST sans body.
+    await approveButtons.click();
+    await expect(page.locator('body')).toContainText('approved');
+    await expect.poll(() => approveCalls).toBe(1);
+
+    // Refus : le modal exige un motif.
+    await rejectButtons.click();
+    await expect(page.locator('body')).toContainText('Raison du refus');
+    // Confirmer sans motif → bouton désactivé (motif obligatoire), aucune requête.
+    const modalConfirm = page.getByRole('button', { name: 'Refuser' }).last();
+    await expect(modalConfirm).toBeDisabled();
+    await expect.poll(() => rejectCalls).toBe(0);
+    // Avec motif → POST avec rejected_reason.
+    await page.getByPlaceholder('Raison obligatoire…').fill('Pièce jointe manquante');
+    await modalConfirm.click();
+    await expect.poll(() => rejectCalls).toBe(1);
+    expect(rejectBody).toContain('rejected_reason');
+    expect(rejectBody).toContain('Pièce jointe manquante');
+    // Après refus : le statut passe à rejected dans la liste rafraîchie.
+    await expect(page.locator('body')).toContainText('rejected');
   });
 
   test('paie : montants brut/net affichés (baseline §10.3 — décomposition par salary_type absente du web)', async ({ page }) => {

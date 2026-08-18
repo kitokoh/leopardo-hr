@@ -1720,5 +1720,20 @@
     "statusPending": "En attente",
     "statusResolved": "Résolu",
     "statusClosed": "Fermé"
+  },
+  "absencesPage": {
+    "approveAction": "Approuver",
+    "rejectAction": "Refuser",
+    "approveSuccess": "Demande approuvée.",
+    "rejectSuccess": "Demande refusée.",
+    "actionError": "Impossible de mettre à jour la demande.",
+    "rejectTitle": "Refuser la demande",
+    "rejectBody": "Vous allez refuser la demande de {name}. Veuillez indiquer une raison.",
+    "rejectReasonLabel": "Raison du refus",
+    "rejectReasonPlaceholder": "Raison obligatoire…",
+    "rejectReasonRequired": "La raison est obligatoire.",
+    "confirm": "Confirmer",
+    "cancel": "Annuler",
+    "inProgress": "En cours…"
   }
 }

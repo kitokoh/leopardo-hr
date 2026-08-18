@@ -1720,5 +1720,20 @@
     "statusPending": "Pending",
     "statusResolved": "Resolved",
     "statusClosed": "Closed"
+  },
+  "absencesPage": {
+    "approveAction": "Approve",
+    "rejectAction": "Reject",
+    "approveSuccess": "Request approved.",
+    "rejectSuccess": "Request rejected.",
+    "actionError": "Unable to update the request.",
+    "rejectTitle": "Reject request",
+    "rejectBody": "You are about to reject {name}'s request. Please provide a reason.",
+    "rejectReasonLabel": "Reason for rejection",
+    "rejectReasonPlaceholder": "Required reason…",
+    "rejectReasonRequired": "The reason is required.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "inProgress": "In progress…"
   }
 }

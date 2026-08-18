@@ -1720,5 +1720,20 @@
     "statusPending": "قيد الانتظار",
     "statusResolved": "محلول",
     "statusClosed": "مغلق"
+  },
+  "absencesPage": {
+    "approveAction": "موافقة",
+    "rejectAction": "رفض",
+    "approveSuccess": "تمت الموافقة على الطلب.",
+    "rejectSuccess": "تم رفض الطلب.",
+    "actionError": "تعذر تحديث الطلب.",
+    "rejectTitle": "رفض الطلب",
+    "rejectBody": "ستقوم برفض طلب {name}. يرجى تقديم سبب.",
+    "rejectReasonLabel": "سبب الرفض",
+    "rejectReasonPlaceholder": "سبب إلزامي…",
+    "rejectReasonRequired": "السبب إلزامي.",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء",
+    "inProgress": "جارٍ التنفيذ…"
   }
 }
