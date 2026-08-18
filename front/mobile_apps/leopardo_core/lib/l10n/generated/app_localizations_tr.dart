@@ -3108,6 +3108,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get retry => 'Yeniden dene';
 
   @override
+  String get settingsJourneyLoadError => 'Yolculuğunuz yüklenemedi.';
+
+  @override
+  String get settingsStatsLoadError => 'İstatistikler yüklenemedi.';
+
+  @override
   String get featureComingSoon => 'Özellik yakında';
 
   @override
@@ -3321,6 +3327,20 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get back => 'Geri';
+  @override
+  String get notificationsMarkAllReadError => 'Bildirimler okundu olarak işaretlenemedi.';
+
+  @override
+  String get notificationsMarkReadError => 'Bildirim okundu olarak işaretlenemedi.';
+
+  @override
+  String get notificationsDeleteError => 'Bildirim silinemedi.';
+
+  @override
+  String get notificationsDeleted => 'Bildirim silindi.';
+
+  @override
+  String get attendanceFutureTimeError => 'Gelecekteki bir saat girilemez';
 
   @override
   String get refresh => 'Yenile';

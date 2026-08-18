@@ -201,7 +201,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         subtitle: 'Profil, langue et securite',
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: MobileSurface.secondary),
-          tooltip: 'Retour',
+          tooltip: context.l10n.back,
           onPressed: () => context.pop(),
         ),
       ),
@@ -439,7 +439,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (snapshot.hasError) {
           return _buildSectionError(
             title: 'Parcours professionnel',
-            message: 'Impossible de charger votre parcours.',
+            message: context.l10n.settingsJourneyLoadError,
           );
         }
         final career = snapshot.data;
@@ -669,7 +669,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (snapshot.hasError) {
           return _buildSectionError(
             title: 'Placard numerique',
-            message: 'Impossible de charger les statistiques.',
+            message: context.l10n.settingsStatsLoadError,
           );
         }
         final stats = snapshot.data;

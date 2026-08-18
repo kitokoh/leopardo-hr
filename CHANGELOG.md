@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **fix(mobile/i18n): long-tail FR leopardo_employee migré vers ARB (Closes #4843).** `settings_screen` (parcours/statistiques — clés `settingsJourneyLoadError`/`settingsStatsLoadError` ajoutées ×4 + fichiers générés), `monthly_summary_screen` (`retry`), `notification_list_screen` (marquage lu/tout lu/suppression + succès suppression + tooltip retour — clés `notifications*` ×4), `attendance_screen` (heure future — clé `attendanceFutureTimeError` ×4). Les écrans smart_attendance étaient déjà migrés (post-#4837). `flutter analyze` à valider en CI ; le reste des chaînes en dur reste suivi par l'épic #4194.
 
 - **fix(ci): cancel-orphan-runs --superseded protège les branches vivantes (Closes #5032).**
 - **feat(web/portail): workflow de clôture paie 2 étapes + verrouillage dans l'onglet Cycles (Closes #5017, EXIG-37/FLOW 6).** Le portail expose désormais le cycle complet sur les `payroll-runs` : **Calculer** (draft/calculating/processing/error), **Valider (RH)** (calculated → `POST /validate`, `PayrollClosingService::validateRh`), **Verrouiller** (validated → `POST /lock`, clôture comptable) et **Déverrouiller** (locked), avec modal de confirmation, feedback localisé et rafraîchissement. Statuts localisés ×4 (brouillon/calculé/validé/verrouillé).
