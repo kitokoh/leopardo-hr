@@ -7,6 +7,7 @@
 
 ## [Unreleased]
 - **fix(ci/tests): follow-up #4978 après merge #5092.** Le retour structuré de `SenegalPayrollRules::calculateSocialChargesWithCategory()` satisfait PHPStan Strict, et `TenantIsolationTest` force la persistance de `password_hash` dans sa fixture Employee afin de respecter PostgreSQL.
+- **docs(ops): DEPLOYMENT_URLS.md — URLs de déploiement actives documentées (progrès #3765)** — surfaces live (Render API, Vercel vitrine, Cloudflare Pages admin), services, hooks de déploiement, health endpoints, procédure de vérification v4.24.0+.
 - **fix(web): NEXT_PUBLIC_ENABLE_BLOG activé par défaut (Closes #2906).** env.ts : enableBlog bascule de `=== true` à `!== false` — blog actif par défaut, désactivable explicitement via `=false`. .env.local.example documenté. Sitemap test commenté.
 - **feat(mobile/i18n): dette #4194 vague 4 — 41 clés team ×4 locales + team_screen manager/hr migrés (Refs #4194 #2755).** 41 clés teamTitle/teamAdd/teamViewProfile/teamMakeHr/teamArchive… ×4 locales + générés Dart. team_screen.dart ×2 apps : 34 chaînes chacun → context.l10n.*.
 - **feat(mobile/i18n): dette #4194 vague 3 — 59 clés settings + 3 param ×4 locales ; manager/hr settings migrés (Refs #4194 #2755).** 62 nouvelles clés ARB (settingsMyProfile, settingsFirstName, settingsBiometric*, settingsJourney*, settingsPassword*, settingsLanguageSaved…) ×4 locales + générés Dart. Settings screens leopardo_manager/hr : 36+20 chaînes migrées. Salary advance screens leopardo_manager/hr : 26 chaînes chacun.
