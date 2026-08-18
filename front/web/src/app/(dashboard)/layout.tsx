@@ -328,7 +328,7 @@ export default function DashboardLayout({
                         <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{notification.type}</p>
                       </button>
                     )) : (
-                      <p className="rounded-lg bg-transparent p-3 text-sm text-slate-600">Aucune notification recente.</p>
+                      <p className="rounded-lg bg-transparent p-3 text-sm text-slate-600">{labels.dashboard.noNotifications}</p>
                     )}
                   </div>
                   <Link
@@ -336,7 +336,7 @@ export default function DashboardLayout({
                     className="mt-3 flex items-center justify-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700"
                     onClick={() => setNotificationsOpen(false)}
                   >
-                    Gerer mes preferences
+                    {labels.dashboard.managePreferences}
                   </Link>
                 </div>
               ) : null}
