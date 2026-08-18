@@ -29,6 +29,7 @@ class EmployeeCreatePersistsPasswordHashTest extends TestCase
 
     public function test_create_employee_with_password_persists_hash_and_allows_login(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create();
 
         /** @var Employee $principal */
@@ -69,6 +70,7 @@ class EmployeeCreatePersistsPasswordHashTest extends TestCase
     {
         Mail::fake();
 
+        /** @var Company $company */
         $company = Company::factory()->create();
 
         /** @var Employee $principal */

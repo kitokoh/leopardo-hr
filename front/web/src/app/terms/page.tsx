@@ -5,7 +5,7 @@ import { SITE_URL } from '@/lib/site-url'
 export const metadata: Metadata = {
   title: 'Conditions generales d utilisation | Leopardo RH',
   description:
-    'Conditions générales d'utilisation multilingues de Leopardo RH pour les clients, administrateurs, managers, employés et intégrateurs.',
+    "Conditions générales d'utilisation multilingues de Leopardo RH pour les clients, administrateurs, managers, employés et intégrateurs.",
   alternates: {
     // #3807 : canonical absolu exigé par Next.js (relatif = canonical invalide).
     canonical: `${SITE_URL}/terms`,
