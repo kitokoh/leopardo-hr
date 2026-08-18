@@ -201,6 +201,11 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->whereNumber('supportTicket');
         Route::post('/support-tickets/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->whereNumber('supportTicket');
 
+        // DEPRECATED (#4929) : endpoint de « go-live readiness » calculé (8
+        // étapes auto-détectées) — distinct de la checklist pilotée par la
+        // table onboarding_steps. Le contrat canonique consommé par web et
+        // mobile est GET /onboarding-setup/checklist + PATCH …/{stepKey}/
+        // complete|skip. Cet endpoint est conservé pour les clients existants.
         Route::get('/onboarding/checklist', OnboardingChecklistController::class);
     });
 

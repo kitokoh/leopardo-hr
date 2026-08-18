@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Building2,
@@ -10,12 +10,14 @@ import {
   Fingerprint,
   Loader2,
   MapPin,
+  QrCode,
   ScanLine,
   SkipForward,
   Users,
   Wallet,
   X,
 } from 'lucide-react';
+import QRCode from 'qrcode';
 import { apiFetch } from '@/lib/api-client';
 import { useVitrineLocale } from '@/modules/vitrine/lib/vitrine-locale';
 import { getCopy, normalizeLocale, storeAuthSession, type StoredAuthUser } from '@/lib/i18n';
@@ -81,6 +83,11 @@ export function OnboardingWizard({
   const [loading, setLoading] = useState(false);
   const [actionKey, setActionKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [employeesCount, setEmployeesCount] = useState<number | null>(null);
+  const [qrData, setQrData] = useState<string | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState<string | null>(null);
+  const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const loadChecklist = useCallback(async () => {
     setError(null);
@@ -98,9 +105,63 @@ export function OnboardingWizard({
     }
   }, [onboarding.errorGeneric]);
 
+  // Quick Start (#4939) : taille de l'entreprise lue depuis le moteur calculé
+  // (GET /onboarding/checklist → data.steps[].metrics.employees_count). Signal
+  // non bloquant : si l'endpoint échoue, le wizard reste complet et fonctionnel.
+  const loadCompanySize = useCallback(async () => {
+    try {
+      const response = await apiFetch('/onboarding/checklist');
+      const payload = (await response.json()) as {
+        data?: { steps?: Array<{ key?: string; metrics?: { employees_count?: number } }> };
+      };
+      const step = payload.data?.steps?.find((s) => s.key === 'employees_added');
+      if (typeof step?.metrics?.employees_count === 'number') {
+        setEmployeesCount(step.metrics.employees_count);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
   useEffect(() => {
     void loadChecklist();
-  }, [loadChecklist]);
+    void loadCompanySize();
+  }, [loadChecklist, loadCompanySize]);
+
+  useEffect(() => {
+    if (qrData && qrCanvasRef.current) {
+      QRCode.toCanvas(qrCanvasRef.current, qrData, { width: 180, margin: 1 }, (err) => {
+        if (err) {
+          console.error(err);
+          setQrError(onboarding.qrError);
+        }
+      });
+    }
+  }, [qrData, onboarding.qrError]);
+
+  const fetchQr = async () => {
+    if (qrData) {
+      setQrData(null);
+      return;
+    }
+    setQrLoading(true);
+    setQrError(null);
+    try {
+      // #4938 — QR d'onboarding de l'entreprise (manager principal/rh requis, 403 sinon).
+      const response = await apiFetch('/company/qr-onboarding');
+      const payload = (await response.json()) as { data?: { token?: string } };
+      if (payload.data?.token) {
+        setQrData(payload.data.token);
+      } else {
+        setQrError(onboarding.qrError);
+      }
+    } catch (e) {
+      console.error(e);
+      setQrError(e instanceof Error ? e.message : onboarding.qrError);
+    } finally {
+      setQrLoading(false);
+    }
+  };
 
   const pendingSteps = useMemo(
     () => (steps ?? []).filter((s) => s.status === 'pending'),
@@ -186,6 +247,10 @@ export function OnboardingWizard({
     .replace('{current}', String(done ? (steps?.length ?? 0) : (steps?.length ?? 0) - pendingSteps.length + 1))
     .replace('{total}', String(steps?.length ?? 0));
 
+  // Quick Start (#4939) : < 15 employés → expérience raccourcie (badge + skip renforcé).
+  const quickStart = employeesCount !== null && employeesCount < 15;
+  const isFirstCheckin = currentStep?.step_key === 'first_checkin';
+
   if (!isOpen) return null;
 
   return (
@@ -209,11 +274,18 @@ export function OnboardingWizard({
           </button>
 
           <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 text-white">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between gap-2">
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
                 {badgeText}
               </span>
-              <span className="text-xs font-semibold text-emerald-50">{progress}%</span>
+              <span className="flex items-center gap-2">
+                {quickStart && (
+                  <span className="rounded-full bg-amber-400/90 px-3 py-1 text-xs font-black uppercase tracking-wider text-amber-950">
+                    {onboarding.quickStart}
+                  </span>
+                )}
+                <span className="text-xs font-semibold text-emerald-50">{progress}%</span>
+              </span>
             </div>
             <h2 className="text-2xl font-black">
               {done
@@ -284,6 +356,11 @@ export function OnboardingWizard({
                         {onboarding.skip}
                       </span>
                     )}
+                    {quickStart && !isCompleted && !isSkipped && s.required === false && (
+                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-600">
+                        {onboarding.later}
+                      </span>
+                    )}
                   </div>
                 );
               })}
@@ -314,6 +391,39 @@ export function OnboardingWizard({
               </div>
             ) : (
               <div className="mt-8 flex flex-col items-end gap-2">
+                {isFirstCheckin && (
+                  <div className="w-full rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs font-medium text-slate-600">{onboarding.firstCheckinHint}</p>
+                    <button
+                      onClick={() => void fetchQr()}
+                      disabled={qrLoading}
+                      className="mt-3 inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 disabled:opacity-50"
+                    >
+                      {qrLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <QrCode className="h-4 w-4" aria-hidden="true" />
+                      )}
+                      {qrLoading ? onboarding.qrLoading : qrData ? onboarding.qrHide : onboarding.qrShow}
+                    </button>
+                    {qrData && (
+                      <div className="mt-3 flex flex-col items-center gap-2">
+                        <canvas
+                          ref={qrCanvasRef}
+                          role="img"
+                          aria-label={onboarding.qrHint}
+                          className="rounded-xl bg-white p-2 shadow-sm"
+                        />
+                        <p className="text-center text-xs text-slate-500">{onboarding.qrHint}</p>
+                      </div>
+                    )}
+                    {qrError && (
+                      <p role="alert" className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-700">
+                        {qrError}
+                      </p>
+                    )}
+                  </div>
+                )}
                 {currentStep && !currentStep.required && (
                   <button
                     onClick={() => void mutateStep(currentStep, 'skipped')}

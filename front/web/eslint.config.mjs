@@ -71,4 +71,15 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  {
+    // Specs Playwright (PA2-I18N-014 #4945) : mêmes règles assouplies que src
+    // (le code e2e utilise des mocks any + des variables utilitaires).
+    files: ["e2e/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
 ];

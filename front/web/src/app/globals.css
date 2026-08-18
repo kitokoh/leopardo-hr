@@ -28,6 +28,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), "Aptos", "Segoe UI Variable", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-jetbrains-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Domaines Leopardo RH */
   --color-rh: #10b981;
