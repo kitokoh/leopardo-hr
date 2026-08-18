@@ -10,17 +10,17 @@ import 'package:leopardo_core/core/storage/secure_storage.dart';
 import 'package:leopardo_hr/features/auth/data/auth_repository.dart';
 import 'package:leopardo_hr/features/attendance/data/attendance_repository.dart';
 import 'package:leopardo_hr/features/settings/data/settings_repository.dart';
-import 'package:leopardo_hr/features/absences/data/absence_repository.dart';
-import 'package:leopardo_hr/features/salary_advances/data/salary_advance_repository.dart';
-import 'package:leopardo_hr/features/payrolls/data/payroll_repository.dart';
-import 'package:leopardo_hr/features/notifications/data/notification_repository.dart';
-import 'package:leopardo_hr/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_hr/features/cabinet/data/cabinet_repository.dart';
+import 'package:leopardo_core/features/absences/data/absence_repository.dart';
+import 'package:leopardo_core/features/salary_advances/data/salary_advance_repository.dart';
+import 'package:leopardo_core/features/payrolls/data/payroll_repository.dart';
+import 'package:leopardo_core/features/notifications/data/notification_repository.dart';
+import 'package:leopardo_core/features/evaluations/data/evaluation_repository.dart';
+import 'package:leopardo_core/features/cabinet/data/cabinet_repository.dart';
 import 'package:leopardo_hr/features/user_auth/data/user_auth_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
-import 'package:leopardo_hr/features/schedules/data/schedule_repository.dart';
-import 'package:leopardo_hr/features/company_branding/data/company_branding_repository.dart';
+import 'package:leopardo_core/features/schedules/data/schedule_repository.dart';
+import 'package:leopardo_core/features/company_branding/data/company_branding_repository.dart';
 
 final secureStorageProvider = Provider<SecureStorage>((ref) {
   return SecureStorage();

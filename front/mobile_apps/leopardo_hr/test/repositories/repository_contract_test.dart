@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_core/core/api/api_client.dart';
-import 'package:leopardo_hr/features/absences/data/absence_repository.dart';
+import 'package:leopardo_core/features/absences/data/absence_repository.dart';
 import 'package:leopardo_hr/features/contracts/data/contract_repository.dart';
-import 'package:leopardo_hr/features/evaluations/data/evaluation_repository.dart';
-import 'package:leopardo_hr/features/notifications/data/notification_repository.dart';
+import 'package:leopardo_core/features/evaluations/data/evaluation_repository.dart';
+import 'package:leopardo_core/features/notifications/data/notification_repository.dart';
 import 'package:leopardo_hr/features/onboarding/data/onboarding_repository.dart';
-import 'package:leopardo_hr/features/payrolls/data/payroll_repository.dart';
-import 'package:leopardo_hr/features/salary_advances/data/salary_advance_repository.dart';
-import 'package:leopardo_hr/features/team/data/employee_repository.dart';
+import 'package:leopardo_core/features/payrolls/data/payroll_repository.dart';
+import 'package:leopardo_core/features/salary_advances/data/salary_advance_repository.dart';
+import 'package:leopardo_core/features/team/data/employee_repository.dart';
 
 import '../helpers/mobile_test_harness.dart';
 

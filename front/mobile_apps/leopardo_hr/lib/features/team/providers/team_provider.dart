@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:leopardo_hr/core/providers/core_providers.dart';
-import 'package:leopardo_hr/features/team/data/employee_repository.dart';
+import 'package:leopardo_core/features/team/data/employee_repository.dart';
 import 'package:leopardo_core/models/employee.dart';
 
 final employeeRepositoryProvider = Provider<EmployeeRepository>((ref) {

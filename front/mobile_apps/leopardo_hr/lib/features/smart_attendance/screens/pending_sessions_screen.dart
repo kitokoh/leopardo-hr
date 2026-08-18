@@ -6,7 +6,7 @@ import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/empty_state.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
-import 'package:leopardo_hr/features/smart_attendance/data/models/geo_attendance_session.dart';
+import 'package:leopardo_core/features/smart_attendance/data/models/geo_attendance_session.dart';
 import 'package:leopardo_hr/features/smart_attendance/providers/smart_attendance_provider.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
