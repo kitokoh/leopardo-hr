@@ -39,6 +39,7 @@ class EmployeeSensitiveFillableTest extends TestCase
             'slug' => 'sensitive-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            'city' => 'Alger', // NOT NULL — durcissement #3677 : fixtures hors mass-assign
         ]);
 
         $employee = new Employee([
@@ -68,6 +69,7 @@ class EmployeeSensitiveFillableTest extends TestCase
             'slug' => 'explicit-qa',
             'sector' => 'tech',
             'country' => 'DZ',
+            'city' => 'Alger', // NOT NULL
         ]);
 
         $employee = Employee::query()->create([
