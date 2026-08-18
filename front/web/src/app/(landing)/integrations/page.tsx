@@ -42,7 +42,7 @@ const integrationsByLocale: Record<string, { title: string; subtitle: string; ba
     categories: ['Tous', 'Pointage', 'Paiement', 'Calendrier', 'API', 'Sécurité'],
     integrations: [
       { icon: <Fingerprint className="w-6 h-6" />, name: 'ZKTeco', description: 'Pointeuses biometriques TCP/IP. Synchronisation automatique des pointages.', status: 'available', category: 'Pointage' },
-      { icon: <CreditCard className="w-6 h-6" />, name: 'Stripe', description: 'Paiement SaaS par carte bancaire. Abonnements et factures automatises.', status: 'available', category: 'Paiement' },
+      { icon: <CreditCard className="w-6 h-6" />, name: 'Stripe', description: 'Paiement SaaS par carte bancaire. Abonnements et factures automatisés.', status: 'available', category: 'Paiement' },
       { icon: <CreditCard className="w-6 h-6" />, name: 'Chargily', description: 'Paiement en ligne pour l\'Algerie. CIB, EDAHABIA et virement bancaire.', status: 'available', category: 'Paiement' },
       { icon: <CalendarClock className="w-6 h-6" />, name: 'Google Calendar', description: 'Synchronisation des congés et formations avec Google Calendar.', status: 'available', category: 'Calendrier' },
       { icon: <CalendarClock className="w-6 h-6" />, name: 'Outlook Calendar', description: 'Synchronisation des événements RH avec Microsoft Outlook.', status: 'available', category: 'Calendrier' },

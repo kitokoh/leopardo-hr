@@ -91,7 +91,7 @@ export default function ContractsPage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      setDownloadError('Telechargement impossible. Reessayez plus tard.');
+      setDownloadError('Téléchargement impossible. Réessayez plus tard.');
     }
   };
 

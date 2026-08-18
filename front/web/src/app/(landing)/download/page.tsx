@@ -66,7 +66,7 @@ const copy: Record<AppLocale, {
     ctaNote: 'Aucun installateur public n\'est encore disponible. Notre équipe vous contacte pour préparer votre installation.',
     features: [
       { icon: <Fingerprint className="w-6 h-6" />, title: 'Synchronisation ZKTeco', description: 'Connexion directe aux bornes biometriques ZKTeco. Push/pull des pointages en temps reel via TCP/IP ou USB.' },
-      { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez a travailler sans internet. Les pointages sont stockes localement et synchronises automatiquement au retour du reseau.' },
+      { icon: <WifiOff className="w-6 h-6" />, title: 'Mode hors-ligne', description: 'Continuez à travailler sans internet. Les pointages sont stockés localement et synchronisés automatiquement au retour du réseau.' },
       { icon: <Monitor className="w-6 h-6" />, title: 'Supervision multi-sites', description: "Surveillez plusieurs sites depuis un seul poste. Alertes en temps reel pour les anomalies d'acces." },
       { icon: <Shield className="w-6 h-6" />, title: 'Securise et chiffre', description: "Communication chiffree TLS 1.3. Les donnees biometriques restent sur le terminal, seuls les hash d'identification transitent." },
       { icon: <Zap className="w-6 h-6" />, title: 'Accès pilote accompagné', description: "Notre équipe prépare l’installation avec vous ; aucun installateur MSI public n’est encore distribué." },
@@ -83,7 +83,7 @@ const copy: Record<AppLocale, {
       title: 'Comment ca marche',
       steps: [
         { step: '01', title: 'Installez', description: 'Telechargez et lancez l\'installateur. Configuration automatique en 2 minutes.' },
-        { step: '02', title: 'Connectez', description: 'Entrez l\'adresse IP de vos bornes ZKTeco. Detection automatique sur le reseau local.' },
+        { step: '02', title: 'Connectez', description: 'Entrez l\'adresse IP de vos bornes ZKTeco. Détection automatique sur le réseau local.' },
         { step: '03', title: 'Synchronisez', description: 'Les pointages remontent automatiquement vers Leopardo RH dans le cloud. Temps reel ou par batch.' },
       ],
     },

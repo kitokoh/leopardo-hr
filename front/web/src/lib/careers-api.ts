@@ -204,7 +204,7 @@ export async function submitPublicApplication(
   const message =
     payload && typeof payload === 'object' && 'message' in payload
       ? String((payload as Record<string, unknown>).message)
-      : 'Une erreur est survenue. Merci de reessayer.';
+      : 'Une erreur est survenue. Merci de réessayer.';
 
   return { success: false, status: response.status, message };
 }

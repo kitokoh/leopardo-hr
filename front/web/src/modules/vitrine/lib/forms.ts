@@ -129,7 +129,7 @@ export async function submitSignupForm(
       success: false,
       message:
         error instanceof Error && error.name === 'AbortError'
-          ? 'Le serveur met du temps a repondre. Veuillez reessayer dans quelques instants.'
+          ? 'Le serveur met du temps à répondre. Veuillez réessayer dans quelques instants.'
           : "Erreur lors de la demande d'essai",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
@@ -211,7 +211,7 @@ export async function submitVerifyForm(
     safeLog("Verify form error:", error);
     return {
       success: false,
-      message: "Erreur lors de la verification",
+      message: "Erreur lors de la vérification",
       error: error instanceof Error ? error.message : "Erreur inconnue",
     };
   }

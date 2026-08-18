@@ -107,7 +107,7 @@ export const demoFormSchema = z.object({
       const selectedDate = new Date(date);
       const today = new Date();
       return selectedDate > today;
-    }, "La date doit etre dans le futur")
+    }, "La date doit être dans le futur")
     .optional()
     .or(z.literal("")),
 });

@@ -428,7 +428,7 @@ export const pageMetadata = {
   careers: {
     title: "Carrieres | Rejoignez l'Équipe Leopardo RH",
     description:
-      "Découvrez nos offres d'emploi et rejoignez l'équipe qui construit la plateforme RH de reference pour les PME.",
+      "Découvrez nos offres d'emploi et rejoignez l'équipe qui construit la plateforme RH de référence pour les PME.",
     keywords: [
       "carrieres Leopardo RH",
       "emploi logiciel RH",
@@ -468,7 +468,7 @@ export const pageMetadata = {
   checkout: {
     title: "Choisissez votre Plan | Abonnement Leopardo RH",
     description:
-      "Selectionnez et souscrivez au plan Leopardo RH adapte a votre entreprise : Pilot, Operations ou Enterprise.",
+      "Selectionnez et souscrivez au plan Leopardo RH adapté à votre entreprise : Pilot, Operations ou Enterprise.",
     keywords: [
       "abonnement Leopardo RH",
       "souscription plan RH",

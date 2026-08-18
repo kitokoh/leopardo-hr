@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Trop de tentatives. Veuillez reessayer plus tard.',
+          message: 'Trop de tentatives. Veuillez réessayer plus tard.',
           error: 'RATE_LIMIT_EXCEEDED',
         },
         { status: 429 }
