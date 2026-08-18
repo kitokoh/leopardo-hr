@@ -25,18 +25,19 @@
 
 ## 📊 Project Stats
 
-> Mesuré sur `main`, 2026-08-17 (revue PM) — méthodologie : voir [docs/audits/AUDIT.md](docs/audits/AUDIT.md).
+> Measured on `main`, 2026-08-17 (audit doc 2026-08-17 — `find docs -name '*.md'` = 685, `git rev-list --count HEAD` = 5 216, `ls .github/workflows/*.yml` = 41).
+> ⚠️ Ces chiffres vivants sont à re-mesurer à chaque release (ils ont été corrigés après des mois d'écart).
 
 | Metric | Value |
 | :--- | :--- |
 | 🧪 **Backend tests passing** | **1 917** (dernier run complet 2026-08-15 · 462 fichiers `*Test.php` sur main au 17/08) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
 | 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
-| 🔌 **API endpoints** (OpenAPI spec) | **517** (paths dans `api/openapi.yaml`) |
-| 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package (`leopardo_core`) |
-| ⚙️ **CI/CD pipelines** | **40** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
+| 🔌 **API endpoints** (OpenAPI spec) | **424** |
+| 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
+| ⚙️ **CI/CD pipelines** | **41** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
 | 📚 **Documentation files** | **685** (architecture, security, specs, runbooks, GTM) |
-| 🕒 **Commit history** | **5 206 commits** since Sept 2025 |
+| 🕒 **Commit history** | **5 216 commits** since March 2026 |
 | 🌍 **Regions covered** (payroll) | 🇩🇿 🇲🇦 🇹🇳 🇫🇷 🇹🇷 🇨🇲 🇬🇦 🇨🇬 🇨🇮 🇸🇳 🇧🇫 🇲🇱 (+ 19 codes au catalogue, voir `docs/payroll/`) |
 | 📦 **License** | MIT — open source, self-hostable or SaaS |
 

@@ -35,11 +35,23 @@ runs:
       id: gate
       uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
       with:
+        # Audit CodeQL #30 (2026-08-17) : les valeurs transitent par les
+        # inputs de l'action et sont lues au runtime (core.getInput) — plus
+        # AUCUNE interpolation ${{ }} dans le source du script (le vecteur
+        # « cache poisoning / code injection » signalé par CodeQL disparaît).
+        sha: ${{ inputs.sha }}
+        required_workflows: '${{ inputs.required_workflows }}'
+        web_changed: ${{ inputs.web_changed }}
         script: |
-          const EVENT = `${{ github.event_name }}`;
-          const sha = `${{ inputs.sha }}`;
-          const webChanged = `${{ inputs.web_changed }}` === 'true';
-          const REQUIRED_WORKFLOWS = JSON.parse(`${{ inputs.required_workflows }}`);
+          const EVENT = process.env.GITHUB_EVENT_NAME;
+          const shaRaw = core.getInput('sha');
+          if (!/^[0-9a-f]{40}$/.test(shaRaw)) {
+            core.setFailed(`Invalid deployment SHA format: "${shaRaw}" (audit CodeQL #30).`);
+            return;
+          }
+          const sha = shaRaw;
+          const webChanged = core.getInput('web_changed') === 'true';
+          const REQUIRED_WORKFLOWS = JSON.parse(core.getInput('required_workflows'));
           const { owner, repo } = context.repo;
 
           const TESTS_WORKFLOW = 'Tests - Leopardo RH';
