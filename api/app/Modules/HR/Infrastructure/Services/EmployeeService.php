@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
-use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
-use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
 use App\Events\EmployeeArchived;
 use App\Events\EmployeeCreated;
 use App\Events\EmployeeRoleAssigned;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Tenant\Infrastructure\Services\TenantCacheService;
+use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
+use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -68,7 +68,7 @@ class EmployeeService
         // create() without it fails before the subsequent forceFill() can run
         // (#4947). Build the trusted, already-authorized payload explicitly and
         // persist it once; sensitive fields remain outside normal fill().
-        $employee = new Employee();
+        $employee = new Employee;
         $employee->forceFill(array_merge(
             Arr::except($payload, ['role', 'manager_role', 'status', 'company_id', 'salary_base']),
             [
@@ -273,4 +273,3 @@ class EmployeeService
         return is_string($value) && $value !== '' ? $value : null;
     }
 }
-
