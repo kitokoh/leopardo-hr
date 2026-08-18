@@ -32,7 +32,7 @@
 | :--- | :--- |
 | 🧪 **Backend tests passing** | **1 917** (dernier run complet 2026-08-15 · 462 fichiers `*Test.php` sur main au 17/08) |
 | 📈 **Backend code coverage** | **71,11 %** (blocking CI gate ≥ 65 %) |
-| 🧩 **DDD business modules** | **19** + shared core (Auth, Tenant, Feature) |
+| 🧩 **DDD business modules** | **18** + shared core (Auth, Tenant, Feature) |
 | 🔌 **API endpoints** (OpenAPI spec) | **424** |
 | 📱 **Native mobile apps** (Flutter) | **5** + shared design-system package |
 | ⚙️ **CI/CD pipelines** | **41** (tests, CodeQL, TruffleHog, OWASP ZAP, Lighthouse, coverage gate…) |
