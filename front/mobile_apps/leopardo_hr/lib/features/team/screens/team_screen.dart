@@ -557,7 +557,7 @@ class _EmployeesTab extends ConsumerWidget {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(
-            const SnackBar(content: Text(context.l10n.teamArchiveSuccess)));
+            SnackBar(content: Text(context.l10n.teamArchiveSuccess)));
       }
     } catch (e) {
       if (context.mounted) {
