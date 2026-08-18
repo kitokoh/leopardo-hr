@@ -16,7 +16,7 @@ documentaire de l'arbre de travail (placeholders) :
   `.env.example` historique) — rotation déjà faite (2026-08-10, #1472).
 - **URL PostgreSQL Neon complète** (mot de passe `npg_…`) — commit `70ca415c` (2026-04-14),
   `docs/GESTION_PROJET/RAPPORT_DEPLOIEMENT_RENDER.md` (#1601).
-- **Clés API Google** (`AIzaSyCYauGS…`, `AIzaSyAkWnXd…` — projet Firebase `leopardo-rh`)
+- **Clés API Google** (2 clés, valeurs non citées — convention #1614 — projet Firebase `leopardo-rh`)
   dans 4 × `google-services.json` historiques (#1467).
 
 Toutes ces valeurs réelles ont été **retirées de la totalité de l'historique git** et
