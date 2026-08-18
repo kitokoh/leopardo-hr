@@ -265,7 +265,7 @@ const landingCopy: Record<AppLocale, LandingCopy> = {
       badge: 'Tarifs',
       title: 'Des offres',
       titleHighlight: 'pour lancer vite',
-      subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employes actifs et vos besoins terrain.',
+      subtitle: 'Commencez par un pilote gratuit, puis payez selon vos employés actifs et vos besoins terrain.',
       recommended: 'Recommande',
       currency: 'EUR',
       annualSavings: "Jusqu'à 17% d'économie",

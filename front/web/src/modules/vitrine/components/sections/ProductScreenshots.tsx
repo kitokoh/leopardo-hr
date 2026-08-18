@@ -41,7 +41,7 @@ const screensByLocale: Record<AppLocale, { badge: string; title: string; titleHi
       {
         icon: <Smartphone className="w-6 h-6" />,
         title: 'App Mobile',
-        description: 'Vos employes pointent, consultent leurs bulletins et soumettent leurs demandes depuis leur telephone.',
+        description: 'Vos employés pointent, consultent leurs bulletins et soumettent leurs demandes depuis leur téléphone.',
         features: ['Pointage GPS/biometrique', 'Bulletins de paie', 'Demandes de conges', 'Notifications push'],
         gradient: 'from-violet-500 to-purple-500',
         mockup: 'mobile',
