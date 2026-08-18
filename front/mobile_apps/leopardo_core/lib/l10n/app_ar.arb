@@ -319,6 +319,9 @@
   "dashboardClientRequests": "طلبات العملاء",
   "dashboardTenantsAtRisk": "مستأجرون معرضون للخطر",
   "dashboardPlatformDashboardHint": "متاح في لوحة تحكم المنصة.",
+  "dashboardSearchplaceholder": "بحث...",
+  "dashboardModulesactivesentence": "{active} وحدة نشطة، و{locked} لتفعيلها حسب خطتك.",
+  "dashboardYourcompany": "شركتك",
   "marketingOauthNavTitle": "تسويق OAuth",
   "marketingOauthTitle": "إعدادات OAuth التسويق",
   "marketingOauthSubtitle": "اربط حسابات وسائل التواصل الاجتماعي عبر Ayrshare",
@@ -338,6 +341,8 @@
   "marketingOauthFieldsPlaceholderId": "معرف العميل الخاص بك",
   "marketingOauthFieldsPlaceholderSecret": "سر جديد (اختياري)",
   "marketingOauthFieldsPlaceholderUri": "https://example.com/oauth/callback",
+  "marketingSocialexampleplaceholder": "مثال: Leopardo RH — وسائل التواصل الاجتماعي",
+  "marketingPostcontentplaceholder": "محتوى المنشور...",
   "attendanceSendingToServer": "جار إرسال {label} إلى الخادم...",
   "attendanceRetryAfterFailure": "{label}. حاول مرة أخرى.",
   "holidaysPageTitle": "الأعياد الرسمية حسب البلد",
@@ -905,6 +910,10 @@
   "apiGenericerror": "خطأ :status على :endpoint.",
   "apiInvaliddata": "بيانات غير صالحة.",
   "apiConnectionerror": "خطأ في الاتصال. تحقق من اتصالك بالإنترنت.",
+  "apiLoginInvalidJson": "نص الطلب غير صالح.",
+  "apiLoginTimeout": "يستغرق الخادم وقتاً طويلاً للرد. يرجى المحاولة مرة أخرى بعد قليل.",
+  "apiLoginNetworkError": "تعذر الوصول إلى الخادم.",
+  "apiLoginBackendError": "استجابة خادم غير متوقعة.",
   "settingspageCancel": "إلغاء",
   "settingspageConfirmpassword": "تأكيد كلمة المرور",
   "settingspageCurrentpassword": "كلمة المرور الحالية",
@@ -970,152 +979,18 @@
   "systempageStatsloaderror": "خطأ أثناء تحميل إحصائيات النظام",
   "systempageSubtitle": "مراقبة منصة Leopardo RH وتكوينها وأتمتتها.",
   "systempageTitle": "إدارة النظام",
-  "retry": "إعادة المحاولة",
-  "featureComingSoon": "الميزة قريبًا",
-  "backToHome": "العودة إلى الرئيسية",
-  "pageNotFound": "الصفحة المطلوبة غير موجودة أو فشل التنقل.",
-  "registerCreateAccount": "أنشئ حسابك",
-  "registerFirstName": "الاسم الأول",
-  "registerRequired": "مطلوب",
-  "registerPassword": "كلمة المرور",
-  "registerMinChars": "8 أحرف على الأقل",
-  "registerCreating": "جارٍ إنشاء الحساب...",
-  "registerSubmit": "أنشئ حسابي",
-  "accessDeniedTitle": "تم رفض الوصول",
-  "accessDeniedBody": "لا يملك حسابك دور المدير المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، موارد بشرية…) أو تواصل مع المسؤول.",
-  "accessDeniedLogout": "تسجيل الخروج",
-  "accessDeniedBodyHr": "لا يملك حسابك دور الموارد البشرية المطلوب لهذا التطبيق. استخدم التطبيق المطابق لدورك (موظف، مدير…) أو تواصل مع المسؤول.",
-  "evaluationsTitle": "تقييماتي",
-  "evaluationsEmpty": "لا توجد تقييمات",
-  "evaluationsEmptyHint": "ليس لديك أي تقييم مسجل بعد.",
-  "evaluationPeriod": "الفترة: {period}",
-  "@evaluationPeriod": {
-    "placeholders": {
-      "period": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceOnTime": "في الموعد",
-  "attendanceLate": "متأخر",
-  "attendanceAbsent": "غائب",
-  "attendanceInProgress": "قيد التقدم",
-  "attendanceNoClock": "لا يوجد تسجيل حضور",
-  "attendanceTimeRange": "من {from} إلى {to}",
-  "@attendanceTimeRange": {
-    "placeholders": {
-      "from": {
-        "type": "String"
-      },
-      "to": {
-        "type": "String"
-      }
-    }
-  },
-  "attendanceHourWorked": "ساعة عمل",
-  "attendanceHoursWorked": "ساعات عمل",
-  "attendanceDaySummary": "يوم {date}، الحالة {status}، {range}، {hours}.",
-  "@attendanceDaySummary": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      },
-      "status": {
-        "type": "String"
-      },
-      "range": {
-        "type": "String"
-      },
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionApproved": "تمت الموافقة على الجلسة ✓",
-  "sessionRejected": "تم رفض الجلسة",
-  "pendingSessionsToValidate": "للموافقة",
-  "pendingSessionsUpToDate": "كل شيء محدث",
-  "pendingSessionsEmpty": "لا توجد جلسة GPS بانتظار الموافقة.",
-  "employeeNumber": "الموظف #{id}",
-  "@employeeNumber": {
-    "placeholders": {
-      "id": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionEntryAt": "الدخول: {time}",
-  "@sessionEntryAt": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "sessionsToValidate": "جلسات للموافقة",
-  "errorPrefix": "خطأ: {message}",
-  "@errorPrefix": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
-  "saDashboardTitle": "حضور GPS — لوحة تحكم الفريق",
-  "saDetected": "تم الكشف",
-  "saApproved": "تمت الموافقة",
-  "saRejected": "مرفوضة",
-  "saRecentSessions": "الجلسات الأخيرة",
-  "saForced": "مفروض",
-  "saPresenceInProgress": "حضور قيد التقدم منذ {time}",
-  "@saPresenceInProgress": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "saGpsZoneNotConfigured": "لم يتم إعداد منطقة GPS لشركتك بعد.",
-  "saDisableAutoGps": "تعطيل GPS التلقائي",
-  "saStatusApproved": "تمت الموافقة",
-  "saStatusDetected": "تم الكشف",
-  "saStatusRejected": "مرفوضة",
-  "saStatusCancelled": "ملغاة",
-  "saStatusPending": "قيد التحقق",
-  "saEnableAutoGps": "تفعيل GPS التلقائي",
-  "attendanceOvertime": "ساعات إضافية",
-  "approvalsUpToDate": "كل شيء محدث",
-  "approvalsEmpty": "لا توجد موافقات معلقة.",
-  "saConfigLoadError": "تعذر تحميل الإعدادات.\n{error}",
-  "@saConfigLoadError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
-  "ampAutoDetectDesc": "يتم اكتشاف حضورك تلقائيًا عند دخولك منطقة الشركة. لا حاجة لأي إجراء منك.",
-  "ampRecommended": "موصى به",
-  "ampQrScanDesc": "امسح رمز QR المعروض عند مدخل الشركة لتسجيل دخولك وخروجك.",
-  "ampManualDesc": "سجل يدويًا بالضغط على زرّي الوصول والمغادرة في شاشة الحضور.",
-  "ampSaveError": "تعذر حفظ تفضيلاتك. تحقق من اتصالك.",
-  "ampTitle": "اختر كيف تريد تسجيل حضورك كل يوم.",
-  "ampModeTitle": "وضع التسجيل",
-  "back": "رجوع",
-  "refresh": "تحديث",
-  "saSessionsLoadError": "تعذر تحميل جلسات GPS. تحقق من اتصالك.",
-  "saStartMonitoringError": "تعذر بدء مراقبة GPS. تحقق من أذونات الموقع وأعد المحاولة.",
-  "shellTeam": "الفريق",
-  "shellSettings": "الإعدادات",
-  "homeCompleteOnboarding": "إكمال تأهيلي",
-  "homeOnboardingHint": "هيئ مساحة عملك في بضع خطوات.",
-  "welcomeMyTeam": "فريقي",
-  "welcomePresences": "الحضور",
-  "welcomeTasks": "المهام",
-  "welcomeLeaves": "الإجازات",
-  "monthlySummaryLoading": "جارٍ تحميل الملخص الشهري...",
-  "orgChartEmpty": "سيتوفر الهيكل التنظيمي بمجرد إعداد الموظفين.",
-  "orgChartCollapse": "طي",
-  "orgChartExpand": "توسيع",
-  "errorUnexpected": "حدث خطأ"
+  "billingCancelSubscriptionConfirm": "هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.",
+  "billingNoActivePeriod": "لا توجد فترة نشطة",
+  "billingNoActiveSubscription": "لا يوجد اشتراك نشط",
+  "billingPeriodLabel": "الفترة",
+  "billingCheckoutSandboxMessage": "دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.",
+  "billingCheckoutUnavailable": "الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.",
+  "billingCheckoutFailed": "تعذر إنشاء جلسة الدفع.",
+  "contractsListSubtitle": "إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.",
+  "contractsSearchplaceholder": "ابحث عن موظف أو نوع عقد...",
+  "contractsAllstatuses": "كل الحالات",
+  "trainingTitleplaceholder": "العنوان *",
+  "trainingDurationplaceholder": "المدة (ساعة)",
+  "trainingMaxparticipantsplaceholder": "الحد الأقصى للمشاركين",
+  "trainingOnline": "عبر الإنترنت"
 }
