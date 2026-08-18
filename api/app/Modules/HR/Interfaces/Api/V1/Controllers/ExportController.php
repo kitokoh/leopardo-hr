@@ -241,7 +241,7 @@ class ExportController extends Controller
             'created_at',
         ]);
 
-        return $this->exportResponse($request, $records, 'vehicles_export');
+        return $this->exportResponse($request, $records, 'vehicles_export', 'vehicles');
     }
 
     public function history(Request $request): JsonResponse
@@ -455,8 +455,12 @@ class ExportController extends Controller
     /**
      * @param  Collection<int, \stdClass>  $records
      */
-    private function exportResponse(Request $request, Collection $records, string $filenamePrefix): JsonResponse
+    private function exportResponse(Request $request, Collection $records, string $filenamePrefix, ?string $type = null): JsonResponse
     {
+        // Le type d'historisation (#2199) est distinct du préfixe de fichier :
+        // convention établie `employees` → `employees_export_*.csv` (#5034).
+        $type ??= $filenamePrefix;
+
         $validated = $request->validate([
             'format' => 'nullable|in:json,csv,xlsx',
         ]);
@@ -467,7 +471,7 @@ class ExportController extends Controller
         $format = $validated['format'] ?? 'json';
         if ($format === 'csv' || $format === 'xlsx') {
             $filename = $filenamePrefix.'_'.now()->format('Y-m-d').'.csv';
-            $this->recordExport($request, $user, $filenamePrefix, 'csv', $records->count(), $filename);
+            $this->recordExport($request, $user, $type, 'csv', $records->count(), $filename);
 
             return response()->json([
                 'data' => [
@@ -479,7 +483,7 @@ class ExportController extends Controller
             ]);
         }
 
-        $this->recordExport($request, $user, $filenamePrefix, 'json', $records->count());
+        $this->recordExport($request, $user, $type, 'json', $records->count());
 
         return response()->json([
             'data' => [
