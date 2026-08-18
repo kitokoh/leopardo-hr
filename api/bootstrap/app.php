@@ -45,6 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('billing:check-overdue')->daily();
         $schedule->command('billing:generate-invoices')->monthlyOn(1, '03:00');
         $schedule->command('monitor:slow-queries --threshold=500')->everyFifteenMinutes();
+        // Issue #4948 : trial provisionings bloqués (worker de queue jamais
+        // exécuté) → fail-loud au lieu d'un pending silencieux.
+        $schedule->command('trial-provisionings:sweep')->everyFifteenMinutes();
         // Plan 64 — Auto-close attendance logs without check-out after 12h
         $schedule->command('attendance:auto-close')->hourly();
         // PA2-PAY-012 — Nightly progressive payroll pre-calculation

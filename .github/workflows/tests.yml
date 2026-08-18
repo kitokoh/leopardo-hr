@@ -487,12 +487,19 @@ jobs:
           DB_DATABASE: leopardo_test
           DB_SEARCH_PATH: public,shared_tenants
         run: |
+          set -o pipefail
           mkdir -p storage/test-results storage/coverage-html
           # Issue #4695 : parallélisé comme le job backend-tests (paratest
           # fusionne les rapports de couverture des workers).
           php artisan test --parallel --processes=4 \
             --coverage-clover=storage/test-results/clover.xml \
-            --coverage-html=storage/coverage-html
+            --coverage-html=storage/coverage-html 2>&1 | tee storage/test-results/backend-test-output.txt
+          test_exit=${PIPESTATUS[0]}
+          {
+            echo "Backend coverage test exit code: ${test_exit}"
+            grep -E -m 1 'SQLSTATE\\[[0-9A-Z]+\\]|FAILURES!|ERRORS!|There were [0-9]+ errors' storage/test-results/backend-test-output.txt || true
+          } | tee storage/test-results/backend-causal-error.txt
+          exit "${test_exit}"
 
       - name: Build backend coverage summary
         if: always()
@@ -581,6 +588,8 @@ jobs:
             api/storage/test-results/backend-coverage-summary.md
             api/storage/test-results/coverage-summary.txt
             api/storage/test-results/backend-coverage-threshold.txt
+            api/storage/test-results/backend-test-output.txt
+            api/storage/test-results/backend-causal-error.txt
           if-no-files-found: error
 
       - name: Upload backend coverage reports
