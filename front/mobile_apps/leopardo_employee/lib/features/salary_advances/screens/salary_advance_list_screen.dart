@@ -246,7 +246,7 @@ class _SalaryAdvanceListScreenState
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.salaryAdvanceCancelTitle),
-        content: const Text(
+        content: Text(
           context.l10n.salaryAdvanceCancelBody,
         ),
         actions: [
@@ -284,7 +284,7 @@ class _SalaryAdvanceListScreenState
       context: context,
       builder: (_) => AlertDialog(
         title: Text(context.l10n.salaryAdvanceConfirmReceivedTitle),
-        content: const Text(
+        content: Text(
           context.l10n.salaryAdvanceConfirmReceivedBody,
         ),
         actions: [
