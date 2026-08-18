@@ -699,7 +699,7 @@ class _SalaryAdvanceRequestSheetState
       if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(context.l10n.salaryAdvanceSubmitted)),
+        SnackBar(content: Text(context.l10n.salaryAdvanceSubmitted)),
       );
     } catch (e) {
       if (!context.mounted) return;
