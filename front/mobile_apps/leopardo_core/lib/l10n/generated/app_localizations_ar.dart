@@ -3369,4 +3369,157 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.';
+
+  @override
+  String get absencesApprove => 'موافقة';
+  @override
+  String get absencesApproveBody => 'سينتقل الطلب إلى حالة موافَق عليها وسيتم إشعار الموظف.';
+  @override
+  String get absencesApproveTitle => 'الموافقة على هذا الغياب؟';
+  @override
+  String get absencesApprovedSnack => 'تمت الموافقة على الغياب.';
+  @override
+  String get absencesAttachProof => 'إرفاق مستند (اختياري)';
+  @override
+  String get absencesBalancesLoading => 'جارٍ تحميل الأرصدة';
+  @override
+  String get absencesCancel => 'إلغاء';
+  @override
+  String get absencesCancelBody => 'ستتم إزالة الطلب المعلق وسيرى قسم الموارد البشرية الحالة ملغاة.';
+  @override
+  String get absencesCancelRequest => 'إلغاء الطلب';
+  @override
+  String get absencesCancelTitle => 'إلغاء هذا الطلب؟';
+  @override
+  String get absencesCancelledSnack => 'تم إلغاء طلب الغياب.';
+  @override
+  String get absencesCompanyLabel => 'الشركة: ';
+  @override
+  String get absencesCurrentCompany => 'الشركة الحالية';
+  @override
+  String get absencesDateMissing => 'لم يُحدد تاريخ الطلب';
+  @override
+  String get absencesDaysAvailable => ' أيام متاحة';
+  @override
+  String get absencesEmployeeLabel => 'موظف';
+  @override
+  String get absencesEmptyHint => 'اطلب غيابًا من الزر الرئيسي، ثم تابع قرار الموارد البشرية هنا.';
+  @override
+  String get absencesEmptyTitle => 'لا توجد غيابات';
+  @override
+  String get absencesEnd => 'النهاية';
+  @override
+  String get absencesFailure => 'خطأ: ';
+  @override
+  String get absencesKeep => 'إبقاء';
+  @override
+  String get absencesLoading => 'جارٍ تحميل الغيابات';
+  @override
+  String get absencesNewAbsence => 'غياب جديد';
+  @override
+  String get absencesNewAbsenceHint => 'اختر نوع الرصيد والفترة لإرسالها إلى الموارد البشرية.';
+  @override
+  String get absencesNoTypeAvailable => 'لا يوجد نوع غياب متاح لهذا الحساب. اتصل بالموارد البشرية لتهيئة الأرصدة.';
+  @override
+  String get absencesProofAttached => 'تم إرفاق المستند';
+  @override
+  String get absencesProofDownloaded => 'تم تنزيل المستند: ';
+  @override
+  String get absencesReason => 'السبب';
+  @override
+  String get absencesReasonLabel => 'السبب: ';
+  @override
+  String get absencesReasonMissing => 'لم يُذكر السبب';
+  @override
+  String get absencesReasonNotProvided => 'غير مذكور';
+  @override
+  String get absencesReasonhint => 'مثال: موعد طبي، إجازة عائلية...';
+  @override
+  String get absencesReasonrequired => 'السبب مطلوب';
+  @override
+  String get absencesReject => 'رفض';
+  @override
+  String get absencesRejectHelper => 'سيكون السبب ظاهرًا للموظف.';
+  @override
+  String get absencesRejectTitle => 'رفض الغياب';
+  @override
+  String get absencesRejectedSnack => 'تم رفض الغياب.';
+  @override
+  String get absencesRequest => 'طلب';
+  @override
+  String get absencesRequestLabel => 'الطلب: ';
+  @override
+  String get absencesRequesterLabel => 'مقدم الطلب: ';
+  @override
+  String get absencesStart => 'البداية';
+  @override
+  String get absencesStatusApproved => 'موافَق عليها';
+  @override
+  String get absencesStatusCancelled => 'ملغاة';
+  @override
+  String get absencesStatusPending => 'قيد الانتظار';
+  @override
+  String get absencesStatusRejected => 'مرفوضة';
+  @override
+  String get absencesSubmitToHr => 'إرسال إلى الموارد البشرية';
+  @override
+  String get absencesSubmittedSnack => 'تم إرسال طلب الغياب إلى الموارد البشرية.';
+  @override
+  String get absencesSubtitle => 'الطلبات والأرصدة وقرارات الموارد البشرية';
+  @override
+  String get absencesTitle => 'غياباتي';
+  @override
+  String get absencesType => 'النوع';
+  @override
+  String get absencesTypeFallback => 'غياب';
+  @override
+  String get absencesTypeRequired => 'نوع الغياب مطلوب';
+  @override
+  String get absencesViewProof => 'عرض المستند';
+  @override
+  String get apiLoginBackendError => 'استجابة خادم غير متوقعة.';
+  @override
+  String get apiLoginInvalidJson => 'نص الطلب غير صالح.';
+  @override
+  String get apiLoginNetworkError => 'تعذر الوصول إلى الخادم.';
+  @override
+  String get apiLoginTimeout => 'يستغرق الخادم وقتاً طويلاً للرد. يرجى المحاولة مرة أخرى بعد قليل.';
+  @override
+  String get billingCancelSubscriptionConfirm => 'هل تريد إلغاء اشتراكك؟ ستفقد الوصول إلى الوحدات المميزة في نهاية الفترة الحالية.';
+  @override
+  String get billingCheckoutFailed => 'تعذر إنشاء جلسة الدفع.';
+  @override
+  String get billingCheckoutSandboxMessage => 'دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.';
+  @override
+  String get billingCheckoutUnavailable => 'الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.';
+  @override
+  String get billingNoActivePeriod => 'لا توجد فترة نشطة';
+  @override
+  String get billingNoActiveSubscription => 'لا يوجد اشتراك نشط';
+  @override
+  String get billingPeriodLabel => 'الفترة';
+  @override
+  String get contractsAllstatuses => 'كل الحالات';
+  @override
+  String get contractsListSubtitle => 'إدارة عقود الموظفين: تتبع الحالات والاستحقاقات وتصدير PDF، مرتبطة مباشرة بواجهة برمجة تطبيقات الموارد البشرية.';
+  @override
+  String get contractsSearchplaceholder => 'ابحث عن موظف أو نوع عقد...';
+  @override
+  String get dashboardModulesactivesentence => '{active} وحدة نشطة، و{locked} لتفعيلها حسب خطتك.';
+  @override
+  String get dashboardSearchplaceholder => 'بحث...';
+  @override
+  String get dashboardYourcompany => 'شركتك';
+  @override
+  String get marketingPostcontentplaceholder => 'محتوى المنشور...';
+  @override
+  String get marketingSocialexampleplaceholder => 'مثال: Leopardo RH — وسائل التواصل الاجتماعي';
+  @override
+  String get trainingDurationplaceholder => 'المدة (ساعة)';
+  @override
+  String get trainingMaxparticipantsplaceholder => 'الحد الأقصى للمشاركين';
+  @override
+  String get trainingOnline => 'عبر الإنترنت';
+  @override
+  String get trainingTitleplaceholder => 'العنوان *';
 }

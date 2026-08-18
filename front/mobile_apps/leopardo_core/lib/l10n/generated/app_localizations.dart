@@ -6472,6 +6472,158 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsTr();
   }
 
+  String get absencesApprove;
+
+  String get absencesApproveBody;
+
+  String get absencesApproveTitle;
+
+  String get absencesApprovedSnack;
+
+  String get absencesAttachProof;
+
+  String get absencesBalancesLoading;
+
+  String get absencesCancel;
+
+  String get absencesCancelBody;
+
+  String get absencesCancelRequest;
+
+  String get absencesCancelTitle;
+
+  String get absencesCancelledSnack;
+
+  String get absencesCompanyLabel;
+
+  String get absencesCurrentCompany;
+
+  String get absencesDateMissing;
+
+  String get absencesDaysAvailable;
+
+  String get absencesEmployeeLabel;
+
+  String get absencesEmptyHint;
+
+  String get absencesEmptyTitle;
+
+  String get absencesEnd;
+
+  String get absencesFailure;
+
+  String get absencesKeep;
+
+  String get absencesLoading;
+
+  String get absencesNewAbsence;
+
+  String get absencesNewAbsenceHint;
+
+  String get absencesNoTypeAvailable;
+
+  String get absencesProofAttached;
+
+  String get absencesProofDownloaded;
+
+  String get absencesReason;
+
+  String get absencesReasonLabel;
+
+  String get absencesReasonMissing;
+
+  String get absencesReasonNotProvided;
+
+  String get absencesReasonhint;
+
+  String get absencesReasonrequired;
+
+  String get absencesReject;
+
+  String get absencesRejectHelper;
+
+  String get absencesRejectTitle;
+
+  String get absencesRejectedSnack;
+
+  String get absencesRequest;
+
+  String get absencesRequestLabel;
+
+  String get absencesRequesterLabel;
+
+  String get absencesStart;
+
+  String get absencesStatusApproved;
+
+  String get absencesStatusCancelled;
+
+  String get absencesStatusPending;
+
+  String get absencesStatusRejected;
+
+  String get absencesSubmitToHr;
+
+  String get absencesSubmittedSnack;
+
+  String get absencesSubtitle;
+
+  String get absencesTitle;
+
+  String get absencesType;
+
+  String get absencesTypeFallback;
+
+  String get absencesTypeRequired;
+
+  String get absencesViewProof;
+
+  String get apiLoginBackendError;
+
+  String get apiLoginInvalidJson;
+
+  String get apiLoginNetworkError;
+
+  String get apiLoginTimeout;
+
+  String get billingCancelSubscriptionConfirm;
+
+  String get billingCheckoutFailed;
+
+  String get billingCheckoutSandboxMessage;
+
+  String get billingCheckoutUnavailable;
+
+  String get billingNoActivePeriod;
+
+  String get billingNoActiveSubscription;
+
+  String get billingPeriodLabel;
+
+  String get contractsAllstatuses;
+
+  String get contractsListSubtitle;
+
+  String get contractsSearchplaceholder;
+
+  String get dashboardModulesactivesentence;
+
+  String get dashboardSearchplaceholder;
+
+  String get dashboardYourcompany;
+
+  String get marketingPostcontentplaceholder;
+
+  String get marketingSocialexampleplaceholder;
+
+  String get trainingDurationplaceholder;
+
+  String get trainingMaxparticipantsplaceholder;
+
+  String get trainingOnline;
+
+  String get trainingTitleplaceholder;
+
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
       'an issue with the localizations generation tool. Please file an issue '
