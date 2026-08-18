@@ -132,9 +132,12 @@ class RateLimiterResilienceTest extends TestCase
 
     public function test_rate_limiter_still_returns_429_when_limit_exceeded(): void
     {
-        // Comportement nominal : dépassement du limiter 'auth-sensitive'
-        // (10/min par email+IP) → 429 + Retry-After, sans impact du correctif.
-        $route = '/api/v1/i18n/catalog/fr';
+        // Comportement nominal : dépassement d'une limite → 429 + Retry-After,
+        // sans impact du correctif (fail-open en panne uniquement).
+        // Route throttle:10,1 (anonyme) — déterministe : /api/v1/i18n/catalog
+        // utilise public-registry 60/min (#4501), 11 requêtes n'atteignaient
+        // jamais le quota (#5034 : test cassé pré-existant).
+        $route = '/api/v1/demo-users';
 
         for ($i = 0; $i < 10; $i++) {
             $this->getJson($route)->assertOk();

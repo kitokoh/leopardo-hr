@@ -26,6 +26,12 @@ return [
                 'body' => 'Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible.',
             ],
         ],
+        'leaves' => 'Congés',
+        'my' => [
+            'team' => 'Mon équipe',
+        ],
+        'presences' => 'Présences',
+        'tasks' => 'Tâches',
     ],
     'auth' => [
         'login' => [
