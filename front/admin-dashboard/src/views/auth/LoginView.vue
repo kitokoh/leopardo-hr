@@ -20,7 +20,7 @@
           Leopardo <span class="text-brand-500 not-italic font-black">RH</span>
         </h1>
         <p class="mt-4 text-center text-slate-400 font-bold tracking-[0.15em] uppercase text-xs">
-          Platform Administration • v4.16
+          Platform Administration • v{{ backendVersion || '4.24' }}
         </p>
         <p class="mt-2 text-center text-brand-400 font-black uppercase tracking-widest text-[10px]">
           {{ t('auth.login_subtitle', 'Connectez-vous à votre espace') }}
@@ -192,12 +192,29 @@ import {
 import { useAuthStore } from '@/stores/auth'
 import { useLocaleStore } from '@/stores/locale'
 import { translate } from '@/i18n/index.js'
+import api from '@/services/api'
 import FormField from '@/components/common/FormField.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const localeStore = useLocaleStore()
 const t = (key, fallback = '') => translate(localeStore.current, key, fallback)
+
+// #4953 (audit 2026-08-17) : le label de version était codé en dur (v4.16).
+// Alimenté depuis GET /api/v1/health (champ `version`), fallback statique si
+// l'API est injoignable (login fonctionnel hors-ligne / API down).
+const backendVersion = ref('')
+
+api.get('/health')
+  .then((res) => {
+    const v = res?.data?.version ?? res?.version
+    if (typeof v === 'string' && v.trim() !== '') {
+      backendVersion.value = v.replace(/^v/i, '')
+    }
+  })
+  .catch(() => {
+    // fallback silencieux : le label statique s'affiche.
+  })
 
 const form = reactive({
   email: '',
