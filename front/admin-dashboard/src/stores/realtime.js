@@ -403,12 +403,6 @@ export const useRealtimeStore = defineStore('realtime', () => {
     }
   }
 
-  function emit(event, data) {
-    if (socket.value?.connected) {
-      socket.value.emit(event, data)
-    }
-  }
-
   return {
     // State
     socket,
@@ -431,6 +425,5 @@ export const useRealtimeStore = defineStore('realtime', () => {
     markAllNotificationsAsRead,
     clearNotifications,
     addGlobePoint,
-    emit
   }
 })
