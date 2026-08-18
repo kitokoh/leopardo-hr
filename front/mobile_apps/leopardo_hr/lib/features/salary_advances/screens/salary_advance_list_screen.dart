@@ -476,7 +476,7 @@ class _SalaryAdvanceListScreenState
         advance.status == 'approved';
   }
 
-  static String _getStatusLabel(SalaryAdvance advance) {
+  String _getStatusLabel(SalaryAdvance advance) {
     final validation = advance.validationStatus;
     if (validation == 'manager_approved')
       return context.l10n.salaryStatusValidated;
@@ -484,9 +484,9 @@ class _SalaryAdvanceListScreenState
     if (validation == 'employee_confirmed')
       return context.l10n.salaryStatusReceived;
 
+    if (advance.status == 'active') return context.l10n.salaryStatusActive;
+
     switch (advance.status) {
-      case context.l10n.salaryStatusActive:
-        return context.l10n.salaryStatusActive;
       case 'approved':
         return context.l10n.salaryStatusApproved;
       case 'pending':
@@ -500,7 +500,7 @@ class _SalaryAdvanceListScreenState
     }
   }
 
-  static String _validationLabel(String? status) {
+  String _validationLabel(String? status) {
     switch (status) {
       case 'manager_approved':
         return 'manager valide, paiement a declarer';
@@ -518,9 +518,10 @@ class _SalaryAdvanceListScreenState
     }
   }
 
-  static Color _getStatusColor(String status) {
+  Color _getStatusColor(String status) {
+    if (status == 'active' || status == 'approved') return AppColors.rh;
+
     switch (status) {
-      case context.l10n.salaryStatusActive:
       case 'approved':
         return AppColors.rh;
       case 'pending':
