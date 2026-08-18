@@ -21,11 +21,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('payroll_runs')) {
+        if (! schemaTableExists('payroll_runs')) {
             return;
         }
 
-        if (! Schema::hasColumn('payroll_runs', 'type')) {
+        if (! schemaHasColumn('payroll_runs', 'type')) {
             Schema::table('payroll_runs', function (Blueprint $table): void {
                 $table->string('type', 30)->default('standard'); // standard | regularization
                 $table->unsignedBigInteger('original_run_id')->nullable();
@@ -43,7 +43,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        if (! Schema::hasTable('payroll_runs') || ! Schema::hasColumn('payroll_runs', 'type')) {
+        if (! schemaTableExists('payroll_runs') || ! schemaHasColumn('payroll_runs', 'type')) {
             return;
         }
 

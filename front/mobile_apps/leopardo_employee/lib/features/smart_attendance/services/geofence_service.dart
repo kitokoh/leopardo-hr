@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:leopardo_employee/features/smart_attendance/data/models/smart_attendance_config.dart';
 
 /// Événement de zone détecté par le service de géofencing.
@@ -114,12 +115,7 @@ class GeofenceService {
   /// [lat2], [lng2] : coordonnées du second point (degrés décimaux)
   ///
   /// Retourne la distance en mètres.
-  double distanceMeters(
-    double lat1,
-    double lng1,
-    double lat2,
-    double lng2,
-  ) {
+  double distanceMeters(double lat1, double lng1, double lat2, double lng2) {
     // Conversion degrés → radians
     final phi1 = _toRadians(lat1);
     final phi2 = _toRadians(lat2);
@@ -127,7 +123,8 @@ class GeofenceService {
     final deltaLambda = _toRadians(lng2 - lng1);
 
     // Formule Haversine
-    final a = math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
+    final a =
+        math.sin(deltaPhi / 2) * math.sin(deltaPhi / 2) +
         math.cos(phi1) *
             math.cos(phi2) *
             math.sin(deltaLambda / 2) *

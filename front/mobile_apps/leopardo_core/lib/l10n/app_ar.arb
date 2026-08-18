@@ -1142,5 +1142,6 @@
   "orgChartExpand": "توسيع",
   "errorUnexpected": "حدث خطأ",
   "approvalApproved": "تمت الموافقة على الطلب",
-  "approvalRejected": "تم رفض الطلب"
+  "approvalRejected": "تم رفض الطلب",
+  "saPermissionDenied": "تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة."
 }

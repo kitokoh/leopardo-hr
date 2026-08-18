@@ -1142,5 +1142,6 @@
   "orgChartExpand": "Genişlet",
   "errorUnexpected": "Bir hata oluştu",
   "approvalApproved": "Talep onaylandı",
-  "approvalRejected": "Talep reddedildi"
+  "approvalRejected": "Talep reddedildi",
+  "saPermissionDenied": "Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS'i etkinleştirin."
 }

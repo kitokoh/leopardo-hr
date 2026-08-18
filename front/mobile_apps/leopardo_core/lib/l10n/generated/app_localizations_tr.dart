@@ -3378,4 +3378,8 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get approvalRejected => 'Talep reddedildi';
+
+  @override
+  String get saPermissionDenied =>
+      'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
 }

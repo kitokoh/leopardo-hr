@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('zkteco_devices')) {
+        if (schemaTableExists('zkteco_devices')) {
             return;
         }
 
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->index(['company_id', 'status']);
         });
 
-        if (Schema::hasTable('zkteco_sync_logs')) {
+        if (schemaTableExists('zkteco_sync_logs')) {
             return;
         }
 
@@ -63,7 +63,7 @@ return new class extends Migration
             $table->index(['zkteco_device_id', 'created_at']);
         });
 
-        if (Schema::hasTable('kiosk_announcements')) {
+        if (schemaTableExists('kiosk_announcements')) {
             return;
         }
 
