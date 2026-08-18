@@ -23,12 +23,16 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     /** @param array<string, mixed> $overrides */
     private function insertProvisioning(array $overrides = []): void
     {
+        $staleTimestamp = DB::getDriverName() === 'pgsql'
+            ? DB::raw("CURRENT_TIMESTAMP - INTERVAL '2 hours'")
+            : now()->subHours(2);
+
         DB::table('public.trial_provisionings')->insert(array_merge([
             'email' => 'prospect@example.dz',
             'provisioning_token' => str_repeat('a', 64),
             'status' => 'pending',
-            'created_at' => now()->subHours(2),
-            'updated_at' => now()->subHours(2),
+            'created_at' => $staleTimestamp,
+            'updated_at' => $staleTimestamp,
         ], $overrides));
     }
 
@@ -38,7 +42,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep --max-age-minutes=30');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
@@ -58,7 +62,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
@@ -76,7 +80,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }
@@ -91,7 +95,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 
         $command = $this->artisan('trial-provisionings:sweep --dry-run');
         if ($command instanceof PendingCommand) {
-            $command->assertExitCode(0);
+            self::assertSame(0, $command->run());
         } else {
             self::assertSame(0, $command);
         }

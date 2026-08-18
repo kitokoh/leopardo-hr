@@ -48,13 +48,17 @@ class KioskAttendanceService
             // training/other) instead of being locked to plain check_in/out.
             if ($action === 'check_out') {
                 return $this->attendanceService->checkOut($employee, new CheckInDTO(
-                    method: 'kiosk_'.$kiosk->biometric_mode,
+                    // Persist the canonical method accepted by attendance_logs;
+                    // biometric_mode remains available as biometric_type/metadata.
+                    method: 'biometric',
                     work_type: $workType,
                 ));
             }
 
             return $this->attendanceService->checkIn($employee, new CheckInDTO(
-                method: 'kiosk_'.$kiosk->biometric_mode,
+                // Persist the canonical method accepted by attendance_logs;
+                // biometric_mode remains available as biometric_type/metadata.
+                method: 'biometric',
                 work_type: $workType,
             ));
         });
@@ -125,7 +129,7 @@ class KioskAttendanceService
 
                 try {
                     $log = $this->attendanceService->importExternalPunch($employee, new CheckInDTO(
-                        method: 'kiosk_offline',
+                        method: 'biometric',
                         occurred_at: $event['occurred_at'] ?? null,
                         external_event_id: $event['external_event_id'] ?? null,
                         biometric_type: $event['biometric_type'] ?? $kiosk->biometric_mode,

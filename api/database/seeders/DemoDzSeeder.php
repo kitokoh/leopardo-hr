@@ -171,7 +171,7 @@ class DemoDzSeeder extends Seeder
         $manager = null;
 
         foreach ($accounts as $account) {
-            $employee = Employee::query()->firstOrCreate(
+            $employee = Employee::query()->firstOrNew(
                 ['company_id' => $company->id, 'email' => $account['email']],
                 [
                     'first_name' => $account['first_name'],
