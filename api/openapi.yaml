@@ -11986,15 +11986,22 @@ paths:
           description: "Stripe non configure sur cet environnement"
 
   /billing/portal:
-    get:
+    post:
       tags: ["Billing"]
       summary: "Creer une session Stripe Customer Portal pour gerer l'abonnement (manager)"
       operationId: createBillingPortalSession
-      parameters:
-        - name: return_url
-          in: query
-          required: true
-          schema: { type: string, format: uri, maxLength: 500 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [return_url]
+              properties:
+                return_url:
+                  type: string
+                  format: uri
+                  maxLength: 500
       responses:
         "200":
           description: "URL du portail client Stripe"
