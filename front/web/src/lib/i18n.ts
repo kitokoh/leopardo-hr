@@ -166,6 +166,18 @@ export type CopyTree = {
     statusValidated: string;
     statusDraft: string;
     statusCompleted: string;
+    runDraft: string;
+    runCalculated: string;
+    runValidated: string;
+    runLocked: string;
+    runCalculate: string;
+    runValidate: string;
+    runLock: string;
+    runUnlock: string;
+    runConfirmLock: string;
+    runConfirmUnlock: string;
+    runActionError: string;
+    runCancel: string;
     downloadPdf: string;
     viewDetail: string;
     resultsCount: string;
@@ -667,6 +679,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'Valide',
       statusDraft: 'Brouillon',
       statusCompleted: 'Termine',
+      runDraft: 'Brouillon',
+      runCalculated: 'Calculé',
+      runValidated: 'Validé',
+      runLocked: 'Verrouillé',
+      runCalculate: 'Calculer',
+      runValidate: 'Valider (RH)',
+      runLock: 'Verrouiller',
+      runUnlock: 'Déverrouiller',
+      runConfirmLock: 'Verrouiller la clôture de ce cycle ?',
+      runConfirmUnlock: 'Déverrouiller la clôture de ce cycle ?',
+      runActionError: 'Impossible d'exécuter l'action sur ce cycle de paie.',
+      runCancel: 'Annuler',
       downloadPdf: 'Télécharger PDF',
       viewDetail: 'Voir detail',
       resultsCount: 'resultats',
@@ -1165,6 +1189,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'معتمد',
       statusDraft: 'مسودة',
       statusCompleted: 'مكتمل',
+      runDraft: 'مسودة',
+      runCalculated: 'تم الحساب',
+      runValidated: 'تم الاعتماد',
+      runLocked: 'مقفل',
+      runCalculate: 'احسب',
+      runValidate: 'اعتماد (موارد بشرية)',
+      runLock: 'قفل',
+      runUnlock: 'فتح القفل',
+      runConfirmLock: 'قفل إقفال دورة الرواتب هذه؟',
+      runConfirmUnlock: 'فتح إقفال دورة الرواتب هذه؟',
+      runActionError: 'تعذر تنفيذ الإجراء على دورة الرواتب.',
+      runCancel: 'إلغاء',
       downloadPdf: 'تحميل PDF',
       viewDetail: 'عرض التفاصيل',
       resultsCount: 'نتائج',
@@ -1663,6 +1699,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'Onaylandi',
       statusDraft: 'Taslak',
       statusCompleted: 'Tamamlandi',
+      runDraft: 'Taslak',
+      runCalculated: 'Hesaplandı',
+      runValidated: 'Onaylandı',
+      runLocked: 'Kilitli',
+      runCalculate: 'Hesapla',
+      runValidate: 'Onayla (İK)',
+      runLock: 'Kilitle',
+      runUnlock: 'Kilidi aç',
+      runConfirmLock: 'Bu maaş döneminin kapanışı kilitlensin mi?',
+      runConfirmUnlock: 'Bu maaş döneminin kapanış kilidi açılsın mı?',
+      runActionError: 'Maaş döneminde işlem gerçekleştirilemedi.',
+      runCancel: 'İptal',
       downloadPdf: 'PDF indir',
       viewDetail: 'Detayi gor',
       resultsCount: 'sonuc',
@@ -2161,6 +2209,18 @@ const copy: Record<AppLocale, CopyTree> = {
       statusValidated: 'Validated',
       statusDraft: 'Draft',
       statusCompleted: 'Completed',
+      runDraft: 'Draft',
+      runCalculated: 'Calculated',
+      runValidated: 'Validated',
+      runLocked: 'Locked',
+      runCalculate: 'Calculate',
+      runValidate: 'Validate (HR)',
+      runLock: 'Lock',
+      runUnlock: 'Unlock',
+      runConfirmLock: 'Lock this payroll run closure?',
+      runConfirmUnlock: 'Unlock this payroll run closure?',
+      runActionError: 'Unable to perform this action on the payroll run.',
+      runCancel: 'Cancel',
       downloadPdf: 'Download PDF',
       viewDetail: 'View detail',
       resultsCount: 'results',
