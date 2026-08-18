@@ -4,6 +4,10 @@
 
 # Versioning : Semantic Versioning (semver.org) 
 
+## [Unreleased]
+- **fix(api/security): EdgeNode/EdgeLicense — credentials plus jamais sérialisés en clair (Closes #4687).** `$hidden = ['license_key','metadata']` sur `EdgeNode` (le metadata contient le hash SHA-256 de l'edge_token) et `$hidden = ['license_key','signed_payload']` sur `EdgeLicense` : les réponses list/show ne fuient plus les secrets. Les endpoints d'émission (`POST /api/v1/edge` et `POST /api/v1/edge/{id}/license`) ré-exposent explicitement via `makeVisible()` — le contrat d'enregistrement `license: {license_key, signed_payload}` est préservé (test dédié `EdgeCredentialVisibilityTest`).
+- **fix(api/tests): PHPStan Strict rouge sur main — `ZktecoControllerTest::assertSearchPathRestored()` typée `array<int, string>` (docblock).** Le follow-up #4869 (assertions search_path robustes) a introduit un paramètre `array` sans shape → gate PHPStan Strict level 8 en échec sur main et toutes les PR. Annotation `@param array<int, string>` + `@var` sur la closure de normalisation.
+- **fix(i18n/mobile): 13 clés userAuth*/auth.* manquantes promues dans shared — build leopardo_employee réparé (Closes #4762).** La résolution précédente de #4762 (ARB régénérés sans promotion dans shared) supprimait les getters référencés par les écrans user_auth (user_login_screen, user_register_screen, company_request_screen) → `flutter analyze` échouait (undefined_getter). Les clés `user_auth.*` (first_name, last_name, google_error, register_*, already_account, login_subtitle, no_account, personal_login, phone_optional) + `auth.demo.access` + `auth.toggle.password.visibility` sont promues dans shared/i18n ×4 avec les valeurs historiques (#4650), syncs rejoués (idempotent), 39/39 références couvertes, validate vert.
 
 ## [Unreleased]
 - **fix(ci/tests): follow-up #4978 après merge #5092.** Le retour structuré de `SenegalPayrollRules::calculateSocialChargesWithCategory()` satisfait PHPStan Strict, et `TenantIsolationTest` force la persistance de `password_hash` dans sa fixture Employee afin de respecter PostgreSQL.
