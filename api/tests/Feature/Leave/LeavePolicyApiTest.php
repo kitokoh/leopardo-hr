@@ -13,24 +13,17 @@ use App\Modules\Planning\Domain\Models\LeavePolicy;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Laravel\Sanctum\Sanctum;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class LeavePolicyApiTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
         $this->createLeaveSchemaIfNeeded();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
     }
 
     private function createLeaveSchemaIfNeeded(): void
