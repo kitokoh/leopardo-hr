@@ -21,6 +21,7 @@ cd "${ROOT}"
 REGISTRY=(
   $'gestionemployerbackend.onrender.com\tlive'
   $'gestionemployer-backend.vercel.app\tlive'
+  $'leo-admin.pages.dev\tlive'
   $'api.leopardo-rh.com\ttarget'
   $'app.leopardo-rh.com\ttarget'
   $'leopardo-rh.com\ttarget'
@@ -85,7 +86,7 @@ for f in "${FILES[@]}"; do
       echo "::error::Domaine 'deprecated' référencé dans ${f} : ${domain}"
       errors=$((errors + 1))
     fi
-  done < <(grep -oE '([a-z0-9-]+\.)+(leopardo-rh\.com|leopardo\.app)|gestionemployerbackend\.onrender\.com' "${f}" 2>/dev/null || true)
+  done < <(grep -oE '([a-z0-9-]+\.)+(leopardo-rh\.com|leopardo\.app)|gestionemployerbackend\.onrender\.com|leo-admin\.pages\.dev' "${f}" 2>/dev/null || true)
 done
 
 # --- Cohérence registre garde <-> docs/ops/DOMAINS.md ------------------------
