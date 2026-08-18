@@ -6,6 +6,7 @@ namespace Tests\Feature\Billing;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 /**
@@ -19,6 +20,7 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @param array<string, mixed> $overrides */
     private function insertProvisioning(array $overrides = []): void
     {
         DB::table('trial_provisionings')->insert(array_merge([
@@ -34,13 +36,19 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     {
         $this->insertProvisioning();
 
-        $this->artisan('trial-provisionings:sweep')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
         $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'prospect@example.dz',
             'status' => 'failed',
         ]);
         $row = DB::table('trial_provisionings')->where('email', 'prospect@example.dz')->first();
+        self::assertNotNull($row);
         $this->assertStringContainsString('SWEEP_TIMEOUT', (string) $row->error);
     }
 
@@ -48,7 +56,12 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     {
         $this->insertProvisioning(['updated_at' => now()->subMinutes(5)]);
 
-        $this->artisan('trial-provisionings:sweep')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
         $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'prospect@example.dz',
@@ -61,7 +74,12 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
         $this->insertProvisioning(['status' => 'ready', 'provisioning_token' => str_repeat('b', 64)]);
         $this->insertProvisioning(['status' => 'failed', 'provisioning_token' => str_repeat('c', 64)]);
 
-        $this->artisan('trial-provisionings:sweep')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
         $this->assertDatabaseHas('trial_provisionings', ['provisioning_token' => str_repeat('b', 64), 'status' => 'ready']);
         $this->assertDatabaseHas('trial_provisionings', ['provisioning_token' => str_repeat('c', 64), 'status' => 'failed']);
@@ -71,7 +89,12 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     {
         $this->insertProvisioning();
 
-        $this->artisan('trial-provisionings:sweep --dry-run')->assertExitCode(0);
+        $command = $this->artisan('trial-provisionings:sweep --dry-run');
+        if ($command instanceof PendingCommand) {
+            $command->assertExitCode(0);
+        } else {
+            self::assertSame(0, $command);
+        }
 
         $this->assertDatabaseHas('trial_provisionings', [
             'email' => 'prospect@example.dz',
