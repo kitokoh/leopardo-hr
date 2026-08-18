@@ -3402,4 +3402,157 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
+
+  @override
+  String get absencesApprove => 'Onayla';
+  @override
+  String get absencesApproveBody => 'Talep onaylı duruma geçecek ve çalışan bilgilendirilecek.';
+  @override
+  String get absencesApproveTitle => 'Bu izni onaylamak istiyor musunuz?';
+  @override
+  String get absencesApprovedSnack => 'İzin onaylandı.';
+  @override
+  String get absencesAttachProof => 'Belge ekle (isteğe bağlı)';
+  @override
+  String get absencesBalancesLoading => 'Bakiyeler yükleniyor';
+  @override
+  String get absencesCancel => 'İptal';
+  @override
+  String get absencesCancelBody => 'Bekleyen talep kaldırılacak ve İK iptal durumunu görecek.';
+  @override
+  String get absencesCancelRequest => 'Talebi iptal et';
+  @override
+  String get absencesCancelTitle => 'Bu talep iptal edilsin mi?';
+  @override
+  String get absencesCancelledSnack => 'İzin talebi iptal edildi.';
+  @override
+  String get absencesCompanyLabel => 'Şirket: ';
+  @override
+  String get absencesCurrentCompany => 'Mevcut şirket';
+  @override
+  String get absencesDateMissing => 'Talep tarihi belirtilmedi';
+  @override
+  String get absencesDaysAvailable => ' gün kullanılabilir';
+  @override
+  String get absencesEmployeeLabel => 'Çalışan';
+  @override
+  String get absencesEmptyHint => 'Ana butondan izin talep edin, ardından İK kararını buradan takip edin.';
+  @override
+  String get absencesEmptyTitle => 'İzin yok';
+  @override
+  String get absencesEnd => 'Bitiş';
+  @override
+  String get absencesFailure => 'Hata: ';
+  @override
+  String get absencesKeep => 'Koru';
+  @override
+  String get absencesLoading => 'İzinler yükleniyor';
+  @override
+  String get absencesNewAbsence => 'Yeni izin';
+  @override
+  String get absencesNewAbsenceHint => 'İK\'ya iletilecek bakiye türünü ve dönemi seçin.';
+  @override
+  String get absencesNoTypeAvailable => 'Bu hesap için izin türü yok. Bakiyeleri yapılandırmak için İK ile iletişime geçin.';
+  @override
+  String get absencesProofAttached => 'Belge eklendi';
+  @override
+  String get absencesProofDownloaded => 'Belge indirildi: ';
+  @override
+  String get absencesReason => 'Gerekçe';
+  @override
+  String get absencesReasonLabel => 'Gerekçe: ';
+  @override
+  String get absencesReasonMissing => 'Gerekçe belirtilmedi';
+  @override
+  String get absencesReasonNotProvided => 'belirtilmedi';
+  @override
+  String get absencesReasonhint => 'Örn: doktor randevusu, aile izni...';
+  @override
+  String get absencesReasonrequired => 'Gerekçe zorunlu';
+  @override
+  String get absencesReject => 'Reddet';
+  @override
+  String get absencesRejectHelper => 'Gerekçe çalışana görünür olacak.';
+  @override
+  String get absencesRejectTitle => 'İzni reddet';
+  @override
+  String get absencesRejectedSnack => 'İzin reddedildi.';
+  @override
+  String get absencesRequest => 'Talep et';
+  @override
+  String get absencesRequestLabel => 'Talep: ';
+  @override
+  String get absencesRequesterLabel => 'Talep eden: ';
+  @override
+  String get absencesStart => 'Başlangıç';
+  @override
+  String get absencesStatusApproved => 'onaylı';
+  @override
+  String get absencesStatusCancelled => 'iptal edildi';
+  @override
+  String get absencesStatusPending => 'beklemede';
+  @override
+  String get absencesStatusRejected => 'reddedildi';
+  @override
+  String get absencesSubmitToHr => 'İK\'ya gönder';
+  @override
+  String get absencesSubmittedSnack => 'İzin talebi İK\'ya iletildi.';
+  @override
+  String get absencesSubtitle => 'Talepler, bakiyeler ve İK kararları';
+  @override
+  String get absencesTitle => 'İzinlerim';
+  @override
+  String get absencesType => 'Tür';
+  @override
+  String get absencesTypeFallback => 'İzin';
+  @override
+  String get absencesTypeRequired => 'İzin türü zorunlu';
+  @override
+  String get absencesViewProof => 'Belgeyi görüntüle';
+  @override
+  String get apiLoginBackendError => 'Beklenmeyen sunucu yanıtı.';
+  @override
+  String get apiLoginInvalidJson => 'Geçersiz istek gövdesi.';
+  @override
+  String get apiLoginNetworkError => 'Sunucuya ulaşılamıyor.';
+  @override
+  String get apiLoginTimeout => 'Sunucu yanıt vermekte çok yavaş. Lütfen kısa süre sonra tekrar deneyin.';
+  @override
+  String get billingCancelSubscriptionConfirm => 'Aboneliğinizi iptal etmek istiyor musunuz? Premium modüllere erişiminizi mevcut dönem sonunda kaybedersiniz.';
+  @override
+  String get billingCheckoutFailed => 'Ödeme oturumu oluşturulamadı.';
+  @override
+  String get billingCheckoutSandboxMessage => 'Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.';
+  @override
+  String get billingCheckoutUnavailable => 'Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.';
+  @override
+  String get billingNoActivePeriod => 'Aktif dönem yok';
+  @override
+  String get billingNoActiveSubscription => 'Aktif abonelik yok';
+  @override
+  String get billingPeriodLabel => 'Dönem';
+  @override
+  String get contractsAllstatuses => 'Tüm durumlar';
+  @override
+  String get contractsListSubtitle => 'Çalışan sözleşme yönetimi: durum takibi, son tarihler ve PDF dışa aktarma, doğrudan İK API\'sine bağlı.';
+  @override
+  String get contractsSearchplaceholder => 'Çalışan veya sözleşme türü ara...';
+  @override
+  String get dashboardModulesactivesentence => '{active} aktif modül, planınıza göre {locked} etkinleştirilecek.';
+  @override
+  String get dashboardSearchplaceholder => 'Ara...';
+  @override
+  String get dashboardYourcompany => 'Şirketiniz';
+  @override
+  String get marketingPostcontentplaceholder => 'Gönderi içeriği...';
+  @override
+  String get marketingSocialexampleplaceholder => 'Örn: Leopardo RH — Sosyal medya';
+  @override
+  String get trainingDurationplaceholder => 'Süre (saat)';
+  @override
+  String get trainingMaxparticipantsplaceholder => 'Maks. katılımcı';
+  @override
+  String get trainingOnline => 'Çevrimiçi';
+  @override
+  String get trainingTitleplaceholder => 'Başlık *';
 }

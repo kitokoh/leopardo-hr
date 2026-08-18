@@ -3448,4 +3448,157 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.';
+
+  @override
+  String get absencesApprove => 'Approuver';
+  @override
+  String get absencesApproveBody => 'La demande passera en statut approuvé et l\'employé sera notifié.';
+  @override
+  String get absencesApproveTitle => 'Approuver cette absence ?';
+  @override
+  String get absencesApprovedSnack => 'Absence approuvée.';
+  @override
+  String get absencesAttachProof => 'Joindre un justificatif (optionnel)';
+  @override
+  String get absencesBalancesLoading => 'Chargement des soldes';
+  @override
+  String get absencesCancel => 'Annuler';
+  @override
+  String get absencesCancelBody => 'La demande en attente sera retirée et le RH verra le statut annulé.';
+  @override
+  String get absencesCancelRequest => 'Annuler la demande';
+  @override
+  String get absencesCancelTitle => 'Annuler cette demande ?';
+  @override
+  String get absencesCancelledSnack => 'Demande d\'absence annulée.';
+  @override
+  String get absencesCompanyLabel => 'Entreprise : ';
+  @override
+  String get absencesCurrentCompany => 'Entreprise courante';
+  @override
+  String get absencesDateMissing => 'Date de demande non renseignée';
+  @override
+  String get absencesDaysAvailable => ' j disponibles';
+  @override
+  String get absencesEmployeeLabel => 'Employé';
+  @override
+  String get absencesEmptyHint => 'Demandez une absence depuis le bouton principal, puis suivez la décision RH ici.';
+  @override
+  String get absencesEmptyTitle => 'Aucune absence';
+  @override
+  String get absencesEnd => 'Fin';
+  @override
+  String get absencesFailure => 'Échec : ';
+  @override
+  String get absencesKeep => 'Garder';
+  @override
+  String get absencesLoading => 'Chargement des absences';
+  @override
+  String get absencesNewAbsence => 'Nouvelle absence';
+  @override
+  String get absencesNewAbsenceHint => 'Choisissez le type de solde et la période à transmettre au RH.';
+  @override
+  String get absencesNoTypeAvailable => 'Aucun type d\'absence disponible pour ce compte. Contactez le RH pour configurer les soldes.';
+  @override
+  String get absencesProofAttached => 'Justificatif joint';
+  @override
+  String get absencesProofDownloaded => 'Justificatif téléchargé : ';
+  @override
+  String get absencesReason => 'Motif';
+  @override
+  String get absencesReasonLabel => 'Motif : ';
+  @override
+  String get absencesReasonMissing => 'Motif non renseigné';
+  @override
+  String get absencesReasonNotProvided => 'non renseigné';
+  @override
+  String get absencesReasonhint => 'Ex : rendez-vous médical, congé familial…';
+  @override
+  String get absencesReasonrequired => 'Motif obligatoire';
+  @override
+  String get absencesReject => 'Refuser';
+  @override
+  String get absencesRejectHelper => 'Le motif sera visible par l\'employé.';
+  @override
+  String get absencesRejectTitle => 'Refuser l\'absence';
+  @override
+  String get absencesRejectedSnack => 'Absence refusée.';
+  @override
+  String get absencesRequest => 'Demander';
+  @override
+  String get absencesRequestLabel => 'Demande : ';
+  @override
+  String get absencesRequesterLabel => 'Demandeur : ';
+  @override
+  String get absencesStart => 'Début';
+  @override
+  String get absencesStatusApproved => 'approuvée';
+  @override
+  String get absencesStatusCancelled => 'annulée';
+  @override
+  String get absencesStatusPending => 'en attente';
+  @override
+  String get absencesStatusRejected => 'rejetée';
+  @override
+  String get absencesSubmitToHr => 'Soumettre au RH';
+  @override
+  String get absencesSubmittedSnack => 'Demande d\'absence transmise au RH.';
+  @override
+  String get absencesSubtitle => 'Demandes, soldes et décisions RH';
+  @override
+  String get absencesTitle => 'Mes absences';
+  @override
+  String get absencesType => 'Type';
+  @override
+  String get absencesTypeFallback => 'Absence';
+  @override
+  String get absencesTypeRequired => 'Type d\'absence requis';
+  @override
+  String get absencesViewProof => 'Voir le justificatif';
+  @override
+  String get apiLoginBackendError => 'Réponse serveur inattendue.';
+  @override
+  String get apiLoginInvalidJson => 'Corps de requête invalide.';
+  @override
+  String get apiLoginNetworkError => 'Impossible de contacter le serveur.';
+  @override
+  String get apiLoginTimeout => 'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.';
+  @override
+  String get billingCancelSubscriptionConfirm => 'Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.';
+  @override
+  String get billingCheckoutFailed => 'Impossible de créer la session de paiement.';
+  @override
+  String get billingCheckoutSandboxMessage => 'Paiement simulé (mode sandbox). Aucune carte débitée.';
+  @override
+  String get billingCheckoutUnavailable => 'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.';
+  @override
+  String get billingNoActivePeriod => 'Aucune période active';
+  @override
+  String get billingNoActiveSubscription => 'Aucun abonnement active';
+  @override
+  String get billingPeriodLabel => 'Période';
+  @override
+  String get contractsAllstatuses => 'Tous les statuts';
+  @override
+  String get contractsListSubtitle => 'Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l\'API RH.';
+  @override
+  String get contractsSearchplaceholder => 'Rechercher un employe ou un type de contrat...';
+  @override
+  String get dashboardModulesactivesentence => '{active} modules actifs, {locked} a activer selon votre plan.';
+  @override
+  String get dashboardSearchplaceholder => 'Rechercher...';
+  @override
+  String get dashboardYourcompany => 'Votre entreprise';
+  @override
+  String get marketingPostcontentplaceholder => 'Contenu de la publication...';
+  @override
+  String get marketingSocialexampleplaceholder => 'Ex: Leopardo RH — Reseaux sociaux';
+  @override
+  String get trainingDurationplaceholder => 'Duree (h)';
+  @override
+  String get trainingMaxparticipantsplaceholder => 'Participants max';
+  @override
+  String get trainingOnline => 'En ligne';
+  @override
+  String get trainingTitleplaceholder => 'Titre *';
 }
