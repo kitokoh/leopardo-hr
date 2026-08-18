@@ -58,7 +58,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
 
         // 2. Le manager approuve (double validation).
         Sanctum::actingAs($this->manager);
-        $approved = $this->putJson("/api/v1/salary-advances/{$advanceId}/manager-approve")
+        $approved = $this->postJson("/api/v1/salary-advances/{$advanceId}/manager-approve")
             ->assertOk()
             ->json('data');
         $this->assertSame('approved', $approved['status']);
@@ -112,7 +112,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
         $advanceId = $created['id'];
 
         Sanctum::actingAs($this->manager);
-        $this->putJson("/api/v1/salary-advances/{$advanceId}/manager-approve")->assertOk();
+        $this->postJson("/api/v1/salary-advances/{$advanceId}/manager-approve")->assertOk();
 
         $this->putJson("/api/v1/salary-advances/{$advanceId}/mark-paid")->assertOk();
 
@@ -141,7 +141,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
         $created = $this->postJson('/api/v1/salary-advances', ['amount' => 5000])->assertCreated()->json('data');
 
         Sanctum::actingAs($this->manager);
-        $this->putJson("/api/v1/salary-advances/{$created['id']}/manager-approve")->assertOk();
+        $this->postJson("/api/v1/salary-advances/{$created['id']}/manager-approve")->assertOk();
         $this->putJson("/api/v1/salary-advances/{$created['id']}/mark-paid")->assertOk();
 
         /** @var Employee $other */
@@ -155,7 +155,7 @@ class SalaryAdvanceWorkflowTest extends TestCase
         Sanctum::actingAs($this->employee);
         $created = $this->postJson('/api/v1/salary-advances', ['amount' => 5000])->assertCreated()->json('data');
 
-        $this->putJson("/api/v1/salary-advances/{$created['id']}/manager-approve")->assertStatus(403);
+        $this->postJson("/api/v1/salary-advances/{$created['id']}/manager-approve")->assertStatus(403);
         $this->putJson("/api/v1/salary-advances/{$created['id']}/mark-paid")->assertStatus(403);
     }
 }

@@ -93,7 +93,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson("/api/v1/expense-claims/{$claim->id}/approve");
+        $response = $this->postJson("/api/v1/expense-claims/{$claim->id}/approve");
         $response->assertOk();
         $response->assertJsonPath('data.status', 'approved');
     }
@@ -163,7 +163,7 @@ class ExpenseClaimControllerTest extends TestCase
         $this->getJson('/api/v1/expense-claims')
             ->assertOk()
             ->assertJsonCount(2, 'data');
-        $this->putJson("/api/v1/expense-claims/{$foreignClaim->id}/approve")->assertNotFound();
+        $this->postJson("/api/v1/expense-claims/{$foreignClaim->id}/approve")->assertNotFound();
     }
 
     public function test_manager_can_reject_expense_claim_with_reason(): void
@@ -187,7 +187,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [
+        $response = $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", [
             'reason' => 'Justificatifs manquants',
         ]);
 
@@ -216,7 +216,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [])
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", [])
             ->assertStatus(422);
     }
 
@@ -244,7 +244,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/approve")
             ->assertStatus(403);
     }
 
@@ -272,7 +272,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", [
             'reason' => 'test',
         ])->assertStatus(403);
     }
@@ -300,7 +300,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($foreignManager);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/approve")
             ->assertNotFound();
     }
 
@@ -327,7 +327,7 @@ class ExpenseClaimControllerTest extends TestCase
 
         Sanctum::actingAs($foreignManager);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", [
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", [
             'reason' => 'Tentative cross-tenant',
         ])->assertNotFound();
     }

@@ -156,7 +156,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         ]);
 
         $response = $this->actingAs($managerA, 'sanctum')
-            ->putJson("/api/v1/salary-advances/{$advanceB->id}/approve", [
+            ->postJson("/api/v1/salary-advances/{$advanceB->id}/approve", [
                 'repayment_months' => 3,
             ]);
 
@@ -195,7 +195,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         ]);
 
         $response = $this->actingAs($employee, 'sanctum')
-            ->putJson("/api/v1/salary-advances/{$advance->id}/approve", [
+            ->postJson("/api/v1/salary-advances/{$advance->id}/approve", [
                 'repayment_months' => 3,
             ]);
 
@@ -220,7 +220,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         ]);
 
         $this->actingAs($manager, 'sanctum')
-            ->putJson("/api/v1/salary-advances/{$advance->id}/manager-approve")
+            ->postJson("/api/v1/salary-advances/{$advance->id}/manager-approve")
             ->assertOk()
             ->assertJsonPath('data.status', 'approved')
             ->assertJsonPath('data.validation_status', 'manager_approved')
@@ -294,7 +294,7 @@ class SalaryAdvanceSecurityTest extends TestCase
         ]);
 
         $this->actingAs($manager, 'sanctum')
-            ->putJson("/api/v1/salary-advances/{$advance->id}/manager-approve")
+            ->postJson("/api/v1/salary-advances/{$advance->id}/manager-approve")
             ->assertOk();
 
         $this->actingAs($manager, 'sanctum')

@@ -111,7 +111,7 @@ class AbsenceRepository {
   Future<Absence> approveAbsence(int absenceId) async {
     final response = await apiClient.requestWithRetry(
       '/absences/$absenceId/approve',
-      method: 'PUT',
+      method: 'POST',
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
     );
@@ -124,7 +124,7 @@ class AbsenceRepository {
   }) async {
     final response = await apiClient.requestWithRetry(
       '/absences/$absenceId/reject',
-      method: 'PUT',
+      method: 'POST',
       data: {'rejected_reason': reason.trim()},
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,

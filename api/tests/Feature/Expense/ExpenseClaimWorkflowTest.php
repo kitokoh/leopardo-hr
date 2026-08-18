@@ -121,7 +121,7 @@ class ExpenseClaimWorkflowTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/approve")
             ->assertOk()
             ->assertJsonPath('data.status', 'approved');
 
@@ -154,9 +154,9 @@ class ExpenseClaimWorkflowTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/approve")
             ->assertStatus(422);
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'x'])
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'x'])
             ->assertStatus(422);
 
         $this->assertDatabaseHas('expense_claims', [
@@ -186,11 +186,11 @@ class ExpenseClaimWorkflowTest extends TestCase
         Sanctum::actingAs($manager);
 
         // Rejet sans raison -> 422
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject")
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject")
             ->assertUnprocessable();
 
         // Rejet avec raison -> ok
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'Justificatif manquant'])
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'Justificatif manquant'])
             ->assertOk()
             ->assertJsonPath('data.status', 'rejected');
     }
@@ -219,8 +219,8 @@ class ExpenseClaimWorkflowTest extends TestCase
 
         // Pas de fuite d'existence cross-tenant : 404, pas 403
         $this->getJson("/api/v1/expense-claims/{$claim->id}")->assertNotFound();
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")->assertNotFound();
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'x'])->assertNotFound();
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/approve")->assertNotFound();
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/reject", ['reason' => 'x'])->assertNotFound();
     }
 
     public function test_employee_cannot_approve_own_claim(): void
@@ -242,6 +242,6 @@ class ExpenseClaimWorkflowTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->putJson("/api/v1/expense-claims/{$claim->id}/approve")->assertForbidden();
+        $this->postJson("/api/v1/expense-claims/{$claim->id}/approve")->assertForbidden();
     }
 }

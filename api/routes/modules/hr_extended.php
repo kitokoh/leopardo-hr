@@ -136,8 +136,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::delete('/training/enrollments/{trainingEnrollment}', [TrainingController::class, 'destroyEnrollment']);
 
         // ── Loan management ──────────────────────────────────────────────
-        Route::put('/loans/{employeeLoan}/approve', [EmployeeLoanController::class, 'approve']);
-        Route::put('/loans/{employeeLoan}/disburse', [EmployeeLoanController::class, 'disburse']);
+        Route::post('/loans/{employeeLoan}/approve', [EmployeeLoanController::class, 'approve']);
+        Route::post('/loans/{employeeLoan}/disburse', [EmployeeLoanController::class, 'disburse']);
 
         // ── Approval Workflows (principal, rh) ───────────────────────────
         Route::get('/approval-workflows', [ApprovalController::class, 'indexWorkflows']);

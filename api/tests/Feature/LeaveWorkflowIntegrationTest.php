@@ -119,7 +119,7 @@ class LeaveWorkflowIntegrationTest extends TestCase
             $absenceId = $response->json('data.id');
 
             // Employee should not be able to approve
-            $approveResponse = $this->putJson("/api/v1/absences/{$absenceId}/approve");
+            $approveResponse = $this->postJson("/api/v1/absences/{$absenceId}/approve");
             $this->assertContains($approveResponse->status(), [403, 404, 405]);
         }
     }

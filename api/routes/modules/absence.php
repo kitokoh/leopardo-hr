@@ -23,7 +23,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::get('/{absence}/proof', [AbsenceController::class, 'downloadProof'])->whereNumber('absence');
         // #4933 : modification d'une demande en attente (dates/raison).
         Route::put('/{absence}', [AbsenceController::class, 'update'])->whereNumber('absence');
-        Route::put('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
-        Route::put('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
+        Route::post('/{absence}/approve', [AbsenceController::class, 'approve'])->whereNumber('absence');
+        Route::post('/{absence}/reject', [AbsenceController::class, 'reject'])->whereNumber('absence');
         Route::delete('/{absence}', [AbsenceController::class, 'destroy'])->whereNumber('absence');
     });

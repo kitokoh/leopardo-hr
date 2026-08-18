@@ -38,7 +38,7 @@ class CorrectionWorkflowTest extends TestCase
             ->assertJsonPath('data.0.id', $correction->id)
             ->assertJsonPath('data.0.employee.name', 'Amina Test');
 
-        $response = $this->putJson("/api/v1/attendance/corrections/{$correction->id}/approve");
+        $response = $this->postJson("/api/v1/attendance/corrections/{$correction->id}/approve");
 
         $response->assertOk()
             ->assertJsonPath('data.status', 'applied')
@@ -86,7 +86,7 @@ class CorrectionWorkflowTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $this->putJson("/api/v1/attendance/corrections/{$correction->id}/approve")
+        $this->postJson("/api/v1/attendance/corrections/{$correction->id}/approve")
             ->assertNotFound();
     }
 

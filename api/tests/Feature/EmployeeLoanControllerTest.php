@@ -85,7 +85,7 @@ class EmployeeLoanControllerTest extends TestCase
 
         Sanctum::actingAs($manager);
 
-        $response = $this->putJson("/api/v1/loans/{$loan->id}/approve");
+        $response = $this->postJson("/api/v1/loans/{$loan->id}/approve");
         $response->assertOk();
         $response->assertJsonPath('data.status', 'approved');
     }
@@ -111,7 +111,7 @@ class EmployeeLoanControllerTest extends TestCase
 
         Sanctum::actingAs($employee);
 
-        $this->putJson("/api/v1/loans/{$loan->id}/approve")->assertStatus(403);
+        $this->postJson("/api/v1/loans/{$loan->id}/approve")->assertStatus(403);
     }
 
     public function test_cross_tenant_loan_returns_404(): void
@@ -134,7 +134,7 @@ class EmployeeLoanControllerTest extends TestCase
 
         // Manager of company A must receive 404 when accessing a loan from company B
         $this->getJson("/api/v1/loans/{$foreignLoan->id}")->assertNotFound();
-        $this->putJson("/api/v1/loans/{$foreignLoan->id}/approve")->assertNotFound();
+        $this->postJson("/api/v1/loans/{$foreignLoan->id}/approve")->assertNotFound();
     }
 
     public function test_disburse_requires_approved_status(): void
@@ -157,13 +157,13 @@ class EmployeeLoanControllerTest extends TestCase
         Sanctum::actingAs($manager);
 
         // Disburse must fail (422) when loan is still in pending_approval state
-        $this->putJson("/api/v1/loans/{$pendingLoan->id}/disburse")
+        $this->postJson("/api/v1/loans/{$pendingLoan->id}/disburse")
             ->assertUnprocessable();
 
         // After approval, disburse must succeed (200)
         $pendingLoan->update(['status' => 'approved']);
 
-        $this->putJson("/api/v1/loans/{$pendingLoan->id}/disburse")
+        $this->postJson("/api/v1/loans/{$pendingLoan->id}/disburse")
             ->assertOk()
             ->assertJsonPath('data.status', 'disbursed');
     }

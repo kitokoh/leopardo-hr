@@ -188,7 +188,7 @@ class LeaveBalancesSnapshotTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $this->putJson('/api/v1/absences/'.$absence->id.'/approve')->assertOk();
+        $this->postJson('/api/v1/absences/'.$absence->id.'/approve')->assertOk();
 
         $snapshot = $this->snapshot();
         $this->assertNotNull($snapshot);
@@ -203,7 +203,7 @@ class LeaveBalancesSnapshotTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
+        $this->postJson('/api/v1/absences/'.$absence->id.'/reject', [
             'rejected_reason' => 'Refusé',
         ])->assertOk();
 
@@ -220,7 +220,7 @@ class LeaveBalancesSnapshotTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $this->putJson('/api/v1/absences/'.$absence->id.'/reject', [
+        $this->postJson('/api/v1/absences/'.$absence->id.'/reject', [
             'rejected_reason' => 'Annulé après approbation',
         ])->assertOk();
 
@@ -251,7 +251,7 @@ class LeaveBalancesSnapshotTest extends TestCase
 
         Sanctum::actingAs($this->manager);
 
-        $this->putJson('/api/v1/absences/'.$absence->id.'/approve')->assertOk();
+        $this->postJson('/api/v1/absences/'.$absence->id.'/approve')->assertOk();
 
         $this->assertNull($this->snapshot());
     }
@@ -285,7 +285,7 @@ class LeaveBalancesSnapshotTest extends TestCase
         // Isolation cross-tenant : l'absence appartient désormais au tenant B,
         // le manager A ne peut PAS l'approuver → 404 (pas 200). La row snapshot
         // du tenant A reste introuvable.
-        $this->putJson('/api/v1/absences/'.$absence->id.'/approve')->assertNotFound();
+        $this->postJson('/api/v1/absences/'.$absence->id.'/approve')->assertNotFound();
         $this->assertNull($this->snapshot());
     }
 }

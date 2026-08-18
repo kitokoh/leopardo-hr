@@ -293,7 +293,7 @@ class AttendanceRepository {
   Future<void> approveCorrection(int correctionId) async {
     await apiClient.requestWithRetry(
       '/attendance/corrections/$correctionId/approve',
-      method: 'PUT',
+      method: 'POST',
       data: const {},
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
@@ -303,7 +303,7 @@ class AttendanceRepository {
   Future<void> rejectCorrection(int correctionId) async {
     await apiClient.requestWithRetry(
       '/attendance/corrections/$correctionId/reject',
-      method: 'PUT',
+      method: 'POST',
       data: const {},
       maxRetriesOverride: 0,
       timeoutOverride: _actionTimeout,
