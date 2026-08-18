@@ -6477,4 +6477,25 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       'an issue with the localizations generation tool. Please file an issue '
       'on GitHub with a reproducible sample app and the gen-l10n configuration '
       'that was used.');
+
+  /// No description provided for @approvalsTitle.
+  String get approvalsTitle;
+
+  /// No description provided for @approvalsRejectReasonLabel.
+  String get approvalsRejectReasonLabel;
+
+  /// No description provided for @approvalsRejectReasonHint.
+  String get approvalsRejectReasonHint;
+
+  /// No description provided for @approvalsLoading.
+  String get approvalsLoading;
+
+  /// No description provided for @actionApprove.
+  String get actionApprove;
+
+  /// No description provided for @actionReject.
+  String get actionReject;
+
+  /// No description provided for @actionCancel.
+  String get actionCancel;
 }

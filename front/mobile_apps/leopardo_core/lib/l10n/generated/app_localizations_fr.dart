@@ -3448,4 +3448,25 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.';
+
+  @override
+  String get approvalsTitle => 'Approbations';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Motif du refus';
+
+  @override
+  String get approvalsRejectReasonHint => 'Expliquez la raison...';
+
+  @override
+  String get approvalsLoading => 'Chargement des approbations...';
+
+  @override
+  String get actionApprove => 'Approuver';
+
+  @override
+  String get actionReject => 'Refuser';
+
+  @override
+  String get actionCancel => 'Annuler';
 }

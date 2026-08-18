@@ -3401,4 +3401,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String get approvalsTitle => 'Approvals';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Rejection reason';
+
+  @override
+  String get approvalsRejectReasonHint => 'Explain the reason...';
+
+  @override
+  String get approvalsLoading => 'Loading approvals...';
+
+  @override
+  String get actionApprove => 'Approve';
+
+  @override
+  String get actionReject => 'Reject';
+
+  @override
+  String get actionCancel => 'Cancel';
 }

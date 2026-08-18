@@ -3369,4 +3369,25 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'تم رفض إذن الموقع. فعّل نظام تحديد المواقع في الإعدادات لبدء المراقبة.';
+
+  @override
+  String get approvalsTitle => 'الموافقات';
+
+  @override
+  String get approvalsRejectReasonLabel => 'سبب الرفض';
+
+  @override
+  String get approvalsRejectReasonHint => 'اشرح السبب...';
+
+  @override
+  String get approvalsLoading => 'جارٍ تحميل الموافقات...';
+
+  @override
+  String get actionApprove => 'اعتماد';
+
+  @override
+  String get actionReject => 'رفض';
+
+  @override
+  String get actionCancel => 'إلغاء';
 }

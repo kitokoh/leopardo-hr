@@ -3402,4 +3402,25 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Konum izni reddedildi. İzlemeyi başlatmak için ayarlardan GPS\'i etkinleştirin.';
+
+  @override
+  String get approvalsTitle => 'Onaylar';
+
+  @override
+  String get approvalsRejectReasonLabel => 'Ret gerekçesi';
+
+  @override
+  String get approvalsRejectReasonHint => 'Gerekçeyi açıklayın...';
+
+  @override
+  String get approvalsLoading => 'Onaylar yükleniyor...';
+
+  @override
+  String get actionApprove => 'Onayla';
+
+  @override
+  String get actionReject => 'Reddet';
+
+  @override
+  String get actionCancel => 'İptal';
 }
