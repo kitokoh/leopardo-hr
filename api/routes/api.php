@@ -201,6 +201,11 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/support-tickets/{supportTicket}', [SupportTicketController::class, 'show'])->whereNumber('supportTicket');
         Route::post('/support-tickets/{supportTicket}/reply', [SupportTicketController::class, 'reply'])->whereNumber('supportTicket');
 
+        // DEPRECATED (#4929) : endpoint de « go-live readiness » calculé (8
+        // étapes auto-détectées) — distinct de la checklist pilotée par la
+        // table onboarding_steps. Le contrat canonique consommé par web et
+        // mobile est GET /onboarding-setup/checklist + PATCH …/{stepKey}/
+        // complete|skip. Cet endpoint est conservé pour les clients existants.
         Route::get('/onboarding/checklist', OnboardingChecklistController::class);
     });
 
@@ -231,7 +236,8 @@ Route::prefix('v1')->group(function (): void {
     // Multi-App dedicated route modules
     require __DIR__.'/modules/hr_app.php';
 
-    // IA Module — routes separees /api/ai/*
+    // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
+    // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';
 
     // Platform (super-admin, hors module)

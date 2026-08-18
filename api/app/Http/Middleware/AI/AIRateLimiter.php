@@ -28,7 +28,9 @@ class AIRateLimiter
 
         if ($current >= $limit) {
             return response()->json([
-                'message' => 'AI quota exceeded for this month.',
+                'error' => 'AI_QUOTA_EXCEEDED',
+                'message' => 'AI_QUOTA_EXCEEDED',
+                'localized_message' => __('errors.AI_QUOTA_EXCEEDED', [], $request->getLocale()),
                 'quota' => $limit,
                 'used' => $current,
             ], 429);

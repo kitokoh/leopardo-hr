@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         // ── attendance_logs ────────────────────────────────────────────────────
-        if (! Schema::hasTable('attendance_logs')) {
+        if (! schemaTableExists('attendance_logs')) {
             Schema::create('attendance_logs', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -55,7 +55,7 @@ return new class extends Migration
         DB::statement("COMMENT ON COLUMN attendance_logs.check_in IS 'Stocké en UTC. TOUJOURS calculer les retards/HS en timezone entreprise via Carbon::setTimezone(company->timezone)'");
 
         // ── absence_types ──────────────────────────────────────────────────────
-        if (! Schema::hasTable('absence_types')) {
+        if (! schemaTableExists('absence_types')) {
             Schema::create('absence_types', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -70,7 +70,7 @@ return new class extends Migration
         }
 
         // ── absences ───────────────────────────────────────────────────────────
-        if (! Schema::hasTable('absences')) {
+        if (! schemaTableExists('absences')) {
             Schema::create('absences', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -103,7 +103,7 @@ return new class extends Migration
         }
 
         // ── leave_balance_logs ────────────────────────────────────────────────
-        if (! Schema::hasTable('leave_balance_logs')) {
+        if (! schemaTableExists('leave_balance_logs')) {
             Schema::create('leave_balance_logs', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -120,7 +120,7 @@ return new class extends Migration
         }
 
         // ── salary_advances ────────────────────────────────────────────────────
-        if (! Schema::hasTable('salary_advances')) {
+        if (! schemaTableExists('salary_advances')) {
             Schema::create('salary_advances', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();

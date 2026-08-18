@@ -1,3 +1,8 @@
+> ⚠️ **DOCUMENT HISTORIQUE (MAJ 2026-08-17)** — ce scénario décrit la suite de tests de
+> l'arborescence `front/mobile/`, **supprimée du dépôt (PR #754)**. Les apps Flutter vivent sous
+> `front/mobile_apps/*` et leur CI est `mobile-apps-ci.yml`. Les chemins `front/mobile/...` ci-dessous
+> n'existent plus ; conserver ce document à titre d'historique des scénarios couverts à l'époque.
+
 # SCÉNARIOS DE TEST MOBILE FLUTTER (COUVERTURE COMPLÈTE)
 
 ## Objectif

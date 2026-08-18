@@ -19,6 +19,9 @@ Date : 2026-05-22
 | Workers Cloudflare | Automatisations edge futures | Projet Cloudflare `gestionemploye` si reactive |
 | Repository GitHub | Source de verite code et PR | `kitokoh/leopardo-hr` |
 
+> ⚠️ **MAJ 2026-08-17** : `*.leopardo-rh.com` est **NXDOMAIN** (domaine jamais acheté, issue #3452).
+> Les URLs de prod réelles et vérifiées sont dans le registre canonique `docs/ops/DOMAINS.md`.
+
 Les URLs finales devront etre remplacees par les domaines officiels apres achat du nom de domaine. Recommandation :
 
 - `www.leopardo-rh.com` : vitrine publique.

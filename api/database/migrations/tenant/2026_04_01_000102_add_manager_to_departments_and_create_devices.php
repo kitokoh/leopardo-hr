@@ -32,7 +32,7 @@ return new class extends Migration
         // ── 2. employee_devices ────────────────────────────────────────────────
         // DÉCISION ARCHITECTURALE : table séparée (PAS fcm_tokens JSONB dans employees)
         // Raison : scalable multi-device, permet last_seen par appareil, révocation ciblée
-        if (! Schema::hasTable('employee_devices')) {
+        if (! schemaTableExists('employee_devices')) {
             Schema::create('employee_devices', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();
@@ -51,7 +51,7 @@ return new class extends Migration
         }
 
         // ── 3. devices (appareils ZKTeco / QR) ────────────────────────────────
-        if (! Schema::hasTable('devices')) {
+        if (! schemaTableExists('devices')) {
             Schema::create('devices', function (Blueprint $table) {
                 $table->increments('id');
                 $table->uuid('company_id')->nullable()->index();

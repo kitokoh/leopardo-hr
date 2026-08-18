@@ -9,7 +9,7 @@
 
 ```
 leopardo-hr/
-├── api/                    # Backend Laravel (PHP 8.2+)
+├── api/                    # Backend Laravel (PHP 8.4+)
 ├── front/
 │   ├── admin-dashboard/    # Dashboard admin (Vue.js / Vite)
 │   ├── web/                # Vitrine (Next.js)
@@ -275,3 +275,19 @@ $this->artisan('my:command')->assertSuccessful();
 - [docs/archive/PLAN_ACTION/](./docs/archive/PLAN_ACTION/) — Plans d'action detailles
 - [docs/validation/](./docs/validation/) — Rapports de readiness
 - [docs/security/](./docs/security/) — Audits securite
+
+
+## Verbes HTTP — actions métier (issue #4930)
+
+Convention unique, appliquée à toutes les routes API :
+
+- **POST** — créer une ressource ET déclencher une action métier
+  (approve/reject/disburse/validate/complete/skip/activate…).
+- **PUT/PATCH** — modifier une ressource existante (mise à jour d'état
+  de la ressource elle-même).
+- **GET** — lecture pure, sans effet de bord (exceptions documentées :
+  magic links email, exports idempotents).
+
+Rétrocompatibilité : les anciens verbes restent acceptés comme **alias
+dépréciés** le temps de la migration des clients Flutter — listés dans
+`dev-hub/tools/openapi-coverage-allowlist.txt` (#4930).

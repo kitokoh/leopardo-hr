@@ -25,13 +25,17 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/onboarding-setup/progress', [OnboardingStepController::class, 'progress']);
     // #3430 : écritures d'état company-level réservées aux managers (api.manager) —
     // un employé simple ne peut plus falsifier le progrès d'onboarding de l'entreprise.
+    Route::post('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete'])
+        ->middleware('api.manager');
+    // #4930 : action métier → POST ; PATCH déprécié conservé (rétrocompatibilité).
     Route::patch('/onboarding-setup/{stepKey}/complete', [OnboardingStepController::class, 'complete'])
+        ->middleware('api.manager');
+    Route::post('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
         ->middleware('api.manager');
     Route::patch('/onboarding-setup/{stepKey}/skip', [OnboardingStepController::class, 'skip'])
         ->middleware('api.manager');
 
-    // Alias expected by mobile/web clients: list onboarding steps.
-    Route::get('/onboarding/steps', [OnboardingStepController::class, 'checklist']);
+
 
     // Feature Flags — read for all (la mise à jour de la matrice est réservée à
     // l'administration plateforme ; l'endpoint PUT #3892 n'a jamais été implémenté

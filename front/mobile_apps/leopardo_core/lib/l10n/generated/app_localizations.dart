@@ -6414,6 +6414,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Demande refusée'**
   String get approvalRejected;
+
+  /// No description provided for @saPermissionDenied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.'**
+  String get saPermissionDenied;
 }
 
 class _AppLocalizationsDelegate

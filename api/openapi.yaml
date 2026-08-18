@@ -4829,7 +4829,7 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /attendance/corrections/{correction}/approve:
-    put:
+    post:
       tags: ["Attendance"]
       summary: "Appliquer une demande de correction de pointage"
       parameters:
@@ -4856,7 +4856,7 @@ paths:
           $ref: "#/components/responses/Validation422"
 
   /attendance/corrections/{correction}/reject:
-    put:
+    post:
       tags: ["Attendance"]
       summary: "Refuser une demande de correction de pointage"
       parameters:
@@ -8175,7 +8175,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /absences/{absence}/approve:
-    put:
+    post:
       tags: ["Absences"]
       summary: "Approuver une absence (manager)"
       parameters:
@@ -8199,7 +8199,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /absences/{absence}/reject:
-    put:
+    post:
       tags: ["Absences"]
       summary: "Rejeter une absence (manager)"
       parameters:
@@ -8335,7 +8335,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /salary-advances/{salaryAdvance}/approve:
-    put:
+    post:
       tags: ["Salary Advances"]
       summary: "Approuver une avance (manager)"
       parameters:
@@ -8367,7 +8367,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /salary-advances/{salaryAdvance}/reject:
-    put:
+    post:
       tags: ["Salary Advances"]
       summary: "Rejeter une avance (manager)"
       parameters:
@@ -8399,7 +8399,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /salary-advances/{salaryAdvance}/manager-approve:
-    put:
+    post:
       tags: ["Salary Advances"]
       summary: "Valider une avance avant paiement (manager/RH)"
       parameters:
@@ -13144,7 +13144,7 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /loans/{employeeLoan}/approve:
-    put:
+    post:
       tags: ["Loans"]
       summary: "Approuver un pret"
       parameters:
@@ -13161,7 +13161,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /loans/{employeeLoan}/disburse:
-    put:
+    post:
       tags: ["Loans"]
       summary: "Decaisser un pret"
       parameters:
@@ -13265,7 +13265,7 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /expense-claims/{expenseClaim}/approve:
-    put:
+    post:
       tags: ["Expenses"]
       summary: "Approuver une note de frais"
       parameters:
@@ -13282,7 +13282,7 @@ paths:
           $ref: "#/components/responses/Error403"
 
   /expense-claims/{expenseClaim}/reject:
-    put:
+    post:
       tags: ["Expenses"]
       summary: "Rejeter une note de frais"
       parameters:
@@ -15771,7 +15771,7 @@ paths:
                   total_steps: { type: integer }
 
   /onboarding-setup/{stepKey}/complete:
-    patch:
+    post:
       tags: ["Onboarding"]
       summary: "Marquer une étape comme complète"
       security: [{ BearerAuth: [] }]
@@ -15785,7 +15785,7 @@ paths:
         "404": { description: "Étape inconnue" }
 
   /onboarding-setup/{stepKey}/skip:
-    patch:
+    post:
       tags: ["Onboarding"]
       summary: "Ignorer une étape d'onboarding"
       security: [{ BearerAuth: [] }]
@@ -15918,7 +15918,7 @@ paths:
           $ref: "#/components/responses/Error401"
 
   /payrolls/{payroll}/validate:
-    put:
+    post:
       tags: ["Payroll Engine"]
       summary: "Valider un run de paie (manager, même société)"
       parameters:
