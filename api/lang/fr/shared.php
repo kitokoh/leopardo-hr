@@ -9,7 +9,7 @@ return [
             'subtitle' => 'Conversationnelle, mobile-first, modulaire.',
         ],
         'hero' => [
-            'title' => 'Votre journee commence ici, pas dans un back-office.',
+            'title' => 'Votre journée commence ici, pas dans un back-office.',
             'description' => 'Pointage, suivi personnel et modules RH actifs s ouvrent d abord sur le telephone, avec une experience simple et lisible.',
         ],
         'story' => [
@@ -43,7 +43,7 @@ return [
             ],
         ],
         'personal_account' => [
-            'create' => 'Creer un compte personnel',
+            'create' => 'Créer un compte personnel',
             'explanation' => 'Compte personnel : organisez vos documents, puis creez ou rejoignez une entreprise depuis votre espace.',
         ],
         'back_tooltip' => 'Retour',

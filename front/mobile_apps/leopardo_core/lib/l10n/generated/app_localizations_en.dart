@@ -3401,4 +3401,157 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get saPermissionDenied =>
       'Location permission denied. Enable GPS in settings to start monitoring.';
+
+  @override
+  String get absencesApprove => 'Approve';
+  @override
+  String get absencesApproveBody => 'The request will move to approved status and the employee will be notified.';
+  @override
+  String get absencesApproveTitle => 'Approve this absence?';
+  @override
+  String get absencesApprovedSnack => 'Absence approved.';
+  @override
+  String get absencesAttachProof => 'Attach a supporting document (optional)';
+  @override
+  String get absencesBalancesLoading => 'Loading balances';
+  @override
+  String get absencesCancel => 'Cancel';
+  @override
+  String get absencesCancelBody => 'The pending request will be removed and HR will see the cancelled status.';
+  @override
+  String get absencesCancelRequest => 'Cancel request';
+  @override
+  String get absencesCancelTitle => 'Cancel this request?';
+  @override
+  String get absencesCancelledSnack => 'Absence request cancelled.';
+  @override
+  String get absencesCompanyLabel => 'Company: ';
+  @override
+  String get absencesCurrentCompany => 'Current company';
+  @override
+  String get absencesDateMissing => 'No request date';
+  @override
+  String get absencesDaysAvailable => ' day(s) available';
+  @override
+  String get absencesEmployeeLabel => 'Employee';
+  @override
+  String get absencesEmptyHint => 'Request an absence from the main button, then follow the HR decision here.';
+  @override
+  String get absencesEmptyTitle => 'No absences';
+  @override
+  String get absencesEnd => 'End';
+  @override
+  String get absencesFailure => 'Error: ';
+  @override
+  String get absencesKeep => 'Keep';
+  @override
+  String get absencesLoading => 'Loading absences';
+  @override
+  String get absencesNewAbsence => 'New absence';
+  @override
+  String get absencesNewAbsenceHint => 'Choose the balance type and the period to send to HR.';
+  @override
+  String get absencesNoTypeAvailable => 'No absence type available for this account. Contact HR to configure balances.';
+  @override
+  String get absencesProofAttached => 'Supporting document attached';
+  @override
+  String get absencesProofDownloaded => 'Supporting document downloaded: ';
+  @override
+  String get absencesReason => 'Reason';
+  @override
+  String get absencesReasonLabel => 'Reason: ';
+  @override
+  String get absencesReasonMissing => 'No reason provided';
+  @override
+  String get absencesReasonNotProvided => 'not provided';
+  @override
+  String get absencesReasonhint => 'e.g. medical appointment, family leave...';
+  @override
+  String get absencesReasonrequired => 'Reason is required';
+  @override
+  String get absencesReject => 'Reject';
+  @override
+  String get absencesRejectHelper => 'The reason will be visible to the employee.';
+  @override
+  String get absencesRejectTitle => 'Reject absence';
+  @override
+  String get absencesRejectedSnack => 'Absence rejected.';
+  @override
+  String get absencesRequest => 'Request';
+  @override
+  String get absencesRequestLabel => 'Request: ';
+  @override
+  String get absencesRequesterLabel => 'Requester: ';
+  @override
+  String get absencesStart => 'Start';
+  @override
+  String get absencesStatusApproved => 'approved';
+  @override
+  String get absencesStatusCancelled => 'cancelled';
+  @override
+  String get absencesStatusPending => 'pending';
+  @override
+  String get absencesStatusRejected => 'rejected';
+  @override
+  String get absencesSubmitToHr => 'Submit to HR';
+  @override
+  String get absencesSubmittedSnack => 'Absence request sent to HR.';
+  @override
+  String get absencesSubtitle => 'Requests, balances and HR decisions';
+  @override
+  String get absencesTitle => 'My absences';
+  @override
+  String get absencesType => 'Type';
+  @override
+  String get absencesTypeFallback => 'Absence';
+  @override
+  String get absencesTypeRequired => 'Absence type is required';
+  @override
+  String get absencesViewProof => 'View supporting document';
+  @override
+  String get apiLoginBackendError => 'Unexpected server response.';
+  @override
+  String get apiLoginInvalidJson => 'Invalid request body.';
+  @override
+  String get apiLoginNetworkError => 'Unable to reach the server.';
+  @override
+  String get apiLoginTimeout => 'The server is taking too long to respond. Please try again shortly.';
+  @override
+  String get billingCancelSubscriptionConfirm => 'Cancel your subscription? You will lose access to premium modules at the end of the current period.';
+  @override
+  String get billingCheckoutFailed => 'Unable to create the payment session.';
+  @override
+  String get billingCheckoutSandboxMessage => 'Simulated payment (sandbox mode). No card is charged.';
+  @override
+  String get billingCheckoutUnavailable => 'Online payment is temporarily unavailable. Contact support at support@leopardo-rh.com.';
+  @override
+  String get billingNoActivePeriod => 'No active period';
+  @override
+  String get billingNoActiveSubscription => 'No active subscription';
+  @override
+  String get billingPeriodLabel => 'Period';
+  @override
+  String get contractsAllstatuses => 'All statuses';
+  @override
+  String get contractsListSubtitle => 'Employee contract management: status tracking, expirations and PDF export, wired directly to the HR API.';
+  @override
+  String get contractsSearchplaceholder => 'Search for an employee or contract type...';
+  @override
+  String get dashboardModulesactivesentence => '{active} modules active, {locked} to activate based on your plan.';
+  @override
+  String get dashboardSearchplaceholder => 'Search...';
+  @override
+  String get dashboardYourcompany => 'Your company';
+  @override
+  String get marketingPostcontentplaceholder => 'Post content...';
+  @override
+  String get marketingSocialexampleplaceholder => 'Ex: Leopardo RH — Social media';
+  @override
+  String get trainingDurationplaceholder => 'Duration (h)';
+  @override
+  String get trainingMaxparticipantsplaceholder => 'Max participants';
+  @override
+  String get trainingOnline => 'Online';
+  @override
+  String get trainingTitleplaceholder => 'Title *';
 }
