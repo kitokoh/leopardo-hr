@@ -73,7 +73,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               const SizedBox(height: 12),
               Text(
                 context.l10n.errorUnexpected,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               Text(context.l10n.pageNotFound, textAlign: TextAlign.center),
@@ -108,7 +111,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/access-denied',
       };
       final onPublic = publicRoutes.contains(location);
-      final isAuthorized = isAuth && authState.employee!.isHr;
+      final isAuthorized =
+          isAuth && (authState.employee!.isManager || authState.employee!.isHr);
 
       if (!isAuth && !onPublic) return '/welcome';
       if (isAuth && !isAuthorized) {

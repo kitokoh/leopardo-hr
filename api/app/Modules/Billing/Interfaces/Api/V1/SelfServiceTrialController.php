@@ -62,9 +62,21 @@ class SelfServiceTrialController extends Controller
         // « compte déjà existant » est déplacée à l'étape verify, où le
         // client a prouvé la possession de la boîte mail (OTP valide).
         // L'existence est simplement loggée côté serveur ici.
-        $existingManager = $this->requestTrialSignup->findExistingManager($email);
-        if ($existingManager) {
-            Log::info('trial.signup_duplicate_email_uniform_response', ['email' => $email]);
+        // Issue #4949 : l'existence d'un manager ne doit JAMAIS produire un
+        // 500 brut — une erreur DB/schéma (ex. search_path prod) est convertie
+        // en 503 localisé réessayable (même contrat que #4866/#4874). La
+        // détection d'email existant est purement informative ici : la réponse
+        // reste uniforme (anti-énumération #3945).
+        try {
+            $existingManager = $this->requestTrialSignup->findExistingManager($email);
+            if ($existingManager) {
+                Log::info('trial.signup_duplicate_email_uniform_response', ['email' => $email]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('trial.signup_duplicate_check_failed', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         if (($validated['requestedWorkflow'] ?? '') === 'guided_trial') {
