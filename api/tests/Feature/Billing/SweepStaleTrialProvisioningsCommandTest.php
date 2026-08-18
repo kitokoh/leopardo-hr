@@ -23,12 +23,16 @@ class SweepStaleTrialProvisioningsCommandTest extends TestCase
     /** @param array<string, mixed> $overrides */
     private function insertProvisioning(array $overrides = []): void
     {
+        $staleTimestamp = DB::getDriverName() === 'pgsql'
+            ? DB::raw("CURRENT_TIMESTAMP - INTERVAL '2 hours'")
+            : now()->subHours(2);
+
         DB::table('public.trial_provisionings')->insert(array_merge([
             'email' => 'prospect@example.dz',
             'provisioning_token' => str_repeat('a', 64),
             'status' => 'pending',
-            'created_at' => now()->subHours(2),
-            'updated_at' => now()->subHours(2),
+            'created_at' => $staleTimestamp,
+            'updated_at' => $staleTimestamp,
         ], $overrides));
     }
 
