@@ -6,6 +6,7 @@
 
 
 ## [Unreleased]
+- **feat(web): approbation/refus des absences dans le portail (Closes #5019).** La liste des absences gagne les actions Approuver/Refuser pour les demandes en attente : `PUT /absences/{id}/approve` et `PUT /absences/{id}/reject` (motif **obligatoire** au refus, contrat `rejected_reason` 1-1000), modal de refus motivé, statuts localisés ×4 (En attente/Approuvée/Refusée/Annulée), états loading/erreur, mises à jour optimistes. 3 tests composant.
 - **docs(api): openapi.yaml — 14 verbes d'action PUT/PATCH dépréciés documentés (deprecated: true)** → **744/744 routes couvertes, 0 gap, 0 allowlist, 0 drift** (allowlist vidée — convention #4930 entièrement documentée).
 - **fix(api/tests): fixtures NOT NULL suite HR — companies.city + users.first_name/last_name (issue #5034, partiel 4/9).** `EmployeeSensitiveFillableTest` créait des companies sans `city` (colonne NOT NULL sur le vrai schéma, public 000002) et `UserEmployeeLinkCrossTenantTest` des users sans `first_name`/`last_name` → SQLSTATE 23502. Ajout des champs manquants (4 échecs résolus) ; les 5 restants (`ExportHistoryTest` ×3, `OrganigrammeTest` ×2) relèvent d'investigations runtime (contrat de réponse/endpoint), hors fixtures.
 - **docs: corrections revue PM** — CHANGELOG : double header `## [Unreleased]` fusionné (D6) ; README : pipelines **41 → 43** (workflows réels, D4) et endpoints API **517 → 744** (couverture OpenAPI 100 %).

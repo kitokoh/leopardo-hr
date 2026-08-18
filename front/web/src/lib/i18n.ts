@@ -141,6 +141,25 @@ export type CopyTree = {
     qrLoading: string;
     steps: Record<string, { title: string; desc: string }>;
   };
+  absences: {
+    title: string;
+    approve: string;
+    reject: string;
+    cancel: string;
+    rejectTitle: string;
+    rejectBody: string;
+    reasonLabel: string;
+    reasonPlaceholder: string;
+    reasonRequired: string;
+    rejectConfirm: string;
+    rejectInProgress: string;
+    statusPending: string;
+    statusApproved: string;
+    statusRejected: string;
+    statusCancelled: string;
+    loadError: string;
+    empty: string;
+  };
   payrollPage: {
     title: string;
     subtitle: string;
@@ -654,6 +673,25 @@ const copy: Record<AppLocale, CopyTree> = {
         },
       },
     },
+    absences: {
+      title: 'Absences',
+      approve: 'Approuver',
+      reject: 'Refuser',
+      cancel: 'Annuler',
+      rejectTitle: 'Refuser la demande',
+      rejectBody: "Précisez le motif du refus (obligatoire). L'employé sera notifié.",
+      reasonLabel: 'Motif du refus',
+      reasonPlaceholder: 'Motif obligatoire…',
+      reasonRequired: 'Le motif est obligatoire pour refuser.',
+      rejectConfirm: 'Confirmer le refus',
+      rejectInProgress: 'Refus en cours...',
+      statusPending: 'En attente',
+      statusApproved: 'Approuvée',
+      statusRejected: 'Refusée',
+      statusCancelled: 'Annulée',
+      loadError: 'Impossible de charger les absences.',
+      empty: 'Aucune absence.',
+    },
     payrollPage: {
       title: 'Paie',
       subtitle: "Bulletins de paie et cycles de paie, avec export PDF direct, connecte a l'API RH pour chaque tenant.",
@@ -1163,6 +1201,25 @@ const copy: Record<AppLocale, CopyTree> = {
           desc: 'قم بتسجيل حضور تجريبي للتحقق من الإعداد.',
         },
       },
+    },
+    absences: {
+      title: 'الإجازات',
+      approve: 'موافقة',
+      reject: 'رفض',
+      cancel: 'إلغاء',
+      rejectTitle: 'رفض الطلب',
+      rejectBody: 'يرجى تحديد سبب الرفض (إلزامي). سيتم إشعار الموظف.',
+      reasonLabel: 'سبب الرفض',
+      reasonPlaceholder: 'السبب إلزامي…',
+      reasonRequired: 'السبب إلزامي للرفض.',
+      rejectConfirm: 'تأكيد الرفض',
+      rejectInProgress: 'جارٍ الرفض...',
+      statusPending: 'قيد الانتظار',
+      statusApproved: 'تمت الموافقة',
+      statusRejected: 'مرفوض',
+      statusCancelled: 'ملغى',
+      loadError: 'تعذر تحميل الإجازات.',
+      empty: 'لا توجد إجازات.',
     },
     payrollPage: {
       title: 'الرواتب',
@@ -1674,6 +1731,25 @@ const copy: Record<AppLocale, CopyTree> = {
         },
       },
     },
+    absences: {
+      title: 'İzinler',
+      approve: 'Onayla',
+      reject: 'Reddet',
+      cancel: 'İptal',
+      rejectTitle: 'Talebi reddet',
+      rejectBody: 'Reddetme nedenini belirtin (zorunlu). Çalışana bildirim gönderilecektir.',
+      reasonLabel: 'Reddetme nedeni',
+      reasonPlaceholder: 'Zorunlu neden…',
+      reasonRequired: 'Reddetmek için neden zorunludur.',
+      rejectConfirm: 'Reddi onayla',
+      rejectInProgress: 'Reddediliyor...',
+      statusPending: 'Beklemede',
+      statusApproved: 'Onaylandı',
+      statusRejected: 'Reddedildi',
+      statusCancelled: 'İptal edildi',
+      loadError: 'İzinler yüklenemedi.',
+      empty: 'İzin yok.',
+    },
     payrollPage: {
       title: 'Bordro',
       subtitle: 'Bordrolar ve bordro donemleri, her kiraci icin IK API sine bagli dogrudan PDF disa aktarimi ile.',
@@ -2183,6 +2259,25 @@ const copy: Record<AppLocale, CopyTree> = {
           desc: 'Run a test check-in to validate the setup.',
         },
       },
+    },
+    absences: {
+      title: 'Absences',
+      approve: 'Approve',
+      reject: 'Reject',
+      cancel: 'Cancel',
+      rejectTitle: 'Reject request',
+      rejectBody: 'Please provide the rejection reason (required). The employee will be notified.',
+      reasonLabel: 'Rejection reason',
+      reasonPlaceholder: 'Required reason…',
+      reasonRequired: 'A reason is required to reject.',
+      rejectConfirm: 'Confirm rejection',
+      rejectInProgress: 'Rejecting...',
+      statusPending: 'Pending',
+      statusApproved: 'Approved',
+      statusRejected: 'Rejected',
+      statusCancelled: 'Cancelled',
+      loadError: 'Unable to load absences.',
+      empty: 'No absences.',
     },
     payrollPage: {
       title: 'Payroll',
