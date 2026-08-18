@@ -171,6 +171,7 @@ return [
     'PLATFORM_ADMIN_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
     'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
     'CONTACT_EMAIL_REQUIRED' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',

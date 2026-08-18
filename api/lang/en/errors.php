@@ -172,6 +172,7 @@ return [
     'PLATFORM_ADMIN_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
     'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'No active plan is available to approve this request.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'No active plan is available to approve this request.',
     'CONTACT_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Enterprise schema mode is frozen. Contact support.',

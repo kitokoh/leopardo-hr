@@ -172,6 +172,7 @@ return [
     'PLATFORM_ADMIN_ONLY' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
     'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Seul un administrateur plateforme peut modifier le calendrier islamique.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'Aucun plan actif disponible pour approuver cette demande.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'Aucun plan actif disponible pour approuver cette demande.',
     'CONTACT_EMAIL_REQUIRED' => 'Un email de contact est requis pour approuver cette demande.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Mode schema Enterprise gelé. Contactez le support.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Mode schema Enterprise gelé. Contactez le support.',

@@ -171,6 +171,7 @@ return [
     'PLATFORM_ADMIN_ONLY' => 'İslami takvimi yalnızca platform yöneticisi değiştirebilir.',
     'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'İslami takvimi yalnızca platform yöneticisi değiştirebilir.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'Bu talebi onaylamak için uygun aktif bir plan yok.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'Bu talebi onaylamak için uygun aktif bir plan yok.',
     'CONTACT_EMAIL_REQUIRED' => 'Bu talebi onaylamak için bir iletişim e-postası gereklidir.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
     'COMPANY_SCHEMA_MODE_LOCKED' => 'Kurumsal şema modu donduruldu. Destek ile iletişime geçin.',
