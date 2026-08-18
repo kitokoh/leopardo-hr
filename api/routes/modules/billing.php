@@ -46,10 +46,13 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/billing/subscription/renew', [BillingController::class, 'renew']);
         Route::get('/billing/invoices', [BillingController::class, 'invoices']);
         Route::get('/billing/invoices/{id}', [BillingController::class, 'showInvoice'])->whereNumber('id');
+        // #4931 : GET idempotent accepté — génération PDF pure (aucune écriture).
         Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'invoicePdf'])->whereNumber('id');
 
         // Stripe Checkout & Portal
         Route::post('/billing/checkout', [BillingController::class, 'createCheckoutSession']);
-        Route::get('/billing/portal', [BillingController::class, 'customerPortal']);
+        // #4931 : customerPortal CRÉE une session Stripe (effet de bord) →
+        // POST, jamais GET. La réponse reste la même (URL du portal).
+        Route::post('/billing/portal', [BillingController::class, 'customerPortal']);
     });
 });

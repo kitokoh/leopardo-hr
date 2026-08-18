@@ -992,5 +992,156 @@
   "trainingTitleplaceholder": "Titre *",
   "trainingDurationplaceholder": "Duree (h)",
   "trainingMaxparticipantsplaceholder": "Participants max",
-  "trainingOnline": "En ligne"
+  "trainingOnline": "En ligne",
+  "retry": "Réessayer",
+  "featureComingSoon": "Fonction bientôt disponible",
+  "backToHome": "Retour à l'accueil",
+  "pageNotFound": "La page demandée est introuvable ou la navigation a échoué.",
+  "registerCreateAccount": "Créer votre compte",
+  "registerFirstName": "Prénom",
+  "registerRequired": "Obligatoire",
+  "registerPassword": "Mot de passe",
+  "registerMinChars": "8 caractères minimum",
+  "registerCreating": "Création de compte en cours...",
+  "registerSubmit": "Créer mon compte",
+  "accessDeniedTitle": "Accès refusé",
+  "accessDeniedBody": "Votre compte n'a pas le rôle Manager requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, RH…) ou contactez votre administrateur.",
+  "accessDeniedLogout": "Se déconnecter",
+  "accessDeniedBodyHr": "Votre compte n'a pas le rôle RH requis pour cette application. Utilisez l'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur.",
+  "evaluationsTitle": "Mes Évaluations",
+  "evaluationsEmpty": "Aucune évaluation",
+  "evaluationsEmptyHint": "Vous n'avez pas encore d'évaluation enregistrée.",
+  "evaluationPeriod": "Période : {period}",
+  "@evaluationPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "attendanceOnTime": "à l'heure",
+  "attendanceLate": "en retard",
+  "attendanceAbsent": "absent",
+  "attendanceInProgress": "en cours",
+  "attendanceNoClock": "pas de pointage",
+  "attendanceTimeRange": "de {from} à {to}",
+  "@attendanceTimeRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "attendanceHourWorked": "heure travaillée",
+  "attendanceHoursWorked": "heures travaillées",
+  "attendanceDaySummary": "Journée du {date}, statut {status}, {range}, {hours}.",
+  "@attendanceDaySummary": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionApproved": "Session approuvée ✓",
+  "sessionRejected": "Session rejetée",
+  "pendingSessionsToValidate": "À valider",
+  "pendingSessionsUpToDate": "Tout est à jour",
+  "pendingSessionsEmpty": "Aucune session GPS en attente de validation.",
+  "employeeNumber": "Employé #{id}",
+  "@employeeNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionEntryAt": "Entrée : {time}",
+  "@sessionEntryAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsToValidate": "Sessions à valider",
+  "errorPrefix": "Erreur : {message}",
+  "@errorPrefix": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "saDashboardTitle": "Pointage GPS — tableau de bord équipe",
+  "saDetected": "Détectées",
+  "saApproved": "Approuvées",
+  "saRejected": "Rejetées",
+  "saRecentSessions": "Sessions récentes",
+  "saForced": "Imposé",
+  "saPresenceInProgress": "Présence en cours depuis {time}",
+  "@saPresenceInProgress": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "saGpsZoneNotConfigured": "La zone GPS de votre entreprise n'est pas encore configurée.",
+  "saDisableAutoGps": "Désactiver le GPS automatique",
+  "saStatusApproved": "Approuvée",
+  "saStatusDetected": "Détectée",
+  "saStatusRejected": "Rejetée",
+  "saStatusCancelled": "Annulée",
+  "saStatusPending": "En validation",
+  "saEnableAutoGps": "Activer le GPS automatique",
+  "attendanceOvertime": "Heures supplémentaires",
+  "approvalsUpToDate": "Tout est à jour",
+  "approvalsEmpty": "Aucune approbation en attente.",
+  "saConfigLoadError": "Impossible de charger la configuration.\n{error}",
+  "@saConfigLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "ampAutoDetectDesc": "Votre présence est détectée automatiquement dès que vous entrez dans la zone de l'entreprise. Aucune action requise de votre part.",
+  "ampRecommended": "Recommandé",
+  "ampQrScanDesc": "Scannez le QR Code affiché à l'entrée de l'entreprise pour pointer votre arrivée et votre départ.",
+  "ampManualDesc": "Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l'écran de présence.",
+  "ampSaveError": "Impossible de sauvegarder votre préférence. Vérifiez votre connexion.",
+  "ampTitle": "Choisissez comment vous souhaitez pointer votre présence chaque jour.",
+  "ampModeTitle": "Mode de pointage",
+  "back": "Retour",
+  "refresh": "Actualiser",
+  "saSessionsLoadError": "Impossible de charger les sessions GPS. Vérifiez votre connexion.",
+  "saStartMonitoringError": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.",
+  "shellTeam": "Équipe",
+  "shellSettings": "Réglages",
+  "homeCompleteOnboarding": "Compléter mon onboarding",
+  "homeOnboardingHint": "Configurez votre espace en quelques étapes.",
+  "welcomeMyTeam": "Mon équipe",
+  "welcomePresences": "Présences",
+  "welcomeTasks": "Tâches",
+  "welcomeLeaves": "Congés",
+  "monthlySummaryLoading": "Chargement du résumé mensuel...",
+  "orgChartEmpty": "L'organigramme sera disponible une fois les employés configurés.",
+  "orgChartCollapse": "Réduire",
+  "orgChartExpand": "Développer",
+  "errorUnexpected": "Une erreur est survenue",
+  "approvalApproved": "Demande approuvée",
+  "approvalRejected": "Demande refusée",
+  "saPermissionDenied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
 }

@@ -992,5 +992,156 @@
   "trainingTitleplaceholder": "Title *",
   "trainingDurationplaceholder": "Duration (h)",
   "trainingMaxparticipantsplaceholder": "Max participants",
-  "trainingOnline": "Online"
+  "trainingOnline": "Online",
+  "retry": "Retry",
+  "featureComingSoon": "Feature coming soon",
+  "backToHome": "Back to home",
+  "pageNotFound": "The requested page was not found or the navigation failed.",
+  "registerCreateAccount": "Create your account",
+  "registerFirstName": "First name",
+  "registerRequired": "Required",
+  "registerPassword": "Password",
+  "registerMinChars": "8 characters minimum",
+  "registerCreating": "Creating your account...",
+  "registerSubmit": "Create my account",
+  "accessDeniedTitle": "Access denied",
+  "accessDeniedBody": "Your account does not have the required Manager role for this application. Use the application matching your role (Employee, HR…) or contact your administrator.",
+  "accessDeniedLogout": "Log out",
+  "accessDeniedBodyHr": "Your account does not have the required HR role for this application. Use the application matching your role (Employee, Manager…) or contact your administrator.",
+  "evaluationsTitle": "My Evaluations",
+  "evaluationsEmpty": "No evaluations",
+  "evaluationsEmptyHint": "You don't have any recorded evaluation yet.",
+  "evaluationPeriod": "Period: {period}",
+  "@evaluationPeriod": {
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "attendanceOnTime": "on time",
+  "attendanceLate": "late",
+  "attendanceAbsent": "absent",
+  "attendanceInProgress": "in progress",
+  "attendanceNoClock": "no clock-in",
+  "attendanceTimeRange": "from {from} to {to}",
+  "@attendanceTimeRange": {
+    "placeholders": {
+      "from": {
+        "type": "String"
+      },
+      "to": {
+        "type": "String"
+      }
+    }
+  },
+  "attendanceHourWorked": "hour worked",
+  "attendanceHoursWorked": "hours worked",
+  "attendanceDaySummary": "Day of {date}, status {status}, {range}, {hours}.",
+  "@attendanceDaySummary": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "range": {
+        "type": "String"
+      },
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionApproved": "Session approved ✓",
+  "sessionRejected": "Session rejected",
+  "pendingSessionsToValidate": "To validate",
+  "pendingSessionsUpToDate": "All up to date",
+  "pendingSessionsEmpty": "No GPS session waiting for validation.",
+  "employeeNumber": "Employee #{id}",
+  "@employeeNumber": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionEntryAt": "Entry: {time}",
+  "@sessionEntryAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionsToValidate": "Sessions to validate",
+  "errorPrefix": "Error: {message}",
+  "@errorPrefix": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "saDashboardTitle": "GPS attendance — team dashboard",
+  "saDetected": "Detected",
+  "saApproved": "Approved",
+  "saRejected": "Rejected",
+  "saRecentSessions": "Recent sessions",
+  "saForced": "Enforced",
+  "saPresenceInProgress": "Presence in progress since {time}",
+  "@saPresenceInProgress": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "saGpsZoneNotConfigured": "Your company's GPS zone is not configured yet.",
+  "saDisableAutoGps": "Disable automatic GPS",
+  "saStatusApproved": "Approved",
+  "saStatusDetected": "Detected",
+  "saStatusRejected": "Rejected",
+  "saStatusCancelled": "Cancelled",
+  "saStatusPending": "Pending validation",
+  "saEnableAutoGps": "Enable automatic GPS",
+  "attendanceOvertime": "Overtime hours",
+  "approvalsUpToDate": "All up to date",
+  "approvalsEmpty": "No pending approvals.",
+  "saConfigLoadError": "Unable to load the configuration.\n{error}",
+  "@saConfigLoadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "ampAutoDetectDesc": "Your presence is detected automatically as soon as you enter the company zone. No action required from you.",
+  "ampRecommended": "Recommended",
+  "ampQrScanDesc": "Scan the QR Code displayed at the company entrance to clock in and out.",
+  "ampManualDesc": "Clock in manually using the Arrival and Departure buttons in the attendance screen.",
+  "ampSaveError": "Unable to save your preference. Check your connection.",
+  "ampTitle": "Choose how you want to clock your presence every day.",
+  "ampModeTitle": "Attendance mode",
+  "back": "Back",
+  "refresh": "Refresh",
+  "saSessionsLoadError": "Unable to load GPS sessions. Check your connection.",
+  "saStartMonitoringError": "Unable to start GPS monitoring. Check location permissions and try again.",
+  "shellTeam": "Team",
+  "shellSettings": "Settings",
+  "homeCompleteOnboarding": "Complete my onboarding",
+  "homeOnboardingHint": "Set up your workspace in a few steps.",
+  "welcomeMyTeam": "My team",
+  "welcomePresences": "Attendance",
+  "welcomeTasks": "Tasks",
+  "welcomeLeaves": "Leave",
+  "monthlySummaryLoading": "Loading monthly summary...",
+  "orgChartEmpty": "The org chart will be available once employees are configured.",
+  "orgChartCollapse": "Collapse",
+  "orgChartExpand": "Expand",
+  "errorUnexpected": "An error occurred",
+  "approvalApproved": "Request approved",
+  "approvalRejected": "Request rejected",
+  "saPermissionDenied": "Location permission denied. Enable GPS in settings to start monitoring."
 }

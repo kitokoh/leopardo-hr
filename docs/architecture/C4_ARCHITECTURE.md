@@ -31,7 +31,7 @@ C4Container
     Container(admin, "Admin Dashboard", "Vue 3 / Vite", "Pilotage plateforme et modules admin")
     Container(web, "Web manager", "Laravel Blade / Next selon surface", "Portail manager et vitrine")
     Container(mobile, "Mobile", "Flutter Riverpod", "Pointage, conges, paie, notifications")
-    Container(api, "Backend API", "Laravel 11 / PHP 8.4", "API REST, RBAC, tenant, workflows RH")
+    Container(api, "Backend API", "Laravel 12 / PHP 8.4", "API REST, RBAC, tenant, workflows RH")
     ContainerDb(pg, "PostgreSQL 16", "Schemas public/tenant", "Donnees transactionnelles")
     Container(redis, "Redis 7", "Cache / queue / rate limit", "Performance et traitements async")
     Container(ci, "GitHub Actions", "CI/CD", "Tests, quality, deploy gates")

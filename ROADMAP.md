@@ -11,24 +11,34 @@ Leopardo RH follows a phased delivery approach, prioritizing stability for SMEs 
 Depuis 2026-08-07, le projet suit le **programme FOCUS** (plan complet : `docs/focus/PLAN.md`, issues `focus` F-01…F-30) : approfondissement du noyau (paie DZ, HR, présence, sécurité, qualité) **sans fermer les autres modules**, qui passent en maintenance assumée (bugs/sécurité prioritaires, features re-planifiées — ADR-0012).
 
 - **Wedge** : conformité paie DZ (IRG, CNAS, golden tests, bulletins, exports, clôture 2 étapes).
-- **Métriques** : coverage Payroll ≥ 80 %, ≥ 40 golden tests, #1472 clos, 3 pilotes DZ.
+- **Métriques** : coverage Payroll ≥ 80 % (gate dédiée `payroll-ci.yml` + warning par module en CI), ≥ 40 golden tests, purge des secrets #1472/#1601/#1467 **clos** (2026-08-11), 3 pilotes DZ.
 - **Périphérique** : label `peripheral`, aucune suppression.
 
 ## 📍 Current Status: Phase 0 (MVP)
-**Status: COMPLETED & STABLE**
+**Status: COMPLETED** (périmètre produit)
 - Core HR management & employee lifecycle.
 - Multi-tenant shared isolation.
 - Native Mobile App (Flutter) for attendance tracking.
 - Basic Payroll Estimation logic.
 - ZKTeco Biometric Kiosk integration.
 
+> ⚠️ **État réel 2026-08-17** : le périmètre MVP est livré, mais la **stabilisation
+> production** est en cours — `leopardo-rh.com` en NXDOMAIN (#3452), migration vers
+> services gratuits Render/Vercel planifiée (#3765/#3766), vitrine déployée en retard
+> sur `main` (#4867). Voir `PILOTAGE.md` et `docs/qa/TRIAGE_2026-08-17.md` pour l'état
+> opérationnel courant.
+
 ---
 
 ## 🚀 Phase 1: Foundation Hardening (Q2 2026)
-**Status: IN PROGRESS**
+**Status: ~80 % — reste RTMX**
 - [x] Professional Documentation & Open Source Positioning.
-- [x] Domain-Driven Design (DDD) backend restructuring (18 modules — voir ARCHITECTURE.md).
-- [ ] Enterprise-grade security audits and hardening.
+- [x] Domain-Driven Design (DDD) backend restructuring — 18 modules DDD
+      (`docs/PLAN_ACTION2/09_AUDIT_MODULES_API_STRUCTURE.md`, `docs/archive/PLAN_ACTION2/`).
+- [x] Enterprise-grade security audits and hardening — chaîne d'audits
+      (`docs/audits/`), purge des secrets historiques effectuée 2026-08-11
+      (`docs/security/POST_MORTEM_PURGE_2026-08-11.md`), secret scanning actif,
+      Dependabot 0 alerte, CodeQL 1 alerte ouverte.
 - [ ] Real-time Mobile Experience (RTMX) components.
 
 ## 🏗 Phase 2: Modular Expansion (Q3 2026)
