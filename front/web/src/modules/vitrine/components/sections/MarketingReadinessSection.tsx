@@ -29,7 +29,7 @@ const copyByLocale: Record<AppLocale, ReadinessCopy> = {
       { title: 'Voir le produit en action', text: 'Un parcours demo clair pour comprendre la valeur avant achat.', href: '/demo', cta: 'Planifier une demo' },
       { title: 'Lire les guides RH', text: 'Des contenus concrets pour attirer managers, RH et dirigeants.', href: '/blog', cta: 'Explorer le blog' },
       { title: 'Comparer les plans', text: 'Une offre lisible pour demarrer petit puis activer les modules avances.', href: '/pricing', cta: 'Voir les tarifs' },
-      { title: 'Ouvrir votre espace client', text: 'Un chemin direct pour creer le compte entreprise et rejoindre le dashboard.', href: '/signup', cta: 'Commencer maintenant' },
+      { title: 'Ouvrir votre espace client', text: 'Un chemin direct pour créer le compte entreprise et rejoindre le dashboard.', href: '/signup', cta: 'Commencer maintenant' },
     ],
   },
   en: {

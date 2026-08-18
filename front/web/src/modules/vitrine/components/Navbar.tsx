@@ -102,7 +102,7 @@ const navByLocale: Record<string, NavEntry[]> = {
         { href: '/download?platform=windows', icon: <Monitor className="w-4 h-4" />, label: 'Windows', description: 'Client desktop pour ZKTeco et synchronisation' },
         { href: '/download?platform=macos', icon: <Laptop className="w-4 h-4" />, label: 'macOS', description: 'Espace bureau pour les equipes terrain' },
         { href: '/download?platform=android', icon: <Smartphone className="w-4 h-4" />, label: 'Android', description: 'Pointage mobile et self-service employe' },
-        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'Application mobile iOS pour employes et managers' },
+        { href: '/download?platform=ios', icon: <Smartphone className="w-4 h-4" />, label: 'iPhone', description: 'Application mobile iOS pour employés et managers' },
       ],
     },
     {
