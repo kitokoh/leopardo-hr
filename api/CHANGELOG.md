@@ -47,6 +47,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Les erreurs SQL réelles de `ProvisionGuidedTrial` ne sont plus remplacées par `SET search_path`, ce qui rend le diagnostic et le retry fiables.
 - **Provisioning demo : conserver `pending` pendant les retries du job.**
   - `ProvisionDemoTenantJob::handle()` ne marque plus prématurément la ligne `trial_provisionings` comme `failed` ; le statut final est écrit uniquement par `failed()` après épuisement des tentatives.
+- **Provisioning demo : renseigner le `password_hash` avant l’INSERT du manager.**
+  - `ProvisionGuidedTrial` prépare désormais le manager avec `forceFill()` puis l’insère en une seule opération ; cela respecte la contrainte PostgreSQL NOT NULL de `employees.password_hash`.
 - **fix(api): checklist onboarding unifiée — plus de 403 employé, shape unique (Closes #3239).**
   - `GET /onboarding/checklist` (moteur calculé) ne requiert plus `viewAny` : tout utilisateur authentifié du tenant (employé non-manager inclus) peut lire sa checklist (données scopées à sa société par le middleware tenant) ; les écritures `complete`/`skip` gardent leur RBAC existant
   - Shape canonique unique documentée (moteur calculé en référence) : `data{ completed_steps, total_steps, progress_percent, progress (alias), go_live_ready, next_actions, steps }` — `GET /onboarding-setup/checklist` (moteur DB) wrappe désormais sa collection sous `data.steps` et `GET /onboarding-setup/progress` expose aussi `progress_percent`

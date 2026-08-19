@@ -103,7 +103,10 @@ class ProvisionGuidedTrial
             $this->tenantManager->setTenant($company);
 
             try {
-                $manager = Employee::query()->create([
+                // Prepare every NOT NULL field before the initial INSERT.
+                // PostgreSQL rejects creating the employee first and assigning
+                // password_hash only afterwards (#4978).
+                $manager = new Employee([
                     'first_name' => 'Manager',
                     'last_name' => 'Sandbox',
                     'email' => $email,
@@ -117,15 +120,16 @@ class ProvisionGuidedTrial
                         'guided_trial' => true,
                     ],
                 ]);
-                // Sensitive fields set explicitly (not mass-assignable, #3677).
-                $manager->company_id = $company->id;
-                $manager->role = 'manager';
-                $manager->manager_role = 'principal';
-                $manager->status = 'active';
-                $manager->salary_base = 0;
-                // Issue #4496 : password_hash non mass-assignable.
-                $manager->password_hash = Hash::make(Str::random(16));
-                $manager->save();
+                // Sensitive fields are deliberately assigned explicitly
+                // (not mass-assignable, #3677/#4496).
+                $manager->forceFill([
+                    'company_id' => $company->id,
+                    'role' => 'manager',
+                    'manager_role' => 'principal',
+                    'status' => 'active',
+                    'salary_base' => 0,
+                    'password_hash' => Hash::make(Str::random(16)),
+                ])->save();
 
                 // Basic Seeding to make it look active
                 $this->seedBasicSandboxData($company->id, $manager->id);
