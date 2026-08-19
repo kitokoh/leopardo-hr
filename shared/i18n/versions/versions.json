@@ -50,19 +50,19 @@
       "checksums": {
         "ar": "6f71856968437d3a841e1806891f5e376e2411ed8b3a666f61af3042e7df482f",
         "en": "bede6ad5bb497522ba8eb852da28de0a82d4ed37993c355c805c7b0c64d23745",
-        "fr": "c850660202eb6f3c14eeaa55298bd6ba04f400af8a44a8ea11740fb7a597dbd9",
+        "fr": "8985680412ca9050e5bf35f1aeefa53d4128b4190c36302571a4ddbe830ca110",
         "tr": "003620c116424b658edfb8730ec3d95953844d4e3ac6177611be70898d14a41b"
       },
-      "updated_at": "2026-08-18T19:51:33.157Z"
+      "updated_at": "2026-08-19T03:24:02.634Z"
     },
     "admin": {
       "checksums": {
         "ar": "bb8024668a6cbe9fb7bc72d14bacf1a99968b2e4446db8dd48de7fbcf035f584",
         "en": "c75f1ed704b7d95360e7de8324c1527bd9744f2394ba8d22fa9a8c864a68fb57",
-        "fr": "dd46d134809bc3aceb6ad1a07a52540158a94c44685f77f4586a799c422711ab",
+        "fr": "4cb5648ba1954205fba54139112d5868bb14b472b95b90d2ba8906a209b397f7",
         "tr": "7337ae8b0d7b0a4a6be3306d5c8c7fb3f73d52300e1cc3b815598f7bb79332f4"
       },
-      "updated_at": "2026-08-18T19:51:33.182Z"
+      "updated_at": "2026-08-19T03:24:02.655Z"
     }
   }
 }

@@ -1560,7 +1560,7 @@
       "create": "Créer",
       "uploading": "Envoi en cours...",
       "document_added": "Document ajouté avec succès",
-      "upload_failed": "Échec de l'envoi du document. Réessayez.",
+      "upload_failed": "Échec de l’envoi du document. Réessayez.",
       "share_title": "Partager « {name} »",
       "create_share_link": "Créer un lien de partage",
       "link_copied": "Lien copié : {url}",
