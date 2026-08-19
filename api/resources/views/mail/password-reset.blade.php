@@ -9,7 +9,17 @@ Votre code de réinitialisation (valable **60 minutes**, usage unique) :
 
 # {{ $token }}
 
-<x-mail::button :url="config('app.url')">
+@php
+    // Le client public est le web client (Next.js) : le lien de réinitialisation
+    // doit y mener (page auth/reset-password?token=&email=), jamais au backend.
+    // Fallback : racine APP_URL si FRONTEND_URL n'est pas configuré (dev).
+    $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+    $resetUrl = $frontendUrl !== ''
+        ? $frontendUrl.'/auth/reset-password?token='.rawurlencode($token).'&email='.rawurlencode($email)
+        : config('app.url');
+@endphp
+
+<x-mail::button :url="$resetUrl">
 {{ __('emails.email_password_reset_button') }}
 </x-mail::button>
 
