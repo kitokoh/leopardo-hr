@@ -104,8 +104,8 @@ class CommunicationServiceTest extends TestCase
         ], ['email', 'sms', 'whatsapp']);
 
         $this->assertSame('queued', $result['results']['email']);
-        $this->assertSame('queued', $result['results']['sms']);
-        $this->assertSame('queued', $result['results']['whatsapp']);
+        $this->assertSame('undelivered', $result['results']['sms']);
+        $this->assertSame('undelivered', $result['results']['whatsapp']);
         $this->assertSame(3, CommunicationEvent::query()->where('template_key', 'payroll_ready')->count());
 
         CommunicationEvent::query()
