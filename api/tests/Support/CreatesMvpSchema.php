@@ -997,6 +997,11 @@ trait CreatesMvpSchema
 
         if (DB::getDriverName() === 'pgsql') {
             $this->restoreDefaultSearchPath();
+            // The MVP fixture drops/recreates both schemas outside Laravel's
+            // migration repository. Force the next RefreshTenantDatabase test
+            // to rebuild the canonical public + tenant schema instead of
+            // reusing RefreshDatabaseState::$migrated from the prior class.
+            RefreshDatabaseState::$migrated = false;
 
             return;
         }
