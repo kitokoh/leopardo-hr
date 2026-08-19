@@ -42,6 +42,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 - **Estimation salariale : restreindre les endpoints nominatifs aux managers.**
   - `quick-estimate` et `receipt` refusent désormais les employés non managers ; l’auto-service reste disponible via les endpoints `/me` dédiés.
   - Maintient le scope tenant et équipe de `EmployeePolicy::view` après le contrôle de rôle.
+- **PostgreSQL : préserver l’exception racine lors de la restauration du tenant.**
+  - `TenantManager::resetToPrevious()` ignore uniquement le `25P02` produit par le cleanup d’un transaction déjà abortée ; toute autre erreur de restauration continue d’être propagée.
+  - Les erreurs SQL réelles de `ProvisionGuidedTrial` ne sont plus remplacées par `SET search_path`, ce qui rend le diagnostic et le retry fiables.
 - **fix(api): checklist onboarding unifiée — plus de 403 employé, shape unique (Closes #3239).**
   - `GET /onboarding/checklist` (moteur calculé) ne requiert plus `viewAny` : tout utilisateur authentifié du tenant (employé non-manager inclus) peut lire sa checklist (données scopées à sa société par le middleware tenant) ; les écritures `complete`/`skip` gardent leur RBAC existant
   - Shape canonique unique documentée (moteur calculé en référence) : `data{ completed_steps, total_steps, progress_percent, progress (alias), go_live_ready, next_actions, steps }` — `GET /onboarding-setup/checklist` (moteur DB) wrappe désormais sa collection sous `data.steps` et `GET /onboarding-setup/progress` expose aussi `progress_percent`

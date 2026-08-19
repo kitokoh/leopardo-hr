@@ -6,6 +6,7 @@ namespace App\Core\Tenant;
 
 use App\Core\Tenant\Domain\Models\Company;
 use Closure;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -68,7 +69,17 @@ final class TenantManager
     public function resetToPrevious(): void
     {
         if ($this->isPostgres()) {
-            DB::statement('SET search_path TO '.$this->previousPath);
+            try {
+                DB::statement('SET search_path TO '.$this->previousPath);
+            } catch (QueryException $exception) {
+                // PostgreSQL rejects every statement after a failed query in
+                // the current transaction. Do not let this cleanup 25P02
+                // replace the original provisioning exception; the outer
+                // transaction/test teardown will rollback the failed scope.
+                if ($exception->getCode() !== '25P02') {
+                    throw $exception;
+                }
+            }
         }
 
         $this->restoreCompanyContext($this->previousCompany);
