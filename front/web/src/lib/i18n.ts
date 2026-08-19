@@ -121,6 +121,28 @@ export type CopyTree = {
     showPassword: string;
     hidePassword: string;
   };
+  accountActivation: {
+    title: string;
+    subtitle: string;
+    passwordLabel: string;
+    passwordPlaceholder: string;
+    confirmPasswordLabel: string;
+    confirmPasswordPlaceholder: string;
+    submit: string;
+    submitting: string;
+    successTitle: string;
+    successBody: string;
+    backToLogin: string;
+    invalidPassword: string;
+    passwordMismatch: string;
+    missingTokenTitle: string;
+    missingTokenBody: string;
+    alreadyAccepted: string;
+    expired: string;
+    genericError: string;
+    showPassword: string;
+    hidePassword: string;
+  };
   onboarding: {
     stepBadge: string;
     next: string;
@@ -627,6 +649,94 @@ const copy: Record<AppLocale, CopyTree> = {
       genericError: 'Une erreur est survenue. Réessayez dans quelques instants.',
       showPassword: 'Afficher le mot de passe',
       hidePassword: 'Masquer le mot de passe',
+    },
+    accountActivation: {
+      title: 'Activez votre compte',
+      subtitle: 'Définissez un mot de passe pour activer votre compte Leopardo RH.',
+      passwordLabel: 'Mot de passe',
+      passwordPlaceholder: '8 caractères minimum',
+      confirmPasswordLabel: 'Confirmer le mot de passe',
+      confirmPasswordPlaceholder: 'Répétez le mot de passe',
+      submit: 'Activer mon compte',
+      submitting: 'Activation…',
+      successTitle: 'Compte activé !',
+      successBody: 'Votre compte est actif. Vous pouvez maintenant vous connecter.',
+      backToLogin: 'Aller à la connexion',
+      invalidPassword: 'Le mot de passe doit contenir au moins 8 caractères.',
+      passwordMismatch: 'Les deux mots de passe ne correspondent pas.',
+      missingTokenTitle: 'Lien invalide ou expiré',
+      missingTokenBody: 'Ce lien d\'activation est invalide ou a expiré. Contactez votre manager pour recevoir une nouvelle invitation.',
+      alreadyAccepted: 'Ce lien a déjà été utilisé. Connectez-vous directement.',
+      expired: 'Ce lien a expiré. Demandez une nouvelle invitation.',
+      genericError: 'Une erreur est survenue. Réessayez dans quelques instants.',
+      showPassword: 'Afficher le mot de passe',
+      hidePassword: 'Masquer le mot de passe',
+    },
+    accountActivation: {
+      title: 'Activate your account',
+      subtitle: 'Set a password to activate your Leopardo RH account.',
+      passwordLabel: 'Password',
+      passwordPlaceholder: '8 characters minimum',
+      confirmPasswordLabel: 'Confirm password',
+      confirmPasswordPlaceholder: 'Repeat your password',
+      submit: 'Activate my account',
+      submitting: 'Activating…',
+      successTitle: 'Account activated!',
+      successBody: 'Your account is now active. You can sign in.',
+      backToLogin: 'Go to sign in',
+      invalidPassword: 'Password must be at least 8 characters.',
+      passwordMismatch: 'The two passwords do not match.',
+      missingTokenTitle: 'Invalid or expired link',
+      missingTokenBody: 'This activation link is invalid or has expired. Contact your manager to get a new invitation.',
+      alreadyAccepted: 'This link has already been used. Sign in directly.',
+      expired: 'This link has expired. Request a new invitation.',
+      genericError: 'Something went wrong. Please try again in a moment.',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
+    },
+    accountActivation: {
+      title: 'تفعيل حسابك',
+      subtitle: 'حدد كلمة مرور لتفعيل حسابك في ليوباردو RH.',
+      passwordLabel: 'كلمة المرور',
+      passwordPlaceholder: '8 أحرف على الأقل',
+      confirmPasswordLabel: 'تأكيد كلمة المرور',
+      confirmPasswordPlaceholder: 'أعد إدخال كلمة المرور',
+      submit: 'تفعيل حسابي',
+      submitting: 'جارٍ التفعيل…',
+      successTitle: 'تم تفعيل الحساب!',
+      successBody: 'حسابك أصبح نشطًا. يمكنك الآن تسجيل الدخول.',
+      backToLogin: 'الانتقال إلى تسجيل الدخول',
+      invalidPassword: 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.',
+      passwordMismatch: 'كلمتا المرور غير متطابقتين.',
+      missingTokenTitle: 'رابط غير صالح أو منتهي الصلاحية',
+      missingTokenBody: 'رابط التفعيل هذا غير صالح أو انتهت صلاحيته. تواصل مع مديرك للحصول على دعوة جديدة.',
+      alreadyAccepted: 'تم استخدام هذا الرابط بالفعل. سجّل الدخول مباشرة.',
+      expired: 'انتهت صلاحية هذا الرابط. اطلب دعوة جديدة.',
+      genericError: 'حدث خطأ ما. حاول مرة أخرى بعد قليل.',
+      showPassword: 'إظهار كلمة المرور',
+      hidePassword: 'إخفاء كلمة المرور',
+    },
+    accountActivation: {
+      title: 'Hesabınızı etkinleştirin',
+      subtitle: 'Leopardo RH hesabınızı etkinleştirmek için bir şifre belirleyin.',
+      passwordLabel: 'Şifre',
+      passwordPlaceholder: 'En az 8 karakter',
+      confirmPasswordLabel: 'Şifreyi onayla',
+      confirmPasswordPlaceholder: 'Şifrenizi tekrar girin',
+      submit: 'Hesabımı etkinleştir',
+      submitting: 'Etkinleştiriliyor…',
+      successTitle: 'Hesap etkinleştirildi!',
+      successBody: 'Hesabınız artık aktif. Giriş yapabilirsiniz.',
+      backToLogin: 'Girişe git',
+      invalidPassword: 'Şifre en az 8 karakter olmalıdır.',
+      passwordMismatch: 'Şifreler eşleşmiyor.',
+      missingTokenTitle: 'Geçersiz veya süresi dolmuş bağlantı',
+      missingTokenBody: 'Bu etkinleştirme bağlantısı geçersiz veya süresi dolmuş. Yeni bir davet için yöneticinizle iletişime geçin.',
+      alreadyAccepted: 'Bu bağlantı zaten kullanıldı. Doğrudan giriş yapın.',
+      expired: 'Bu bağlantının süresi doldu. Yeni bir davet isteyin.',
+      genericError: 'Bir hata oluştu. Birkaç dakika sonra tekrar deneyin.',
+      showPassword: 'Şifreyi göster',
+      hidePassword: 'Şifreyi gizle',
     },
     onboarding: {
       stepBadge: 'Étape {current} sur {total}',
