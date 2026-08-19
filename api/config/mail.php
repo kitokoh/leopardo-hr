@@ -62,6 +62,19 @@ return [
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
+        // Issue #5139 : l'egress Render bloque le SMTP sortant (587 comme
+        // 465 — timeout TCP vers smtp.mailgun.org). Bascule sur l'API HTTP
+        // Mailgun (port 443) : transport natif Laravel (symfony/mailgun-mailer
+        // déjà présent), idempotent avec le reste de la config.
+        'mailgun' => [
+            'transport' => 'mailgun',
+            'domain' => env('MAILGUN_DOMAIN'),
+            'secret' => env('MAILGUN_SECRET'),
+            'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+            // 'scheme' => 'https',
+            'timeout' => env('MAIL_SMTP_TIMEOUT', 15),
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],
