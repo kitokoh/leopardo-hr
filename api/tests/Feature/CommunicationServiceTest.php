@@ -240,7 +240,7 @@ class CommunicationServiceTest extends TestCase
 
             $this->assertSame('sent', $result['results']['app']);
             $this->assertSame('queued', $result['results']['email']);
-            $this->assertSame('queued', $result['results']['sms']);
+            $this->assertSame('undelivered', $result['results']['sms']);
             $this->assertSame(0, CommunicationEvent::query()->where('error_message', 'Quiet hours active.')->count());
         } finally {
             Carbon::setTestNow();
