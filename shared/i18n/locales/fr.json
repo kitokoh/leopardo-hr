@@ -468,7 +468,9 @@
     "retry_after_failure": "{label}. Reessayez.",
     "absent": "absent",
     "day": {
-      "summary": "Journée du {date}, statut {status}, {range}, {hours}."
+      "summary": "Journée du {date}, statut {status}, {range}, {hours}.",
+      "today": "Aujourd'hui",
+      "yesterday": "Hier"
     },
     "hour": {
       "worked": "heure travaillée"
@@ -494,7 +496,168 @@
       "time": {
         "error": "Impossible de saisir une heure future"
       }
-    }
+    },
+    "break": {
+      "failure": "Pause non confirmée",
+      "hint": "Ferme la session et marque une pause",
+      "loading": "Envoi de la pause",
+      "success": "Pause confirmée.",
+      "title": "Partir en pause"
+    },
+    "checkin": {
+      "failure": "Arrivée non confirmée. Réessayez.",
+      "label": "Arrivée",
+      "sending": "Envoi de l'arrivée vers le serveur...",
+      "success": "Arrivée confirmée."
+    },
+    "checkout": {
+      "failure": "Départ non confirmé. Réessayez.",
+      "label": "Départ",
+      "sending": "Envoi du départ vers le serveur...",
+      "success": "Départ confirmé."
+    },
+    "correction": {
+      "checkin": {
+        "label": "Arrivée réelle *"
+      },
+      "checkout": {
+        "label": "Départ réel"
+      },
+      "direct": {
+        "hint": "La correction sera appliquée au dossier de pointage."
+      },
+      "no": {
+        "log": {
+          "warning": "Aucune ligne de pointage existante à modifier pour ce jour."
+        }
+      },
+      "reason": {
+        "hint": "Motif (ex: oubli de pointage à 8h)",
+        "required": "Motif obligatoire"
+      },
+      "request": {
+        "hint": "La demande sera transmise au RH pour validation."
+      },
+      "submit": {
+        "direct": "Modifier",
+        "request": "Demander une modification"
+      },
+      "title": "Modifier le pointage",
+      "checkin_time": "Heure d'arrivée réelle",
+      "checkout_time": "Heure de départ réelle",
+      "checkin_required": "Saisir l'heure d'arrivée réelle",
+      "submit_error": "Impossible d'envoyer la modification pour le moment."
+    },
+    "daily": {
+      "estimate": "Gain estimé du jour"
+    },
+    "fingerprint": {
+      "enable": "Activer l'empreinte (optionnel)",
+      "enabled": "Empreinte activée (optionnel)"
+    },
+    "history": {
+      "title": "Historique"
+    },
+    "menu": {
+      "edit": "Modifier",
+      "monthly": "Mon mois complet",
+      "profile": "Mon profil"
+    },
+    "mission": {
+      "failure": "Mission non confirmée",
+      "hint": "Temps de travail hors site habituel",
+      "loading": "Envoi mission",
+      "success": "Mission démarrée.",
+      "title": "Mission"
+    },
+    "none": "Aucun",
+    "other": {
+      "label": "Autre"
+    },
+    "overtime_failure": "Heures supplémentaires non confirmées",
+    "overtime_hint": "Démarrer une session d'heures supp",
+    "overtime_loading": "Envoi heures supplémentaires",
+    "overtime_short": "Heure supp",
+    "overtime_success": "Heures supplémentaires démarrées.",
+    "overtime_title": "Heures supplémentaires",
+    "pause": {
+      "label": "Pause"
+    },
+    "preferences": {
+      "title": "Préférences"
+    },
+    "press": {
+      "to": {
+        "checkin": "Appuyez pour enregistrer votre arrivée",
+        "checkout": "Appuyez pour enregistrer votre départ"
+      }
+    },
+    "resume": {
+      "failure": "Reprise non confirmée",
+      "hint": "Reprendre après une pause ou une sortie",
+      "loading": "Envoi reprise",
+      "success": "Reprise confirmée.",
+      "title": "Reprise"
+    },
+    "role": {
+      "employee": "Employé",
+      "employee2": "Employé",
+      "finance": "Finance",
+      "hr": "Responsable RH",
+      "manager": "Manager",
+      "principal": "Manager principal"
+    },
+    "saving": "Enregistrement en cours...",
+    "settings": {
+      "title": "Paramètres"
+    },
+    "status": {
+      "complete": "Complet",
+      "in": {
+        "progress": "En cours"
+      },
+      "late": "Retard",
+      "pointer": "À pointer"
+    },
+    "sync": {
+      "title": "Synchronisation"
+    },
+    "tasks": {
+      "title": "Tâches du jour",
+      "loading": "Chargement des tâches du jour...",
+      "unavailable": "Tâches indisponibles",
+      "unavailable_hint": "Le pointage reste utilisable. Réessayez après synchronisation.",
+      "empty": "Aucune tâche aujourd'hui",
+      "empty_hint": "Vous pourrez pointer normalement. Les tâches assignées apparaîtront ici.",
+      "close_hint": "Clôturez ce qui est réalisé avant votre départ."
+    },
+    "this": {
+      "week": "CETTE SEMAINE"
+    },
+    "today": "AUJOURD'HUI",
+    "training": {
+      "label": "Formation"
+    },
+    "travel": {
+      "failure": "Déplacement non confirmé",
+      "hint": "Temps de déplacement professionnel",
+      "loading": "Envoi déplacement",
+      "success": "Déplacement démarré.",
+      "title": "Déplacement"
+    },
+    "week": {
+      "earnings": "Gain estimé",
+      "hours": "Heures semaine",
+      "late": "Retard cumulé",
+      "unavailable": "Semaine indisponible pour l'instant. Le pointage reste utilisable."
+    },
+    "work": {
+      "type": {
+        "title": "Type de pointage"
+      }
+    },
+    "sessions": "Sessions",
+    "break_minutes": "{minutes} min"
   },
   "holidays": {
     "page": {
@@ -1325,7 +1488,15 @@
       "to": {
         "date": "Tout est à jour"
       }
-    }
+    },
+    "loading": "Chargement des approbations...",
+    "reject": {
+      "reason": {
+        "hint": "Expliquez la raison...",
+        "label": "Motif du refus"
+      }
+    },
+    "title": "Approbations"
   },
   "back": "Retour",
   "employee": {
@@ -1531,18 +1702,178 @@
     "submit_to_hr": "Soumettre au RH",
     "submitted_snack": "Demande d'absence transmise au RH.",
     "days_available": " j disponibles",
-    "days_short": " j"
+    "days_short": " j",
+    "empty": "Aucune absence",
+    "list": {
+      "subtitle": "Demandes, soldes et décisions RH",
+      "title": "Mes Absences"
+    }
   },
   "settings": {
     "journey": {
       "load": {
         "error": "Impossible de charger votre parcours."
+      },
+      "in": {
+        "progress": "En cours"
+      },
+      "title": "Parcours professionnel",
+      "unknown": {
+        "company": "Entreprise",
+        "date": "Date inconnue",
+        "position": "Poste non renseigné"
       }
     },
     "stats": {
       "load": {
         "error": "Impossible de charger les statistiques."
       }
+    },
+    "account": {
+      "portable": {
+        "hint": "Votre compte reste utile même quand vous changez d'entreprise."
+      },
+      "subtitle": "Profil, langue et sécurité",
+      "title": "Compte"
+    },
+    "biometric": {
+      "approved": "Approuvé",
+      "consent": "Je consens au traitement de mes données biométriques.",
+      "device": "Appareil de référence (optionnel)",
+      "face": "Visage",
+      "fingerprint": "Empreinte digitale",
+      "manager": {
+        "hint": "Réservée aux profils employés dans cette app manager."
+      },
+      "none": "Aucun enrôlement",
+      "note": "Note (optionnel)",
+      "pending": "En attente",
+      "rejected": "Rejeté",
+      "saved": "Préparation biométrique enregistrée.",
+      "terminal": {
+        "hint": "Préparation doigt et visage pour les bornes terrain."
+      }
+    },
+    "confirm": {
+      "password": "Confirmer le mot de passe"
+    },
+    "current": {
+      "password": "Mot de passe actuel"
+    },
+    "edge": {
+      "saved": "Paramètres Edge enregistrés."
+    },
+    "email": {
+      "invalid": "Email invalide",
+      "label": "Email",
+      "required": "Email requis"
+    },
+    "employee": {
+      "profile": {
+        "hint": "Profil employé : accès au pointage, à l'historique personnel et aux paramètres de préparation biométrie."
+      }
+    },
+    "first": {
+      "name": "Prénom",
+      "name_required": "Prénom requis"
+    },
+    "kiosk": {
+      "biometric": {
+        "title": "Biométrie kiosk"
+      }
+    },
+    "language": {
+      "saved": "Langue enregistrée.",
+      "subtitle": "La langue choisie pilote aussi les notifications et textes futurs.",
+      "title": "Langue"
+    },
+    "last": {
+      "name": {
+        "label": "Nom",
+        "required": "Nom requis"
+      }
+    },
+    "logout": "Déconnexion",
+    "manager": {
+      "account": {
+        "hint": "Un compte manager doit rester clair, sécurisé et prêt pour les décisions terrain."
+      }
+    },
+    "mobile": {
+      "access": "Accès mobile"
+    },
+    "my": {
+      "profile": "Mon profil",
+      "qr": {
+        "employee": "Mon QR code",
+        "manager": "Mon QR manager"
+      }
+    },
+    "new": {
+      "password": "Nouveau mot de passe"
+    },
+    "no": {
+      "company": {
+        "qr": "Aucun QR entreprise dans le presse-papiers."
+      },
+      "journey": "Aucun parcours enregistré pour le moment."
+    },
+    "notifications": {
+      "subtitle": "Canaux, heures calmes et alertes manager opérationnelles.",
+      "title": "Notifications"
+    },
+    "password": {
+      "changed": "Mot de passe modifié.",
+      "min": {
+        "length": "8 caractères minimum"
+      },
+      "mismatch": "Mots de passe différents"
+    },
+    "paste": {
+      "qr": "Coller le QR fourni par le manager ou le RH"
+    },
+    "personal": {
+      "contacts": "Contacts personnels",
+      "email": "Email personnel (optionnel)",
+      "phone": "Téléphone personnel (optionnel)"
+    },
+    "portable": {
+      "account": {
+        "hint": "Vos informations personnelles restent attachées au compte."
+      }
+    },
+    "preferred": {
+      "language": "Langue préférée",
+      "language_label": "Langue préférée"
+    },
+    "profile": {
+      "saved": "Profil enregistré."
+    },
+    "qr": {
+      "copy": {
+        "token": "Copier aussi le jeton"
+      },
+      "manager": {
+        "hint": "Un collègue ou un RH peut le scanner pour pré-remplir une invitation."
+      }
+    },
+    "recovery": {
+      "email": "Email de secours (optionnel)"
+    },
+    "save": "Enregistrer",
+    "save_enrollment": "Enregistrer la préparation",
+    "save_profile": "Enregistrer le profil",
+    "saving": "Enregistrement...",
+    "security": {
+      "title": "Sécurité"
+    },
+    "session": {
+      "subtitle": "La déconnexion reste volontairement en bas de page.",
+      "title": "Session"
+    },
+    "team": {
+      "drive": "Pilotage équipe",
+      "drive_hint": "Profil, rôle et permissions restent lisibles pour les actions RH."
     }
   },
   "cabinet": {
@@ -1572,6 +1903,182 @@
       "delete_body": "Le document « {name} » sera supprimé définitivement.",
       "delete": "Supprimer",
       "documents_count": "{count, plural, =1{1 doc} other{{count} docs}}"
+    }
+  },
+  "absence": {
+    "cancel": {
+      "body": "La demande en attente sera retirée et le RH verra le statut annulé.",
+      "request": "Annuler la demande",
+      "title": "Annuler cette demande ?"
+    },
+    "cancelled": "Demande d'absence annulée.",
+    "label": "Absence",
+    "new": {
+      "hint": "Choisissez le type de solde et la période à transmettre au RH.",
+      "title": "Nouvelle absence"
+    },
+    "no": {
+      "type": "Aucun type d'absence disponible pour ce compte. Contactez le RH pour configurer les soldes."
+    },
+    "request": "Demander",
+    "view": {
+      "proof": "Voir le justificatif"
+    }
+  },
+  "action": {
+    "approve": "Approuver",
+    "cancel": "Annuler",
+    "reject": "Refuser"
+  },
+  "cancel": {
+    "request": "Annuler la demande"
+  },
+  "confirm": {
+    "receipt": "Confirmer la réception"
+  },
+  "empty": {
+    "absences": "Aucune absence",
+    "advances": "Aucune avance",
+    "history": "Aucun historique",
+    "payslips": "Aucune fiche de paie",
+    "sessions": "Aucune session"
+  },
+  "load": {
+    "error": "Erreur de chargement"
+  },
+  "no": {
+    "data": "Aucune donnée",
+    "reason": "Aucun motif",
+    "tasks": {
+      "today": "{'fr': \"Aucune tâche aujourd'hui\", 'en': 'No tasks today', 'tr': 'Bugün görev yok', 'ar': 'لا توجد مهام اليوم'}"
+    }
+  },
+  "salary": {
+    "advance": {
+      "attach": {
+        "hint": "Joindre une pièce (optionnel)"
+      },
+      "attachment": {
+        "label": "Pièce jointe"
+      },
+      "cancel": {
+        "action": "Annuler",
+        "body": "La demande en attente sera retirée avant décision RH.",
+        "request": "Annuler la demande",
+        "title": "Annuler cette avance ?"
+      },
+      "cancelled": "Demande d'avance annulée.",
+      "confirm": {
+        "action": "Confirmer",
+        "received": "Confirmer réception",
+        "received_body": "Confirmez seulement si le montant est effectivement arrivé. Cette action sera historisée.",
+        "received_title": "Confirmer la réception ?"
+      },
+      "keep": "Garder",
+      "list": {
+        "subtitle": "Demandes, statuts et remboursement",
+        "title": "Avances"
+      },
+      "no": {
+        "reason": "Aucun motif"
+      },
+      "payment": {
+        "declared": "Le manager a déclaré le paiement. Confirmez uniquement après réception effective."
+      },
+      "request": "Demander",
+      "request_title": "Demande d'avance",
+      "submitted": "Demande d'avance transmise au RH.",
+      "view": {
+        "proof": "Voir la pièce jointe"
+      }
+    },
+    "advances": {
+      "empty": "Aucune avance",
+      "empty_hint": "Demandez une avance en quelques secondes, puis suivez la décision RH ici.",
+      "loading": "Chargement des avances"
+    },
+    "status": {
+      "active": "active",
+      "approved": "approuvée",
+      "cancelled": "annulée",
+      "pending": "en attente",
+      "received": "reçue",
+      "rejected": "rejetée",
+      "to": {
+        "confirm": "à confirmer"
+      },
+      "validated": "validée"
+    }
+  },
+  "save": {
+    "profile": "Enregistrer le profil"
+  },
+  "saving": {
+    "profile": "Enregistrement…"
+  },
+  "tax": {
+    "slabs": {
+      "sim": {
+        "compare": "Salaire à comparer"
+      }
+    }
+  },
+  "team": {
+    "add": "Ajouter",
+    "add_collaborator": "Ajouter un collaborateur",
+    "add_from_qr": "Depuis QR employé",
+    "add_from_qr_hint": "Coller le code fourni",
+    "add_manual_form": "Formulaire classique",
+    "add_manual_hint": "Saisie manuelle complète",
+    "archive": "Archiver",
+    "archive_confirm_action": "Archiver",
+    "archive_confirm_title": "Archiver cet employé ?",
+    "archive_success": "Employé archivé.",
+    "confirm": {
+      "cancel": "Annuler"
+    },
+    "edit": {
+      "profile": "Modifier la fiche",
+      "profile_hint": "Mettre à jour les champs RH essentiels"
+    },
+    "employee": {
+      "label": "Employé"
+    },
+    "employees": {
+      "tab": "Employés"
+    },
+    "empty": "Aucun collaborateur",
+    "empty_hint": "Commencez par ajouter votre équipe avec le bouton ci-dessous.",
+    "invitations": {
+      "tab": "Invitations"
+    },
+    "make": {
+      "hr": "Nommer RH",
+      "hr_confirm_action": "Nommer RH",
+      "hr_confirm_title": "Nommer RH ?",
+      "hr_hint": "Donner les permissions RH à ce collaborateur",
+      "hr_success": "RH nommé."
+    },
+    "manager": {
+      "label": "Manager",
+      "required": "Accès manager/RH requis"
+    },
+    "revoke": {
+      "hr": "Révoquer RH",
+      "hr_confirm_action": "Révoquer",
+      "hr_confirm_title": "Révoquer RH ?",
+      "hr_hint": "Retirer les permissions RH de ce compte",
+      "hr_success": "Permissions RH retirées."
+    },
+    "subtitle": "Collaborateurs et invitations",
+    "title": "Équipe",
+    "view": {
+      "attendance": "Statistiques et pointages",
+      "attendance_hint": "Présence, anomalies, historique",
+      "profile": "Voir la fiche",
+      "profile_hint": "Coordonnées, poste, salaire, horaire",
+      "tasks": "Tâches",
+      "tasks_hint": "Voir ou assigner des tâches terrain"
     }
   }
 }

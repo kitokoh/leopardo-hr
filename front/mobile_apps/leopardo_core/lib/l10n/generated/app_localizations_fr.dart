@@ -3930,6 +3930,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get attendanceTasksTitle => 'Tâches du jour';
+  String get attendanceTasksLoading => 'Chargement des tâches du jour...';
+  String get attendanceTasksUnavailable => 'Tâches indisponibles';
+  String get attendanceTasksUnavailableHint => 'Le pointage reste utilisable. Réessayez après synchronisation.';
+  String get attendanceTasksEmpty => 'Aucune tâche aujourd\'hui';
+  String get attendanceTasksEmptyHint => 'Vous pourrez pointer normalement. Les tâches assignées apparaîtront ici.';
+  String get attendanceTasksCloseHint => 'Clôturez ce qui est réalisé avant votre départ.';
+  String get attendanceSessions => 'Sessions';
+  String attendanceBreakMinutes(Object minutes) => '$minutes min';
 
   @override
   String get attendanceHistoryTitle => 'Historique';
@@ -4090,6 +4098,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get attendanceStatusComplete => 'Complet';
   @override
+  String get attendanceDayToday => 'Aujourd\'hui';
+  String get attendanceDayYesterday => 'Hier';
+  String get attendanceCorrectionCheckinTime => 'Heure d\'arrivée réelle';
+  String get attendanceCorrectionCheckoutTime => 'Heure de départ réelle';
+  String get attendanceCorrectionCheckinRequired => 'Saisir l\'heure d\'arrivée réelle';
+  String get attendanceCorrectionSubmitError => 'Impossible d\'envoyer la modification pour le moment.';
   String get attendanceCorrectionTitle => 'Modifier le pointage';
   @override
   String get attendanceCorrectionDirectHint => 'La correction sera appliquée au dossier de pointage.';

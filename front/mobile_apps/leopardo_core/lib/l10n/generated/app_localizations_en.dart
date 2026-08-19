@@ -3883,6 +3883,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attendanceTasksTitle => 'Today\'s tasks';
+  String get attendanceTasksLoading => 'Loading today\'s tasks...';
+  String get attendanceTasksUnavailable => 'Tasks unavailable';
+  String get attendanceTasksUnavailableHint => 'Clocking in remains functional. Retry after sync.';
+  String get attendanceTasksEmpty => 'No tasks today';
+  String get attendanceTasksEmptyHint => 'You can still punch normally. Assigned tasks will appear here.';
+  String get attendanceTasksCloseHint => 'Close completed tasks before clocking out.';
+  String get attendanceSessions => 'Sessions';
+  String attendanceBreakMinutes(Object minutes) => '$minutes min';
 
   @override
   String get attendanceHistoryTitle => 'History';
@@ -4043,6 +4051,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get attendanceStatusComplete => 'Complete';
   @override
+  String get attendanceDayToday => 'Today';
+  String get attendanceDayYesterday => 'Yesterday';
+  String get attendanceCorrectionCheckinTime => 'Actual clock-in time';
+  String get attendanceCorrectionCheckoutTime => 'Actual clock-out time';
+  String get attendanceCorrectionCheckinRequired => 'Enter the actual clock-in time';
+  String get attendanceCorrectionSubmitError => 'Unable to send the correction at the moment.';
   String get attendanceCorrectionTitle => 'Edit attendance';
   @override
   String get attendanceCorrectionDirectHint => 'The correction will be applied to the attendance record.';

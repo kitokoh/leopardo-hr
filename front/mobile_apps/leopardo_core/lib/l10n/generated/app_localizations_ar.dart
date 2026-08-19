@@ -3851,6 +3851,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get attendanceTasksTitle => 'مهام اليوم';
+  String get attendanceTasksLoading => 'جارٍ تحميل مهام اليوم...';
+  String get attendanceTasksUnavailable => 'المهام غير متوفرة';
+  String get attendanceTasksUnavailableHint => 'يمكنك التسجيل بشكل طبيعي. أعد المحاولة بعد المزامنة.';
+  String get attendanceTasksEmpty => 'لا توجد مهام اليوم';
+  String get attendanceTasksEmptyHint => 'يمكنك تسجيل حضورك بشكل طبيعي. ستظهر المهام المعيّنة هنا.';
+  String get attendanceTasksCloseHint => 'أغلق ما تم إنجازه قبل تسجيل المغادرة.';
+  String get attendanceSessions => 'الجلسات';
+  String attendanceBreakMinutes(Object minutes) => '$minutes دق';
 
   @override
   String get attendanceHistoryTitle => 'السجل';
@@ -4011,6 +4019,12 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get attendanceStatusComplete => 'مكتمل';
   @override
+  String get attendanceDayToday => 'اليوم';
+  String get attendanceDayYesterday => 'أمس';
+  String get attendanceCorrectionCheckinTime => 'وقت الدخول الفعلي';
+  String get attendanceCorrectionCheckoutTime => 'وقت الخروج الفعلي';
+  String get attendanceCorrectionCheckinRequired => 'أدخل وقت الدخول الفعلي';
+  String get attendanceCorrectionSubmitError => 'تعذر إرسال التصحيح في الوقت الحالي.';
   String get attendanceCorrectionTitle => 'تعديل الحضور';
   @override
   String get attendanceCorrectionDirectHint => 'سيُطبق التصحيح على سجل الحضور.';

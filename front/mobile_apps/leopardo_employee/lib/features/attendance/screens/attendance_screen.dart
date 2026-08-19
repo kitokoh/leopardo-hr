@@ -130,7 +130,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 _buildNoticeGlassCard(attState.notice!, AppColors.warning),
               ],
               const SizedBox(height: 24),
-              _buildSectionTitle('CETTE SEMAINE'),
+              _buildSectionTitle(context.l10n.attendanceThisWeek),
               const SizedBox(height: 10),
               if (weekAsync.hasError)
                 _buildNoticeGlassCard(
@@ -464,37 +464,34 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
           child: tasksAsync.when(
-            loading: () => const _TasksSheetFrame(
+            loading: () => _TasksSheetFrame(
               child: _SheetMessage(
                 icon: Icons.sync,
                 title: context.l10n.attendanceSyncTitle,
-                body: 'Chargement des taches du jour...',
+                body: context.l10n.attendanceTasksLoading,
               ),
             ),
-            error: (_, __) => const _TasksSheetFrame(
+            error: (_, __) => _TasksSheetFrame(
               child: _SheetMessage(
                 icon: Icons.wifi_off_outlined,
-                title: 'Taches indisponibles',
-                body:
-                    'Le pointage reste utilisable. Reessayez apres synchronisation.',
+                title: context.l10n.attendanceTasksUnavailable,
+                body: context.l10n.attendanceTasksUnavailableHint,
               ),
             ),
             data: (tasks) => _TasksSheetFrame(
               child: tasks.isEmpty
-                  ? const _SheetMessage(
+                  ? _SheetMessage(
                       icon: Icons.task_alt_outlined,
-                      title: 'Aucune tache aujourd hui',
-                      body:
-                          'Vous pourrez pointer normalement. Les taches assignees apparaitront ici.',
+                      title: context.l10n.attendanceTasksEmpty,
+                      body: context.l10n.attendanceTasksEmptyHint,
                     )
                   : Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const _SheetHeader(
+                        _SheetHeader(
                           title: context.l10n.attendanceTasksTitle,
-                          subtitle:
-                              'Cloturez ce qui est realise avant votre depart.',
+                          subtitle: context.l10n.attendanceTasksCloseHint,
                         ),
                         const SizedBox(height: 14),
                         ...tasks.map((task) => _TaskLine(task: task)),
@@ -583,8 +580,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                 const SizedBox(width: 5),
                 Text(
                   _fingerprintEnabled
-                      ? 'Empreinte activee (optionnel)'
-                      : 'Activer l\'empreinte (optionnel)',
+                      ? context.l10n.attendanceFingerprintEnabled
+                      : context.l10n.attendanceFingerprintEnable,
                   style: TextStyle(
                     fontSize: 11,
                     color:
@@ -626,9 +623,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         children: [
           Row(
             children: [
-              const Text(
-                'AUJOURD\'HUI',
-                style: TextStyle(
+              Text(
+                context.l10n.attendanceToday,
+                style: const TextStyle(
                   color: _secondary,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -642,9 +639,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _TimeChip(label: 'Arrivee', value: checkIn)),
+              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckinLabel, value: checkIn)),
               const SizedBox(width: 10),
-              Expanded(child: _TimeChip(label: 'Depart', value: checkOut)),
+              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckoutLabel, value: checkOut)),
             ],
           ),
           if (sessionsCount > 1 || breakMinutes > 0) ...[
@@ -653,13 +650,16 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
               children: [
                 Expanded(
                   child: _TimeChip(
-                    label: 'Sessions',
+                    label: context.l10n.attendanceSessions,
                     value: sessionsCount.toString(),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _TimeChip(label: 'Pauses', value: '$breakMinutes min'),
+                  child: _TimeChip(
+                    label: context.l10n.attendancePauseLabel,
+                    value: context.l10n.attendanceBreakMinutes(breakMinutes),
+                  ),
                 ),
               ],
             ),

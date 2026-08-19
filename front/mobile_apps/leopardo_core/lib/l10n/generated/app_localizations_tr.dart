@@ -3884,6 +3884,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get attendanceTasksTitle => 'Bugünün görevleri';
+  String get attendanceTasksLoading => 'Günün görevleri yükleniyor...';
+  String get attendanceTasksUnavailable => 'Görevler kullanılamıyor';
+  String get attendanceTasksUnavailableHint => 'Yoklama yapılabilir. Senkronizasyon sonrası tekrar deneyin.';
+  String get attendanceTasksEmpty => 'Bugün görev yok';
+  String get attendanceTasksEmptyHint => 'Normal yoklama yapabilirsiniz. Atanan görevler burada görünecek.';
+  String get attendanceTasksCloseHint => 'Çıkış yapmadan önce tamamlananları kapatın.';
+  String get attendanceSessions => 'Oturumlar';
+  String attendanceBreakMinutes(Object minutes) => '$minutes dk';
 
   @override
   String get attendanceHistoryTitle => 'Geçmiş';
@@ -4044,6 +4052,12 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get attendanceStatusComplete => 'Tamamlandı';
   @override
+  String get attendanceDayToday => 'Bugün';
+  String get attendanceDayYesterday => 'Dün';
+  String get attendanceCorrectionCheckinTime => 'Gerçek giriş saati';
+  String get attendanceCorrectionCheckoutTime => 'Gerçek çıkış saati';
+  String get attendanceCorrectionCheckinRequired => 'Gerçek giriş saatini girin';
+  String get attendanceCorrectionSubmitError => 'Düzeltme şu an gönderilemiyor.';
   String get attendanceCorrectionTitle => 'Devam kaydını düzenle';
   @override
   String get attendanceCorrectionDirectHint => 'Düzeltme, devam kaydına uygulanacak.';

@@ -6320,7 +6320,8 @@ abstract class AppLocalizations {
   String cabinetScreenDeleteBody(Object name);
   String get cabinetScreenDeleteTitle;
 
-  String cabinetScreenDocumentsCount(num count);  String get cabinetScreenDocumentAdded;
+  String cabinetScreenDocumentsCount(num count);
+  String get cabinetScreenDocumentAdded;
   String get cabinetScreenDocuments;
   String get cabinetScreenEmailHint;
   String get cabinetScreenEmptyDescription;
@@ -6948,6 +6949,30 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   /// No description provided for @attendanceTasksTitle.
   String get attendanceTasksTitle;
 
+  /// No description provided for @attendanceTasksLoading.
+  String get attendanceTasksLoading;
+
+  /// No description provided for @attendanceTasksUnavailable.
+  String get attendanceTasksUnavailable;
+
+  /// No description provided for @attendanceTasksUnavailableHint.
+  String get attendanceTasksUnavailableHint;
+
+  /// No description provided for @attendanceTasksEmpty.
+  String get attendanceTasksEmpty;
+
+  /// No description provided for @attendanceTasksEmptyHint.
+  String get attendanceTasksEmptyHint;
+
+  /// No description provided for @attendanceTasksCloseHint.
+  String get attendanceTasksCloseHint;
+
+  /// No description provided for @attendanceSessions.
+  String get attendanceSessions;
+
+  /// No description provided for @attendanceBreakMinutes.
+  String attendanceBreakMinutes(Object minutes);
+
   /// No description provided for @attendanceHistoryTitle.
   String get attendanceHistoryTitle;
 
@@ -7105,6 +7130,24 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   String get attendanceStatusLate;
   /// No description provided for @attendanceStatusComplete.
   String get attendanceStatusComplete;
+  /// No description provided for @attendanceDayToday.
+  String get attendanceDayToday;
+
+  /// No description provided for @attendanceDayYesterday.
+  String get attendanceDayYesterday;
+
+  /// No description provided for @attendanceCorrectionCheckinTime.
+  String get attendanceCorrectionCheckinTime;
+
+  /// No description provided for @attendanceCorrectionCheckoutTime.
+  String get attendanceCorrectionCheckoutTime;
+
+  /// No description provided for @attendanceCorrectionCheckinRequired.
+  String get attendanceCorrectionCheckinRequired;
+
+  /// No description provided for @attendanceCorrectionSubmitError.
+  String get attendanceCorrectionSubmitError;
+
   /// No description provided for @attendanceCorrectionTitle.
   String get attendanceCorrectionTitle;
   /// No description provided for @attendanceCorrectionDirectHint.
