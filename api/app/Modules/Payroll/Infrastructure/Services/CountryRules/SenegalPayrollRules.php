@@ -131,8 +131,8 @@ class SenegalPayrollRules extends AbstractCountryRules
      * (employees.ipres_category). L'ancienne approximation par seuil de brut
      * est remplacée ici par la vérification de catégorie.
      *
-     * @param ?string  $category  Valeur de employees.ipres_category :
-     *                           'cadre' | 'general' | 'ouvrier' | null
+     * @param  ?string  $category  Valeur de employees.ipres_category :
+     *                             'cadre' | 'general' | 'ouvrier' | null
      * @return array{employee: float, employer: float}
      */
     public function calculateSocialChargesWithCategory(float $grossSalary, ?string $category): array
@@ -148,14 +148,14 @@ class SenegalPayrollRules extends AbstractCountryRules
      *   - Sans catégorie (null) : T2 si brut > 432 000 (approximation pilote
      *     conservée pour la compatibilité du moteur de base).
      *
-     * @param ?string $category  employees.ipres_category ou null
+     * @param  ?string  $category  employees.ipres_category ou null
      * @return array{employee: float, employer: float}
      */
     private function doCalculateSocialCharges(float $grossSalary, ?string $category): array
     {
-        $ipresCap  = 432000.0;
-        $cssCap    = 63000.0;
-        $t2Floor   = 432000.0;
+        $ipresCap = 432000.0;
+        $cssCap = 63000.0;
+        $t2Floor = 432000.0;
         // #1912 : plafond T2 = 1 296 000 XOF/mois (CLEISS 01/2026, AfricaPaieRH) —
         // l'ancienne valeur 2 160 000 était erronée.
         $t2Ceiling = 1296000.0;
@@ -198,12 +198,12 @@ class SenegalPayrollRules extends AbstractCountryRules
     public function calculateBracketTax(float $grossSalary): float
     {
         return match (true) {
-            $grossSalary <= 75000   => 900.0,
-            $grossSalary <= 200000  => 1800.0,
-            $grossSalary <= 600000  => 3600.0,
+            $grossSalary <= 75000 => 900.0,
+            $grossSalary <= 200000 => 1800.0,
+            $grossSalary <= 600000 => 3600.0,
             $grossSalary <= 1000000 => 7200.0,
             $grossSalary <= 1500000 => 12000.0,
-            default                 => 18000.0,
+            default => 18000.0,
         };
     }
 
@@ -236,9 +236,9 @@ class SenegalPayrollRules extends AbstractCountryRules
     public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
         return match (strtolower((string) $category)) {
-            'cadre'              => 66.0,
-            'ouvrier', 'worker'  => 6.0,
-            default              => 22.0,
+            'cadre' => 66.0,
+            'ouvrier', 'worker' => 6.0,
+            default => 22.0,
         };
     }
 
@@ -266,8 +266,8 @@ class SenegalPayrollRules extends AbstractCountryRules
     public function publicHolidaysSource(): string
     {
         return 'SN fixed public holidays (seed PublicHolidaySeeder, issue #2255): '
-            . '1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques '
-            . '(Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
+            .'1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques '
+            .'(Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
     }
 
     /**
