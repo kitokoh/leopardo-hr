@@ -34,20 +34,32 @@ class FeaturePlanMatrixSeeder extends Seeder
             ['feature_key' => 'custom_branding', 'free' => [false, null], 'pilot' => [false, null], 'operations' => [false, null], 'enterprise' => [true, null]],
         ];
 
+        $rows = [];
         foreach ($matrix as $row) {
             $featureKey = $row['feature_key'];
             foreach (['free', 'pilot', 'operations', 'enterprise'] as $plan) {
                 [$enabled, $limit] = $row[$plan];
-                DB::table('feature_plan_matrix')->updateOrInsert(
-                    ['feature_key' => $featureKey, 'plan' => $plan],
-                    [
-                        'enabled' => $enabled,
-                        'limit_value' => $limit,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ],
-                );
+                $rows[] = [
+                    'feature_key' => $featureKey,
+                    'plan' => $plan,
+                    'enabled' => $enabled,
+                    'limit_value' => $limit,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
         }
+
+        // Issue #5129 : `updateOrInsert` (SELECT puis INSERT) n'est pas
+        // race-safe sous PostgreSQL — deux déploiements concurrents (Render
+        // redéploie pendant qu'un retry du même boot tourne) produisent un
+        // 23505 unique_violation → `db:seed` échoue → deploy `update_failed`.
+        // `upsert` = INSERT ... ON CONFLICT (feature_key, plan) DO UPDATE —
+        // atomique, idempotent, concurrent-safe.
+        DB::table('feature_plan_matrix')->upsert(
+            $rows,
+            ['feature_key', 'plan'],
+            ['enabled', 'limit_value', 'updated_at'],
+        );
     }
 }
