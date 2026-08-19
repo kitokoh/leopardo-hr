@@ -90,4 +90,52 @@ class GoldenDzPayrollTest extends TestCase
         $this->assertSame(7042.0, $irg);
         $this->assertSame(47558.0, $net);
     }
-}
+
+    public function test_golden_dz_irg_at_30000_minimum_abatement(): void
+    {
+        // #5149 — Golden test calcul à la main : 30 000 DZD (tranche 23 %)
+        // Référence légale : CIDTA art. 104 (tranches IRG) + art. 104 bis
+        //                    (abattement forfaitaire 40 %, plancher 12 000 DZA/an).
+        //
+        // Calcul manuel :
+        //   Tranche 0–20 000 DZD → 0 %                   = 0
+        //   Tranche 20 001–30 000 DZD : 10 000 × 23 %    = 2 300 DZD/mois
+        //   Impôt mensuel avant abattement               = 2 300 DZD
+        //   Impôt annuel                                 = 2 300 × 12 = 27 600 DZD
+        //
+        //   Abattement = max(27 600 × 40 %, plancher 12 000) plafonné 18 000
+        //              = max(11 040, 12 000) = 12 000 DZD  ← plancher s'applique
+        //
+        //   IRG annuel net = 27 600 − 12 000 = 15 600 DZD
+        //   IRG mensuel    = 15 600 / 12     = 1 300 DZD
+        //
+        // Cas pédagogique : seul cas où le PLANCHER d'abattement est actif
+        // (40 % de 27 600 = 11 040 < plancher 12 000 DZD).
+        $this->assertSame(1300.0, $this->rules()->calculateIncomeTax(30000.0));
+    }
+
+    public function test_golden_dz_irg_at_120000_maximum_abatement_cap(): void
+    {
+        // #5149 — Golden test calcul à la main : 120 000 DZD (tranche 30 %)
+        // Référence légale : CIDTA art. 104 + art. 104 bis
+        //                    (abattement forfaitaire 40 %, plafond 18 000 DZA/an).
+        //
+        // Calcul manuel :
+        //   0–20 000 → 0 %                                = 0
+        //   20 001–40 000 : 20 000 × 23 %                = 4 600 DZD/mois
+        //   40 001–80 000 : 40 000 × 27 %                = 10 800 DZD/mois
+        //   80 001–120 000 : 40 000 × 30 %               = 12 000 DZD/mois
+        //   Impôt mensuel avant abattement               = 27 400 DZD
+        //   Impôt annuel                                 = 27 400 × 12 = 328 800 DZD
+        //
+        //   Abattement = max(328 800 × 40 %, plancher 12 000) plafonné 18 000
+        //              = max(131 520, 12 000) = 131 520 → plafonné à 18 000 DZD
+        //                                            ← PLAFOND s'applique
+        //
+        //   IRG annuel net = 328 800 − 18 000 = 310 800 DZD
+        //   IRG mensuel    = 310 800 / 12     = 25 900 DZD
+        //
+        // Cas pédagogique : seul cas où le PLAFOND d'abattement est actif
+        // (40 % de 328 800 = 131 520 > plafond 18 000 DZD).
+        $this->assertSame(25900.0, $this->rules()->calculateIncomeTax(120000.0));
+    }

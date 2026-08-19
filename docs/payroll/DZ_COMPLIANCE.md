@@ -52,6 +52,16 @@
 - Abattement : min(max(120 000 × 0,40 ; 12 000) ; 18 000) = 18 000 DZD
 - **IRG mensuel net : (120 000 − 18 000) / 12 = 8 500 DZD**
 
+**Cas limites de l'abattement (#5149 — golden tests ajoutés)** :
+
+| Salaire imposable | Impôt avant abattement | Abattement 40 % | Règle appliquée | IRG mensuel |
+|---|---|---|---|---|
+| 30 000 DZD | 27 600/an | 11 040 < plancher 12 000 | **Plancher 12 000** | **1 300 DZD** |
+| 60 000 DZD | 120 000/an | 48 000 > plafond 18 000 | **Plafond 18 000** | **8 500 DZD** |
+| 120 000 DZD | 328 800/an | 131 520 > plafond 18 000 | **Plafond 18 000** | **25 900 DZD** |
+
+Référence légale : CIDTA art. 104 (barèmes IRG) + art. 104 bis (abattement forfaitaire 40 %, plancher 12 000 DZD/an, plafond 18 000 DZD/an).
+
 ## 2. CNAS — Cotisations sécurité sociale
 
 | Cotisation | Taux | Assiette | Cap |

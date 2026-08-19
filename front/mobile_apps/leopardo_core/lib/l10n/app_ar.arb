@@ -1133,6 +1133,7 @@
   "absencesSubmitToHr": "إرسال إلى الموارد البشرية",
   "absencesSubmittedSnack": "تم إرسال طلب الغياب إلى الموارد البشرية.",
   "absencesDaysAvailable": " أيام متاحة",
+  "absencesDaysShort": " ي",
   "settingsJourneyLoadError": "تعذر تحميل مسارك.",
   "settingsStatsLoadError": "تعذر تحميل الإحصائيات.",
   "cabinetScreenTitleRoot": "خزانتي",

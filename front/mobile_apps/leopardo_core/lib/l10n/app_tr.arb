@@ -1133,6 +1133,7 @@
   "absencesSubmitToHr": "İK'ya gönder",
   "absencesSubmittedSnack": "İzin talebi İK'ya iletildi.",
   "absencesDaysAvailable": " gün kullanılabilir",
+  "absencesDaysShort": " g",
   "settingsJourneyLoadError": "Yolculuğunuz yüklenemedi.",
   "settingsStatsLoadError": "İstatistikler yüklenemedi.",
   "cabinetScreenTitleRoot": "Dolabım",
