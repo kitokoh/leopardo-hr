@@ -77,6 +77,7 @@ class ContractLifecycleTest extends TestCase
             'start_date' => now()->toDateString(),
             'base_salary' => 100000,
             'currency' => 'DZD',
+            'salary_frequency' => 'monthly',
             'status' => $status,
         ]);
     }
@@ -139,6 +140,7 @@ class ContractLifecycleTest extends TestCase
             'start_date' => now()->addYear()->toDateString(),
             'end_date' => null,
             'base_salary' => 120000,
+            'salary_frequency' => 'monthly',
         ]);
 
         $this->assertSame('draft', $newContract->status);
