@@ -112,12 +112,14 @@ trait RefreshTenantDatabase
         // tenant fixture and make a healthy canonical database look missing;
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
-            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history"
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions"
         );
 
         return $row !== null
             && $row->companies !== null
-            && $row->export_history !== null;
+            && $row->export_history !== null
+            && $row->onboarding_steps !== null
+            && $row->social_contributions !== null;
     }
 
     /**
