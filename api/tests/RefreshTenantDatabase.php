@@ -107,15 +107,17 @@ trait RefreshTenantDatabase
 
     private function canonicalSchemaReady(): bool
     {
-        $connection = DB::connection();
-        $searchPath = (string) ($connection->getConfig('search_path') ?? '');
+        // Use explicit schema qualification. SchemaBuilder::hasTable() follows
+        // the mutable session search_path, which can temporarily point at a
+        // tenant fixture and make a healthy canonical database look missing;
+        // that would remigrate before every test and exhaust Coverage timeout.
+        $row = DB::selectOne(
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history"
+        );
 
-        if ($searchPath === '') {
-            return false;
-        }
-
-        return $connection->getSchemaBuilder()->hasTable('companies')
-            && $connection->getSchemaBuilder()->hasTable('export_history');
+        return $row !== null
+            && $row->companies !== null
+            && $row->export_history !== null;
     }
 
     /**
