@@ -191,6 +191,9 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Geçersiz veya süresi dolmuş cihaz tokeni.',
     'INVALID_KIOSK_TOKEN' => 'Geçersiz veya süresi dolmuş kiosk tokeni.',
     'BIOMETRIC_NOT_APPROVED' => 'Bu çalışan için biyometrik erişim onaylanmamış.',
+    // #5121 — kiracı başına yapılandırılabilir yoklama yöntemleri
+    'PUNCH_METHOD_NOT_ALLOWED' => '":method" yoklama yöntemi bu kioskta izin verilmiyor.',
+    'EMPLOYEE_METHOD_NOT_ENROLLED' => 'Çalışan ":method" yoklama yöntemi için kayıtlı değil.',
 
     // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
     'EMPLOYEE_INACTIVE' => 'Hesap etkin değil.',

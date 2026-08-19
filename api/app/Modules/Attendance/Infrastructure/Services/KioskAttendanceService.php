@@ -29,7 +29,9 @@ class KioskAttendanceService
                     $query
                         ->where('email', $identifier)
                         ->orWhere('matricule', $identifier)
-                        ->orWhere('zkteco_id', $identifier);
+                        ->orWhere('zkteco_id', $identifier)
+                        // #5122 — badge/carte de pointage
+                        ->orWhere('badge_number', $identifier);
                 })
                 ->first();
 
@@ -114,7 +116,9 @@ class KioskAttendanceService
                         $query
                             ->where('email', $identifier)
                             ->orWhere('matricule', $identifier)
-                            ->orWhere('zkteco_id', $identifier);
+                            ->orWhere('zkteco_id', $identifier)
+                            // #5122 — badge/carte de pointage
+                            ->orWhere('badge_number', $identifier);
                     })
                     ->first();
 

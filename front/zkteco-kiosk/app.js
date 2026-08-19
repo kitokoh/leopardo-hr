@@ -65,6 +65,8 @@ const state = {
   lastStatusRefreshAt: null,
   isPunching: false,
   isRetryingSync: false,
+  // #5120 — méthodes de pointage autorisées (null = toutes)
+  punchMethods: null,
 };
 
 // ── Selectors ────────────────────────────────────────
@@ -79,6 +81,10 @@ const els = {
   lastSyncAt: $('#lastSyncAt'),
   identifier: $('#identifier'),
   biometricType: $('#biometricType'),
+  // #5122 — champ badge_number pour flux carte
+  badgeNumber: $('#badgeNumber'),
+  badgeNumberField: $('#badgeNumberField'),
+  identifierField: $('#identifierField'),
   statusBox: $('#statusBox'),
   syncDot: $('#syncDot'),
   syncLabel: $('#syncLabel'),
@@ -253,6 +259,13 @@ async function refreshStatus() {
     const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/status`);
     state.status = payload.data;
     state.lastStatusRefreshAt = new Date().toISOString();
+    // #5120 — mettre à jour les méthodes autorisées depuis la config device
+    if (Array.isArray(payload.data?.punch_methods)) {
+      state.punchMethods = payload.data.punch_methods;
+    } else {
+      state.punchMethods = null; // null = toutes méthodes
+    }
+    updateMethodSelector(state.punchMethods);
     renderStatus();
   } catch (error) {
     setStatus('#statusBox', error.message || t('error.bridgeUnavailable'), true);
@@ -260,6 +273,77 @@ async function refreshStatus() {
       els.lastSyncAt.textContent = t('error.bridgeUnavailableShort');
     }
   }
+}
+
+/**
+ * #5120/#5123 — Met à jour le sélecteur de méthode de pointage selon la
+ * configuration du device. `methods` null = toutes méthodes autorisées.
+ *
+ * @param {string[]|null} methods
+ */
+function updateMethodSelector(methods) {
+  const select = els.biometricType;
+  if (!select) return;
+
+  const ALL_METHODS = ['fingerprint', 'face', 'card'];
+  const allowed = Array.isArray(methods) && methods.length > 0 ? methods : ALL_METHODS;
+
+  // Reconstruire les options selon les méthodes autorisées
+  const currentValue = select.value;
+  select.innerHTML = '';
+
+  if (allowed.includes('fingerprint')) {
+    const opt = document.createElement('option');
+    opt.value = 'fingerprint';
+    opt.setAttribute('data-i18n', 'biometricType.fingerprint');
+    opt.textContent = t('biometricType.fingerprint');
+    select.appendChild(opt);
+  }
+  if (allowed.includes('face')) {
+    const opt = document.createElement('option');
+    opt.value = 'face';
+    opt.setAttribute('data-i18n', 'biometricType.face');
+    opt.textContent = t('biometricType.face');
+    select.appendChild(opt);
+  }
+  if (allowed.includes('card')) {
+    const opt = document.createElement('option');
+    opt.value = 'card';
+    opt.setAttribute('data-i18n', 'biometricType.card');
+    opt.textContent = t('biometricType.card');
+    select.appendChild(opt);
+  }
+
+  // Restaurer la sélection si toujours valide, sinon prendre le premier
+  if (allowed.includes(currentValue)) {
+    select.value = currentValue;
+  } else if (select.options.length > 0) {
+    select.value = select.options[0].value;
+  }
+
+  // Afficher l'état « aucune méthode » si le tableau est vide
+  const noMethod = $(`#noMethodWarning`);
+  if (select.options.length === 0) {
+    setPunchButtonsDisabled(true);
+    if (noMethod) noMethod.classList.remove('hidden');
+  } else {
+    setPunchButtonsDisabled(false);
+    if (noMethod) noMethod.classList.add('hidden');
+  }
+
+  // Mettre à jour la visibilité du champ badge
+  onMethodChange(select.value);
+}
+
+/**
+ * #5123 — Affiche/masque le champ badge_number selon la méthode sélectionnée.
+ *
+ * @param {string} method
+ */
+function onMethodChange(method) {
+  const isCard = method === 'card';
+  if (els.identifierField) els.identifierField.classList.toggle('hidden', isCard);
+  if (els.badgeNumberField) els.badgeNumberField.classList.toggle('hidden', !isCard);
 }
 
 // PA2-KIO-003: actionable retry for the sync status pill. Forces a full
@@ -297,23 +381,39 @@ function pulseStatus(success) {
 
 async function submitPunch(action) {
   if (state.isPunching) return;
-  const identifier = els.identifier.value.trim();
+
+  const selectedMethod = els.biometricType ? els.biometricType.value : 'fingerprint';
+  const isCard = selectedMethod === 'card';
+
+  // #5123 — pour la carte, on utilise le champ badge_number, sinon l'identifiant biométrique
+  const identifier = isCard
+    ? (els.badgeNumber ? els.badgeNumber.value.trim() : '')
+    : (els.identifier ? els.identifier.value.trim() : '');
+
   if (!identifier) {
-    setStatus('#statusBox', t('error.identifierRequired'), true);
+    setStatus('#statusBox', isCard ? t('error.badgeRequired') : t('error.identifierRequired'), true);
     return;
   }
+
   state.isPunching = true;
   setPunchButtonsDisabled(true);
-  setStatus('#statusBox', t('punch.recognizing', { type: els.biometricType.value, action: actionLabel(action) }));
+  setStatus('#statusBox', t('punch.recognizing', { type: selectedMethod, action: actionLabel(action) }));
+
   try {
-    const employee = await findLocalRosterEmployee(identifier);
+    const employee = isCard ? null : await findLocalRosterEmployee(identifier);
+
+    // #5121 — payload enrichi avec method (et badge_number pour carte)
+    const punchBody = {
+      identifier: isCard ? '' : identifier,
+      action,
+      biometric_type: isCard ? 'fingerprint' : selectedMethod, // rétro-compat bridge
+      method: selectedMethod,
+      ...(isCard ? { badge_number: identifier } : {}),
+    };
+
     const payload = await localFetchJson(`${CONFIG.localBridgeUrl}/punch`, {
       method: 'POST',
-      body: JSON.stringify({
-        identifier,
-        action,
-        biometric_type: els.biometricType.value,
-      }),
+      body: JSON.stringify(punchBody),
     });
     const mode = payload.data.sync_status === 'synced' ? t('punch.mode.synced') : t('punch.mode.offline');
     const employeeLabel = employee?.name || identifier;
@@ -321,8 +421,15 @@ async function submitPunch(action) {
     setStatus('#statusBox', t('punch.confirmed', { action: actionLabel(action), mode, time: eventTime, employee: employeeLabel }));
     pulseStatus(true);
     feedback.success();
-    els.identifier.value = '';
-    els.identifier.focus();
+
+    // Vider le champ utilisé et redonner le focus
+    if (isCard && els.badgeNumber) {
+      els.badgeNumber.value = '';
+      els.badgeNumber.focus();
+    } else if (els.identifier) {
+      els.identifier.value = '';
+      els.identifier.focus();
+    }
     await refreshStatus();
   } catch (error) {
     setStatus('#statusBox', error.message || t('error.punchFailed'), true);
@@ -585,9 +692,21 @@ function safeImageUrl(url) {
 
 // ── ZKTeco Bridge (hardware interface) ───────────────
 window.ZKTecoBridge = {
-  submitIdentifier(value, action = 'check_in', biometricType = 'fingerprint') {
-    els.identifier.value = value || '';
-    els.biometricType.value = biometricType || 'fingerprint';
+  /**
+   * Soumet un pointage depuis le bridge matériel.
+   *
+   * #5121 — `method` est le nouveau champ (fingerprint|face|card).
+   * `biometricType` est conservé pour rétro-compatibilité.
+   */
+  submitIdentifier(value, action = 'check_in', biometricType = 'fingerprint', method = null) {
+    const resolvedMethod = method || biometricType || 'fingerprint';
+    if (els.biometricType) els.biometricType.value = resolvedMethod;
+    if (resolvedMethod === 'card') {
+      if (els.badgeNumber) els.badgeNumber.value = value || '';
+    } else {
+      if (els.identifier) els.identifier.value = value || '';
+    }
+    onMethodChange(resolvedMethod);
     return submitPunch(action);
   },
   fillIdentifier(value) {
@@ -624,6 +743,11 @@ function init() {
   // Punch
   els.checkInBtn.addEventListener('click', () => submitPunch('check_in'));
   els.checkOutBtn.addEventListener('click', () => submitPunch('check_out'));
+
+  // #5123 — changement de méthode : afficher/masquer champ badge
+  if (els.biometricType) {
+    els.biometricType.addEventListener('change', () => onMethodChange(els.biometricType.value));
+  }
 
   // PA2-KIO-003: actionable sync retry button next to the status pill
   if (els.syncRetryBtn) {

@@ -193,6 +193,9 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Invalid or expired device token.',
     'INVALID_KIOSK_TOKEN' => 'Invalid or expired kiosk token.',
     'BIOMETRIC_NOT_APPROVED' => 'Biometric access is not approved for this employee.',
+    // #5121 — configurable punch methods per tenant
+    'PUNCH_METHOD_NOT_ALLOWED' => 'The punch method ":method" is not allowed on this kiosk.',
+    'EMPLOYEE_METHOD_NOT_ENROLLED' => 'The employee is not enrolled for the punch method ":method".',
     // Company / Tenant
 
     // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue

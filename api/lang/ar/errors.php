@@ -191,6 +191,9 @@ return [
     'INVALID_DEVICE_TOKEN' => 'رمز الجهاز غير صالح أو منتهي الصلاحية.',
     'INVALID_KIOSK_TOKEN' => 'رمز الكشك غير صالح أو منتهي الصلاحية.',
     'BIOMETRIC_NOT_APPROVED' => 'الوصول البيومتري غير معتمد لهذا الموظف.',
+    // #5121 — طرق التسجيل القابلة للتكوين لكل مستأجر
+    'PUNCH_METHOD_NOT_ALLOWED' => 'طريقة التسجيل ":method" غير مسموح بها على هذا الكشك.',
+    'EMPLOYEE_METHOD_NOT_ENROLLED' => 'الموظف غير مسجل لطريقة التسجيل ":method".',
 
     // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
     'EMPLOYEE_INACTIVE' => 'الحساب غير نشط.',

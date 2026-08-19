@@ -10,5 +10,7 @@
   "syncIntervalSeconds": 60,
   "listenHost": "127.0.0.1",
   "listenPort": 8037,
+  "_punch_methods_comment": "#5120 — Méthodes de pointage autorisées : null = toutes (fingerprint, face, card). Synchroniser avec ZktecoDevice.punch_methods côté API.",
+  "punch_methods": null,
   "_edge": "Bloc 'edge' retiré (issue #2750) : aucun code ne le lisait (ni app.js ni bridge.py). Le bridge sert la config cloud via les globals window.__KIOSK_* injectés dans les pages HTML."
 }

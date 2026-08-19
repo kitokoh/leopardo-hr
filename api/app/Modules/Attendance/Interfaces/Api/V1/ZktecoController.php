@@ -52,6 +52,9 @@ class ZktecoController extends Controller
             'location_label' => ['nullable', 'string', 'max:120'],
             'model' => ['nullable', 'string', 'max:60'],
             'firmware_version' => ['nullable', 'string', 'max:60'],
+            // #5120 — méthodes de pointage configurables par tenant
+            'punch_methods' => ['nullable', 'array'],
+            'punch_methods.*' => ['string', 'in:fingerprint,face,card', 'distinct'],
         ]);
 
         $company = currentCompany();
@@ -137,6 +140,9 @@ class ZktecoController extends Controller
             'protocol' => ['nullable', 'in:tcp,udp,cloud_api'],
             'location_label' => ['nullable', 'string', 'max:120'],
             'status' => ['nullable', 'in:online,offline,maintenance'],
+            // #5120 — méthodes de pointage configurables par tenant
+            'punch_methods' => ['nullable', 'array'],
+            'punch_methods.*' => ['string', 'in:fingerprint,face,card', 'distinct'],
         ]);
 
         $device->update($validated);
@@ -192,6 +198,8 @@ class ZktecoController extends Controller
             'records.*.timestamp' => ['required', 'date'],
             'records.*.punch_type' => ['nullable', 'integer', 'min:0', 'max:5'],
             'records.*.badge_number' => ['nullable', 'string'],
+            // #5121 — méthode de pointage (absent = rétro-compat fingerprint)
+            'records.*.method' => ['nullable', 'string', 'in:fingerprint,face,card'],
         ]);
 
         // #4934 : le device est authentifié par le middleware `zkteco.device`.
