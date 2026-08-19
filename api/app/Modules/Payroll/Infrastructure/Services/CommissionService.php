@@ -32,7 +32,7 @@ class CommissionService
             return null;
         }
 
-        $partner = Partner::find($company->referrer_partner_id);
+        $partner = Partner::query()->find($company->referrer_partner_id);
         if (!$partner || $partner->status !== 'active') {
             return null;
         }

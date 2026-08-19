@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
  * @property string $timezone
  * @property string $currency
  * @property string|null $notes
+ * @property int|null $referrer_partner_id
  * @property array<mixed> $features
  * @property array<mixed> $metadata
  * @property Carbon|null $created_at

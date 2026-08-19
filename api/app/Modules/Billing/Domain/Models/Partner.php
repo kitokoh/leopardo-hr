@@ -25,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property int $user_id
  * @property string $referral_code
  * @property int $default_commission_rate
+ * @property int $tax_rate
+ * @property int $payout_threshold
  * @property string $status
  * @property string $type
  * @property Carbon|null $created_at
