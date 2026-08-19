@@ -95,12 +95,6 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/contracts/{contract}/renew', [ContractController::class, 'renew']);
         Route::get('/contracts/{contract}/amendments', [ContractController::class, 'amendments']);
         Route::post('/contracts/{contract}/amendments', [ContractController::class, 'storeAmendment']);
-        Route::get('/contracts/{contract}/generate-pdf', [ContractController::class, 'generatePdf']);
-        // Alias exposed to web/mobile clients (issue #2226) — the Web App
-        // historically called GET /contracts/{id}/pdf before /generate-pdf
-        // existed; keep both working for backward compatibility.
-        Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);
-
         // ── Recruitment / ATS ────────────────────────────────────────────
         Route::get('/recruitment/jobs', [RecruitmentController::class, 'indexJobs']);
         Route::post('/recruitment/jobs', [RecruitmentController::class, 'storeJob']);
@@ -147,6 +141,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/approval-workflows/{approvalWorkflow}', [ApprovalController::class, 'updateWorkflow']);
         Route::delete('/approval-workflows/{approvalWorkflow}', [ApprovalController::class, 'destroyWorkflow']);
     });
+
+    // Contract PDF downloads are self-service: the controller enforces
+    // same-tenant access and permits the contract owner or a manager.
+    Route::get('/contracts/{contract}/generate-pdf', [ContractController::class, 'generatePdf']);
+    // Alias exposed to web/mobile clients (issue #2226) — the Web App
+    // historically called GET /contracts/{id}/pdf before /generate-pdf
+    // existed; keep both working for backward compatibility.
+    Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);
 
     // ══════════════════════════════════════════════════════════════════════
     //   ADMIN ROUTES (all managers; controller policies still apply)
