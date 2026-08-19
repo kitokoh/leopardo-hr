@@ -99,13 +99,21 @@ class GrowthPartnerRaceTest extends TestCase
     public function test_service_apply_is_idempotent_under_unique_constraint(): void
     {
         $service = app(PartnerService::class);
+        // PartnerService::apply accepts a public users.id because partners.user_id
+        // references users.id; an Employee id belongs to the tenant table.
+        $user = User::query()->forceCreate([
+            'first_name' => 'Partner',
+            'last_name' => 'Idempotency QA',
+            'email' => 'partner-idempotency-'.uniqid().'@test.hr',
+            'password_hash' => Hash::make('password123'),
+        ]);
 
-        $first = $service->apply((int) $this->employee->id, ['type' => 'individual']);
+        $first = $service->apply((int) $user->id, ['type' => 'individual']);
         $this->assertInstanceOf(Partner::class, $first);
 
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Déjà partenaire.');
-        $service->apply((int) $this->employee->id, ['type' => 'individual']);
+        $service->apply((int) $user->id, ['type' => 'individual']);
     }
 
     public function test_payout_status_transition_guard_rejects_invalid_moves(): void
