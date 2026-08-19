@@ -50,8 +50,29 @@ return [
             'port' => env('MAIL_PORT', 2525),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
-            'timeout' => null,
+            // Issue #5115 : `encryption` manquait → MAIL_ENCRYPTION (tls/ssl)
+            // était ignoré et les envois SMTP partaient en clair / échouaient.
+            // `timeout` borné (15s) : sans lui, un connect SMTP bloqué attend
+            // le défaut socket et finit en fatal max_execution_time (30s).
+            // `stream.socket.bindto` IPv4 : un connect SMTP vers Mailgun
+            // blackhole sur IPv6 (Render) — 0.0.0.0:0 force le résolveur IPv4.
+            'encryption' => env('MAIL_ENCRYPTION'),
+            'timeout' => env('MAIL_SMTP_TIMEOUT', 15),
+            'stream' => ['socket' => ['bindto' => env('MAIL_SMTP_BINDTO', '0.0.0.0:0')]],
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+        ],
+
+        // Issue #5139 : l'egress Render bloque le SMTP sortant (587 comme
+        // 465 — timeout TCP vers smtp.mailgun.org). Bascule sur l'API HTTP
+        // Mailgun (port 443) : transport natif Laravel (symfony/mailgun-mailer
+        // déjà présent), idempotent avec le reste de la config.
+        'mailgun' => [
+            'transport' => 'mailgun',
+            'domain' => env('MAILGUN_DOMAIN'),
+            'secret' => env('MAILGUN_SECRET'),
+            'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+            // 'scheme' => 'https',
+            'timeout' => env('MAIL_SMTP_TIMEOUT', 15),
         ],
 
         'ses' => [

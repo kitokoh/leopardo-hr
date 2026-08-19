@@ -237,6 +237,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
   moduleIllustrates: string;
   moduleExplore: string;
   discoverModule: string;
+  ctaDescription: string;
+  ctaPrimaryText: string;
   useCase: string;
 }> = {
   fr: {
@@ -249,6 +251,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'Ce cas illustre le module {module}',
     moduleExplore: 'Découvrez comment Leopardo RH couvre ce besoin au quotidien, ou explorez les autres études de cas.',
     discoverModule: 'Découvrir {module}',
+    ctaDescription: 'Rejoignez les entreprises qui ont choisi Leopardo RH',
+    ctaPrimaryText: 'Essai gratuit',
     useCase: "Cas d'usage — {module}",
   },
   en: {
@@ -261,6 +265,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'This case illustrates the {module} module',
     moduleExplore: 'Discover how Leopardo RH covers this need day to day, or explore other case studies.',
     discoverModule: 'Discover {module}',
+    ctaDescription: 'Join the companies that chose Leopardo RH',
+    ctaPrimaryText: 'Free trial',
     useCase: 'Use case — {module}',
   },
   tr: {
@@ -273,6 +279,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'Bu vaka {module} modülünü gösterir',
     moduleExplore: 'Leopardo RH’nin bu ihtiyacı günlük olarak nasıl karşıladığını keşfedin veya diğer vaka çalışmalarına göz atın.',
     discoverModule: '{module} modülünü keşfedin',
+    ctaDescription: 'Leopardo RH’yi seçen şirketlere katılın',
+    ctaPrimaryText: 'Ücretsiz deneme',
     useCase: 'Kullanım senaryosu — {module}',
   },
   ar: {
@@ -285,6 +293,8 @@ export const caseStudyUiCopy: Record<AppLocale, {
     moduleIllustrates: 'توضح هذه الحالة وحدة {module}',
     moduleExplore: 'اكتشف كيف تغطي Leopardo RH هذه الحاجة يومياً، أو استكشف دراسات الحالة الأخرى.',
     discoverModule: 'اكتشف {module}',
+    ctaDescription: 'انضم إلى الشركات التي اختارت Leopardo RH',
+    ctaPrimaryText: 'تجربة مجانية',
     useCase: 'حالة استخدام — {module}',
   },
 };
