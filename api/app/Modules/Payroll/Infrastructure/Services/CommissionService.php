@@ -7,6 +7,7 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Modules\Payroll\Domain\Models\Commission;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
+use App\Modules\Billing\Domain\Models\PartnerReferral;
 use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
@@ -38,7 +39,7 @@ class CommissionService
         }
 
         // 12-month commission limit rule
-        $referral = \App\Modules\Billing\Domain\Models\PartnerReferral::where('company_id', $company->id)->first();
+        $referral = PartnerReferral::where('company_id', $company->id)->first();
         if ($referral && $referral->referred_at->diffInMonths(now()) >= 12) {
             Log::info("Commission period (12 months) expired for company {$company->id}");
             return null;
