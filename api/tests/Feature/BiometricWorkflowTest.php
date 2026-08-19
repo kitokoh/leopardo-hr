@@ -156,7 +156,7 @@ class BiometricWorkflowTest extends TestCase
                 'action' => 'check_in',
             ])->assertCreated()
             ->assertJsonPath('data.employee_id', $employee->id)
-            ->assertJsonPath('data.method', 'kiosk_fingerprint');
+            ->assertJsonPath('data.method', 'biometric');
     }
 
     public function test_kiosk_can_sync_offline_events_and_fetch_roster(): void
