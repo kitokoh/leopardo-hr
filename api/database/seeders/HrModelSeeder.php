@@ -475,12 +475,14 @@ class HrModelSeeder extends Seeder
             ],
         ];
 
-        foreach ($models as $model) {
-            DB::table('hr_model_templates')->updateOrInsert(
-                ['country_code' => $model['country_code']],
-                $model
-            );
-        }
+        // Issue #5129 : `upsert` (INSERT ... ON CONFLICT (country_code) DO UPDATE)
+        // plutôt qu'`updateOrInsert` (SELECT puis INSERT, race 23505 sous
+        // PostgreSQL quand deux déploiements concurrents seedent la même table).
+        DB::table('hr_model_templates')->upsert(
+            $models,
+            ['country_code'],
+            array_keys($models[0]),
+        );
 
         $this->command->info('✅ Modèles RH créés : DZ, MA, TN, FR, TR, SN, CM (zone CEMAC), CI (zone CEDEAO/UEMOA) (cotisations + IR + congés + jours fériés)');
     }
