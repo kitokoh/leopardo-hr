@@ -59,9 +59,9 @@ class _TeamScreenState extends ConsumerState<TeamScreen>
             onPressed: () => context.pop(),
           ),
         ),
-        body: const Center(
+        body: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Text(
               context.l10n.teamManagerRequiredHint,
               textAlign: TextAlign.center,
@@ -237,13 +237,12 @@ class _EmployeesTab extends ConsumerWidget {
         data: (employees) {
           if (employees.isEmpty) {
             return ListView(
-              children: const [
-                SizedBox(height: 80),
+              children: [
+                const SizedBox(height: 80),
                 EmptyState(
                   icon: Icons.group_add,
                   title: context.l10n.teamEmpty,
-                  description:
-                      context.l10n.teamEmptyHint,
+                  description: context.l10n.teamEmptyHint,
                 ),
               ],
             );
@@ -260,7 +259,7 @@ class _EmployeesTab extends ConsumerWidget {
               final e = employees[employeeIndex];
               final subtitle = [
                 e.email,
-                _roleLabel(e),
+                _roleLabel(e, context.l10n),
                 e.workStateLabel,
                 if (_employmentLine(e) != null) _employmentLine(e)!,
               ].join(' - ');
@@ -291,11 +290,11 @@ class _EmployeesTab extends ConsumerWidget {
     return parts.join();
   }
 
-  String _roleLabel(Employee e) {
+  String _roleLabel(Employee e, AppLocalizations l10n) {
     if (e.role == 'manager') {
       return 'Manager ${e.managerRole ?? ''}'.trim();
     }
-    return context.l10n.teamEmployeeLabel;
+    return l10n.teamEmployeeLabel;
   }
 
   String? _employmentLine(Employee e) {
@@ -365,7 +364,7 @@ class _EmployeesTab extends ConsumerWidget {
                   color: _workStateColor(employee.workState),
                 ),
                 MobileStatusPill(
-                  label: _roleLabel(employee),
+                  label: _roleLabel(employee, context.l10n),
                   color: employee.isHr || employee.isPrincipal
                       ? AppColors.info
                       : MobileSurface.disabled,
@@ -385,9 +384,7 @@ class _EmployeesTab extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.edit_note_rounded),
               title: Text(context.l10n.teamEditProfile),
-              subtitle: const Text(
-                context.l10n.teamEditProfileHint,
-              ),
+              subtitle: Text(context.l10n.teamEditProfileHint),
               onTap: () {
                 Navigator.of(context).pop();
                 _openEditEmployeeSheet(context, employee);
@@ -547,7 +544,7 @@ class _EmployeesTab extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text(context.l10n.teamArchiveSuccess)));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.teamArchiveSuccess)));
       }
     } catch (e) {
       if (context.mounted) {
@@ -1631,9 +1628,9 @@ class _CreateEmployeeFormState extends ConsumerState<_CreateEmployeeForm> {
                 initialValue: _role,
                 dropdownColor: MobileSurface.surface,
                 decoration: const InputDecoration(labelText: 'Role'),
-                items: const [
+                items: [
                   DropdownMenuItem(value: 'employee', child: Text(context.l10n.teamEmployeeLabel)),
-                  DropdownMenuItem(value: 'manager', child: Text('Manager')),
+                  const DropdownMenuItem(value: 'manager', child: Text('Manager')),
                 ],
                 onChanged: (v) => setState(() {
                   _role = v ?? 'employee';

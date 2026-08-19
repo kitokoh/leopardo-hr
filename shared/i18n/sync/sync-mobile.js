@@ -65,7 +65,16 @@ function flatten(node, current = [], result = {}) {
     const next = [...current, key];
     if (typeof value === 'string') {
       const dotKey = next.join('.');
-      const mobileKey = keyAliases[dotKey] || defaultKey(dotKey);
+      // Preserve already-camelized top-level compatibility aliases. The canonical
+      // catalogs contain these legacy keys flat; passing them through sanitizePart()
+      // lowercases the internal capitals (e.g. attendanceCheckinLabel becomes
+      // attendancecheckinlabel), so Flutter never generates the getter used by
+      // the legacy mobile screens.
+      const isTopLevelCamelCase = current.length === 0
+        && /^[a-z][A-Za-z0-9]*$/.test(key)
+        && /[A-Z]/.test(key);
+      const mobileKey = keyAliases[dotKey]
+        || (isTopLevelCamelCase ? key : defaultKey(dotKey));
       result[mobileKey] = value;
       continue;
     }

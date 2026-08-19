@@ -53,7 +53,7 @@ class _SalaryAdvanceListScreenState
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showRequestSheet(context),
         icon: const Icon(Icons.add_card_outlined),
-        label: const Text(context.l10n.salaryAdvanceRequest),
+        label: Text(context.l10n.salaryAdvanceRequest),
       ),
       body: RefreshIndicator(
         color: AppColors.rh,
@@ -67,7 +67,7 @@ class _SalaryAdvanceListScreenState
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
-                children: const [
+                children: [
                   EmptyState(
                     icon: Icons.payments,
                     title: context.l10n.salaryAdvancesEmpty,
@@ -97,7 +97,7 @@ class _SalaryAdvanceListScreenState
 
                 return Semantics(
                   label:
-                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance)}.',
+                      '$requester demande une avance de $amount, motif : $reason, statut ${_getStatusLabel(advance, context.l10n)}.',
                   container: true,
                   child: ExcludeSemantics(
                     child: MobileListGlassCard(
@@ -108,7 +108,7 @@ class _SalaryAdvanceListScreenState
                           ? '$amount - $reason'
                           : '$amount - $reason - $months mois',
                       trailing: MobileStatusPill(
-                        label: _getStatusLabel(advance),
+                        label: _getStatusLabel(advance, context.l10n),
                         color: color,
                       ),
                       footer: _advanceFooter(context, advance, actor: actor),
@@ -119,7 +119,7 @@ class _SalaryAdvanceListScreenState
             );
           },
           loading: () =>
-              const MobileEmptyLoading(label: context.l10n.salaryAdvancesLoading),
+              MobileEmptyLoading(label: context.l10n.salaryAdvancesLoading),
           error: (e, _) => ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(20),
@@ -203,7 +203,7 @@ class _SalaryAdvanceListScreenState
           child: TextButton.icon(
             onPressed: () => _confirmCancelAdvance(context, advance.id),
             icon: const Icon(Icons.close_rounded, size: 16),
-            label: const Text(context.l10n.salaryAdvanceCancelRequest),
+            label: Text(context.l10n.salaryAdvanceCancelRequest),
           ),
         ),
       ],
@@ -226,7 +226,7 @@ class _SalaryAdvanceListScreenState
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.attach_file_rounded, size: 16),
-        label: const Text(context.l10n.salaryAdvanceViewProof),
+        label: Text(context.l10n.salaryAdvanceViewProof),
       ),
     );
   }
@@ -281,7 +281,7 @@ class _SalaryAdvanceListScreenState
     final company = advance.companyName?.trim().isNotEmpty == true
         ? advance.companyName!.trim()
         : 'Entreprise courante';
-    final validation = _validationLabel(advance.validationStatus);
+    final validation = _validationLabel(advance.validationStatus, context.l10n);
     final payment = [
       if (advance.managerApprovedAt != null)
         'Validation manager : ${DateFormat('d MMM yyyy', deviceIntlDateLocale).format(advance.managerApprovedAt!)}',
@@ -319,18 +319,16 @@ class _SalaryAdvanceListScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text(context.l10n.salaryAdvanceCancelTitle),
-        content: const Text(
-          context.l10n.salaryAdvanceCancelBody,
-        ),
+        title: Text(context.l10n.salaryAdvanceCancelTitle),
+        content: Text(context.l10n.salaryAdvanceCancelBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text(context.l10n.salaryAdvanceKeep),
+            child: Text(context.l10n.salaryAdvanceKeep),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(context.l10n.salaryAdvanceCancelAction),
+            child: Text(context.l10n.salaryAdvanceCancelAction),
           ),
         ],
       ),
@@ -342,7 +340,7 @@ class _SalaryAdvanceListScreenState
       ref.invalidate(salaryAdvancesProvider);
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(context.l10n.salaryAdvanceCancelled)),
+        SnackBar(content: Text(context.l10n.salaryAdvanceCancelled)),
       );
     } catch (error) {
       if (!context.mounted) return;
@@ -417,7 +415,7 @@ class _SalaryAdvanceListScreenState
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text(context.l10n.salaryAdvanceConfirmAction),
+            child: Text(context.l10n.salaryAdvanceConfirmAction),
           ),
         ],
       ),
@@ -481,29 +479,29 @@ class _SalaryAdvanceListScreenState
         advance.status == 'approved';
   }
 
-  static String _getStatusLabel(SalaryAdvance advance) {
+  String _getStatusLabel(SalaryAdvance advance, AppLocalizations l10n) {
     final validation = advance.validationStatus;
-    if (validation == 'manager_approved') return context.l10n.salaryStatusValidated;
+    if (validation == 'manager_approved') return l10n.salaryStatusValidated;
     if (validation == 'payment_declared') return 'envoyee';
-    if (validation == 'employee_confirmed') return context.l10n.salaryStatusReceived;
+    if (validation == 'employee_confirmed') return l10n.salaryStatusReceived;
 
     switch (advance.status) {
-      case context.l10n.salaryStatusActive:
-        return context.l10n.salaryStatusActive;
+      case 'active':
+        return l10n.salaryStatusActive;
       case 'approved':
-        return context.l10n.salaryStatusApproved;
+        return l10n.salaryStatusApproved;
       case 'pending':
-        return context.l10n.salaryStatusPending;
+        return l10n.salaryStatusPending;
       case 'rejected':
-        return context.l10n.salaryStatusRejected;
+        return l10n.salaryStatusRejected;
       case 'cancelled':
-        return context.l10n.salaryStatusCancelled;
+        return l10n.salaryStatusCancelled;
       default:
         return advance.status;
     }
   }
 
-  static String _validationLabel(String? status) {
+  String _validationLabel(String? status, AppLocalizations l10n) {
     switch (status) {
       case 'manager_approved':
         return 'manager valide, paiement a declarer';
@@ -512,10 +510,10 @@ class _SalaryAdvanceListScreenState
       case 'employee_confirmed':
         return 'reception confirmee par l employe';
       case 'rejected':
-        return context.l10n.salaryStatusRejected;
+        return l10n.salaryStatusRejected;
       case 'pending':
       case null:
-        return context.l10n.salaryStatusPending;
+        return l10n.salaryStatusPending;
       default:
         return status;
     }
@@ -523,7 +521,7 @@ class _SalaryAdvanceListScreenState
 
   static Color _getStatusColor(String status) {
     switch (status) {
-      case context.l10n.salaryStatusActive:
+      case 'active':
       case 'approved':
         return AppColors.rh;
       case 'pending':
@@ -703,7 +701,7 @@ class _SalaryAdvanceRequestSheetState
       if (!context.mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(context.l10n.salaryAdvanceSubmitted)),
+        SnackBar(content: Text(context.l10n.salaryAdvanceSubmitted)),
       );
     } catch (e) {
       if (!context.mounted) return;

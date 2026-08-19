@@ -61,7 +61,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
-                children: const [
+                children: [
                   EmptyState(
                     icon: Icons.calendar_today,
                     title: context.l10n.absencesEmptyTitle,
