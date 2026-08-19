@@ -3740,4 +3740,593 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get attendancebreakfailure => 'Break not confirmed';
+
+  @override
+  String get attendancebreakhint => 'Closes the session and starts a break';
+
+  @override
+  String get attendancebreakloading => 'Sending break';
+
+  @override
+  String get attendancebreaksuccess => 'Break confirmed.';
+
+  @override
+  String get attendancebreaktitle => 'Take a break';
+
+  @override
+  String get attendancecheckinfailure => 'Check-in not confirmed. Try again.';
+
+  @override
+  String get attendancecheckinlabel => 'Check-in';
+
+  @override
+  String get attendancecheckinsending => 'Sending check-in to server...';
+
+  @override
+  String get attendancecheckinsuccess => 'Check-in confirmed.';
+
+  @override
+  String get attendancecheckoutfailure => 'Checkout not confirmed. Try again.';
+
+  @override
+  String get attendancecheckoutlabel => 'Check-out';
+
+  @override
+  String get attendancecheckoutsending => 'Sending checkout to server...';
+
+  @override
+  String get attendancecheckoutsuccess => 'Checkout confirmed.';
+
+  @override
+  String get attendancecorrectioncheckinlabel => 'Actual check-in *';
+
+  @override
+  String get attendancecorrectioncheckoutlabel => 'Actual check-out';
+
+  @override
+  String get attendancecorrectiondirecthint =>
+      'The correction will be applied to the attendance record.';
+
+  @override
+  String get attendancecorrectionnologwarning =>
+      'No existing attendance entry to edit for this day.';
+
+  @override
+  String get attendancecorrectionreasonhint =>
+      'Reason (e.g. forgot to clock in at 8h)';
+
+  @override
+  String get attendancecorrectionreasonrequired => 'Reason is required';
+
+  @override
+  String get attendancecorrectionrequesthint =>
+      'The request will be sent to HR for validation.';
+
+  @override
+  String get attendancecorrectionsubmitdirect => 'Edit';
+
+  @override
+  String get attendancecorrectionsubmitrequest => 'Request a correction';
+
+  @override
+  String get attendancedailyestimate => 'Estimated daily earnings';
+
+  @override
+  String get attendancefingerprintenable => 'Enable fingerprint (optional)';
+
+  @override
+  String get attendancefingerprintenabled => 'Fingerprint enabled (optional)';
+
+  @override
+  String get attendancehistorytitle => 'History';
+
+  @override
+  String get attendancemenuedit => 'Edit';
+
+  @override
+  String get attendancemenumonthly => 'My full month';
+
+  @override
+  String get attendancemenuprofile => 'My profile';
+
+  @override
+  String get attendancemissionfailure => 'Mission not confirmed';
+
+  @override
+  String get attendancemissionhint => 'Work time outside the usual site';
+
+  @override
+  String get attendancemissionloading => 'Sending mission';
+
+  @override
+  String get attendancemissionsuccess => 'Mission started.';
+
+  @override
+  String get attendancemissiontitle => 'Mission';
+
+  @override
+  String get attendancenone => 'None';
+
+  @override
+  String get attendanceotherlabel => 'Other';
+
+  @override
+  String get attendanceovertimefailure => 'Overtime not confirmed';
+
+  @override
+  String get attendanceovertimehint => 'Start an overtime session';
+
+  @override
+  String get attendanceovertimeloading => 'Sending overtime';
+
+  @override
+  String get attendanceovertimeshort => 'OT';
+
+  @override
+  String get attendanceovertimesuccess => 'Overtime started.';
+
+  @override
+  String get attendanceovertimetitle => 'Overtime';
+
+  @override
+  String get attendancepauselabel => 'Break';
+
+  @override
+  String get attendancepreferencestitle => 'Preferences';
+
+  @override
+  String get attendancepresstocheckin => 'Tap to record your check-in';
+
+  @override
+  String get attendancepresstocheckout => 'Tap to record your checkout';
+
+  @override
+  String get attendanceresumefailure => 'Resume not confirmed';
+
+  @override
+  String get attendanceresumehint => 'Resume after a break or leave';
+
+  @override
+  String get attendanceresumeloading => 'Sending resume';
+
+  @override
+  String get attendanceresumesuccess => 'Resume confirmed.';
+
+  @override
+  String get attendanceresumetitle => 'Resume';
+
+  @override
+  String get attendanceroleemployee => 'Employee';
+
+  @override
+  String get attendanceroleemployee2 => 'Employee';
+
+  @override
+  String get attendancerolehr => 'HR Manager';
+
+  @override
+  String get attendancerolemanager => 'Manager';
+
+  @override
+  String get attendanceroleprincipal => 'Principal Manager';
+
+  @override
+  String get attendancesaving => 'Saving...';
+
+  @override
+  String get attendancesettingstitle => 'Settings';
+
+  @override
+  String get attendancestatuscomplete => 'Complete';
+
+  @override
+  String get attendancestatusinprogress => 'In progress';
+
+  @override
+  String get attendancestatuslate => 'Late';
+
+  @override
+  String get attendancestatuspointer => 'To clock in';
+
+  @override
+  String get attendancesynctitle => 'Synchronization';
+
+  @override
+  String get attendancetaskstitle => 'Today\'s tasks';
+
+  @override
+  String get attendancethisweek => 'THIS WEEK';
+
+  @override
+  String get attendancetoday => 'TODAY';
+
+  @override
+  String get attendancetraininglabel => 'Training';
+
+  @override
+  String get attendancetravelfailure => 'Travel not confirmed';
+
+  @override
+  String get attendancetravelhint => 'Professional travel time';
+
+  @override
+  String get attendancetravelloading => 'Sending travel';
+
+  @override
+  String get attendancetravelsuccess => 'Travel started.';
+
+  @override
+  String get attendancetraveltitle => 'Travel';
+
+  @override
+  String get attendanceweekearnings => 'Estimated earnings';
+
+  @override
+  String get attendanceweekhours => 'Week hours';
+
+  @override
+  String get attendanceweeklate => 'Cumulated delay';
+
+  @override
+  String get attendanceweekunavailable =>
+      'Week temporarily unavailable. Clock-in remains usable.';
+
+  @override
+  String get attendanceworktypetitle => 'Clock type';
+
+  @override
+  String get emptyhistory => 'No history';
+
+  @override
+  String get emptypayslips => 'No payslips';
+
+  @override
+  String get loaderror => 'Loading error';
+
+  @override
+  String get nodata => 'No data';
+
+  @override
+  String get salaryadvanceattachhint => 'Attach a file (optional)';
+
+  @override
+  String get salaryadvanceattachmentlabel => 'Attachment';
+
+  @override
+  String get salaryadvancecancelaction => 'Cancel';
+
+  @override
+  String get salaryadvancecancelbody =>
+      'The pending request will be removed before the HR decision.';
+
+  @override
+  String get salaryadvancecancelrequest => 'Cancel request';
+
+  @override
+  String get salaryadvancecanceltitle => 'Cancel this advance?';
+
+  @override
+  String get salaryadvancecancelled => 'Advance request cancelled.';
+
+  @override
+  String get salaryadvanceconfirmaction => 'Confirm';
+
+  @override
+  String get salaryadvanceconfirmreceived => 'Confirm receipt';
+
+  @override
+  String get salaryadvanceconfirmreceivedbody =>
+      'Confirm only if the amount actually arrived. This action will be recorded.';
+
+  @override
+  String get salaryadvanceconfirmreceivedtitle => 'Confirm receipt?';
+
+  @override
+  String get salaryadvancekeep => 'Keep';
+
+  @override
+  String get salaryadvancelistsubtitle => 'Requests, statuses and repayment';
+
+  @override
+  String get salaryadvancelisttitle => 'Advances';
+
+  @override
+  String get salaryadvancenoreason => 'No reason';
+
+  @override
+  String get salaryadvancepaymentdeclared =>
+      'The manager declared the payment. Confirm only after you actually received it.';
+
+  @override
+  String get salaryadvancerequest => 'Request';
+
+  @override
+  String get salaryadvancerequesttitle => 'Advance request';
+
+  @override
+  String get salaryadvancesubmitted => 'Advance request sent to HR.';
+
+  @override
+  String get salaryadvanceviewproof => 'View attachment';
+
+  @override
+  String get salaryadvancesempty => 'No advances';
+
+  @override
+  String get salaryadvancesemptyhint =>
+      'Request an advance in seconds, then track the HR decision here.';
+
+  @override
+  String get salaryadvancesloading => 'Loading advances';
+
+  @override
+  String get salarystatusactive => 'active';
+
+  @override
+  String get salarystatusapproved => 'approved';
+
+  @override
+  String get salarystatuscancelled => 'cancelled';
+
+  @override
+  String get salarystatuspending => 'pending';
+
+  @override
+  String get salarystatusreceived => 'received';
+
+  @override
+  String get salarystatusrejected => 'rejected';
+
+  @override
+  String get salarystatustoconfirm => 'to confirm';
+
+  @override
+  String get salarystatusvalidated => 'validated';
+
+  @override
+  String get settingsaccountportablehint =>
+      'Your account stays useful even when you change company.';
+
+  @override
+  String get settingsaccountsubtitle => 'Profile, language and security';
+
+  @override
+  String get settingsaccounttitle => 'Account';
+
+  @override
+  String get settingsbiometricmanagerhint =>
+      'Reserved for employee profiles in this manager app.';
+
+  @override
+  String get settingsbiometricterminalhint =>
+      'Finger and face preparation for field terminals.';
+
+  @override
+  String get settingscurrentpassword => 'Current password';
+
+  @override
+  String get settingsedgesaved => 'Edge settings saved.';
+
+  @override
+  String get settingsemailinvalid => 'Invalid email';
+
+  @override
+  String get settingsemaillabel => 'Email';
+
+  @override
+  String get settingsemailrequired => 'Email is required';
+
+  @override
+  String get settingsemployeeprofilehint =>
+      'Employee profile: access to clock-in, personal history and biometric setup settings.';
+
+  @override
+  String get settingsfirstname => 'First name';
+
+  @override
+  String get settingsfirstnamerequired => 'First name is required';
+
+  @override
+  String get settingskioskbiometrictitle => 'Kiosk biometrics';
+
+  @override
+  String get settingslanguagetitle => 'Language';
+
+  @override
+  String get settingslastnamelabel => 'Last name';
+
+  @override
+  String get settingslastnamerequired => 'Last name is required';
+
+  @override
+  String get settingslogout => 'Log out';
+
+  @override
+  String get settingsmanageraccounthint =>
+      'A manager account must remain clear, secure and ready for field decisions.';
+
+  @override
+  String get settingsmanagerprofilehint =>
+      'HR/Manager profile: access to team monitoring and history.';
+
+  @override
+  String get settingsmobileaccess => 'Mobile access';
+
+  @override
+  String get settingsmyprofile => 'My profile';
+
+  @override
+  String get settingsnewpassword => 'New password';
+
+  @override
+  String get settingsnocompanyqr => 'No company QR in the clipboard.';
+
+  @override
+  String get settingsnojourney => 'No journey recorded yet.';
+
+  @override
+  String get settingsnotificationssubtitle =>
+      'Channels, quiet hours and manager operational alerts.';
+
+  @override
+  String get settingsnotificationstitle => 'Notifications';
+
+  @override
+  String get settingsoverview => 'Overview';
+
+  @override
+  String get settingsportableaccounthint =>
+      'Your personal information remains linked to your account.';
+
+  @override
+  String get settingspreferredlanguage => 'Preferred language';
+
+  @override
+  String get settingssave => 'Save';
+
+  @override
+  String get settingssaveprofile => 'Save profile';
+
+  @override
+  String get settingssaving => 'Saving...';
+
+  @override
+  String get settingssecuritytitle => 'Security';
+
+  @override
+  String get settingssessionsubtitle =>
+      'Logout is intentionally at the bottom of the page.';
+
+  @override
+  String get settingssessiontitle => 'Session';
+
+  @override
+  String get settingsteamdrive => 'Team drive';
+
+  @override
+  String get settingsteamdrivehint =>
+      'Profile, role and permissions remain readable for HR actions.';
+
+  @override
+  String get teamadd => 'Add';
+
+  @override
+  String get teamaddcollaborator => 'Add a collaborator';
+
+  @override
+  String get teamaddfromqr => 'From employee QR';
+
+  @override
+  String get teamaddfromqrhint => 'Paste the provided code';
+
+  @override
+  String get teamaddmanualform => 'Classic form';
+
+  @override
+  String get teamaddmanualhint => 'Complete manual entry';
+
+  @override
+  String get teamarchive => 'Archive';
+
+  @override
+  String get teamarchiveconfirmaction => 'Archive';
+
+  @override
+  String get teamarchiveconfirmtitle => 'Archive this employee?';
+
+  @override
+  String get teamarchivesuccess => 'Employee archived.';
+
+  @override
+  String get teamconfirmcancel => 'Cancel';
+
+  @override
+  String get teameditprofile => 'Edit profile';
+
+  @override
+  String get teameditprofilehint => 'Update essential HR fields';
+
+  @override
+  String get teamemployeelabel => 'Employee';
+
+  @override
+  String get teamemployeestab => 'Employees';
+
+  @override
+  String get teamempty => 'No collaborator';
+
+  @override
+  String get teamemptyhint =>
+      'Start by adding your team with the button below.';
+
+  @override
+  String get teaminvitationstab => 'Invitations';
+
+  @override
+  String get teamloading => 'Loading team';
+
+  @override
+  String get teammakehr => 'Appoint HR';
+
+  @override
+  String get teammakehrconfirmaction => 'Appoint HR';
+
+  @override
+  String get teammakehrconfirmtitle => 'Appoint HR?';
+
+  @override
+  String get teammakehrhint => 'Grant HR permissions to this collaborator';
+
+  @override
+  String get teammakehrsuccess => 'HR appointed.';
+
+  @override
+  String get teammanagerrequired => 'Manager/HR access required';
+
+  @override
+  String get teammanagerrequiredhint =>
+      'Only principal managers and HR can manage the team from mobile.';
+
+  @override
+  String get teamrevokehr => 'Revoke HR';
+
+  @override
+  String get teamrevokehrconfirmaction => 'Revoke';
+
+  @override
+  String get teamrevokehrconfirmtitle => 'Revoke HR?';
+
+  @override
+  String get teamrevokehrhint => 'Remove HR permissions from this account';
+
+  @override
+  String get teamrevokehrsuccess => 'HR permissions removed.';
+
+  @override
+  String get teamsubtitle => 'Employees and invitations';
+
+  @override
+  String get teamtitle => 'Team';
+
+  @override
+  String get teamviewattendance => 'Attendance stats';
+
+  @override
+  String get teamviewattendancehint => 'Presence, anomalies, history';
+
+  @override
+  String get teamviewprofile => 'View profile';
+
+  @override
+  String get teamviewprofilehint =>
+      'Contact details, position, salary, schedule';
+
+  @override
+  String get teamviewtasks => 'Tasks';
+
+  @override
+  String get teamviewtaskshint => 'View or assign field tasks';
 }

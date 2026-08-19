@@ -3705,4 +3705,591 @@ class AppLocalizationsAr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get attendancebreakfailure => 'لم يتم تأكيد الاستراحة';
+
+  @override
+  String get attendancebreakhint => 'يغلق الجلسة ويبدأ الاستراحة';
+
+  @override
+  String get attendancebreakloading => 'جارٍ إرسال الاستراحة';
+
+  @override
+  String get attendancebreaksuccess => 'تم تأكيد الاستراحة.';
+
+  @override
+  String get attendancebreaktitle => 'الذهاب في استراحة';
+
+  @override
+  String get attendancecheckinfailure => 'لم يتم تأكيد الدخول. حاول مجدداً.';
+
+  @override
+  String get attendancecheckinlabel => 'وقت الدخول';
+
+  @override
+  String get attendancecheckinsending => 'إرسال وقت الدخول إلى الخادم...';
+
+  @override
+  String get attendancecheckinsuccess => 'تم تأكيد الدخول.';
+
+  @override
+  String get attendancecheckoutfailure => 'لم يتم تأكيد الخروج. حاول مجدداً.';
+
+  @override
+  String get attendancecheckoutlabel => 'وقت الخروج';
+
+  @override
+  String get attendancecheckoutsending => 'إرسال وقت الخروج إلى الخادم...';
+
+  @override
+  String get attendancecheckoutsuccess => 'تم تأكيد الخروج.';
+
+  @override
+  String get attendancecorrectioncheckinlabel => 'وقت الدخول الفعلي *';
+
+  @override
+  String get attendancecorrectioncheckoutlabel => 'وقت الخروج الفعلي';
+
+  @override
+  String get attendancecorrectiondirecthint => 'سيُطبق التصحيح على سجل الحضور.';
+
+  @override
+  String get attendancecorrectionnologwarning =>
+      'لا يوجد سجل حضور لتعديله لهذا اليوم.';
+
+  @override
+  String get attendancecorrectionreasonhint =>
+      'السبب (مثلاً: نسيت التسجيل في الساعة 8)';
+
+  @override
+  String get attendancecorrectionreasonrequired => 'السبب مطلوب';
+
+  @override
+  String get attendancecorrectionrequesthint =>
+      'سيُرسل الطلب إلى الموارد البشرية للمراجعة.';
+
+  @override
+  String get attendancecorrectionsubmitdirect => 'تعديل';
+
+  @override
+  String get attendancecorrectionsubmitrequest => 'طلب تصحيح';
+
+  @override
+  String get attendancedailyestimate => 'الأرباح اليومية التقديرية';
+
+  @override
+  String get attendancefingerprintenable => 'تفعيل البصمة (اختياري)';
+
+  @override
+  String get attendancefingerprintenabled => 'البصمة مفعلة (اختياري)';
+
+  @override
+  String get attendancehistorytitle => 'السجل';
+
+  @override
+  String get attendancemenuedit => 'تعديل';
+
+  @override
+  String get attendancemenumonthly => 'شهري الكامل';
+
+  @override
+  String get attendancemenuprofile => 'ملفي الشخصي';
+
+  @override
+  String get attendancemissionfailure => 'لم يتم تأكيد المهمة';
+
+  @override
+  String get attendancemissionhint => 'وقت عمل خارج الموقع المعتاد';
+
+  @override
+  String get attendancemissionloading => 'جارٍ إرسال المهمة';
+
+  @override
+  String get attendancemissionsuccess => 'بدأت المهمة.';
+
+  @override
+  String get attendancemissiontitle => 'مهمة';
+
+  @override
+  String get attendancenone => 'لا شيء';
+
+  @override
+  String get attendanceotherlabel => 'آخر';
+
+  @override
+  String get attendanceovertimefailure => 'لم يتم تأكيد الساعات الإضافية';
+
+  @override
+  String get attendanceovertimehint => 'بدء جلسة ساعات إضافية';
+
+  @override
+  String get attendanceovertimeloading => 'جارٍ إرسال الساعات الإضافية';
+
+  @override
+  String get attendanceovertimeshort => 'إضافي';
+
+  @override
+  String get attendanceovertimesuccess => 'بدأت الساعات الإضافية.';
+
+  @override
+  String get attendanceovertimetitle => 'ساعات إضافية';
+
+  @override
+  String get attendancepauselabel => 'استراحة';
+
+  @override
+  String get attendancepreferencestitle => 'التفضيلات';
+
+  @override
+  String get attendancepresstocheckin => 'اضغط لتسجيل دخولك';
+
+  @override
+  String get attendancepresstocheckout => 'اضغط لتسجيل خروجك';
+
+  @override
+  String get attendanceresumefailure => 'لم يتم تأكيد الاستئناف';
+
+  @override
+  String get attendanceresumehint => 'استئناف بعد استراحة أو خروج';
+
+  @override
+  String get attendanceresumeloading => 'جارٍ إرسال الاستئناف';
+
+  @override
+  String get attendanceresumesuccess => 'تم تأكيد الاستئناف.';
+
+  @override
+  String get attendanceresumetitle => 'استئناف';
+
+  @override
+  String get attendanceroleemployee => 'موظف';
+
+  @override
+  String get attendanceroleemployee2 => 'موظف';
+
+  @override
+  String get attendancerolehr => 'مسؤول الموارد البشرية';
+
+  @override
+  String get attendancerolemanager => 'مدير';
+
+  @override
+  String get attendanceroleprincipal => 'مدير رئيسي';
+
+  @override
+  String get attendancesaving => 'جارٍ الحفظ...';
+
+  @override
+  String get attendancesettingstitle => 'الإعدادات';
+
+  @override
+  String get attendancestatuscomplete => 'مكتمل';
+
+  @override
+  String get attendancestatusinprogress => 'جارٍ';
+
+  @override
+  String get attendancestatuslate => 'متأخر';
+
+  @override
+  String get attendancestatuspointer => 'للتسجيل';
+
+  @override
+  String get attendancesynctitle => 'المزامنة';
+
+  @override
+  String get attendancetaskstitle => 'مهام اليوم';
+
+  @override
+  String get attendancethisweek => 'هذا الأسبوع';
+
+  @override
+  String get attendancetoday => 'اليوم';
+
+  @override
+  String get attendancetraininglabel => 'تدريب';
+
+  @override
+  String get attendancetravelfailure => 'لم يتم تأكيد التنقل';
+
+  @override
+  String get attendancetravelhint => 'وقت التنقل المهني';
+
+  @override
+  String get attendancetravelloading => 'جارٍ إرسال التنقل';
+
+  @override
+  String get attendancetravelsuccess => 'بدأ التنقل.';
+
+  @override
+  String get attendancetraveltitle => 'تنقل';
+
+  @override
+  String get attendanceweekearnings => 'الأرباح التقديرية';
+
+  @override
+  String get attendanceweekhours => 'ساعات الأسبوع';
+
+  @override
+  String get attendanceweeklate => 'التأخر المتراكم';
+
+  @override
+  String get attendanceweekunavailable =>
+      'الأسبوع غير متاح حاليًا. يبقى تسجيل الدخول متاحًا.';
+
+  @override
+  String get attendanceworktypetitle => 'نوع تسجيل الوقت';
+
+  @override
+  String get emptyhistory => 'لا يوجد سجل';
+
+  @override
+  String get emptypayslips => 'لا توجد كشوف رواتب';
+
+  @override
+  String get loaderror => 'خطأ في التحميل';
+
+  @override
+  String get nodata => 'لا توجد بيانات';
+
+  @override
+  String get salaryadvanceattachhint => 'إرفاق ملف (اختياري)';
+
+  @override
+  String get salaryadvanceattachmentlabel => 'المرفق';
+
+  @override
+  String get salaryadvancecancelaction => 'إلغاء';
+
+  @override
+  String get salaryadvancecancelbody =>
+      'ستُحذف الطلبات المعلقة قبل قرار الموارد البشرية.';
+
+  @override
+  String get salaryadvancecancelrequest => 'إلغاء الطلب';
+
+  @override
+  String get salaryadvancecanceltitle => 'إلغاء هذه السلفة؟';
+
+  @override
+  String get salaryadvancecancelled => 'تم إلغاء طلب السلفة.';
+
+  @override
+  String get salaryadvanceconfirmaction => 'تأكيد';
+
+  @override
+  String get salaryadvanceconfirmreceived => 'تأكيد الاستلام';
+
+  @override
+  String get salaryadvanceconfirmreceivedbody =>
+      'أكّد فقط إذا وصل المبلغ فعليًا. سيتم تسجيل هذا الإجراء.';
+
+  @override
+  String get salaryadvanceconfirmreceivedtitle => 'تأكيد الاستلام؟';
+
+  @override
+  String get salaryadvancekeep => 'إبقاء';
+
+  @override
+  String get salaryadvancelistsubtitle => 'الطلبات والحالات والسداد';
+
+  @override
+  String get salaryadvancelisttitle => 'السلف';
+
+  @override
+  String get salaryadvancenoreason => 'لا يوجد سبب';
+
+  @override
+  String get salaryadvancepaymentdeclared =>
+      'أعلن المدير عن الدفع. أكّد فقط بعد استلامك الفعلي.';
+
+  @override
+  String get salaryadvancerequest => 'طلب';
+
+  @override
+  String get salaryadvancerequesttitle => 'طلب سلفة';
+
+  @override
+  String get salaryadvancesubmitted =>
+      'تم إرسال طلب السلفة إلى الموارد البشرية.';
+
+  @override
+  String get salaryadvanceviewproof => 'عرض المرفق';
+
+  @override
+  String get salaryadvancesempty => 'لا توجد سلف';
+
+  @override
+  String get salaryadvancesemptyhint =>
+      'اطلب سلفة في ثوانٍ، ثم تابع قرار الموارد البشرية هنا.';
+
+  @override
+  String get salaryadvancesloading => 'جارٍ تحميل السلف';
+
+  @override
+  String get salarystatusactive => 'نشطة';
+
+  @override
+  String get salarystatusapproved => 'معتمدة';
+
+  @override
+  String get salarystatuscancelled => 'ملغاة';
+
+  @override
+  String get salarystatuspending => 'قيد الانتظار';
+
+  @override
+  String get salarystatusreceived => 'تم الاستلام';
+
+  @override
+  String get salarystatusrejected => 'مرفوضة';
+
+  @override
+  String get salarystatustoconfirm => 'بانتظار التأكيد';
+
+  @override
+  String get salarystatusvalidated => 'تم التحقق';
+
+  @override
+  String get settingsaccountportablehint =>
+      'يظل حسابك مفيدًا حتى عند تغيير الشركة.';
+
+  @override
+  String get settingsaccountsubtitle => 'الملف الشخصي واللغة والأمان';
+
+  @override
+  String get settingsaccounttitle => 'الحساب';
+
+  @override
+  String get settingsbiometricmanagerhint =>
+      'محجوزة لملفات الموظفين في تطبيق المدير هذا.';
+
+  @override
+  String get settingsbiometricterminalhint =>
+      'تحضير الإصبع والوجه للمحطات الميدانية.';
+
+  @override
+  String get settingscurrentpassword => 'كلمة المرور الحالية';
+
+  @override
+  String get settingsedgesaved => 'تم حفظ إعدادات الحافة.';
+
+  @override
+  String get settingsemailinvalid => 'بريد إلكتروني غير صالح';
+
+  @override
+  String get settingsemaillabel => 'البريد الإلكتروني';
+
+  @override
+  String get settingsemailrequired => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get settingsemployeeprofilehint =>
+      'ملف الموظف: الوصول إلى تسجيل الوقت والسجل الشخصي وإعدادات التحضير البيومتري.';
+
+  @override
+  String get settingsfirstname => 'الاسم الأول';
+
+  @override
+  String get settingsfirstnamerequired => 'الاسم الأول مطلوب';
+
+  @override
+  String get settingskioskbiometrictitle => 'القياسات الحيوية لكشك';
+
+  @override
+  String get settingslanguagetitle => 'اللغة';
+
+  @override
+  String get settingslastnamelabel => 'اسم العائلة';
+
+  @override
+  String get settingslastnamerequired => 'اسم العائلة مطلوب';
+
+  @override
+  String get settingslogout => 'تسجيل الخروج';
+
+  @override
+  String get settingsmanageraccounthint =>
+      'يجب أن يظل حساب المدير واضحاً وآمناً وجاهزاً لقرارات الميدان.';
+
+  @override
+  String get settingsmanagerprofilehint =>
+      'ملف RH/مدير: الوصول إلى مراقبة الفريق والسجل.';
+
+  @override
+  String get settingsmobileaccess => 'الوصول المحمول';
+
+  @override
+  String get settingsmyprofile => 'ملفي الشخصي';
+
+  @override
+  String get settingsnewpassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get settingsnocompanyqr => 'لا يوجد رمز QR للشركة في الحافظة.';
+
+  @override
+  String get settingsnojourney => 'لا توجد رحلة مسجلة بعد.';
+
+  @override
+  String get settingsnotificationssubtitle =>
+      'القنوات وساعات الهدوء وتنبيهات المدير التشغيلية.';
+
+  @override
+  String get settingsnotificationstitle => 'الإشعارات';
+
+  @override
+  String get settingsoverview => 'نظرة عامة';
+
+  @override
+  String get settingsportableaccounthint =>
+      'تبقى معلوماتك الشخصية مرتبطة بحسابك.';
+
+  @override
+  String get settingspreferredlanguage => 'اللغة المفضلة';
+
+  @override
+  String get settingssave => 'حفظ';
+
+  @override
+  String get settingssaveprofile => 'حفظ الملف الشخصي';
+
+  @override
+  String get settingssaving => 'جارٍ الحفظ...';
+
+  @override
+  String get settingssecuritytitle => 'الأمان';
+
+  @override
+  String get settingssessionsubtitle =>
+      'يظل تسجيل الخروج عمداً في أسفل الصفحة.';
+
+  @override
+  String get settingssessiontitle => 'الجلسة';
+
+  @override
+  String get settingsteamdrive => 'إدارة الفريق';
+
+  @override
+  String get settingsteamdrivehint =>
+      'يبقى الملف الشخصي والدور والصلاحيات مرئية لإجراءات الموارد البشرية.';
+
+  @override
+  String get teamadd => 'إضافة';
+
+  @override
+  String get teamaddcollaborator => 'إضافة متعاون';
+
+  @override
+  String get teamaddfromqr => 'من رمز QR للموظف';
+
+  @override
+  String get teamaddfromqrhint => 'ألصق الرمز المقدم';
+
+  @override
+  String get teamaddmanualform => 'نموذج كلاسيكي';
+
+  @override
+  String get teamaddmanualhint => 'إدخال يدوي كامل';
+
+  @override
+  String get teamarchive => 'أرشفة';
+
+  @override
+  String get teamarchiveconfirmaction => 'أرشفة';
+
+  @override
+  String get teamarchiveconfirmtitle => 'أرشفة هذا الموظف؟';
+
+  @override
+  String get teamarchivesuccess => 'تمت أرشفة الموظف.';
+
+  @override
+  String get teamconfirmcancel => 'إلغاء';
+
+  @override
+  String get teameditprofile => 'تعديل الملف';
+
+  @override
+  String get teameditprofilehint => 'تحديث الحقول الأساسية للموارد البشرية';
+
+  @override
+  String get teamemployeelabel => 'موظف';
+
+  @override
+  String get teamemployeestab => 'الموظفون';
+
+  @override
+  String get teamempty => 'لا يوجد متعاون';
+
+  @override
+  String get teamemptyhint => 'ابدأ بإضافة فريقك باستخدام الزر أدناه.';
+
+  @override
+  String get teaminvitationstab => 'الدعوات';
+
+  @override
+  String get teamloading => 'تحميل الفريق';
+
+  @override
+  String get teammakehr => 'تعيين موارد بشرية';
+
+  @override
+  String get teammakehrconfirmaction => 'تعيين موارد بشرية';
+
+  @override
+  String get teammakehrconfirmtitle => 'تعيين موارد بشرية؟';
+
+  @override
+  String get teammakehrhint => 'منح صلاحيات الموارد البشرية لهذا المتعاون';
+
+  @override
+  String get teammakehrsuccess => 'تم تعيين موارد بشرية.';
+
+  @override
+  String get teammanagerrequired => 'يلزم وصول المدير/الموارد البشرية';
+
+  @override
+  String get teammanagerrequiredhint =>
+      'المديرون الرئيسيون وموظفو الموارد البشرية فقط يمكنهم إدارة الفريق من الهاتف.';
+
+  @override
+  String get teamrevokehr => 'إلغاء موارد بشرية';
+
+  @override
+  String get teamrevokehrconfirmaction => 'إلغاء';
+
+  @override
+  String get teamrevokehrconfirmtitle => 'إلغاء موارد بشرية؟';
+
+  @override
+  String get teamrevokehrhint => 'إزالة صلاحيات الموارد البشرية من هذا الحساب';
+
+  @override
+  String get teamrevokehrsuccess => 'تمت إزالة صلاحيات الموارد البشرية.';
+
+  @override
+  String get teamsubtitle => 'الموظفون والدعوات';
+
+  @override
+  String get teamtitle => 'الفريق';
+
+  @override
+  String get teamviewattendance => 'إحصائيات الحضور';
+
+  @override
+  String get teamviewattendancehint => 'الحضور والشذوذات والسجل';
+
+  @override
+  String get teamviewprofile => 'عرض الملف';
+
+  @override
+  String get teamviewprofilehint => 'معلومات الاتصال والمنصب والراتب والجدول';
+
+  @override
+  String get teamviewtasks => 'المهام';
+
+  @override
+  String get teamviewtaskshint => 'عرض أو تعيين مهام ميدانية';
 }

@@ -3739,4 +3739,593 @@ class AppLocalizationsTr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get attendancebreakfailure => 'Mola onaylanmadı';
+
+  @override
+  String get attendancebreakhint => 'Oturumu kapatır ve molayı başlatır';
+
+  @override
+  String get attendancebreakloading => 'Mola gönderiliyor';
+
+  @override
+  String get attendancebreaksuccess => 'Mola onaylandı.';
+
+  @override
+  String get attendancebreaktitle => 'Molaya çık';
+
+  @override
+  String get attendancecheckinfailure => 'Giriş onaylanmadı. Tekrar deneyin.';
+
+  @override
+  String get attendancecheckinlabel => 'Giriş';
+
+  @override
+  String get attendancecheckinsending => 'Giriş sunucuya gönderiliyor...';
+
+  @override
+  String get attendancecheckinsuccess => 'Giriş onaylandı.';
+
+  @override
+  String get attendancecheckoutfailure => 'Çıkış onaylanmadı. Tekrar deneyin.';
+
+  @override
+  String get attendancecheckoutlabel => 'Çıkış';
+
+  @override
+  String get attendancecheckoutsending => 'Çıkış sunucuya gönderiliyor...';
+
+  @override
+  String get attendancecheckoutsuccess => 'Çıkış onaylandı.';
+
+  @override
+  String get attendancecorrectioncheckinlabel => 'Gerçek giriş saati *';
+
+  @override
+  String get attendancecorrectioncheckoutlabel => 'Gerçek çıkış saati';
+
+  @override
+  String get attendancecorrectiondirecthint =>
+      'Düzeltme, devam kaydına uygulanacak.';
+
+  @override
+  String get attendancecorrectionnologwarning =>
+      'Bu gün için düzenlenecek mevcut devam girişi yok.';
+
+  @override
+  String get attendancecorrectionreasonhint =>
+      'Gerekçe (örn: saat 8\'de giriş yapmayı unuttum)';
+
+  @override
+  String get attendancecorrectionreasonrequired => 'Gerekçe zorunludur';
+
+  @override
+  String get attendancecorrectionrequesthint =>
+      'Talep, onay için İK\'ya iletilecek.';
+
+  @override
+  String get attendancecorrectionsubmitdirect => 'Düzenle';
+
+  @override
+  String get attendancecorrectionsubmitrequest => 'Düzeltme talep et';
+
+  @override
+  String get attendancedailyestimate => 'Tahmini günlük kazanç';
+
+  @override
+  String get attendancefingerprintenable =>
+      'Parmak izini etkinleştir (isteğe bağlı)';
+
+  @override
+  String get attendancefingerprintenabled => 'Parmak izi etkin (isteğe bağlı)';
+
+  @override
+  String get attendancehistorytitle => 'Geçmiş';
+
+  @override
+  String get attendancemenuedit => 'Düzenle';
+
+  @override
+  String get attendancemenumonthly => 'Tam ayım';
+
+  @override
+  String get attendancemenuprofile => 'Profilim';
+
+  @override
+  String get attendancemissionfailure => 'Görev onaylanmadı';
+
+  @override
+  String get attendancemissionhint => 'Her zamanki saha dışında çalışma süresi';
+
+  @override
+  String get attendancemissionloading => 'Görev gönderiliyor';
+
+  @override
+  String get attendancemissionsuccess => 'Görev başladı.';
+
+  @override
+  String get attendancemissiontitle => 'Görev';
+
+  @override
+  String get attendancenone => 'Hiçbiri';
+
+  @override
+  String get attendanceotherlabel => 'Diğer';
+
+  @override
+  String get attendanceovertimefailure => 'Fazla mesai onaylanmadı';
+
+  @override
+  String get attendanceovertimehint => 'Fazla mesai oturumu başlat';
+
+  @override
+  String get attendanceovertimeloading => 'Fazla mesai gönderiliyor';
+
+  @override
+  String get attendanceovertimeshort => 'F. mesai';
+
+  @override
+  String get attendanceovertimesuccess => 'Fazla mesai başladı.';
+
+  @override
+  String get attendanceovertimetitle => 'Fazla mesai';
+
+  @override
+  String get attendancepauselabel => 'Mola';
+
+  @override
+  String get attendancepreferencestitle => 'Tercihler';
+
+  @override
+  String get attendancepresstocheckin => 'Girişinizi kaydetmek için dokunun';
+
+  @override
+  String get attendancepresstocheckout => 'Çıkışınızı kaydetmek için dokunun';
+
+  @override
+  String get attendanceresumefailure => 'Devam onaylanmadı';
+
+  @override
+  String get attendanceresumehint => 'Moladan veya çıkıştan sonra devam et';
+
+  @override
+  String get attendanceresumeloading => 'Devam gönderiliyor';
+
+  @override
+  String get attendanceresumesuccess => 'Devam onaylandı.';
+
+  @override
+  String get attendanceresumetitle => 'Devam et';
+
+  @override
+  String get attendanceroleemployee => 'Çalışan';
+
+  @override
+  String get attendanceroleemployee2 => 'Çalışan';
+
+  @override
+  String get attendancerolehr => 'İK Yöneticisi';
+
+  @override
+  String get attendancerolemanager => 'Yönetici';
+
+  @override
+  String get attendanceroleprincipal => 'Baş Yönetici';
+
+  @override
+  String get attendancesaving => 'Kaydediliyor...';
+
+  @override
+  String get attendancesettingstitle => 'Ayarlar';
+
+  @override
+  String get attendancestatuscomplete => 'Tamamlandı';
+
+  @override
+  String get attendancestatusinprogress => 'Devam ediyor';
+
+  @override
+  String get attendancestatuslate => 'Geç';
+
+  @override
+  String get attendancestatuspointer => 'Giriş yapılacak';
+
+  @override
+  String get attendancesynctitle => 'Senkronizasyon';
+
+  @override
+  String get attendancetaskstitle => 'Bugünün görevleri';
+
+  @override
+  String get attendancethisweek => 'BU HAFTA';
+
+  @override
+  String get attendancetoday => 'BUGÜN';
+
+  @override
+  String get attendancetraininglabel => 'Eğitim';
+
+  @override
+  String get attendancetravelfailure => 'Seyahat onaylanmadı';
+
+  @override
+  String get attendancetravelhint => 'Mesleki seyahat süresi';
+
+  @override
+  String get attendancetravelloading => 'Seyahat gönderiliyor';
+
+  @override
+  String get attendancetravelsuccess => 'Seyahat başladı.';
+
+  @override
+  String get attendancetraveltitle => 'Seyahat';
+
+  @override
+  String get attendanceweekearnings => 'Tahmini kazanç';
+
+  @override
+  String get attendanceweekhours => 'Haftalık saatler';
+
+  @override
+  String get attendanceweeklate => 'Birikimli gecikme';
+
+  @override
+  String get attendanceweekunavailable =>
+      'Hafta şu anda kullanılamıyor. Giriş yine de kullanılabilir.';
+
+  @override
+  String get attendanceworktypetitle => 'Giriş türü';
+
+  @override
+  String get emptyhistory => 'Geçmiş yok';
+
+  @override
+  String get emptypayslips => 'Maaş bordrosu yok';
+
+  @override
+  String get loaderror => 'Yükleme hatası';
+
+  @override
+  String get nodata => 'Veri yok';
+
+  @override
+  String get salaryadvanceattachhint => 'Dosya ekle (isteğe bağlı)';
+
+  @override
+  String get salaryadvanceattachmentlabel => 'Ek';
+
+  @override
+  String get salaryadvancecancelaction => 'İptal';
+
+  @override
+  String get salaryadvancecancelbody =>
+      'Bekleyen talep, İK kararından önce kaldırılacaktır.';
+
+  @override
+  String get salaryadvancecancelrequest => 'Talebi iptal et';
+
+  @override
+  String get salaryadvancecanceltitle => 'Bu avans iptal edilsin mi?';
+
+  @override
+  String get salaryadvancecancelled => 'Avans talebi iptal edildi.';
+
+  @override
+  String get salaryadvanceconfirmaction => 'Onayla';
+
+  @override
+  String get salaryadvanceconfirmreceived => 'Teslim alındığını onayla';
+
+  @override
+  String get salaryadvanceconfirmreceivedbody =>
+      'Yalnızca tutar gerçekten ulaştıysa onaylayın. Bu işlem kaydedilecektir.';
+
+  @override
+  String get salaryadvanceconfirmreceivedtitle => 'Teslim alındığını onayla?';
+
+  @override
+  String get salaryadvancekeep => 'Tut';
+
+  @override
+  String get salaryadvancelistsubtitle => 'Talepler, durumlar ve geri ödeme';
+
+  @override
+  String get salaryadvancelisttitle => 'Avanslar';
+
+  @override
+  String get salaryadvancenoreason => 'Gerekçe yok';
+
+  @override
+  String get salaryadvancepaymentdeclared =>
+      'Yönetici ödemeyi onayladı. Yalnızca fiilen aldıktan sonra onaylayın.';
+
+  @override
+  String get salaryadvancerequest => 'Talep Et';
+
+  @override
+  String get salaryadvancerequesttitle => 'Avans talebi';
+
+  @override
+  String get salaryadvancesubmitted => 'Avans talebi İK\'ya iletildi.';
+
+  @override
+  String get salaryadvanceviewproof => 'Eki görüntüle';
+
+  @override
+  String get salaryadvancesempty => 'Avans yok';
+
+  @override
+  String get salaryadvancesemptyhint =>
+      'Saniyeler içinde avans talep edin, ardından İK kararını buradan takip edin.';
+
+  @override
+  String get salaryadvancesloading => 'Avanslar yükleniyor';
+
+  @override
+  String get salarystatusactive => 'aktif';
+
+  @override
+  String get salarystatusapproved => 'onaylandı';
+
+  @override
+  String get salarystatuscancelled => 'iptal edildi';
+
+  @override
+  String get salarystatuspending => 'beklemede';
+
+  @override
+  String get salarystatusreceived => 'alındı';
+
+  @override
+  String get salarystatusrejected => 'reddedildi';
+
+  @override
+  String get salarystatustoconfirm => 'onaylanacak';
+
+  @override
+  String get salarystatusvalidated => 'doğrulandı';
+
+  @override
+  String get settingsaccountportablehint =>
+      'Şirket değiştirseniz bile hesabınız kullanışlı kalır.';
+
+  @override
+  String get settingsaccountsubtitle => 'Profil, dil ve güvenlik';
+
+  @override
+  String get settingsaccounttitle => 'Hesap';
+
+  @override
+  String get settingsbiometricmanagerhint =>
+      'Bu yönetici uygulamasındaki çalışan profilleri için ayrılmıştır.';
+
+  @override
+  String get settingsbiometricterminalhint =>
+      'Saha terminalleri için parmak ve yüz hazırlığı.';
+
+  @override
+  String get settingscurrentpassword => 'Mevcut şifre';
+
+  @override
+  String get settingsedgesaved => 'Edge ayarları kaydedildi.';
+
+  @override
+  String get settingsemailinvalid => 'Geçersiz e-posta';
+
+  @override
+  String get settingsemaillabel => 'E-posta';
+
+  @override
+  String get settingsemailrequired => 'E-posta gereklidir';
+
+  @override
+  String get settingsemployeeprofilehint =>
+      'Çalışan profili: giriş, kişisel geçmiş ve biyometrik hazırlık ayarlarına erişim.';
+
+  @override
+  String get settingsfirstname => 'Ad';
+
+  @override
+  String get settingsfirstnamerequired => 'Ad gereklidir';
+
+  @override
+  String get settingskioskbiometrictitle => 'Kiosk biyometrisi';
+
+  @override
+  String get settingslanguagetitle => 'Dil';
+
+  @override
+  String get settingslastnamelabel => 'Soyad';
+
+  @override
+  String get settingslastnamerequired => 'Soyad gereklidir';
+
+  @override
+  String get settingslogout => 'Çıkış yap';
+
+  @override
+  String get settingsmanageraccounthint =>
+      'Yönetici hesabı net, güvenli ve saha kararları için hazır olmalıdır.';
+
+  @override
+  String get settingsmanagerprofilehint =>
+      'İK/Yönetici profili: ekip takibi ve geçmişe erişim.';
+
+  @override
+  String get settingsmobileaccess => 'Mobil erişim';
+
+  @override
+  String get settingsmyprofile => 'Profilim';
+
+  @override
+  String get settingsnewpassword => 'Yeni şifre';
+
+  @override
+  String get settingsnocompanyqr => 'Panoda şirket QR\'ı yok.';
+
+  @override
+  String get settingsnojourney => 'Henüz kayıtlı yolculuk yok.';
+
+  @override
+  String get settingsnotificationssubtitle =>
+      'Kanallar, sessiz saatler ve yönetici operasyonel uyarıları.';
+
+  @override
+  String get settingsnotificationstitle => 'Bildirimler';
+
+  @override
+  String get settingsoverview => 'Genel bakış';
+
+  @override
+  String get settingsportableaccounthint =>
+      'Kişisel bilgileriniz hesabınıza bağlı kalır.';
+
+  @override
+  String get settingspreferredlanguage => 'Tercih edilen dil';
+
+  @override
+  String get settingssave => 'Kaydet';
+
+  @override
+  String get settingssaveprofile => 'Profili kaydet';
+
+  @override
+  String get settingssaving => 'Kaydediliyor...';
+
+  @override
+  String get settingssecuritytitle => 'Güvenlik';
+
+  @override
+  String get settingssessionsubtitle =>
+      'Çıkış sayfanın altında kasıtlı olarak yer alır.';
+
+  @override
+  String get settingssessiontitle => 'Oturum';
+
+  @override
+  String get settingsteamdrive => 'Ekip yönetimi';
+
+  @override
+  String get settingsteamdrivehint =>
+      'Profil, rol ve izinler İK işlemleri için okunabilir kalır.';
+
+  @override
+  String get teamadd => 'Ekle';
+
+  @override
+  String get teamaddcollaborator => 'İşbirlikçi ekle';
+
+  @override
+  String get teamaddfromqr => 'Çalışan QR kodundan';
+
+  @override
+  String get teamaddfromqrhint => 'Sağlanan kodu yapıştır';
+
+  @override
+  String get teamaddmanualform => 'Klasik form';
+
+  @override
+  String get teamaddmanualhint => 'Tam manuel giriş';
+
+  @override
+  String get teamarchive => 'Arşivle';
+
+  @override
+  String get teamarchiveconfirmaction => 'Arşivle';
+
+  @override
+  String get teamarchiveconfirmtitle => 'Bu çalışan arşivlensin mi?';
+
+  @override
+  String get teamarchivesuccess => 'Çalışan arşivlendi.';
+
+  @override
+  String get teamconfirmcancel => 'İptal';
+
+  @override
+  String get teameditprofile => 'Profili düzenle';
+
+  @override
+  String get teameditprofilehint => 'Temel İK alanlarını güncelleyin';
+
+  @override
+  String get teamemployeelabel => 'Çalışan';
+
+  @override
+  String get teamemployeestab => 'Çalışanlar';
+
+  @override
+  String get teamempty => 'İşbirlikçi yok';
+
+  @override
+  String get teamemptyhint => 'Aşağıdaki düğmeyle ekibinizi eklemeye başlayın.';
+
+  @override
+  String get teaminvitationstab => 'Davetler';
+
+  @override
+  String get teamloading => 'Ekip yükleniyor';
+
+  @override
+  String get teammakehr => 'İK Ata';
+
+  @override
+  String get teammakehrconfirmaction => 'İK Ata';
+
+  @override
+  String get teammakehrconfirmtitle => 'İK Atansın mı?';
+
+  @override
+  String get teammakehrhint => 'Bu işbirlikçiye İK izinleri ver';
+
+  @override
+  String get teammakehrsuccess => 'İK atandı.';
+
+  @override
+  String get teammanagerrequired => 'Yönetici/İK erişimi gerekli';
+
+  @override
+  String get teammanagerrequiredhint =>
+      'Sadece baş yöneticiler ve İK ekibi mobilde yönetebilir.';
+
+  @override
+  String get teamrevokehr => 'İK İptal';
+
+  @override
+  String get teamrevokehrconfirmaction => 'İptal';
+
+  @override
+  String get teamrevokehrconfirmtitle => 'İK İptal edilsin mi?';
+
+  @override
+  String get teamrevokehrhint => 'Bu hesaptan İK izinlerini kaldır';
+
+  @override
+  String get teamrevokehrsuccess => 'İK izinleri kaldırıldı.';
+
+  @override
+  String get teamsubtitle => 'Çalışanlar ve davetler';
+
+  @override
+  String get teamtitle => 'Ekip';
+
+  @override
+  String get teamviewattendance => 'Devam istatistikleri';
+
+  @override
+  String get teamviewattendancehint => 'Varlık, anormallikler, geçmiş';
+
+  @override
+  String get teamviewprofile => 'Profili görüntüle';
+
+  @override
+  String get teamviewprofilehint =>
+      'İletişim bilgileri, pozisyon, maaş, program';
+
+  @override
+  String get teamviewtasks => 'Görevler';
+
+  @override
+  String get teamviewtaskshint => 'Saha görevlerini görüntüle veya ata';
 }
