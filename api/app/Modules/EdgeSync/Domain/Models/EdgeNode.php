@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,8 +21,8 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $slug
  * @property string $site_address
- * @property string $status  active|inactive|suspended
- * @property string $mode    cloud|offline|hybrid
+ * @property string $status active|inactive|suspended
+ * @property string $mode cloud|offline|hybrid
  * @property string $license_key
  * @property Carbon $license_expires_at
  * @property Carbon|null $last_sync_at
@@ -33,9 +34,9 @@ use Illuminate\Support\Carbon;
  * @property array<string,mixed> $metadata
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Company|null $company
  *
- * @property-read \App\Core\Tenant\Domain\Models\Company|null $company
- * @mixin \Illuminate\Database\Eloquent\Builder<static>
+ * @mixin Builder<static>
  */
 class EdgeNode extends Model
 {
@@ -48,6 +49,16 @@ class EdgeNode extends Model
 
     protected $keyType = 'string';
 
+    // #4687 : le license_key (identifiant d'appareil) et le metadata (contient
+    // le hash SHA-256 de l'edge_token) ne doivent jamais être sérialisés dans
+    // les réponses list/show — le token en clair n'est montré qu'une fois à
+    // l'enregistrement (edge_token). Les endpoints d'émission (store /
+    // issueLicense) ré-exposent explicitement via makeVisible().
+    protected $hidden = [
+        'license_key',
+        'metadata',
+    ];
+
     protected $fillable = [
         'company_id', 'name', 'slug', 'site_address',
         'status', 'mode', 'license_key', 'license_expires_at',
@@ -55,20 +66,12 @@ class EdgeNode extends Model
         'edge_version', 'capabilities', 'metadata',
     ];
 
-    // #4687 (audit 360° 2026-08-16) : credentials d'appareil jamais sérialisés
-    // — license_key (identifiant) + metadata (hash SHA-256 de l'edge_token,
-    // « montré une seule fois » au moment de l'enrôlement).
-    protected $hidden = [
-        'license_key',
-        'metadata',
-    ];
-
     protected $casts = [
         'license_expires_at' => 'datetime',
-        'last_sync_at'       => 'datetime',
-        'last_seen_at'       => 'datetime',
-        'capabilities'       => 'array',
-        'metadata'           => 'array',
+        'last_sync_at' => 'datetime',
+        'last_seen_at' => 'datetime',
+        'capabilities' => 'array',
+        'metadata' => 'array',
     ];
 
     public function company(): BelongsTo
@@ -111,4 +114,3 @@ class EdgeNode extends Model
         return $this->license_expires_at->diffInDays(now()) <= config('edge.license_renewal_warning_days', 7);
     }
 }
-

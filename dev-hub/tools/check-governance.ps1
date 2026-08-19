@@ -217,7 +217,11 @@ if ($changelogTouched -and (Test-Path "CHANGELOG.md")) {
     $chg = Get-Content "CHANGELOG.md" -Raw
     $baseChg = ""
     try {
-        $baseChg = git show "${BaseRef}:CHANGELOG.md"
+        # #5116 : `git show` natif multi-lignes → tableau PS → coerce en string
+        # jointe par ESPACES → le regex (?m)^...$ ne matche jamais → base lue à 0
+        # pour toutes les PRs (faux positifs sur toutes les PR touchant CHANGELOG).
+        # `-join "\`n"` reconstruit une string multi-lignes correcte.
+        $baseChg = (git show "${BaseRef}:CHANGELOG.md") -join "`n"
     } catch {
         $baseChg = ""
     }
