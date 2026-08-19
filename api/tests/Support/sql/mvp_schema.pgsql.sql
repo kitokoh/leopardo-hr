@@ -38,6 +38,7 @@ DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE;
 DROP TABLE IF EXISTS shared_tenants.employees CASCADE;
 DROP TABLE IF EXISTS shared_tenants.schedules CASCADE;
 DROP TABLE IF EXISTS shared_tenants.onboarding_steps CASCADE;
+DROP TABLE IF EXISTS shared_tenants.social_contributions CASCADE;
 
 CREATE TABLE public.plans (
     id serial PRIMARY KEY,
@@ -238,6 +239,29 @@ CREATE TABLE shared_tenants.onboarding_steps (
 );
 
 CREATE INDEX onboarding_steps_company_id_index ON shared_tenants.onboarding_steps (company_id);
+
+CREATE TABLE shared_tenants.social_contributions (
+    id bigserial PRIMARY KEY,
+    company_id uuid NULL,
+    country_code varchar(2) NOT NULL,
+    name varchar(150) NOT NULL,
+    code varchar(50) NOT NULL,
+    type varchar(20) NOT NULL,
+    rate numeric(8, 4) NOT NULL,
+    cap numeric(14, 2) NULL,
+    effective_from date NOT NULL,
+    effective_to date NULL,
+    legal_reference varchar(255) NULL,
+    validation_status varchar(20) NOT NULL DEFAULT 'approved',
+    validated_by integer NULL,
+    validated_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL,
+    CONSTRAINT social_contributions_code_unique UNIQUE (code)
+);
+
+CREATE INDEX social_contributions_country_type_effective_index
+    ON shared_tenants.social_contributions (country_code, type, effective_from);
 
 CREATE TABLE shared_tenants.employees (
     id serial PRIMARY KEY,
