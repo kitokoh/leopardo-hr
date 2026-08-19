@@ -343,4 +343,15 @@ if [ "$#" -gt 0 ]; then
     exec "$@"
 fi
 
+# Déploiement mono-conteneur (plan gratuit, pas de service worker dédié) :
+# on consomme la queue Redis dans le conteneur web en arrière-plan. Sans
+# cela, les jobs (webhooks, audit, notifications, emails…) s'accumulent dans
+# Upstash/Redis sans jamais être traités. Compatible Upstash : config
+# `block_for => null` → LPOP (pas de BLPOP bloquant).
+echo "Starting background queue worker (web container)..."
+php artisan queue:work redis \
+    --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
+    --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600 \
+    >/dev/null 2>&1 &
+
 exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile

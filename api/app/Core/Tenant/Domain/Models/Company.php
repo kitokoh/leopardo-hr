@@ -47,6 +47,13 @@ class Company extends Model
 
     public $incrementing = false;
 
+    // Registre des sociétés = public.companies (tous les tenants, quel que
+    // soit leur schema_name). Sans qualification explicite, la résolution
+    // passait par le search_path (ex. shared_tenants) et tombait sur la
+    // table shadow vide shared_tenants.companies → $employee->company null →
+    // invitations/onboarding silencieusement sautés (constaté en prod).
+    protected $table = 'public.companies';
+
     protected $keyType = 'string';
 
     protected $fillable = [
