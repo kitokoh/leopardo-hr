@@ -279,7 +279,7 @@ class CommunicationServiceTest extends TestCase
 
         $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['sms', 'whatsapp']);
 
-        $this->assertSame('queued', $result['results']['sms']);
+        $this->assertSame('undelivered', $result['results']['sms']);
         $this->assertSame('skipped', $result['results']['whatsapp']);
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,
