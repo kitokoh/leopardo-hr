@@ -149,9 +149,14 @@ class DashboardController extends Controller
         $periodStart = now();
 
         try {
-            $parsedMonth = Carbon::createFromFormat('!Y-m', $month);
-            if ($parsedMonth instanceof Carbon) {
-                $periodStart = $parsedMonth;
+            // Carbon normalise silencieusement `2026-13` vers `2027-01`;
+            // valider explicitement le mois avant le parsing pour respecter
+            // le contrat de fallback sur le mois courant.
+            if (preg_match('/^\d{4}-(0[1-9]|1[0-2])$/D', $month) === 1) {
+                $parsedMonth = Carbon::createFromFormat('!Y-m', $month);
+                if ($parsedMonth instanceof Carbon) {
+                    $periodStart = $parsedMonth;
+                }
             }
         } catch (\Throwable) {
             // A client-controlled month must never turn an invalid date into a
