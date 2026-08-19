@@ -121,7 +121,7 @@ return [
     'COUNTRY_NOT_SUPPORTED' => 'The request country is invalid or unsupported (:countries).',
     'ABSENCE_END_DATE_AFTER_START' => 'The end date must be after or equal to the start date.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manual checkout requires a check-in time.',
-    'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'The checkout time must be after the check-in time.',
+    'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'Check-out time must be after check-in time.',
     // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
     'VEHICLE_DELETED' => 'Vehicle deleted.',
     'SCHEDULE_DELETED' => 'Schedule deleted successfully.',
