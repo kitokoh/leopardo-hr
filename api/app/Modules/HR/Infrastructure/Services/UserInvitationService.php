@@ -64,11 +64,19 @@ class UserInvitationService
         // PAS faire échouer le flux principal (création d'employé, invitation,
         // provisioning). L'invitation reste enregistrée et valide en base —
         // l'envoi pourra être retenté (resend) une fois le mailer configuré.
+        // Lien d'activation : le web client (FRONTEND_URL) est privilégié — le
+        // formulaire Blade du backend reste le fallback en phase dev.
+        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+
+        $activationUrl = $frontendUrl !== ''
+            ? $frontendUrl.'/activate/'.$plainToken
+            : route('invitation.activate.show', ['token' => $plainToken]);
+
         try {
             Mail::to($employee->email)->send(new UserInvitationMail(
                 company: $company,
                 employee: $employee,
-                activationUrl: route('invitation.activate.show', ['token' => $plainToken]),
+                activationUrl: $activationUrl,
                 invitedByEmail: $invitedByEmail,
             ));
         } catch (\Throwable $e) {
