@@ -145,8 +145,10 @@ class CheckThenCreateRaceTest extends TestCase
 
     public function test_commission_service_race_is_idempotent(): void
     {
+        // partners.user_id references public.users, not tenant employees.
+        $partnerUser = User::factory()->create();
         $partner = Partner::create([
-            'user_id' => $this->employee->id,
+            'user_id' => $partnerUser->id,
             'referral_code' => 'QA-'.strtoupper(substr(uniqid(), -6)),
             'application_status' => 'approved',
             'status' => 'active',
