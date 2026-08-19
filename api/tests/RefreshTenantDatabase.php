@@ -85,6 +85,13 @@ trait RefreshTenantDatabase
      */
     protected function refreshTestDatabase(): void
     {
+        // Some MVP fixture tests rebuild schemas outside Laravel's migration
+        // repository. The static flag can therefore remain stale even after a
+        // teardown; verify the canonical tables before trusting it.
+        if (DB::getDriverName() === 'pgsql' && ! $this->canonicalSchemaReady()) {
+            RefreshDatabaseState::$migrated = false;
+        }
+
         if (! RefreshDatabaseState::$migrated) {
             $this->runPublicMigrations();
 
@@ -96,6 +103,19 @@ trait RefreshTenantDatabase
         }
 
         $this->beginDatabaseTransaction();
+    }
+
+    private function canonicalSchemaReady(): bool
+    {
+        $connection = DB::connection();
+        $searchPath = (string) ($connection->getConfig('search_path') ?? '');
+
+        if ($searchPath === '') {
+            return false;
+        }
+
+        return $connection->getSchemaBuilder()->hasTable('companies')
+            && $connection->getSchemaBuilder()->hasTable('export_history');
     }
 
     /**
