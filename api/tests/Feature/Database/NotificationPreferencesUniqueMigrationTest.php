@@ -181,8 +181,13 @@ class NotificationPreferencesUniqueMigrationTest extends TestCase
         $this->assertTrue($this->constraintExists());
 
         try {
-            $this->insertPreference(3, 4, '2026-05-01 10:00:00');
-            $this->fail('Un doublon (company_id, employee_id) doit être rejeté par la contrainte UNIQUE');
+            // PostgreSQL aborts the current transaction after a constraint
+            // violation; isolate the deliberate failure in a savepoint so the
+            // shared test transaction remains usable for teardown.
+            DB::transaction(function (): void {
+                $this->insertPreference(3, 4, '2026-05-01 10:00:00');
+                $this->fail('Un doublon (company_id, employee_id) doit être rejeté par la contrainte UNIQUE');
+            });
         } catch (QueryException $e) {
             $this->assertSame('23505', (string) $e->getCode(), 'unique_violation attendue');
         }
