@@ -31,6 +31,9 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Tests Feature : `RoleAssignmentAuditTest` (6 tests couvrant nomination/revocation sur les deux endpoints, non-régression sur les champs non lies au rôle, et rejet d'un manager non-principal)
 
 ### Fixed
+- **PostgreSQL : préserver la transaction après une candidature partenaire dupliquée (issue #4978).**
+  - `PartnerService::apply()` exécute désormais la création dans une transaction imbriquée/savepoint ; une violation unique attendue est rollbackée localement avant d’être convertie en `ALREADY_EXISTS`.
+  - Évite l’état `25P02 current transaction is aborted` qui contaminait les tests suivants après le scénario de course/idempotence.
 - **fix(api): checklist onboarding unifiée — plus de 403 employé, shape unique (Closes #3239).**
   - `GET /onboarding/checklist` (moteur calculé) ne requiert plus `viewAny` : tout utilisateur authentifié du tenant (employé non-manager inclus) peut lire sa checklist (données scopées à sa société par le middleware tenant) ; les écritures `complete`/`skip` gardent leur RBAC existant
   - Shape canonique unique documentée (moteur calculé en référence) : `data{ completed_steps, total_steps, progress_percent, progress (alias), go_live_ready, next_actions, steps }` — `GET /onboarding-setup/checklist` (moteur DB) wrappe désormais sa collection sous `data.steps` et `GET /onboarding-setup/progress` expose aussi `progress_percent`

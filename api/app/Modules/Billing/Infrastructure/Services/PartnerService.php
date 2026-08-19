@@ -32,7 +32,11 @@ class PartnerService
             : null;
 
         try {
-            return Partner::create([
+            // PostgreSQL aborts the current transaction after a unique
+            // violation. A nested transaction creates a savepoint, allowing
+            // the expected ALREADY_EXISTS domain error to leave the caller's
+            // transaction usable (notably in race-condition tests).
+            return DB::transaction(fn (): Partner => Partner::create([
                 'user_id' => $userId,
                 'referral_code' => strtoupper(\Illuminate\Support\Str::random(10)),
                 'application_status' => 'pending',
@@ -45,7 +49,7 @@ class PartnerService
                 'website' => $details['website'] ?? null,
                 'commission_rate' => $details['commission_rate'] ?? null,
                 'payment_details' => $encryptedDetails,
-            ]);
+            ]));
         } catch (QueryException $e) {
             // 23505 = violation de contrainte unique (race gagnée par l'autre requête).
             if ($e->getCode() === '23505' || str_contains($e->getMessage(), 'partners_user_id_unique')) {
