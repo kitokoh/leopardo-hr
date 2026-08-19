@@ -57,7 +57,7 @@ class QueueJobsFailedHandlerTest extends TestCase
             'company_id' => $company->id,
             'payroll_run_id' => 1,
             'status' => 'generating',
-            'format' => 'csv',
+            'format' => 'csv_generic',
             'total_amount' => 0,
             'transfer_count' => 0,
         ]);
