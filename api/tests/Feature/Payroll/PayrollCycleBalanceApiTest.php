@@ -62,7 +62,9 @@ class PayrollCycleBalanceApiTest extends TestCase
         $this->assertIsArray($data);
         $this->assertArrayHasKey('gross_due', $data);
         $this->assertArrayHasKey('paid', $data);
-        $this->assertArrayHasKey('balance', $data);
+        // Le contrat (modèle mobile PayrollBalance + issue #4500) expose
+        // `remaining` — pas `balance` (renommé lors de l'harmonisation).
+        $this->assertArrayHasKey('remaining', $data);
         $this->assertArrayHasKey('pay_slip', $data);
     }
 

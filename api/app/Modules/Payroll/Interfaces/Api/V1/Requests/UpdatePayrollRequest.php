@@ -4,13 +4,27 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\Payroll\Domain\Models\Payroll;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePayrollRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        // Même policy produit (#3305) que StorePayrollRequest : écriture
+        // réservée principal comptable / RH.
+        /** @var Employee|null $actor */
+        $actor = $this->user();
+
+        if ($actor === null || ! $actor->hasManagerRole('principal', 'rh')) {
+            return false;
+        }
+
+        // Le manager ne peut modifier que les fiches de SA société.
+        $payroll = $this->route('payroll');
+
+        return $payroll instanceof Payroll ? $payroll->company_id === $actor->company_id : true;
     }
 
     public function rules(): array

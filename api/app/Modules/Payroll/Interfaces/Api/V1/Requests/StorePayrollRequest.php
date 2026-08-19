@@ -13,7 +13,14 @@ class StorePayrollRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        // Policy produit (#3305) : l'écriture de fiche est réservée au
+        // principal comptable / RH. Vérifié ici (AVANT la validation) pour
+        // qu'un manager de département reçoive bien 403 même avec un payload
+        // invalide.
+        /** @var Employee|null $actor */
+        $actor = $this->user();
+
+        return $actor !== null && $actor->hasManagerRole('principal', 'rh');
     }
 
     public function rules(): array

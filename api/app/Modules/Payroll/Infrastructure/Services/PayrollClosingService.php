@@ -7,10 +7,11 @@ namespace App\Modules\Payroll\Infrastructure\Services;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Jobs\ArchivePaySlipsToCabinetJob;
-use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Application\Services\PayrollRegularizationService;
+use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunHasRegularizationsException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
+use App\Modules\Payroll\Domain\Exceptions\PayrollRunNoSlipsException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Facades\DB;
 
@@ -39,6 +40,12 @@ class PayrollClosingService
      * @throws PayrollAlreadyValidatedException si le run est déjà validé
      * @throws PayrollRunLockedException si le run est verrouillé
      * @throws \RuntimeException si le run n'est pas en état calculé
+     */
+    /**
+     * @throws PayrollRunLockedException
+     * @throws PayrollAlreadyValidatedException
+     * @throws PayrollRunNoSlipsException
+     * @throws \RuntimeException statut inattendu
      */
     public function validateRh(PayrollRun $run, Employee $validator): PayrollRun
     {
@@ -95,6 +102,8 @@ class PayrollClosingService
      *
      * @throws PayrollRunLockedException si le run est déjà verrouillé
      * @throws PayrollAlreadyValidatedException si le run n'est pas validé
+     * @throws PayrollRunNoSlipsException si le run est vide
+     * @throws \RuntimeException statut inattendu
      */
     public function lock(PayrollRun $run, Employee $validator): PayrollRun
     {
@@ -247,7 +256,7 @@ class PayrollClosingService
     private function assertHasPaySlips(PayrollRun $run): void
     {
         if ($run->paySlips()->count() === 0) {
-            throw new \RuntimeException('Ce run ne contient aucun bulletin — impossible de valider/clôturer une paie vide. Vérifiez les structures salariales actives et recalculez.');
+            throw new PayrollRunNoSlipsException;
         }
     }
 

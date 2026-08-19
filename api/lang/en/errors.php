@@ -159,6 +159,7 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'This payroll run is already validated and can no longer be modified.',
     'PAYROLL_RUN_LOCKED' => 'This payroll run is locked (accounting close) and can no longer be modified.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Only a locked payroll run can be regularized.',
+    'PAYROLL_RUN_NO_SLIPS' => 'This payroll run contains no pay slips — an empty payroll cannot be validated or closed. Check the active salary structures and recalculate.',
     'PAYROLL_RUN_NOT_VALIDATED' => 'The run must be validated (HR step) before accounting lock.',
     'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'A password or an email invitation is required.',
     'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'The manager type is required.',

@@ -74,7 +74,10 @@ class PayrollController extends Controller
     {
         /** @var Employee $actor */
         $actor = $request->user();
-        if (! $actor->isManager()) {
+        // Policy produit (#3305) : les écritures payroll sont réservées au
+        // principal comptable / RH — un manager de département (isManager
+        // mais pas manager_role principal/rh) reçoit 403.
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
@@ -106,7 +109,8 @@ class PayrollController extends Controller
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        // Écriture réservée principal/RH (#3305), cf. store().
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
@@ -122,7 +126,8 @@ class PayrollController extends Controller
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        // Validation = écriture réservée principal/RH (#3305).
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 
@@ -138,7 +143,8 @@ class PayrollController extends Controller
         if ($payroll->company_id !== $actor->company_id) {
             abort(404);
         }
-        if (! $actor->isManager()) {
+        // Suppression = écriture réservée principal/RH (#3305).
+        if (! $actor->hasManagerRole('principal', 'rh')) {
             abort(403);
         }
 

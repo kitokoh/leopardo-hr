@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Events\PayrollValidated;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollPeriodConflictException;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Payroll\Domain\Models\Payroll;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PayrollService
@@ -99,7 +99,14 @@ class PayrollService
                     }
                     $deducted = min($remaining, $advance->amount_remaining);
                     $newRem = round($advance->amount_remaining - $deducted, 2);
-                    $advance->update(['amount_remaining' => $newRem, 'status' => $newRem <= 0 ? 'repaid' : 'active']);
+                    // #4677/#3597 : `status` n'est PAS mass-assignable — un
+                    // update() l'écarterait silencieusement et l'avance ne
+                    // passerait jamais à `repaid` (déduction perdue, avance
+                    // active à remboursement nul). forceFill obligatoire.
+                    $advance->forceFill([
+                        'amount_remaining' => $newRem,
+                        'status' => $newRem <= 0 ? 'repaid' : 'active',
+                    ])->save();
                     $remaining -= $deducted;
                 }
             }
@@ -236,4 +243,3 @@ class PayrollService
         return $normalized;
     }
 }
-

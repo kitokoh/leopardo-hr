@@ -13,6 +13,7 @@ use App\Jobs\WarmPaySlipPdfPathsForPayrollRunJob;
 use App\Modules\Payroll\Application\Services\PayrollRegularizationService;
 use App\Modules\Payroll\Domain\Exceptions\PayrollAlreadyValidatedException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunLockedException;
+use App\Modules\Payroll\Domain\Exceptions\PayrollRunNoSlipsException;
 use App\Modules\Payroll\Domain\Exceptions\PayrollRunNotLockedException;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Exports\PayrollAccountingExportService;
@@ -224,7 +225,7 @@ class PayrollRunController extends Controller
             // Étape 1 du workflow F-11 : validation RH via le service de clôture
             // (mise à jour conditionnelle atomique + audit trail `payroll_run_validated`).
             $this->closing->validateRh($payrollRun, $actor);
-        } catch (PayrollAlreadyValidatedException|PayrollRunLockedException $e) {
+        } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|PayrollRunNoSlipsException $e) {
             // #3810 / #4310 : codes stables + message localisé via catalogue,
             // jamais le message d'exception brut (FR codé en dur, non traduit).
             return response()->json([
@@ -293,7 +294,7 @@ class PayrollRunController extends Controller
 
         try {
             $this->closing->lock($payrollRun, $actor);
-        } catch (PayrollAlreadyValidatedException|PayrollRunLockedException $e) {
+        } catch (PayrollAlreadyValidatedException|PayrollRunLockedException|PayrollRunNoSlipsException $e) {
             // #3810 / #4310 : codes stables + message localisé via catalogue,
             // jamais le message d'exception brut (FR codé en dur, non traduit).
             return response()->json([

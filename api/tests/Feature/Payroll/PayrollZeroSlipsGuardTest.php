@@ -78,7 +78,8 @@ class PayrollZeroSlipsGuardTest extends TestCase
 
         $this->postJson("/api/v1/payroll-runs/{$run->id}/validate")
             ->assertStatus(422)
-            ->assertJsonPath('message', fn (string $message) => str_contains($message, 'aucun bulletin'));
+            ->assertJsonPath('message', 'PAYROLL_RUN_NO_SLIPS')
+            ->assertJsonPath('localized_message', fn (string $message) => str_contains($message, 'aucun bulletin'));
 
         $this->assertSame(PayrollRun::STATUS_CALCULATED, $run->fresh()?->status);
     }
@@ -92,6 +93,7 @@ class PayrollZeroSlipsGuardTest extends TestCase
 
         $this->postJson("/api/v1/payroll-runs/{$run->id}/lock")
             ->assertStatus(422)
-            ->assertJsonPath('message', fn (string $message) => str_contains($message, 'aucun bulletin'));
+            ->assertJsonPath('message', 'PAYROLL_RUN_NO_SLIPS')
+            ->assertJsonPath('localized_message', fn (string $message) => str_contains($message, 'aucun bulletin'));
     }
 }
