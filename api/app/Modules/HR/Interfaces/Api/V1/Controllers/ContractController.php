@@ -102,7 +102,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false && $contract->employee_id !== $actor->id) {
+        if ($actor->isManager() === false && (string) $contract->employee_id !== (string) $actor->id) {
             abort(403);
         }
 
@@ -162,7 +162,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false && $contract->employee_id !== $actor->id) {
+        if ($actor->isManager() === false && (string) $contract->employee_id !== (string) $actor->id) {
             abort(403);
         }
 
@@ -375,7 +375,7 @@ class ContractController extends Controller
         if ($contract->company_id !== $actor->company_id) {
             abort(404);
         }
-        if ($actor->isManager() === false && $contract->employee_id !== $actor->id) {
+        if ($actor->isManager() === false && (string) $contract->employee_id !== (string) $actor->id) {
             abort(403);
         }
 

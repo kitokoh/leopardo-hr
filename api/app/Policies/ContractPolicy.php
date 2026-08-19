@@ -20,7 +20,7 @@ class ContractPolicy
             return false;
         }
 
-        return $actor->isManager() || $actor->id === $contract->employee_id;
+        return $actor->isManager() || (string) $actor->id === (string) $contract->employee_id;
     }
 
     public function create(Employee $actor): bool
