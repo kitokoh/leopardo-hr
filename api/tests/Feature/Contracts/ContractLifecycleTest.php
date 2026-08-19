@@ -76,6 +76,7 @@ class ContractLifecycleTest extends TestCase
             'contract_type' => 'cdi',
             'start_date' => now()->toDateString(),
             'base_salary' => 100000,
+            'currency' => 'DZD',
             'status' => $status,
         ]);
     }
