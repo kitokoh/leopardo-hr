@@ -78,6 +78,7 @@ class ContractLifecycleTest extends TestCase
             'base_salary' => 100000,
             'currency' => 'DZD',
             'salary_frequency' => 'monthly',
+            'work_hours_per_week' => 40,
             'status' => $status,
         ]);
     }
@@ -141,6 +142,7 @@ class ContractLifecycleTest extends TestCase
             'end_date' => null,
             'base_salary' => 120000,
             'salary_frequency' => 'monthly',
+            'work_hours_per_week' => 40,
         ]);
 
         $this->assertSame('draft', $newContract->status);
