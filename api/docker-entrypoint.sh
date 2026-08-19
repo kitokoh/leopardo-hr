@@ -344,14 +344,17 @@ if [ "$#" -gt 0 ]; then
 fi
 
 # Déploiement mono-conteneur (plan gratuit, pas de service worker dédié) :
-# on consomme la queue Redis dans le conteneur web en arrière-plan. Sans
-# cela, les jobs (webhooks, audit, notifications, emails…) s'accumulent dans
-# Upstash/Redis sans jamais être traités. Compatible Upstash : config
-# `block_for => null` → LPOP (pas de BLPOP bloquant).
+# on consomme la queue dans le conteneur web en arrière-plan. Sans cela, les
+# jobs (webhooks, audit, notifications, emails…) s'accumulent sans jamais être
+# traités. La connexion est la valeur de QUEUE_CONNECTION (database depuis le
+# 2026-08-19 : l'Upstash gratuit a brûlé sa quota mensuelle de 500k requêtes
+# avec le polling Redis — LPOP 3 s × 8 queues ≈ 230k req/jour → Redis refuse
+# toute connexion. Le driver Postgres poll via SELECT FOR UPDATE SKIP LOCKED,
+# sans quota). `block_for => null` reste compatible si on revient à Redis.
 echo "Starting background queue worker (web container)..."
-php artisan queue:work redis \
+php artisan queue:work \
     --queue=webhooks,audit,notifications,emails,pdf,payroll,documents,default \
-    --tries=3 --timeout=300 --sleep=3 --max-jobs=500 --max-time=3600 \
+    --tries=3 --timeout=300 --sleep=5 --max-jobs=500 --max-time=3600 \
     >/dev/null 2>&1 &
 
 exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
