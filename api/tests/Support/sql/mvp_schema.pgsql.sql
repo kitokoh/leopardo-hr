@@ -37,6 +37,7 @@ DROP TABLE IF EXISTS shared_tenants.attendance_correction_requests CASCADE;
 DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE;
 DROP TABLE IF EXISTS shared_tenants.employees CASCADE;
 DROP TABLE IF EXISTS shared_tenants.schedules CASCADE;
+DROP TABLE IF EXISTS shared_tenants.onboarding_steps CASCADE;
 
 CREATE TABLE public.plans (
     id serial PRIMARY KEY,
@@ -218,6 +219,25 @@ CREATE TABLE shared_tenants.schedules (
 );
 
 CREATE INDEX schedules_company_id_index ON shared_tenants.schedules (company_id);
+
+CREATE TABLE shared_tenants.onboarding_steps (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    step_key varchar(50) NOT NULL,
+    title varchar(200) NOT NULL,
+    description text NULL,
+    status varchar(20) NOT NULL DEFAULT 'pending',
+    completed_at timestamptz NULL,
+    completed_by integer NULL,
+    "order" smallint NOT NULL DEFAULT 0,
+    required boolean NOT NULL DEFAULT true,
+    metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL,
+    CONSTRAINT onboarding_steps_company_step_unique UNIQUE (company_id, step_key)
+);
+
+CREATE INDEX onboarding_steps_company_id_index ON shared_tenants.onboarding_steps (company_id);
 
 CREATE TABLE shared_tenants.employees (
     id serial PRIMARY KEY,
