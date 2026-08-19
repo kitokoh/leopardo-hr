@@ -1257,6 +1257,22 @@ trait CreatesMvpSchema
             });
         }
 
+        if (! Schema::hasTable($this->moduleTable('export_history'))) {
+            Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->nullable();
+                $table->string('type', 100);
+                $table->string('format', 10)->nullable();
+                $table->unsignedInteger('record_count')->nullable();
+                $table->string('filename', 255)->nullable();
+                $table->string('ip_address', 45)->nullable();
+                $table->string('user_agent', 500)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->index(['company_id', 'created_at']);
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('company_announcements'))) {
             Schema::create($this->moduleTable('company_announcements'), function (Blueprint $table): void {
                 $table->id();
