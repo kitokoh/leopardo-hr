@@ -1149,7 +1149,7 @@
   "cabinetScreenCreate": "Créer",
   "cabinetScreenUploading": "Envoi en cours...",
   "cabinetScreenDocumentAdded": "Document ajouté avec succès",
-  "cabinetScreenUploadFailed": "Échec de l'envoi du document. Réessayez.",
+  "cabinetScreenUploadFailed": "Échec de l’envoi du document. Réessayez.",
   "cabinetScreenShareTitle": "Partager « {name} »",
   "cabinetScreenCreateShareLink": "Créer un lien de partage",
   "cabinetScreenLinkCopied": "Lien copié : {url}",

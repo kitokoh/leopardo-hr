@@ -117,7 +117,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeHeroTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Votre journee commence ici, pas dans un back-office.'**
+  /// **'Votre journée commence ici, pas dans un back-office.'**
   String get welcomeHeroTitle;
 
   /// No description provided for @welcomeHeroDescription.
@@ -162,6 +162,30 @@ abstract class AppLocalizations {
   /// **'Le produit ouvre d abord ce qui est utile aujourd hui, puis garde Finance, Securite et Leo dans un cap lisible.'**
   String get welcomeStoryModulesBody;
 
+  /// No description provided for @welcomeLeaves.
+  ///
+  /// In fr, this message translates to:
+  /// **'Congés'**
+  String get welcomeLeaves;
+
+  /// No description provided for @welcomeMyTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon équipe'**
+  String get welcomeMyTeam;
+
+  /// No description provided for @welcomePresences.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présences'**
+  String get welcomePresences;
+
+  /// No description provided for @welcomeTasks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tâches'**
+  String get welcomeTasks;
+
   /// No description provided for @login.
   ///
   /// In fr, this message translates to:
@@ -177,7 +201,7 @@ abstract class AppLocalizations {
   /// No description provided for @createPersonalAccount.
   ///
   /// In fr, this message translates to:
-  /// **'Creer un compte personnel'**
+  /// **'Créer un compte personnel'**
   String get createPersonalAccount;
 
   /// No description provided for @personalAccountExplanation.
@@ -303,19 +327,19 @@ abstract class AppLocalizations {
   /// No description provided for @commonLanguageVariantsFrFr.
   ///
   /// In fr, this message translates to:
-  /// **'Francais (France)'**
+  /// **'Français (France)'**
   String get commonLanguageVariantsFrFr;
 
   /// No description provided for @commonLanguageVariantsFrBe.
   ///
   /// In fr, this message translates to:
-  /// **'Francais (Belgique)'**
+  /// **'Français (Belgique)'**
   String get commonLanguageVariantsFrBe;
 
   /// No description provided for @commonLanguageVariantsFrCa.
   ///
   /// In fr, this message translates to:
-  /// **'Francais (Canada)'**
+  /// **'Français (Canada)'**
   String get commonLanguageVariantsFrCa;
 
   /// No description provided for @commonLanguageVariantsArSa.
@@ -735,7 +759,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileOpenSettings.
   ///
   /// In fr, this message translates to:
-  /// **'Ouvrir les parametres du compte'**
+  /// **'Ouvrir les paramètres du compte'**
   String get profileOpenSettings;
 
   /// No description provided for @profileLanguageUpdated.
@@ -1185,7 +1209,7 @@ abstract class AppLocalizations {
   /// No description provided for @usersToastCreated.
   ///
   /// In fr, this message translates to:
-  /// **'Utilisateur cree avec succes'**
+  /// **'Utilisateur créé avec succès'**
   String get usersToastCreated;
 
   /// No description provided for @usersToastUpdated.
@@ -1653,7 +1677,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardChecksystemsecurity.
   ///
   /// In fr, this message translates to:
-  /// **'Verifier systeme et securite'**
+  /// **'Vérifier système et sécurité'**
   String get dashboardChecksystemsecurity;
 
   /// No description provided for @dashboardOpensystem.
@@ -2016,6 +2040,24 @@ abstract class AppLocalizations {
   /// **'Disponible dans le dashboard plateforme.'**
   String get dashboardPlatformDashboardHint;
 
+  /// No description provided for @dashboardSearchplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher...'**
+  String get dashboardSearchplaceholder;
+
+  /// No description provided for @dashboardModulesactivesentence.
+  ///
+  /// In fr, this message translates to:
+  /// **'{active} modules actifs, {locked} a activer selon votre plan.'**
+  String dashboardModulesactivesentence(Object active, Object locked);
+
+  /// No description provided for @dashboardYourcompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre entreprise'**
+  String get dashboardYourcompany;
+
   /// No description provided for @marketingOauthNavTitle.
   ///
   /// In fr, this message translates to:
@@ -2130,6 +2172,18 @@ abstract class AppLocalizations {
   /// **'https://example.com/oauth/callback'**
   String get marketingOauthFieldsPlaceholderUri;
 
+  /// No description provided for @marketingSocialexampleplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex: Leopardo RH — Reseaux sociaux'**
+  String get marketingSocialexampleplaceholder;
+
+  /// No description provided for @marketingPostcontentplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Contenu de la publication...'**
+  String get marketingPostcontentplaceholder;
+
   /// No description provided for @attendanceSendingToServer.
   ///
   /// In fr, this message translates to:
@@ -2141,6 +2195,73 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{label}. Reessayez.'**
   String attendanceRetryAfterFailure(Object label);
+
+  /// No description provided for @attendanceAbsent.
+  ///
+  /// In fr, this message translates to:
+  /// **'absent'**
+  String get attendanceAbsent;
+
+  /// No description provided for @attendanceDaySummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
+  String attendanceDaySummary(
+      Object date, Object hours, Object range, Object status);
+
+  /// No description provided for @attendanceHourWorked.
+  ///
+  /// In fr, this message translates to:
+  /// **'heure travaillée'**
+  String get attendanceHourWorked;
+
+  /// No description provided for @attendanceHoursWorked.
+  ///
+  /// In fr, this message translates to:
+  /// **'heures travaillées'**
+  String get attendanceHoursWorked;
+
+  /// No description provided for @attendanceInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'en cours'**
+  String get attendanceInProgress;
+
+  /// No description provided for @attendanceLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'en retard'**
+  String get attendanceLate;
+
+  /// No description provided for @attendanceNoClock.
+  ///
+  /// In fr, this message translates to:
+  /// **'pas de pointage'**
+  String get attendanceNoClock;
+
+  /// No description provided for @attendanceOnTime.
+  ///
+  /// In fr, this message translates to:
+  /// **'à l\'heure'**
+  String get attendanceOnTime;
+
+  /// No description provided for @attendanceOvertime.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heures supplémentaires'**
+  String get attendanceOvertime;
+
+  /// No description provided for @attendanceTimeRange.
+  ///
+  /// In fr, this message translates to:
+  /// **'de {from} à {to}'**
+  String attendanceTimeRange(Object from, Object to);
+
+  /// No description provided for @attendanceFutureTimeError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de saisir une heure future'**
+  String get attendanceFutureTimeError;
 
   /// No description provided for @holidaysPageTitle.
   ///
@@ -3083,12 +3204,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Salaire brut'**
   String get taxSlabsSimGross;
-
-  /// No description provided for @taxSlabsSimCompare.
-  ///
-  /// In fr, this message translates to:
-  /// **'Salaire à comparer'**
-  String get taxSlabsSimCompare;
 
   /// No description provided for @taxSlabsSimRun.
   ///
@@ -4035,7 +4150,7 @@ abstract class AppLocalizations {
   /// No description provided for @companiesRetry.
   ///
   /// In fr, this message translates to:
-  /// **'Reessayer'**
+  /// **'Réessayer'**
   String get companiesRetry;
 
   /// No description provided for @companiesCompany.
@@ -4407,7 +4522,7 @@ abstract class AppLocalizations {
   /// No description provided for @navigationLogout.
   ///
   /// In fr, this message translates to:
-  /// **'Deconnexion'**
+  /// **'Déconnexion'**
   String get navigationLogout;
 
   /// No description provided for @navigationCompanydetail.
@@ -4542,6 +4657,18 @@ abstract class AppLocalizations {
   /// **'Fonctionnalite entreprise — reservee aux espaces client'**
   String get shellTenantonly;
 
+  /// No description provided for @shellSettings.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
+  String get shellSettings;
+
+  /// No description provided for @shellTeam.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équipe'**
+  String get shellTeam;
+
   /// No description provided for @exportsReportemployees.
   ///
   /// In fr, this message translates to:
@@ -4623,7 +4750,7 @@ abstract class AppLocalizations {
   /// No description provided for @exportsHrreportssub.
   ///
   /// In fr, this message translates to:
-  /// **'Generez des rapports avances avec filtres de periode et departement.'**
+  /// **'Générez des rapports avancés avec filtres de période et département.'**
   String get exportsHrreportssub;
 
   /// No description provided for @exportsReporttype.
@@ -4719,13 +4846,13 @@ abstract class AppLocalizations {
   /// No description provided for @companydetailAnalyzing.
   ///
   /// In fr, this message translates to:
-  /// **'Analyse des donnees client...'**
+  /// **'Analyse des données client...'**
   String get companydetailAnalyzing;
 
   /// No description provided for @companydetailRetry.
   ///
   /// In fr, this message translates to:
-  /// **'Reessayer'**
+  /// **'Réessayer'**
   String get companydetailRetry;
 
   /// No description provided for @companydetailFieldadoption.
@@ -5051,6 +5178,30 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Centre de notifications web et mobile.'**
   String get notificationsChannelInappDesc;
+
+  /// No description provided for @notificationsMarkAllReadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de marquer les notifications comme lues.'**
+  String get notificationsMarkAllReadError;
+
+  /// No description provided for @notificationsMarkReadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de marquer la notification comme lue.'**
+  String get notificationsMarkReadError;
+
+  /// No description provided for @notificationsDeleteError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de supprimer la notification.'**
+  String get notificationsDeleteError;
+
+  /// No description provided for @notificationsDeleted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Notification supprimée.'**
+  String get notificationsDeleted;
 
   /// No description provided for @employeesLoadError.
   ///
@@ -5532,6 +5683,30 @@ abstract class AppLocalizations {
   /// **'Erreur de connexion. Vérifiez votre connexion internet.'**
   String get apiConnectionerror;
 
+  /// No description provided for @apiLoginInvalidJson.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corps de requête invalide.'**
+  String get apiLoginInvalidJson;
+
+  /// No description provided for @apiLoginTimeout.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le serveur met trop de temps à répondre. Réessayez dans quelques instants.'**
+  String get apiLoginTimeout;
+
+  /// No description provided for @apiLoginNetworkError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de contacter le serveur.'**
+  String get apiLoginNetworkError;
+
+  /// No description provided for @apiLoginBackendError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réponse serveur inattendue.'**
+  String get apiLoginBackendError;
+
   /// No description provided for @settingspageCancel.
   ///
   /// In fr, this message translates to:
@@ -5922,82 +6097,89 @@ abstract class AppLocalizations {
   /// **'Administration Système'**
   String get systempageTitle;
 
-  /// No description provided for @retry.
+  /// No description provided for @billingCancelSubscriptionConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'Réessayer'**
-  String get retry;
+  /// **'Annuler votre abonnement ? Vous perdrez l\'accès aux modules premium à la fin de la période en cours.'**
+  String get billingCancelSubscriptionConfirm;
 
-  /// No description provided for @settingsJourneyLoadError.
-  String get settingsJourneyLoadError;
-
-  /// No description provided for @settingsStatsLoadError.
-  String get settingsStatsLoadError;
-  /// No description provided for @featureComingSoon.
+  /// No description provided for @billingNoActivePeriod.
   ///
   /// In fr, this message translates to:
-  /// **'Fonction bientôt disponible'**
-  String get featureComingSoon;
+  /// **'Aucune période active'**
+  String get billingNoActivePeriod;
 
-  /// No description provided for @backToHome.
+  /// No description provided for @billingNoActiveSubscription.
   ///
   /// In fr, this message translates to:
-  /// **'Retour à l\'accueil'**
-  String get backToHome;
+  /// **'Aucun abonnement active'**
+  String get billingNoActiveSubscription;
 
-  /// No description provided for @pageNotFound.
+  /// No description provided for @billingPeriodLabel.
   ///
   /// In fr, this message translates to:
-  /// **'La page demandée est introuvable ou la navigation a échoué.'**
-  String get pageNotFound;
+  /// **'Période'**
+  String get billingPeriodLabel;
 
-  /// No description provided for @registerCreateAccount.
+  /// No description provided for @billingCheckoutSandboxMessage.
   ///
   /// In fr, this message translates to:
-  /// **'Créer votre compte'**
-  String get registerCreateAccount;
+  /// **'Paiement simulé (mode sandbox). Aucune carte débitée.'**
+  String get billingCheckoutSandboxMessage;
 
-  /// No description provided for @registerFirstName.
+  /// No description provided for @billingCheckoutUnavailable.
   ///
   /// In fr, this message translates to:
-  /// **'Prénom'**
-  String get registerFirstName;
+  /// **'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.'**
+  String get billingCheckoutUnavailable;
 
-  /// No description provided for @registerRequired.
+  /// No description provided for @billingCheckoutFailed.
   ///
   /// In fr, this message translates to:
-  /// **'Obligatoire'**
-  String get registerRequired;
+  /// **'Impossible de créer la session de paiement.'**
+  String get billingCheckoutFailed;
 
-  /// No description provided for @registerPassword.
+  /// No description provided for @contractsListSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Mot de passe'**
-  String get registerPassword;
+  /// **'Gestion des contrats employés : suivi des statuts, échéances et export PDF, branchée directement sur l\'API RH.'**
+  String get contractsListSubtitle;
 
-  /// No description provided for @registerMinChars.
+  /// No description provided for @contractsSearchplaceholder.
   ///
   /// In fr, this message translates to:
-  /// **'8 caractères minimum'**
-  String get registerMinChars;
+  /// **'Rechercher un employe ou un type de contrat...'**
+  String get contractsSearchplaceholder;
 
-  /// No description provided for @registerCreating.
+  /// No description provided for @contractsAllstatuses.
   ///
   /// In fr, this message translates to:
-  /// **'Création de compte en cours...'**
-  String get registerCreating;
+  /// **'Tous les statuts'**
+  String get contractsAllstatuses;
 
-  /// No description provided for @registerSubmit.
+  /// No description provided for @trainingTitleplaceholder.
   ///
   /// In fr, this message translates to:
-  /// **'Créer mon compte'**
-  String get registerSubmit;
+  /// **'Titre *'**
+  String get trainingTitleplaceholder;
 
-  /// No description provided for @accessDeniedTitle.
+  /// No description provided for @trainingDurationplaceholder.
   ///
   /// In fr, this message translates to:
-  /// **'Accès refusé'**
-  String get accessDeniedTitle;
+  /// **'Duree (h)'**
+  String get trainingDurationplaceholder;
+
+  /// No description provided for @trainingMaxparticipantsplaceholder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Participants max'**
+  String get trainingMaxparticipantsplaceholder;
+
+  /// No description provided for @trainingOnline.
+  ///
+  /// In fr, this message translates to:
+  /// **'En ligne'**
+  String get trainingOnline;
 
   /// No description provided for @accessDeniedBody.
   ///
@@ -6011,258 +6193,17 @@ abstract class AppLocalizations {
   /// **'Se déconnecter'**
   String get accessDeniedLogout;
 
+  /// No description provided for @accessDeniedTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Accès refusé'**
+  String get accessDeniedTitle;
+
   /// No description provided for @accessDeniedBodyHr.
   ///
   /// In fr, this message translates to:
   /// **'Votre compte n\'a pas le rôle RH requis pour cette application. Utilisez l\'application correspondant à votre rôle (Employee, Manager…) ou contactez votre administrateur.'**
   String get accessDeniedBodyHr;
-
-  /// No description provided for @evaluationsTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mes Évaluations'**
-  String get evaluationsTitle;
-
-  /// No description provided for @evaluationsEmpty.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune évaluation'**
-  String get evaluationsEmpty;
-
-  /// No description provided for @evaluationsEmptyHint.
-  ///
-  /// In fr, this message translates to:
-  /// **'Vous n\'avez pas encore d\'évaluation enregistrée.'**
-  String get evaluationsEmptyHint;
-
-  /// No description provided for @evaluationPeriod.
-  ///
-  /// In fr, this message translates to:
-  /// **'Période : {period}'**
-  String evaluationPeriod(String period);
-
-  /// No description provided for @attendanceOnTime.
-  ///
-  /// In fr, this message translates to:
-  /// **'à l\'heure'**
-  String get attendanceOnTime;
-
-  /// No description provided for @attendanceLate.
-  ///
-  /// In fr, this message translates to:
-  /// **'en retard'**
-  String get attendanceLate;
-
-  /// No description provided for @attendanceAbsent.
-  ///
-  /// In fr, this message translates to:
-  /// **'absent'**
-  String get attendanceAbsent;
-
-  /// No description provided for @attendanceInProgress.
-  ///
-  /// In fr, this message translates to:
-  /// **'en cours'**
-  String get attendanceInProgress;
-
-  /// No description provided for @attendanceNoClock.
-  ///
-  /// In fr, this message translates to:
-  /// **'pas de pointage'**
-  String get attendanceNoClock;
-
-  /// No description provided for @attendanceTimeRange.
-  ///
-  /// In fr, this message translates to:
-  /// **'de {from} à {to}'**
-  String attendanceTimeRange(String from, String to);
-
-  /// No description provided for @attendanceHourWorked.
-  ///
-  /// In fr, this message translates to:
-  /// **'heure travaillée'**
-  String get attendanceHourWorked;
-
-  /// No description provided for @attendanceHoursWorked.
-  ///
-  /// In fr, this message translates to:
-  /// **'heures travaillées'**
-  String get attendanceHoursWorked;
-
-  /// No description provided for @attendanceDaySummary.
-  ///
-  /// In fr, this message translates to:
-  /// **'Journée du {date}, statut {status}, {range}, {hours}.'**
-  String attendanceDaySummary(
-      String date, String status, String range, String hours);
-
-  /// No description provided for @sessionApproved.
-  ///
-  /// In fr, this message translates to:
-  /// **'Session approuvée ✓'**
-  String get sessionApproved;
-
-  /// No description provided for @sessionRejected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Session rejetée'**
-  String get sessionRejected;
-
-  /// No description provided for @pendingSessionsToValidate.
-  ///
-  /// In fr, this message translates to:
-  /// **'À valider'**
-  String get pendingSessionsToValidate;
-
-  /// No description provided for @pendingSessionsUpToDate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tout est à jour'**
-  String get pendingSessionsUpToDate;
-
-  /// No description provided for @pendingSessionsEmpty.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune session GPS en attente de validation.'**
-  String get pendingSessionsEmpty;
-
-  /// No description provided for @employeeNumber.
-  ///
-  /// In fr, this message translates to:
-  /// **'Employé #{id}'**
-  String employeeNumber(String id);
-
-  /// No description provided for @sessionEntryAt.
-  ///
-  /// In fr, this message translates to:
-  /// **'Entrée : {time}'**
-  String sessionEntryAt(String time);
-
-  /// No description provided for @sessionsToValidate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sessions à valider'**
-  String get sessionsToValidate;
-
-  /// No description provided for @errorPrefix.
-  ///
-  /// In fr, this message translates to:
-  /// **'Erreur : {message}'**
-  String errorPrefix(String message);
-
-  /// No description provided for @saDashboardTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pointage GPS — tableau de bord équipe'**
-  String get saDashboardTitle;
-
-  /// No description provided for @saDetected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Détectées'**
-  String get saDetected;
-
-  /// No description provided for @saApproved.
-  ///
-  /// In fr, this message translates to:
-  /// **'Approuvées'**
-  String get saApproved;
-
-  /// No description provided for @saRejected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Rejetées'**
-  String get saRejected;
-
-  /// No description provided for @saRecentSessions.
-  ///
-  /// In fr, this message translates to:
-  /// **'Sessions récentes'**
-  String get saRecentSessions;
-
-  /// No description provided for @saForced.
-  ///
-  /// In fr, this message translates to:
-  /// **'Imposé'**
-  String get saForced;
-
-  /// No description provided for @saPresenceInProgress.
-  ///
-  /// In fr, this message translates to:
-  /// **'Présence en cours depuis {time}'**
-  String saPresenceInProgress(String time);
-
-  /// No description provided for @saGpsZoneNotConfigured.
-  ///
-  /// In fr, this message translates to:
-  /// **'La zone GPS de votre entreprise n\'est pas encore configurée.'**
-  String get saGpsZoneNotConfigured;
-
-  /// No description provided for @saDisableAutoGps.
-  ///
-  /// In fr, this message translates to:
-  /// **'Désactiver le GPS automatique'**
-  String get saDisableAutoGps;
-
-  /// No description provided for @saStatusApproved.
-  ///
-  /// In fr, this message translates to:
-  /// **'Approuvée'**
-  String get saStatusApproved;
-
-  /// No description provided for @saStatusDetected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Détectée'**
-  String get saStatusDetected;
-
-  /// No description provided for @saStatusRejected.
-  ///
-  /// In fr, this message translates to:
-  /// **'Rejetée'**
-  String get saStatusRejected;
-
-  /// No description provided for @saStatusCancelled.
-  ///
-  /// In fr, this message translates to:
-  /// **'Annulée'**
-  String get saStatusCancelled;
-
-  /// No description provided for @saStatusPending.
-  ///
-  /// In fr, this message translates to:
-  /// **'En validation'**
-  String get saStatusPending;
-
-  /// No description provided for @saEnableAutoGps.
-  ///
-  /// In fr, this message translates to:
-  /// **'Activer le GPS automatique'**
-  String get saEnableAutoGps;
-
-  /// No description provided for @attendanceOvertime.
-  ///
-  /// In fr, this message translates to:
-  /// **'Heures supplémentaires'**
-  String get attendanceOvertime;
-
-  /// No description provided for @approvalsUpToDate.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tout est à jour'**
-  String get approvalsUpToDate;
-
-  /// No description provided for @approvalsEmpty.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucune approbation en attente.'**
-  String get approvalsEmpty;
-
-  /// No description provided for @saConfigLoadError.
-  ///
-  /// In fr, this message translates to:
-  /// **'Impossible de charger la configuration.\n{error}'**
-  String saConfigLoadError(String error);
 
   /// No description provided for @ampAutoDetectDesc.
   ///
@@ -6270,11 +6211,17 @@ abstract class AppLocalizations {
   /// **'Votre présence est détectée automatiquement dès que vous entrez dans la zone de l\'entreprise. Aucune action requise de votre part.'**
   String get ampAutoDetectDesc;
 
-  /// No description provided for @ampRecommended.
+  /// No description provided for @ampManualDesc.
   ///
   /// In fr, this message translates to:
-  /// **'Recommandé'**
-  String get ampRecommended;
+  /// **'Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l\'écran de présence.'**
+  String get ampManualDesc;
+
+  /// No description provided for @ampModeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mode de pointage'**
+  String get ampModeTitle;
 
   /// No description provided for @ampQrScanDesc.
   ///
@@ -6282,11 +6229,11 @@ abstract class AppLocalizations {
   /// **'Scannez le QR Code affiché à l\'entrée de l\'entreprise pour pointer votre arrivée et votre départ.'**
   String get ampQrScanDesc;
 
-  /// No description provided for @ampManualDesc.
+  /// No description provided for @ampRecommended.
   ///
   /// In fr, this message translates to:
-  /// **'Pointez manuellement en appuyant sur les boutons Arrivée et Départ dans l\'écran de présence.'**
-  String get ampManualDesc;
+  /// **'Recommandé'**
+  String get ampRecommended;
 
   /// No description provided for @ampSaveError.
   ///
@@ -6300,88 +6247,83 @@ abstract class AppLocalizations {
   /// **'Choisissez comment vous souhaitez pointer votre présence chaque jour.'**
   String get ampTitle;
 
-  /// No description provided for @ampModeTitle.
+  /// No description provided for @approvalApproved.
   ///
   /// In fr, this message translates to:
-  /// **'Mode de pointage'**
-  String get ampModeTitle;
+  /// **'Demande approuvée'**
+  String get approvalApproved;
+
+  /// No description provided for @approvalRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande refusée'**
+  String get approvalRejected;
+
+  /// No description provided for @approvalsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune approbation en attente.'**
+  String get approvalsEmpty;
+
+  /// No description provided for @approvalsUpToDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est à jour'**
+  String get approvalsUpToDate;
 
   /// No description provided for @back.
   ///
   /// In fr, this message translates to:
   /// **'Retour'**
   String get back;
-  String get cabinetScreenAddDocument;
-  String get cabinetScreenAddDocumentSubtitle;
-  String get cabinetScreenCancel;
-  String get cabinetScreenCreate;
-  String get cabinetScreenCreateShareLink;
-  String get cabinetScreenDelete;
-  String cabinetScreenDeleteBody(Object name);
-  String get cabinetScreenDeleteTitle;
 
-  String cabinetScreenDocumentsCount(num count);
-  String get cabinetScreenDocumentAdded;
-  String get cabinetScreenDocuments;
-  String get cabinetScreenEmailHint;
-  String get cabinetScreenEmptyDescription;
-  String get cabinetScreenEmptyTitle;
-  String get cabinetScreenFolderNameHint;
-  String get cabinetScreenFolders;
-  String cabinetScreenLinkCopied(Object url);
-  String get cabinetScreenNewFolder;
-  String get cabinetScreenSend;
-  String get cabinetScreenShareByEmail;
-  String cabinetScreenShareSent(Object email);
-  String cabinetScreenShareTitle(Object name);
-  String get cabinetScreenTitleRoot;
-  String get cabinetScreenUploadFailed;
-  String get cabinetScreenUploading;
-
-  /// No description provided for @notificationsMarkAllReadError.
-  String get notificationsMarkAllReadError;
-
-  /// No description provided for @notificationsMarkReadError.
-  String get notificationsMarkReadError;
-
-  /// No description provided for @notificationsDeleteError.
-  String get notificationsDeleteError;
-
-  /// No description provided for @notificationsDeleted.
-  String get notificationsDeleted;
-
-  /// No description provided for @attendanceFutureTimeError.
-  String get attendanceFutureTimeError;
-
-  /// No description provided for @refresh.
+  /// No description provided for @employeeNumber.
   ///
   /// In fr, this message translates to:
-  /// **'Actualiser'**
-  String get refresh;
+  /// **'Employé #{id}'**
+  String employeeNumber(Object id);
 
-  /// No description provided for @saSessionsLoadError.
+  /// No description provided for @errorPrefix.
   ///
   /// In fr, this message translates to:
-  /// **'Impossible de charger les sessions GPS. Vérifiez votre connexion.'**
-  String get saSessionsLoadError;
+  /// **'Erreur : {message}'**
+  String errorPrefix(Object message);
 
-  /// No description provided for @saStartMonitoringError.
+  /// No description provided for @errorUnexpected.
   ///
   /// In fr, this message translates to:
-  /// **'Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.'**
-  String get saStartMonitoringError;
+  /// **'Une erreur est survenue'**
+  String get errorUnexpected;
 
-  /// No description provided for @shellTeam.
+  /// No description provided for @evaluationPeriod.
   ///
   /// In fr, this message translates to:
-  /// **'Équipe'**
-  String get shellTeam;
+  /// **'Période : {period}'**
+  String evaluationPeriod(Object period);
 
-  /// No description provided for @shellSettings.
+  /// No description provided for @evaluationsEmpty.
   ///
   /// In fr, this message translates to:
-  /// **'Réglages'**
-  String get shellSettings;
+  /// **'Aucune évaluation'**
+  String get evaluationsEmpty;
+
+  /// No description provided for @evaluationsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes Évaluations'**
+  String get evaluationsTitle;
+
+  /// No description provided for @evaluationsEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vous n\'avez pas encore d\'évaluation enregistrée.'**
+  String get evaluationsEmptyHint;
+
+  /// No description provided for @featureComingSoon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fonction bientôt disponible'**
+  String get featureComingSoon;
 
   /// No description provided for @homeCompleteOnboarding.
   ///
@@ -6395,41 +6337,11 @@ abstract class AppLocalizations {
   /// **'Configurez votre espace en quelques étapes.'**
   String get homeOnboardingHint;
 
-  /// No description provided for @welcomeMyTeam.
-  ///
-  /// In fr, this message translates to:
-  /// **'Mon équipe'**
-  String get welcomeMyTeam;
-
-  /// No description provided for @welcomePresences.
-  ///
-  /// In fr, this message translates to:
-  /// **'Présences'**
-  String get welcomePresences;
-
-  /// No description provided for @welcomeTasks.
-  ///
-  /// In fr, this message translates to:
-  /// **'Tâches'**
-  String get welcomeTasks;
-
-  /// No description provided for @welcomeLeaves.
-  ///
-  /// In fr, this message translates to:
-  /// **'Congés'**
-  String get welcomeLeaves;
-
   /// No description provided for @monthlySummaryLoading.
   ///
   /// In fr, this message translates to:
   /// **'Chargement du résumé mensuel...'**
   String get monthlySummaryLoading;
-
-  /// No description provided for @orgChartEmpty.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'organigramme sera disponible une fois les employés configurés.'**
-  String get orgChartEmpty;
 
   /// No description provided for @orgChartCollapse.
   ///
@@ -6437,882 +6349,725 @@ abstract class AppLocalizations {
   /// **'Réduire'**
   String get orgChartCollapse;
 
+  /// No description provided for @orgChartEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'organigramme sera disponible une fois les employés configurés.'**
+  String get orgChartEmpty;
+
   /// No description provided for @orgChartExpand.
   ///
   /// In fr, this message translates to:
   /// **'Développer'**
   String get orgChartExpand;
 
-  /// No description provided for @errorUnexpected.
+  /// No description provided for @pageNotFound.
   ///
   /// In fr, this message translates to:
-  /// **'Une erreur est survenue'**
-  String get errorUnexpected;
+  /// **'La page demandée est introuvable ou la navigation a échoué.'**
+  String get pageNotFound;
 
-  /// No description provided for @approvalApproved.
+  /// No description provided for @pendingSessionsEmpty.
   ///
   /// In fr, this message translates to:
-  /// **'Demande approuvée'**
-  String get approvalApproved;
+  /// **'Aucune session GPS en attente de validation.'**
+  String get pendingSessionsEmpty;
 
-  /// No description provided for @approvalRejected.
+  /// No description provided for @pendingSessionsToValidate.
   ///
   /// In fr, this message translates to:
-  /// **'Demande refusée'**
-  String get approvalRejected;
+  /// **'À valider'**
+  String get pendingSessionsToValidate;
+
+  /// No description provided for @pendingSessionsUpToDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout est à jour'**
+  String get pendingSessionsUpToDate;
+
+  /// No description provided for @refresh.
+  ///
+  /// In fr, this message translates to:
+  /// **'Actualiser'**
+  String get refresh;
+
+  /// No description provided for @registerCreateAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer votre compte'**
+  String get registerCreateAccount;
+
+  /// No description provided for @registerCreating.
+  ///
+  /// In fr, this message translates to:
+  /// **'Création de compte en cours...'**
+  String get registerCreating;
+
+  /// No description provided for @registerFirstName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prénom'**
+  String get registerFirstName;
+
+  /// No description provided for @registerMinChars.
+  ///
+  /// In fr, this message translates to:
+  /// **'8 caractères minimum'**
+  String get registerMinChars;
+
+  /// No description provided for @registerPassword.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mot de passe'**
+  String get registerPassword;
+
+  /// No description provided for @registerRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Obligatoire'**
+  String get registerRequired;
+
+  /// No description provided for @registerSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer mon compte'**
+  String get registerSubmit;
+
+  /// No description provided for @retry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réessayer'**
+  String get retry;
+
+  /// No description provided for @saApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuvées'**
+  String get saApproved;
+
+  /// No description provided for @saConfigLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger la configuration.\n{error}'**
+  String saConfigLoadError(Object error);
+
+  /// No description provided for @saDashboardTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pointage GPS — tableau de bord équipe'**
+  String get saDashboardTitle;
+
+  /// No description provided for @saDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détectées'**
+  String get saDetected;
+
+  /// No description provided for @saDisableAutoGps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Désactiver le GPS automatique'**
+  String get saDisableAutoGps;
+
+  /// No description provided for @saEnableAutoGps.
+  ///
+  /// In fr, this message translates to:
+  /// **'Activer le GPS automatique'**
+  String get saEnableAutoGps;
+
+  /// No description provided for @saForced.
+  ///
+  /// In fr, this message translates to:
+  /// **'Imposé'**
+  String get saForced;
+
+  /// No description provided for @saGpsZoneNotConfigured.
+  ///
+  /// In fr, this message translates to:
+  /// **'La zone GPS de votre entreprise n\'est pas encore configurée.'**
+  String get saGpsZoneNotConfigured;
 
   /// No description provided for @saPermissionDenied.
   ///
   /// In fr, this message translates to:
   /// **'Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance.'**
   String get saPermissionDenied;
-  String get absencesApprove;
 
-  String get absencesApproveBody;
+  /// No description provided for @saPresenceInProgress.
+  ///
+  /// In fr, this message translates to:
+  /// **'Présence en cours depuis {time}'**
+  String saPresenceInProgress(Object time);
 
-  String get absencesApproveTitle;
+  /// No description provided for @saRecentSessions.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sessions récentes'**
+  String get saRecentSessions;
 
-  String get absencesApprovedSnack;
+  /// No description provided for @saRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejetées'**
+  String get saRejected;
 
-  String get absencesAttachProof;
+  /// No description provided for @saSessionsLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les sessions GPS. Vérifiez votre connexion.'**
+  String get saSessionsLoadError;
 
-  String get absencesBalancesLoading;
+  /// No description provided for @saStartMonitoringError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez.'**
+  String get saStartMonitoringError;
 
-  String get absencesCancel;
+  /// No description provided for @saStatusApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuvée'**
+  String get saStatusApproved;
 
-  String get absencesCancelBody;
+  /// No description provided for @saStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get saStatusCancelled;
 
-  String get absencesCancelRequest;
+  /// No description provided for @saStatusDetected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Détectée'**
+  String get saStatusDetected;
 
-  String get absencesCancelTitle;
+  /// No description provided for @saStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'En validation'**
+  String get saStatusPending;
 
-  String get absencesCancelledSnack;
+  /// No description provided for @saStatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejetée'**
+  String get saStatusRejected;
 
-  String get absencesCompanyLabel;
+  /// No description provided for @sessionApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session approuvée ✓'**
+  String get sessionApproved;
 
-  String get absencesCurrentCompany;
+  /// No description provided for @sessionEntryAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrée : {time}'**
+  String sessionEntryAt(Object time);
 
-  String get absencesDateMissing;
+  /// No description provided for @sessionRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Session rejetée'**
+  String get sessionRejected;
 
-  String get absencesDaysAvailable;
-  String get absencesDaysShort;
+  /// No description provided for @sessionsToValidate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Sessions à valider'**
+  String get sessionsToValidate;
 
-  String get absencesEmployeeLabel;
+  /// No description provided for @backToHome.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à l\'accueil'**
+  String get backToHome;
 
-  String get absencesEmptyHint;
-
-  String get absencesEmptyTitle;
-
-  String get absencesEnd;
-
-  String get absencesFailure;
-
-  String get absencesKeep;
-
-  String get absencesLoading;
-
-  String get absencesNewAbsence;
-
-  String get absencesNewAbsenceHint;
-
-  String get absencesNoTypeAvailable;
-
-  String get absencesProofAttached;
-
-  String get absencesProofDownloaded;
-
-  String get absencesReason;
-
-  String get absencesReasonLabel;
-
-  String get absencesReasonMissing;
-
-  String get absencesReasonNotProvided;
-
-  String get absencesReasonhint;
-
-  String get absencesReasonrequired;
-
-  String get absencesReject;
-
-  String get absencesRejectHelper;
-
-  String get absencesRejectTitle;
-
-  String get absencesRejectedSnack;
-
-  String get absencesRequest;
-
-  String get absencesRequestLabel;
-
-  String get absencesRequesterLabel;
-
-  String get absencesStart;
-
-  String get absencesStatusApproved;
-
-  String get absencesStatusCancelled;
-
-  String get absencesStatusPending;
-
-  String get absencesStatusRejected;
-
-  String get absencesSubmitToHr;
-
-  String get absencesSubmittedSnack;
-
-  String get absencesSubtitle;
-
+  /// No description provided for @absencesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes absences'**
   String get absencesTitle;
 
-  String get absencesType;
+  /// No description provided for @absencesSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes, soldes et décisions RH'**
+  String get absencesSubtitle;
 
+  /// No description provided for @absencesRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demander'**
+  String get absencesRequest;
+
+  /// No description provided for @absencesEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune absence'**
+  String get absencesEmptyTitle;
+
+  /// No description provided for @absencesEmptyHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandez une absence depuis le bouton principal, puis suivez la décision RH ici.'**
+  String get absencesEmptyHint;
+
+  /// No description provided for @absencesEmployeeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Employé'**
+  String get absencesEmployeeLabel;
+
+  /// No description provided for @absencesTypeFallback.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absence'**
   String get absencesTypeFallback;
 
-  String get absencesTypeRequired;
+  /// No description provided for @absencesLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des absences'**
+  String get absencesLoading;
 
+  /// No description provided for @absencesApprove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuver'**
+  String get absencesApprove;
+
+  /// No description provided for @absencesReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get absencesReject;
+
+  /// No description provided for @absencesCancelRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la demande'**
+  String get absencesCancelRequest;
+
+  /// No description provided for @absencesViewProof.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir le justificatif'**
   String get absencesViewProof;
 
-  String get apiLoginBackendError;
+  /// No description provided for @absencesProofDownloaded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Justificatif téléchargé : '**
+  String get absencesProofDownloaded;
 
-  String get apiLoginInvalidJson;
+  /// No description provided for @absencesFailure.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec : '**
+  String get absencesFailure;
 
-  String get apiLoginNetworkError;
+  /// No description provided for @absencesReasonMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif non renseigné'**
+  String get absencesReasonMissing;
 
-  String get apiLoginTimeout;
+  /// No description provided for @absencesDateMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de demande non renseignée'**
+  String get absencesDateMissing;
 
-  String get billingCancelSubscriptionConfirm;
+  /// No description provided for @absencesCurrentCompany.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise courante'**
+  String get absencesCurrentCompany;
 
-  String get billingCheckoutFailed;
+  /// No description provided for @absencesRequesterLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandeur : '**
+  String get absencesRequesterLabel;
 
-  String get billingCheckoutSandboxMessage;
+  /// No description provided for @absencesCompanyLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entreprise : '**
+  String get absencesCompanyLabel;
 
-  String get billingCheckoutUnavailable;
+  /// No description provided for @absencesRequestLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande : '**
+  String get absencesRequestLabel;
 
-  String get billingNoActivePeriod;
+  /// No description provided for @absencesReasonLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif : '**
+  String get absencesReasonLabel;
 
-  String get billingNoActiveSubscription;
+  /// No description provided for @absencesApproveTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Approuver cette absence ?'**
+  String get absencesApproveTitle;
 
-  String get billingPeriodLabel;
+  /// No description provided for @absencesReasonNotProvided.
+  ///
+  /// In fr, this message translates to:
+  /// **'non renseigné'**
+  String get absencesReasonNotProvided;
 
-  String get contractsAllstatuses;
+  /// No description provided for @absencesApproveBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande passera en statut approuvé et l\'employé sera notifié.'**
+  String get absencesApproveBody;
 
-  String get contractsListSubtitle;
+  /// No description provided for @absencesApprovedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absence approuvée.'**
+  String get absencesApprovedSnack;
 
-  String get contractsSearchplaceholder;
+  /// No description provided for @absencesRejectTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser l\'absence'**
+  String get absencesRejectTitle;
 
-  String get dashboardModulesactivesentence;
+  /// No description provided for @absencesRejectHelper.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le motif sera visible par l\'employé.'**
+  String get absencesRejectHelper;
 
-  String get dashboardSearchplaceholder;
+  /// No description provided for @absencesRejectedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Absence refusée.'**
+  String get absencesRejectedSnack;
 
-  String get dashboardYourcompany;
+  /// No description provided for @absencesCancelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler cette demande ?'**
+  String get absencesCancelTitle;
 
-  String get marketingPostcontentplaceholder;
+  /// No description provided for @absencesCancelBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande en attente sera retirée et le RH verra le statut annulé.'**
+  String get absencesCancelBody;
 
-  String get marketingSocialexampleplaceholder;
+  /// No description provided for @absencesKeep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder'**
+  String get absencesKeep;
 
-  String get trainingDurationplaceholder;
+  /// No description provided for @absencesCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get absencesCancel;
 
-  String get trainingMaxparticipantsplaceholder;
+  /// No description provided for @absencesCancelledSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande d\'absence annulée.'**
+  String get absencesCancelledSnack;
 
-  String get trainingOnline;
+  /// No description provided for @absencesStatusApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'approuvée'**
+  String get absencesStatusApproved;
 
-  String get trainingTitleplaceholder;
+  /// No description provided for @absencesStatusPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'en attente'**
+  String get absencesStatusPending;
 
+  /// No description provided for @absencesStatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'rejetée'**
+  String get absencesStatusRejected;
 
-  /// No description provided for @attendanceFutureTimeError.
-  String get attendanceFutureTimeError;
+  /// No description provided for @absencesStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'annulée'**
+  String get absencesStatusCancelled;
 
-  /// No description provided for @notificationsMarkAllReadError.
-  String get notificationsMarkAllReadError;
+  /// No description provided for @absencesNewAbsence.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle absence'**
+  String get absencesNewAbsence;
 
-  /// No description provided for @notificationsMarkReadError.
-  String get notificationsMarkReadError;
+  /// No description provided for @absencesNewAbsenceHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez le type de solde et la période à transmettre au RH.'**
+  String get absencesNewAbsenceHint;
 
-  /// No description provided for @notificationsDeleteError.
-  String get notificationsDeleteError;
+  /// No description provided for @absencesNoTypeAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun type d\'absence disponible pour ce compte. Contactez le RH pour configurer les soldes.'**
+  String get absencesNoTypeAvailable;
 
-  /// No description provided for @notificationsDeleted.
-  String get notificationsDeleted;
+  /// No description provided for @absencesType.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type'**
+  String get absencesType;
+
+  /// No description provided for @absencesTypeRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Type d\'absence requis'**
+  String get absencesTypeRequired;
+
+  /// No description provided for @absencesBalancesLoading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chargement des soldes'**
+  String get absencesBalancesLoading;
+
+  /// No description provided for @absencesStart.
+  ///
+  /// In fr, this message translates to:
+  /// **'Début'**
+  String get absencesStart;
+
+  /// No description provided for @absencesEnd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fin'**
+  String get absencesEnd;
+
+  /// No description provided for @absencesReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get absencesReason;
+
+  /// No description provided for @absencesReasonhint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ex : rendez-vous médical, congé familial…'**
+  String get absencesReasonhint;
+
+  /// No description provided for @absencesReasonrequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif obligatoire'**
+  String get absencesReasonrequired;
+
+  /// No description provided for @absencesAttachProof.
+  ///
+  /// In fr, this message translates to:
+  /// **'Joindre un justificatif (optionnel)'**
+  String get absencesAttachProof;
+
+  /// No description provided for @absencesProofAttached.
+  ///
+  /// In fr, this message translates to:
+  /// **'Justificatif joint'**
+  String get absencesProofAttached;
+
+  /// No description provided for @absencesSubmitToHr.
+  ///
+  /// In fr, this message translates to:
+  /// **'Soumettre au RH'**
+  String get absencesSubmitToHr;
+
+  /// No description provided for @absencesSubmittedSnack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande d\'absence transmise au RH.'**
+  String get absencesSubmittedSnack;
+
+  /// No description provided for @absencesDaysAvailable.
+  ///
+  /// In fr, this message translates to:
+  /// **' j disponibles'**
+  String get absencesDaysAvailable;
+
+  /// No description provided for @absencesDaysShort.
+  ///
+  /// In fr, this message translates to:
+  /// **' j'**
+  String get absencesDaysShort;
 
   /// No description provided for @settingsJourneyLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger votre parcours.'**
   String get settingsJourneyLoadError;
 
   /// No description provided for @settingsStatsLoadError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de charger les statistiques.'**
   String get settingsStatsLoadError;
 
-  /// No description provided for @emptyAbsences.
-  String get emptyAbsences;
-
-  /// No description provided for @cancelRequest.
-  String get cancelRequest;
-
-  /// No description provided for @emptySessions.
-  String get emptySessions;
-
-  /// No description provided for @emptyHistory.
-  String get emptyHistory;
-
-  /// No description provided for @emptyPayslips.
-  String get emptyPayslips;
-
-  /// No description provided for @emptyAdvances.
-  String get emptyAdvances;
-
-  /// No description provided for @noReason.
-  String get noReason;
-
-  /// No description provided for @confirmReceipt.
-  String get confirmReceipt;
-
-  /// No description provided for @saveProfile.
-  String get saveProfile;
-
-  /// No description provided for @savingProfile.
-  String get savingProfile;
-
-  /// No description provided for @loadError.
-  String get loadError;
-
-  /// No description provided for @noData.
-  String get noData;
-
-  /// No description provided for @noTasksToday.
-  String get noTasksToday;
-
-  /// No description provided for @salaryAdvanceListTitle.
-  String get salaryAdvanceListTitle;
-
-  /// No description provided for @salaryAdvanceListSubtitle.
-  String get salaryAdvanceListSubtitle;
-
-  /// No description provided for @salaryAdvanceRequest.
-  String get salaryAdvanceRequest;
-
-  /// No description provided for @salaryAdvancesEmpty.
-  String get salaryAdvancesEmpty;
-
-  /// No description provided for @salaryAdvancesEmptyHint.
-  String get salaryAdvancesEmptyHint;
-
-  /// No description provided for @salaryAdvanceNoReason.
-  String get salaryAdvanceNoReason;
-
-  /// No description provided for @salaryAdvancesLoading.
-  String get salaryAdvancesLoading;
-
-  /// No description provided for @salaryAdvancePaymentDeclared.
-  String get salaryAdvancePaymentDeclared;
-
-  /// No description provided for @salaryAdvanceConfirmReceived.
-  String get salaryAdvanceConfirmReceived;
-
-  /// No description provided for @salaryAdvanceCancelRequest.
-  String get salaryAdvanceCancelRequest;
-
-  /// No description provided for @salaryAdvanceViewProof.
-  String get salaryAdvanceViewProof;
-
-  /// No description provided for @salaryAdvanceProofDownloaded.
-  String salaryAdvanceProofDownloaded(Object path);
-
-  /// No description provided for @salaryAdvanceError.
-  String salaryAdvanceError(Object error);
-
-  /// No description provided for @salaryAdvanceCancelTitle.
-  String get salaryAdvanceCancelTitle;
-
-  /// No description provided for @salaryAdvanceCancelBody.
-  String get salaryAdvanceCancelBody;
-
-  /// No description provided for @salaryAdvanceKeep.
-  String get salaryAdvanceKeep;
-
-  /// No description provided for @salaryAdvanceCancelAction.
-  String get salaryAdvanceCancelAction;
-
-  /// No description provided for @salaryAdvanceCancelled.
-  String get salaryAdvanceCancelled;
-
-  /// No description provided for @salaryAdvanceMonths.
-  String salaryAdvanceMonths(Object reason, Object months);
-
-  /// No description provided for @salaryAdvanceSemantics.
-  String salaryAdvanceSemantics(Object amount, Object reason, Object status);
-
-  /// No description provided for @salaryStatusValidated.
-  String get salaryStatusValidated;
-
-  /// No description provided for @salaryStatusToConfirm.
-  String get salaryStatusToConfirm;
-
-  /// No description provided for @salaryStatusReceived.
-  String get salaryStatusReceived;
-
-  /// No description provided for @salaryStatusActive.
-  String get salaryStatusActive;
-
-  /// No description provided for @salaryStatusApproved.
-  String get salaryStatusApproved;
-
-  /// No description provided for @salaryStatusPending.
-  String get salaryStatusPending;
-
-  /// No description provided for @salaryStatusRejected.
-  String get salaryStatusRejected;
-
-  /// No description provided for @salaryStatusCancelled.
-  String get salaryStatusCancelled;
-
-  /// No description provided for @salaryAdvanceConfirmReceivedTitle.
-  String get salaryAdvanceConfirmReceivedTitle;
-
-  /// No description provided for @salaryAdvanceConfirmReceivedBody.
-  String get salaryAdvanceConfirmReceivedBody;
-
-  /// No description provided for @salaryAdvanceConfirmAction.
-  String get salaryAdvanceConfirmAction;
-
-  /// No description provided for @salaryAdvanceRequestTitle.
-  String get salaryAdvanceRequestTitle;
-
-  /// No description provided for @salaryAdvanceAttachmentLabel.
-  String get salaryAdvanceAttachmentLabel;
-
-  /// No description provided for @salaryAdvanceAttachHint.
-  String get salaryAdvanceAttachHint;
-
-  /// No description provided for @salaryAdvanceSubmitted.
-  String get salaryAdvanceSubmitted;
-
-  /// No description provided for @absencesListTitle.
-  String get absencesListTitle;
-
-  /// No description provided for @absencesListSubtitle.
-  String get absencesListSubtitle;
-
-  /// No description provided for @absenceRequest.
-  String get absenceRequest;
-
-  /// No description provided for @absencesEmpty.
-  String get absencesEmpty;
-
-  /// No description provided for @absenceLabel.
-  String get absenceLabel;
-
-  /// No description provided for @absencesDaysCount.
-  String absencesDaysCount(Object date, Object days);
-
-  /// No description provided for @absenceViewProof.
-  String get absenceViewProof;
-
-  /// No description provided for @absenceCancelRequest.
-  String get absenceCancelRequest;
-
-  /// No description provided for @absenceProofDownloaded.
-  String absenceProofDownloaded(Object path);
-
-  /// No description provided for @absenceCancelTitle.
-  String get absenceCancelTitle;
-
-  /// No description provided for @absenceCancelBody.
-  String get absenceCancelBody;
-
-  /// No description provided for @absenceCancelled.
-  String get absenceCancelled;
-
-  /// No description provided for @absenceNewTitle.
-  String get absenceNewTitle;
-
-  /// No description provided for @absenceNewHint.
-  String get absenceNewHint;
-
-  /// No description provided for @absenceNoType.
-  String get absenceNoType;
-
-  /// No description provided for @attendanceRoleEmployee.
-  String get attendanceRoleEmployee;
-
-  /// No description provided for @attendanceWeekUnavailable.
-  String get attendanceWeekUnavailable;
-
-  /// No description provided for @attendanceWorkTypeTitle.
-  String get attendanceWorkTypeTitle;
-
-  /// No description provided for @attendanceBreakTitle.
-  String get attendanceBreakTitle;
-
-  /// No description provided for @attendanceBreakHint.
-  String get attendanceBreakHint;
-
-  /// No description provided for @attendanceBreakLoading.
-  String get attendanceBreakLoading;
-
-  /// No description provided for @attendanceBreakSuccess.
-  String get attendanceBreakSuccess;
-
-  /// No description provided for @attendanceBreakFailure.
-  String get attendanceBreakFailure;
-
-  /// No description provided for @attendanceResumeTitle.
-  String get attendanceResumeTitle;
-
-  /// No description provided for @attendanceResumeHint.
-  String get attendanceResumeHint;
-
-  /// No description provided for @attendanceResumeLoading.
-  String get attendanceResumeLoading;
-
-  /// No description provided for @attendanceResumeSuccess.
-  String get attendanceResumeSuccess;
-
-  /// No description provided for @attendanceResumeFailure.
-  String get attendanceResumeFailure;
-
-  /// No description provided for @attendanceOvertimeTitle.
-  String get attendanceOvertimeTitle;
-
-  /// No description provided for @attendanceOvertimeHint.
-  String get attendanceOvertimeHint;
-
-  /// No description provided for @attendanceOvertimeLoading.
-  String get attendanceOvertimeLoading;
-
-  /// No description provided for @attendanceOvertimeSuccess.
-  String get attendanceOvertimeSuccess;
-
-  /// No description provided for @attendanceOvertimeFailure.
-  String get attendanceOvertimeFailure;
-
-  /// No description provided for @attendanceMissionTitle.
-  String get attendanceMissionTitle;
-
-  /// No description provided for @attendanceMissionHint.
-  String get attendanceMissionHint;
-
-  /// No description provided for @attendanceMissionLoading.
-  String get attendanceMissionLoading;
-
-  /// No description provided for @attendanceMissionSuccess.
-  String get attendanceMissionSuccess;
-
-  /// No description provided for @attendanceMissionFailure.
-  String get attendanceMissionFailure;
-
-  /// No description provided for @attendanceTravelTitle.
-  String get attendanceTravelTitle;
-
-  /// No description provided for @attendanceTravelHint.
-  String get attendanceTravelHint;
-
-  /// No description provided for @attendanceTravelLoading.
-  String get attendanceTravelLoading;
-
-  /// No description provided for @attendanceTravelSuccess.
-  String get attendanceTravelSuccess;
-
-  /// No description provided for @attendanceTravelFailure.
-  String get attendanceTravelFailure;
-
-  /// No description provided for @attendanceTasksTitle.
-  String get attendanceTasksTitle;
-
-  /// No description provided for @attendanceHistoryTitle.
-  String get attendanceHistoryTitle;
-
-  /// No description provided for @attendancePreferencesTitle.
-  String get attendancePreferencesTitle;
-
-  /// No description provided for @attendanceSettingsTitle.
-  String get attendanceSettingsTitle;
-
-  /// No description provided for @attendanceSyncTitle.
-  String get attendanceSyncTitle;
-
-  /// No description provided for @attendanceSaving.
-  String get attendanceSaving;
-
-  /// No description provided for @attendancePressToCheckout.
-  String get attendancePressToCheckout;
-
-  /// No description provided for @attendancePressToCheckin.
-  String get attendancePressToCheckin;
-
-  /// No description provided for @attendanceOvertimeShort.
-  String get attendanceOvertimeShort;
-
-  /// No description provided for @attendancePauseLabel.
-  String get attendancePauseLabel;
-
-  /// No description provided for @attendanceTrainingLabel.
-  String get attendanceTrainingLabel;
-
-  /// No description provided for @attendanceOtherLabel.
-  String get attendanceOtherLabel;
-
-  /// No description provided for @settingsEdgeSaved.
-  String get settingsEdgeSaved;
-
-  /// No description provided for @settingsAccountTitle.
-  String get settingsAccountTitle;
-
-  /// No description provided for @settingsAccountSubtitle.
-  String get settingsAccountSubtitle;
-
-  /// No description provided for @settingsEmployeeProfileHint.
-  String get settingsEmployeeProfileHint;
-
-  /// No description provided for @settingsSaving.
-  String get settingsSaving;
-
-  /// No description provided for @settingsSaveProfile.
-  String get settingsSaveProfile;
-
-  /// No description provided for @settingsKioskBiometricTitle.
-  String get settingsKioskBiometricTitle;
-
-  /// No description provided for @settingsNotificationsTitle.
-  String get settingsNotificationsTitle;
-
-  /// No description provided for @settingsAccountPortableHint.
-  String get settingsAccountPortableHint;
-
-  /// No description provided for @settingsNoJourney.
-  String get settingsNoJourney;
-
-  /// No description provided for @settingsNoCompanyQr.
-  String get settingsNoCompanyQr;
-
-  /// No description provided for @settingsLanguageTitle.
-  String get settingsLanguageTitle;
-
-  /// No description provided for @settingsPreferredLanguage.
-  String get settingsPreferredLanguage;
-
-  /// No description provided for @settingsSecurityTitle.
-  String get settingsSecurityTitle;
-
-  /// No description provided for @settingsCurrentPassword.
-  String get settingsCurrentPassword;
-
-  /// No description provided for @settingsSaveEnrollment.
-  String get settingsSaveEnrollment;
-
-  /// No description provided for @settingsSave.
-  String get settingsSave;
-
-  /// No description provided for @settingsLogout.
-  String get settingsLogout;
-
-  /// No description provided for @approvalsTitle.
-  String get approvalsTitle;
-
-  /// No description provided for @approvalsRejectReasonLabel.
-  String get approvalsRejectReasonLabel;
-
-  /// No description provided for @approvalsRejectReasonHint.
-  String get approvalsRejectReasonHint;
-
-  /// No description provided for @approvalsLoading.
-  String get approvalsLoading;
-
-  /// No description provided for @actionApprove.
-  String get actionApprove;
-
-  /// No description provided for @actionReject.
-  String get actionReject;
-
-  /// No description provided for @actionCancel.
-  String get actionCancel;
-
-
-  /// No description provided for @attendanceThisWeek.
-  String get attendanceThisWeek;
-  /// No description provided for @attendanceToday.
-  String get attendanceToday;
-  /// No description provided for @attendanceCheckinLabel.
-  String get attendanceCheckinLabel;
-  /// No description provided for @attendanceCheckoutLabel.
-  String get attendanceCheckoutLabel;
-  /// No description provided for @attendanceDailyEstimate.
-  String get attendanceDailyEstimate;
-  /// No description provided for @attendanceWeekHours.
-  String get attendanceWeekHours;
-  /// No description provided for @attendanceWeekEarnings.
-  String get attendanceWeekEarnings;
-  /// No description provided for @attendanceWeekLate.
-  String get attendanceWeekLate;
-  /// No description provided for @attendanceMenuEdit.
-  String get attendanceMenuEdit;
-  /// No description provided for @attendanceMenuMonthly.
-  String get attendanceMenuMonthly;
-  /// No description provided for @attendanceMenuProfile.
-  String get attendanceMenuProfile;
-  /// No description provided for @attendanceCheckoutSending.
-  String get attendanceCheckoutSending;
-  /// No description provided for @attendanceCheckinSending.
-  String get attendanceCheckinSending;
-  /// No description provided for @attendanceCheckoutSuccess.
-  String get attendanceCheckoutSuccess;
-  /// No description provided for @attendanceCheckoutFailure.
-  String get attendanceCheckoutFailure;
-  /// No description provided for @attendanceCheckinSuccess.
-  String get attendanceCheckinSuccess;
-  /// No description provided for @attendanceCheckinFailure.
-  String get attendanceCheckinFailure;
-  /// No description provided for @attendanceFingerprintEnabled.
-  String get attendanceFingerprintEnabled;
-  /// No description provided for @attendanceFingerprintEnable.
-  String get attendanceFingerprintEnable;
-  /// No description provided for @attendanceAbsent.
-  String get attendanceAbsent;
-  /// No description provided for @attendanceStatusPointer.
-  String get attendanceStatusPointer;
-  /// No description provided for @attendanceStatusInProgress.
-  String get attendanceStatusInProgress;
-  /// No description provided for @attendanceStatusLate.
-  String get attendanceStatusLate;
-  /// No description provided for @attendanceStatusComplete.
-  String get attendanceStatusComplete;
-  /// No description provided for @attendanceCorrectionTitle.
-  String get attendanceCorrectionTitle;
-  /// No description provided for @attendanceCorrectionDirectHint.
-  String get attendanceCorrectionDirectHint;
-  /// No description provided for @attendanceCorrectionRequestHint.
-  String get attendanceCorrectionRequestHint;
-  /// No description provided for @attendanceCorrectionCheckinLabel.
-  String get attendanceCorrectionCheckinLabel;
-  /// No description provided for @attendanceCorrectionCheckoutLabel.
-  String get attendanceCorrectionCheckoutLabel;
-  /// No description provided for @attendanceCorrectionReasonHint.
-  String get attendanceCorrectionReasonHint;
-  /// No description provided for @attendanceCorrectionReasonRequired.
-  String get attendanceCorrectionReasonRequired;
-  /// No description provided for @attendanceCorrectionNoLogWarning.
-  String get attendanceCorrectionNoLogWarning;
-  /// No description provided for @attendanceCorrectionSubmitDirect.
-  String get attendanceCorrectionSubmitDirect;
-  /// No description provided for @attendanceCorrectionSubmitRequest.
-  String get attendanceCorrectionSubmitRequest;
-  /// No description provided for @attendanceRoleEmployee2.
-  String get attendanceRoleEmployee2;
-  /// No description provided for @attendanceRolePrincipal.
-  String get attendanceRolePrincipal;
-  /// No description provided for @attendanceRoleHr.
-  String get attendanceRoleHr;
-  /// No description provided for @attendanceRoleFinance.
-  String get attendanceRoleFinance;
-  /// No description provided for @attendanceRoleManager.
-  String get attendanceRoleManager;
-  /// No description provided for @attendanceNone.
-  String get attendanceNone;
-
-
-  /// No description provided for @settingsMobileAccess.
-  String get settingsMobileAccess;
-  /// No description provided for @settingsManagerProfileHint.
-  String get settingsManagerProfileHint;
-  /// No description provided for @settingsTeamDrive.
-  String get settingsTeamDrive;
-  /// No description provided for @settingsTeamDriveHint.
-  String get settingsTeamDriveHint;
-  /// No description provided for @settingsSessionTitle.
-  String get settingsSessionTitle;
-  /// No description provided for @settingsSessionSubtitle.
-  String get settingsSessionSubtitle;
-  /// No description provided for @settingsOverview.
-  String get settingsOverview;
-  /// No description provided for @settingsManagerAccountHint.
-  String get settingsManagerAccountHint;
-  /// No description provided for @settingsMyProfile.
-  String get settingsMyProfile;
-  /// No description provided for @settingsFirstName.
-  String get settingsFirstName;
-  /// No description provided for @settingsLastNameLabel.
-  String get settingsLastNameLabel;
-  /// No description provided for @settingsEmailLabel.
-  String get settingsEmailLabel;
-  /// No description provided for @settingsEmailRequired.
-  String get settingsEmailRequired;
-  /// No description provided for @settingsEmailInvalid.
-  String get settingsEmailInvalid;
-  /// No description provided for @settingsFirstNameRequired.
-  String get settingsFirstNameRequired;
-  /// No description provided for @settingsLastNameRequired.
-  String get settingsLastNameRequired;
-  /// No description provided for @settingsPersonalContacts.
-  String get settingsPersonalContacts;
-  /// No description provided for @settingsPersonalEmail.
-  String get settingsPersonalEmail;
-  /// No description provided for @settingsRecoveryEmail.
-  String get settingsRecoveryEmail;
-  /// No description provided for @settingsPersonalPhone.
-  String get settingsPersonalPhone;
-  /// No description provided for @settingsNewPassword.
-  String get settingsNewPassword;
-  /// No description provided for @settingsConfirmPassword.
-  String get settingsConfirmPassword;
-  /// No description provided for @settingsPasswordMinLength.
-  String get settingsPasswordMinLength;
-  /// No description provided for @settingsPasswordMismatch.
-  String get settingsPasswordMismatch;
-  /// No description provided for @settingsPasswordChanged.
-  String get settingsPasswordChanged;
-  /// No description provided for @settingsShareProfile.
-  String get settingsShareProfile;
-  /// No description provided for @settingsMyQrManager.
-  String get settingsMyQrManager;
-  /// No description provided for @settingsMyQrEmployee.
-  String get settingsMyQrEmployee;
-  /// No description provided for @settingsQrManagerHint.
-  String get settingsQrManagerHint;
-  /// No description provided for @settingsQrCopyToken.
-  String get settingsQrCopyToken;
-  /// No description provided for @settingsPasteQr.
-  String get settingsPasteQr;
-  /// No description provided for @settingsJourneyTitle.
-  String get settingsJourneyTitle;
-  /// No description provided for @settingsJourneyUnknownDate.
-  String get settingsJourneyUnknownDate;
-  /// No description provided for @settingsJourneyToday.
-  String get settingsJourneyToday;
-  /// No description provided for @settingsJourneyInProgress.
-  String get settingsJourneyInProgress;
-  /// No description provided for @settingsJourneyUnknownPosition.
-  String get settingsJourneyUnknownPosition;
-  /// No description provided for @settingsJourneyUnknownCompany.
-  String get settingsJourneyUnknownCompany;
-  /// No description provided for @settingsNotificationsSubtitle.
-  String get settingsNotificationsSubtitle;
-  /// No description provided for @settingsLanguageSubtitle.
-  String get settingsLanguageSubtitle;
-  /// No description provided for @settingsProfileSaved.
-  String get settingsProfileSaved;
-  /// No description provided for @settingsBiometricManagerHint.
-  String get settingsBiometricManagerHint;
-  /// No description provided for @settingsBiometricTerminalHint.
-  String get settingsBiometricTerminalHint;
-  /// No description provided for @settingsBiometricNote.
-  String get settingsBiometricNote;
-  /// No description provided for @settingsBiometricDevice.
-  String get settingsBiometricDevice;
-  /// No description provided for @settingsBiometricFace.
-  String get settingsBiometricFace;
-  /// No description provided for @settingsBiometricFingerprint.
-  String get settingsBiometricFingerprint;
-  /// No description provided for @settingsBiometricConsent.
-  String get settingsBiometricConsent;
-  /// No description provided for @settingsBiometricSaved.
-  String get settingsBiometricSaved;
-  /// No description provided for @settingsBiometricEnrollmentStatus.
-  String get settingsBiometricEnrollmentStatus;
-  /// No description provided for @settingsBiometricNone.
-  String get settingsBiometricNone;
-  /// No description provided for @settingsBiometricPending.
-  String get settingsBiometricPending;
-  /// No description provided for @settingsBiometricApproved.
-  String get settingsBiometricApproved;
-  /// No description provided for @settingsBiometricRejected.
-  String get settingsBiometricRejected;
-  /// No description provided for @settingsPreferredLanguageLabel.
-  String get settingsPreferredLanguageLabel;
-  /// No description provided for @settingsLanguageSaved.
-  String get settingsLanguageSaved;
-  /// No description provided for @settingsPortableAccountHint.
-  String get settingsPortableAccountHint;
-
-
-  /// No description provided for @settingsPasswordError.
-  String settingsPasswordError(Object error);
-  /// No description provided for @settingsProfileError.
-  String settingsProfileError(Object error);
-  /// No description provided for @settingsBiometricError.
-  String settingsBiometricError(Object error);
-
-
-  /// No description provided for @teamTitle.
-  String get teamTitle;
-  /// No description provided for @teamSubtitle.
-  String get teamSubtitle;
-  /// No description provided for @teamManagerRequired.
-  String get teamManagerRequired;
-  /// No description provided for @teamManagerRequiredHint.
-  String get teamManagerRequiredHint;
-  /// No description provided for @teamEmployeesTab.
-  String get teamEmployeesTab;
-  /// No description provided for @teamInvitationsTab.
-  String get teamInvitationsTab;
-  /// No description provided for @teamAdd.
-  String get teamAdd;
-  /// No description provided for @teamAddCollaborator.
-  String get teamAddCollaborator;
-  /// No description provided for @teamAddManualForm.
-  String get teamAddManualForm;
-  /// No description provided for @teamAddManualHint.
-  String get teamAddManualHint;
-  /// No description provided for @teamAddFromQr.
-  String get teamAddFromQr;
-  /// No description provided for @teamAddFromQrHint.
-  String get teamAddFromQrHint;
-  /// No description provided for @teamLoading.
-  String get teamLoading;
-  /// No description provided for @teamEmpty.
-  String get teamEmpty;
-  /// No description provided for @teamEmptyHint.
-  String get teamEmptyHint;
-  /// No description provided for @teamEmployeeLabel.
-  String get teamEmployeeLabel;
-  /// No description provided for @teamManagerLabel.
-  String get teamManagerLabel;
-  /// No description provided for @teamViewProfile.
-  String get teamViewProfile;
-  /// No description provided for @teamViewProfileHint.
-  String get teamViewProfileHint;
-  /// No description provided for @teamEditProfile.
-  String get teamEditProfile;
-  /// No description provided for @teamEditProfileHint.
-  String get teamEditProfileHint;
-  /// No description provided for @teamViewAttendance.
-  String get teamViewAttendance;
-  /// No description provided for @teamViewAttendanceHint.
-  String get teamViewAttendanceHint;
-  /// No description provided for @teamViewTasks.
-  String get teamViewTasks;
-  /// No description provided for @teamViewTasksHint.
-  String get teamViewTasksHint;
-  /// No description provided for @teamMakeHr.
-  String get teamMakeHr;
-  /// No description provided for @teamRevokeHr.
-  String get teamRevokeHr;
-  /// No description provided for @teamMakeHrHint.
-  String get teamMakeHrHint;
-  /// No description provided for @teamRevokeHrHint.
-  String get teamRevokeHrHint;
-  /// No description provided for @teamArchive.
-  String get teamArchive;
-  /// No description provided for @teamMakeHrConfirmTitle.
-  String get teamMakeHrConfirmTitle;
-  /// No description provided for @teamRevokeHrConfirmTitle.
-  String get teamRevokeHrConfirmTitle;
-  /// No description provided for @teamArchiveConfirmTitle.
-  String get teamArchiveConfirmTitle;
-  /// No description provided for @teamConfirmCancel.
-  String get teamConfirmCancel;
-  /// No description provided for @teamMakeHrConfirmAction.
-  String get teamMakeHrConfirmAction;
-  /// No description provided for @teamRevokeHrConfirmAction.
-  String get teamRevokeHrConfirmAction;
-  /// No description provided for @teamArchiveConfirmAction.
-  String get teamArchiveConfirmAction;
-  /// No description provided for @teamMakeHrSuccess.
-  String get teamMakeHrSuccess;
-  /// No description provided for @teamRevokeHrSuccess.
-  String get teamRevokeHrSuccess;
-  /// No description provided for @teamArchiveSuccess.
-  String get teamArchiveSuccess;
-
-  /// No description provided for @teamActionError.
-  String teamActionError(Object error);
+  /// No description provided for @cabinetScreenTitleRoot.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mon placard'**
+  String get cabinetScreenTitleRoot;
+
+  /// No description provided for @cabinetScreenEmptyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Placard vide'**
+  String get cabinetScreenEmptyTitle;
+
+  /// No description provided for @cabinetScreenEmptyDescription.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajoutez des dossiers et documents pour organiser votre espace.'**
+  String get cabinetScreenEmptyDescription;
+
+  /// No description provided for @cabinetScreenFolders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dossiers'**
+  String get cabinetScreenFolders;
+
+  /// No description provided for @cabinetScreenDocuments.
+  ///
+  /// In fr, this message translates to:
+  /// **'Documents'**
+  String get cabinetScreenDocuments;
+
+  /// No description provided for @cabinetScreenNewFolder.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveau dossier'**
+  String get cabinetScreenNewFolder;
+
+  /// No description provided for @cabinetScreenAddDocument.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un document'**
+  String get cabinetScreenAddDocument;
+
+  /// No description provided for @cabinetScreenAddDocumentSubtitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Depuis vos fichiers ou la camera'**
+  String get cabinetScreenAddDocumentSubtitle;
+
+  /// No description provided for @cabinetScreenFolderNameHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du dossier'**
+  String get cabinetScreenFolderNameHint;
+
+  /// No description provided for @cabinetScreenCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler'**
+  String get cabinetScreenCancel;
+
+  /// No description provided for @cabinetScreenCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer'**
+  String get cabinetScreenCreate;
+
+  /// No description provided for @cabinetScreenUploading.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoi en cours...'**
+  String get cabinetScreenUploading;
+
+  /// No description provided for @cabinetScreenDocumentAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Document ajouté avec succès'**
+  String get cabinetScreenDocumentAdded;
+
+  /// No description provided for @cabinetScreenUploadFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Échec de l’envoi du document. Réessayez.'**
+  String get cabinetScreenUploadFailed;
+
+  /// No description provided for @cabinetScreenShareTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager « {name} »'**
+  String cabinetScreenShareTitle(Object name);
+
+  /// No description provided for @cabinetScreenCreateShareLink.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un lien de partage'**
+  String get cabinetScreenCreateShareLink;
+
+  /// No description provided for @cabinetScreenLinkCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lien copié : {url}'**
+  String cabinetScreenLinkCopied(Object url);
+
+  /// No description provided for @cabinetScreenShareByEmail.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager par email'**
+  String get cabinetScreenShareByEmail;
+
+  /// No description provided for @cabinetScreenEmailHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Email du destinataire'**
+  String get cabinetScreenEmailHint;
+
+  /// No description provided for @cabinetScreenSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get cabinetScreenSend;
+
+  /// No description provided for @cabinetScreenShareSent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partage envoyé à {email}'**
+  String cabinetScreenShareSent(Object email);
+
+  /// No description provided for @cabinetScreenDeleteTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer le document ?'**
+  String get cabinetScreenDeleteTitle;
+
+  /// No description provided for @cabinetScreenDeleteBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le document « {name} » sera supprimé définitivement.'**
+  String cabinetScreenDeleteBody(Object name);
+
+  /// No description provided for @cabinetScreenDelete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Supprimer'**
+  String get cabinetScreenDelete;
+
+  /// No description provided for @cabinetScreenDocumentsCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{1 doc} other{{count} docs}}'**
+  String cabinetScreenDocumentsCount(num count);
 }
 
 class _AppLocalizationsDelegate
@@ -7344,7 +7099,6 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     case 'tr':
       return AppLocalizationsTr();
   }
-
 
   throw FlutterError(
       'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
