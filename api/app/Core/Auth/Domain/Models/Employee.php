@@ -48,6 +48,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $ipres_category
  * @property float|null $family_parts
  * @property string|null $zkteco_id
+ * @property string|null $badge_number
  * @property string $first_name
  * @property string|null $middle_name
  * @property string $last_name
@@ -149,6 +150,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
         'ipres_category',
         'family_parts',
         'zkteco_id',
+        'badge_number',
         'first_name',
         'middle_name',
         'last_name',

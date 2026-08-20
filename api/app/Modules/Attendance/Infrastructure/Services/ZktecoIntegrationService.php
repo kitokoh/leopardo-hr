@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Attendance\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Domain\Models\ZktecoSyncLog;
 use Carbon\Carbon;
@@ -30,6 +31,10 @@ class ZktecoIntegrationService
             'fingerprint_capacity' => $data['fingerprint_capacity'] ?? 3000,
             'face_capacity' => $data['face_capacity'] ?? 500,
             'capabilities' => $data['capabilities'] ?? null,
+            // #5120 — méthodes de pointage configurables (null = toutes)
+            'punch_methods' => isset($data['punch_methods']) && is_array($data['punch_methods']) && count($data['punch_methods']) > 0
+                ? array_values($data['punch_methods'])
+                : null,
             'status' => 'offline',
         ]);
     }
@@ -61,16 +66,53 @@ class ZktecoIntegrationService
 
         foreach ($records as $record) {
             try {
+                // #5121 — méthode de pointage (absent → fingerprint, rétro-compat)
+                $method = isset($record['method']) && $record['method'] !== ''
+                    ? (string) $record['method']
+                    : ZktecoDevice::PUNCH_METHOD_FINGERPRINT;
+
+                // #5121 — vérification méthode autorisée par le device
+                if (! $device->isPunchMethodAllowed($method)) {
+                    $errors++;
+                    Log::channel('audit')->warning('zkteco.sync.method_not_allowed', [
+                        'device_id' => $device->id,
+                        'serial_number' => $device->serial_number,
+                        'company_id' => $device->company_id,
+                        'method' => $method,
+                        'user_id' => $record['user_id'] ?? null,
+                        'error_code' => 'PUNCH_METHOD_NOT_ALLOWED',
+                    ]);
+
+                    continue;
+                }
+
+                // #5122 — lookup étendu : zkteco_id, matricule, badge_number
                 $employee = DB::table('employees')
                     ->where('company_id', $device->company_id)
                     ->where(function ($query) use ($record): void {
                         $query->where('zkteco_id', $record['user_id'] ?? null)
-                            ->orWhere('matricule', $record['badge_number'] ?? null);
+                            ->orWhere('matricule', $record['badge_number'] ?? null)
+                            ->orWhere('badge_number', $record['badge_number'] ?? null);
                     })
                     ->first();
 
                 if (! $employee) {
                     $errors++;
+
+                    continue;
+                }
+
+                // #5121 — vérification enrôlement employé pour la méthode
+                if (! $this->isEmployeeEnrolledForMethod($employee, $method)) {
+                    $errors++;
+                    Log::channel('audit')->warning('zkteco.sync.employee_method_not_enrolled', [
+                        'device_id' => $device->id,
+                        'serial_number' => $device->serial_number,
+                        'company_id' => $device->company_id,
+                        'method' => $method,
+                        'employee_id' => $employee->id,
+                        'error_code' => 'EMPLOYEE_METHOD_NOT_ENROLLED',
+                    ]);
 
                     continue;
                 }
@@ -186,6 +228,26 @@ class ZktecoIntegrationService
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Vérifie si l'employé est enrôlé pour la méthode demandée (#5121).
+     *
+     * Mapping :
+     *  - fingerprint → biometric_fingerprint_enabled
+     *  - face        → biometric_face_enabled
+     *  - card        → badge_number non vide
+     *
+     * @param  object  $employee  Résultat DB::table (stdClass ou Employee)
+     */
+    private function isEmployeeEnrolledForMethod(object $employee, string $method): bool
+    {
+        return match ($method) {
+            ZktecoDevice::PUNCH_METHOD_FINGERPRINT => (bool) ($employee->biometric_fingerprint_enabled ?? false),
+            ZktecoDevice::PUNCH_METHOD_FACE => (bool) ($employee->biometric_face_enabled ?? false),
+            ZktecoDevice::PUNCH_METHOD_CARD => ! empty($employee->badge_number),
+            default => false,
+        };
     }
 
     private function resolveAction(int $punchType): string

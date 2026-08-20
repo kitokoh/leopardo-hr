@@ -195,6 +195,9 @@ return [
     'INVALID_DEVICE_TOKEN' => 'Token d\'appareil invalide ou expiré.',
     'INVALID_KIOSK_TOKEN' => 'Token kiosk invalide ou expiré.',
     'BIOMETRIC_NOT_APPROVED' => 'L\'accès biométrique n\'est pas approuvé pour cet employé.',
+    // #5121 — méthodes de pointage configurables par tenant
+    'PUNCH_METHOD_NOT_ALLOWED' => 'La méthode de pointage « :method » n\'est pas autorisée sur ce kiosque.',
+    'EMPLOYEE_METHOD_NOT_ENROLLED' => 'L\'employé n\'est pas enrôlé pour la méthode de pointage « :method ».',
 
     // #4878 (audit 2026-08-17) : middleware Web + login web — littéraux FR déplacés au catalogue
     'EMPLOYEE_INACTIVE' => 'Compte inactif.',

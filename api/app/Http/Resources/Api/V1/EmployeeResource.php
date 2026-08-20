@@ -65,6 +65,14 @@ class EmployeeResource extends JsonResource
             'currency' => $company?->currency,
             'biometric_face_enabled' => (bool) ($this->employeeAttribute('biometric_face_enabled') ?? false),
             'biometric_fingerprint_enabled' => (bool) ($this->employeeAttribute('biometric_fingerprint_enabled') ?? false),
+            // #5122 — badge/carte de pointage (exposé seulement si renseigné)
+            'badge_number' => $this->employeeAttribute('badge_number') ?: null,
+            // #5122 — statut d'enrôlement par méthode (fingerprint / face / card)
+            'enrollment' => [
+                'fingerprint' => (bool) ($this->employeeAttribute('biometric_fingerprint_enabled') ?? false),
+                'face' => (bool) ($this->employeeAttribute('biometric_face_enabled') ?? false),
+                'card' => ! empty($this->employeeAttribute('badge_number')),
+            ],
             'address_line' => $this->employeeAttribute('address_line'),
             'postal_code' => $this->employeeAttribute('postal_code'),
             'emergency_contact_name' => $this->employeeAttribute('emergency_contact_name'),

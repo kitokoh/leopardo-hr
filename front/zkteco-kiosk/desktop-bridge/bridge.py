@@ -87,6 +87,8 @@ ALLOWED_STATIC_FILES = frozenset({
 # l'insertion évite qu'un événement « poison » bloque la file offline.
 VALID_ACTIONS = frozenset({"check_in", "check_out"})
 VALID_BIOMETRIC_TYPES = frozenset({"fingerprint", "face", "mixed"})
+# #5121 — méthodes de pointage (nouveau contrat, inclut la carte)
+VALID_PUNCH_METHODS = frozenset({"fingerprint", "face", "card"})
 
 # Politique de retry de la sync (#3588) : 5xx/réseau = transitoire (backoff
 # exponentiel borné), 4xx = permanent (dead-letter). Au-delà du cap, un
@@ -150,6 +152,11 @@ class LocalStore:
             self.conn.execute("alter table punch_queue add column retry_count integer not null default 0")
         if "next_retry_at" not in columns:
             self.conn.execute("alter table punch_queue add column next_retry_at text")
+        # #5121 — méthode de pointage (fingerprint|face|card) et badge_number (carte)
+        if "method" not in columns:
+            self.conn.execute("alter table punch_queue add column method text")
+        if "badge_number" not in columns:
+            self.conn.execute("alter table punch_queue add column badge_number text")
         self.conn.commit()
 
     def upsert_roster(self, employees: list[dict]) -> None:
@@ -182,12 +189,26 @@ class LocalStore:
                     ),
                 )
 
-    def queue_punch(self, identifier: str, action: str, biometric_type: str) -> dict:
+    def queue_punch(
+        self,
+        identifier: str,
+        action: str,
+        biometric_type: str,
+        method: str | None = None,
+        badge_number: str | None = None,
+    ) -> dict:
+        """Enregistre un pointage dans la file offline.
+
+        #5121 — `method` (fingerprint|face|card) est le nouveau champ de méthode
+        de pointage transmis à l'API. `badge_number` est requis pour method=card.
+        """
         payload = {
             "external_event_id": str(uuid.uuid4()),
             "identifier": identifier,
             "action": action,
             "biometric_type": biometric_type,
+            "method": method or biometric_type,  # fallback rétro-compat
+            "badge_number": badge_number,
             "occurred_at": utc_now_iso(),
             "created_at": utc_now_iso(),
         }
@@ -196,14 +217,16 @@ class LocalStore:
                 """
                 insert into punch_queue (
                     external_event_id, identifier, action, biometric_type,
-                    occurred_at, created_at
-                ) values (?, ?, ?, ?, ?, ?)
+                    method, badge_number, occurred_at, created_at
+                ) values (?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     payload["external_event_id"],
                     payload["identifier"],
                     payload["action"],
                     payload["biometric_type"],
+                    payload["method"],
+                    payload["badge_number"],
                     payload["occurred_at"],
                     payload["created_at"],
                 ),
@@ -413,6 +436,9 @@ class SyncEngine:
                     "occurred_at": event["occurred_at"],
                     "external_event_id": event["external_event_id"],
                     "biometric_type": event["biometric_type"],
+                    # #5121 — méthode de pointage + badge pour flux carte
+                    **({"method": event["method"]} if event.get("method") else {}),
+                    **({"badge_number": event["badge_number"]} if event.get("badge_number") else {}),
                 }
                 for event in events
             ]
@@ -608,6 +634,8 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
         if parsed.path == "/local/status":
             online, error_message = SYNC_ENGINE.online_status()
+            # #5120 — punch_methods depuis la config (null = toutes méthodes)
+            punch_methods = CONFIG.get("punch_methods")
             payload = {
                 "data": {
                     "company_name": CONFIG.get("companyName", "Leopardo RH Client"),
@@ -618,6 +646,7 @@ class BridgeHandler(BaseHTTPRequestHandler):
                     "online": online,
                     "last_error": error_message or STORE.get_state("last_sync_error", ""),
                     "last_sync_at": STORE.get_state("last_sync_at", ""),
+                    "punch_methods": punch_methods if isinstance(punch_methods, list) else None,
                 }
             }
             return self._json(200, payload)
@@ -649,19 +678,29 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 identifier = str(payload.get("identifier", "")).strip()
                 action = str(payload.get("action", "check_in")).strip() or "check_in"
                 biometric_type = str(payload.get("biometric_type", "fingerprint")).strip() or "fingerprint"
+                # #5121 — méthode de pointage (nouveau champ, rétro-compat biometric_type)
+                method_raw = str(payload.get("method", biometric_type)).strip()
+                method = method_raw if method_raw in VALID_PUNCH_METHODS else biometric_type
+                badge_number_raw = payload.get("badge_number")
+                badge_number: str | None = str(badge_number_raw).strip() if badge_number_raw else None
 
-                if not identifier:
+                # Pour method=card, l'identifiant peut être le badge_number lui-même.
+                effective_identifier = identifier or (badge_number or "")
+                if not effective_identifier:
                     return self._json(422, {"error": "IDENTIFIER_REQUIRED"})
-                if len(identifier) > 150:
+                if len(effective_identifier) > 150:
                     return self._json(422, {"error": "IDENTIFIER_TOO_LONG"})
                 # Validation à l'insertion (#3588) : un événement hors contrat
                 # serveur ne doit jamais entrer dans la file offline.
                 if action not in VALID_ACTIONS:
                     return self._json(422, {"error": "INVALID_ACTION"})
-                if biometric_type not in VALID_BIOMETRIC_TYPES:
+                if biometric_type not in VALID_BIOMETRIC_TYPES and method not in VALID_PUNCH_METHODS:
                     return self._json(422, {"error": "INVALID_BIOMETRIC_TYPE"})
 
-                event = STORE.queue_punch(identifier, action, biometric_type)
+                event = STORE.queue_punch(
+                    effective_identifier, action, biometric_type,
+                    method=method, badge_number=badge_number,
+                )
                 sync_status = "queued"
 
                 if CONFIG.get("autoSync", True):

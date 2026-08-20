@@ -704,9 +704,15 @@
 
             <div class="card">
               <div class="field-stack">
-                <div>
+                <!-- #5123 — champ identifiant biometrique (masque si methode carte) -->
+                <div id="identifierField">
                   <label for="identifier" data-i18n="identifier.label">Identifiant employe / zkteco_id / matricule</label>
                   <input id="identifier" name="identifier" autocomplete="off" data-i18n-placeholder="identifier.placeholder" placeholder="Scanner ou saisir l'identifiant" data-i18n-aria-label="identifier.aria" aria-label="Identifiant employe">
+                </div>
+                <!-- #5123 — champ badge/carte (visible si methode carte) -->
+                <div id="badgeNumberField" class="hidden">
+                  <label for="badgeNumber" data-i18n="card.badge.label">Numero de badge / carte</label>
+                  <input id="badgeNumber" name="badge_number" type="text" inputmode="numeric" autocomplete="off" data-i18n-placeholder="card.badge.placeholder" placeholder="Saisir le numero de badge" data-i18n-aria-label="card.badge.aria" aria-label="Numero de badge">
                 </div>
                 <div>
                   <label for="biometricType" data-i18n="biometricType.label">Mode de reconnaissance</label>
@@ -716,6 +722,8 @@
                     <option value="mixed" data-i18n="biometricType.mixed">Mixte</option>
                   </select>
                 </div>
+                <!-- #5123 — etat : aucune methode autorisee -->
+                <div id="noMethodWarning" class="status hidden" role="alert" data-i18n="error.noMethodAvailable" style="font-size:14px;">Aucune methode de pointage disponible.</div>
               </div>
               <div class="actions">
                 <button class="primary" id="checkInButton" data-i18n-aria-label="checkIn.aria" aria-label="Pointer entree"><span data-i18n="checkIn.label">Arrivee</span></button>

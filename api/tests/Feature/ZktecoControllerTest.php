@@ -375,6 +375,121 @@ class ZktecoControllerTest extends TestCase
             ->assertOk();
     }
 
+    // ── #5120 — punch_methods CRUD ──────────────────────────────────────
+
+    public function test_register_device_stores_punch_methods(): void
+    {
+        $response = $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices', [
+                'serial_number' => 'SN-PM-001',
+                'name' => 'Porte PM1',
+                'punch_methods' => ['face', 'card'],
+            ])
+            ->assertCreated();
+
+        $response->assertJsonPath('data.punch_methods', ['face', 'card']);
+
+        $this->assertDatabaseHas('zkteco_devices', [
+            'serial_number' => 'SN-PM-001',
+        ]);
+    }
+
+    public function test_register_device_without_punch_methods_stores_null(): void
+    {
+        $response = $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices', [
+                'serial_number' => 'SN-PM-002',
+                'name' => 'Porte PM2',
+            ])
+            ->assertCreated();
+
+        // null = toutes méthodes autorisées (rétro-compat)
+        $response->assertJsonPath('data.punch_methods', null);
+    }
+
+    public function test_register_device_rejects_invalid_punch_method(): void
+    {
+        $this->actingAs($this->manager)
+            ->postJson('/api/v1/zkteco/devices', [
+                'serial_number' => 'SN-PM-003',
+                'name' => 'Porte PM3',
+                'punch_methods' => ['retina'],
+            ])
+            ->assertUnprocessable();
+    }
+
+    public function test_update_device_sets_punch_methods(): void
+    {
+        /** @var ZktecoDevice $device */
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-PM-004',
+            'name' => 'Porte PM4',
+        ]);
+
+        $response = $this->actingAs($this->manager)
+            ->putJson('/api/v1/zkteco/devices/'.$device->id, [
+                'punch_methods' => ['fingerprint'],
+            ])
+            ->assertOk();
+
+        $response->assertJsonPath('data.punch_methods', ['fingerprint']);
+    }
+
+    public function test_update_device_resets_punch_methods_to_null(): void
+    {
+        /** @var ZktecoDevice $device */
+        $device = ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-PM-005',
+            'name' => 'Porte PM5',
+            'punch_methods' => ['face', 'card'],
+        ]);
+
+        $response = $this->actingAs($this->manager)
+            ->putJson('/api/v1/zkteco/devices/'.$device->id, [
+                'punch_methods' => null,
+            ])
+            ->assertOk();
+
+        $response->assertJsonPath('data.punch_methods', null);
+    }
+
+    public function test_device_punch_methods_scoped_to_tenant(): void
+    {
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create();
+        $otherDevice = ZktecoDevice::query()->create([
+            'company_id' => $otherCompany->id,
+            'serial_number' => 'SN-PM-OTHER-001',
+            'name' => 'Borne autre tenant',
+        ]);
+
+        $this->actingAs($this->manager)
+            ->putJson('/api/v1/zkteco/devices/'.$otherDevice->id, [
+                'punch_methods' => ['card'],
+            ])
+            ->assertStatus(404);
+    }
+
+    public function test_index_exposes_punch_methods(): void
+    {
+        ZktecoDevice::query()->create([
+            'company_id' => $this->company->id,
+            'serial_number' => 'SN-PM-IDX-001',
+            'name' => 'Porte IDX',
+            'punch_methods' => ['fingerprint', 'face'],
+        ]);
+
+        $response = $this->actingAs($this->manager)
+            ->getJson('/api/v1/zkteco/devices')
+            ->assertOk();
+
+        $response->assertJsonFragment(['punch_methods' => ['fingerprint', 'face']]);
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+
     /**
      * #4787/#4817 — vérifie que le search_path a été restauré (schémas et
      * ordre). Comparaison normalisée : PostgreSQL formate SHOW search_path

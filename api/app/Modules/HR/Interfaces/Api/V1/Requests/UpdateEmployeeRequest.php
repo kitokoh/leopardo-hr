@@ -80,6 +80,16 @@ class UpdateEmployeeRequest extends FormRequest
             'biometric_fingerprint_reference_path' => ['sometimes', 'nullable', 'string', 'max:255'],
             'photo_path' => ['sometimes', 'nullable', 'string', 'max:255'],
             'zkteco_id' => ['sometimes', 'nullable', 'string', 'max:50'],
+            // #5122 — badge/carte de pointage : unique par tenant (même règle que matricule)
+            'badge_number' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('employees', 'badge_number')
+                    ->where(fn ($query) => $query->where('company_id', $companyId))
+                    ->ignore($employeeId),
+            ],
             'extra_data' => ['sometimes', 'nullable', 'array'],
             'extra_data.department' => ['sometimes', 'nullable', 'string', 'max:120'],
             'extra_data.job_title' => ['sometimes', 'nullable', 'string', 'max:120'],
