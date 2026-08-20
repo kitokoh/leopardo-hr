@@ -4,6 +4,10 @@
 
 ### The open-source, AI-native HR & Payroll OS for high-growth companies
 
+Leopardo RH is an open-source, mobile-first HR and payroll operating system for growing companies with field teams and multiple sites. It replaces fragmented spreadsheets and messaging workflows with a unified platform for employee records, attendance, leave, schedules, documents, payroll preparation and workforce analytics.
+
+The project is designed for self-hosting or SaaS deployment and includes web dashboards, native Flutter apps, a biometric kiosk path, multi-tenant isolation, RBAC, SSO options and an OpenAPI integration layer.
+
 **Multi-tenant · Modular Monolith (DDD) · Biometric Time Tracking · Automated Multi-Country Payroll**
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/kitokoh/leopardo-hr/tests.yml?branch=main&style=for-the-badge&logo=github&label=CI%2FCD)](https://github.com/kitokoh/leopardo-hr/actions)
