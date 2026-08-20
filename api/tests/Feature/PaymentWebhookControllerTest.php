@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Invoice;
-use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
+use App\Modules\Payroll\Domain\Models\Payment;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Testing\TestResponse;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -14,6 +16,7 @@ class PaymentWebhookControllerTest extends TestCase
     use RefreshTenantDatabase;
 
     private const STRIPE_SECRET = 'whsec_test_stripe_2026';
+
     private const CHARGILY_SECRET = 'whsec_test_chargily_2026';
 
     protected function setUp(): void
@@ -29,7 +32,11 @@ class PaymentWebhookControllerTest extends TestCase
         ]);
     }
 
-    private function postStripeWebhook(array $payload): \Illuminate\Testing\TestResponse
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return TestResponse<JsonResponse>
+     */
+    private function postStripeWebhook(array $payload): TestResponse
     {
         $body = (string) json_encode($payload, JSON_UNESCAPED_SLASHES);
         $timestamp = (string) time();
@@ -43,7 +50,11 @@ class PaymentWebhookControllerTest extends TestCase
         ], $body);
     }
 
-    private function postChargilyWebhook(array $payload): \Illuminate\Testing\TestResponse
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return TestResponse<JsonResponse>
+     */
+    private function postChargilyWebhook(array $payload): TestResponse
     {
         $body = (string) json_encode($payload, JSON_UNESCAPED_SLASHES);
         $signature = hash_hmac('sha256', $body, self::CHARGILY_SECRET);
@@ -257,4 +268,3 @@ class PaymentWebhookControllerTest extends TestCase
         $response->assertStatus(400);
     }
 }
-
