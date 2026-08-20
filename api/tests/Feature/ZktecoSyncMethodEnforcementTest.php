@@ -32,7 +32,8 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
         $this->setUpMvpSchema();
 
         /** @var Company $company */
-        $this->company = Company::factory()->create();
+        $company = Company::factory()->create();
+        $this->company = $company;
     }
 
     protected function tearDown(): void
@@ -69,8 +70,10 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
         return $employee;
     }
 
-    /** @param array<int, array<string, mixed>> $records */
-    /** @return \Illuminate\Testing\TestResponse<mixed> */
+    /**
+     * @param  array<int, array<string, mixed>>  $records
+     * @return \Illuminate\Testing\TestResponse<\Symfony\Component\HttpFoundation\Response>
+     */
     private function syncRequest(ZktecoDevice $device, array $records): \Illuminate\Testing\TestResponse
     {
         return $this->withHeader('X-Device-Token', 'device-token-enf')
