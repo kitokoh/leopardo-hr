@@ -164,6 +164,7 @@ class PasswordResetController
         $previousSearchPath = DB::getDriverName() === 'pgsql' ? $this->currentSearchPath() : null;
         $employee = null;
         $employeeSchema = null;
+        $searchPathChanged = false;
 
         try {
             $lookup = null;
@@ -179,6 +180,7 @@ class PasswordResetController
                 if ($lookupSchema !== null && $this->isSafeSchemaName($lookupSchema)) {
                     $this->setTenantSearchPath($lookupSchema);
                     $employeeSchema = $lookupSchema;
+                    $searchPathChanged = true;
                 }
 
                 // #2652 : schéma tenant absent/migré partiel ⇒ traité « aucun employé ».
@@ -215,7 +217,10 @@ class PasswordResetController
 
             return [null, null];
         } finally {
-            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+            // #4495 : ne restaurer que si le search_path a réellement été
+            // modifié — un SET inconditionnel sur le chemin public alimente
+            // l'oracle de timing (le test l'interdit explicitement).
+            if ($searchPathChanged && $previousSearchPath !== null && $previousSearchPath !== '') {
                 DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }

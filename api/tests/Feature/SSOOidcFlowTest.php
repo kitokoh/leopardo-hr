@@ -27,7 +27,7 @@ class SSOOidcFlowTest extends TestCase
 
     private Employee $manager;
 
-    private string $issuer = 'https://idp.example.com';
+    private string $issuer = 'https://www.example.com';
 
     protected function setUp(): void
     {

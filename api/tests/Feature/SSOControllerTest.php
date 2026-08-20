@@ -24,6 +24,11 @@ class SSOControllerTest extends TestCase
         parent::setUp();
         $this->setUpMvpSchema();
 
+        // #3890 : gate de feature SAML — le test du callback valide le chemin
+        // SAML_RESPONSE_MISSING (400) ; on l'active explicitement (le défaut
+        // fail-closed répond 501).
+        config(['services.saml.enabled' => true]);
+
         $this->company = Company::factory()->create();
 
         $this->manager = Employee::factory()->create([
@@ -89,8 +94,8 @@ class SSOControllerTest extends TestCase
         $response = $this->actingAs($this->employee, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'saml',
-                'entity_id' => 'https://idp.example.com/metadata',
-                'sso_url' => 'https://idp.example.com/sso',
+                'entity_id' => 'https://www.example.com/metadata',
+                'sso_url' => 'https://www.example.com/sso',
             ]);
 
         $response->assertForbidden();
@@ -101,15 +106,15 @@ class SSOControllerTest extends TestCase
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'saml',
-                'entity_id' => 'https://idp.example.com/metadata',
-                'sso_url' => 'https://idp.example.com/sso',
-                'slo_url' => 'https://idp.example.com/slo',
+                'entity_id' => 'https://www.example.com/metadata',
+                'sso_url' => 'https://www.example.com/sso',
+                'slo_url' => 'https://www.example.com/slo',
                 'certificate' => 'MIIC...base64cert...==',
             ]);
 
         $response->assertOk()
             ->assertJsonPath('data.provider', 'saml')
-            ->assertJsonPath('data.entity_id', 'https://idp.example.com/metadata');
+            ->assertJsonPath('data.entity_id', 'https://www.example.com/metadata');
     }
 
     public function test_configure_sso_validates_provider(): void
@@ -117,8 +122,8 @@ class SSOControllerTest extends TestCase
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'invalid',
-                'entity_id' => 'https://idp.example.com/metadata',
-                'sso_url' => 'https://idp.example.com/sso',
+                'entity_id' => 'https://www.example.com/metadata',
+                'sso_url' => 'https://www.example.com/sso',
             ]);
 
         $response->assertUnprocessable();
@@ -130,7 +135,7 @@ class SSOControllerTest extends TestCase
             ->deleteJson('/api/v1/sso/disable');
 
         $response->assertOk()
-            ->assertJsonPath('message', 'SSO desactive.');
+            ->assertJsonPath('message', 'SSO désactivé.');
     }
 
     public function test_saml_callback_requires_saml_response(): void
@@ -146,8 +151,8 @@ class SSOControllerTest extends TestCase
         $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'oidc',
-                'entity_id' => 'https://idp.example.com',
-                'sso_url' => 'https://idp.example.com/oauth2/authorize',
+                'entity_id' => 'https://www.example.com',
+                'sso_url' => 'https://www.example.com/oauth2/authorize',
                 'client_id' => 'client-123',
                 'client_secret' => 'super-secret-value',
             ])
@@ -169,8 +174,8 @@ class SSOControllerTest extends TestCase
         $response = $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'oidc',
-                'entity_id' => 'https://idp.example.com',
-                'sso_url' => 'https://idp.example.com/oauth2/authorize',
+                'entity_id' => 'https://www.example.com',
+                'sso_url' => 'https://www.example.com/oauth2/authorize',
                 'client_id' => 'client-123',
                 'client_secret' => 'another-secret',
             ])
@@ -185,8 +190,8 @@ class SSOControllerTest extends TestCase
         $this->actingAs($this->manager, 'sanctum')
             ->postJson('/api/v1/sso/configure', [
                 'provider' => 'saml',
-                'entity_id' => 'https://idp.example.com/metadata',
-                'sso_url' => 'https://idp.example.com/sso',
+                'entity_id' => 'https://www.example.com/metadata',
+                'sso_url' => 'https://www.example.com/sso',
                 'certificate' => 'MIIC...base64cert...==',
             ])
             ->assertOk();
@@ -208,8 +213,8 @@ class SSOControllerTest extends TestCase
             'provider' => 'saml',
             'config' => json_encode([
                 'provider' => 'saml',
-                'entity_id' => 'https://idp.example.com/metadata',
-                'sso_url' => 'https://idp.example.com/sso',
+                'entity_id' => 'https://www.example.com/metadata',
+                'sso_url' => 'https://www.example.com/sso',
             ]),
             'is_active' => true,
             'created_at' => now(),

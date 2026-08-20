@@ -271,6 +271,7 @@ class ZktecoControllerTest extends TestCase
             'company_id' => $this->company->id,
             'role' => 'employee',
             'zkteco_id' => 'zk-43',
+            'biometric_fingerprint_enabled' => true,
         ]);
 
         $this->withHeader('X-Device-Token', 'valid-device-token')

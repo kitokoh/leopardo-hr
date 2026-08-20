@@ -27,7 +27,8 @@ class OnboardingSeedStepsTest extends TestCase
 
         $steps = OnboardingStep::where('company_id', $company->id)->get();
 
-        $this->assertCount(6, $steps);
+        // #4929 : contrat unifié — 10 étapes (source de vérité unique du seeder).
+        $this->assertCount(10, $steps);
         foreach ($steps as $step) {
             $this->assertNotSame('', $step->step_key, 'step_key ne doit pas être NULL');
             $this->assertNotSame('', $step->title, 'title ne doit pas être NULL');
@@ -35,7 +36,8 @@ class OnboardingSeedStepsTest extends TestCase
         }
 
         $this->assertSame(
-            ['add_employees', 'configure_payroll', 'setup_schedules', 'setup_geofence', 'setup_kiosk', 'first_checkin'],
+            ['activate_geofence', 'company_info', 'configure_payroll', 'configure_schedules', 'first_attendance',
+             'first_department', 'first_employee', 'first_report', 'install_kiosk', 'invite_manager'],
             $steps->pluck('step_key')->sort()->values()->all()
         );
     }
@@ -50,7 +52,7 @@ class OnboardingSeedStepsTest extends TestCase
         $action->execute((string) $company->id);
 
         $this->assertSame(
-            6,
+            10,
             OnboardingStep::where('company_id', $company->id)->count(),
             'un second appel ne doit pas dupliquer les étapes'
         );
