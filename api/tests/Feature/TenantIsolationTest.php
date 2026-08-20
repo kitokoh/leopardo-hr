@@ -43,6 +43,7 @@ class TenantIsolationTest extends TestCase
 
     public function test_employee_scope_only_returns_current_company_rows(): void
     {
+        /** @var Company $companyA */
         $companyA = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
@@ -52,6 +53,7 @@ class TenantIsolationTest extends TestCase
             'email' => 'a@company.test',
         ]);
 
+        /** @var Company $companyB */
         $companyB = Company::factory()->create([
             'name' => 'Company B',
             'slug' => 'company-b',
@@ -83,6 +85,7 @@ class TenantIsolationTest extends TestCase
 
     public function test_creating_hook_auto_injects_company_id(): void
     {
+        /** @var Company $company */
         $company = Company::factory()->create([
             'name' => 'Company Main',
             'slug' => 'company-main',

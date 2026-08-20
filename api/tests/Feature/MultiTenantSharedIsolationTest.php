@@ -62,7 +62,8 @@ class MultiTenantSharedIsolationTest extends TestCase
 
         $cities = ['Alger', 'Oran', 'Constantine', 'Annaba', 'Setif'];
         foreach ($cities as $i => $city) {
-            $this->companies[] = Company::factory()->create([
+            /** @var Company $company */
+            $company = Company::factory()->create([
                 'name' => "Company {$city}",
                 'slug' => 'company-'.strtolower($city),
                 'sector' => 'restaurant',
@@ -70,6 +71,7 @@ class MultiTenantSharedIsolationTest extends TestCase
                 'city' => $city,
                 'email' => strtolower($city).'@company.test',
             ]);
+            $this->companies[] = $company;
         }
     }
 
