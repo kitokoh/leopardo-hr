@@ -25,7 +25,7 @@ class GoldenDzPayrollTest extends TestCase
 
     private function rules(): AlgeriaPayrollRules
     {
-        return new AlgeriaPayrollRules();
+        return new AlgeriaPayrollRules;
     }
 
     public function test_golden_dz_irg_at_minimum_wage_20000(): void
