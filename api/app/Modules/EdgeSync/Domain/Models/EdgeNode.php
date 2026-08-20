@@ -54,6 +54,12 @@ class EdgeNode extends Model
     // les réponses list/show — le token en clair n'est montré qu'une fois à
     // l'enregistrement (edge_token). Les endpoints d'émission (store /
     // issueLicense) ré-exposent explicitement via makeVisible().
+    // #5197 : restauré après que #5117 (suppression du doublon $hidden) ait
+    // retiré les DEUX déclarations → fuite de credentials en list/show.
+    protected $hidden = [
+        'license_key',
+        'metadata',
+    ];
 
     protected $fillable = [
         'company_id', 'name', 'slug', 'site_address',
