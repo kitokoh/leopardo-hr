@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-20T00:00:00Z",
   "_locale": "fr",
   "app": {
     "title": "Leopardo RH"
@@ -939,6 +939,349 @@
       "unknown": {
         "message": "Aucune règle de paie n'est disponible pour {country} : le calcul de paie n'est pas disponible pour ce pays."
       }
+    }
+  },
+  "pricing": {
+    "page": {
+      "hero": {
+        "badge": "Tarification transparente",
+        "headline": "Des tarifs pensés pour les équipes terrain",
+        "subheadline": "Commencez gratuitement — sans carte bancaire — et passez à un plan payant quand vous êtes prêt.",
+        "primary": "Commencer gratuitement",
+        "secondary": "Parler à un expert"
+      },
+      "plans": {
+        "badge": "Nos plans",
+        "title": "Un plan pour chaque étape de votre croissance",
+        "subtitle": "Commencez petit, montez en puissance sans changer de plateforme.",
+        "monthly": "Mensuel",
+        "annual": "Annuel",
+        "customPrice": "Sur devis",
+        "periodMonthly": "/mois",
+        "periodAnnual": "/mois facturé annuellement",
+        "trialNote": "Essai gratuit · Aucune CB requise"
+      },
+      "currency": {
+        "label": "Afficher les prix en",
+        "approx": "Conversion approximative depuis le prix de référence en EUR ; le tarif contractuel reste fixé en EUR."
+      },
+      "trust": {
+        "items": {
+          "0": "Plan gratuit sans CB",
+          "1": "Support inclus dès le premier jour",
+          "2": "Données hébergées en Europe",
+          "3": "Résiliation à tout moment"
+        }
+      },
+      "comparison": {
+        "badge": "Comparaison complète",
+        "title": "Tout ce qui est inclus",
+        "subtitle": "par plan",
+        "featureColumn": "Fonctionnalité",
+        "categories": {
+          "0": {
+            "name": "Gestion RH",
+            "features": {
+              "0": {
+                "name": "Pointage web & mobile",
+                "free": "Web seulement"
+              },
+              "1": {
+                "name": "Absences & congés"
+              },
+              "2": {
+                "name": "Calendrier partagé"
+              },
+              "3": {
+                "name": "Onboarding guidé"
+              },
+              "4": {
+                "name": "Évaluations & performance"
+              },
+              "5": {
+                "name": "Organigramme dynamique"
+              }
+            }
+          },
+          "1": {
+            "name": "Paie & finance",
+            "features": {
+              "0": {
+                "name": "Calcul automatisé de la paie"
+              },
+              "1": {
+                "name": "Bulletins de paie PDF"
+              },
+              "2": {
+                "name": "Exports comptables"
+              },
+              "3": {
+                "name": "Avances sur salaire"
+              },
+              "4": {
+                "name": "Multi-pays & multi-devises"
+              },
+              "5": {
+                "name": "Conformité légale avancée"
+              }
+            }
+          },
+          "2": {
+            "name": "Terrain & mobile",
+            "features": {
+              "0": {
+                "name": "App mobile Employee"
+              },
+              "1": {
+                "name": "App mobile Manager"
+              },
+              "2": {
+                "name": "Mode hors-ligne"
+              },
+              "3": {
+                "name": "Intégration ZKTeco biométrie"
+              },
+              "4": {
+                "name": "Kiosque RH dédié"
+              },
+              "5": {
+                "name": "GPS & géofencing"
+              }
+            }
+          },
+          "3": {
+            "name": "Sécurité & intégrations",
+            "features": {
+              "0": {
+                "name": "Coffre-fort documentaire"
+              },
+              "1": {
+                "name": "API REST & Webhooks"
+              },
+              "2": {
+                "name": "SSO SAML / OIDC"
+              },
+              "3": {
+                "name": "Audit trail immuable"
+              },
+              "4": {
+                "name": "Schéma PostgreSQL isolé"
+              },
+              "5": {
+                "name": "SLA dédié & support prioritaire"
+              }
+            }
+          }
+        }
+      },
+      "faq": {
+        "badge": "FAQ tarifs",
+        "title": "Questions fréquentes",
+        "subtitle": "Les points à vérifier avant de démarrer",
+        "all": "Tous",
+        "categories": {
+          "0": "Facturation",
+          "1": "Essai",
+          "2": "Support",
+          "3": "Sécurité",
+          "4": "Technique"
+        },
+        "items": {
+          "0": {
+            "question": "Que comprend le plan Pilot ?",
+            "answer": "Le plan Pilot à 29 €/mois inclut jusqu'à 30 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.",
+            "category": "Essai"
+          },
+          "1": {
+            "question": "Puis-je changer de plan ?",
+            "answer": "Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.",
+            "category": "Facturation"
+          },
+          "2": {
+            "question": "Comment fonctionne la facturation ?",
+            "answer": "Chaque plan inclut un prix fixe par mois avec un plafond d'employés inclus (30 pour Pilot, 200 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.",
+            "category": "Facturation"
+          },
+          "3": {
+            "question": "L'essai est-il vraiment gratuit ?",
+            "answer": "Oui. Essai gratuit complet — 30 jours sur le plan Free, 14 jours sur les plans payants. Aucune carte bancaire requise pour s'inscrire.",
+            "category": "Essai"
+          },
+          "4": {
+            "question": "Que se passe-t-il à la fin de l'essai ?",
+            "answer": "Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.",
+            "category": "Essai"
+          },
+          "5": {
+            "question": "Quel support est disponible ?",
+            "answer": "Pilot : support email sous 48h. Operations : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.",
+            "category": "Support"
+          },
+          "6": {
+            "question": "Où sont hébergées mes données ?",
+            "answer": "En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.",
+            "category": "Sécurité"
+          },
+          "7": {
+            "question": "Êtes-vous conformes RGPD ?",
+            "answer": "Oui. DPA disponible, données exclusivement en Europe, droit à l'effacement implémenté, exports de données sur demande.",
+            "category": "Sécurité"
+          },
+          "8": {
+            "question": "L'API est-elle disponible ?",
+            "answer": "L'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Pilot, vous pouvez exporter vos données en CSV/Excel.",
+            "category": "Technique"
+          }
+        },
+        "moreTitle": "Une autre question ?",
+        "contactSupport": "Contacter le support"
+      },
+      "cta": {
+        "badge": "Prêt à démarrer",
+        "headline": "Lancez vos RH terrain dès aujourd'hui",
+        "subheadline": "Rejoignez les équipes qui ont réduit leur temps de paie de 2h à 8 minutes.",
+        "primary": "Démarrer gratuitement",
+        "secondary": "Contacter les ventes"
+      },
+      "badges": {
+        "popular": "Le plus populaire",
+        "free": "100% Gratuit",
+        "freePrice": "Gratuit",
+        "freeNote": "Sans carte bancaire · Pour toujours",
+        "freeTag": "gratuit"
+      }
+    },
+    "plans": {
+      "customPrice": "Sur devis",
+      "free": {
+        "description": "Pour démarrer sans engagement — idéal pour les équipes de 5 personnes",
+        "priceNote": "14 jours d'essai gratuits. Jusqu'à 5 employés.",
+        "employeeLimit": "Jusqu'à 5 employés",
+        "cta": "Commencer gratuitement",
+        "features": {
+          "0": "Pointage web et mobile basique",
+          "1": "Absences et congés (consultation)",
+          "2": "Dossiers employés essentiels",
+          "3": "Bulletins de paie PDF",
+          "4": "App Employee incluse",
+          "5": "Support communautaire"
+        },
+        "period": "/mois",
+        "annualPeriod": "/mois"
+      },
+      "pilot": {
+        "description": "Pour piloter Leopardo sur un site, une équipe ou une agence",
+        "priceNote": "14 jours offerts. Jusqu'à 30 employés.",
+        "employeeLimit": "Jusqu'à 30 employés",
+        "cta": "Lancer un essai gratuit",
+        "features": {
+          "0": "Pointage web et mobile",
+          "1": "Absences, congés et soldes",
+          "2": "Dossiers employés et documents RH",
+          "3": "Bulletins de paie PDF et exports essentiels",
+          "4": "Portail client et espace manager",
+          "5": "Apps Employee et Manager incluses",
+          "6": "Support email sous 48h"
+        },
+        "period": "/mois",
+        "annualPeriod": "/mois · 290 €/an facturé annuellement"
+      },
+      "operations": {
+        "description": "Pour les PME multi-équipes qui pilotent terrain, RH et paie",
+        "priceNote": "14 jours offerts. Jusqu'à 200 employés.",
+        "employeeLimit": "Jusqu'à 200 employés",
+        "cta": "Essayer Operations",
+        "features": {
+          "0": "Tout Pilot, plus :",
+          "1": "Paie multi-pays et validations RH",
+          "2": "Managers, équipes et workflows d'approbation",
+          "3": "Pointage ZKTeco, kiosque et mobile",
+          "4": "Analytics RH, readiness et exports avancés",
+          "5": "API, webhooks et intégrations",
+          "6": "Support prioritaire sous 24h"
+        },
+        "period": "/mois",
+        "annualPeriod": "/mois · 790 €/an facturé annuellement"
+      },
+      "enterprise": {
+        "description": "Pour groupes multi-pays, franchises, réseaux de sites et exigences fortes",
+        "priceNote": "14 jours offerts. Employés illimités.",
+        "employeeLimit": "Employés illimités",
+        "cta": "Contacter les ventes",
+        "features": {
+          "0": "Tout Operations, plus :",
+          "1": "SSO SAML/OIDC et politiques avancées",
+          "2": "SLA, accompagnement migration et formation",
+          "3": "Environnements dédiés ou région cloud choisie",
+          "4": "Audit trail, exports compliance et support prioritaire",
+          "5": "Options IA, connecteurs et gouvernance sur mesure"
+        }
+      }
+    },
+    "faq": {
+      "items": {
+        "0": {
+          "question": "Que comprend le plan Pilot ?",
+          "answer": "Le plan Pilot à 29 €/mois inclut jusqu'à 30 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.",
+          "category": "Essai"
+        },
+        "1": {
+          "question": "Puis-je changer de plan ?",
+          "answer": "Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.",
+          "category": "Facturation"
+        },
+        "2": {
+          "question": "Comment fonctionne la facturation ?",
+          "answer": "Chaque plan inclut un prix fixe par mois avec un plafond d'employés inclus (5 pour Free, 30 pour Pilot, 200 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.",
+          "category": "Facturation"
+        },
+        "3": {
+          "question": "L'essai est-il vraiment gratuit ?",
+          "answer": "Oui. 14 jours complets avec toutes les fonctionnalités payantes. Aucune carte bancaire requise pour s'inscrire.",
+          "category": "Essai"
+        },
+        "4": {
+          "question": "Le plan Free est-il vraiment gratuit ?",
+          "answer": "Oui. Le plan Free (0 €/mois) inclut jusqu'à 5 employés : pointage web, absences et congés, dossiers employés et l'app mobile Employee. Aucune carte bancaire.",
+          "category": "Essai"
+        },
+        "5": {
+          "question": "Que se passe-t-il à la fin de l'essai ?",
+          "answer": "Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.",
+          "category": "Essai"
+        },
+        "6": {
+          "question": "Quel support est disponible ?",
+          "answer": "Pilot : support email sous 48h. Operations : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.",
+          "category": "Support"
+        },
+        "7": {
+          "question": "Où sont hébergées mes données ?",
+          "answer": "En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.",
+          "category": "Sécurité"
+        },
+        "8": {
+          "question": "Êtes-vous conformes RGPD ?",
+          "answer": "Oui. DPA disponible, données exclusivement en Europe, droit à l'effacement implémenté, exports de données sur demande.",
+          "category": "Sécurité"
+        },
+        "9": {
+          "question": "L'API est-elle disponible ?",
+          "answer": "L'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Pilot, vous pouvez exporter vos données en CSV/Excel.",
+          "category": "Technique"
+        }
+      }
+    },
+    "section": {
+      "freeLabel": "Gratuit",
+      "toggleMonthly": "Mensuel",
+      "toggleAnnual": "Annuel",
+      "toggleAria": "Changer la période de facturation",
+      "fullComparison": "Voir la comparaison complete"
+    },
+    "card": {
+      "periodDefault": "/mois",
+      "customPriceDefault": "Sur devis"
     }
   },
   "signup": {
@@ -1950,7 +2293,7 @@
     "data": "Aucune donnée",
     "reason": "Aucun motif",
     "tasks": {
-      "today": "{'fr': \"Aucune tâche aujourd'hui\", 'en': 'No tasks today', 'tr': 'Bugün görev yok', 'ar': 'لا توجد مهام اليوم'}"
+      "today": "Aucune tâche aujourd'hui"
     }
   },
   "salary": {

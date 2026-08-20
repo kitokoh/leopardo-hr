@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-20T00:00:00Z",
   "_locale": "tr",
   "app": {
     "title": "Leopardo IK"
@@ -939,6 +939,349 @@
       "unknown": {
         "message": "{country} için maaş kuralları mevcut değil: bu ülke için maaş hesaplaması kullanılamıyor."
       }
+    }
+  },
+  "pricing": {
+    "page": {
+      "hero": {
+        "badge": "Şeffaf fiyatlandırma",
+        "headline": "Saha HR ekipleri için fiyatlandırma",
+        "subheadline": "Ücretsiz başlayın — kredi kartı gerekmez — hazır olduğunuzda yükseltin.",
+        "primary": "Ücretsiz başla",
+        "secondary": "Uzmanla konuş"
+      },
+      "plans": {
+        "badge": "Planlarımız",
+        "title": "Büyümenizin her aşaması için bir plan",
+        "subtitle": "Küçük başlayın, platform değiştirmeden büyüyün.",
+        "monthly": "Aylık",
+        "annual": "Yıllık",
+        "customPrice": "Teklif alın",
+        "periodMonthly": "/ay",
+        "periodAnnual": "/ay yıllık faturalama",
+        "trialNote": "Ücretsiz deneme · Kredi kartı gerekmez"
+      },
+      "currency": {
+        "label": "Fiyatları şu para birimiyle göster",
+        "approx": "EUR referans fiyatından yaklaşık dönüşüm; sözleşme tutarı EUR olarak kalır."
+      },
+      "trust": {
+        "items": {
+          "0": "Ücretsiz plan — kredi kartı yok",
+          "1": "İlk günden destek dahil",
+          "2": "Avrupa'da barındırılan veriler",
+          "3": "İstediğiniz zaman iptal"
+        }
+      },
+      "comparison": {
+        "badge": "Tam karşılaştırma",
+        "title": "Dahil olan her şey",
+        "subtitle": "plan bazında",
+        "featureColumn": "Özellik",
+        "categories": {
+          "0": {
+            "name": "İK Yönetimi",
+            "features": {
+              "0": {
+                "name": "Web & mobil devam takibi",
+                "free": "Yalnızca web"
+              },
+              "1": {
+                "name": "Devamsızlık & izin"
+              },
+              "2": {
+                "name": "Paylaşılan takvim"
+              },
+              "3": {
+                "name": "Rehberli işe alım"
+              },
+              "4": {
+                "name": "Değerlendirme & performans"
+              },
+              "5": {
+                "name": "Dinamik organizasyon şeması"
+              }
+            }
+          },
+          "1": {
+            "name": "Bordro & Finans",
+            "features": {
+              "0": {
+                "name": "Otomatik bordro hesabı"
+              },
+              "1": {
+                "name": "PDF bordro dökümü"
+              },
+              "2": {
+                "name": "Muhasebe dışa aktarımı"
+              },
+              "3": {
+                "name": "Maaş avansı"
+              },
+              "4": {
+                "name": "Çok ülke & çok para birimi"
+              },
+              "5": {
+                "name": "Gelişmiş yasal uyumluluk"
+              }
+            }
+          },
+          "2": {
+            "name": "Saha & Mobil",
+            "features": {
+              "0": {
+                "name": "Çalışan mobil uygulaması"
+              },
+              "1": {
+                "name": "Yönetici mobil uygulaması"
+              },
+              "2": {
+                "name": "Çevrimdışı mod"
+              },
+              "3": {
+                "name": "ZKTeco biyometri entegrasyonu"
+              },
+              "4": {
+                "name": "Özel HR kiosk"
+              },
+              "5": {
+                "name": "GPS & coğrafi sınır"
+              }
+            }
+          },
+          "3": {
+            "name": "Güvenlik & Entegrasyonlar",
+            "features": {
+              "0": {
+                "name": "Belge kasası"
+              },
+              "1": {
+                "name": "REST API & Webhook"
+              },
+              "2": {
+                "name": "SSO SAML / OIDC"
+              },
+              "3": {
+                "name": "Değiştirilemez denetim kaydı"
+              },
+              "4": {
+                "name": "İzole PostgreSQL şeması"
+              },
+              "5": {
+                "name": "Özel SLA & destek"
+              }
+            }
+          }
+        }
+      },
+      "faq": {
+        "badge": "Fiyat SSS",
+        "title": "Sık sorulan sorular",
+        "subtitle": "Başlamadan önce kontrol edilecek noktalar",
+        "all": "Tümü",
+        "categories": {
+          "0": "Faturalama",
+          "1": "Deneme",
+          "2": "Destek",
+          "3": "Güvenlik",
+          "4": "Teknik"
+        },
+        "items": {
+          "0": {
+            "question": "Pilot planı neler içerir?",
+            "answer": "Ayda 29 €'dan başlayan Pilot planı 30 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.",
+            "category": "Deneme"
+          },
+          "1": {
+            "question": "Planı değiştirebilir miyim?",
+            "answer": "Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.",
+            "category": "Faturalama"
+          },
+          "2": {
+            "question": "Faturalama nasıl çalışır?",
+            "answer": "Her plan, dahil edilen çalışan sınırıyla (Pilot için 30, Operations için 200, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.",
+            "category": "Faturalama"
+          },
+          "3": {
+            "question": "Deneme gerçekten ücretsiz mi?",
+            "answer": "Evet. Ücretsiz deneme — Free planda 30 gün, ücretli planlarda 14 gün. Kaydolmak için kredi kartı gerekmez.",
+            "category": "Deneme"
+          },
+          "4": {
+            "question": "Deneme bitince ne olur?",
+            "answer": "Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.",
+            "category": "Deneme"
+          },
+          "5": {
+            "question": "Hangi destek sağlanır?",
+            "answer": "Pilot: 48 saat içinde e-posta desteği. Operations: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.",
+            "category": "Destek"
+          },
+          "6": {
+            "question": "Verilerim nerede barındırılır?",
+            "answer": "Avrupa'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.",
+            "category": "Güvenlik"
+          },
+          "7": {
+            "question": "KVKK uyumlu musunuz?",
+            "answer": "Evet. DPA mevcut, veriler yalnızca Avrupa'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.",
+            "category": "Güvenlik"
+          },
+          "8": {
+            "question": "API kullanılabilir mi?",
+            "answer": "REST API ve webhook'lar Operations planından itibaren kullanılabilir. Pilot'ta verilerinizi CSV/Excel olarak dışa aktarabilirsiniz.",
+            "category": "Teknik"
+          }
+        },
+        "moreTitle": "Başka sorunuz var mı?",
+        "contactSupport": "Destek ile iletişim"
+      },
+      "cta": {
+        "badge": "Başlamaya hazır",
+        "headline": "Saha İK'nızı bugün başlatın",
+        "subheadline": "Bordro süresini 2 saatten 8 dakikaya düşüren ekiplere katılın.",
+        "primary": "Ücretsiz başla",
+        "secondary": "Satış ekibine ulaş"
+      },
+      "badges": {
+        "popular": "En popüler",
+        "free": "%100 Ücretsiz",
+        "freePrice": "Ücretsiz",
+        "freeNote": "Kredi kartı gerekmez · Sonsuza kadar",
+        "freeTag": "ücretsiz"
+      }
+    },
+    "plans": {
+      "customPrice": "Teklif",
+      "free": {
+        "description": "Taahhütsüz başlayın — 5 kişiye kadar ekipler için ideal",
+        "priceNote": "14 gün deneme. 5 çalışana kadar.",
+        "employeeLimit": "5 çalışana kadar",
+        "cta": "Ücretsiz başla",
+        "features": {
+          "0": "Temel web ve mobil yoklama",
+          "1": "İzin ve devamsızlık görüntüleme",
+          "2": "Temel çalışan kayıtları",
+          "3": "PDF bordro dökümleri",
+          "4": "Employee uygulaması dahil",
+          "5": "Topluluk desteği"
+        },
+        "period": "/ay",
+        "annualPeriod": "/ay"
+      },
+      "pilot": {
+        "description": "Leopardo'yu tek saha, ekip veya şubede denemek için",
+        "priceNote": "14 gün ücretsiz. 30 çalışana kadar.",
+        "employeeLimit": "30 çalışana kadar",
+        "cta": "Ücretsiz denemeye başla",
+        "features": {
+          "0": "Web ve mobil yoklama",
+          "1": "İzin, devamsızlık ve bakiye takibi",
+          "2": "Çalışan dosyaları ve İK belgeleri",
+          "3": "PDF bordro dökümleri ve temel dışa aktarımlar",
+          "4": "Müşteri portalı ve yönetici alanı",
+          "5": "Employee ve Manager uygulamaları dahil",
+          "6": "48 saat içinde e-posta desteği"
+        },
+        "period": "/ay",
+        "annualPeriod": "/ay · yıllık 290 € fatura"
+      },
+      "operations": {
+        "description": "Saha ekipleri, İK akışları ve bordro yöneten KOBİ'ler için",
+        "priceNote": "14 gün ücretsiz. 200 çalışana kadar.",
+        "employeeLimit": "200 çalışana kadar",
+        "cta": "Operations'ı dene",
+        "features": {
+          "0": "Pilot'taki her şey, artı:",
+          "1": "Çok ülkeli bordro ve İK onayları",
+          "2": "Yöneticiler, ekipler ve onay akışları",
+          "3": "ZKTeco, kiosk ve mobil yoklama",
+          "4": "İK analitiği, readiness ve gelişmiş dışa aktarımlar",
+          "5": "API, webhook ve entegrasyonlar",
+          "6": "24 saat içinde öncelikli destek"
+        },
+        "period": "/ay",
+        "annualPeriod": "/ay · yıllık 790 € fatura"
+      },
+      "enterprise": {
+        "description": "Çok ülkeli gruplar, franchise'lar, saha ağları ve yüksek yönetişim için",
+        "priceNote": "14 gün ücretsiz. Sınırsız çalışan.",
+        "employeeLimit": "Sınırsız çalışan",
+        "cta": "Satışla iletişime geç",
+        "features": {
+          "0": "Operations'taki her şey, artı:",
+          "1": "SAML/OIDC SSO ve gelişmiş politikalar",
+          "2": "SLA, geçiş desteği ve eğitim",
+          "3": "Özel ortamlar veya seçilen bulut bölgesi",
+          "4": "Denetim izi, uyumluluk dışa aktarımları ve öncelikli destek",
+          "5": "AI, bağlayıcılar ve yönetişim seçenekleri"
+        }
+      }
+    },
+    "faq": {
+      "items": {
+        "0": {
+          "question": "Pilot planı neler içerir?",
+          "answer": "Ayda 29 €'dan başlayan Pilot planı 30 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.",
+          "category": "Deneme"
+        },
+        "1": {
+          "question": "Planı değiştirebilir miyim?",
+          "answer": "Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.",
+          "category": "Faturalama"
+        },
+        "2": {
+          "question": "Faturalama nasıl çalışır?",
+          "answer": "Her plan, dahil edilen çalışan sınırıyla (Free için 5, Pilot için 30, Operations için 200, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.",
+          "category": "Faturalama"
+        },
+        "3": {
+          "question": "Deneme gerçekten ücretsiz mi?",
+          "answer": "Evet. Tüm ücretli özelliklerle 14 tam gün. Kaydolmak için kredi kartı gerekmez.",
+          "category": "Deneme"
+        },
+        "4": {
+          "question": "Free planı gerçekten ücretsiz mi?",
+          "answer": "Evet. Free planı (0 €/ay) 5 çalışana kadar: web yoklama, izinler ve devamsızlık, çalışan dosyaları ve Employee mobil uygulaması. Kredi kartı gerekmez.",
+          "category": "Deneme"
+        },
+        "5": {
+          "question": "Deneme bitince ne olur?",
+          "answer": "Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.",
+          "category": "Deneme"
+        },
+        "6": {
+          "question": "Hangi destek sağlanır?",
+          "answer": "Pilot: 48 saat içinde e-posta desteği. Operations: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.",
+          "category": "Destek"
+        },
+        "7": {
+          "question": "Verilerim nerede barındırılır?",
+          "answer": "Avrupa'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.",
+          "category": "Güvenlik"
+        },
+        "8": {
+          "question": "KVKK uyumlu musunuz?",
+          "answer": "Evet. DPA mevcut, veriler yalnızca Avrupa'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.",
+          "category": "Güvenlik"
+        },
+        "9": {
+          "question": "API kullanılabilir mi?",
+          "answer": "REST API ve webhook'lar Operations planından itibaren kullanılabilir. Pilot'ta verilerinizi CSV/Excel olarak dışa aktarabilirsiniz.",
+          "category": "Teknik"
+        }
+      }
+    },
+    "section": {
+      "freeLabel": "Ücretsiz",
+      "toggleMonthly": "Aylik",
+      "toggleAnnual": "Yillik",
+      "toggleAria": "Faturalama dönemini değiştir",
+      "fullComparison": "Tam karsilastirmayi gorun"
+    },
+    "card": {
+      "periodDefault": "/ay",
+      "customPriceDefault": "Teklif"
     }
   },
   "signup": {

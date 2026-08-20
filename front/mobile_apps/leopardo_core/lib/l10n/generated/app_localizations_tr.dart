@@ -1808,6 +1808,449 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  @override
+  String get pricingPageHeroBadge => 'Şeffaf fiyatlandırma';
+  @override
+  String get pricingPageHeroHeadline => 'Saha HR ekipleri için fiyatlandırma';
+  @override
+  String get pricingPageHeroSubheadline =>
+      'Ücretsiz başlayın — kredi kartı gerekmez — hazır olduğunuzda yükseltin.';
+  @override
+  String get pricingPageHeroPrimary => 'Ücretsiz başla';
+  @override
+  String get pricingPageHeroSecondary => 'Uzmanla konuş';
+  @override
+  String get pricingPagePlansBadge => 'Planlarımız';
+  @override
+  String get pricingPagePlansTitle => 'Büyümenizin her aşaması için bir plan';
+  @override
+  String get pricingPagePlansSubtitle =>
+      'Küçük başlayın, platform değiştirmeden büyüyün.';
+  @override
+  String get pricingPagePlansMonthly => 'Aylık';
+  @override
+  String get pricingPagePlansAnnual => 'Yıllık';
+  @override
+  String get pricingPagePlansCustomprice => 'Teklif alın';
+  @override
+  String get pricingPagePlansPeriodmonthly => '/ay';
+  @override
+  String get pricingPagePlansPeriodannual => '/ay yıllık faturalama';
+  @override
+  String get pricingPagePlansTrialnote =>
+      'Ücretsiz deneme · Kredi kartı gerekmez';
+  @override
+  String get pricingPageCurrencyLabel => 'Fiyatları şu para birimiyle göster';
+  @override
+  String get pricingPageCurrencyApprox =>
+      'EUR referans fiyatından yaklaşık dönüşüm; sözleşme tutarı EUR olarak kalır.';
+  @override
+  String get pricingPageTrustItems0 => 'Ücretsiz plan — kredi kartı yok';
+  @override
+  String get pricingPageTrustItems1 => 'İlk günden destek dahil';
+  @override
+  String get pricingPageTrustItems2 => 'Avrupa\'da barındırılan veriler';
+  @override
+  String get pricingPageTrustItems3 => 'İstediğiniz zaman iptal';
+  @override
+  String get pricingPageComparisonBadge => 'Tam karşılaştırma';
+  @override
+  String get pricingPageComparisonTitle => 'Dahil olan her şey';
+  @override
+  String get pricingPageComparisonSubtitle => 'plan bazında';
+  @override
+  String get pricingPageComparisonFeaturecolumn => 'Özellik';
+  @override
+  String get pricingPageComparisonCategories0Name => 'İK Yönetimi';
+  @override
+  String get pricingPageComparisonCategories0Features0Name =>
+      'Web & mobil devam takibi';
+  @override
+  String get pricingPageComparisonCategories0Features0Free => 'Yalnızca web';
+  @override
+  String get pricingPageComparisonCategories0Features1Name =>
+      'Devamsızlık & izin';
+  @override
+  String get pricingPageComparisonCategories0Features2Name =>
+      'Paylaşılan takvim';
+  @override
+  String get pricingPageComparisonCategories0Features3Name =>
+      'Rehberli işe alım';
+  @override
+  String get pricingPageComparisonCategories0Features4Name =>
+      'Değerlendirme & performans';
+  @override
+  String get pricingPageComparisonCategories0Features5Name =>
+      'Dinamik organizasyon şeması';
+  @override
+  String get pricingPageComparisonCategories1Name => 'Bordro & Finans';
+  @override
+  String get pricingPageComparisonCategories1Features0Name =>
+      'Otomatik bordro hesabı';
+  @override
+  String get pricingPageComparisonCategories1Features1Name =>
+      'PDF bordro dökümü';
+  @override
+  String get pricingPageComparisonCategories1Features2Name =>
+      'Muhasebe dışa aktarımı';
+  @override
+  String get pricingPageComparisonCategories1Features3Name => 'Maaş avansı';
+  @override
+  String get pricingPageComparisonCategories1Features4Name =>
+      'Çok ülke & çok para birimi';
+  @override
+  String get pricingPageComparisonCategories1Features5Name =>
+      'Gelişmiş yasal uyumluluk';
+  @override
+  String get pricingPageComparisonCategories2Name => 'Saha & Mobil';
+  @override
+  String get pricingPageComparisonCategories2Features0Name =>
+      'Çalışan mobil uygulaması';
+  @override
+  String get pricingPageComparisonCategories2Features1Name =>
+      'Yönetici mobil uygulaması';
+  @override
+  String get pricingPageComparisonCategories2Features2Name => 'Çevrimdışı mod';
+  @override
+  String get pricingPageComparisonCategories2Features3Name =>
+      'ZKTeco biyometri entegrasyonu';
+  @override
+  String get pricingPageComparisonCategories2Features4Name => 'Özel HR kiosk';
+  @override
+  String get pricingPageComparisonCategories2Features5Name =>
+      'GPS & coğrafi sınır';
+  @override
+  String get pricingPageComparisonCategories3Name =>
+      'Güvenlik & Entegrasyonlar';
+  @override
+  String get pricingPageComparisonCategories3Features0Name => 'Belge kasası';
+  @override
+  String get pricingPageComparisonCategories3Features1Name =>
+      'REST API & Webhook';
+  @override
+  String get pricingPageComparisonCategories3Features2Name => 'SSO SAML / OIDC';
+  @override
+  String get pricingPageComparisonCategories3Features3Name =>
+      'Değiştirilemez denetim kaydı';
+  @override
+  String get pricingPageComparisonCategories3Features4Name =>
+      'İzole PostgreSQL şeması';
+  @override
+  String get pricingPageComparisonCategories3Features5Name =>
+      'Özel SLA & destek';
+  @override
+  String get pricingPageFaqBadge => 'Fiyat SSS';
+  @override
+  String get pricingPageFaqTitle => 'Sık sorulan sorular';
+  @override
+  String get pricingPageFaqSubtitle =>
+      'Başlamadan önce kontrol edilecek noktalar';
+  @override
+  String get pricingPageFaqAll => 'Tümü';
+  @override
+  String get pricingPageFaqCategories0 => 'Faturalama';
+  @override
+  String get pricingPageFaqCategories1 => 'Deneme';
+  @override
+  String get pricingPageFaqCategories2 => 'Destek';
+  @override
+  String get pricingPageFaqCategories3 => 'Güvenlik';
+  @override
+  String get pricingPageFaqCategories4 => 'Teknik';
+  @override
+  String get pricingPageFaqItems0Question => 'Pilot planı neler içerir?';
+  @override
+  String get pricingPageFaqItems0Answer =>
+      'Ayda 29 €\'dan başlayan Pilot planı 30 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.';
+  @override
+  String get pricingPageFaqItems0Category => 'Deneme';
+  @override
+  String get pricingPageFaqItems1Question => 'Planı değiştirebilir miyim?';
+  @override
+  String get pricingPageFaqItems1Answer =>
+      'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.';
+  @override
+  String get pricingPageFaqItems1Category => 'Faturalama';
+  @override
+  String get pricingPageFaqItems2Question => 'Faturalama nasıl çalışır?';
+  @override
+  String get pricingPageFaqItems2Answer =>
+      'Her plan, dahil edilen çalışan sınırıyla (Pilot için 30, Operations için 200, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.';
+  @override
+  String get pricingPageFaqItems2Category => 'Faturalama';
+  @override
+  String get pricingPageFaqItems3Question => 'Deneme gerçekten ücretsiz mi?';
+  @override
+  String get pricingPageFaqItems3Answer =>
+      'Evet. Ücretsiz deneme — Free planda 30 gün, ücretli planlarda 14 gün. Kaydolmak için kredi kartı gerekmez.';
+  @override
+  String get pricingPageFaqItems3Category => 'Deneme';
+  @override
+  String get pricingPageFaqItems4Question => 'Deneme bitince ne olur?';
+  @override
+  String get pricingPageFaqItems4Answer =>
+      'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.';
+  @override
+  String get pricingPageFaqItems4Category => 'Deneme';
+  @override
+  String get pricingPageFaqItems5Question => 'Hangi destek sağlanır?';
+  @override
+  String get pricingPageFaqItems5Answer =>
+      'Pilot: 48 saat içinde e-posta desteği. Operations: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.';
+  @override
+  String get pricingPageFaqItems5Category => 'Destek';
+  @override
+  String get pricingPageFaqItems6Question => 'Verilerim nerede barındırılır?';
+  @override
+  String get pricingPageFaqItems6Answer =>
+      'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.';
+  @override
+  String get pricingPageFaqItems6Category => 'Güvenlik';
+  @override
+  String get pricingPageFaqItems7Question => 'KVKK uyumlu musunuz?';
+  @override
+  String get pricingPageFaqItems7Answer =>
+      'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.';
+  @override
+  String get pricingPageFaqItems7Category => 'Güvenlik';
+  @override
+  String get pricingPageFaqItems8Question => 'API kullanılabilir mi?';
+  @override
+  String get pricingPageFaqItems8Answer =>
+      'REST API ve webhook\'lar Operations planından itibaren kullanılabilir. Pilot\'ta verilerinizi CSV/Excel olarak dışa aktarabilirsiniz.';
+  @override
+  String get pricingPageFaqItems8Category => 'Teknik';
+  @override
+  String get pricingPageCtaBadge => 'Başlamaya hazır';
+  @override
+  String get pricingPageCtaHeadline => 'Saha İK\'nızı bugün başlatın';
+  @override
+  String get pricingPageCtaSubheadline =>
+      'Bordro süresini 2 saatten 8 dakikaya düşüren ekiplere katılın.';
+  @override
+  String get pricingPageCtaPrimary => 'Ücretsiz başla';
+  @override
+  String get pricingPageCtaSecondary => 'Satış ekibine ulaş';
+  @override
+  String get pricingPageBadgesPopular => 'En popüler';
+  @override
+  String get pricingPageBadgesFree => '%100 Ücretsiz';
+  @override
+  String get pricingPageBadgesFreeprice => 'Ücretsiz';
+  @override
+  String get pricingPageBadgesFreenote =>
+      'Kredi kartı gerekmez · Sonsuza kadar';
+  @override
+  String get pricingPageBadgesFreetag => 'ücretsiz';
+  @override
+  String get pricingPlansCustomprice => 'Teklif';
+  @override
+  String get pricingPlansFreeDescription =>
+      'Taahhütsüz başlayın — 5 kişiye kadar ekipler için ideal';
+  @override
+  String get pricingPlansFreePricenote => '14 gün deneme. 5 çalışana kadar.';
+  @override
+  String get pricingPlansFreeEmployeelimit => '5 çalışana kadar';
+  @override
+  String get pricingPlansFreeCta => 'Ücretsiz başla';
+  @override
+  String get pricingPlansFreeFeatures0 => 'Temel web ve mobil yoklama';
+  @override
+  String get pricingPlansFreeFeatures1 => 'İzin ve devamsızlık görüntüleme';
+  @override
+  String get pricingPlansFreeFeatures2 => 'Temel çalışan kayıtları';
+  @override
+  String get pricingPlansFreeFeatures3 => 'PDF bordro dökümleri';
+  @override
+  String get pricingPlansFreeFeatures4 => 'Employee uygulaması dahil';
+  @override
+  String get pricingPlansFreeFeatures5 => 'Topluluk desteği';
+  @override
+  String get pricingPlansFreePeriod => '/ay';
+  @override
+  String get pricingPlansFreeAnnualperiod => '/ay';
+  @override
+  String get pricingPlansPilotDescription =>
+      'Leopardo\'yu tek saha, ekip veya şubede denemek için';
+  @override
+  String get pricingPlansPilotPricenote =>
+      '14 gün ücretsiz. 30 çalışana kadar.';
+  @override
+  String get pricingPlansPilotEmployeelimit => '30 çalışana kadar';
+  @override
+  String get pricingPlansPilotCta => 'Ücretsiz denemeye başla';
+  @override
+  String get pricingPlansPilotFeatures0 => 'Web ve mobil yoklama';
+  @override
+  String get pricingPlansPilotFeatures1 => 'İzin, devamsızlık ve bakiye takibi';
+  @override
+  String get pricingPlansPilotFeatures2 => 'Çalışan dosyaları ve İK belgeleri';
+  @override
+  String get pricingPlansPilotFeatures3 =>
+      'PDF bordro dökümleri ve temel dışa aktarımlar';
+  @override
+  String get pricingPlansPilotFeatures4 => 'Müşteri portalı ve yönetici alanı';
+  @override
+  String get pricingPlansPilotFeatures5 =>
+      'Employee ve Manager uygulamaları dahil';
+  @override
+  String get pricingPlansPilotFeatures6 => '48 saat içinde e-posta desteği';
+  @override
+  String get pricingPlansPilotPeriod => '/ay';
+  @override
+  String get pricingPlansPilotAnnualperiod => '/ay · yıllık 290 € fatura';
+  @override
+  String get pricingPlansOperationsDescription =>
+      'Saha ekipleri, İK akışları ve bordro yöneten KOBİ\'ler için';
+  @override
+  String get pricingPlansOperationsPricenote =>
+      '14 gün ücretsiz. 200 çalışana kadar.';
+  @override
+  String get pricingPlansOperationsEmployeelimit => '200 çalışana kadar';
+  @override
+  String get pricingPlansOperationsCta => 'Operations\'ı dene';
+  @override
+  String get pricingPlansOperationsFeatures0 => 'Pilot\'taki her şey, artı:';
+  @override
+  String get pricingPlansOperationsFeatures1 =>
+      'Çok ülkeli bordro ve İK onayları';
+  @override
+  String get pricingPlansOperationsFeatures2 =>
+      'Yöneticiler, ekipler ve onay akışları';
+  @override
+  String get pricingPlansOperationsFeatures3 =>
+      'ZKTeco, kiosk ve mobil yoklama';
+  @override
+  String get pricingPlansOperationsFeatures4 =>
+      'İK analitiği, readiness ve gelişmiş dışa aktarımlar';
+  @override
+  String get pricingPlansOperationsFeatures5 =>
+      'API, webhook ve entegrasyonlar';
+  @override
+  String get pricingPlansOperationsFeatures6 =>
+      '24 saat içinde öncelikli destek';
+  @override
+  String get pricingPlansOperationsPeriod => '/ay';
+  @override
+  String get pricingPlansOperationsAnnualperiod => '/ay · yıllık 790 € fatura';
+  @override
+  String get pricingPlansEnterpriseDescription =>
+      'Çok ülkeli gruplar, franchise\'lar, saha ağları ve yüksek yönetişim için';
+  @override
+  String get pricingPlansEnterprisePricenote =>
+      '14 gün ücretsiz. Sınırsız çalışan.';
+  @override
+  String get pricingPlansEnterpriseEmployeelimit => 'Sınırsız çalışan';
+  @override
+  String get pricingPlansEnterpriseCta => 'Satışla iletişime geç';
+  @override
+  String get pricingPlansEnterpriseFeatures0 =>
+      'Operations\'taki her şey, artı:';
+  @override
+  String get pricingPlansEnterpriseFeatures1 =>
+      'SAML/OIDC SSO ve gelişmiş politikalar';
+  @override
+  String get pricingPlansEnterpriseFeatures2 => 'SLA, geçiş desteği ve eğitim';
+  @override
+  String get pricingPlansEnterpriseFeatures3 =>
+      'Özel ortamlar veya seçilen bulut bölgesi';
+  @override
+  String get pricingPlansEnterpriseFeatures4 =>
+      'Denetim izi, uyumluluk dışa aktarımları ve öncelikli destek';
+  @override
+  String get pricingPlansEnterpriseFeatures5 =>
+      'AI, bağlayıcılar ve yönetişim seçenekleri';
+  @override
+  String get pricingFaqItems0Question => 'Pilot planı neler içerir?';
+  @override
+  String get pricingFaqItems0Answer =>
+      'Ayda 29 €\'dan başlayan Pilot planı 30 çalışana kadar web ve mobil yoklama, izinler, çalışan dosyaları ve PDF maaş bordrolarını içerir. 14 gün ücretsiz deneme, kredi kartı gerekmez.';
+  @override
+  String get pricingFaqItems0Category => 'Deneme';
+  @override
+  String get pricingFaqItems1Question => 'Planı değiştirebilir miyim?';
+  @override
+  String get pricingFaqItems1Answer =>
+      'Evet, istediğiniz zaman. Yükseltme anında, düşürme bir sonraki dönemde uygulanır. Gizli ücret yoktur.';
+  @override
+  String get pricingFaqItems1Category => 'Faturalama';
+  @override
+  String get pricingFaqItems2Question => 'Faturalama nasıl çalışır?';
+  @override
+  String get pricingFaqItems2Answer =>
+      'Her plan, dahil edilen çalışan sınırıyla (Free için 5, Pilot için 30, Operations için 200, Enterprise için sınırsız) sabit bir aylık fiyat içerir. Aktif çalışan başına ek ücret yoktur.';
+  @override
+  String get pricingFaqItems2Category => 'Faturalama';
+  @override
+  String get pricingFaqItems3Question => 'Deneme gerçekten ücretsiz mi?';
+  @override
+  String get pricingFaqItems3Answer =>
+      'Evet. Tüm ücretli özelliklerle 14 tam gün. Kaydolmak için kredi kartı gerekmez.';
+  @override
+  String get pricingFaqItems3Category => 'Deneme';
+  @override
+  String get pricingFaqItems4Question => 'Free planı gerçekten ücretsiz mi?';
+  @override
+  String get pricingFaqItems4Answer =>
+      'Evet. Free planı (0 €/ay) 5 çalışana kadar: web yoklama, izinler ve devamsızlık, çalışan dosyaları ve Employee mobil uygulaması. Kredi kartı gerekmez.';
+  @override
+  String get pricingFaqItems4Category => 'Deneme';
+  @override
+  String get pricingFaqItems5Question => 'Deneme bitince ne olur?';
+  @override
+  String get pricingFaqItems5Answer =>
+      'Bir plan seçersiniz ya da verileriniz 14 gün daha arşivlenir. Onayınız olmadan otomatik faturalama yapılmaz.';
+  @override
+  String get pricingFaqItems5Category => 'Deneme';
+  @override
+  String get pricingFaqItems6Question => 'Hangi destek sağlanır?';
+  @override
+  String get pricingFaqItems6Answer =>
+      'Pilot: 48 saat içinde e-posta desteği. Operations: 24 saat içinde öncelikli destek. Enterprise: özel hesap yöneticisi + sözleşmesel SLA.';
+  @override
+  String get pricingFaqItems6Category => 'Destek';
+  @override
+  String get pricingFaqItems7Question => 'Verilerim nerede barındırılır?';
+  @override
+  String get pricingFaqItems7Answer =>
+      'Avrupa\'da (Render EU / Supabase EU). Durağan veriler AES-256, iletimde TLS 1.3. Tenant izolasyonu garantili.';
+  @override
+  String get pricingFaqItems7Category => 'Güvenlik';
+  @override
+  String get pricingFaqItems8Question => 'KVKK uyumlu musunuz?';
+  @override
+  String get pricingFaqItems8Answer =>
+      'Evet. DPA mevcut, veriler yalnızca Avrupa\'da, silme hakkı uygulanmış, talep üzerine veri dışa aktarımı.';
+  @override
+  String get pricingFaqItems8Category => 'Güvenlik';
+  @override
+  String get pricingFaqItems9Question => 'API kullanılabilir mi?';
+  @override
+  String get pricingFaqItems9Answer =>
+      'REST API ve webhook\'lar Operations planından itibaren kullanılabilir. Pilot\'ta verilerinizi CSV/Excel olarak dışa aktarabilirsiniz.';
+  @override
+  String get pricingFaqItems9Category => 'Teknik';
+  @override
+  String get pricingSectionFreelabel => 'Ücretsiz';
+  @override
+  String get pricingSectionTogglemonthly => 'Aylik';
+  @override
+  String get pricingSectionToggleannual => 'Yillik';
+  @override
+  String get pricingSectionTogglearia => 'Faturalama dönemini değiştir';
+  @override
+  String get pricingSectionFullcomparison => 'Tam karsilastirmayi gorun';
+  @override
+  String get pricingCardPerioddefault => '/ay';
+  @override
+  String get pricingCardCustompricedefault => 'Teklif';
+
+  @override
+  String get pricingPageFaqMoretitle => 'Başka sorunuz var mı?';
+  @override
+  String get pricingPageFaqContactsupport => 'Destek ile iletişim';
+
+
   String get signupBadge => '14 günlük ücretsiz deneme';
 
   @override

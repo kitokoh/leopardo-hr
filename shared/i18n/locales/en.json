@@ -1,6 +1,6 @@
 {
   "_version": "1.0.0",
-  "_updated_at": "2026-08-17T00:00:00Z",
+  "_updated_at": "2026-08-20T00:00:00Z",
   "_locale": "en",
   "app": {
     "title": "Leopardo HR"
@@ -939,6 +939,349 @@
       "unknown": {
         "message": "No payroll rules are available for {country}: payroll calculation is not available for this country."
       }
+    }
+  },
+  "pricing": {
+    "page": {
+      "hero": {
+        "badge": "Transparent pricing",
+        "headline": "Pricing built for field HR teams",
+        "subheadline": "Start for free — no credit card — and upgrade when you are ready.",
+        "primary": "Start for free",
+        "secondary": "Talk to an expert"
+      },
+      "plans": {
+        "badge": "Our plans",
+        "title": "A plan for every stage of your growth",
+        "subtitle": "Start small, scale up without switching platforms.",
+        "monthly": "Monthly",
+        "annual": "Annual",
+        "customPrice": "Custom",
+        "periodMonthly": "/month",
+        "periodAnnual": "/month billed annually",
+        "trialNote": "Free trial · No credit card required"
+      },
+      "currency": {
+        "label": "Show prices in",
+        "approx": "Approximate conversion from the EUR reference price; the contractual price stays denominated in EUR."
+      },
+      "trust": {
+        "items": {
+          "0": "Free trial — no credit card",
+          "1": "Support included from day one",
+          "2": "Data hosted in Europe",
+          "3": "Cancel anytime"
+        }
+      },
+      "comparison": {
+        "badge": "Full comparison",
+        "title": "Everything that's included",
+        "subtitle": "per plan",
+        "featureColumn": "Feature",
+        "categories": {
+          "0": {
+            "name": "HR management",
+            "features": {
+              "0": {
+                "name": "Web & mobile attendance",
+                "free": "Web only"
+              },
+              "1": {
+                "name": "Absences & leave"
+              },
+              "2": {
+                "name": "Shared calendar"
+              },
+              "3": {
+                "name": "Guided onboarding"
+              },
+              "4": {
+                "name": "Reviews & performance"
+              },
+              "5": {
+                "name": "Dynamic org chart"
+              }
+            }
+          },
+          "1": {
+            "name": "Payroll & finance",
+            "features": {
+              "0": {
+                "name": "Automated payroll"
+              },
+              "1": {
+                "name": "PDF pay slips"
+              },
+              "2": {
+                "name": "Accounting exports"
+              },
+              "3": {
+                "name": "Salary advances"
+              },
+              "4": {
+                "name": "Multi-country & currency"
+              },
+              "5": {
+                "name": "Advanced legal compliance"
+              }
+            }
+          },
+          "2": {
+            "name": "Field & mobile",
+            "features": {
+              "0": {
+                "name": "Employee mobile app"
+              },
+              "1": {
+                "name": "Manager mobile app"
+              },
+              "2": {
+                "name": "Offline mode"
+              },
+              "3": {
+                "name": "ZKTeco biometrics"
+              },
+              "4": {
+                "name": "Dedicated HR kiosk"
+              },
+              "5": {
+                "name": "GPS & geofencing"
+              }
+            }
+          },
+          "3": {
+            "name": "Security & integrations",
+            "features": {
+              "0": {
+                "name": "Document vault"
+              },
+              "1": {
+                "name": "REST API & Webhooks"
+              },
+              "2": {
+                "name": "SSO SAML / OIDC"
+              },
+              "3": {
+                "name": "Immutable audit trail"
+              },
+              "4": {
+                "name": "Isolated PostgreSQL schema"
+              },
+              "5": {
+                "name": "Dedicated SLA & support"
+              }
+            }
+          }
+        }
+      },
+      "faq": {
+        "badge": "Pricing FAQ",
+        "title": "Frequently asked questions",
+        "subtitle": "What to check before you start",
+        "all": "All",
+        "categories": {
+          "0": "Billing",
+          "1": "Trial",
+          "2": "Support",
+          "3": "Security",
+          "4": "Technical"
+        },
+        "items": {
+          "0": {
+            "question": "What does the Pilot plan include?",
+            "answer": "The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.",
+            "category": "Trial"
+          },
+          "1": {
+            "question": "Can I change plan later?",
+            "answer": "Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.",
+            "category": "Billing"
+          },
+          "2": {
+            "question": "How does billing work?",
+            "answer": "Each plan includes a fixed monthly price with an included employee cap (30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.",
+            "category": "Billing"
+          },
+          "3": {
+            "question": "Is the trial really free?",
+            "answer": "Yes. Full free trial — 30 days on the Free plan, 14 days on paid plans. No credit card needed to sign up.",
+            "category": "Trial"
+          },
+          "4": {
+            "question": "What happens when the trial ends?",
+            "answer": "You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.",
+            "category": "Trial"
+          },
+          "5": {
+            "question": "What support is available?",
+            "answer": "Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.",
+            "category": "Support"
+          },
+          "6": {
+            "question": "Where is my data hosted?",
+            "answer": "In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.",
+            "category": "Security"
+          },
+          "7": {
+            "question": "Are you GDPR compliant?",
+            "answer": "Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.",
+            "category": "Security"
+          },
+          "8": {
+            "question": "Is the API available?",
+            "answer": "REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.",
+            "category": "Technical"
+          }
+        },
+        "moreTitle": "Another question?",
+        "contactSupport": "Contact support"
+      },
+      "cta": {
+        "badge": "Ready to start",
+        "headline": "Launch your field HR today",
+        "subheadline": "Join teams that reduced payroll time from 2 hours to 8 minutes.",
+        "primary": "Start for free",
+        "secondary": "Contact sales"
+      },
+      "badges": {
+        "popular": "Most popular",
+        "free": "100% Free",
+        "freePrice": "Free",
+        "freeNote": "No credit card · Forever",
+        "freeTag": "free"
+      }
+    },
+    "plans": {
+      "customPrice": "Custom",
+      "free": {
+        "description": "Start without commitment — ideal for teams of up to 5 people",
+        "priceNote": "14-day free trial. Up to 5 employees.",
+        "employeeLimit": "Up to 5 employees",
+        "cta": "Start for free",
+        "features": {
+          "0": "Basic web and mobile attendance",
+          "1": "Leave and absence consultation",
+          "2": "Essential employee records",
+          "3": "PDF pay slips",
+          "4": "Employee app included",
+          "5": "Community support"
+        },
+        "period": "/month",
+        "annualPeriod": "/month"
+      },
+      "pilot": {
+        "description": "For testing Leopardo on one site, team or branch",
+        "priceNote": "14 days free. Up to 30 employees.",
+        "employeeLimit": "Up to 30 employees",
+        "cta": "Start free trial",
+        "features": {
+          "0": "Web and mobile attendance",
+          "1": "Leave, absences and balances",
+          "2": "Employee records and HR documents",
+          "3": "PDF pay slips and basic exports",
+          "4": "Client portal and manager space",
+          "5": "Employee and Manager apps included",
+          "6": "Email support within 48h"
+        },
+        "period": "/month",
+        "annualPeriod": "/month · billed 290 €/year"
+      },
+      "operations": {
+        "description": "For SMBs managing field teams, HR workflows and payroll",
+        "priceNote": "14 days free. Up to 200 employees.",
+        "employeeLimit": "Up to 200 employees",
+        "cta": "Try Operations",
+        "features": {
+          "0": "Everything in Pilot, plus:",
+          "1": "Multi-country payroll and HR validations",
+          "2": "Managers, teams and approval workflows",
+          "3": "ZKTeco, kiosk and mobile attendance",
+          "4": "HR analytics, readiness and advanced exports",
+          "5": "API, webhooks and integrations",
+          "6": "Priority support within 24h"
+        },
+        "period": "/month",
+        "annualPeriod": "/month · billed 790 €/year"
+      },
+      "enterprise": {
+        "description": "For multi-country groups, franchises, site networks and strict governance",
+        "priceNote": "14 days free. Unlimited employees.",
+        "employeeLimit": "Unlimited employees",
+        "cta": "Contact sales",
+        "features": {
+          "0": "Everything in Operations, plus:",
+          "1": "SAML/OIDC SSO and advanced policies",
+          "2": "SLA, migration guidance and training",
+          "3": "Dedicated environments or selected cloud region",
+          "4": "Audit trail, compliance exports and priority support",
+          "5": "AI, connectors and governance options"
+        }
+      }
+    },
+    "faq": {
+      "items": {
+        "0": {
+          "question": "What does the Pilot plan include?",
+          "answer": "The Pilot plan at €29/month includes up to 30 employees, web and mobile time tracking, absences and leave, employee records and PDF payslips. Free 14-day trial, no credit card required.",
+          "category": "Trial"
+        },
+        "1": {
+          "question": "Can I change plan later?",
+          "answer": "Yes, anytime. Upgrades are instant, downgrades apply at the next cycle. No hidden fees.",
+          "category": "Billing"
+        },
+        "2": {
+          "question": "How does billing work?",
+          "answer": "Each plan includes a fixed monthly price with an included employee cap (5 for Free, 30 for Pilot, 200 for Operations, unlimited for Enterprise). No per-active-employee surcharge.",
+          "category": "Billing"
+        },
+        "3": {
+          "question": "Is the trial really free?",
+          "answer": "Yes. 14 full days with all paid features included. No credit card needed to sign up.",
+          "category": "Trial"
+        },
+        "4": {
+          "question": "Is the Free plan really free?",
+          "answer": "Yes. The Free plan (€0/month) includes up to 5 employees: web attendance, leave and absences, employee records and the Employee mobile app. No credit card.",
+          "category": "Trial"
+        },
+        "5": {
+          "question": "What happens when the trial ends?",
+          "answer": "You choose a plan or your data stays archived for 14 more days. No automatic billing without your consent.",
+          "category": "Trial"
+        },
+        "6": {
+          "question": "What support is available?",
+          "answer": "Pilot: email support within 48h. Operations: priority support within 24h. Enterprise: dedicated account manager + contractual SLA.",
+          "category": "Support"
+        },
+        "7": {
+          "question": "Where is my data hosted?",
+          "answer": "In Europe (Render EU / Supabase EU). AES-256 encryption at rest, TLS 1.3 in transit. Tenant isolation guaranteed.",
+          "category": "Security"
+        },
+        "8": {
+          "question": "Are you GDPR compliant?",
+          "answer": "Yes. DPA available, data exclusively in Europe, right to erasure implemented, data exports on request.",
+          "category": "Security"
+        },
+        "9": {
+          "question": "Is the API available?",
+          "answer": "REST API and webhooks are available from the Operations plan. On Pilot you can export your data as CSV/Excel.",
+          "category": "Technical"
+        }
+      }
+    },
+    "section": {
+      "freeLabel": "Free",
+      "toggleMonthly": "Monthly",
+      "toggleAnnual": "Annual",
+      "toggleAria": "Toggle billing period",
+      "fullComparison": "View full comparison"
+    },
+    "card": {
+      "periodDefault": "/month",
+      "customPriceDefault": "Custom"
     }
   },
   "signup": {

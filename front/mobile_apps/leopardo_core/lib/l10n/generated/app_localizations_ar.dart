@@ -1795,6 +1795,438 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  @override
+  String get pricingPageHeroBadge => 'تسعير شفاف';
+  @override
+  String get pricingPageHeroHeadline =>
+      'أسعار مصممة لفرق الموارد البشرية الميدانية';
+  @override
+  String get pricingPageHeroSubheadline =>
+      'ابدأ مجانًا — بدون بطاقة ائتمان — وانتقل إلى خطة مدفوعة متى كنت مستعدًا.';
+  @override
+  String get pricingPageHeroPrimary => 'ابدأ مجانًا';
+  @override
+  String get pricingPageHeroSecondary => 'تحدث مع خبير';
+  @override
+  String get pricingPagePlansBadge => 'خططنا';
+  @override
+  String get pricingPagePlansTitle => 'خطة لكل مرحلة من مراحل نموك';
+  @override
+  String get pricingPagePlansSubtitle => 'ابدأ صغيرًا، توسع دون تغيير المنصة.';
+  @override
+  String get pricingPagePlansMonthly => 'شهري';
+  @override
+  String get pricingPagePlansAnnual => 'سنوي';
+  @override
+  String get pricingPagePlansCustomprice => 'حسب الطلب';
+  @override
+  String get pricingPagePlansPeriodmonthly => '/شهر';
+  @override
+  String get pricingPagePlansPeriodannual => '/شهر مع فوترة سنوية';
+  @override
+  String get pricingPagePlansTrialnote =>
+      'تجربة مجانية · لا بطاقة ائتمان مطلوبة';
+  @override
+  String get pricingPageCurrencyLabel => 'عرض الأسعار بعملة';
+  @override
+  String get pricingPageCurrencyApprox =>
+      'تحويل تقريبي من السعر المرجعي باليورو؛ يبقى السعر التعاقدي محددًا باليورو.';
+  @override
+  String get pricingPageTrustItems0 => 'خطة مجانية بلا بطاقة ائتمان';
+  @override
+  String get pricingPageTrustItems1 => 'دعم مشمول من اليوم الأول';
+  @override
+  String get pricingPageTrustItems2 => 'بيانات مستضافة في أوروبا';
+  @override
+  String get pricingPageTrustItems3 => 'إلغاء في أي وقت';
+  @override
+  String get pricingPageComparisonBadge => 'مقارنة كاملة';
+  @override
+  String get pricingPageComparisonTitle => 'كل ما هو مشمول';
+  @override
+  String get pricingPageComparisonSubtitle => 'حسب الخطة';
+  @override
+  String get pricingPageComparisonFeaturecolumn => 'الميزة';
+  @override
+  String get pricingPageComparisonCategories0Name => 'إدارة الموارد البشرية';
+  @override
+  String get pricingPageComparisonCategories0Features0Name =>
+      'تتبع الحضور ويب وموبايل';
+  @override
+  String get pricingPageComparisonCategories0Features0Free => 'ويب فقط';
+  @override
+  String get pricingPageComparisonCategories0Features1Name =>
+      'الغياب والإجازات';
+  @override
+  String get pricingPageComparisonCategories0Features2Name => 'تقويم مشترك';
+  @override
+  String get pricingPageComparisonCategories0Features3Name => 'إعداد موجّه';
+  @override
+  String get pricingPageComparisonCategories0Features4Name =>
+      'التقييمات والأداء';
+  @override
+  String get pricingPageComparisonCategories0Features5Name =>
+      'هيكل تنظيمي ديناميكي';
+  @override
+  String get pricingPageComparisonCategories1Name => 'الرواتب والمالية';
+  @override
+  String get pricingPageComparisonCategories1Features0Name => 'حساب رواتب آلي';
+  @override
+  String get pricingPageComparisonCategories1Features1Name => 'قسائم رواتب PDF';
+  @override
+  String get pricingPageComparisonCategories1Features2Name => 'تصدير محاسبي';
+  @override
+  String get pricingPageComparisonCategories1Features3Name => 'سلف الرواتب';
+  @override
+  String get pricingPageComparisonCategories1Features4Name =>
+      'متعدد الدول والعملات';
+  @override
+  String get pricingPageComparisonCategories1Features5Name =>
+      'امتثال قانوني متقدم';
+  @override
+  String get pricingPageComparisonCategories2Name => 'الميدان والموبايل';
+  @override
+  String get pricingPageComparisonCategories2Features0Name =>
+      'تطبيق موبايل للموظفين';
+  @override
+  String get pricingPageComparisonCategories2Features1Name =>
+      'تطبيق موبايل للمديرين';
+  @override
+  String get pricingPageComparisonCategories2Features2Name => 'وضع عدم الاتصال';
+  @override
+  String get pricingPageComparisonCategories2Features3Name =>
+      'تكامل بصمة ZKTeco';
+  @override
+  String get pricingPageComparisonCategories2Features4Name => 'كشك HR مخصص';
+  @override
+  String get pricingPageComparisonCategories2Features5Name =>
+      'GPS وتحديد المناطق';
+  @override
+  String get pricingPageComparisonCategories3Name => 'الأمان والتكاملات';
+  @override
+  String get pricingPageComparisonCategories3Features0Name => 'خزنة المستندات';
+  @override
+  String get pricingPageComparisonCategories3Features1Name =>
+      'REST API وWebhooks';
+  @override
+  String get pricingPageComparisonCategories3Features2Name =>
+      'SSO عبر SAML / OIDC';
+  @override
+  String get pricingPageComparisonCategories3Features3Name =>
+      'سجل تدقيق غير قابل للتغيير';
+  @override
+  String get pricingPageComparisonCategories3Features4Name =>
+      'مخطط PostgreSQL معزول';
+  @override
+  String get pricingPageComparisonCategories3Features5Name =>
+      'SLA مخصص ودعم أولوي';
+  @override
+  String get pricingPageFaqBadge => 'أسئلة التسعير';
+  @override
+  String get pricingPageFaqTitle => 'أسئلة شائعة';
+  @override
+  String get pricingPageFaqSubtitle => 'ما يجب التحقق منه قبل البدء';
+  @override
+  String get pricingPageFaqAll => 'الكل';
+  @override
+  String get pricingPageFaqCategories0 => 'الفوترة';
+  @override
+  String get pricingPageFaqCategories1 => 'التجربة';
+  @override
+  String get pricingPageFaqCategories2 => 'الدعم';
+  @override
+  String get pricingPageFaqCategories3 => 'الأمان';
+  @override
+  String get pricingPageFaqCategories4 => 'التقني';
+  @override
+  String get pricingPageFaqItems0Question => 'ماذا تشمل خطة Pilot؟';
+  @override
+  String get pricingPageFaqItems0Answer =>
+      'خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.';
+  @override
+  String get pricingPageFaqItems0Category => 'التجربة';
+  @override
+  String get pricingPageFaqItems1Question => 'هل يمكنني تغيير الخطة لاحقًا؟';
+  @override
+  String get pricingPageFaqItems1Answer =>
+      'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.';
+  @override
+  String get pricingPageFaqItems1Category => 'الفوترة';
+  @override
+  String get pricingPageFaqItems2Question => 'كيف تعمل الفوترة؟';
+  @override
+  String get pricingPageFaqItems2Answer =>
+      'تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.';
+  @override
+  String get pricingPageFaqItems2Category => 'الفوترة';
+  @override
+  String get pricingPageFaqItems3Question => 'هل التجربة مجانية حقًا؟';
+  @override
+  String get pricingPageFaqItems3Answer =>
+      'نعم. تجربة مجانية كاملة — 30 يومًا على الخطة المجانية، 14 يومًا على الخطط المدفوعة. لا بطاقة ائتمان للتسجيل.';
+  @override
+  String get pricingPageFaqItems3Category => 'التجربة';
+  @override
+  String get pricingPageFaqItems4Question => 'ماذا يحدث عند انتهاء التجربة؟';
+  @override
+  String get pricingPageFaqItems4Answer =>
+      'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.';
+  @override
+  String get pricingPageFaqItems4Category => 'التجربة';
+  @override
+  String get pricingPageFaqItems5Question => 'ما نوع الدعم المتاح؟';
+  @override
+  String get pricingPageFaqItems5Answer =>
+      'Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.';
+  @override
+  String get pricingPageFaqItems5Category => 'الدعم';
+  @override
+  String get pricingPageFaqItems6Question => 'أين تُستضاف بياناتي؟';
+  @override
+  String get pricingPageFaqItems6Answer =>
+      'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.';
+  @override
+  String get pricingPageFaqItems6Category => 'الأمان';
+  @override
+  String get pricingPageFaqItems7Question => 'هل أنتم متوافقون مع GDPR؟';
+  @override
+  String get pricingPageFaqItems7Answer =>
+      'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.';
+  @override
+  String get pricingPageFaqItems7Category => 'الأمان';
+  @override
+  String get pricingPageFaqItems8Question => 'هل API متاح؟';
+  @override
+  String get pricingPageFaqItems8Answer =>
+      'REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.';
+  @override
+  String get pricingPageFaqItems8Category => 'التقني';
+  @override
+  String get pricingPageCtaBadge => 'جاهز للبدء';
+  @override
+  String get pricingPageCtaHeadline =>
+      'أطلق إدارة الموارد البشرية الميدانية اليوم';
+  @override
+  String get pricingPageCtaSubheadline =>
+      'انضم إلى الفرق التي خفّضت وقت إعداد الرواتب من ساعتين إلى 8 دقائق.';
+  @override
+  String get pricingPageCtaPrimary => 'ابدأ مجانًا';
+  @override
+  String get pricingPageCtaSecondary => 'تواصل مع المبيعات';
+  @override
+  String get pricingPageBadgesPopular => 'الأكثر شيوعاً';
+  @override
+  String get pricingPageBadgesFree => 'مجاني 100%';
+  @override
+  String get pricingPageBadgesFreeprice => 'مجاني';
+  @override
+  String get pricingPageBadgesFreenote => 'بدون بطاقة بنكية · للأبد';
+  @override
+  String get pricingPageBadgesFreetag => 'مجاني';
+  @override
+  String get pricingPlansCustomprice => 'حسب الطلب';
+  @override
+  String get pricingPlansFreeDescription =>
+      'ابدأ بدون التزام — مثالي للفرق حتى 5 أشخاص';
+  @override
+  String get pricingPlansFreePricenote => '14 يومًا مجانًا. حتى 5 موظفين.';
+  @override
+  String get pricingPlansFreeEmployeelimit => 'حتى 5 موظفين';
+  @override
+  String get pricingPlansFreeCta => 'ابدأ مجانًا';
+  @override
+  String get pricingPlansFreeFeatures0 => 'الحضور الأساسي عبر الويب والجوال';
+  @override
+  String get pricingPlansFreeFeatures1 => 'عرض الإجازات والغيابات';
+  @override
+  String get pricingPlansFreeFeatures2 => 'سجلات الموظفين الأساسية';
+  @override
+  String get pricingPlansFreeFeatures3 => 'قسائم رواتب PDF';
+  @override
+  String get pricingPlansFreeFeatures4 => 'تطبيق Employee مشمول';
+  @override
+  String get pricingPlansFreeFeatures5 => 'دعم المجتمع';
+  @override
+  String get pricingPlansFreePeriod => '/شهر';
+  @override
+  String get pricingPlansFreeAnnualperiod => '/شهر';
+  @override
+  String get pricingPlansPilotDescription =>
+      'لاختبار Leopardo على موقع واحد أو فريق أو فرع';
+  @override
+  String get pricingPlansPilotPricenote =>
+      '14 يومًا مجانًا. يشمل حتى 30 موظفًا.';
+  @override
+  String get pricingPlansPilotEmployeelimit => 'حتى 30 موظفًا';
+  @override
+  String get pricingPlansPilotCta => 'ابدأ تجربة مجانية';
+  @override
+  String get pricingPlansPilotFeatures0 => 'الحضور عبر الويب والجوال';
+  @override
+  String get pricingPlansPilotFeatures1 => 'الإجازات والغيابات والأرصدة';
+  @override
+  String get pricingPlansPilotFeatures2 => 'ملفات الموظفين والوثائق الإدارية';
+  @override
+  String get pricingPlansPilotFeatures3 => 'قسائم رواتب PDF وتصديرات أساسية';
+  @override
+  String get pricingPlansPilotFeatures4 => 'بوابة العميل ومساحة المدير';
+  @override
+  String get pricingPlansPilotFeatures5 => 'تطبيقا Employee وManager مشمولان';
+  @override
+  String get pricingPlansPilotFeatures6 => 'دعم عبر البريد خلال 48 ساعة';
+  @override
+  String get pricingPlansPilotPeriod => '/شهر';
+  @override
+  String get pricingPlansPilotAnnualperiod => '/شهر · يُفوتر 290 € سنوياً';
+  @override
+  String get pricingPlansOperationsDescription =>
+      'للشركات الصغيرة والمتوسطة التي تحتاج الحضور والرواتب والمديرين والتحليلات';
+  @override
+  String get pricingPlansOperationsPricenote =>
+      '14 يومًا مجانًا. يشمل حتى 200 موظف.';
+  @override
+  String get pricingPlansOperationsEmployeelimit => 'حتى 200 موظف';
+  @override
+  String get pricingPlansOperationsCta => 'جرّب Operations';
+  @override
+  String get pricingPlansOperationsFeatures0 => 'كل ما في Pilot، بالإضافة إلى:';
+  @override
+  String get pricingPlansOperationsFeatures1 =>
+      'رواتب متعددة البلدان وموافقات الموارد البشرية';
+  @override
+  String get pricingPlansOperationsFeatures2 => 'مديرون وفرق ومسارات اعتماد';
+  @override
+  String get pricingPlansOperationsFeatures3 => 'حضور ZKTeco والكشك والجوال';
+  @override
+  String get pricingPlansOperationsFeatures4 =>
+      'تحليلات الموارد البشرية وجاهزية وتصديرات متقدمة';
+  @override
+  String get pricingPlansOperationsFeatures5 => 'API وwebhooks وتكاملات';
+  @override
+  String get pricingPlansOperationsFeatures6 => 'دعم أولوية خلال 24 ساعة';
+  @override
+  String get pricingPlansOperationsPeriod => '/شهر';
+  @override
+  String get pricingPlansOperationsAnnualperiod => '/شهر · يُفوتر 790 € سنوياً';
+  @override
+  String get pricingPlansEnterpriseDescription =>
+      'للمجموعات متعددة البلدان وشبكات المواقع والحوكمة المتقدمة';
+  @override
+  String get pricingPlansEnterprisePricenote =>
+      '14 يومًا مجانًا. موظفون بلا حدود.';
+  @override
+  String get pricingPlansEnterpriseEmployeelimit => 'موظفون بلا حدود';
+  @override
+  String get pricingPlansEnterpriseCta => 'تواصل مع المبيعات';
+  @override
+  String get pricingPlansEnterpriseFeatures0 =>
+      'كل ما في Operations، بالإضافة إلى:';
+  @override
+  String get pricingPlansEnterpriseFeatures1 =>
+      'SSO عبر SAML/OIDC وسياسات متقدمة';
+  @override
+  String get pricingPlansEnterpriseFeatures2 =>
+      'اتفاقية خدمة ومرافقة انتقال وتدريب';
+  @override
+  String get pricingPlansEnterpriseFeatures3 =>
+      'بيئات مخصصة أو منطقة سحابية مختارة';
+  @override
+  String get pricingPlansEnterpriseFeatures4 =>
+      'سجل تدقيق وتصديرات امتثال ودعم أولوية';
+  @override
+  String get pricingPlansEnterpriseFeatures5 =>
+      'خيارات ذكاء اصطناعي وتكاملات وحوكمة مخصصة';
+  @override
+  String get pricingFaqItems0Question => 'ماذا تشمل خطة Pilot؟';
+  @override
+  String get pricingFaqItems0Answer =>
+      'خطة Pilot بسعر 29 يورو/شهر تشمل حتى 30 موظفًا، تسجيل الحضور عبر الويب والجوال، الإجازات، ملفات الموظفين وكشوف الرواتب PDF. تجربة مجانية 14 يومًا بدون بطاقة ائتمان.';
+  @override
+  String get pricingFaqItems0Category => 'التجربة';
+  @override
+  String get pricingFaqItems1Question => 'هل يمكنني تغيير الخطة لاحقًا؟';
+  @override
+  String get pricingFaqItems1Answer =>
+      'نعم، في أي وقت. الترقية فورية والتخفيض يُطبق في الدورة التالية. لا رسوم مخفية.';
+  @override
+  String get pricingFaqItems1Category => 'الفوترة';
+  @override
+  String get pricingFaqItems2Question => 'كيف تعمل الفوترة؟';
+  @override
+  String get pricingFaqItems2Answer =>
+      'تتضمن كل خطة سعرًا شهريًا ثابتًا مع حد أقصى مضمّن للموظفين (5 لـ Free، 30 لـ Pilot، 200 لـ Operations، غير محدود لـ Enterprise). لا رسوم إضافية لكل موظف نشط.';
+  @override
+  String get pricingFaqItems2Category => 'الفوترة';
+  @override
+  String get pricingFaqItems3Question => 'هل التجربة مجانية حقًا؟';
+  @override
+  String get pricingFaqItems3Answer =>
+      'نعم. 14 يومًا كاملة بجميع المزايا المدفوعة. لا بطاقة ائتمان للتسجيل.';
+  @override
+  String get pricingFaqItems3Category => 'التجربة';
+  @override
+  String get pricingFaqItems4Question => 'هل خطة Free مجانية حقًا؟';
+  @override
+  String get pricingFaqItems4Answer =>
+      'نعم. خطة Free (0 €/شهر) تشمل حتى 5 موظفين: الحضور عبر الويب، الإجازات والغيابات، ملفات الموظفين وتطبيق Employee للجوال. لا بطاقة ائتمان.';
+  @override
+  String get pricingFaqItems4Category => 'التجربة';
+  @override
+  String get pricingFaqItems5Question => 'ماذا يحدث عند انتهاء التجربة؟';
+  @override
+  String get pricingFaqItems5Answer =>
+      'تختار خطة أو تبقى بياناتك مؤرشفة 14 يومًا إضافية. لا فوترة تلقائية بدون موافقتك.';
+  @override
+  String get pricingFaqItems5Category => 'التجربة';
+  @override
+  String get pricingFaqItems6Question => 'ما نوع الدعم المتاح؟';
+  @override
+  String get pricingFaqItems6Answer =>
+      'Pilot: دعم عبر البريد الإلكتروني خلال 48 ساعة. Operations: دعم ذو أولوية خلال 24 ساعة. Enterprise: مدير حساب مخصص + SLA تعاقدي.';
+  @override
+  String get pricingFaqItems6Category => 'الدعم';
+  @override
+  String get pricingFaqItems7Question => 'أين تُستضاف بياناتي؟';
+  @override
+  String get pricingFaqItems7Answer =>
+      'في أوروبا (Render EU / Supabase EU). تشفير AES-256 أثناء التخزين وTLS 1.3 أثناء النقل. عزل المستأجرين مضمون.';
+  @override
+  String get pricingFaqItems7Category => 'الأمان';
+  @override
+  String get pricingFaqItems8Question => 'هل أنتم متوافقون مع GDPR؟';
+  @override
+  String get pricingFaqItems8Answer =>
+      'نعم. DPA متاح، البيانات في أوروبا حصرًا، حق الحذف مُطبَّق، تصدير البيانات عند الطلب.';
+  @override
+  String get pricingFaqItems8Category => 'الأمان';
+  @override
+  String get pricingFaqItems9Question => 'هل API متاح؟';
+  @override
+  String get pricingFaqItems9Answer =>
+      'REST API والـ Webhooks متاحة من خطة Operations. في Pilot يمكنك تصدير بياناتك بصيغة CSV/Excel.';
+  @override
+  String get pricingFaqItems9Category => 'التقني';
+  @override
+  String get pricingSectionFreelabel => 'مجاني';
+  @override
+  String get pricingSectionTogglemonthly => 'شهري';
+  @override
+  String get pricingSectionToggleannual => 'سنوي';
+  @override
+  String get pricingSectionTogglearia => 'تغيير فترة الفوترة';
+  @override
+  String get pricingSectionFullcomparison => 'عرض المقارنة الكاملة';
+  @override
+  String get pricingCardPerioddefault => '/شهر';
+  @override
+  String get pricingCardCustompricedefault => 'حسب الطلب';
+
+  @override
+  String get pricingPageFaqMoretitle => 'سؤال آخر؟';
+  @override
+  String get pricingPageFaqContactsupport => 'تواصل مع الدعم';
+
+
   String get signupBadge => 'تجربة مجانية لمدة 14 يومًا';
 
   @override
