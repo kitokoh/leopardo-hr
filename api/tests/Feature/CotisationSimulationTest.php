@@ -527,8 +527,10 @@ class CotisationSimulationTest extends TestCase
         /** @var PaySlip|null $slip */
         $slip = $run->paySlips()->first();
         $this->assertNotNull($slip);
-        // TRIMF (5 400) > IR (2 380) → le net bulletin intègre le minimum fiscal.
-        $this->assertEquals(89000.0, (float) $slip->net_salary);
+        // #1912 (validation expert-comptable 2026-08-18) : barème TRIMF révisé
+        // (tranche 75 000–200 000 → 1 800). max(IR 2 380, TRIMF 1 800) = IR →
+        // net = 100 000 − IPRES 5 600 − IR 2 380 = 92 020.
+        $this->assertEquals(92020.0, (float) $slip->net_salary);
 
         /** @var Employee $manager */
         $manager = Employee::factory()->create([
@@ -546,9 +548,9 @@ class CotisationSimulationTest extends TestCase
         ])->assertOk()->json('data');
 
         $this->assertEquals((float) $slip->net_salary, $sim['net']);
-        $this->assertEquals(89000.0, $sim['net']);
-        // L'impôt exposé est bien l'IR (2 380) — le TRIMF (5 400) est déduit
-        // dans base_deductions (max(IR, TRIMF)) mais l'IR reste affiché.
+        $this->assertEquals(92020.0, $sim['net']);
+        // L'impôt exposé est bien l'IR (2 380) — le TRIMF (1 800, barème #1912)
+        // est déduit dans base_deductions (max(IR, TRIMF)) mais l'IR reste affiché.
         $this->assertEquals(2380.0, (float) $sim['income_tax']);
     }
 
