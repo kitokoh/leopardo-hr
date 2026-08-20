@@ -26,15 +26,12 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
 
     private Company $company;
 
-    private ZktecoDevice $device;
-
-    private Employee $employee;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpMvpSchema();
 
+        /** @var Company $company */
         $this->company = Company::factory()->create();
     }
 
@@ -46,6 +43,7 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
+    /** @param array<string, mixed> $extra */
     private function createDevice(array $extra = []): ZktecoDevice
     {
         return ZktecoDevice::query()->create(array_merge([
@@ -59,15 +57,20 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
     /** @param array<string, mixed> $extra */
     private function createEmployee(array $extra = []): Employee
     {
-        return Employee::factory()->create(array_merge([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create(array_merge([
             'company_id' => $this->company->id,
             'role' => 'employee',
             'zkteco_id' => 'zk-enf-'.uniqid(),
             'biometric_fingerprint_enabled' => true,
             'biometric_face_enabled' => false,
         ], $extra));
+
+        return $employee;
     }
 
+    /** @param array<int, array<string, mixed>> $records */
+    /** @return \Illuminate\Testing\TestResponse<mixed> */
     private function syncRequest(ZktecoDevice $device, array $records): \Illuminate\Testing\TestResponse
     {
         return $this->withHeader('X-Device-Token', 'device-token-enf')
