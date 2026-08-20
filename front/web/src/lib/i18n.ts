@@ -64,6 +64,10 @@ export type CopyTree = {
       generic: string;
       missingToken: string;
       missingUser: string;
+      google: string;
+      googleNetwork: string;
+      googleAuthFailed: string;
+      googleNoAccount: string;
     };
   };
   dashboard: {
@@ -593,6 +597,13 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'Une erreur est survenue.',
         missingToken: 'Le jeton de connexion est absent de la réponse API.',
         missingUser: 'Le profil utilisateur est absent de la réponse API.',
+        // Issue #5173 — erreurs Google propagées par le callback vitrine
+        // (`/auth/login?error=...`). Afficher un message clair au lieu d'un
+        // formulaire muet après un échec OAuth.
+        google: 'La connexion avec Google a échoué. Veuillez réessayer.',
+        googleNetwork: 'Impossible de contacter Google. Vérifiez votre connexion et réessayez.',
+        googleAuthFailed: 'Google a refusé la connexion. Veuillez réessayer.',
+        googleNoAccount: 'Aucun compte Leopardo RH n’est associé à cet email Google. Demandez une invitation à votre administrateur.',
       },
     },
     dashboard: {
@@ -1144,6 +1155,10 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'حدث خطأ.',
         missingToken: 'رمز تسجيل الدخول غير موجود في رد ال API.',
         missingUser: 'ملف المستخدم غير موجود في رد ال API.',
+        google: 'فشل تسجيل الدخول عبر Google. حاول مرة أخرى.',
+        googleNetwork: 'تعذر الوصول إلى Google. تحقق من اتصالك وحاول مرة أخرى.',
+        googleAuthFailed: 'رفض Google تسجيل الدخول. حاول مرة أخرى.',
+        googleNoAccount: 'لا يوجد حساب Leopardo RH مرتبط ببريد Google هذا. اطلب دعوة من المسؤول.',
       },
     },
     dashboard: {
@@ -1695,6 +1710,10 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'Bir hata olustu.',
         missingToken: 'API yanitinda giris tokeni yok.',
         missingUser: 'API yanitinda kullanici profili yok.',
+        google: 'Google ile giris basarisiz oldu. Lutfen tekrar deneyin.',
+        googleNetwork: 'Google ile baglanti kurulamadi. Baglantinizi kontrol edip tekrar deneyin.',
+        googleAuthFailed: 'Google girisini reddetti. Lutfen tekrar deneyin.',
+        googleNoAccount: 'Bu Google e-postasiyla iliskili Leopardo RH hesabi yok. Yoneticinizden davet isteyin.',
       },
     },
     dashboard: {
@@ -2246,6 +2265,10 @@ const copy: Record<AppLocale, CopyTree> = {
         generic: 'Something went wrong.',
         missingToken: 'The login token is missing from the API response.',
         missingUser: 'The authenticated user profile is missing from the API response.',
+        google: 'Google sign-in failed. Please try again.',
+        googleNetwork: 'Could not reach Google. Check your connection and try again.',
+        googleAuthFailed: 'Google refused the sign-in. Please try again.',
+        googleNoAccount: 'No Leopardo RH account is linked to this Google email. Ask your administrator for an invitation.',
       },
     },
     dashboard: {
