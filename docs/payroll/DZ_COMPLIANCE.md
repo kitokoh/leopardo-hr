@@ -6,17 +6,26 @@
 
 ## Statut
 
-| Règle | État | Référence | Validité |
-|---|---|---|---|
-| IRG (barème) | ✅ implémentée + **validée** | LF 2022 (réforme IRG) | 2026-08-08 ✅ |
-| CNAS salariale 9 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ |
-| CNAS patronale 26 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ |
-| SMIG/SNA (20 000 DZD) | ✅ implémentée + **validée** | CNAS/loi | 2026-08-08 ✅ |
-| Congés payés (2,5 j/mois, 1/10ᵉ) | 📝 à documenter/test | Code du travail (loi 90-11) | — |
-| Préavis / licenciement | 📝 à documenter/test | loi 90-11 art. 98+ | — |
-| Solde de tout compte / certificat | 📝 à documenter/test | loi 90-11 | — |
-| Assurance chômage | 📝 à documenter/test | À identifier | — |
-| Heures sup (25 %/50 %) | 📝 à documenter/test | loi 90-11 art. 18-19 | — |
+| Règle | État | Référence | Validité | Confiance |
+|---|---|---|---|---|
+| IRG (barème) | ✅ implémentée + **validée** | LF 2022 (réforme IRG) — CIDTA art. 104 | 2026-08-08 ✅ | `pilot` |
+| IRG abattement 40 % (plancher 12 000 / plafond 18 000 DZD/an) | ✅ implémentée + **validée** | CIDTA art. 104 bis | 2026-08-08 ✅ | `pilot` |
+| CNAS salariale 9 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ | `pilot` |
+| CNAS patronale 26 % | ✅ implémentée + **validée** | CNAS | 2026-08-08 ✅ | `pilot` |
+| SMIG/SNA (20 000 DZD) | ✅ implémentée + **validée** | CNAS/loi | 2026-08-08 ✅ | `pilot` |
+| Congés payés (2,5 j/mois, 1/10ᵉ vs maintien) | ✅ implémenté + golden tests | Code du travail (loi 90-11) | #1537 | `pilot` |
+| Préavis / licenciement | ✅ implémenté + golden tests | loi 90-11 art. 73-4/98 (préavis), art. 72 (licenciement) | #1819/#1943 | `pilot` |
+| Solde de tout compte / certificat | ✅ implémenté + golden tests | loi 90-11 | F-08 (#1538) | `pilot` |
+| Assurance chômage (inclus CNAS) | ✅ documenté + verrouillé | décret législatif n° 94-11, art. 94-188 | #1819/#1943 | `pilot` |
+| Heures sup (25 %/50 %) | ✅ implémenté + golden tests | loi 90-11 art. 18-19/33 | F-05 | `pilot` |
+
+**Confiance (issue #5149)** : `AlgeriaPayrollRules::confidenceLevel()` renvoie
+`pilot` (vérifié par `ComplianceConfidenceApiTest` et le contrat de calcul).
+La validation experte comptable DZ du 2026-08-08 couvre le cœur (barème IRG +
+abattement, CNAS 9 %/26 %, SMIG) ; le passage à `production` exige la revue
+formelle des valeurs `pilot` restantes (préavis, licenciement, HS, congés) —
+même procédure que SN #1912. Chaque taux du moteur a donc un niveau de
+confiance explicite : `pilot` aujourd'hui, `production` après validation.
 
 ## 1. IRG — Impôt sur le revenu global (salaires)
 
@@ -86,7 +95,7 @@ recoupe `contract_start`/`contract_end` avec la période du run (PayrollCalculat
 | Sortie 10/07 (10 j sur 31) | 22 × 10/31 = 7,10 j → 60 000 × 7,10/22 | **19 363,64** |
 | Absence 1 jour (21/22) | 60 000 × 21/22 | 57 272,73 (retenue **2 727,27**) |
 | Congés sans solde 5 j (17/22) | 60 000 × 17/22 | 46 363,64 (retenue **13 636,36**) |
-| Heures sup 10 h @25 % + 5 h @50 % | taux horaire 346,16 (60 000/173,33) → 10×346,16×1,25 + 5×346,16×1,50 | **6 923,20** |
+| Heures sup 10 h @25 % + 5 h @50 % | taux horaire 346,160503… (60 000/173,33) → 10×346,160503×1,25 + 5×346,160503×1,50 | **6 923,21** (précision complète #2685) |
 
 ⚠️ Majorations HS (25 % jusqu'à 10 h/mois, 50 % au-delà) : seuil conventionnel **à confirmer** par la convention collective applicable.
 
@@ -123,6 +132,7 @@ consommées par `EndOfContractService` au lieu de valeurs codées en dur).
 | Heures supplémentaires (25 %/50 %) | ⚙️ implémenté (palier unique ×1,5 pilot) | loi 90-11 art. 33 | Seuil conventionnel à confirmer |
 | Assurance chômage | ✅ **AC inclus dans les agrégats CNAS (9 % / 26 %) (#1819/#1943)** | décret législatif n° 94-11, art. 94-188 ; décrets exécutifs n° 22-70 (10/02/2022) et n° 26-87 (21/01/2026) | Le régime contributif CNAC couvre les salariés du privé licenciés pour motif économique (1 % patron + 0,5 % salarié), déjà inclus dans CNAS → **pas de lignes AC_DZ_EMP/AC_DZ_PAT séparées** (double cotisation). L'allocation chômage des primo-demandeurs (ANEM, 13 000 DZD/mois) est financée par le budget de l'État (≈ 420 Mds DZD en LF 2026) |
 | Rétroactifs et régularisations | ✅ implémenté (#1818) | — | — |
+| Primes non soumises (`SalaryComponent.is_taxable=false`) | ⚠️ **non modélisé** — le moteur ajoute TOUTE ligne earning au brut (assiette CNAS + IRG complète), le drapeau `is_taxable` n'est pas consommé par `PayrollCalculator::computeSlipValues` (vérifié #5149) | — | Issue fille P1 : paramétrer l'exclusion des primes non imposables de l'assiette CNAS/IRG, avec le calcul à la main en preuve |
 
 > Règle (inchangée) : toute modification de taux/durée = mise à jour
 > **simultanée** du référentiel + du golden test + du CHANGELOG.
