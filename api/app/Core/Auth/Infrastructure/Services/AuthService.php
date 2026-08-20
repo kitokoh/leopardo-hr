@@ -73,9 +73,15 @@ readonly class AuthService
                 // QueryException et le login dégrade en 401 au lieu de
                 // retrouver l'employé dans le schéma partagé.
                 $defaultPath = (string) config('database.connections.pgsql.search_path', 'shared_tenants,public');
-                DB::statement('SET search_path TO '.$this->formatSearchPath(
-                    array_map('trim', explode(',', $defaultPath))
-                ));
+                $formattedDefault = $this->formatSearchPath(array_map('trim', explode(',', $defaultPath)));
+                // #4495 : ne reposer le chemin par défaut que s'il a réellement
+                // divergé — un SET search_path systématique sur le chemin public
+                // alimente l'oracle de timing (le test l'interdit explicitement).
+                $currentSearchPath = $this->currentSearchPath();
+                if ($currentSearchPath === null
+                    || preg_replace('/[\s"]+/', '', $currentSearchPath) !== preg_replace('/[\s"]+/', '', $formattedDefault)) {
+                    DB::statement('SET search_path TO '.$formattedDefault);
+                }
 
                 /** @var Employee|null $employee */
                 $employee = Employee::withoutGlobalScopes()

@@ -13,11 +13,52 @@ class PaymentWebhookControllerTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    private const STRIPE_SECRET = 'whsec_test_stripe_2026';
+    private const CHARGILY_SECRET = 'whsec_test_chargily_2026';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // #2614/#2615 : les services webhook sont fail-closed — un secret est
+        // requis pour vérifier les signatures. Les tests signent donc les
+        // payloads avec un secret de test.
+        config([
+            'services.stripe.webhook_secret' => self::STRIPE_SECRET,
+            'services.chargily.webhook_secret' => self::CHARGILY_SECRET,
+        ]);
+    }
+
+    private function postStripeWebhook(array $payload): \Illuminate\Testing\TestResponse
+    {
+        $body = (string) json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $timestamp = (string) time();
+        $signature = hash_hmac('sha256', $timestamp.'.'.$body, self::STRIPE_SECRET);
+
+        // NB : `call()` n'applique pas les defaultHeaders — les en-têtes
+        // doivent passer par le tableau `$server` (préfixe HTTP_).
+        return $this->call('POST', '/api/v1/webhooks/stripe', [], [], [], [
+            'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
+            'CONTENT_TYPE' => 'application/json',
+        ], $body);
+    }
+
+    private function postChargilyWebhook(array $payload): \Illuminate\Testing\TestResponse
+    {
+        $body = (string) json_encode($payload, JSON_UNESCAPED_SLASHES);
+        $signature = hash_hmac('sha256', $body, self::CHARGILY_SECRET);
+
+        return $this->call('POST', '/api/v1/webhooks/chargily', [], [], [], [
+            'HTTP_X_CHARGILY_SIGNATURE' => 'sha256='.$signature,
+            'CONTENT_TYPE' => 'application/json',
+        ], $body);
+    }
+
     public function test_stripe_invoice_paid_marks_invoice_paid_and_records_payment(): void
     {
         [$company, $subscription, $invoice] = $this->billingFixture(stripeInvoiceId: 'in_123');
 
-        $response = $this->postJson('/api/v1/webhooks/stripe', [
+        $response = $this->postStripeWebhook([
             'type' => 'invoice.paid',
             'data' => [
                 'object' => [
@@ -47,7 +88,7 @@ class PaymentWebhookControllerTest extends TestCase
     {
         [, $subscription, $invoice] = $this->billingFixture(stripeInvoiceId: 'in_failed');
 
-        $this->postJson('/api/v1/webhooks/stripe', [
+        $this->postStripeWebhook([
             'type' => 'invoice.payment_failed',
             'data' => ['object' => ['id' => 'in_failed']],
         ])->assertOk();
@@ -60,7 +101,7 @@ class PaymentWebhookControllerTest extends TestCase
     {
         [, $subscription] = $this->billingFixture(stripeSubscriptionId: 'sub_cancelled');
 
-        $this->postJson('/api/v1/webhooks/stripe', [
+        $this->postStripeWebhook([
             'type' => 'customer.subscription.deleted',
             'data' => ['object' => ['id' => 'sub_cancelled']],
         ])->assertOk();
@@ -74,7 +115,7 @@ class PaymentWebhookControllerTest extends TestCase
     {
         [$company, , $invoice] = $this->billingFixture(invoiceNumber: 'LEO-CHARGILY-1');
 
-        $this->postJson('/api/v1/webhooks/chargily', [
+        $this->postChargilyWebhook([
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'checkout_123',
@@ -100,7 +141,7 @@ class PaymentWebhookControllerTest extends TestCase
     {
         [, $subscription, $invoice] = $this->billingFixture(stripeInvoiceId: 'in_safe');
 
-        $response = $this->postJson('/api/v1/webhooks/stripe', [
+        $response = $this->postStripeWebhook([
             'type' => 'invoice.paid',
             'data' => ['object' => ['id' => 'in_unknown']],
         ]);
@@ -115,7 +156,7 @@ class PaymentWebhookControllerTest extends TestCase
     {
         [, $subscription, $invoice] = $this->billingFixture(stripeInvoiceId: 'in_safe');
 
-        $response = $this->postJson('/api/v1/webhooks/stripe', [
+        $response = $this->postStripeWebhook([
             'type' => 'customer.created',
             'data' => ['object' => ['id' => 'cus_123']],
         ]);
@@ -130,7 +171,7 @@ class PaymentWebhookControllerTest extends TestCase
     {
         [, $subscription, $invoice] = $this->billingFixture(invoiceNumber: 'LEO-CHARGILY-SAFE');
 
-        $response = $this->postJson('/api/v1/webhooks/chargily', [
+        $response = $this->postChargilyWebhook([
             'type' => 'checkout.paid',
             'data' => [
                 'id' => 'checkout_unknown',
@@ -196,9 +237,8 @@ class PaymentWebhookControllerTest extends TestCase
             ],
         ]);
 
-        // Without CHARGILY_WEBHOOK_SECRET configured in test env, signature check is skipped.
-        // This test documents the expected behaviour: either 200 (secret not set) or 400 (secret set + wrong sig).
-        $this->assertContains($response->status(), [200, 400]);
+        // #2615 : secret de test configuré → signature invalide → 400 déterministe.
+        $response->assertStatus(400);
     }
 
     public function test_stripe_webhook_rejects_invalid_signature(): void
@@ -213,9 +253,8 @@ class PaymentWebhookControllerTest extends TestCase
             'data' => ['object' => ['id' => 'in_sig_test']],
         ]);
 
-        // With STRIPE_WEBHOOK_SECRET unset, StripeWebhookController falls back to StripeService
-        // which skips verification → 200. With secret set → 400. Both are documented behaviour.
-        $this->assertContains($response->status(), [200, 400]);
+        // #2614 : secret de test configuré → signature invalide → 400 déterministe.
+        $response->assertStatus(400);
     }
 }
 

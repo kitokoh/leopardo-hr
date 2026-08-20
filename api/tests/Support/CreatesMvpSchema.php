@@ -242,6 +242,7 @@ trait CreatesMvpSchema
             $table->unsignedInteger('site_id')->nullable();
             $table->string('matricule', 20)->nullable();
             $table->string('zkteco_id', 50)->nullable();
+            $table->string('badge_number', 50)->nullable();
             $table->string('first_name', 100)->default('');
             $table->string('middle_name', 100)->nullable();
             $table->string('last_name', 100)->default('');
@@ -1997,11 +1998,21 @@ trait CreatesMvpSchema
                 $table->string('status', 20)->default('offline');
                 $table->timestampTz('last_heartbeat_at')->nullable();
                 $table->timestampTz('last_sync_at')->nullable();
+                $table->json('punch_methods')->nullable();
                 $table->timestamps();
             });
         }
 
         // ── EdgeSync module tables ──────────────────────────────────
+
+        if (! Schema::hasTable($this->moduleTable('company_settings'))) {
+            Schema::create($this->moduleTable('company_settings'), function (Blueprint $table): void {
+                $table->string('key', 100)->primary();
+                $table->text('value');
+                $table->string('value_type', 20)->default('string');
+                $table->timestampTz('updated_at')->nullable();
+            });
+        }
 
         if (! Schema::hasTable('edge_nodes')) {
             Schema::create('edge_nodes', function (Blueprint $table): void {

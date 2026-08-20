@@ -14,30 +14,11 @@ class TenantIsolationTest extends TestCase
     {
         parent::setUp();
 
-        \DB::statement('DROP TABLE IF EXISTS employees CASCADE');
-        \DB::statement('DROP TABLE IF EXISTS companies CASCADE');
-
-        Schema::create('companies', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('slug');
-            $table->string('sector');
-            $table->char('country', 2);
-            $table->string('city');
-            $table->string('email');
-            $table->unsignedInteger('plan_id')->nullable();
-            $table->string('schema_name', 63);
-            $table->string('tenancy_type', 20)->default('shared');
-            $table->string('status', 20)->default('active');
-            $table->date('subscription_start')->nullable();
-            $table->date('subscription_end')->nullable();
-            $table->char('language', 2)->default('fr');
-            $table->string('timezone', 50)->default('Africa/Algiers');
-            $table->char('currency', 3)->default('DZD');
-            $table->jsonb('features')->default(\DB::raw("'{}'::jsonb"));
-            $table->jsonb('metadata')->default(\DB::raw("'{}'::jsonb"));
-            $table->timestamps();
-        });
+        // #5198 : `Company` est qualifié `public.companies` (fix prod). On
+        // utilise la table migrée du schéma public — la factory fournit les
+        // colonnes strictes (plan_id, subscription_*) — et on ne crée que la
+        // table minimale `employees` (modèle non qualifié → shared_tenants).
+        \DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
 
         Schema::create('employees', function (Blueprint $table): void {
             $table->increments('id');
@@ -56,35 +37,28 @@ class TenantIsolationTest extends TestCase
     protected function tearDown(): void
     {
         app()->forgetInstance('current_company');
-        \DB::statement('DROP TABLE IF EXISTS employees CASCADE');
-        \DB::statement('DROP TABLE IF EXISTS companies CASCADE');
+        \DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
         parent::tearDown();
     }
 
     public function test_employee_scope_only_returns_current_company_rows(): void
     {
-        $companyA = Company::query()->create([
+        $companyA = Company::factory()->create([
             'name' => 'Company A',
             'slug' => 'company-a',
             'sector' => 'restaurant',
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'a@company.test',
-            'schema_name' => 'shared_tenants',
-            'tenancy_type' => 'shared',
-            'status' => 'active',
         ]);
 
-        $companyB = Company::query()->create([
+        $companyB = Company::factory()->create([
             'name' => 'Company B',
             'slug' => 'company-b',
             'sector' => 'restaurant',
             'country' => 'DZ',
             'city' => 'Oran',
             'email' => 'b@company.test',
-            'schema_name' => 'shared_tenants',
-            'tenancy_type' => 'shared',
-            'status' => 'active',
         ]);
 
         app()->instance('current_company', $companyA);
@@ -109,15 +83,13 @@ class TenantIsolationTest extends TestCase
 
     public function test_creating_hook_auto_injects_company_id(): void
     {
-        $company = Company::query()->create([
+        $company = Company::factory()->create([
             'name' => 'Company Main',
             'slug' => 'company-main',
             'sector' => 'atelier',
             'country' => 'DZ',
             'city' => 'Alger',
             'email' => 'main@company.test',
-            'schema_name' => 'shared_tenants',
-            'tenancy_type' => 'shared',
             'status' => 'active',
         ]);
 

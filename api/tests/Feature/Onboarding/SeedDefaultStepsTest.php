@@ -29,11 +29,16 @@ class SeedDefaultStepsTest extends TestCase
 
         $steps = OnboardingStep::where('company_id', $company->id)->orderBy('order')->get();
 
-        $this->assertCount(6, $steps);
-        $this->assertSame(['add_employees', 'configure_payroll', 'setup_schedules', 'setup_geofence', 'setup_kiosk', 'first_checkin'], $steps->pluck('step_key')->all());
+        // #4929 : contrat unifié — 10 étapes (source de vérité unique du seeder).
+        $this->assertCount(10, $steps);
+        $this->assertSame(
+            ['company_info', 'first_department', 'first_employee', 'first_attendance', 'invite_manager',
+             'configure_schedules', 'first_report', 'configure_payroll', 'install_kiosk', 'activate_geofence'],
+            $steps->pluck('step_key')->all()
+        );
         /** @var OnboardingStep $firstStep */
         $firstStep = $steps->first();
-        $this->assertSame('Ajouter des employés', $firstStep->title);
+        $this->assertSame('Renseigner les informations entreprise', $firstStep->title);
         // Aucune étape ne doit avoir step_key/title NULL (régression #4188).
         $this->assertNotContains(null, $steps->pluck('step_key')->all());
         $this->assertNotContains(null, $steps->pluck('title')->all());
@@ -47,7 +52,7 @@ class SeedDefaultStepsTest extends TestCase
         (new SeedDefaultSteps)->execute((string) $company->id);
         (new SeedDefaultSteps)->execute((string) $company->id);
 
-        $this->assertSame(6, OnboardingStep::where('company_id', $company->id)->count());
+        $this->assertSame(10, OnboardingStep::where('company_id', $company->id)->count());
     }
 
     public function test_seed_does_not_duplicate_when_a_step_was_manually_completed(): void
@@ -65,7 +70,7 @@ class SeedDefaultStepsTest extends TestCase
 
         (new SeedDefaultSteps)->execute((string) $company->id);
 
-        $this->assertSame(6, OnboardingStep::where('company_id', $company->id)->count());
+        $this->assertSame(10, OnboardingStep::where('company_id', $company->id)->count());
         $this->assertSame(
             1,
             OnboardingStep::where('company_id', $company->id)->where('step_key', 'configure_payroll')->count(),

@@ -32,35 +32,15 @@ class MultiTenantSharedIsolationTest extends TestCase
     {
         parent::setUp();
 
+        // #5198 : `Company` est qualifié `public.companies` (fix prod). On
+        // utilise la table migrée du schéma public (factory → colonnes
+        // strictes) et on ne crée que la table minimale `employees`
+        // (modèle non qualifié → shared_tenants).
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('DROP TABLE IF EXISTS employees CASCADE');
-            DB::statement('DROP TABLE IF EXISTS companies CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
         } else {
             Schema::dropIfExists('employees');
-            Schema::dropIfExists('companies');
         }
-
-        Schema::create('companies', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('slug');
-            $table->string('sector');
-            $table->char('country', 2);
-            $table->string('city');
-            $table->string('email');
-            $table->unsignedInteger('plan_id')->nullable();
-            $table->string('schema_name', 63);
-            $table->string('tenancy_type', 20)->default('shared');
-            $table->string('status', 20)->default('active');
-            $table->date('subscription_start')->nullable();
-            $table->date('subscription_end')->nullable();
-            $table->char('language', 2)->default('fr');
-            $table->string('timezone', 50)->default('Africa/Algiers');
-            $table->char('currency', 3)->default('DZD');
-            $table->jsonb('features')->default(DB::raw("'{}'::jsonb"));
-            $table->jsonb('metadata')->default(DB::raw("'{}'::jsonb"));
-            $table->timestamps();
-        });
 
         Schema::create('employees', function (Blueprint $table): void {
             $table->increments('id');
@@ -76,18 +56,19 @@ class MultiTenantSharedIsolationTest extends TestCase
             $table->timestamps();
         });
 
+        // La table publique persiste entre les méthodes : purge des slugs de
+        // ce test avant re-création (contrainte companies_slug_unique).
+        $this->purgeTestCompanies();
+
         $cities = ['Alger', 'Oran', 'Constantine', 'Annaba', 'Setif'];
         foreach ($cities as $i => $city) {
-            $this->companies[] = Company::query()->create([
+            $this->companies[] = Company::factory()->create([
                 'name' => "Company {$city}",
                 'slug' => 'company-'.strtolower($city),
                 'sector' => 'restaurant',
                 'country' => 'DZ',
                 'city' => $city,
                 'email' => strtolower($city).'@company.test',
-                'schema_name' => 'shared_tenants',
-                'tenancy_type' => 'shared',
-                'status' => 'active',
             ]);
         }
     }
@@ -96,13 +77,18 @@ class MultiTenantSharedIsolationTest extends TestCase
     {
         app()->forgetInstance('current_company');
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('DROP TABLE IF EXISTS employees CASCADE');
-            DB::statement('DROP TABLE IF EXISTS companies CASCADE');
+            DB::statement('DROP TABLE IF EXISTS shared_tenants.employees CASCADE');
         } else {
             Schema::dropIfExists('employees');
-            Schema::dropIfExists('companies');
         }
+        $this->purgeTestCompanies();
         parent::tearDown();
+    }
+
+    private function purgeTestCompanies(): void
+    {
+        $slugs = ['company-alger', 'company-oran', 'company-constantine', 'company-annaba', 'company-setif'];
+        DB::table('public.companies')->whereIn('slug', $slugs)->delete();
     }
 
     public function test_five_shared_companies_each_only_see_their_own_employees(): void

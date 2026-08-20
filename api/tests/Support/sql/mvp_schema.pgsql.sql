@@ -272,6 +272,7 @@ CREATE TABLE shared_tenants.employees (
     site_id integer NULL,
     matricule varchar(20) NULL,
     zkteco_id varchar(50) NULL,
+    badge_number varchar(50) NULL,
     first_name varchar(100) NOT NULL DEFAULT '',
     middle_name varchar(100) NULL,
     last_name varchar(100) NOT NULL DEFAULT '',
@@ -1004,7 +1005,15 @@ CREATE TABLE IF NOT EXISTS shared_tenants.zkteco_devices (
     last_heartbeat_at timestamptz NULL,
     last_sync_at timestamptz NULL,
     capabilities jsonb NULL,
+    punch_methods jsonb NULL,
     created_at timestamptz NULL,
+    updated_at timestamptz NULL
+);
+
+CREATE TABLE IF NOT EXISTS shared_tenants.company_settings (
+    key varchar(100) PRIMARY KEY,
+    value text NOT NULL,
+    value_type varchar(20) NOT NULL DEFAULT 'string',
     updated_at timestamptz NULL
 );
 

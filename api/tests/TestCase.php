@@ -122,6 +122,9 @@ abstract class TestCase extends BaseTestCase
      * TestDatabases avant le beginDatabaseTransaction) → on ne crée que si
      * aucune transaction n'est active.
      */
+    /** @var array<string, true> */
+    private static array $parallelPublicMigrated = [];
+
     private function ensureParallelDatabaseExists(string $database): void
     {
         if (DB::transactionLevel() > 0) {
@@ -136,6 +139,50 @@ abstract class TestCase extends BaseTestCase
                 throw $exception;
             }
         }
+
+        $this->ensureWorkerPublicSchema($database);
+    }
+
+    /**
+     * Les bases de workers parallèles (`{db}_test_{token}`) sont créées vides
+     * par l'infra de test : aucun test n'a le schéma `public` migré tant que le
+     * premier test du worker n'est pas un RefreshTenantDatabase. Depuis que
+     * `Company` est qualifié `public.companies` (fix prod #5198), tout test
+     * touchant le modèle Company échoue en `relation "public.companies" does
+     * not exist` si le worker n'a pas migré — échecs en cascade sur ~38 classes
+     * (Payment, Onboarding, SSO, Payroll...).
+     *
+     * On bootstrap donc les migrations publiques UNE SEULE FOIS par base de
+     * worker (même contrat que `.github/actions/setup-backend-db` : migrations
+     * `public` + schéma `shared_tenants`), puis on restaure la connexion.
+     */
+    private function ensureWorkerPublicSchema(string $database): void
+    {
+        if (isset(self::$parallelPublicMigrated[$database])) {
+            return;
+        }
+
+        $connection = DB::getDefaultConnection();
+        $originalSearchPath = config("database.connections.{$connection}.search_path");
+
+        config(["database.connections.{$connection}.search_path" => 'public']);
+        DB::purge($connection);
+        DB::reconnect($connection);
+
+        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
+        try {
+            $this->artisan('migrate', [
+                '--path' => 'database/migrations/public',
+                '--force' => true,
+            ]);
+        } finally {
+            config(["database.connections.{$connection}.search_path" => $originalSearchPath]);
+            DB::purge($connection);
+            DB::reconnect($connection);
+        }
+
+        self::$parallelPublicMigrated[$database] = true;
     }
 
     private function envValueForTesting(string $key, string $fallback): string
