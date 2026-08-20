@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Attendance\Domain\Models;
 
 use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\Domain\Models\CompanySetting;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @mixin Builder<static>
@@ -83,20 +85,20 @@ class ZktecoDevice extends Model
     public function resolvedPunchMethods(): array
     {
         if (! empty($this->punch_methods)) {
-            return array_values($this->punch_methods);
+            return array_values(array_filter($this->punch_methods, 'is_string'));
         }
 
         // Défaut entreprise (optionnel) — #5120 FR-001
         $company = $this->company;
         if ($company !== null) {
-            $setting = \App\Core\Tenant\Domain\Models\CompanySetting::query()
+            $setting = CompanySetting::query()
                 ->where('key', 'kiosk.punch_methods.default')
                 ->first();
 
             if ($setting !== null && ! empty($setting->value)) {
                 $decoded = json_decode((string) $setting->value, true);
                 if (is_array($decoded) && count($decoded) > 0) {
-                    return array_values($decoded);
+                    return array_values(array_filter($decoded, 'is_string'));
                 }
             }
         }
@@ -123,5 +125,15 @@ class ZktecoDevice extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * Journal de synchronisation du device.
+     *
+     * @return HasMany<ZktecoSyncLog, $this>
+     */
+    public function syncLogs(): HasMany
+    {
+        return $this->hasMany(ZktecoSyncLog::class, 'zkteco_device_id');
     }
 }

@@ -13,6 +13,12 @@ return new class extends Migration
      * l'ancienne version doivent appliquer
      * `2026_08_09_000007_kiosk_announcements_company_id_uuid` (conversion
      * additive) — ne PAS réécrire cette migration à nouveau.
+     *
+     * F-13b (#1663) : `zkteco_devices.company_id` est passé de
+     * `unsignedBigInteger` à `uuid` (les deux étaient incompatibles avec
+     * `companies.id` = uuid → SQLSTATE 22P02 sur schéma réel). Environnements
+     * déjà migrés : appliquer
+     * `2026_08_19_000003_zkteco_devices_company_id_uuid` (conversion additive).
      */
     public function up(): void
     {
@@ -22,7 +28,8 @@ return new class extends Migration
 
         Schema::create('zkteco_devices', function (Blueprint $table): void {
             $table->id();
-            $table->unsignedBigInteger('company_id');
+            $table->uuid('company_id')->index();
+            $table->index(['company_id', 'status']);
             $table->string('serial_number', 100)->unique();
             $table->string('name', 120);
             $table->string('ip_address', 45)->nullable();
@@ -40,7 +47,6 @@ return new class extends Migration
             $table->json('capabilities')->nullable();
             $table->timestamps();
 
-            $table->index(['company_id', 'status']);
         });
 
         if (schemaTableExists('zkteco_sync_logs')) {

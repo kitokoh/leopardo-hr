@@ -7,7 +7,10 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
-use Tests\Support\CreatesMvpSchema;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Testing\TestResponse;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -22,40 +25,51 @@ use Tests\TestCase;
  */
 class ZktecoSyncMethodEnforcementTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     private Company $company;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
 
-        /** @var Company $company */
-        $company = Company::factory()->create();
-        $this->company = $company;
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
+        $this->company = Company::query()->create([
+            'name' => 'Kiosk Enforcement Corp',
+            'slug' => 'kiosk-enforcement-corp',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'kiosk-enf@test.local',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
+            'timezone' => 'UTC',
+        ]);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
-    /** @param array<string, mixed> $extra */
+    /**
+     * @param  array<string, mixed>  $extra
+     */
     private function createDevice(array $extra = []): ZktecoDevice
     {
         return ZktecoDevice::query()->create(array_merge([
             'company_id' => $this->company->id,
             'serial_number' => 'SN-ENF-'.uniqid(),
             'name' => 'Borne test enforcement',
-            'sync_token_hash' => bcrypt('device-token-enf'),
+            'sync_token_hash' => Hash::make('device-token-enf'),
         ], $extra));
     }
 
-    /** @param array<string, mixed> $extra */
+    /**
+     * @param  array<string, mixed>  $extra
+     */
     private function createEmployee(array $extra = []): Employee
     {
         /** @var Employee $employee */
@@ -72,9 +86,9 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
 
     /**
      * @param  array<int, array<string, mixed>>  $records
-     * @return \Illuminate\Testing\TestResponse<\Symfony\Component\HttpFoundation\Response>
+     * @return TestResponse<JsonResponse>
      */
-    private function syncRequest(ZktecoDevice $device, array $records): \Illuminate\Testing\TestResponse
+    private function syncRequest(ZktecoDevice $device, array $records): TestResponse
     {
         return $this->withHeader('X-Device-Token', 'device-token-enf')
             ->postJson('/api/v1/zkteco/sync-attendance/'.$device->serial_number, [
@@ -223,6 +237,45 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
             ->assertStatus(201)
             ->assertJsonPath('data.records_processed', 0)
             ->assertJsonPath('data.errors', 1);
+    }
+
+    /**
+     * #5122 — régression : un record SANS `badge_number` ne doit PAS matcher
+     * tous les employés sans badge (`badge_number IS NULL`). Le lookup doit
+     * résoudre l'employé par zkteco_id, même si un employé sans badge a été
+     * créé avant lui dans la même company.
+     */
+    public function test_sync_without_badge_resolves_correct_employee(): void
+    {
+        $device = $this->createDevice(['punch_methods' => null]);
+
+        // Premier employé SANS badge (créé avant — piège du orWhere badge IS NULL).
+        $first = $this->createEmployee([
+            'biometric_fingerprint_enabled' => true,
+            'zkteco_id' => 'zk-first-no-badge',
+        ]);
+
+        // Employé cible : enrôlé, résolu par son zkteco_id.
+        $target = $this->createEmployee([
+            'biometric_fingerprint_enabled' => true,
+            'zkteco_id' => 'zk-target-42',
+        ]);
+
+        $this->syncRequest($device, [
+            [
+                'user_id' => 'zk-target-42',
+                'timestamp' => '2026-09-01 08:00:00',
+            ],
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.records_processed', 1)
+            ->assertJsonPath('data.errors', 0);
+
+        $this->assertDatabaseHas('attendance_logs', [
+            'employee_id' => $target->id,
+            'date' => '2026-09-01',
+            'method' => 'zkteco',
+        ]);
     }
 
     /**
