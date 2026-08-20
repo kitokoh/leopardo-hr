@@ -167,7 +167,7 @@ class PlatformCompanyRequestController extends Controller
             ?? DB::table('plans')->orderBy('id')->value('id');
 
         if (! $resolvedPlanId) {
-            abort(422, 'NO_ACTIVE_PLAN_AVAILABLE');
+            abort(422, __('errors.COMPANY_REQUEST_NO_ACTIVE_PLAN'));
         }
 
         $managerName = trim($companyRequest->manager_name ?: $companyRequest->user?->fullName() ?: 'Manager principal');

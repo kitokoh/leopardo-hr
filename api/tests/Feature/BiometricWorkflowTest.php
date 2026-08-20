@@ -60,22 +60,23 @@ class BiometricWorkflowTest extends TestCase
             'status' => 'active',
         ])->save();
 
-        $this->actingAs($employee, 'sanctum')
+        $requestResponse = $this->actingAs($employee, 'sanctum')
             ->postJson('/api/v1/auth/biometric-enrollment', [
                 'requested_face_enabled' => true,
                 'requested_fingerprint_enabled' => true,
                 'requested_fingerprint_device_id' => 'FP-ENTREE-01',
                 'employee_note' => 'Pret pour borne entree',
-            ])
-            ->assertCreated()
+            ]);
+        $requestResponse->assertCreated()
             ->assertJsonPath('data.status', 'pending');
+        $requestId = $requestResponse->json('data.id');
 
         $employee->refresh();
         $this->assertFalse($employee->biometric_face_enabled);
         $this->assertFalse($employee->biometric_fingerprint_enabled);
 
         $this->actingAs($manager, 'sanctum')
-            ->postJson('/api/v1/biometric-enrollment-requests/1/approve', [
+            ->postJson("/api/v1/biometric-enrollment-requests/{$requestId}/approve", [
                 'manager_note' => 'Validation RH',
             ])
             ->assertOk()
@@ -155,7 +156,7 @@ class BiometricWorkflowTest extends TestCase
                 'action' => 'check_in',
             ])->assertCreated()
             ->assertJsonPath('data.employee_id', $employee->id)
-            ->assertJsonPath('data.method', 'kiosk_fingerprint');
+            ->assertJsonPath('data.method', 'biometric');
     }
 
     public function test_kiosk_can_sync_offline_events_and_fetch_roster(): void

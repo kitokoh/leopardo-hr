@@ -29,6 +29,10 @@ class EmailBounceWebhookControllerTest extends TestCase
     {
         parent::setUp();
         $this->setUpMvpSchema();
+        // Successful webhook scenarios must explicitly configure the shared
+        // secret; the fail-closed unconfigured case is covered by
+        // EmailBounceWebhookTest.
+        config()->set('services.mail_bounce_webhook.secret', 'test-bounce-secret');
     }
 
     protected function tearDown(): void

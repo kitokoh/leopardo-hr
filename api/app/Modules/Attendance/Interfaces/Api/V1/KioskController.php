@@ -168,7 +168,9 @@ class KioskController extends Controller
     {
         $validated = $request->validate([
             'events' => ['required', 'array'],
-            'events.*.identifier' => ['required', 'string', 'max:150'],
+            // Les identifiants absents ou composés d'espaces sont isolés par
+            // KioskAttendanceService et retournés dans skipped[].
+            'events.*.identifier' => ['nullable', 'string', 'max:150'],
             'events.*.action' => ['nullable', 'in:check_in,check_out'],
             'events.*.occurred_at' => ['nullable', 'date'],
             'events.*.external_event_id' => ['nullable', 'string', 'max:100'],

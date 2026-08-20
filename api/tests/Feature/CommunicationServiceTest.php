@@ -104,8 +104,8 @@ class CommunicationServiceTest extends TestCase
         ], ['email', 'sms', 'whatsapp']);
 
         $this->assertSame('queued', $result['results']['email']);
-        $this->assertSame('queued', $result['results']['sms']);
-        $this->assertSame('queued', $result['results']['whatsapp']);
+        $this->assertSame('undelivered', $result['results']['sms']);
+        $this->assertSame('undelivered', $result['results']['whatsapp']);
         $this->assertSame(3, CommunicationEvent::query()->where('template_key', 'payroll_ready')->count());
 
         CommunicationEvent::query()
@@ -240,7 +240,7 @@ class CommunicationServiceTest extends TestCase
 
             $this->assertSame('sent', $result['results']['app']);
             $this->assertSame('queued', $result['results']['email']);
-            $this->assertSame('queued', $result['results']['sms']);
+            $this->assertSame('undelivered', $result['results']['sms']);
             $this->assertSame(0, CommunicationEvent::query()->where('error_message', 'Quiet hours active.')->count());
         } finally {
             Carbon::setTestNow();
@@ -279,7 +279,7 @@ class CommunicationServiceTest extends TestCase
 
         $result = app(CommunicationService::class)->notifyEmployee($employee, 'absence_approved', [], ['sms', 'whatsapp']);
 
-        $this->assertSame('queued', $result['results']['sms']);
+        $this->assertSame('undelivered', $result['results']['sms']);
         $this->assertSame('skipped', $result['results']['whatsapp']);
         $this->assertDatabaseHas('communication_events', [
             'employee_id' => $employee->id,

@@ -57,10 +57,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // silent/offline Edge node at a client site (or an expiring/expired
         // offline license) went completely unnoticed in production.
         //
-        // NOTE: edge:detect-silent-nodes was REMOVED (#4317) — it queried
-        // legacy bigint columns (node_id/alert_muted) absent du schéma
-        // canonique UUID ; seul edge:monitor (modèle Eloquent EdgeNode) est
-        // planifiable. Voir issue #1291 et
+        // `edge:detect-silent-nodes` remains available as a non-scheduled
+        // compatibility command for legacy operational scripts/fixtures. It
+        // detects the old node_id schema only; the canonical UUID model is
+        // monitored by `edge:monitor` below. See issue #1291 and
         // docs/audits/AUDIT_MOBILE_EDGE_2026-07-26.md sections 1.3/1.4.
         $schedule->command('edge:monitor')->everyThirtyMinutes()->withoutOverlapping();
     })

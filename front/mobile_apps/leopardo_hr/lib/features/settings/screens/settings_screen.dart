@@ -9,6 +9,7 @@ import 'package:leopardo_hr/core/providers/core_providers.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
 import 'package:leopardo_core/core/theme/app_typography.dart';
 import 'package:leopardo_core/core/widgets/mobile_surface.dart';
+import 'package:leopardo_core/l10n/l10n.dart';
 import 'package:leopardo_core/models/notification_preferences.dart';
 import 'package:leopardo_hr/features/auth/providers/auth_provider.dart';
 import 'package:leopardo_core/features/settings/data/biometric_enrollment.dart';
@@ -189,7 +190,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       (
         icon: Icons.admin_panel_settings_outlined,
         color: AppColors.rh,
-        title: isManager ? context.l10n.settingsTeamDrive : context.l10n.settingsAccountTitle,
+        title: isManager
+            ? context.l10n.settingsTeamDrive
+            : context.l10n.settingsAccountTitle,
         subtitle: isManager
             ? context.l10n.settingsTeamDriveHint
             : context.l10n.settingsPortableAccountHint,
@@ -198,8 +201,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         icon: Icons.lock_outline_rounded,
         color: AppColors.info,
         title: context.l10n.settingsSecurityTitle,
-        subtitle:
-            context.l10n.settingsSessionSubtitle,
+        subtitle: context.l10n.settingsSessionSubtitle,
       ),
       (
         icon: Icons.language_outlined,
@@ -278,7 +280,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _firstNameController,
-              decoration: const InputDecoration(labelText: context.l10n.settingsFirstName),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsFirstName),
               validator: (value) => (value == null || value.trim().isEmpty)
                   ? context.l10n.settingsFirstNameRequired
                   : null,
@@ -286,15 +289,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _lastNameController,
-              decoration: const InputDecoration(labelText: context.l10n.settingsLastNameLabel),
-              validator: (value) =>
-                  (value == null || value.trim().isEmpty) ? context.l10n.settingsLastNameRequired : null,
+              decoration: InputDecoration(
+                  labelText: context.l10n.settingsLastNameLabel),
+              validator: (value) => (value == null || value.trim().isEmpty)
+                  ? context.l10n.settingsLastNameRequired
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: context.l10n.settingsEmailLabel),
+              decoration:
+                  InputDecoration(labelText: context.l10n.settingsEmailLabel),
               validator: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.isEmpty) return context.l10n.settingsEmailRequired;
@@ -316,7 +322,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             FilledButton(
               onPressed: _profileSaving ? null : _saveProfile,
               child: Text(
-                _profileSaving ? context.l10n.settingsSaving : context.l10n.settingsSaveProfile,
+                _profileSaving
+                    ? context.l10n.settingsSaving
+                    : context.l10n.settingsSaveProfile,
               ),
             ),
           ],
@@ -416,7 +424,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: _newPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: context.l10n.settingsNewPassword,
               ),
               validator: (value) {

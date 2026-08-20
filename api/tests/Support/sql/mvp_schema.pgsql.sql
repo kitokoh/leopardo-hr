@@ -37,6 +37,8 @@ DROP TABLE IF EXISTS shared_tenants.attendance_correction_requests CASCADE;
 DROP TABLE IF EXISTS shared_tenants.attendance_logs CASCADE;
 DROP TABLE IF EXISTS shared_tenants.employees CASCADE;
 DROP TABLE IF EXISTS shared_tenants.schedules CASCADE;
+DROP TABLE IF EXISTS shared_tenants.onboarding_steps CASCADE;
+DROP TABLE IF EXISTS shared_tenants.social_contributions CASCADE;
 
 CREATE TABLE public.plans (
     id serial PRIMARY KEY,
@@ -218,6 +220,48 @@ CREATE TABLE shared_tenants.schedules (
 );
 
 CREATE INDEX schedules_company_id_index ON shared_tenants.schedules (company_id);
+
+CREATE TABLE shared_tenants.onboarding_steps (
+    id bigserial PRIMARY KEY,
+    company_id uuid NOT NULL,
+    step_key varchar(50) NOT NULL,
+    title varchar(200) NOT NULL,
+    description text NULL,
+    status varchar(20) NOT NULL DEFAULT 'pending',
+    completed_at timestamptz NULL,
+    completed_by integer NULL,
+    "order" smallint NOT NULL DEFAULT 0,
+    required boolean NOT NULL DEFAULT true,
+    metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL,
+    CONSTRAINT onboarding_steps_company_step_unique UNIQUE (company_id, step_key)
+);
+
+CREATE INDEX onboarding_steps_company_id_index ON shared_tenants.onboarding_steps (company_id);
+
+CREATE TABLE shared_tenants.social_contributions (
+    id bigserial PRIMARY KEY,
+    company_id uuid NULL,
+    country_code varchar(2) NOT NULL,
+    name varchar(150) NOT NULL,
+    code varchar(50) NOT NULL,
+    type varchar(20) NOT NULL,
+    rate numeric(8, 4) NOT NULL,
+    cap numeric(14, 2) NULL,
+    effective_from date NOT NULL,
+    effective_to date NULL,
+    legal_reference varchar(255) NULL,
+    validation_status varchar(20) NOT NULL DEFAULT 'approved',
+    validated_by integer NULL,
+    validated_at timestamptz NULL,
+    created_at timestamptz NULL,
+    updated_at timestamptz NULL,
+    CONSTRAINT social_contributions_code_unique UNIQUE (code)
+);
+
+CREATE INDEX social_contributions_country_type_effective_index
+    ON shared_tenants.social_contributions (country_code, type, effective_from);
 
 CREATE TABLE shared_tenants.employees (
     id serial PRIMARY KEY,

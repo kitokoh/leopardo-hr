@@ -135,11 +135,10 @@ class CabinetDocumentControllerTest extends TestCase
 
     private function makeDocument(bool $readOnly, ?int $folderId = null): CabinetDocument
     {
-        // QA pass 2026-08-14 (#2172) : les tables cabinet portent un
-        // `company_id` NUMERIQUE historique — en mode shared (UUID), le
-        // CabinetService écrit la legacy key 0 (cf. legacyCompanyKey).
+        // Cabinet company_id is UUID after migration #2172; keep the real
+        // tenant identity instead of the removed legacy numeric key 0.
         return CabinetDocument::create([
-            'company_id' => is_numeric($this->company->id) ? (int) $this->company->id : 0,
+            'company_id' => $this->company->id,
             'employee_id' => $this->manager->id,
             'folder_id' => $folderId,
             'name' => $readOnly ? 'Bulletin mars 2026.pdf' : 'CV.pdf',
@@ -175,7 +174,7 @@ class CabinetDocumentControllerTest extends TestCase
         Sanctum::actingAs($this->manager);
 
         $folder = CabinetFolder::create([
-            'company_id' => is_numeric($this->company->id) ? (int) $this->company->id : 0,
+            'company_id' => $this->company->id,
             'employee_id' => $this->manager->id,
             'name' => 'Dossier cible',
         ]);

@@ -45,9 +45,13 @@ class EstimationController extends Controller
 
     public function quickEstimate(QuickEstimateRequest $request, string $employeeId): JsonResponse
     {
-        // #3943 : `view` (et non `viewAny`) — le scope équipe (managesTeamMemberOf)
-        // s'applique aux managers dept/superviseur, et l'auto-accès employé aussi.
+        // Named employee estimates are manager-scoped. Employee self-service
+        // is exposed separately through `/me/quick-estimate`.
         $employee = Employee::query()->findOrFail($employeeId);
+        $actor = $request->user();
+        if (! $actor instanceof Employee || ! $actor->isManager()) {
+            abort(403);
+        }
         $this->authorize('view', $employee);
 
         $estimate = $this->estimationService->quickEstimate(
@@ -61,10 +65,13 @@ class EstimationController extends Controller
 
     public function receipt(ReceiptRequest $request, string $employeeId): Response
     {
-        // #3943 : `view` (et non `viewAny`) — même scope équipe que
-        // quickEstimate/dailySummary : un superviseur ne télécharge un reçu
-        // d'estimation que pour ses propres employés.
+        // Receipts are named payroll documents and remain manager-scoped;
+        // employee self-service uses the dedicated `/me` endpoint.
         $employee = Employee::query()->findOrFail($employeeId);
+        $actor = $request->user();
+        if (! $actor instanceof Employee || ! $actor->isManager()) {
+            abort(403);
+        }
         $this->authorize('view', $employee);
 
         $estimate = $this->estimationService->quickEstimate(

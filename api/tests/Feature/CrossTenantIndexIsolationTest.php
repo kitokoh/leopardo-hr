@@ -207,11 +207,10 @@ class CrossTenantIndexIsolationTest extends TestCase
 
         Sanctum::actingAs($this->managerB);
 
-        // Un manager du tenant B ne doit pas lire les soldes d'un employé du
-        // tenant A : la réponse doit être vide, sans fuite de données.
-        $response = $this->getJson("/api/v1/employees/{$this->employeeA->id}/leave-balances?year=2026")
-            ->assertOk();
-        $this->assertCount(0, $response->json());
+        // L’ancienne route par employé est volontairement supprimée : elle
+        // exposait historiquement des soldes sans garde de rôle ni scope société.
+        $this->getJson("/api/v1/employees/{$this->employeeA->id}/leave-balances?year=2026")
+            ->assertNotFound();
     }
 
     public function test_project_store_rejects_members_from_another_company(): void

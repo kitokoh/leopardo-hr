@@ -31,8 +31,9 @@ class CameraRtspSecurityTest extends TestCase
 
     private function assertHostRejected(string $rtspUrl): void
     {
-        $company = $this->createCompanyWithCameras();
-        $principal = $this->createManager($company);
+        $suffix = substr(md5($rtspUrl), 0, 8);
+        $company = $this->createCompanyWithCameras('alpha-'.$suffix);
+        $principal = $this->createManager($company, 'principal', 'manager-'.$suffix.'@company.test');
 
         $response = $this->withHeaders($this->authHeaders($principal))
             ->postJson('/api/v1/cameras/test-rtsp', ['rtsp_url' => $rtspUrl]);
@@ -58,8 +59,8 @@ class CameraRtspSecurityTest extends TestCase
 
     public function test_invalid_scheme_is_rejected_without_shell(): void
     {
-        $company = $this->createCompanyWithCameras();
-        $principal = $this->createManager($company);
+        $company = $this->createCompanyWithCameras('alpha-http');
+        $principal = $this->createManager($company, 'principal', 'manager-http@company.test');
 
         $this->withHeaders($this->authHeaders($principal))
             ->postJson('/api/v1/cameras/test-rtsp', ['rtsp_url' => 'http://192.168.1.1/x'])

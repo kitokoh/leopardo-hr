@@ -160,12 +160,13 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             if (logs.isEmpty) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
+                children: [
                   SizedBox(height: 80),
                   EmptyState(
                     icon: Icons.history_toggle_off,
                     title: context.l10n.emptyHistory,
-                    description: 'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
+                    description:
+                        'Rien ici pour le moment. Vos pointages apparaitront au fur et a mesure.',
                   ),
                 ],
               );
@@ -273,7 +274,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                             subtitle: Text(
                               log.checkIn != null
                                   ? '${log.checkIn!.hour.toString().padLeft(2, '0')}:${log.checkIn!.minute.toString().padLeft(2, '0')} -> '
-                                        '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
+                                      '${log.checkOut != null ? "${log.checkOut!.hour.toString().padLeft(2, '0')}:${log.checkOut!.minute.toString().padLeft(2, '0')}" : "En cours"}'
                                   : 'Absence',
                             ),
                             trailing: Text(

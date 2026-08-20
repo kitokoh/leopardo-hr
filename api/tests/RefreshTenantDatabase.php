@@ -85,6 +85,13 @@ trait RefreshTenantDatabase
      */
     protected function refreshTestDatabase(): void
     {
+        // Some MVP fixture tests rebuild schemas outside Laravel's migration
+        // repository. The static flag can therefore remain stale even after a
+        // teardown; verify the canonical tables before trusting it.
+        if (DB::getDriverName() === 'pgsql' && ! $this->canonicalSchemaReady()) {
+            RefreshDatabaseState::$migrated = false;
+        }
+
         if (! RefreshDatabaseState::$migrated) {
             $this->runPublicMigrations();
 
@@ -96,6 +103,23 @@ trait RefreshTenantDatabase
         }
 
         $this->beginDatabaseTransaction();
+    }
+
+    private function canonicalSchemaReady(): bool
+    {
+        // Use explicit schema qualification. SchemaBuilder::hasTable() follows
+        // the mutable session search_path, which can temporarily point at a
+        // tenant fixture and make a healthy canonical database look missing;
+        // that would remigrate before every test and exhaust Coverage timeout.
+        $row = DB::selectOne(
+            "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions"
+        );
+
+        return $row !== null
+            && $row->companies !== null
+            && $row->export_history !== null
+            && $row->onboarding_steps !== null
+            && $row->social_contributions !== null;
     }
 
     /**

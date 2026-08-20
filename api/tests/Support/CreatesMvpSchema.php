@@ -997,6 +997,11 @@ trait CreatesMvpSchema
 
         if (DB::getDriverName() === 'pgsql') {
             $this->restoreDefaultSearchPath();
+            // The MVP fixture drops/recreates both schemas outside Laravel's
+            // migration repository. Force the next RefreshTenantDatabase test
+            // to rebuild the canonical public + tenant schema instead of
+            // reusing RefreshDatabaseState::$migrated from the prior class.
+            RefreshDatabaseState::$migrated = false;
 
             return;
         }
@@ -1249,6 +1254,22 @@ trait CreatesMvpSchema
                 $table->text('error_message')->nullable();
                 $table->timestampTz('occurred_at')->useCurrent();
                 $table->timestamps();
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('export_history'))) {
+            Schema::create($this->moduleTable('export_history'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedInteger('employee_id')->nullable();
+                $table->string('type', 100);
+                $table->string('format', 10)->nullable();
+                $table->unsignedInteger('record_count')->nullable();
+                $table->string('filename', 255)->nullable();
+                $table->string('ip_address', 45)->nullable();
+                $table->string('user_agent', 500)->nullable();
+                $table->timestampTz('created_at')->useCurrent();
+                $table->index(['company_id', 'created_at']);
             });
         }
 

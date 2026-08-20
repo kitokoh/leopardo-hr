@@ -72,20 +72,10 @@ class ProvisionDemoTenantJob implements ShouldQueue
         } catch (\Throwable $e) {
             Log::error('Failed to provision sandbox', ['error' => $e->getMessage()]);
 
-            if ($this->provisioningToken !== null) {
-                DB::table('trial_provisionings')
-                    ->where('provisioning_token', $this->provisioningToken)
-                    ->update([
-                        'status' => 'failed',
-                        'error' => mb_substr($e->getMessage(), 0, 500),
-                        'updated_at' => now(),
-                    ]);
-            }
-
             // Issue #3600 : rethrow — le job doit être re-tenté par la queue
             // (tries=5, backoff 30/60/120/300) au lieu de « réussir » en
-            // silence. Le statut 'failed' ci-dessus reste visible pendant les
-            // retries ; un succès ultérieur le repassera à 'ready'.
+            // silence. Le statut reste `pending` pendant les retries ; la
+            // méthode `failed()` le passe à `failed` après le dernier essai.
             throw $e;
         }
     }

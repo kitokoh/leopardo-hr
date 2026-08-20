@@ -121,7 +121,7 @@ return [
     'COUNTRY_NOT_SUPPORTED' => 'The request country is invalid or unsupported (:countries).',
     'ABSENCE_END_DATE_AFTER_START' => 'The end date must be after or equal to the start date.',
     'ATTENDANCE_CHECKOUT_REQUIRES_CHECKIN' => 'Manual checkout requires a check-in time.',
-    'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'The checkout time must be after the check-in time.',
+    'ATTENDANCE_CHECKOUT_AFTER_CHECKIN' => 'Check-out time must be after check-in time.',
     // #4812 (audit 2026-08-17) : littéraux FR/EN des contrôleurs déplacés au catalogue
     'VEHICLE_DELETED' => 'Vehicle deleted.',
     'SCHEDULE_DELETED' => 'Schedule deleted successfully.',
@@ -170,9 +170,12 @@ return [
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'The month_day must match the month and day of the date.',
     'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'Check-out time must be after check-in time.',
     'PLATFORM_ADMIN_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'Only a platform administrator can modify the Islamic calendar.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'No active plan is available to approve this request.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'No active plan is available to approve this request.',
     'CONTACT_EMAIL_REQUIRED' => 'A contact email is required to approve this request.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'Enterprise schema mode is frozen. Contact support.',
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'Enterprise schema mode is frozen. Contact support.',
     'AI_FEATURE_DISABLED' => 'AI features are disabled for this workspace.',
 
     // Manager roles (audit SWEQA-3, #4812)

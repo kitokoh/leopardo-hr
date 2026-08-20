@@ -124,7 +124,7 @@ if (-not (Test-Path -LiteralPath $contractPath)) {
         }
 
         foreach ($nav in Get-StaticNavigations $root) {
-            if ($nav.Route -eq "/" -or $nav.Route.Contains(":")) {
+            if ($nav.Route -eq "/" -or $nav.Route.Contains(":") -or $nav.Route.Contains('$')) {
                 continue
             }
             if (-not $routes.Contains($nav.Route)) {

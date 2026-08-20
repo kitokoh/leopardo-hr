@@ -405,8 +405,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                       : context.l10n.attendanceFingerprintEnable,
                   style: TextStyle(
                     fontSize: 11,
-                    color:
-                        _fingerprintEnabled ? _soft : AppColors.mobileDarkFieldAlt,
+                    color: _fingerprintEnabled
+                        ? _soft
+                        : AppColors.mobileDarkFieldAlt,
                   ),
                 ),
               ],
@@ -415,7 +416,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       ],
     );
   }
-
 
   Widget _buildTodayCard(AttendanceState state) {
     final log = state.todayLog;
@@ -439,7 +439,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
         children: [
           Row(
             children: [
-              const Text(
+              Text(
                 context.l10n.attendanceToday,
                 style: TextStyle(
                   color: _secondary,
@@ -455,9 +455,15 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckinLabel, value: checkIn)),
+              Expanded(
+                  child: _TimeChip(
+                      label: context.l10n.attendanceCheckinLabel,
+                      value: checkIn)),
               const SizedBox(width: 10),
-              Expanded(child: _TimeChip(label: context.l10n.attendanceCheckoutLabel, value: checkOut)),
+              Expanded(
+                  child: _TimeChip(
+                      label: context.l10n.attendanceCheckoutLabel,
+                      value: checkOut)),
             ],
           ),
           const SizedBox(height: 14),
@@ -465,7 +471,7 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           const SizedBox(height: 14),
           Row(
             children: [
-              const Text(
+              Text(
                 context.l10n.attendanceDailyEstimate,
                 style: TextStyle(color: _muted, fontSize: 12),
               ),
@@ -565,7 +571,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
                         style: TextStyle(
                           fontSize: 12,
                           fontFeatures: const [FontFeature.tabularFigures()],
-                          color: day.isAbsent ? _soft : AppColors.mobileDarkTextSoft,
+                          color: day.isAbsent
+                              ? _soft
+                              : AppColors.mobileDarkTextSoft,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -648,12 +656,14 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
             color: AppColors.mobileDarkTextSoft,
           ),
           _WeekStat(
-            value: '${totalEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
+            value:
+                '${totalEarnings.toStringAsFixed(0)}${currencySuffix(currency)}',
             label: context.l10n.attendanceWeekEarnings,
             color: AppColors.rh,
           ),
           _WeekStat(
-            value: totalLate > 0 ? '$totalLate min' : context.l10n.attendanceNone,
+            value:
+                totalLate > 0 ? '$totalLate min' : context.l10n.attendanceNone,
             label: context.l10n.attendanceWeekLate,
             color: totalLate > 0 ? AppColors.warning : AppColors.rh,
           ),
@@ -711,7 +721,8 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
           ? 'Aujourd hui'
           : index == 1
               ? 'Hier'
-              : _capitalize(DateFormat('EEE', deviceIntlDateLocale).format(date));
+              : _capitalize(
+                  DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
           '$labelPrefix - ${DateFormat('d MMM', deviceIntlDateLocale).format(date)}';
       return AttendanceDaySummary.fromLog(
@@ -743,7 +754,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
   }
 
   String _statusLabel(AttendanceLog? log) {
-    if (log == null || log.checkIn == null) return context.l10n.attendanceStatusPointer;
+    if (log == null || log.checkIn == null) {
+      return context.l10n.attendanceStatusPointer;
+    }
     if (log.checkOut == null) return context.l10n.attendanceStatusInProgress;
     if ((log.lateMinutes ?? 0) > 0) return context.l10n.attendanceStatusLate;
     return context.l10n.attendanceStatusComplete;
@@ -760,7 +773,6 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
     return value[0].toUpperCase() + value.substring(1);
   }
 }
-
 
 class _CorrectionSheet extends ConsumerStatefulWidget {
   final DateTime targetDate;
@@ -822,7 +834,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (_isTimeFuture(picked)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(context.l10n.attendanceFutureTimeError),
           backgroundColor: AppColors.danger,
         ),
@@ -844,7 +856,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
 
     if (widget.canDirectEdit && widget.logId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
             context.l10n.attendanceCorrectionNoLogWarning,
           ),
@@ -944,7 +956,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               widget.canDirectEdit
                   ? context.l10n.attendanceCorrectionDirectHint
                   : context.l10n.attendanceCorrectionRequestHint,
-              style: const TextStyle(fontSize: 12, color: AppColors.mobileDarkMuted),
+              style: const TextStyle(
+                  fontSize: 12, color: AppColors.mobileDarkMuted),
             ),
             const SizedBox(height: 18),
             Row(
@@ -971,7 +984,8 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
               controller: _reasonCtrl,
               maxLines: 2,
               maxLength: 200,
-              style: const TextStyle(fontSize: 13, color: AppColors.mobileDarkText),
+              style: const TextStyle(
+                  fontSize: 13, color: AppColors.mobileDarkText),
               decoration: InputDecoration(
                 hintText: context.l10n.attendanceCorrectionReasonHint,
                 hintStyle: const TextStyle(
@@ -982,11 +996,13 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
                 fillColor: AppColors.mobileDarkField,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide:
+                      const BorderSide(color: AppColors.mobileDarkBorder),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.mobileDarkBorder),
+                  borderSide:
+                      const BorderSide(color: AppColors.mobileDarkBorder),
                 ),
               ),
               validator: (value) => value == null || value.trim().isEmpty
@@ -1057,7 +1073,8 @@ class _TimeTile extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
+              style: const TextStyle(
+                  fontSize: 10, color: AppColors.mobileDarkMuted),
             ),
             const SizedBox(height: 4),
             Text(
@@ -1067,7 +1084,8 @@ class _TimeTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: value != null ? AppColors.rh : AppColors.mobileDarkDisabled,
+                color:
+                    value != null ? AppColors.rh : AppColors.mobileDarkDisabled,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),
@@ -1098,7 +1116,8 @@ class _TimeChip extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
+            style:
+                const TextStyle(fontSize: 10, color: AppColors.mobileDarkMuted),
           ),
           const SizedBox(height: 4),
           Text(
@@ -1191,7 +1210,8 @@ class _WeekStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: AppColors.mobileDarkDisabled),
+          style: const TextStyle(
+              fontSize: 10, color: AppColors.mobileDarkDisabled),
         ),
       ],
     );

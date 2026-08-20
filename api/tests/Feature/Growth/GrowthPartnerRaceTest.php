@@ -31,6 +31,8 @@ class GrowthPartnerRaceTest extends TestCase
 
     private Employee $employee;
 
+    private User $adminUser;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -97,13 +99,21 @@ class GrowthPartnerRaceTest extends TestCase
     public function test_service_apply_is_idempotent_under_unique_constraint(): void
     {
         $service = app(PartnerService::class);
+        // PartnerService::apply accepts a public users.id because partners.user_id
+        // references users.id; an Employee id belongs to the tenant table.
+        $user = User::query()->forceCreate([
+            'first_name' => 'Partner',
+            'last_name' => 'Idempotency QA',
+            'email' => 'partner-idempotency-'.uniqid().'@test.hr',
+            'password_hash' => Hash::make('password123'),
+        ]);
 
-        $first = $service->apply((int) $this->employee->id, ['type' => 'individual']);
+        $first = $service->apply((int) $user->id, ['type' => 'individual']);
         $this->assertInstanceOf(Partner::class, $first);
 
         $this->expectException(DomainException::class);
         $this->expectExceptionMessage('Déjà partenaire.');
-        $service->apply((int) $this->employee->id, ['type' => 'individual']);
+        $service->apply((int) $user->id, ['type' => 'individual']);
     }
 
     public function test_payout_status_transition_guard_rejects_invalid_moves(): void
@@ -122,13 +132,13 @@ class GrowthPartnerRaceTest extends TestCase
         ]);
 
         // Transition valide : pending → paid
-        $service->updatePayoutStatus($payout, 'paid', (int) $this->employee->id, 'Paiement effectue');
+        $service->updatePayoutStatus($payout, 'paid', (int) $this->adminUser->id, 'Paiement effectue');
         $payout->refresh();
         $this->assertSame('paid', $payout->status);
 
         // Transition invalide : paid → pending → DomainException propre
         try {
-            $service->updatePayoutStatus($payout, 'pending', (int) $this->employee->id, 'Reouverture');
+            $service->updatePayoutStatus($payout, 'pending', (int) $this->adminUser->id, 'Reouverture');
             $this->fail('La transition paid -> pending doit etre refusee.');
         } catch (DomainException $e) {
             $this->assertSame(422, $e->statusCode());
@@ -151,6 +161,7 @@ class GrowthPartnerRaceTest extends TestCase
             'email' => 'partner-'.uniqid().'@test.hr',
             'password_hash' => Hash::make('password123'),
         ]);
+        $this->adminUser = $user;
         $partner = Partner::create([
             'user_id' => $user->id,
             'referral_code' => 'QA-'.strtoupper(substr(uniqid(), -6)),

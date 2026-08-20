@@ -315,7 +315,7 @@ class _ApprovalScreenState extends ConsumerState<ApprovalScreen> {
                       );
                     },
                   ),
-            loading: () => const SizedBox(
+            loading: () => SizedBox(
               height: 400,
               child: Center(
                 child: CircularProgressIndicator(

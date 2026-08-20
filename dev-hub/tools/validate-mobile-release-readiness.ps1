@@ -80,6 +80,14 @@ foreach ($app in $apps) {
     $libContent = (Get-ChildItem -LiteralPath (Join-Path $root "lib") -Recurse -File -Filter *.dart | ForEach-Object {
         Get-Content -LiteralPath $_.FullName -Raw
     }) -join "`n"
+    # Manager and platform apps consume the shared core package, so its API
+    # repositories are part of their production wiring and must be validated.
+    $sharedCoreLib = Join-Path $repoRoot "front/mobile_apps/leopardo_core/lib"
+    if (Test-Path -LiteralPath $sharedCoreLib) {
+        $libContent += "`n" + ((Get-ChildItem -LiteralPath $sharedCoreLib -Recurse -File -Filter *.dart | ForEach-Object {
+            Get-Content -LiteralPath $_.FullName -Raw
+        }) -join "`n")
+    }
 
     Assert-Contains $androidGradle "namespace = `"$($app.AndroidId)`"" "$($app.Name) android namespace"
     Assert-Contains $androidGradle "applicationId = `"$($app.AndroidId)`"" "$($app.Name) android applicationId"

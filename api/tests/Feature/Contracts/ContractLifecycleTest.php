@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Contracts;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Application\Actions\ContractLifecycleAction;
 use App\Modules\HR\Domain\Exceptions\InvalidContractTransitionException;
 use App\Modules\HR\Domain\Models\Contract;
@@ -21,6 +22,8 @@ use Tests\TestCase;
 class ContractLifecycleTest extends TestCase
 {
     use RefreshTenantDatabase;
+
+    protected Employee $employee;
 
     protected function setUp(): void
     {
@@ -53,16 +56,29 @@ class ContractLifecycleTest extends TestCase
                 $t->timestamps();
             });
         }
+
+        /** @var Company $company */
+        $company = Company::factory()->create([
+            'id' => '11111111-1111-1111-1111-111111111111',
+        ]);
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+        ]);
+        $this->employee = $employee;
     }
 
     private function createContract(string $status = 'draft', ?string $companyId = null): Contract
     {
         return Contract::create([
-            'company_id' => $companyId ?? '11111111-1111-1111-1111-111111111111',
-            'employee_id' => 1,
+            'company_id' => $companyId ?? $this->employee->company_id,
+            'employee_id' => $this->employee->id,
             'contract_type' => 'cdi',
             'start_date' => now()->toDateString(),
             'base_salary' => 100000,
+            'currency' => 'DZD',
+            'salary_frequency' => 'monthly',
+            'work_hours_per_week' => 40,
             'status' => $status,
         ]);
     }
@@ -125,6 +141,8 @@ class ContractLifecycleTest extends TestCase
             'start_date' => now()->addYear()->toDateString(),
             'end_date' => null,
             'base_salary' => 120000,
+            'salary_frequency' => 'monthly',
+            'work_hours_per_week' => 40,
         ]);
 
         $this->assertSame('draft', $newContract->status);
@@ -136,6 +154,9 @@ class ContractLifecycleTest extends TestCase
     {
         $manager = Employee::factory()->manager()->create(['company_id' => '11111111-1111-1111-1111-111111111111']);
         Sanctum::actingAs($manager);
+        Company::factory()->create([
+            'id' => '99999999-9999-9999-9999-999999999999',
+        ]);
 
         $foreignContract = $this->createContract('draft', '99999999-9999-9999-9999-999999999999');
 

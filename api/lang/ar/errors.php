@@ -169,9 +169,12 @@ return [
     'PUBLIC_HOLIDAY_MONTH_DAY_MISMATCH' => 'يجب أن يتطابق اليوم والشهر مع يوم وشهر التاريخ.',
     'ATTENDANCE_CHECK_OUT_AFTER_CHECK_IN' => 'يجب أن يكون وقت الخروج بعد وقت الدخول.',
     'PLATFORM_ADMIN_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
+    'ISLAMIC_CALENDAR_PLATFORM_ONLY' => 'يمكن لمسؤول المنصة فقط تعديل التقويم الإسلامي.',
     'NO_ACTIVE_PLAN_AVAILABLE' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
+    'COMPANY_REQUEST_NO_ACTIVE_PLAN' => 'لا توجد خطة نشطة متاحة للموافقة على هذا الطلب.',
     'CONTACT_EMAIL_REQUIRED' => 'البريد الإلكتروني للتواصل مطلوب للموافقة على هذا الطلب.',
     'ENTERPRISE_SCHEMA_FROZEN' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
+    'COMPANY_SCHEMA_MODE_LOCKED' => 'وضع مخطط المؤسسة مجمد. اتصل بالدعم.',
     'AI_FEATURE_DISABLED' => 'ميزات الذكاء الاصطناعي معطلة لهذه المساحة.',
 
     // Manager roles (audit SWEQA-3, #4812)

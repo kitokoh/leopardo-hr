@@ -62,6 +62,7 @@ class CabinetShareAccessByTokenTest extends TestCase
             'shareable_type' => CabinetDocument::class,
             'shareable_id'  => $document->id,
             'share_token'   => 'token-document-4798',
+            'shared_via'    => 'link',
             'expires_at'    => Carbon::now()->addDay(),
         ]);
 
@@ -96,6 +97,7 @@ class CabinetShareAccessByTokenTest extends TestCase
             'shareable_type' => CabinetDocument::class,
             'shareable_id'   => $document->id,
             'share_token'    => 'token-expired-4798',
+            'shared_via'     => 'link',
             'expires_at'     => Carbon::now()->subDay(),
         ]);
 
@@ -130,6 +132,7 @@ class CabinetShareAccessByTokenTest extends TestCase
             'shareable_type' => CabinetFolder::class,
             'shareable_id'   => $folder->id,
             'share_token'    => 'token-folder-4798',
+            'shared_via'     => 'link',
             'expires_at'     => Carbon::now()->addDay(),
         ]);
 

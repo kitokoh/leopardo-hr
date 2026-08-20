@@ -90,6 +90,7 @@ class TrainingGlobalListTest extends TestCase
             'company_id' => $this->otherCompany->id,
             'training_course_id' => $otherCourse->id,
             'start_date' => '2026-11-01',
+            'end_date' => '2026-11-05',
             'status' => 'planned',
         ]);
 
@@ -136,6 +137,7 @@ class TrainingGlobalListTest extends TestCase
                 'type' => 'internal',
             ])->id,
             'start_date' => '2026-11-01',
+            'end_date' => '2026-11-05',
             'status' => 'planned',
         ]);
         TrainingEnrollment::query()->create([
@@ -196,6 +198,7 @@ class TrainingGlobalListTest extends TestCase
             'company_id' => $this->otherCompany->id,
             'training_course_id' => $otherCourse->id,
             'start_date' => '2026-11-01',
+            'end_date' => '2026-11-05',
             'status' => 'planned',
         ]);
 

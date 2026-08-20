@@ -10,6 +10,7 @@ use App\Jobs\SendPushNotificationJob;
 use App\Jobs\SendTrialDripEmailJob;
 use App\Modules\Marketing\Infrastructure\Jobs\PublishScheduledPostJob;
 use App\Modules\Payroll\Domain\Models\BankExport;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Tests\RefreshTenantDatabase;
@@ -53,11 +54,18 @@ class QueueJobsFailedHandlerTest extends TestCase
     {
         /** @var \App\Core\Tenant\Domain\Models\Company $company */
         $company = \App\Core\Tenant\Domain\Models\Company::factory()->create(['country' => 'DZ']);
+        $run = PayrollRun::query()->create([
+            'company_id' => $company->id,
+            'country_code' => 'DZ',
+            'period_start' => '2026-05-01',
+            'period_end' => '2026-05-31',
+            'status' => PayrollRun::STATUS_DRAFT,
+        ]);
         $export = BankExport::query()->create([
             'company_id' => $company->id,
-            'payroll_run_id' => 1,
+            'payroll_run_id' => $run->id,
             'status' => 'generating',
-            'format' => 'csv',
+            'format' => 'csv_generic',
             'total_amount' => 0,
             'transfer_count' => 0,
         ]);

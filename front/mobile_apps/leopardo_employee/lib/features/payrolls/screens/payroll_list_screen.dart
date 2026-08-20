@@ -16,7 +16,6 @@ import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/utils/currency_format.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
 
-
 class PayrollListScreen extends ConsumerStatefulWidget {
   const PayrollListScreen({super.key});
 
@@ -151,8 +150,8 @@ class _PayrollListScreenState extends ConsumerState<PayrollListScreen> {
               }
 
               if (payrolls.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.only(top: 56),
+                return Padding(
+                  padding: const EdgeInsets.only(top: 56),
                   child: EmptyState(
                     icon: Icons.description,
                     title: context.l10n.emptyPayslips,

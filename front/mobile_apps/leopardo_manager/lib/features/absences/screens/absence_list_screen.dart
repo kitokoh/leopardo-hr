@@ -61,7 +61,7 @@ class _AbsenceListScreenState extends ConsumerState<AbsenceListScreen> {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
-                children: const [
+                children: [
                   EmptyState(
                     icon: Icons.calendar_today,
                     title: context.l10n.absencesEmptyTitle,
@@ -543,10 +543,10 @@ class _AbsenceRequestSheetState extends ConsumerState<_AbsenceRequestSheet> {
                 style: const TextStyle(color: MobileSurface.text),
                 decoration: InputDecoration(
                   labelText: context.l10n.absencesReason,
-                  hintText: context.l10n.absencesReasonHint,
+                  hintText: context.l10n.absencesReasonhint,
                 ),
                 validator: (value) => value == null || value.trim().length < 4
-                    ? context.l10n.absencesReasonRequired
+                    ? context.l10n.absencesReasonrequired
                     : null,
               ),
               const SizedBox(height: 12),

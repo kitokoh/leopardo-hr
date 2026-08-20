@@ -31,6 +31,24 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
   - Tests Feature : `RoleAssignmentAuditTest` (6 tests couvrant nomination/revocation sur les deux endpoints, non-régression sur les champs non lies au rôle, et rejet d'un manager non-principal)
 
 ### Fixed
+- **PostgreSQL : préserver la transaction après une candidature partenaire dupliquée (issue #4978).**
+  - `PartnerService::apply()` exécute désormais la création dans une transaction imbriquée/savepoint ; une violation unique attendue est rollbackée localement avant d’être convertie en `ALREADY_EXISTS`.
+  - Évite l’état `25P02 current transaction is aborted` qui contaminait les tests suivants après le scénario de course/idempotence.
+- **Edge : restaurer la compatibilité de `edge:detect-silent-nodes` sans remplacer `edge:monitor`.**
+  - La commande legacy accepte `--threshold` et `--dry-run`, détecte uniquement le schéma historique `node_id` et n’est pas planifiée ; le scheduler continue d’utiliser le monitor canonique UUID `edge:monitor`.
+  - Lorsque le schéma legacy est absent, la commande se termine proprement avec une indication d’utiliser `edge:monitor`, évitant `CommandNotFoundException` en CI et dans les scripts historiques.
+- **Tests webhook email : configurer explicitement le secret dans les scénarios de succès.**
+  - `EmailBounceWebhookControllerTest` injecte désormais un secret de fixture pour tester les réponses 200 ; le scénario fail-closed sans secret reste couvert par `EmailBounceWebhookTest`.
+- **Estimation salariale : restreindre les endpoints nominatifs aux managers.**
+  - `quick-estimate` et `receipt` refusent désormais les employés non managers ; l’auto-service reste disponible via les endpoints `/me` dédiés.
+  - Maintient le scope tenant et équipe de `EmployeePolicy::view` après le contrôle de rôle.
+- **PostgreSQL : préserver l’exception racine lors de la restauration du tenant.**
+  - `TenantManager::resetToPrevious()` ignore uniquement le `25P02` produit par le cleanup d’un transaction déjà abortée ; toute autre erreur de restauration continue d’être propagée.
+  - Les erreurs SQL réelles de `ProvisionGuidedTrial` ne sont plus remplacées par `SET search_path`, ce qui rend le diagnostic et le retry fiables.
+- **Provisioning demo : conserver `pending` pendant les retries du job.**
+  - `ProvisionDemoTenantJob::handle()` ne marque plus prématurément la ligne `trial_provisionings` comme `failed` ; le statut final est écrit uniquement par `failed()` après épuisement des tentatives.
+- **Provisioning demo : renseigner le `password_hash` avant l’INSERT du manager.**
+  - `ProvisionGuidedTrial` prépare désormais le manager avec `forceFill()` puis l’insère en une seule opération ; cela respecte la contrainte PostgreSQL NOT NULL de `employees.password_hash`.
 - **fix(api): checklist onboarding unifiée — plus de 403 employé, shape unique (Closes #3239).**
   - `GET /onboarding/checklist` (moteur calculé) ne requiert plus `viewAny` : tout utilisateur authentifié du tenant (employé non-manager inclus) peut lire sa checklist (données scopées à sa société par le middleware tenant) ; les écritures `complete`/`skip` gardent leur RBAC existant
   - Shape canonique unique documentée (moteur calculé en référence) : `data{ completed_steps, total_steps, progress_percent, progress (alias), go_live_ready, next_actions, steps }` — `GET /onboarding-setup/checklist` (moteur DB) wrappe désormais sa collection sous `data.steps` et `GET /onboarding-setup/progress` expose aussi `progress_percent`
