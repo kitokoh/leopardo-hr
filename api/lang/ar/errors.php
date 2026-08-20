@@ -112,6 +112,7 @@ return [
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'لا يوجد حساب مرتبط بحساب Google هذا.',
     'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير متاح مؤقتًا (نقص في الإعدادات). يرجى التواصل مع المسؤول.',
     'GOOGLE_INVITATION_REQUIRED' => 'لا يوجد حساب لهذا البريد الإلكتروني الخاص بـ Google. اطلب دعوة من المسؤول.',
+    'GOOGLE_OAUTH_NOT_CONFIGURED' => 'تسجيل الدخول عبر Google غير مهيأ بعد. يرجى المحاولة لاحقًا.',
     'NO_ACTIVE_SUBSCRIPTION' => 'لا يوجد اشتراك نشط.',
     'STRIPE_NOT_CONFIGURED' => 'الدفع عبر الإنترنت غير مهيأ بعد.',
     'BILLING_PORTAL_FAILED' => 'تعذر الوصول إلى بوابة الفوترة.',

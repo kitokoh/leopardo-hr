@@ -31,6 +31,24 @@ class GoogleOAuthStateTest extends TestCase
         $this->assertNotNull($route, 'Route GET /api/v1/auth/google introuvable.');
     }
 
+    public function test_redirect_without_google_config_returns_503(): void
+    {
+        // Issue #5170 : GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET /
+        // GOOGLE_REDIRECT_URL absents de l'env (prod Render) → la redirection
+        // doit échouer proprement en 503 GOOGLE_OAUTH_NOT_CONFIGURED, pas en
+        // 500 via une exception Socialite non gérée.
+        config([
+            'services.google.client_id' => null,
+            'services.google.client_secret' => null,
+            'services.google.redirect' => null,
+        ]);
+
+        $response = $this->get('/api/v1/auth/google');
+
+        $response->assertStatus(503)
+            ->assertJson(['error' => 'GOOGLE_OAUTH_NOT_CONFIGURED']);
+    }
+
     public function test_callback_without_state_is_rejected(): void
     {
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
