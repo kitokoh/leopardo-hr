@@ -7,6 +7,8 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
+use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -72,7 +74,7 @@ class ZktecoSyncMethodEnforcementTest extends TestCase
 
     /**
      * @param  array<int, array<string, mixed>>  $records
-     * @return \Illuminate\Testing\TestResponse<\Symfony\Component\HttpFoundation\Response>
+     * @return TestResponse<Response>
      */
     private function syncRequest(ZktecoDevice $device, array $records): \Illuminate\Testing\TestResponse
     {
