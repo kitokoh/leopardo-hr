@@ -2012,6 +2012,27 @@ trait CreatesMvpSchema
             });
         }
 
+        // #5175 : migrations additifs idempotents — les bases de test CLONÉES
+        // (parallélisation CI, `leopardo_test_test_N`) conservent l'ancien
+        // schéma : hasTable est true mais les colonnes récentes manquent.
+        // Même garde `hasColumn` que les migrations tenant.
+        $zktecoAdditive = [
+            ['sync_token_hash', function (Blueprint $t): void { $t->string('sync_token_hash', 255)->nullable(); }],
+            ['location_label', function (Blueprint $t): void { $t->string('location_label', 120)->nullable(); }],
+            ['model', function (Blueprint $t): void { $t->string('model', 60)->nullable(); }],
+            ['firmware_version', function (Blueprint $t): void { $t->string('firmware_version', 60)->nullable(); }],
+            ['employee_capacity', function (Blueprint $t): void { $t->unsignedInteger('employee_capacity')->default(1000); }],
+            ['fingerprint_capacity', function (Blueprint $t): void { $t->unsignedInteger('fingerprint_capacity')->default(3000); }],
+            ['face_capacity', function (Blueprint $t): void { $t->unsignedInteger('face_capacity')->default(500); }],
+            ['capabilities', function (Blueprint $t): void { $t->json('capabilities')->nullable(); }],
+            ['punch_methods', function (Blueprint $t): void { $t->json('punch_methods')->nullable(); }],
+        ];
+        foreach ($zktecoAdditive as [$column, $columnDef]) {
+            if (! Schema::hasColumn($this->moduleTable('zkteco_devices'), $column)) {
+                Schema::table($this->moduleTable('zkteco_devices'), fn (Blueprint $table) => $columnDef($table));
+            }
+        }
+
         // ── EdgeSync module tables ──────────────────────────────────
 
         if (! Schema::hasTable($this->moduleTable('company_settings'))) {
