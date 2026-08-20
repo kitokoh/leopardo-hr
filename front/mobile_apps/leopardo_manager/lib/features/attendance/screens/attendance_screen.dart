@@ -708,9 +708,9 @@ class _AttendanceScreenState extends ConsumerState<AttendanceScreen> {
       final date = today.subtract(Duration(days: index));
       final log = byDay[_dateKey(date)];
       final labelPrefix = index == 0
-          ? 'Aujourd hui'
+          ? context.l10n.attendanceDayToday
           : index == 1
-              ? 'Hier'
+              ? context.l10n.attendanceDayYesterday
               : _capitalize(DateFormat('EEE', deviceIntlDateLocale).format(date));
       final label =
           '$labelPrefix - ${DateFormat('d MMM', deviceIntlDateLocale).format(date)}';
@@ -811,7 +811,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
       context: context,
       initialTime: TimeOfDay.now(),
       helpText:
-          isCheckIn ? 'Heure d\'arrivee reelle' : 'Heure de depart reelle',
+          isCheckIn ? context.l10n.attendanceCorrectionCheckinTime : context.l10n.attendanceCorrectionCheckoutTime,
       builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
         child: child!,
@@ -837,7 +837,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     if (!_formKey.currentState!.validate()) return;
     if (_checkIn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Saisir l\'heure d\'arrivee reelle')),
+        SnackBar(content: Text(context.l10n.attendanceCorrectionCheckinRequired)),
       );
       return;
     }
@@ -879,7 +879,7 @@ class _CorrectionSheetState extends ConsumerState<_CorrectionSheet> {
     setState(() => _submitting = false);
     if (!success) {
       final message = ref.read(attendanceProvider).error ??
-          'Impossible d envoyer la modification pour le moment.';
+          context.l10n.attendanceCorrectionSubmitError;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(message), backgroundColor: AppColors.danger),
       );

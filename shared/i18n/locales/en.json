@@ -468,7 +468,9 @@
     "retry_after_failure": "{label}. Please try again.",
     "absent": "absent",
     "day": {
-      "summary": "Day of {date}, status {status}, {range}, {hours}."
+      "summary": "Day of {date}, status {status}, {range}, {hours}.",
+      "today": "Today",
+      "yesterday": "Yesterday"
     },
     "hour": {
       "worked": "hour worked"
@@ -494,7 +496,168 @@
       "time": {
         "error": "Cannot enter a future time"
       }
-    }
+    },
+    "break": {
+      "failure": "Break not confirmed",
+      "hint": "Closes the session and starts a break",
+      "loading": "Sending break",
+      "success": "Break confirmed.",
+      "title": "Take a break"
+    },
+    "checkin": {
+      "failure": "Check-in not confirmed. Try again.",
+      "label": "Check-in",
+      "sending": "Sending check-in to server...",
+      "success": "Check-in confirmed."
+    },
+    "checkout": {
+      "failure": "Checkout not confirmed. Try again.",
+      "label": "Check-out",
+      "sending": "Sending checkout to server...",
+      "success": "Checkout confirmed."
+    },
+    "correction": {
+      "checkin": {
+        "label": "Actual check-in *"
+      },
+      "checkout": {
+        "label": "Actual check-out"
+      },
+      "direct": {
+        "hint": "The correction will be applied to the attendance record."
+      },
+      "no": {
+        "log": {
+          "warning": "No existing attendance entry to edit for this day."
+        }
+      },
+      "reason": {
+        "hint": "Reason (e.g. forgot to clock in at 8h)",
+        "required": "Reason is required"
+      },
+      "request": {
+        "hint": "The request will be sent to HR for validation."
+      },
+      "submit": {
+        "direct": "Edit",
+        "request": "Request a correction"
+      },
+      "title": "Edit attendance",
+      "checkin_time": "Actual clock-in time",
+      "checkout_time": "Actual clock-out time",
+      "checkin_required": "Enter the actual clock-in time",
+      "submit_error": "Unable to send the correction at the moment."
+    },
+    "daily": {
+      "estimate": "Estimated daily earnings"
+    },
+    "fingerprint": {
+      "enable": "Enable fingerprint (optional)",
+      "enabled": "Fingerprint enabled (optional)"
+    },
+    "history": {
+      "title": "History"
+    },
+    "menu": {
+      "edit": "Edit",
+      "monthly": "My full month",
+      "profile": "My profile"
+    },
+    "mission": {
+      "failure": "Mission not confirmed",
+      "hint": "Work time outside the usual site",
+      "loading": "Sending mission",
+      "success": "Mission started.",
+      "title": "Mission"
+    },
+    "none": "None",
+    "other": {
+      "label": "Other"
+    },
+    "overtime_failure": "Overtime not confirmed",
+    "overtime_hint": "Start an overtime session",
+    "overtime_loading": "Sending overtime",
+    "overtime_short": "OT",
+    "overtime_success": "Overtime started.",
+    "overtime_title": "Overtime",
+    "pause": {
+      "label": "Break"
+    },
+    "preferences": {
+      "title": "Preferences"
+    },
+    "press": {
+      "to": {
+        "checkin": "Tap to record your check-in",
+        "checkout": "Tap to record your checkout"
+      }
+    },
+    "resume": {
+      "failure": "Resume not confirmed",
+      "hint": "Resume after a break or leave",
+      "loading": "Sending resume",
+      "success": "Resume confirmed.",
+      "title": "Resume"
+    },
+    "role": {
+      "employee": "Employee",
+      "employee2": "Employee",
+      "finance": "Finance",
+      "hr": "HR Manager",
+      "manager": "Manager",
+      "principal": "Principal Manager"
+    },
+    "saving": "Saving...",
+    "settings": {
+      "title": "Settings"
+    },
+    "status": {
+      "complete": "Complete",
+      "in": {
+        "progress": "In progress"
+      },
+      "late": "Late",
+      "pointer": "To clock in"
+    },
+    "sync": {
+      "title": "Synchronization"
+    },
+    "tasks": {
+      "title": "Today's tasks",
+      "loading": "Loading today's tasks...",
+      "unavailable": "Tasks unavailable",
+      "unavailable_hint": "Clocking in remains functional. Retry after sync.",
+      "empty": "No tasks today",
+      "empty_hint": "You can still punch normally. Assigned tasks will appear here.",
+      "close_hint": "Close completed tasks before clocking out."
+    },
+    "this": {
+      "week": "THIS WEEK"
+    },
+    "today": "TODAY",
+    "training": {
+      "label": "Training"
+    },
+    "travel": {
+      "failure": "Travel not confirmed",
+      "hint": "Professional travel time",
+      "loading": "Sending travel",
+      "success": "Travel started.",
+      "title": "Travel"
+    },
+    "week": {
+      "earnings": "Estimated earnings",
+      "hours": "Week hours",
+      "late": "Cumulated delay",
+      "unavailable": "Week temporarily unavailable. Clock-in remains usable."
+    },
+    "work": {
+      "type": {
+        "title": "Clock type"
+      }
+    },
+    "sessions": "Sessions",
+    "break_minutes": "{minutes} min"
   },
   "holidays": {
     "page": {
@@ -1325,7 +1488,15 @@
       "to": {
         "date": "All up to date"
       }
-    }
+    },
+    "loading": "Loading approvals...",
+    "reject": {
+      "reason": {
+        "hint": "Explain the reason...",
+        "label": "Rejection reason"
+      }
+    },
+    "title": "Approvals"
   },
   "back": "Back",
   "employee": {
@@ -1531,18 +1702,178 @@
     "submit_to_hr": "Submit to HR",
     "submitted_snack": "Absence request sent to HR.",
     "days_available": " day(s) available",
-    "days_short": " d"
+    "days_short": " d",
+    "empty": "No absences",
+    "list": {
+      "subtitle": "Requests, balances and HR decisions",
+      "title": "My absences"
+    }
   },
   "settings": {
     "journey": {
       "load": {
         "error": "Unable to load your journey."
+      },
+      "in": {
+        "progress": "In progress"
+      },
+      "title": "Professional journey",
+      "unknown": {
+        "company": "Company",
+        "date": "Unknown date",
+        "position": "Position not specified"
       }
     },
     "stats": {
       "load": {
         "error": "Unable to load statistics."
       }
+    },
+    "account": {
+      "portable": {
+        "hint": "Your account stays useful even when you change company."
+      },
+      "subtitle": "Profile, language and security",
+      "title": "Account"
+    },
+    "biometric": {
+      "approved": "Approved",
+      "consent": "I consent to the processing of my biometric data.",
+      "device": "Reference device (optional)",
+      "face": "Face",
+      "fingerprint": "Fingerprint",
+      "manager": {
+        "hint": "Reserved for employee profiles in this manager app."
+      },
+      "none": "No enrollment",
+      "note": "Note (optional)",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "saved": "Biometric enrollment saved.",
+      "terminal": {
+        "hint": "Finger and face preparation for field terminals."
+      }
+    },
+    "confirm": {
+      "password": "Confirm password"
+    },
+    "current": {
+      "password": "Current password"
+    },
+    "edge": {
+      "saved": "Edge settings saved."
+    },
+    "email": {
+      "invalid": "Invalid email",
+      "label": "Email",
+      "required": "Email is required"
+    },
+    "employee": {
+      "profile": {
+        "hint": "Employee profile: access to clock-in, personal history and biometric setup settings."
+      }
+    },
+    "first": {
+      "name": "First name",
+      "name_required": "First name is required"
+    },
+    "kiosk": {
+      "biometric": {
+        "title": "Kiosk biometrics"
+      }
+    },
+    "language": {
+      "saved": "Language saved.",
+      "subtitle": "The chosen language also drives future notifications and texts.",
+      "title": "Language"
+    },
+    "last": {
+      "name": {
+        "label": "Last name",
+        "required": "Last name is required"
+      }
+    },
+    "logout": "Log out",
+    "manager": {
+      "account": {
+        "hint": "A manager account must remain clear, secure and ready for field decisions."
+      }
+    },
+    "mobile": {
+      "access": "Mobile access"
+    },
+    "my": {
+      "profile": "My profile",
+      "qr": {
+        "employee": "My QR code",
+        "manager": "My manager QR"
+      }
+    },
+    "new": {
+      "password": "New password"
+    },
+    "no": {
+      "company": {
+        "qr": "No company QR in the clipboard."
+      },
+      "journey": "No journey recorded yet."
+    },
+    "notifications": {
+      "subtitle": "Channels, quiet hours and manager operational alerts.",
+      "title": "Notifications"
+    },
+    "password": {
+      "changed": "Password changed.",
+      "min": {
+        "length": "Minimum 8 characters"
+      },
+      "mismatch": "Passwords do not match"
+    },
+    "paste": {
+      "qr": "Paste the QR provided by the manager or HR"
+    },
+    "personal": {
+      "contacts": "Personal contacts",
+      "email": "Personal email (optional)",
+      "phone": "Personal phone (optional)"
+    },
+    "portable": {
+      "account": {
+        "hint": "Your personal information remains linked to your account."
+      }
+    },
+    "preferred": {
+      "language": "Preferred language",
+      "language_label": "Preferred language"
+    },
+    "profile": {
+      "saved": "Profile saved."
+    },
+    "qr": {
+      "copy": {
+        "token": "Also copy the token"
+      },
+      "manager": {
+        "hint": "A colleague or HR can scan it to pre-fill an invitation."
+      }
+    },
+    "recovery": {
+      "email": "Recovery email (optional)"
+    },
+    "save": "Save",
+    "save_enrollment": "Save enrollment",
+    "save_profile": "Save profile",
+    "saving": "Saving...",
+    "security": {
+      "title": "Security"
+    },
+    "session": {
+      "subtitle": "Logout is intentionally at the bottom of the page.",
+      "title": "Session"
+    },
+    "team": {
+      "drive": "Team drive",
+      "drive_hint": "Profile, role and permissions remain readable for HR actions."
     }
   },
   "cabinet": {
@@ -1572,6 +1903,182 @@
       "delete_body": "The document \"{name}\" will be permanently deleted.",
       "delete": "Delete",
       "documents_count": "{count, plural, =1{1 doc} other{{count} docs}}"
+    }
+  },
+  "absence": {
+    "cancel": {
+      "body": "The pending request will be removed and HR will see the cancelled status.",
+      "request": "Cancel request",
+      "title": "Cancel this request?"
+    },
+    "cancelled": "Absence request cancelled.",
+    "label": "Absence",
+    "new": {
+      "hint": "Choose the balance type and the period to send to HR.",
+      "title": "New absence"
+    },
+    "no": {
+      "type": "No absence type available for this account. Contact HR to configure balances."
+    },
+    "request": "Request",
+    "view": {
+      "proof": "View proof"
+    }
+  },
+  "action": {
+    "approve": "Approve",
+    "cancel": "Cancel",
+    "reject": "Reject"
+  },
+  "cancel": {
+    "request": "Cancel request"
+  },
+  "confirm": {
+    "receipt": "Confirm receipt"
+  },
+  "empty": {
+    "absences": "No absences",
+    "advances": "No advances",
+    "history": "No history",
+    "payslips": "No payslips",
+    "sessions": "No sessions"
+  },
+  "load": {
+    "error": "Loading error"
+  },
+  "no": {
+    "data": "No data",
+    "reason": "No reason",
+    "tasks": {
+      "today": "No tasks today"
+    }
+  },
+  "salary": {
+    "advance": {
+      "attach": {
+        "hint": "Attach a file (optional)"
+      },
+      "attachment": {
+        "label": "Attachment"
+      },
+      "cancel": {
+        "action": "Cancel",
+        "body": "The pending request will be removed before the HR decision.",
+        "request": "Cancel request",
+        "title": "Cancel this advance?"
+      },
+      "cancelled": "Advance request cancelled.",
+      "confirm": {
+        "action": "Confirm",
+        "received": "Confirm receipt",
+        "received_body": "Confirm only if the amount actually arrived. This action will be recorded.",
+        "received_title": "Confirm receipt?"
+      },
+      "keep": "Keep",
+      "list": {
+        "subtitle": "Requests, statuses and repayment",
+        "title": "Advances"
+      },
+      "no": {
+        "reason": "No reason"
+      },
+      "payment": {
+        "declared": "The manager declared the payment. Confirm only after you actually received it."
+      },
+      "request": "Request",
+      "request_title": "Advance request",
+      "submitted": "Advance request sent to HR.",
+      "view": {
+        "proof": "View attachment"
+      }
+    },
+    "advances": {
+      "empty": "No advances",
+      "empty_hint": "Request an advance in seconds, then track the HR decision here.",
+      "loading": "Loading advances"
+    },
+    "status": {
+      "active": "active",
+      "approved": "approved",
+      "cancelled": "cancelled",
+      "pending": "pending",
+      "received": "received",
+      "rejected": "rejected",
+      "to": {
+        "confirm": "to confirm"
+      },
+      "validated": "validated"
+    }
+  },
+  "save": {
+    "profile": "Save profile"
+  },
+  "saving": {
+    "profile": "Saving…"
+  },
+  "tax": {
+    "slabs": {
+      "sim": {
+        "compare": "Salary to compare"
+      }
+    }
+  },
+  "team": {
+    "add": "Add",
+    "add_collaborator": "Add a collaborator",
+    "add_from_qr": "From employee QR",
+    "add_from_qr_hint": "Paste the provided code",
+    "add_manual_form": "Classic form",
+    "add_manual_hint": "Complete manual entry",
+    "archive": "Archive",
+    "archive_confirm_action": "Archive",
+    "archive_confirm_title": "Archive this employee?",
+    "archive_success": "Employee archived.",
+    "confirm": {
+      "cancel": "Cancel"
+    },
+    "edit": {
+      "profile": "Edit profile",
+      "profile_hint": "Update essential HR fields"
+    },
+    "employee": {
+      "label": "Employee"
+    },
+    "employees": {
+      "tab": "Employees"
+    },
+    "empty": "No collaborator",
+    "empty_hint": "Start by adding your team with the button below.",
+    "invitations": {
+      "tab": "Invitations"
+    },
+    "make": {
+      "hr": "Appoint HR",
+      "hr_confirm_action": "Appoint HR",
+      "hr_confirm_title": "Appoint HR?",
+      "hr_hint": "Grant HR permissions to this collaborator",
+      "hr_success": "HR appointed."
+    },
+    "manager": {
+      "label": "Manager",
+      "required": "Manager/HR access required"
+    },
+    "revoke": {
+      "hr": "Revoke HR",
+      "hr_confirm_action": "Revoke",
+      "hr_confirm_title": "Revoke HR?",
+      "hr_hint": "Remove HR permissions from this account",
+      "hr_success": "HR permissions removed."
+    },
+    "subtitle": "Employees and invitations",
+    "title": "Team",
+    "view": {
+      "attendance": "Attendance stats",
+      "attendance_hint": "Presence, anomalies, history",
+      "profile": "View profile",
+      "profile_hint": "Contact details, position, salary, schedule",
+      "tasks": "Tasks",
+      "tasks_hint": "View or assign field tasks"
     }
   },
   "attendanceBreakFailure": "Break not confirmed",

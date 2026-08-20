@@ -468,7 +468,9 @@
     "retry_after_failure": "{label}. Lütfen tekrar deneyin.",
     "absent": "yok",
     "day": {
-      "summary": "{date} günü, durum {status}, {range}, {hours}."
+      "summary": "{date} günü, durum {status}, {range}, {hours}.",
+      "today": "Bugün",
+      "yesterday": "Dün"
     },
     "hour": {
       "worked": "çalışılan saat"
@@ -494,7 +496,168 @@
       "time": {
         "error": "Gelecekteki bir saat girilemez"
       }
-    }
+    },
+    "break": {
+      "failure": "Mola onaylanmadı",
+      "hint": "Oturumu kapatır ve molayı başlatır",
+      "loading": "Mola gönderiliyor",
+      "success": "Mola onaylandı.",
+      "title": "Molaya çık"
+    },
+    "checkin": {
+      "failure": "Giriş onaylanmadı. Tekrar deneyin.",
+      "label": "Giriş",
+      "sending": "Giriş sunucuya gönderiliyor...",
+      "success": "Giriş onaylandı."
+    },
+    "checkout": {
+      "failure": "Çıkış onaylanmadı. Tekrar deneyin.",
+      "label": "Çıkış",
+      "sending": "Çıkış sunucuya gönderiliyor...",
+      "success": "Çıkış onaylandı."
+    },
+    "correction": {
+      "checkin": {
+        "label": "Gerçek giriş saati *"
+      },
+      "checkout": {
+        "label": "Gerçek çıkış saati"
+      },
+      "direct": {
+        "hint": "Düzeltme, devam kaydına uygulanacak."
+      },
+      "no": {
+        "log": {
+          "warning": "Bu gün için düzenlenecek mevcut devam girişi yok."
+        }
+      },
+      "reason": {
+        "hint": "Gerekçe (örn: saat 8'de giriş yapmayı unuttum)",
+        "required": "Gerekçe zorunludur"
+      },
+      "request": {
+        "hint": "Talep, onay için İK'ya iletilecek."
+      },
+      "submit": {
+        "direct": "Düzenle",
+        "request": "Düzeltme talep et"
+      },
+      "title": "Devam kaydını düzenle",
+      "checkin_time": "Gerçek giriş saati",
+      "checkout_time": "Gerçek çıkış saati",
+      "checkin_required": "Gerçek giriş saatini girin",
+      "submit_error": "Düzeltme şu an gönderilemiyor."
+    },
+    "daily": {
+      "estimate": "Tahmini günlük kazanç"
+    },
+    "fingerprint": {
+      "enable": "Parmak izini etkinleştir (isteğe bağlı)",
+      "enabled": "Parmak izi etkin (isteğe bağlı)"
+    },
+    "history": {
+      "title": "Geçmiş"
+    },
+    "menu": {
+      "edit": "Düzenle",
+      "monthly": "Tam ayım",
+      "profile": "Profilim"
+    },
+    "mission": {
+      "failure": "Görev onaylanmadı",
+      "hint": "Her zamanki saha dışında çalışma süresi",
+      "loading": "Görev gönderiliyor",
+      "success": "Görev başladı.",
+      "title": "Görev"
+    },
+    "none": "Hiçbiri",
+    "other": {
+      "label": "Diğer"
+    },
+    "overtime_failure": "Fazla mesai onaylanmadı",
+    "overtime_hint": "Fazla mesai oturumu başlat",
+    "overtime_loading": "Fazla mesai gönderiliyor",
+    "overtime_short": "F. mesai",
+    "overtime_success": "Fazla mesai başladı.",
+    "overtime_title": "Fazla mesai",
+    "pause": {
+      "label": "Mola"
+    },
+    "preferences": {
+      "title": "Tercihler"
+    },
+    "press": {
+      "to": {
+        "checkin": "Girişinizi kaydetmek için dokunun",
+        "checkout": "Çıkışınızı kaydetmek için dokunun"
+      }
+    },
+    "resume": {
+      "failure": "Devam onaylanmadı",
+      "hint": "Moladan veya çıkıştan sonra devam et",
+      "loading": "Devam gönderiliyor",
+      "success": "Devam onaylandı.",
+      "title": "Devam et"
+    },
+    "role": {
+      "employee": "Çalışan",
+      "employee2": "Çalışan",
+      "finance": "Finans",
+      "hr": "İK Yöneticisi",
+      "manager": "Yönetici",
+      "principal": "Baş Yönetici"
+    },
+    "saving": "Kaydediliyor...",
+    "settings": {
+      "title": "Ayarlar"
+    },
+    "status": {
+      "complete": "Tamamlandı",
+      "in": {
+        "progress": "Devam ediyor"
+      },
+      "late": "Geç",
+      "pointer": "Giriş yapılacak"
+    },
+    "sync": {
+      "title": "Senkronizasyon"
+    },
+    "tasks": {
+      "title": "Bugünün görevleri",
+      "loading": "Günün görevleri yükleniyor...",
+      "unavailable": "Görevler kullanılamıyor",
+      "unavailable_hint": "Yoklama yapılabilir. Senkronizasyon sonrası tekrar deneyin.",
+      "empty": "Bugün görev yok",
+      "empty_hint": "Normal yoklama yapabilirsiniz. Atanan görevler burada görünecek.",
+      "close_hint": "Çıkış yapmadan önce tamamlananları kapatın."
+    },
+    "this": {
+      "week": "BU HAFTA"
+    },
+    "today": "BUGÜN",
+    "training": {
+      "label": "Eğitim"
+    },
+    "travel": {
+      "failure": "Seyahat onaylanmadı",
+      "hint": "Mesleki seyahat süresi",
+      "loading": "Seyahat gönderiliyor",
+      "success": "Seyahat başladı.",
+      "title": "Seyahat"
+    },
+    "week": {
+      "earnings": "Tahmini kazanç",
+      "hours": "Haftalık saatler",
+      "late": "Birikimli gecikme",
+      "unavailable": "Hafta şu anda kullanılamıyor. Giriş yine de kullanılabilir."
+    },
+    "work": {
+      "type": {
+        "title": "Giriş türü"
+      }
+    },
+    "sessions": "Oturumlar",
+    "break_minutes": "{minutes} dk"
   },
   "holidays": {
     "page": {
@@ -1325,7 +1488,15 @@
       "to": {
         "date": "Her şey güncel"
       }
-    }
+    },
+    "loading": "Onaylar yükleniyor...",
+    "reject": {
+      "reason": {
+        "hint": "Gerekçeyi açıklayın...",
+        "label": "Ret gerekçesi"
+      }
+    },
+    "title": "Onaylar"
   },
   "back": "Geri",
   "employee": {
@@ -1531,18 +1702,178 @@
     "submit_to_hr": "İK'ya gönder",
     "submitted_snack": "İzin talebi İK'ya iletildi.",
     "days_available": " gün kullanılabilir",
-    "days_short": " g"
+    "days_short": " g",
+    "empty": "İzin yok",
+    "list": {
+      "subtitle": "Talepler, bakiyeler ve İK kararları",
+      "title": "İzinlerim"
+    }
   },
   "settings": {
     "journey": {
       "load": {
         "error": "Yolculuğunuz yüklenemedi."
+      },
+      "in": {
+        "progress": "Devam ediyor"
+      },
+      "title": "Profesyonel yolculuk",
+      "unknown": {
+        "company": "Şirket",
+        "date": "Bilinmeyen tarih",
+        "position": "Pozisyon belirtilmemiş"
       }
     },
     "stats": {
       "load": {
         "error": "İstatistikler yüklenemedi."
       }
+    },
+    "account": {
+      "portable": {
+        "hint": "Şirket değiştirseniz bile hesabınız kullanışlı kalır."
+      },
+      "subtitle": "Profil, dil ve güvenlik",
+      "title": "Hesap"
+    },
+    "biometric": {
+      "approved": "Onaylandı",
+      "consent": "Biyometrik verilerimin işlenmesine onay veriyorum.",
+      "device": "Referans cihaz (isteğe bağlı)",
+      "face": "Yüz",
+      "fingerprint": "Parmak izi",
+      "manager": {
+        "hint": "Bu yönetici uygulamasındaki çalışan profilleri için ayrılmıştır."
+      },
+      "none": "Kayıt yok",
+      "note": "Not (isteğe bağlı)",
+      "pending": "Beklemede",
+      "rejected": "Reddedildi",
+      "saved": "Biyometrik kayıt tamamlandı.",
+      "terminal": {
+        "hint": "Saha terminalleri için parmak ve yüz hazırlığı."
+      }
+    },
+    "confirm": {
+      "password": "Şifreyi onayla"
+    },
+    "current": {
+      "password": "Mevcut şifre"
+    },
+    "edge": {
+      "saved": "Edge ayarları kaydedildi."
+    },
+    "email": {
+      "invalid": "Geçersiz e-posta",
+      "label": "E-posta",
+      "required": "E-posta gereklidir"
+    },
+    "employee": {
+      "profile": {
+        "hint": "Çalışan profili: giriş, kişisel geçmiş ve biyometrik hazırlık ayarlarına erişim."
+      }
+    },
+    "first": {
+      "name": "Ad",
+      "name_required": "Ad gereklidir"
+    },
+    "kiosk": {
+      "biometric": {
+        "title": "Kiosk biyometrisi"
+      }
+    },
+    "language": {
+      "saved": "Dil kaydedildi.",
+      "subtitle": "Seçilen dil gelecekteki bildirimleri ve metinleri de etkiler.",
+      "title": "Dil"
+    },
+    "last": {
+      "name": {
+        "label": "Soyad",
+        "required": "Soyad gereklidir"
+      }
+    },
+    "logout": "Çıkış yap",
+    "manager": {
+      "account": {
+        "hint": "Yönetici hesabı net, güvenli ve saha kararları için hazır olmalıdır."
+      }
+    },
+    "mobile": {
+      "access": "Mobil erişim"
+    },
+    "my": {
+      "profile": "Profilim",
+      "qr": {
+        "employee": "QR kodum",
+        "manager": "Yönetici QR kodum"
+      }
+    },
+    "new": {
+      "password": "Yeni şifre"
+    },
+    "no": {
+      "company": {
+        "qr": "Panoda şirket QR'ı yok."
+      },
+      "journey": "Henüz kayıtlı yolculuk yok."
+    },
+    "notifications": {
+      "subtitle": "Kanallar, sessiz saatler ve yönetici operasyonel uyarıları.",
+      "title": "Bildirimler"
+    },
+    "password": {
+      "changed": "Şifre değiştirildi.",
+      "min": {
+        "length": "En az 8 karakter"
+      },
+      "mismatch": "Şifreler eşleşmiyor"
+    },
+    "paste": {
+      "qr": "Yönetici veya İK tarafından sağlanan QR kodu yapıştırın"
+    },
+    "personal": {
+      "contacts": "Kişisel iletişim",
+      "email": "Kişisel e-posta (isteğe bağlı)",
+      "phone": "Kişisel telefon (isteğe bağlı)"
+    },
+    "portable": {
+      "account": {
+        "hint": "Kişisel bilgileriniz hesabınıza bağlı kalır."
+      }
+    },
+    "preferred": {
+      "language": "Tercih edilen dil",
+      "language_label": "Tercih edilen dil"
+    },
+    "profile": {
+      "saved": "Profil kaydedildi."
+    },
+    "qr": {
+      "copy": {
+        "token": "Jetonu da kopyala"
+      },
+      "manager": {
+        "hint": "Bir meslektaş veya İK daveti önceden doldurmak için tarayabilir."
+      }
+    },
+    "recovery": {
+      "email": "Kurtarma e-postası (isteğe bağlı)"
+    },
+    "save": "Kaydet",
+    "save_enrollment": "Kaydı kaydet",
+    "save_profile": "Profili kaydet",
+    "saving": "Kaydediliyor...",
+    "security": {
+      "title": "Güvenlik"
+    },
+    "session": {
+      "subtitle": "Çıkış sayfanın altında kasıtlı olarak yer alır.",
+      "title": "Oturum"
+    },
+    "team": {
+      "drive": "Ekip yönetimi",
+      "drive_hint": "Profil, rol ve izinler İK işlemleri için okunabilir kalır."
     }
   },
   "cabinet": {
@@ -1572,6 +1903,182 @@
       "delete_body": "\"{name}\" belgesi kalıcı olarak silinecek.",
       "delete": "Sil",
       "documents_count": "{count, plural, =1{1 belge} other{{count} belge}}"
+    }
+  },
+  "absence": {
+    "cancel": {
+      "body": "Bekleyen talep kaldırılacak ve İK iptal edilmiş durumu görecek.",
+      "request": "Talebi iptal et",
+      "title": "Bu talep iptal edilsin mi?"
+    },
+    "cancelled": "İzin talebi iptal edildi.",
+    "label": "İzin",
+    "new": {
+      "hint": "İK'ya iletilecek bakiye türünü ve dönemi seçin.",
+      "title": "Yeni izin"
+    },
+    "no": {
+      "type": "Bu hesap için kullanılabilir izin türü yok. Bakiyeleri yapılandırmak için İK ile iletişime geçin."
+    },
+    "request": "Talep Et",
+    "view": {
+      "proof": "Kanıtı görüntüle"
+    }
+  },
+  "action": {
+    "approve": "Onayla",
+    "cancel": "İptal",
+    "reject": "Reddet"
+  },
+  "cancel": {
+    "request": "Talebi iptal et"
+  },
+  "confirm": {
+    "receipt": "Teslim alındığını onayla"
+  },
+  "empty": {
+    "absences": "Devamsızlık yok",
+    "advances": "Avans yok",
+    "history": "Geçmiş yok",
+    "payslips": "Maaş bordrosu yok",
+    "sessions": "Oturum yok"
+  },
+  "load": {
+    "error": "Yükleme hatası"
+  },
+  "no": {
+    "data": "Veri yok",
+    "reason": "Gerekçe yok",
+    "tasks": {
+      "today": "Bugün görev yok"
+    }
+  },
+  "salary": {
+    "advance": {
+      "attach": {
+        "hint": "Dosya ekle (isteğe bağlı)"
+      },
+      "attachment": {
+        "label": "Ek"
+      },
+      "cancel": {
+        "action": "İptal",
+        "body": "Bekleyen talep, İK kararından önce kaldırılacaktır.",
+        "request": "Talebi iptal et",
+        "title": "Bu avans iptal edilsin mi?"
+      },
+      "cancelled": "Avans talebi iptal edildi.",
+      "confirm": {
+        "action": "Onayla",
+        "received": "Teslim alındığını onayla",
+        "received_body": "Yalnızca tutar gerçekten ulaştıysa onaylayın. Bu işlem kaydedilecektir.",
+        "received_title": "Teslim alındığını onayla?"
+      },
+      "keep": "Tut",
+      "list": {
+        "subtitle": "Talepler, durumlar ve geri ödeme",
+        "title": "Avanslar"
+      },
+      "no": {
+        "reason": "Gerekçe yok"
+      },
+      "payment": {
+        "declared": "Yönetici ödemeyi onayladı. Yalnızca fiilen aldıktan sonra onaylayın."
+      },
+      "request": "Talep Et",
+      "request_title": "Avans talebi",
+      "submitted": "Avans talebi İK'ya iletildi.",
+      "view": {
+        "proof": "Eki görüntüle"
+      }
+    },
+    "advances": {
+      "empty": "Avans yok",
+      "empty_hint": "Saniyeler içinde avans talep edin, ardından İK kararını buradan takip edin.",
+      "loading": "Avanslar yükleniyor"
+    },
+    "status": {
+      "active": "aktif",
+      "approved": "onaylandı",
+      "cancelled": "iptal edildi",
+      "pending": "beklemede",
+      "received": "alındı",
+      "rejected": "reddedildi",
+      "to": {
+        "confirm": "onaylanacak"
+      },
+      "validated": "doğrulandı"
+    }
+  },
+  "save": {
+    "profile": "Profili kaydet"
+  },
+  "saving": {
+    "profile": "Kaydediliyor…"
+  },
+  "tax": {
+    "slabs": {
+      "sim": {
+        "compare": "Karşılaştırılacak maaş"
+      }
+    }
+  },
+  "team": {
+    "add": "Ekle",
+    "add_collaborator": "İşbirlikçi ekle",
+    "add_from_qr": "Çalışan QR kodundan",
+    "add_from_qr_hint": "Sağlanan kodu yapıştır",
+    "add_manual_form": "Klasik form",
+    "add_manual_hint": "Tam manuel giriş",
+    "archive": "Arşivle",
+    "archive_confirm_action": "Arşivle",
+    "archive_confirm_title": "Bu çalışan arşivlensin mi?",
+    "archive_success": "Çalışan arşivlendi.",
+    "confirm": {
+      "cancel": "İptal"
+    },
+    "edit": {
+      "profile": "Profili düzenle",
+      "profile_hint": "Temel İK alanlarını güncelleyin"
+    },
+    "employee": {
+      "label": "Çalışan"
+    },
+    "employees": {
+      "tab": "Çalışanlar"
+    },
+    "empty": "İşbirlikçi yok",
+    "empty_hint": "Aşağıdaki düğmeyle ekibinizi eklemeye başlayın.",
+    "invitations": {
+      "tab": "Davetler"
+    },
+    "make": {
+      "hr": "İK Ata",
+      "hr_confirm_action": "İK Ata",
+      "hr_confirm_title": "İK Atansın mı?",
+      "hr_hint": "Bu işbirlikçiye İK izinleri ver",
+      "hr_success": "İK atandı."
+    },
+    "manager": {
+      "label": "Yönetici",
+      "required": "Yönetici/İK erişimi gerekli"
+    },
+    "revoke": {
+      "hr": "İK İptal",
+      "hr_confirm_action": "İptal",
+      "hr_confirm_title": "İK İptal edilsin mi?",
+      "hr_hint": "Bu hesaptan İK izinlerini kaldır",
+      "hr_success": "İK izinleri kaldırıldı."
+    },
+    "subtitle": "Çalışanlar ve davetler",
+    "title": "Ekip",
+    "view": {
+      "attendance": "Devam istatistikleri",
+      "attendance_hint": "Varlık, anormallikler, geçmiş",
+      "profile": "Profili görüntüle",
+      "profile_hint": "İletişim bilgileri, pozisyon, maaş, program",
+      "tasks": "Görevler",
+      "tasks_hint": "Saha görevlerini görüntüle veya ata"
     }
   },
   "attendanceBreakFailure": "Mola onaylanmadı",
