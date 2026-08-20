@@ -116,8 +116,15 @@ class TrainingController extends Controller
 
         $sessions = TrainingSession::query()
             ->where('company_id', $user->company_id)
-            ->with(['course:id,title', 'trainer:id,first_name,last_name'])
-            ->orderByDesc('start_date')
+            ->with(['course:id,title', 'trainer:id,first_name,last_name']);
+
+        // #5178 : le filtre ?status= (planned|in_progress|completed|cancelled)
+        // était ignoré — la liste globale renvoyait toutes les sessions.
+        if ($request->filled('status')) {
+            $sessions->where('status', $request->input('status'));
+        }
+
+        $sessions = $sessions->orderByDesc('start_date')
             ->paginate(max(1, min(100, $request->integer('per_page', 20))));
 
         return TrainingSessionResource::collection($sessions)->response();
