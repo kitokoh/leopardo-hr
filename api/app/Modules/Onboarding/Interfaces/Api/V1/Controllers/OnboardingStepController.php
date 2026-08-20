@@ -7,10 +7,12 @@ namespace App\Modules\Onboarding\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\OnboardingStepResource;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\HR\Domain\Models\OnboardingStep;
 use App\Modules\Onboarding\Application\Actions\SeedDefaultSteps;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OnboardingStepController extends Controller
 {
@@ -47,6 +49,13 @@ class OnboardingStepController extends Controller
         $completed = $steps->whereIn('status', ['completed', 'skipped'])->count();
         $percent = $total > 0 ? (int) round(($completed / $total) * 100) : 0;
 
+        // #5151 — instrumentation légère (sans outil externe) : horodatage du
+        // parcours pilote exposé au gestionnaire. Champs additifs — les
+        // clients existants ignorent les clés inconnues (contrat canonique
+        // inchangé : completed_steps/total_steps/progress_percent/steps…).
+        $company = Company::find($companyId);
+        $companyCreatedAt = $company?->created_at;
+
         return response()->json([
             'data' => [
                 'completed_steps' => $completed,
@@ -54,6 +63,10 @@ class OnboardingStepController extends Controller
                 'progress_percent' => $percent,
                 'progress' => $percent,
                 'go_live_ready' => $total > 0 && $completed >= $total - 1,
+                'company_created_at' => $companyCreatedAt?->toIso8601String(),
+                'elapsed_since_company_creation_minutes' => $companyCreatedAt
+                    ? (int) $companyCreatedAt->diffInMinutes(now())
+                    : null,
                 'next_actions' => $steps
                     ->where('status', 'pending')
                     ->take(3)
@@ -126,6 +139,22 @@ class OnboardingStepController extends Controller
             'status' => 'completed',
             'completed_at' => now(),
             'completed_by' => $user->id,
+        ]);
+
+        // #5151 — instrumentation légère : horodatage par étape du parcours
+        // pilote (log structuré, pas d'outil externe). `elapsed_minutes` =
+        // temps écoulé depuis la création de la société → permet de mesurer
+        // l'objectif « onboarding pilote < 30 min » sans télémétrie tierce.
+        $companyCreatedAt = Company::find($companyId)?->created_at;
+        Log::info('onboarding.step_completed', [
+            'company_id' => $companyId,
+            'step_key' => $stepKey,
+            'step_order' => $step->order,
+            'step_title' => $step->title,
+            'completed_at' => now()->toIso8601String(),
+            'elapsed_minutes_since_company_creation' => $companyCreatedAt
+                ? (int) $companyCreatedAt->diffInMinutes(now())
+                : null,
         ]);
 
         return (new OnboardingStepResource($step->fresh()))->response();
