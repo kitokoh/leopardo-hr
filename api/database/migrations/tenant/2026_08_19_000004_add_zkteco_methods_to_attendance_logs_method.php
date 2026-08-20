@@ -33,15 +33,19 @@ return new class extends Migration
               AND table_schema = current_schema()
         ");
 
-        if (! $result) {
+        if (! is_object($result) || ! property_exists($result, 'data_type') || ! property_exists($result, 'udt_name')) {
             return; // Colonne absente, rien à faire.
         }
 
         $values = ['zkteco', 'fingerprint', 'face', 'card'];
 
+        $enumName = $result->udt_name;
+
         if ($result->data_type === 'USER-DEFINED') {
             // ENUM PostgreSQL natif — ajouter les valeurs si absentes.
-            $enumName = $result->udt_name;
+            if (! is_string($enumName)) {
+                return;
+            }
 
             foreach ($values as $value) {
                 DB::statement(
@@ -59,11 +63,21 @@ return new class extends Migration
             ");
 
             foreach ($checks as $check) {
-                if (str_contains($check->definition, "'zkteco'")) {
+                if (! is_object($check) || ! property_exists($check, 'definition') || ! property_exists($check, 'conname')) {
+                    continue;
+                }
+
+                $definition = $check->definition;
+                $conname = $check->conname;
+                if (! is_string($definition) || ! is_string($conname)) {
+                    continue;
+                }
+
+                if (str_contains($definition, "'zkteco'")) {
                     continue; // Déjà étendue.
                 }
 
-                DB::statement("ALTER TABLE attendance_logs DROP CONSTRAINT {$check->conname}");
+                DB::statement("ALTER TABLE attendance_logs DROP CONSTRAINT {$conname}");
 
                 $allowed = ['mobile', 'qr', 'biometric', 'manual', 'geo_auto', ...$values];
                 $list = implode(', ', array_map(
@@ -72,7 +86,7 @@ return new class extends Migration
                 ));
 
                 DB::statement(
-                    "ALTER TABLE attendance_logs ADD CONSTRAINT {$check->conname} "
+                    "ALTER TABLE attendance_logs ADD CONSTRAINT {$conname} "
                     ."CHECK ((method)::text = ANY ((ARRAY[{$list}])::text[]))"
                 );
             }

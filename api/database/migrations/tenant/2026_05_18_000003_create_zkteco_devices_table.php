@@ -47,7 +47,6 @@ return new class extends Migration
             $table->json('capabilities')->nullable();
             $table->timestamps();
 
-
         });
 
         if (schemaTableExists('zkteco_sync_logs')) {

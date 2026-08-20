@@ -35,7 +35,7 @@ return new class extends Migration
               AND table_schema = current_schema()
         ");
 
-        if ($column === null || $column->data_type === 'uuid') {
+        if (! is_object($column) || ! property_exists($column, 'data_type') || $column->data_type === 'uuid') {
             return; // Env neuf (migration create corrigée) ou déjà converti.
         }
 
