@@ -12,6 +12,7 @@ use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\CountryRules\CedeaoPayrollRules;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -37,6 +38,8 @@ use Tests\TestCase;
  */
 class GoldenCiPayrollTest extends TestCase
 {
+    use RefreshTenantDatabase;
+
     private function rules(): CedeaoPayrollRules
     {
         return new CedeaoPayrollRules('CI');
@@ -439,6 +442,7 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame(7200.0, (float) $slip->total_deductions);
         $this->assertSame(92800.0, (float) $slip->net_salary);
     }
+
     public function test_golden_ci_ricf_scale_art_120(): void
     {
         // RICF — calcul manuel (CGI CI art. 120, réforme ord. 2023-718/719,
@@ -535,5 +539,4 @@ class GoldenCiPayrollTest extends TestCase
         $this->assertSame(81000.0, $breakdown['income_tax']);
         $this->assertSame(403000.0, $breakdown['net_salary']);
     }
-
 }

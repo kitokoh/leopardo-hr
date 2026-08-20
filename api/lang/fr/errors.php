@@ -159,6 +159,7 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'Cette fiche de paie est déjà validée et ne peut plus être modifiée.',
     'PAYROLL_RUN_LOCKED' => 'Ce run de paie est verrouillé (clôture comptable) et ne peut plus être modifié.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Seul un run de paie verrouillé peut être régularisé.',
+    'PAYROLL_RUN_NO_SLIPS' => 'Ce run ne contient aucun bulletin — impossible de valider ou clôturer une paie vide. Vérifiez les structures salariales actives et recalculez.',
     'PAYROLL_RUN_NOT_VALIDATED' => 'Un run doit être validé (étape RH) avant verrouillage comptable.',
     'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'Le mot de passe ou l\'invitation email est requis.',
     'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'Le type de manager est requis.',

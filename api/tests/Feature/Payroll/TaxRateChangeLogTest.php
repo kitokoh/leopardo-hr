@@ -69,7 +69,6 @@ class TaxRateChangeLogTest extends TestCase
         ]);
         $admin->forceFill(['password_hash' => bcrypt('secret123')])->save();
 
-
         /** @var Employee $manager */
         $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
 
@@ -162,9 +161,15 @@ class TaxRateChangeLogTest extends TestCase
 
         $this->expectException(QueryException::class);
 
-        DB::table('tax_rate_change_log')
-            ->where('id', $log->id)
-            ->update(['action' => 'tampered']);
+        // Le RAISE du trigger avorte la transaction PG : on isole la levée
+        // dans un savepoint (DB::transaction imbriquée) pour ne pas empoisonner
+        // la transaction RefreshDatabase du test (sinon 25P02 en cascade sur
+        // le tearDown et tous les tests suivants du process).
+        DB::transaction(function () use ($log): void {
+            DB::table('tax_rate_change_log')
+                ->where('id', $log->id)
+                ->update(['action' => 'tampered']);
+        });
     }
 
     public function test_db_level_delete_is_blocked_by_trigger(): void
@@ -181,9 +186,12 @@ class TaxRateChangeLogTest extends TestCase
 
         $this->expectException(QueryException::class);
 
-        DB::table('tax_rate_change_log')
-            ->where('id', $log->id)
-            ->delete();
+        // Même isolation en savepoint que test_db_level_update_is_blocked_by_trigger.
+        DB::transaction(function () use ($log): void {
+            DB::table('tax_rate_change_log')
+                ->where('id', $log->id)
+                ->delete();
+        });
     }
 
     public function test_db_level_insert_still_works_with_trigger(): void
@@ -224,7 +232,10 @@ class TaxRateChangeLogTest extends TestCase
 
         $this->expectException(QueryException::class);
 
-        DB::table('tax_rate_change_log')->truncate();
+        // TRUNCATE est transactionnel en PG : même isolation en savepoint.
+        DB::transaction(function (): void {
+            DB::table('tax_rate_change_log')->truncate();
+        });
     }
 
     public function test_mass_assignment_allowlist_blocks_unknown_fields(): void

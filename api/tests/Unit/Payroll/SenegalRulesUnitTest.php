@@ -89,9 +89,9 @@ class SenegalRulesUnitTest extends TestCase
     {
         $abatement = $this->sn()->professionalExpensesDeduction();
 
-        // 30 % du brut, NON plafonné (docs/payroll/SN_COMPLIANCE.md §6).
+        // #1912 : 30 % du brut plafonné à 900 000/an = 75 000/mois (CGI art. 168).
         self::assertSame(30.0, $abatement['rate']);
-        self::assertNull($abatement['cap']);
+        self::assertSame(75000.0, $abatement['cap']);
 
         self::assertSame(90000.0, 300000.0 * 0.30);
     }
@@ -122,18 +122,18 @@ class SenegalRulesUnitTest extends TestCase
     {
         $calculator = new PayrollCalculator;
 
-        // Brut 60 000 — IPRES salariale 5,6 % = 3 360 ; IR = 0 (annuel
-        // 463 680 < 630 000, abattement 30 % du brut) ; TRIMF 2 700 →
-        // déductions = 3 360 + max(0, 2 700) = 6 060 → net 53 940.
+        // #1912 (TRIMF révisé) — Brut 60 000 : IPRES 3 360 ; IR = 0 (annuel
+        // < 630 000) ; TRIMF 900 (≤ 75 000) → déductions = 3 360 + 900 = 4 260
+        // → net 55 740.
         $b60 = $calculator->computeNetBreakdown(60000.0, $this->sn());
-        self::assertSame(6060.0, $b60['base_deductions']);
-        self::assertSame(53940.0, $b60['net_salary']);
+        self::assertSame(4260.0, $b60['base_deductions']);
+        self::assertSame(55740.0, $b60['net_salary']);
 
-        // Brut 100 000 — IPRES 5 600 ; IR 2 380 < TRIMF 5 400 →
-        // déductions = 5 600 + 5 400 = 11 000 → net 89 000.
+        // Brut 100 000 — IPRES 5 600 ; IR 2 380 > TRIMF 1 800 (≤ 200 000) →
+        // déductions = 5 600 + 2 380 = 7 980 → net 92 020.
         $b100 = $calculator->computeNetBreakdown(100000.0, $this->sn());
-        self::assertSame(11000.0, $b100['base_deductions']);
-        self::assertSame(89000.0, $b100['net_salary']);
+        self::assertSame(7980.0, $b100['base_deductions']);
+        self::assertSame(92020.0, $b100['net_salary']);
 
         // Brut 250 000 — IPRES 14 000 ; IR 25 300 > TRIMF 9 000 →
         // déductions = 14 000 + 25 300 = 39 300 → net 210 700.

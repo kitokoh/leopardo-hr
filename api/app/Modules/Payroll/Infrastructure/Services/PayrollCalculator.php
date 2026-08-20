@@ -227,6 +227,15 @@ class PayrollCalculator
             $header = request()->header('X-Correlation-ID') ?: request()->header('X-Request-Id');
             $correlationId = is_string($header) && $header !== '' ? $header : (string) Str::uuid();
             $run->forceFill(['correlation_id' => $correlationId])->save();
+        } else {
+            // Recalcul d'un run déjà calculé : chaque tentative de calcul est
+            // un NOUVEAU calcul → nouveau correlation_id. Sans cela, le 2e
+            // insert d'audit viole la contrainte unique
+            // payroll_calculation_audits.correlation_id et le recalcul
+            // (flux légitime, cf. test "rebuilds slips on recalculation")
+            // échoue en QueryException 25P02.
+            $correlationId = (string) Str::uuid();
+            $run->forceFill(['correlation_id' => $correlationId])->save();
         }
         // Corrélation des logs de ce calcul (issue #1874).
         Log::withContext(['correlation_id' => $correlationId]);

@@ -158,6 +158,7 @@ return [
     'PAYROLL_ALREADY_VALIDATED' => 'Bu maaş bordrosu zaten onaylandı ve artık değiştirilemez.',
     'PAYROLL_RUN_LOCKED' => 'Bu maaş bordrosu kilitli (muhasebe kapanışı) ve artık değiştirilemez.',
     'PAYROLL_RUN_NOT_LOCKED' => 'Yalnızca kilitli bir maaş bordrosu düzeltilebilir.',
+    'PAYROLL_RUN_NO_SLIPS' => 'Bu maaş çalışmasında hiç bordro yok — boş bir maaş ödemesi doğrulanamaz veya kapatılamaz. Aktif maaş yapılarını kontrol edin ve yeniden hesaplayın.',
     'PAYROLL_RUN_NOT_VALIDATED' => 'Muhasebe kilidi öncesinde bordro onaylanmalıdır (İK adımı).',
     'EMPLOYEE_PASSWORD_OR_INVITATION_REQUIRED' => 'Şifre veya e-posta davetiyesi gereklidir.',
     'EMPLOYEE_MANAGER_ROLE_REQUIRED' => 'Yönetici türü gereklidir.',

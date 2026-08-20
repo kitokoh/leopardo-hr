@@ -14,8 +14,11 @@ namespace App\Modules\Payroll\Infrastructure\Services\CountryRules;
  *   - CIPRES / CLEISS — CSS famille 7 %, plafond 63 000 XOF/mois
  *   - Code du travail sénégalais — art. 143 (HS), 65 ss. (préavis), 143 (congés)
  *
- * Statut : PRODUCTION — validé par analyse experte 2026-08-18 (#1912).
- * Voir docs/payroll/SN_VALIDATION.md pour la fiche détaillée.
+ * Statut : PRODUCTION — validation expert-comptable 2026-08-18 (#1912).
+ * Fiche de validation : docs/payroll/SN_COMPLIANCE.md (§11) et
+ * docs/payroll/SN_VALIDATION.md. Valeurs vérifiées contre CLEISS (01/2026),
+ * IPRES (FAQ officielle), rapport d'évaluation des dépenses fiscales du
+ * Ministère des Finances, WageIndicator (décret 2023-1710).
  */
 class SenegalPayrollRules extends AbstractCountryRules
 {
@@ -31,8 +34,11 @@ class SenegalPayrollRules extends AbstractCountryRules
 
     public function minimumWage(): float
     {
-        // SMIG Sénégal — arrêté ministériel 2023 (dernier connu).
-        return 58900.0;
+        // SMIG Sénégal — décret n° 2023-1710 du 07/08/2023, en vigueur depuis
+        // le 01/07/2023 : 371 FCFA/h (40 h/semaine, secteurs non agricoles).
+        // Mensuel = 371 × 40 × 52/12 = 64 305,43 FCFA (source : CLEISS 01/2026,
+        // WageIndicator 08/2026). #1912 : corrige l'ancienne valeur 58 900.
+        return 64305.43;
     }
 
     /**
@@ -49,8 +55,8 @@ class SenegalPayrollRules extends AbstractCountryRules
             // Déclenché uniquement pour les employés de catégorie 'cadre'
             // (employees.ipres_category). Métadonnée floor/ceiling exposée pour
             // que la simulation par item soit cohérente avec le moteur.
-            ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 2160000.0],
-            ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 2160000.0],
+            ['name' => 'IPRES Cadres Salariale (T2)', 'code' => 'IPRES_SN_EMP_T2', 'type' => 'employee', 'rate' => 2.4, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 1296000.0],
+            ['name' => 'IPRES Cadres Patronale (T2)', 'code' => 'IPRES_SN_PAT_T2', 'type' => 'employer', 'rate' => 3.6, 'cap' => null, 'floor' => 432000.0, 'ceiling' => 1296000.0],
             // CSS — prestations familiales 7 % (CIPRES/CLEISS officiel, #2473)
             // + AT 1 % (taux secteur bureau/services, configurable par branche),
             // chacune plafonnées à 63 000 XOF/mois.
@@ -65,18 +71,24 @@ class SenegalPayrollRules extends AbstractCountryRules
     }
 
     /**
-     * Barème IR annuel sénégalais (CGI Sénégal art. 213 et s., taux 2024).
-     * 6 tranches progressives, validées par analyse expert 2026-08-18 (#1912).
+     * Barème IR annuel sénégalais — 7 tranches (CGI art. 213 et s.).
+     *
+     * #1912 (validation expert 2026-08-18) : le barème comporte 7 tranches
+     * de 0 % à 43 % (rapport d'évaluation des dépenses fiscales du Ministère
+     * des Finances ; countrytaxcalc 06/2026). L'ancien barème s'arrêtait à
+     * 40 % dès 13,5 M — la tranche 40 % couvre 13,5 M – 25 M et une tranche
+     * 43 % s'applique au-delà de 25 M.
      */
     protected function defaultTaxSlabs(): array
     {
         return [
-            ['min' => 0,        'max' => 630000,   'rate' => 0,  'fixed_deduction' => 0],
-            ['min' => 630001,   'max' => 1500000,  'rate' => 20, 'fixed_deduction' => 0],
-            ['min' => 1500001,  'max' => 4000000,  'rate' => 30, 'fixed_deduction' => 0],
-            ['min' => 4000001,  'max' => 8000000,  'rate' => 35, 'fixed_deduction' => 0],
-            ['min' => 8000001,  'max' => 13500000, 'rate' => 37, 'fixed_deduction' => 0],
-            ['min' => 13500001, 'max' => null,     'rate' => 40, 'fixed_deduction' => 0],
+            ['min' => 0,         'max' => 630000,    'rate' => 0,  'fixed_deduction' => 0],
+            ['min' => 630001,    'max' => 1500000,   'rate' => 20, 'fixed_deduction' => 0],
+            ['min' => 1500001,   'max' => 4000000,   'rate' => 30, 'fixed_deduction' => 0],
+            ['min' => 4000001,   'max' => 8000000,   'rate' => 35, 'fixed_deduction' => 0],
+            ['min' => 8000001,   'max' => 13500000,  'rate' => 37, 'fixed_deduction' => 0],
+            ['min' => 13500001,  'max' => 25000000,  'rate' => 40, 'fixed_deduction' => 0],
+            ['min' => 25000001,  'max' => null,      'rate' => 43, 'fixed_deduction' => 0],
         ];
     }
 
@@ -86,7 +98,12 @@ class SenegalPayrollRules extends AbstractCountryRules
         // (CGI art. 100 ; SN_COMPLIANCE.md §1/§6).
         $grossForAbatement ??= $grossTaxable;
         $abatement = $this->professionalExpensesDeduction();
-        $monthlyDeduction = $grossForAbatement * ($abatement['rate'] / 100);
+        // #1912 : abattement plafonné (900 000 FCFA/an = 75 000 FCFA/mois,
+        // CGI art. 168 ; AfricaPaieRH, expatriation.io, countrytaxcalc).
+        $monthlyDeduction = min(
+            $grossForAbatement * ($abatement['rate'] / 100),
+            (float) ($abatement['cap'] ?? PHP_FLOAT_MAX),
+        );
 
         $annualTaxable = max(0.0, $grossTaxable - $monthlyDeduction) * $annualBasis;
         $tax = $this->calculateProgressiveTax($annualTaxable, $this->taxSlabs());
@@ -114,8 +131,8 @@ class SenegalPayrollRules extends AbstractCountryRules
      * (employees.ipres_category). L'ancienne approximation par seuil de brut
      * est remplacée ici par la vérification de catégorie.
      *
-     * @param ?string  $category  Valeur de employees.ipres_category :
-     *                           'cadre' | 'general' | 'ouvrier' | null
+     * @param  ?string  $category  Valeur de employees.ipres_category :
+     *                             'cadre' | 'general' | 'ouvrier' | null
      * @return array{employee: float, employer: float}
      */
     public function calculateSocialChargesWithCategory(float $grossSalary, ?string $category): array
@@ -131,15 +148,17 @@ class SenegalPayrollRules extends AbstractCountryRules
      *   - Sans catégorie (null) : T2 si brut > 432 000 (approximation pilote
      *     conservée pour la compatibilité du moteur de base).
      *
-     * @param ?string $category  employees.ipres_category ou null
+     * @param  ?string  $category  employees.ipres_category ou null
      * @return array{employee: float, employer: float}
      */
     private function doCalculateSocialCharges(float $grossSalary, ?string $category): array
     {
-        $ipresCap  = 432000.0;
-        $cssCap    = 63000.0;
-        $t2Floor   = 432000.0;
-        $t2Ceiling = 2160000.0;
+        $ipresCap = 432000.0;
+        $cssCap = 63000.0;
+        $t2Floor = 432000.0;
+        // #1912 : plafond T2 = 1 296 000 XOF/mois (CLEISS 01/2026, AfricaPaieRH) —
+        // l'ancienne valeur 2 160 000 était erronée.
+        $t2Ceiling = 1296000.0;
 
         $employee = $this->computeContribution($grossSalary, 'IPRES_SN_EMP', 5.6, $ipresCap);
         $employer = $this->computeContribution($grossSalary, 'IPRES_SN_PAT', 8.4, $ipresCap);
@@ -170,17 +189,21 @@ class SenegalPayrollRules extends AbstractCountryRules
      * TRIMF — Taxe Représentative des Impôts du Minimum Fiscal.
      *
      * Taxe forfaitaire mensuelle par tranche de brut (CGI Sénégal art. 185).
-     * 6 tranches validées par analyse experte 2026-08-18 (#1912).
+     *
+     * #1912 (validation expert 2026-08-18) : barème révisé (900 à 18 000
+     * FCFA/mois — simulateur Senego 2026 ; l'ancien tableau 900/2 700/5 400/
+     * 9 000/18 000/36 000 était périmé). ⚠️ Source unique secondaire — à
+     * confirmer par la DGID (voir SN_COMPLIANCE.md §11 limites).
      */
     public function calculateBracketTax(float $grossSalary): float
     {
         return match (true) {
-            $grossSalary <= 25000  => 900.0,
-            $grossSalary <= 75000  => 2700.0,
-            $grossSalary <= 150000 => 5400.0,
-            $grossSalary <= 350000 => 9000.0,
-            $grossSalary <= 700000 => 18000.0,
-            default                => 36000.0,
+            $grossSalary <= 75000 => 900.0,
+            $grossSalary <= 200000 => 1800.0,
+            $grossSalary <= 600000 => 3600.0,
+            $grossSalary <= 1000000 => 7200.0,
+            $grossSalary <= 1500000 => 12000.0,
+            default => 18000.0,
         };
     }
 
@@ -194,7 +217,10 @@ class SenegalPayrollRules extends AbstractCountryRules
      */
     public function professionalExpensesDeduction(): array
     {
-        return ['rate' => 30.0, 'cap' => null];
+        // #1912 : plafond 900 000 FCFA/an (soit 75 000 FCFA/mois) — CGI
+        // art. 168. L'ancienne implémentation (non plafonnée) surévaluait
+        // l'abattement des hauts revenus.
+        return ['rate' => 30.0, 'cap' => 75000.0];
     }
 
     /**
@@ -210,9 +236,9 @@ class SenegalPayrollRules extends AbstractCountryRules
     public function noticePeriodDays(float $yearsOfService, ?string $category = null): float
     {
         return match (strtolower((string) $category)) {
-            'cadre'              => 66.0,
-            'ouvrier', 'worker'  => 6.0,
-            default              => 22.0,
+            'cadre' => 66.0,
+            'ouvrier', 'worker' => 6.0,
+            default => 22.0,
         };
     }
 
@@ -240,8 +266,8 @@ class SenegalPayrollRules extends AbstractCountryRules
     public function publicHolidaysSource(): string
     {
         return 'SN fixed public holidays (seed PublicHolidaySeeder, issue #2255): '
-            . '1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques '
-            . '(Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
+            .'1er jan, 4 avr, 1er mai, 15 août, 1er nov, 25 déc + mobiles islamiques '
+            .'(Aïd el-Fitr, Aïd el-Adha, Maouloud) — PA2-COUNTRY-012.';
     }
 
     /**
