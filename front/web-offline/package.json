@@ -29,7 +29,7 @@
     "eslint": "^10.8.1",
     "jsdom": "^30.0.1",
     "tailwindcss": "^4.1.11",
-    "typescript": "^7.0.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.10"
   },
