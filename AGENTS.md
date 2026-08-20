@@ -177,6 +177,9 @@ Le projet est une **Suite d'Applications** (1 App = 1 Metier). Voici les roles d
 - **La Web App Client (`front/web` et admin-dashboard)** : Le portail web client est **unique**. Un employe, un RH ou un Manager se connecte au meme portail, mais l'interface s'adapte dynamiquement et change completement en fonction du role (RBAC).
 - **La Web App Super-Admin** : Interface web reservee exclusivement a l'administration de la plateforme Leopardo (SaaS).
 
+### Freeze scope 60 jours (issue #5147, plan 60 jours)
+Toute feature hors du périmètre autorisé de `docs/GOUVERNANCE/FREEZE_SCOPE_60J.md` est **refusée en revue** avec renvoi vers ce document. Les exceptions passent par une issue `[FREEZE-EXCEPTION]` décidée par le fondateur — jamais par l'agent lui-même.
+
 ## ⚠️ NOUVELLE METHODE DE GESTION DE PROJET (Juillet 2026)
 
 **ATTENTION AGENTS** : Les anciens dossiers `docs/PLAN_ACTION/` et `docs/PLAN_ACTION2/` sont **obsoletes et archives**. Il est **strictement interdit** de lire ces dossiers pour chercher du travail ou d'y creer de nouveaux fichiers Markdown de planification.
