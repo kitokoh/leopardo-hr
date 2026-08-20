@@ -169,6 +169,25 @@ class AuthController extends Controller
 
     public function redirectToGoogle(): mixed
     {
+        // Issue #5170 : garde de configuration. En prod (Render), des
+        // GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_REDIRECT_URL absents
+        // faisaient planter Socialite au moment de construire l'URL →
+        // exception non gérée → 500 INTERNAL_ERROR (page JSON brute côté
+        // vitrine). On échoue rapidement avec un 503 explicite + log
+        // opérationnel (quelles variables manquent) au lieu d'un 500 générique.
+        if (! $this->googleOauthConfigured()) {
+            Log::error('auth.google.not_configured', [
+                'client_id' => filled(config('services.google.client_id')),
+                'client_secret' => filled(config('services.google.client_secret')),
+                'redirect' => filled(config('services.google.redirect')),
+            ]);
+
+            return new JsonResponse([
+                'error' => 'GOOGLE_OAUTH_NOT_CONFIGURED',
+                'message' => __('errors.GOOGLE_OAUTH_NOT_CONFIGURED'),
+            ], 503);
+        }
+
         // Issue #2619 : état aléatoire en session (anti-CSRF login) — validé
         // au callback. Plus de Socialite stateless sans protection.
         $state = Str::random(40);
@@ -178,6 +197,18 @@ class AuthController extends Controller
         $google = Socialite::driver('google');
 
         return $google->with(['state' => $state])->redirect();
+    }
+
+    /**
+     * Issue #5170 : la redirection Google nécessite les trois variables de
+     * configuration (client_id, client_secret, redirect). Absentes → 503
+     * explicite au lieu d'un 500 générique (constat prod 2026-08-20).
+     */
+    private function googleOauthConfigured(): bool
+    {
+        return filled(config('services.google.client_id'))
+            && filled(config('services.google.client_secret'))
+            && filled(config('services.google.redirect'));
     }
 
     public function handleGoogleCallback(Request $request): JsonResponse
