@@ -29,4 +29,4 @@
 - [x] Données disponibles dans PaySlip/PaySlipLine (gross, net, lines typées).
 - [x] Vue `pdf.payslip` alignée : bloc employeur (adresse + **NIF/RC/CNAS employeur/ID.Nat** via `company.metadata`), bloc employé, période/présence, rémunération détaillée, **cumuls annuels** (brut/retenues/net) — PR #1643.
 - [x] Test automatique des mentions : `PaySlipDzMentionsTest` (NIF/RC/CNAS/ID.Nat + cumuls annuels).
-- [ ] Archivage automatique Cabinet + horodatage (suivi #1548).
+- [x] Archivage automatique Cabinet + horodatage — #1817 (`ArchivePaySlipsToCabinetJob`, dispatché par `PayrollClosingService::lock()` ; test `PaySlipCabinetArchiveTest`). Couverture du flux API complétée par `PayrollRunClosingE2ETest` (#5150) : les bulletins `validated`/`sent` sont archivés au verrouillage.

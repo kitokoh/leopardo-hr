@@ -3,6 +3,17 @@
 Protocole de mesure de la clôture de paie mensuelle (calculate → validate-rh
 → lock) sur un jeu de données DZ réaliste.
 
+## Statut (2026-08-20)
+
+- **Spec F-12 (#1594)** : fermée (completed, 2026-08-09) — protocole validé.
+- **Perf F-12 (#1542)** : fermée (completed, 2026-08-09) — cible atteinte
+  (10 000 employés : 90,15 s < 30 min).
+- **Suite #5150** : le runbook comptable (`docs/payroll/RUNBOOK_CLOTURE_DZ.md`)
+  référence ce protocole ; le flux de clôture est couvert de bout en bout par
+  `PayrollRunClosingE2ETest` (moteur réel, API).
+- Sans PostgreSQL local, le protocole s'exécute via docker compose (api) —
+  les mesures ci-dessous proviennent d'un env local PG 16.
+
 ## Prérequis
 
 - API bootable (docker compose up, ou env local PG + Redis).

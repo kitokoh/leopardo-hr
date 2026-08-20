@@ -71,7 +71,6 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
 
     public function handle(PaySlipPdfGenerator $pdfGenerator): void
     {
-        fwrite(STDERR, "DBG handle entered\n");
         /** @var PayrollRun|null $run */
         $run = PayrollRun::query()->withoutGlobalScopes()->find($this->payrollRunId);
         if ($run === null) {
@@ -88,13 +87,15 @@ class ArchivePaySlipsToCabinetJob implements ShouldQueue, TenantScopedJob
             return;
         }
 
+        // #5150 — le filtre ne doit pas être limité à `calculated` : via le
+        // workflow API (validateRun), les bulletins passent en `validated`
+        // avant le verrouillage (`lock`), et `sendSlips` les passe en `sent`.
+        // Un filtre `calculated` seul laissait l'archivage vide pour toute
+        // clôture passée par l'API (F-09 : archivage Cabinet après clôture).
         $slips = PaySlip::query()
             ->where('payroll_run_id', $run->id)
-            ->where('status', 'calculated')
+            ->whereIn('status', ['calculated', 'validated', 'sent'])
             ->get();
-        fwrite(STDERR, "DBG slips=" . $slips->count() . "\n");
-
-
 
         foreach ($slips as $slip) {
             try {
