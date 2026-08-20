@@ -1997,6 +1997,7 @@ trait CreatesMvpSchema
                 $table->string('status', 20)->default('offline');
                 $table->timestampTz('last_heartbeat_at')->nullable();
                 $table->timestampTz('last_sync_at')->nullable();
+                $table->json('punch_methods')->nullable();
                 $table->timestamps();
             });
         }

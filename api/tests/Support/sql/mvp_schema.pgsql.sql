@@ -1004,6 +1004,7 @@ CREATE TABLE IF NOT EXISTS shared_tenants.zkteco_devices (
     last_heartbeat_at timestamptz NULL,
     last_sync_at timestamptz NULL,
     capabilities jsonb NULL,
+    punch_methods jsonb NULL,
     created_at timestamptz NULL,
     updated_at timestamptz NULL
 );
