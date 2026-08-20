@@ -23,7 +23,7 @@
     "globe.gl": "^2.31.0",
     "leaflet": "^1.9.4",
     "nprogress": "^0.2.0",
-    "pinia": "^4.0.2",
+    "pinia": "^4.0.3",
     "socket.io-client": "^4.7.4",
     "three": "^0.185.1",
     "vue": "^3.5.41",
