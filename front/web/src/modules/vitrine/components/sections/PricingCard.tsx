@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
+import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
+import { useSsrLang } from '@/modules/vitrine/lib/locale-ssr-provider';
 
 export interface PricingCardProps {
   name: string;
@@ -25,15 +28,19 @@ export function PricingCard({
   name,
   price,
   currency = 'EUR',
-  period = '/mois',
+  period,
   description,
   features,
   cta,
-  customPriceLabel = 'Sur devis',
+  customPriceLabel,
   highlighted = false,
   badge,
   index = 0,
 }: PricingCardProps) {
+  const ssrLang = useSsrLang() as AppLocale;
+  const resolvedPeriod = period ?? t(ssrLang, 'pricing.card.periodDefault');
+  const resolvedCustomPrice = customPriceLabel ?? t(ssrLang, 'pricing.card.customPriceDefault');
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -69,10 +76,10 @@ export function PricingCard({
         {/* Price */}
         <div className="mb-8">
           <div className="flex items-baseline gap-1">
-            <span className="text-5xl font-black text-slate-900 dark:text-white">{price ?? customPriceLabel}</span>
+            <span className="text-5xl font-black text-slate-900 dark:text-white">{price ?? resolvedCustomPrice}</span>
             {price !== null && <span className="text-slate-500 dark:text-slate-400 font-medium">{currency}</span>}
           </div>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">{period}</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">{resolvedPeriod}</p>
         </div>
 
         {/* CTA */}

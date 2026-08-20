@@ -25,10 +25,12 @@ describe('pricing trial duration consistency (#4951)', () => {
       }
     }
 
-    // Une seule durée (14) sur l'ensemble des locales.
-    expect([...durations].map((d) => d.split(':')[1])).toEqual(
-      [...new Set([...durations].map((d) => d.split(':')[1]))].map(() => '14')
-    );
+    // Une seule durée (14) sur l'ensemble des locales : le SET des durées
+    // distinctes doit être exactement {14}. La forme initiale comparait le
+    // tableau par-locale au tableau dédupliqué — structurellement impossible
+    // à satisfaire dès que 2+ locales annoncent une durée (cf. #2755 lot 2).
+    const distinctDurations = [...new Set([...durations].map((d) => d.split(':')[1]))];
+    expect(distinctDurations).toEqual(['14']);
   });
 
   it('aucun libellé « 30-day » / « 30 jours » ne subsiste', () => {

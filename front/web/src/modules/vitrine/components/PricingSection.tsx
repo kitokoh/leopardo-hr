@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, CheckCircle2, Users } from 'lucide-react'
 import { getPricingPlans, showsCurrency } from '../data/pricing'
 import { useVitrineLocale } from '../lib/vitrine-locale'
+import { t } from '@/lib/i18n/locale-catalog'
 
 export function planNameToCheckoutKey(planName?: string): 'free' | 'pilot' | 'operations' | 'enterprise' {
   const name = (planName ?? '').trim().toLowerCase()
@@ -34,24 +35,11 @@ function getPlanCtaHref(price: string, planName?: string, isAnnual?: boolean) {
   return `/signup?source=home_${planKey}`
 }
 
-const freePlanLabel: Record<string, string> = {
-  fr: 'Gratuit',
-  en: 'Free',
-  tr: 'Ücretsiz',
-  ar: 'مجاني',
-}
-const billingToggle: Record<string, { monthly: string; annual: string }> = {
-  fr: { monthly: 'Mensuel', annual: 'Annuel' },
-  en: { monthly: 'Monthly', annual: 'Annual' },
-  tr: { monthly: 'Aylik', annual: 'Yillik' },
-  ar: { monthly: 'شهري', annual: 'سنوي' },
-}
-
 export function PricingSection() {
   const { copy, locale } = useVitrineLocale()
   const pricingPlans = getPricingPlans(locale)
   const [isAnnual, setIsAnnual] = useState(true)
-  const toggle = billingToggle[locale] ?? billingToggle.en
+  const toggle = { monthly: t(locale, 'pricing.section.toggleMonthly'), annual: t(locale, 'pricing.section.toggleAnnual') }
 
   return (
     <section id="tarifs" className="relative py-32 overflow-hidden">
@@ -81,7 +69,7 @@ export function PricingSection() {
           <button
             onClick={() => setIsAnnual(!isAnnual)}
             className="relative w-14 h-7 rounded-full bg-emerald-500 transition-colors"
-            aria-label="Toggle billing period"
+            aria-label={t(locale, 'pricing.section.toggleAria')}
           >
             <motion.div
               className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-sm"
@@ -142,7 +130,7 @@ export function PricingSection() {
                     <div className="flex items-baseline justify-center gap-1">
                       {plan.price === '0' ? (
                         <span className="text-5xl font-black bg-gradient-to-b from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                          {freePlanLabel[locale] ?? freePlanLabel.en}
+                          {t(locale, 'pricing.section.freeLabel')}
                         </span>
                       ) : (
                         <>
@@ -197,7 +185,7 @@ export function PricingSection() {
             href="/pricing"
             className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
           >
-            {locale === 'fr' ? 'Voir la comparaison complete' : locale === 'tr' ? 'Tam karsilastirmayi gorun' : locale === 'ar' ? 'عرض المقارنة الكاملة' : 'View full comparison'}
+            {t(locale, 'pricing.section.fullComparison')}
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PricingCard, type PricingCardProps } from './PricingCard';
+import type { AppLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
+import { useSsrLang } from '@/modules/vitrine/lib/locale-ssr-provider';
 
 export interface PricingSectionProps {
   title: string;
@@ -29,10 +32,19 @@ export function PricingSection({
   badge,
   plans,
   showToggle = false,
-  toggleLabel = { monthly: 'Mensuel', annual: 'Annuel' },
-  periodLabel = { monthly: '/mois', annual: '/an' },
+  toggleLabel,
+  periodLabel,
 }: PricingSectionProps) {
   const [isAnnual, setIsAnnual] = useState(false);
+  const ssrLang = useSsrLang() as AppLocale;
+  const resolvedToggle = toggleLabel ?? {
+    monthly: t(ssrLang, 'pricing.section.toggleMonthly'),
+    annual: t(ssrLang, 'pricing.section.toggleAnnual'),
+  };
+  const resolvedPeriod = periodLabel ?? {
+    monthly: t(ssrLang, 'pricing.card.periodDefault'),
+    annual: '/an',
+  };
 
   return (
     <section className="relative py-32 overflow-hidden">
@@ -73,7 +85,7 @@ export function PricingSection({
             className="flex items-center justify-center gap-4 mb-16"
           >
             <span className={`text-sm font-medium ${!isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
-              {toggleLabel.monthly}
+              {resolvedToggle.monthly}
             </span>
             <button
               onClick={() => setIsAnnual(!isAnnual)}
@@ -90,7 +102,7 @@ export function PricingSection({
               />
             </button>
             <span className={`text-sm font-medium ${isAnnual ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
-              {toggleLabel.annual}
+              {resolvedToggle.annual}
             </span>
             {isAnnual && (
               <motion.span
@@ -112,7 +124,7 @@ export function PricingSection({
               {...plan}
               index={index}
               price={isAnnual && plan.price ? Math.round(plan.price * 12 * 0.8) : plan.price}
-              period={isAnnual ? periodLabel.annual : periodLabel.monthly}
+              period={isAnnual ? resolvedPeriod.annual : resolvedPeriod.monthly}
             />
           ))}
         </div>
