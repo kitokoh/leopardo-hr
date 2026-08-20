@@ -41,6 +41,7 @@ jobs:
       ref: ${{ steps.context.outputs.ref }}
       sha: ${{ steps.context.outputs.sha }}
       web_changed: ${{ steps.final.outputs.web_changed }}
+      api_changed: ${{ steps.final.outputs.api_changed }}
       app_version: ${{ steps.final.outputs.app_version }}
     steps:
       # The gate runs before the full deployment checkout. This sparse,
@@ -219,11 +220,22 @@ jobs:
           filters: .github/paths-filters.yml
           base: ${{ steps.parent.outputs.sha }}
 
-      - name: Export web_changed output
+      - name: Export web_changed + api_changed outputs
+        id: export
         if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
         shell: bash
         run: |
           echo "web_changed=${{ steps.changes.outputs.web }}" >> "$GITHUB_OUTPUT"
+          # api_changed : true si des fichiers api/** (ou CI backend) ont changé.
+          # Conservateur : si le parent est introuvable (base=sha => diff vide,
+          # paths-filter renvoie false), on déploie quand même (api_changed=true).
+          parent_sha="${{ steps.parent.outputs.sha }}"
+          deploy_sha="${{ steps.context.outputs.sha }}"
+          if [[ "${parent_sha}" == "${deploy_sha}" ]]; then
+            echo "api_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "api_changed=${{ steps.changes.outputs.api }}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Resolve program version for deploy metadata
         if: steps.context.outputs.should_deploy == 'pending-validation' && steps.decision.outputs.should_deploy == 'true'
@@ -253,13 +265,15 @@ jobs:
           if [[ "${{ steps.context.outputs.should_deploy }}" == "pending-validation" ]]; then
             {
               echo "should_deploy=${{ steps.decision.outputs.should_deploy }}"
-              echo "web_changed=${{ steps.changes.outputs.web }}"
+              echo "web_changed=${{ steps.export.outputs.web_changed }}"
+              echo "api_changed=${{ steps.export.outputs.api_changed }}"
               echo "app_version=${{ steps.version.outputs.app_version }}"
             } >> "$GITHUB_OUTPUT"
           else
             {
               echo "should_deploy=${{ steps.context.outputs.should_deploy }}"
               echo "web_changed=false"
+              echo "api_changed=false"
               echo "app_version="
             } >> "$GITHUB_OUTPUT"
           fi
@@ -294,7 +308,11 @@ jobs:
     name: Deploy API + Web to Render
     runs-on: ubuntu-latest
     needs: prepare
-    if: needs.prepare.outputs.should_deploy == 'true'
+    # #5xxx : déploiement piloté par les chemins — ne redéployer Render que si
+    # des fichiers api/** (ou CI backend) ont changé. Un merge web/mobile/docs
+    # ne doit plus déclencher un rebuild de l'API (et autoDeploy Render est à
+    # passer à false — voir render.yaml).
+    if: needs.prepare.outputs.should_deploy == 'true' && needs.prepare.outputs.api_changed == 'true'
     permissions:
       contents: read
 
