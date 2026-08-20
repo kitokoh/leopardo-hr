@@ -79,6 +79,28 @@ class WebhookSsrfGuardTest extends TestCase
         ]);
     }
 
+    public function test_store_accepts_rfc6761_test_hostname_in_testing_env(): void
+    {
+        // RFC 6761 : `.test`/`.example`/`.invalid` sont des TLD réservés aux
+        // tests, non routables (aucun risque SSRF possible). En environnement
+        // de test, la règle les accepte (les fixtures utilisent ces hôtes
+        // fictifs) ; en production ils restent refusés (fail-closed).
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        Sanctum::actingAs($manager);
+
+        $response = $this->postJson('/api/v1/webhooks', [
+            'url' => 'https://hooks.internal.test/hook',
+            'events' => ['employee.created'],
+        ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('webhook_endpoints', [
+            'company_id' => $company->id,
+            'url' => 'https://hooks.internal.test/hook',
+        ]);
+    }
+
     public function test_update_rejects_private_webhook_url(): void
     {
         $company = Company::factory()->create();

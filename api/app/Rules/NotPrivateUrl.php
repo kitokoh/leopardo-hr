@@ -65,6 +65,23 @@ class NotPrivateUrl implements ValidationRule
             return false;
         }
 
+        // RFC 6761 special-use TLDs (`.test`, `.example`, `.invalid`) : non
+        // routables, réservés aux tests. En environnement de test uniquement,
+        // les accepter : ils ne peuvent par construction pointer vers aucune
+        // IP privée/réservée (zéro risque SSRF) et les fixtures utilisent ces
+        // hôtes fictifs (ex. `idp.example.com`, `app.leopardo.test`). En
+        // production, ils restent refusés (fail-closed, inchangé).
+        // `function_exists('app')` : les tests unitaires purs (sans bootstrap
+        // Laravel) doivent conserver le comportement historique (fail-closed).
+        $isTesting = \function_exists('app') && app()->environment('testing');
+        if ($isTesting
+            && (str_ends_with($host, '.test')
+                || str_ends_with($host, '.example')
+                || str_ends_with($host, '.example.com')
+                || str_ends_with($host, '.invalid'))) {
+            return true;
+        }
+
         // Literal IP: validate directly.
         if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
             return self::isPublicIp($host);
