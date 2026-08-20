@@ -103,7 +103,8 @@ class ProvisionGuidedTrial
             $this->tenantManager->setTenant($company);
 
             try {
-                $manager = Employee::query()->create([
+                /** @var Employee $manager */
+                $manager = new Employee([
                     'first_name' => 'Manager',
                     'last_name' => 'Sandbox',
                     'email' => $email,
@@ -117,15 +118,19 @@ class ProvisionGuidedTrial
                         'guided_trial' => true,
                     ],
                 ]);
-                // Sensitive fields set explicitly (not mass-assignable, #3677).
-                $manager->company_id = $company->id;
-                $manager->role = 'manager';
-                $manager->manager_role = 'principal';
-                $manager->status = 'active';
-                $manager->salary_base = 0;
-                // Issue #4496 : password_hash non mass-assignable.
-                $manager->password_hash = Hash::make(Str::random(16));
-                $manager->save();
+                // Issue #5161 : `password_hash` est NOT NULL sans défaut dans le
+                // schéma tenant. Il doit être posé dans le MÊME INSERT (pattern
+                // #3677/#4151, cf. VerifyTrialSignup) — un `create()` sans lui
+                // échoue en SQLSTATE 23502 avant que l'update post-hoc ne puisse
+                // s'exécuter (régression #4558, non couverte par le fix #4947).
+                $manager->forceFill([
+                    'company_id' => $company->id,
+                    'password_hash' => Hash::make(Str::random(16)),
+                    'role' => 'manager',
+                    'manager_role' => 'principal',
+                    'status' => 'active',
+                    'salary_base' => 0,
+                ])->save();
 
                 // Basic Seeding to make it look active
                 $this->seedBasicSandboxData($company->id, $manager->id);

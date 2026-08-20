@@ -138,4 +138,36 @@ class ProvisionDemoTenantJobTest extends TestCase
             ->where('metadata->provisioned_by', 'guided_trial')
             ->count());
     }
+
+    /**
+     * #5161 : le manager sandbox est créé avec `password_hash` dans le MÊME
+     * INSERT — la colonne est NOT NULL sans défaut dans le schéma tenant.
+     * Un `Employee::create()` sans `password_hash` (puis update post-hoc)
+     * échouait en SQLSTATE 23502 → statut 'failed' ~8 s après signup en prod
+     * (régression #4558, non couverte par le fix #4947 qui ne touchait
+     * qu'EmployeeService). Pattern canonique #3677/#4151 : new Employee +
+     * forceFill + save (cf. VerifyTrialSignup).
+     */
+    public function test_guided_trial_manager_persisted_with_password_hash(): void
+    {
+        Mail::fake();
+
+        $email = 'guided-hash-'.uniqid().'@example.com';
+
+        /** @var ProvisionGuidedTrial $provisioner */
+        $provisioner = app(ProvisionGuidedTrial::class);
+        $result = $provisioner->execute($email, 'Sandbox Guided Hash '.uniqid(), 'DZ');
+
+        /** @var Employee $manager */
+        $manager = Employee::query()
+            ->where('email', $email)
+            ->firstOrFail();
+
+        $this->assertSame($result['manager']->id, $manager->id);
+        $this->assertIsString($manager->password_hash);
+        $this->assertStringStartsWith('$2y$', (string) $manager->password_hash);
+        $this->assertSame('manager', $manager->role);
+        $this->assertSame('principal', $manager->manager_role);
+        $this->assertSame('active', $manager->status);
+    }
 }
