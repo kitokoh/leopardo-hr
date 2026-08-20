@@ -139,3 +139,4 @@ class GoldenDzPayrollTest extends TestCase
         // (40 % de 328 800 = 131 520 > plafond 18 000 DZD).
         $this->assertSame(25900.0, $this->rules()->calculateIncomeTax(120000.0));
     }
+}
