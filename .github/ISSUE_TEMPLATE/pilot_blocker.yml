@@ -1,0 +1,65 @@
+name: "🚨 PILOT_BLOCKER"
+description: Bug bloquant signalé par un pilote — paie / pointage / login impossible. SLA de résolution < 24 h (issue #5155).
+title: "[PILOT_BLOCKER]: "
+labels: ["pilot-blocker", "P1", "bug", "prod"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **SLA pilote (issue #5155)** : un bug **bloquant** se règle en **moins de 24 h**.
+        Bloquant = paie, pointage ou login **impossible** pour le pilote (env prod).
+        Tout le reste est P2 (amélioration / non-bloquant) et passe par le flux normal.
+  - type: input
+    id: pilot
+    attributes:
+      label: Pilote concerné
+      description: Nom / société du pilote (ex. Pilote 1 — SARL X, DZ).
+      placeholder: Pilote 1 — SARL X
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte
+      description: Ce que le pilote faisait, à quel moment (date de paie, clôture, import…).
+      placeholder: Clôture de la paie mensuelle d'août — étape validation.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Étapes exactes (menu → action → écran), données utilisées.
+      placeholder: |
+        1. Se connecter en tant que comptable
+        2. Paie → Clôture → Valider
+        3. Écran erreur 500
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact (bloquant ?)
+      description: Le pilote est-il bloqué sur paie / pointage / login ?
+      options:
+        - "Oui — paie bloquée"
+        - "Oui — pointage bloqué"
+        - "Oui — login impossible"
+        - "Non — dégradation, pas bloquant (P2)"
+    validations:
+      required: true
+  - type: textarea
+    id: proof
+    attributes:
+      label: Preuve
+      description: Capture d'écran, extrait de log, requête curl, message d'erreur exact.
+      placeholder: HTTP 500 {"error":"INTERNAL_ERROR", ...}
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        **Triage (ops)** : l'issue est traitée immédiatement par l'agent ops.
+        Hotfix : branche `hotfix/<issue>-<slug>`, CI minimale (paie + E2E funnel),
+        déploiement prod < 24 h, post-mortem court en cas de récidive.
+        Métrique : délai de résolution suivi dans le bilan du vendredi (voir docs/ops/SLA_PILOTES.md).
