@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Billing;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 /**
@@ -20,9 +21,11 @@ class MailCheckConfigCommandTest extends TestCase
     {
         Config::set('mail.default', 'array');
 
-        $this->artisan('mail:check-config')
-            ->expectsOutputToContain('array')
-            ->assertExitCode(0);
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('mail:check-config');
+        $cmd->expectsOutputToContain('array');
+        $cmd->assertExitCode(0);
+        $cmd->run();
     }
 
     public function test_flags_missing_mailgun_credentials_when_transport_is_mailgun(): void
@@ -37,10 +40,12 @@ class MailCheckConfigCommandTest extends TestCase
             'endpoint' => 'api.mailgun.net',
         ]);
 
-        $this->artisan('mail:check-config')
-            ->expectsOutputToContain('MAILGUN_DOMAIN absent/vide')
-            ->expectsOutputToContain('MAILGUN_SECRET absent/vide')
-            ->assertExitCode(1);
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('mail:check-config');
+        $cmd->expectsOutputToContain('MAILGUN_DOMAIN absent/vide');
+        $cmd->expectsOutputToContain('MAILGUN_SECRET absent/vide');
+        $cmd->assertExitCode(1);
+        $cmd->run();
     }
 
     public function test_flags_missing_from_address(): void
@@ -48,8 +53,10 @@ class MailCheckConfigCommandTest extends TestCase
         Config::set('mail.default', 'array');
         Config::set('mail.from.address', '');
 
-        $this->artisan('mail:check-config')
-            ->expectsOutputToContain('MAIL_FROM_ADDRESS absent/vide')
-            ->assertExitCode(1);
+        /** @var PendingCommand $cmd */
+        $cmd = $this->artisan('mail:check-config');
+        $cmd->expectsOutputToContain('MAIL_FROM_ADDRESS absent/vide');
+        $cmd->assertExitCode(1);
+        $cmd->run();
     }
 }

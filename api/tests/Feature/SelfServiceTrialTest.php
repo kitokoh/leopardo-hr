@@ -383,10 +383,11 @@ class SelfServiceTrialTest extends TestCase
         // prod avec 503 TRIAL_OTP_SEND_FAILED (envoi impossible). Le contrat
         // honnête : si l'email OTP ne part pas (mailer KO), la réponse est
         // 503 TRIAL_OTP_SEND_FAILED — JAMAIS un 200 « code envoyé ».
-        // On simule l'échec d'envoi de l'action métier (execute → false).
-        $this->partialMock(RequestTrialSignup::class)
-            ->shouldReceive('execute')
-            ->andReturn(false);
+        // L'action réelle renvoie false quand le transport échoue (même
+        // pattern que le test #3057 frère : Mail::shouldReceive(...)->andThrow).
+        Mail::shouldReceive('to')
+            ->once()
+            ->andThrow(new \RuntimeException('mailgun api down'));
 
         $response = $this->postJson('/api/v1/trial/signup', [
             'email' => 'otp.503@newtech.dz',

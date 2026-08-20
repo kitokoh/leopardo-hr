@@ -96,7 +96,7 @@ class MailCheckConfigCommand extends Command
         $exitCode = $issues === [] ? self::SUCCESS : self::FAILURE;
 
         if ($this->option('json')) {
-            $this->line(json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->line((string) json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         } else {
             $this->info("Mailer résolu : {$report['mailer']} (transport : {$report['transport']})");
             $this->line("Expéditeur : {$report['from_address']} <{$report['from_name']}>");
