@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Modules\HR\Domain\Models\Contract;
@@ -92,12 +93,16 @@ class SelfServiceController extends Controller
         }
 
         try {
-            $enrollment = TrainingEnrollment::create([
+            // #4978 : transaction imbriquée/savepoint — une violation unique
+            // attendue est rollbackée localement, évitant l'état 25P02
+            // (current transaction is aborted) qui contaminerait les requêtes
+            // suivantes (notamment dans les tests de course).
+            $enrollment = DB::transaction(fn (): TrainingEnrollment => TrainingEnrollment::create([
                 'training_session_id' => $sessionId,
                 'employee_id' => $user->id,
                 'company_id' => $user->company_id,
                 'status' => 'enrolled',
-            ]);
+            ]));
         } catch (QueryException $e) {
             // Issue #3811 : course entre le exists() ci-dessus et le create()
             // (contrainte unique (training_session_id, employee_id)) — une

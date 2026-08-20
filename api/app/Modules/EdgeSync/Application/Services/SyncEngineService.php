@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\EdgeSync\Application\Services;
 
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
+use Illuminate\Support\Facades\DB;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -183,16 +183,20 @@ class SyncEngineService
         $payload['synced_from_offline']  = true;
 
         try {
-            match ($item->operation) {
-                'create' => DB::table('attendance_logs')->insert($payload),
-                'update' => DB::table('attendance_logs')
-                    ->where('id', $item->entity_id)
-                    ->update($payload),
-                'delete' => DB::table('attendance_logs')
-                    ->where('id', $item->entity_id)
-                    ->delete(),
-                default  => null,
-            };
+            // #4978 : savepoint — le 23505 attendu (external_event_id dupliqué)
+            // est rollbacké localement, pas de 25P02 en aval du job.
+            DB::transaction(function () use ($item, $payload): void {
+                match ($item->operation) {
+                    'create' => DB::table('attendance_logs')->insert($payload),
+                    'update' => DB::table('attendance_logs')
+                        ->where('id', $item->entity_id)
+                        ->update($payload),
+                    'delete' => DB::table('attendance_logs')
+                        ->where('id', $item->entity_id)
+                        ->delete(),
+                    default  => null,
+                };
+            });
         } catch (QueryException $e) {
             // Issue #3811 : course entre le exists() ci-dessus et l'insert
             // (index unique attendance_logs.external_event_id) — un sync

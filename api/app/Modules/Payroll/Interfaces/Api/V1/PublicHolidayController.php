@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
+use Illuminate\Support\Facades\DB;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
@@ -79,7 +80,9 @@ class PublicHolidayController extends Controller
         $data['created_by'] = $request->user()?->id;
 
         try {
-            $holiday = PublicHoliday::create($data);
+            // #4978 : savepoint — la violation unique attendue (course) est
+            // rollbackée localement (évite 25P02 sur la transaction courante).
+            $holiday = DB::transaction(fn (): PublicHoliday => PublicHoliday::create($data));
         } catch (QueryException $e) {
             // Issue #3811 : course entre assertUnique() et create() (contrainte
             // unique public_holidays_country_year_date_company_unique) — une

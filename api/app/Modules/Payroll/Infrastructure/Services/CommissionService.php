@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Infrastructure\Services;
 
 use App\Modules\Payroll\Domain\Models\Commission;
+use Illuminate\Support\Facades\DB;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerReferral;
@@ -64,7 +65,9 @@ class CommissionService
         $exchangeRate = 1.0;
 
         try {
-            $commission = Commission::create([
+            // #4978 : savepoint — violation unique attendue (idempotence de
+            // course) rollbackée localement, pas de 25P02 en aval.
+            $commission = DB::transaction(fn (): Commission => Commission::create([
                 'partner_id' => $partner->id,
                 'company_id' => $company->id,
                 'payment_id' => $payment->id,
@@ -76,7 +79,7 @@ class CommissionService
                 'original_amount' => $paymentAmountInCents,
                 'original_currency' => $payment->currency,
                 'status' => 'pending',
-            ]);
+            ]));
         } catch (QueryException $e) {
             // Issue #3811 : course entre le exists() d'idempotence (ligne 25) et
             // le create() — un paiement concurrent a déjà créé la commission

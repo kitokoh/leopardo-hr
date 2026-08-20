@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
@@ -128,7 +129,9 @@ class CompanyRequestController extends Controller
         $employee = $request->user();
         if ($employee instanceof Employee) {
             try {
-                $user = User::firstOrCreate(
+                // #4978 : savepoint — le 23505 attendu (course firstOrCreate)
+                // est rollbacké localement au lieu d'abandonner la transaction.
+                $user = DB::transaction(fn (): User => User::firstOrCreate(
                     ['email' => $employee->email],
                     [
                         'first_name' => $employee->first_name,
@@ -137,7 +140,7 @@ class CompanyRequestController extends Controller
                         'provider' => 'employee',
                         'preferred_language' => $employee->preferred_language ?? 'fr',
                     ]
-                );
+                ));
             } catch (QueryException $e) {
                 // Issue #3811 : firstOrCreate n'est PAS atomique — deux requêtes
                 // concurrentes sur le même email (employé et user plateforme)
