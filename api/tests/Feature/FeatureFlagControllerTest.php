@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\FeaturePlanMatrix;
 use App\Modules\Billing\Domain\Models\Subscription;
 use Illuminate\Database\Schema\Blueprint;
@@ -61,14 +61,14 @@ class FeatureFlagControllerTest extends TestCase
 
         Subscription::create([
             'company_id' => $company->id,
-            'plan' => 'business',
+            'plan' => 'operations',
             'status' => 'active',
             'current_period_start' => now(),
             'current_period_end' => now()->addMonth(),
         ]);
         FeaturePlanMatrix::create([
             'feature_key' => 'vehicles',
-            'plan' => 'business',
+            'plan' => 'operations',
             'enabled' => true,
             'limit_value' => 25,
         ]);
@@ -79,7 +79,7 @@ class FeatureFlagControllerTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonPath('data.feature', 'vehicles');
-        $response->assertJsonPath('data.plan', 'business');
+        $response->assertJsonPath('data.plan', 'operations');
         $response->assertJsonPath('data.enabled', true);
         $response->assertJsonPath('data.limit', 25);
     }
@@ -91,7 +91,7 @@ class FeatureFlagControllerTest extends TestCase
 
         FeaturePlanMatrix::create([
             'feature_key' => 'ai',
-            'plan' => 'trial',
+            'plan' => 'free',
             'enabled' => false,
         ]);
 
@@ -100,7 +100,7 @@ class FeatureFlagControllerTest extends TestCase
         $response = $this->getJson('/api/v1/feature-flags/check/ai');
 
         $response->assertOk();
-        $response->assertJsonPath('data.plan', 'trial');
+        $response->assertJsonPath('data.plan', 'free');
         $response->assertJsonPath('data.enabled', false);
     }
 
@@ -144,4 +144,3 @@ class FeatureFlagControllerTest extends TestCase
         });
     }
 }
-

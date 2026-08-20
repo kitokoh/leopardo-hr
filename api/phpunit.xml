@@ -48,5 +48,10 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- Webhooks fail-closed (#2614/#2615) : sans secret, Stripe/Chargily
+             rejettent TOUT payload (400). Les tests Feature signent réellement
+             les payloads avec ces secrets de test. -->
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_test_stripe_0123456789"/>
+        <env name="CHARGILY_WEBHOOK_SECRET" value="whsec_test_chargily_0123456789"/>
     </php>
 </phpunit>

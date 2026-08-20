@@ -29,6 +29,12 @@ on:
 
 permissions:
   contents: read
+  # #5178 : l'étape « Comment payroll coverage on PR » (actions/github-script)
+  # poste un commentaire — sans issues: write, l'API renvoie 403
+  # « Resource not accessible by integration » → le check Coverage Payroll
+  # échoue même quand le gate ≥ 80 % est passé (87,1 % constaté).
+  issues: write
+  pull-requests: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true

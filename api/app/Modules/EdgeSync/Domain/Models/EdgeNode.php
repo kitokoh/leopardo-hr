@@ -61,6 +61,11 @@ class EdgeNode extends Model
         'metadata',
     ];
 
+    protected $hidden = [
+        'license_key',
+        'metadata',
+    ];
+
     protected $fillable = [
         'company_id', 'name', 'slug', 'site_address',
         'status', 'mode', 'license_key', 'license_expires_at',

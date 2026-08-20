@@ -7,6 +7,7 @@ namespace Tests\Feature;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use Laravel\Sanctum\Sanctum;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
@@ -15,7 +16,7 @@ use Tests\TestCase;
  */
 class PayrollCycleSettingsTest extends TestCase
 {
-    use \Tests\RefreshTenantDatabase;
+    use RefreshTenantDatabase;
 
     public function test_manager_can_read_default_cycle_settings(): void
     {
@@ -70,13 +71,15 @@ class PayrollCycleSettingsTest extends TestCase
         $current = $this->getJson('/api/v1/payroll/cycles/current');
 
         $current->assertOk();
+        // #4500 : la réponse est enveloppée sous `data` — les assertions
+        // top-level lisaient null depuis le changement de contrat.
         $this->assertSame(
             now($company->timezone ?: 'UTC')->toDateString(),
-            $current->json('period_start')
+            $current->json('data.period_start')
         );
         $this->assertSame(
             now($company->timezone ?: 'UTC')->toDateString(),
-            $current->json('period_end')
+            $current->json('data.period_end')
         );
     }
 

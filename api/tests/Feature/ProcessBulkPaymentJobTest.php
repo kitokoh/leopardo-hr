@@ -13,8 +13,11 @@ use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
+use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use Mockery;
+use Mockery\Expectation;
 use RuntimeException;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -38,7 +41,7 @@ class ProcessBulkPaymentJobTest extends TestCase
         // payroll_run/slips réutilisés entre tests : purge avant chaque test
         // (flushdb fiable : suite séquentielle, préfixe predis ignoré).
         try {
-            \Illuminate\Support\Facades\Redis::connection('default')->flushdb();
+            Redis::connection('default')->flushdb();
         } catch (\Throwable) {
             // Redis indisponible : garde non bloquante.
         }
@@ -238,9 +241,13 @@ class ProcessBulkPaymentJobTest extends TestCase
         $this->paySlip($run, $employeeA);
         $this->paySlip($run, $employeeB);
 
-        $client = Mockery::mock();
-        $client->shouldReceive('set')->andThrow(new RuntimeException('Redis connection refused'));
-        $client->shouldReceive('del')->andReturn(1);
+        $client = Mockery::mock(PhpRedisConnection::class);
+        /** @var Expectation $setExpectation */
+        $setExpectation = $client->shouldReceive('set');
+        $setExpectation->andThrow(new RuntimeException('Redis connection refused'));
+        /** @var Expectation $delExpectation */
+        $delExpectation = $client->shouldReceive('del');
+        $delExpectation->andReturn(1);
         Redis::shouldReceive('connection')->with('default')->andReturn($client);
 
         try {

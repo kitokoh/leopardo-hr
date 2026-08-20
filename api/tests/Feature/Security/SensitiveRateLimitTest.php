@@ -64,14 +64,24 @@ class SensitiveRateLimitTest extends TestCase
     {
         config(['security.rate_limits.webhooks_inbound_per_minute' => 2]);
 
+        $secret = (string) config('services.stripe.webhook_secret');
+        $this->assertNotSame('', $secret, 'STRIPE_WEBHOOK_SECRET doit être défini dans phpunit.xml');
+
         $payload = [
             'type' => 'customer.created',
             'data' => ['object' => ['id' => 'cus_rate_limit_test']],
         ];
+        $body = json_encode($payload, JSON_THROW_ON_ERROR);
+        $timestamp = (string) time();
+        $signature = hash_hmac('sha256', $timestamp.'.'.$body, $secret);
+        $headers = [
+            'HTTP_Stripe-Signature' => 't='.$timestamp.',v1='.$signature,
+            'CONTENT_TYPE' => 'application/json',
+        ];
 
-        $this->postJson('/api/v1/webhooks/stripe', $payload)->assertOk();
-        $this->postJson('/api/v1/webhooks/stripe', $payload)->assertOk();
-        $this->postJson('/api/v1/webhooks/stripe', $payload)->assertStatus(429);
+        $this->call('POST', '/api/v1/webhooks/stripe', [], [], [], $headers, $body)->assertOk();
+        $this->call('POST', '/api/v1/webhooks/stripe', [], [], [], $headers, $body)->assertOk();
+        $this->call('POST', '/api/v1/webhooks/stripe', [], [], [], $headers, $body)->assertStatus(429);
     }
 
     public function test_web_login_is_rate_limited_by_email_and_ip(): void

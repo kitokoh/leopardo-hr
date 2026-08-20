@@ -140,7 +140,10 @@ class PasswordResetController
             // qu'un changement de mot de passe volontaire).
             $employee->tokens()->delete();
         } finally {
-            if ($previousSearchPath !== null && $previousSearchPath !== '') {
+            // #4495 : ne restaurer le search_path QUE si un schéma tenant a été
+            // appliqué — sinon ce SET inconditionnel est un aller-retour DB inutile
+            // (oracle de timing sur le chemin public forgot-password).
+            if ($employeeSchema !== null && $previousSearchPath !== null && $previousSearchPath !== '') {
                 DB::statement('SET search_path TO '.$previousSearchPath);
             }
         }
