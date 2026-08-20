@@ -8,12 +8,12 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use Illuminate\Support\Facades\DB;
-use Tests\Support\CreatesMvpSchema;
+use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 class ZktecoControllerTest extends TestCase
 {
-    use CreatesMvpSchema;
+    use RefreshTenantDatabase;
 
     private Company $company;
 
@@ -24,26 +24,39 @@ class ZktecoControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->setUpMvpSchema();
 
-        $this->company = Company::factory()->create();
+        $this->company = Company::query()->create([
+            'name' => 'Kiosk Controller Corp',
+            'slug' => 'kiosk-controller-corp',
+            'sector' => 'tech',
+            'country' => 'DZ',
+            'city' => 'Alger',
+            'email' => 'kiosk-ctl@test.local',
+            'schema_name' => 'shared_tenants',
+            'tenancy_type' => 'shared',
+            'status' => 'active',
+            'plan_id' => 1,
+            'subscription_start' => '2026-01-01',
+            'subscription_end' => '2027-01-01',
+            'language' => 'fr',
+            'currency' => 'DZD',
+            'timezone' => 'UTC',
+        ]);
 
-        $this->manager = Employee::factory()->create([
+        /** @var Employee $manager */
+        $manager = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
+        $this->manager = $manager;
 
-        $this->employee = Employee::factory()->create([
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
             'company_id' => $this->company->id,
             'role' => 'employee',
         ]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->tearDownMvpSchema();
-        parent::tearDown();
+        $this->employee = $employee;
     }
 
     public function test_devices_list_requires_authentication(): void
@@ -271,6 +284,7 @@ class ZktecoControllerTest extends TestCase
             'company_id' => $this->company->id,
             'role' => 'employee',
             'zkteco_id' => 'zk-43',
+            'biometric_fingerprint_enabled' => true,
         ]);
 
         $this->withHeader('X-Device-Token', 'valid-device-token')
@@ -303,6 +317,7 @@ class ZktecoControllerTest extends TestCase
             ->postJson('/api/v1/zkteco/devices/'.$device->id.'/regenerate-token')
             ->assertOk();
 
+        /** @var string|null $newToken */
         $newToken = $response->json('device_token');
         $this->assertNotNull($newToken);
         $this->assertNotSame('old-device-token', $newToken);
@@ -497,12 +512,19 @@ class ZktecoControllerTest extends TestCase
      * (option DSN) s'affiche sans espace — comparer les chaînes brutes
      * casse la suite selon l'historique de SET de la session.
      *
-     * @param array<int, string> $expectedSchemas
+     * @param  array<int, string>  $expectedSchemas
      */
     private function assertSearchPathRestored(array $expectedSchemas): void
     {
         $row = DB::selectOne('SHOW search_path');
         $this->assertNotNull($row);
+        if (! is_object($row) || ! property_exists($row, 'search_path')) {
+            $this->fail('SHOW search_path n\'a pas retourné de ligne exploitable.');
+        }
+        $searchPath = $row->search_path;
+        if (! is_string($searchPath)) {
+            $this->fail('SHOW search_path n\'a pas retourné de chaîne exploitable.');
+        }
 
         /** @var \Closure(string): list<string> $normalize */
         $normalize = static fn (string $path): array => array_values(array_filter(array_map(
@@ -510,6 +532,6 @@ class ZktecoControllerTest extends TestCase
             explode(',', str_replace('"', '', $path)),
         ), static fn (string $s): bool => $s !== ''));
 
-        $this->assertSame($expectedSchemas, $normalize((string) $row->search_path));
+        $this->assertSame($expectedSchemas, $normalize($searchPath));
     }
 }

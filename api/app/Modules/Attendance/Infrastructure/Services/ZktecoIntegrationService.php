@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\Attendance\Domain\Models\ZktecoDevice;
 use App\Modules\Attendance\Domain\Models\ZktecoSyncLog;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,9 @@ use Throwable;
 
 class ZktecoIntegrationService
 {
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function registerDevice(string $companyId, array $data): ZktecoDevice
     {
         return ZktecoDevice::query()->create([
@@ -49,6 +53,9 @@ class ZktecoIntegrationService
         return $device;
     }
 
+    /**
+     * @param  array<int, array<string, string|int|null>>  $records
+     */
     public function pullAttendance(ZktecoDevice $device, array $records): ZktecoSyncLog
     {
         $syncLog = ZktecoSyncLog::query()->create([
@@ -86,13 +93,21 @@ class ZktecoIntegrationService
                     continue;
                 }
 
-                // #5122 — lookup étendu : zkteco_id, matricule, badge_number
+                // #5122 — lookup étendu : zkteco_id, matricule, badge_number.
+                // ⚠️ `badge_number` absent du record (null) ne doit PAS générer
+                // de `badge_number IS NULL` (matche tous les employés sans badge
+                // → mauvais employé pointé) : conditions badge uniquement si la
+                // valeur est présente.
                 $employee = DB::table('employees')
                     ->where('company_id', $device->company_id)
-                    ->where(function ($query) use ($record): void {
-                        $query->where('zkteco_id', $record['user_id'] ?? null)
-                            ->orWhere('matricule', $record['badge_number'] ?? null)
-                            ->orWhere('badge_number', $record['badge_number'] ?? null);
+                    ->where(function (Builder $query) use ($record): void {
+                        $query->where('zkteco_id', $record['user_id'] ?? null);
+
+                        $badgeNumber = $record['badge_number'] ?? null;
+                        if ($badgeNumber !== null && $badgeNumber !== '') {
+                            $query->orWhere('matricule', $badgeNumber)
+                                ->orWhere('badge_number', $badgeNumber);
+                        }
                     })
                     ->first();
 
@@ -117,10 +132,10 @@ class ZktecoIntegrationService
                     continue;
                 }
 
-                $timestamp = $record['timestamp'] ?? now()->toDateTimeString();
+                $timestamp = (string) ($record['timestamp'] ?? now()->toDateTimeString());
                 $date = substr($timestamp, 0, 10);
                 $time = substr($timestamp, 11, 8);
-                $action = $this->resolveAction($record['punch_type'] ?? 0);
+                $action = $this->resolveAction((int) ($record['punch_type'] ?? 0));
 
                 // #2330 : `attendance_logs.status` est un enum PostgreSQL
                 // (ontime/late/absent/leave/holiday/incomplete) — 'present'
@@ -134,11 +149,11 @@ class ZktecoIntegrationService
                         ->where('id', $employee->schedule_id)
                         ->where('company_id', $device->company_id)
                         ->first();
-                    if ($schedule !== null && ! empty($schedule->start_time)) {
+                    if ($schedule !== null && is_string($schedule->start_time) && $schedule->start_time !== '') {
                         $checkIn = Carbon::parse($timestamp);
                         $start = Carbon::parse($date.' '.$schedule->start_time);
                         $diffMinutes = $start->diffInMinutes($checkIn, false);
-                        $tolerance = (int) ($schedule->late_tolerance_minutes ?? 0);
+                        $tolerance = is_numeric($schedule->late_tolerance_minutes) ? (int) $schedule->late_tolerance_minutes : 0;
                         $lateMinutes = max(0, (int) floor($diffMinutes - $tolerance));
                         $status = $lateMinutes > 0 ? 'late' : 'ontime';
                     }
@@ -222,6 +237,9 @@ class ZktecoIntegrationService
         return $syncLog;
     }
 
+    /**
+     * @return Collection<int, ZktecoSyncLog>
+     */
     public function getSyncHistory(ZktecoDevice $device, int $limit = 20): Collection
     {
         return $device->syncLogs()
@@ -261,4 +279,3 @@ class ZktecoIntegrationService
         };
     }
 }
-
