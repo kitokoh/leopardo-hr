@@ -120,6 +120,19 @@ vert alors que le correctif n'existe pas (vague du 2026-08-17 : #4690/#4687/
 - Tout skip de deploiement doit emettre `::warning::` + `$GITHUB_STEP_SUMMARY`
   (raison, SHA, conclusions) — un skip silencieux ressemble a un success.
 
+## SLA bugs pilotes (issue #5155)
+
+- **Promesse** : un bug **bloquant** pilote (paie / pointage / login impossible
+  en prod) se regle en **moins de 24 h** (deploiement prod inclus).
+- **Canal** : issue avec le template `PILOT_BLOCKER`
+  (`.github/ISSUE_TEMPLATE/pilot_blocker.yml`) + label `pilot-blocker` — voir
+  `docs/ops/SLA_PILOTES.md`.
+- **Triage** : bloquant = paie/pointage/login impossible ; tout le reste est P2.
+- **Hotfix** : branche `hotfix/<issue>-<slug>`, CI minimale (tests paie + E2E
+  funnel), deploy prod < 24 h, post-mortem court en cas de recidive.
+- **Metrique** : delai moyen de resolution des bloquants, tableau hebdo dans
+  le bilan du vendredi.
+
 ## Regles obligatoires
 
 - **Lecon 2026-08-16 (#4164)** : le garde `validate-mobile-workflow-contracts.ps1`
