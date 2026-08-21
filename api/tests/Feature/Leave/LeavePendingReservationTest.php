@@ -75,7 +75,7 @@ class LeavePendingReservationTest extends TestCase
         $carry->assertExitCode(0);
 
         // Reporté = 10 − 0 − 5 = 5 (et non 10 avant #2416).
-        $carried = LeaveAccrual::query()
+        $carried = LeaveAccrual::withoutGlobalScopes()
             ->where('employee_id', $employee->id)
             ->where('leave_policy_id', $policy->id)
             ->where('type', 'carry_forward')
@@ -83,7 +83,7 @@ class LeavePendingReservationTest extends TestCase
 
         $this->assertSame(5.0, (float) $carried);
 
-        $newBalance = LeaveBalance::query()
+        $newBalance = LeaveBalance::withoutGlobalScopes()
             ->where('employee_id', $employee->id)
             ->where('absence_type_id', $type->id)
             ->where('year', now()->year)
@@ -110,7 +110,7 @@ class LeavePendingReservationTest extends TestCase
         $this->assertInstanceOf(\Illuminate\Testing\PendingCommand::class, $carry);
         $carry->assertExitCode(0);
 
-        $carried = LeaveAccrual::query()
+        $carried = LeaveAccrual::withoutGlobalScopes()
             ->where('employee_id', $employee->id)
             ->where('leave_policy_id', $policy->id)
             ->where('type', 'carry_forward')

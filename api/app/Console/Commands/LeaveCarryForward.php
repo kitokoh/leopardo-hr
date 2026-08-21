@@ -39,9 +39,6 @@ class LeaveCarryForward extends Command
             ->where('carry_forward', true)
             ->get();
 
-        if (app()->environment('testing') && $policies->isEmpty()) {
-            throw new \RuntimeException('LeaveCarryForward found no active carry-forward policies on search_path '.DB::selectOne('select current_schema()')->current_schema.'.');
-        }
 
         $carried = 0;
         $expired = 0;
@@ -53,9 +50,6 @@ class LeaveCarryForward extends Command
                 ->where('year', $fromYear)
                 ->get();
 
-            if (app()->environment('testing') && $balances->isEmpty()) {
-                throw new \RuntimeException("LeaveCarryForward found no balance for policy {$policy->id}, company {$policy->company_id}, year {$fromYear}.");
-            }
 
             foreach ($balances as $oldBalance) {
                 try {
@@ -99,11 +93,7 @@ class LeaveCarryForward extends Command
                     });
                 } catch (\Throwable $e) {
                     Log::warning("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
-                    $this->warn("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
 
-                    if (app()->environment('testing')) {
-                        throw $e;
-                    }
                 }
             }
         }
