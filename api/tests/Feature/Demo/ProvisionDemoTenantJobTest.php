@@ -87,8 +87,12 @@ class ProvisionDemoTenantJobTest extends TestCase
             $this->assertSame('DB transient error', $e->getMessage());
         }
 
-        // Statut encore 'pending' pendant les retries (pas de failed prématuré).
-        $this->assertSame('pending', DB::table('trial_provisionings')->where('provisioning_token', $token)->value('status'));
+        // Comportement #3600 : le catch de handle() pose 'failed' AVANT le
+        // rethrow — le statut reste visible pendant les retries du worker
+        // (commentaire du job : « Le statut 'failed' ci-dessus reste visible
+        // pendant les retries ») ; un succès ultérieur le repasserait à 'ready'.
+        // Régression du test : il attendait 'pending' (écrit avant #3600).
+        $this->assertSame('failed', DB::table('trial_provisionings')->where('provisioning_token', $token)->value('status'));
 
         // failed() (dernier essai) pose le statut définitif.
         $job->failed(new \RuntimeException('DB transient error'));
