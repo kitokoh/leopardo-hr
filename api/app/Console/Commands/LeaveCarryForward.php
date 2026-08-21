@@ -19,6 +19,13 @@ class LeaveCarryForward extends Command
 
     public function handle(): int
     {
+        // Les commandes console peuvent être invoquées depuis un worker ayant
+        // laissé un search_path public ou tenant spécifique. Cette commande
+        // globale lit et écrit dans le schéma tenant partagé canonique.
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants, public');
+        }
+
         $fromYear = (int) ($this->option('year') ?? (now()->year - 1));
         $toYear = $fromYear + 1;
 
