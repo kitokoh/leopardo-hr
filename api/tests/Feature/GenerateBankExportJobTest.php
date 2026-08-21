@@ -71,29 +71,38 @@ class GenerateBankExportJobTest extends TestCase
         // payroll_runs empêche normalement une référence orpheline) : on crée
         // la ligne avec les FKs désactivés pour cette session, comme le ferait
         // une base migrée avant l'ajout de la contrainte.
+        // #5178 : le scénario « run manquant » est défensif (le FK
+        // bank_exports → payroll_runs empêche normalement une référence
+        // orpheline). On désactive les FKs pour TOUTE la durée du job : le
+        // job met à jour la ligne (`status => generating` puis `failed`),
+        // chaque UPDATE re-déclencherait sinon la FK → 23503 → 25P02
+        // (transaction avortée). Restauration en finally.
         DB::statement('SET session_replication_role = replica');
-        $export = BankExport::query()->create([
-            'payroll_run_id' => 999_999,
-            'company_id' => $company->id,
-            'format' => 'csv_generic',
-            'file_path' => null,
-            'total_amount' => 0,
-            'transfer_count' => 0,
-            'status' => BankExport::STATUS_PENDING,
-        ]);
-        DB::statement('SET session_replication_role = DEFAULT');
-
-        $thrown = null;
-
         try {
-            (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
-        } catch (\Throwable $e) {
-            $thrown = $e;
+            $export = BankExport::query()->create([
+                'payroll_run_id' => 999_999,
+                'company_id' => $company->id,
+                'format' => 'csv_generic',
+                'file_path' => null,
+                'total_amount' => 0,
+                'transfer_count' => 0,
+                'status' => BankExport::STATUS_PENDING,
+            ]);
+
+            $thrown = null;
+
+            try {
+                (new GenerateBankExportJob($export->id))->handle(app(BankExportGenerator::class));
+            } catch (\Throwable $e) {
+                $thrown = $e;
+            }
+
+            $this->assertNotNull($thrown, 'Expected the job to rethrow the missing payroll run failure.');
+
+            $export->refresh();
+        } finally {
+            DB::statement('SET session_replication_role = DEFAULT');
         }
-
-        $this->assertNotNull($thrown, 'Expected the job to rethrow the missing payroll run failure.');
-
-        $export->refresh();
 
         $this->assertSame(BankExport::STATUS_FAILED, $export->status);
         $this->assertNotNull($export->error_message);

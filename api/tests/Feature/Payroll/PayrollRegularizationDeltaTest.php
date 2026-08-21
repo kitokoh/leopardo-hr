@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Payroll\Application\Services\PayrollRegularizationService;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
+use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryStructure;
 use App\Modules\Payroll\Infrastructure\Services\PayrollCalculator;
 use App\Modules\Payroll\Infrastructure\Services\PayrollClosingService;
@@ -53,6 +54,10 @@ class PayrollRegularizationDeltaTest extends TestCase
             'company_id' => $company->id,
             'salary_type' => 'fixed',
             'salary_base' => $baseSalary,
+            // #1983 : prorata contrat déterministe — un contract_start aléatoire
+            // (factory) tombant dans la période du run déclenchait le prorata et
+            // rendait le delta non-déterministe (13 545,46 au lieu de 20 000).
+            'contract_start' => '2025-01-01',
             'status' => 'active',
         ]);
 
@@ -107,7 +112,7 @@ class PayrollRegularizationDeltaTest extends TestCase
         // Un SEUL bulletin, différentiel — pas un doublon complet par employé.
         $this->assertSame(1, $regRun->paySlips()->count());
 
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $deltaSlip */
+        /** @var PaySlip $deltaSlip */
         $deltaSlip = $regRun->paySlips()->first();
         $this->assertEquals(20000.0, (float) $deltaSlip->gross_salary);
         $this->assertEquals(6714.0, (float) $deltaSlip->total_deductions);
@@ -116,7 +121,7 @@ class PayrollRegularizationDeltaTest extends TestCase
         $this->assertEquals(25200.0, (float) $deltaSlip->total_cost);
 
         // Référence au bulletin original (audit + PDF « corrige le bulletin #N »).
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $originalSlip */
+        /** @var PaySlip $originalSlip */
         $originalSlip = $originalRun->paySlips()->first();
         $this->assertSame($originalSlip->id, $deltaSlip->original_slip_id);
 
@@ -173,7 +178,7 @@ class PayrollRegularizationDeltaTest extends TestCase
         (new PayrollCalculator)->calculateRun($regRun);
 
         $this->assertSame(1, $regRun->refresh()->paySlips()->count());
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $deltaSlip */
+        /** @var PaySlip $deltaSlip */
         $deltaSlip = $regRun->paySlips()->first();
         $this->assertSame($leaver->id, $deltaSlip->employee_id);
         $this->assertEquals(30000.0, (float) $deltaSlip->gross_salary);
@@ -228,7 +233,7 @@ class PayrollRegularizationDeltaTest extends TestCase
         // Toujours UN bulletin delta (recalcul = remplacement, jamais d'ajout).
         $this->assertSame(1, $regRun->refresh()->paySlips()->count());
 
-        /** @var \App\Modules\Payroll\Domain\Models\PaySlip $deltaSlip */
+        /** @var PaySlip $deltaSlip */
         $deltaSlip = $regRun->paySlips()->first();
         $this->assertEquals(20000.0, (float) $deltaSlip->gross_salary);
     }
