@@ -61,7 +61,7 @@ class ProbeAvailabilityCommand extends Command
             return self::SUCCESS;
         }
 
-        $this->line(json_encode($result, JSON_UNESCAPED_SLASHES));
+        $this->line((string) json_encode($result, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
 
         return self::SUCCESS;
     }
