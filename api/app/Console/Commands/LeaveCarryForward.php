@@ -19,23 +19,37 @@ class LeaveCarryForward extends Command
 
     public function handle(): int
     {
+        // Les commandes console peuvent être invoquées depuis un worker ayant
+        // laissé un search_path public ou tenant spécifique. Cette commande
+        // globale lit et écrit dans le schéma tenant partagé canonique.
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('SET search_path TO shared_tenants, public');
+        }
+
         $fromYear = (int) ($this->option('year') ?? (now()->year - 1));
         $toYear = $fromYear + 1;
 
         $this->info("Processing carry-forward from {$fromYear} to {$toYear}...");
 
-        $policies = LeavePolicy::where('active', true)
+        // Commande globale : elle traite tous les tenants et ne doit pas
+        // hériter d’un `current_company` éventuellement présent dans le
+        // processus de test/worker.
+        $policies = LeavePolicy::withoutGlobalScopes()
+            ->where('active', true)
             ->where('carry_forward', true)
             ->get();
+
 
         $carried = 0;
         $expired = 0;
 
         foreach ($policies as $policy) {
-            $balances = LeaveBalance::where('company_id', $policy->company_id)
+            $balances = LeaveBalance::withoutGlobalScopes()
+                ->where('company_id', $policy->company_id)
                 ->where('absence_type_id', $policy->absence_type_id)
                 ->where('year', $fromYear)
                 ->get();
+
 
             foreach ($balances as $oldBalance) {
                 try {
@@ -53,7 +67,7 @@ class LeaveCarryForward extends Command
                         $maxCarry = $policy->carry_forward_max ?? $unused;
                         $carryAmount = min($unused, $maxCarry);
 
-                        $newBalance = LeaveBalance::firstOrCreate(
+                        $newBalance = LeaveBalance::withoutGlobalScopes()->firstOrCreate(
                             [
                                 'company_id' => $policy->company_id,
                                 'employee_id' => $oldBalance->employee_id,
@@ -65,7 +79,7 @@ class LeaveCarryForward extends Command
 
                         $newBalance->increment('balance', $carryAmount);
 
-                        LeaveAccrual::create([
+                        LeaveAccrual::withoutGlobalScopes()->create([
                             'company_id' => $policy->company_id,
                             'employee_id' => $oldBalance->employee_id,
                             'leave_policy_id' => $policy->id,
@@ -79,6 +93,7 @@ class LeaveCarryForward extends Command
                     });
                 } catch (\Throwable $e) {
                     Log::warning("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
+
                 }
             }
         }
@@ -92,7 +107,8 @@ class LeaveCarryForward extends Command
 
     private function expireOldCarryForwards(int $currentYear, int &$expired): void
     {
-        $policies = LeavePolicy::where('active', true)
+        $policies = LeavePolicy::withoutGlobalScopes()
+            ->where('active', true)
             ->where('carry_forward', true)
             ->whereNotNull('carry_forward_expiry_days')
             ->where('carry_forward_expiry_days', '>', 0)
@@ -105,14 +121,16 @@ class LeaveCarryForward extends Command
                 continue;
             }
 
-            $carryForwards = LeaveAccrual::where('leave_policy_id', $policy->id)
+            $carryForwards = LeaveAccrual::withoutGlobalScopes()
+                ->where('leave_policy_id', $policy->id)
                 ->where('type', 'carry_forward')
                 ->where('effective_date', now()->startOfYear()->toDateString())
                 ->whereNull('expired_at')
                 ->get();
 
             foreach ($carryForwards as $accrual) {
-                $balance = LeaveBalance::where('company_id', $accrual->company_id)
+                $balance = LeaveBalance::withoutGlobalScopes()
+                    ->where('company_id', $accrual->company_id)
                     ->where('employee_id', $accrual->employee_id)
                     ->where('absence_type_id', $policy->absence_type_id)
                     ->where('year', $currentYear)
