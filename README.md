@@ -90,9 +90,10 @@ graph TB
         AI[AI Analytics Layer]
     end
 
-    subgraph "Data Infrastructure"
-        DB[(PostgreSQL 16<br/>Schema-Isolated Multi-Tenant)]
-        Cache[(Redis Cluster)]
+    subgraph "Data Infrastructure (0 €, résiliente)"
+        DB[(PostgreSQL 16<br/>Multi-tenant + queue `database`)]
+        Cache[(Cache Redis ↔ fichier<br/>selon dispo Upstash)]
+        Workers[Workers : web (Render) + drain GH Actions]
         Store[S3-Compatible Storage]
     end
 
@@ -100,6 +101,7 @@ graph TB
     Sec --> API
     API --> HRM & PAY & ATT & AI
     HRM & PAY & ATT & AI --> DB & Cache & Store
+    DB --> Workers
 ```
 
 📐 Full architecture: [ARCHITECTURE.md](ARCHITECTURE.md) · [C4 diagrams](docs/architecture/C4_ARCHITECTURE.md) · [Multi-tenancy](docs/architecture/MULTITENANCY.md) · [ADR log](docs/architecture/adr/)
@@ -108,21 +110,36 @@ graph TB
 
 ## 🚀 Live ecosystem
 
-> ⚠️ **Stabilisation production en cours** — le domaine `leopardo-rh.com` est en NXDOMAIN
-> ([#3452](https://github.com/kitokoh/leopardo-hr/issues/3452)) et la migration vers les
-> services gratuits Render/Vercel est planifiée ([#3765](https://github.com/kitokoh/leopardo-hr/issues/3765),
-> [#3766](https://github.com/kitokoh/leopardo-hr/issues/3766)) ; la vitrine déployée peut être en retard
-> sur `main` ([#4867](https://github.com/kitokoh/leopardo-hr/issues/4867)). Les URLs ci-dessous sont les
-> endpoints **actifs** au 2026-08-17 mais non contractuels tant que la stabilisation n'est pas terminée.
+> 💸 **Architecture 0 € assumée (2026-08-21)** — le domaine `leopardo-rh.com` **n'est pas acheté**
+> (état délibéré, #3452 → wontfix) ; on tourne sur les **tiers gratuits** Render / Vercel /
+> Cloudflare Pages. Les URLs ci-dessous sont **officielles et actives**. La queue vit dans
+> PostgreSQL (driver `database`, zéro quota) avec un drain de secours **GitHub Actions toutes les
+> 5 min** ; le cache/session basculent automatiquement **Redis ↔ fichier** au boot selon la
+> disponibilité d'Upstash (voir « ⚡ Infrastructure & résilience »).
 
 | Layer | Access | Stack |
 | :--- | :--- | :--- |
-| **API Backend** | [gestionemployerbackend.onrender.com](https://gestionemployerbackend.onrender.com) | Laravel 12 · PostgreSQL 16 · Redis |
+| **API Backend** | [gestionemployerbackend.onrender.com](https://gestionemployerbackend.onrender.com) | Laravel 12 · PostgreSQL 16 · queue `database` + worker GH Actions |
 | **Corporate Web** | [gestionemployer-backend.vercel.app](https://gestionemployer-backend.vercel.app) | Next.js 16 · Tailwind |
 | **Admin Panel** | [leo-admin.pages.dev](https://leo-admin.pages.dev) | Vue 3 · Cloudflare Pages |
 | **Mobile Suite** | [Employee / Manager / HR / Marketing / Platform Admin](docs/mobile/README.md) | Flutter · Riverpod |
 
 ---
+
+## ⚡ Infrastructure & résilience (0 €)
+
+> Décisions 2026-08-21 (issues #5204/#5205/#5206/#5207) — objectif : **zéro coût à vie**,
+> résilience « meilleur → pire » selon la disponibilité réelle des fournisseurs.
+
+| Brique | Choix | Pourquoi |
+| :--- | :--- | :--- |
+| **Queue** | driver `database` (PostgreSQL) | Zéro quota (le polling Redis brûlait la quota Upstash 500k/mois en ~2 jours — incident 2026-08-19) ; drainable partout |
+| **Worker principal** | en arrière-plan du conteneur web Render | Latence faible : provisioning trial < 10 s quand le conteneur est réveillé |
+| **Worker de secours** | GitHub Actions `queue-worker-fallback.yml` (cron `*/5`) | Repo **public** = minutes illimitées → la file se vide même quand Render dort (veille 15 min) ou a épuisé ses 750 h/mois |
+| **Cache / Session** | `infra:probe-availability` au boot → **Redis** (Upstash) si joignable, sinon **file** | Le rapide quand il est dispo, le fiable (0 quota) sinon ; retour automatique au redéploiement |
+| **Emails** | transport **Mailgun HTTP API** (port 443 — l'egress Render bloque SMTP) | Sandbox = destinataires whitelistés (phase pilote) ; au passage du domaine → **Resend** (3 000/mois gratuits, transport natif Laravel) |
+
+Liens : [DEPLOYMENT_URLS.md](docs/ops/DEPLOYMENT_URLS.md) · [ARCHITECTURE.md](ARCHITECTURE.md) · workflow [`queue-worker-fallback.yml`](.github/workflows/queue-worker-fallback.yml)
 
 ## 🧑‍💻 Quick start — full environment in ~5 minutes
 
