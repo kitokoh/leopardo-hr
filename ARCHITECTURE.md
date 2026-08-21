@@ -141,6 +141,24 @@ Les pipelines principaux :
 - `mobile-apps-ci.yml` — build Flutter (`front/mobile_apps/*`)
 - `deploy-main.yml` — déploiement production
 
+## Infrastructure & résilience (0 €)
+
+> Décisions 2026-08-21 (#5204/#5205/#5206/#5207) — fournisseurs : Upstash (Redis),
+> Neon (PostgreSQL), GitHub Actions (worker de secours), Render/Vercel/Cloudflare Pages (hosting).
+
+- **Queue** : driver `database` (table `jobs` en PostgreSQL) — zéro quota. Deux consommateurs :
+  le worker en arrière-plan du conteneur web Render (latence) et le drain GitHub Actions
+  (`queue-worker-fallback.yml`, cron `*/5`, repo public = minutes illimitées). Pas de
+  split-brain : chaque job est verrouillé par PostgreSQL (`SELECT FOR UPDATE SKIP LOCKED`).
+- **Cache / Session** : commande `infra:probe-availability` (ping Redis) exécutée par
+  `api/docker-entrypoint.sh` **avant** `config:cache` → `redis` si Upstash répond, sinon `file`
+  (fallback sans quota). Retour automatique sur Redis au redéploiement.
+- **Emails** : transport Mailgun HTTP API (port 443) — l'egress Render bloque le SMTP sortant
+  (#5139). En sandbox, livraison limitée aux destinataires whitelistés (phase pilote) ; passage
+  prévu sur Resend (natif Laravel, 3 000/mois gratuits) à l'achat du domaine.
+- **Domaine** : `leopardo-rh.com` non acheté (état assumé) — URLs gratuites officielles :
+  `docs/ops/DEPLOYMENT_URLS.md`.
+
 ## Conventions
 
 Voir `CONVENTIONS.md` pour les règles de nommage, commits, branches et PR.
