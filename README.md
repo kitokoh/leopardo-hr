@@ -91,9 +91,9 @@ graph TB
     end
 
     subgraph "Data Infrastructure (0 €, résiliente)"
-        DB[(PostgreSQL 16<br/>Multi-tenant + queue `database`)]
-        Cache[(Cache Redis ↔ fichier<br/>selon dispo Upstash)]
-        Workers[Workers : web (Render) + drain GH Actions]
+        DB[(PostgreSQL 16<br/>Multi-tenant + queue database)]
+        Cache[(Cache Redis ou fichier<br/>selon dispo Upstash)]
+        Workers[Worker web Render<br/>+ drain GitHub Actions]
         Store[S3-Compatible Storage]
     end
 
