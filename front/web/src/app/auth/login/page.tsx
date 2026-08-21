@@ -26,6 +26,7 @@ import {
   storeAuthSession,
   storePreferredLocale,
   type AppLocale,
+  type CopyTree,
   type StoredAuthUser,
 } from '@/lib/i18n';
 
@@ -109,6 +110,27 @@ function googleAuthHref(): string {
   return '/api/v1/auth/google';
 }
 
+/**
+ * Issue #5173 — les échecs Google sont propagés par le callback vitrine via
+ * `/auth/login?error=<code>` (voir `src/app/api/v1/auth/google/callback/route.ts`).
+ * Mappe le code vers un message localisé ; retourne null pour tout code
+ * inconnu (on ne masque pas une erreur réelle par un faux message).
+ */
+function resolveGoogleError(code: string, labels: CopyTree): string | null {
+  switch (code) {
+    case 'google_network':
+      return labels.login.errors.googleNetwork;
+    case 'google_auth_failed':
+      return labels.login.errors.googleAuthFailed;
+    case 'google_no_account':
+      return labels.login.errors.googleNoAccount;
+    case 'google':
+      return labels.login.errors.google;
+    default:
+      return null;
+  }
+}
+
 function LoginInner() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -171,6 +193,7 @@ function LoginInner() {
   const performLogin = useCallback(async (loginEmail: string, loginPassword: string, deviceName = 'Web App') => {
     setSubmitting(true);
     setError(null);
+    setUrlError(null);
     setRetryAttempt(0);
     const startedAt = performance.now();
 
@@ -280,6 +303,22 @@ function LoginInner() {
   const searchParams = useSearchParams();
   const registered = searchParams.get('registered') === 'true';
   const registeredPlan = searchParams.get('plan');
+  const googleErrorCode = searchParams.get('error');
+
+  // Issue #5173 — un échec Google (réseau, refus OAuth, compte inconnu)
+  // arrivait sur le formulaire SANS explication : l'utilisateur croit à une
+  // panne au lieu d'une action possible (ex. demander une invitation).
+  const [urlError, setUrlError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!googleErrorCode) {
+      return;
+    }
+    const message = resolveGoogleError(googleErrorCode, labels);
+    if (message) {
+      setUrlError(message);
+    }
+  }, [googleErrorCode, labels]);
 
   if (!mounted) return null;
 
@@ -373,12 +412,12 @@ function LoginInner() {
                     : labels.login.accountCreatedPaid}
                 </div>
               )}
-              {error ? (
+              {(error ?? urlError) ? (
                 <div
                   role="alert"
                   className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
                 >
-                  {error}
+                  {error ?? urlError}
                 </div>
               ) : null}
 
@@ -395,7 +434,7 @@ function LoginInner() {
                   className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
                   placeholder="manager@company.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setUrlError(null); }}
                 />
               </div>
 
@@ -413,7 +452,7 @@ function LoginInner() {
                     className="block h-12 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-transparent/50 dark:bg-slate-800/50 px-4 pr-12 text-slate-950 dark:text-white shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 font-bold text-sm"
                     placeholder={labels.login.password}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => { setPassword(e.target.value); setUrlError(null); }}
                   />
                   <button
                     type="button"

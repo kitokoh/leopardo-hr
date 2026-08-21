@@ -107,7 +107,7 @@ describe('module page sections i18n (#4702)', () => {
         .filter((l: string) => !l.trim().startsWith('//'))
         .join('\n')
       const frLines = code.split('\n').filter((l: string) => {
-        const matches = l.match(/(['"])[^'"]*[àâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ][^'"]*\1/g)
+        const matches = l.match(/(['"])[^'"]*[àâäéèêëîïôöùûüçÀ\u00C2\u00C4ÉÈÊËÎÏÔÖÙÛÜÇ][^'"]*\1/g)
         return (matches ?? []).length > 0
       })
       expect(frLines).toEqual([])
