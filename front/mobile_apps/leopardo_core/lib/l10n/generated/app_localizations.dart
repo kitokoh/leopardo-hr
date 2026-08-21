@@ -3486,6 +3486,381 @@ abstract class AppLocalizations {
   /// **'Aucune règle de paie n\'est disponible pour {country} : le calcul de paie n\'est pas disponible pour ce pays.'**
   String payrollConfidenceUnknownMessage(Object country);
 
+  /// No description provided for @pricingPageHeroBadge.
+  String get pricingPageHeroBadge;
+  /// No description provided for @pricingPageHeroHeadline.
+  String get pricingPageHeroHeadline;
+  /// No description provided for @pricingPageHeroSubheadline.
+  String get pricingPageHeroSubheadline;
+  /// No description provided for @pricingPageHeroPrimary.
+  String get pricingPageHeroPrimary;
+  /// No description provided for @pricingPageHeroSecondary.
+  String get pricingPageHeroSecondary;
+  /// No description provided for @pricingPagePlansBadge.
+  String get pricingPagePlansBadge;
+  /// No description provided for @pricingPagePlansTitle.
+  String get pricingPagePlansTitle;
+  /// No description provided for @pricingPagePlansSubtitle.
+  String get pricingPagePlansSubtitle;
+  /// No description provided for @pricingPagePlansMonthly.
+  String get pricingPagePlansMonthly;
+  /// No description provided for @pricingPagePlansAnnual.
+  String get pricingPagePlansAnnual;
+  /// No description provided for @pricingPagePlansCustomprice.
+  String get pricingPagePlansCustomprice;
+  /// No description provided for @pricingPagePlansPeriodmonthly.
+  String get pricingPagePlansPeriodmonthly;
+  /// No description provided for @pricingPagePlansPeriodannual.
+  String get pricingPagePlansPeriodannual;
+  /// No description provided for @pricingPagePlansTrialnote.
+  String get pricingPagePlansTrialnote;
+  /// No description provided for @pricingPageCurrencyLabel.
+  String get pricingPageCurrencyLabel;
+  /// No description provided for @pricingPageCurrencyApprox.
+  String get pricingPageCurrencyApprox;
+  /// No description provided for @pricingPageTrustItems0.
+  String get pricingPageTrustItems0;
+  /// No description provided for @pricingPageTrustItems1.
+  String get pricingPageTrustItems1;
+  /// No description provided for @pricingPageTrustItems2.
+  String get pricingPageTrustItems2;
+  /// No description provided for @pricingPageTrustItems3.
+  String get pricingPageTrustItems3;
+  /// No description provided for @pricingPageComparisonBadge.
+  String get pricingPageComparisonBadge;
+  /// No description provided for @pricingPageComparisonTitle.
+  String get pricingPageComparisonTitle;
+  /// No description provided for @pricingPageComparisonSubtitle.
+  String get pricingPageComparisonSubtitle;
+  /// No description provided for @pricingPageComparisonFeaturecolumn.
+  String get pricingPageComparisonFeaturecolumn;
+  /// No description provided for @pricingPageComparisonCategories0Name.
+  String get pricingPageComparisonCategories0Name;
+  /// No description provided for @pricingPageComparisonCategories0Features0Name.
+  String get pricingPageComparisonCategories0Features0Name;
+  /// No description provided for @pricingPageComparisonCategories0Features0Free.
+  String get pricingPageComparisonCategories0Features0Free;
+  /// No description provided for @pricingPageComparisonCategories0Features1Name.
+  String get pricingPageComparisonCategories0Features1Name;
+  /// No description provided for @pricingPageComparisonCategories0Features2Name.
+  String get pricingPageComparisonCategories0Features2Name;
+  /// No description provided for @pricingPageComparisonCategories0Features3Name.
+  String get pricingPageComparisonCategories0Features3Name;
+  /// No description provided for @pricingPageComparisonCategories0Features4Name.
+  String get pricingPageComparisonCategories0Features4Name;
+  /// No description provided for @pricingPageComparisonCategories0Features5Name.
+  String get pricingPageComparisonCategories0Features5Name;
+  /// No description provided for @pricingPageComparisonCategories1Name.
+  String get pricingPageComparisonCategories1Name;
+  /// No description provided for @pricingPageComparisonCategories1Features0Name.
+  String get pricingPageComparisonCategories1Features0Name;
+  /// No description provided for @pricingPageComparisonCategories1Features1Name.
+  String get pricingPageComparisonCategories1Features1Name;
+  /// No description provided for @pricingPageComparisonCategories1Features2Name.
+  String get pricingPageComparisonCategories1Features2Name;
+  /// No description provided for @pricingPageComparisonCategories1Features3Name.
+  String get pricingPageComparisonCategories1Features3Name;
+  /// No description provided for @pricingPageComparisonCategories1Features4Name.
+  String get pricingPageComparisonCategories1Features4Name;
+  /// No description provided for @pricingPageComparisonCategories1Features5Name.
+  String get pricingPageComparisonCategories1Features5Name;
+  /// No description provided for @pricingPageComparisonCategories2Name.
+  String get pricingPageComparisonCategories2Name;
+  /// No description provided for @pricingPageComparisonCategories2Features0Name.
+  String get pricingPageComparisonCategories2Features0Name;
+  /// No description provided for @pricingPageComparisonCategories2Features1Name.
+  String get pricingPageComparisonCategories2Features1Name;
+  /// No description provided for @pricingPageComparisonCategories2Features2Name.
+  String get pricingPageComparisonCategories2Features2Name;
+  /// No description provided for @pricingPageComparisonCategories2Features3Name.
+  String get pricingPageComparisonCategories2Features3Name;
+  /// No description provided for @pricingPageComparisonCategories2Features4Name.
+  String get pricingPageComparisonCategories2Features4Name;
+  /// No description provided for @pricingPageComparisonCategories2Features5Name.
+  String get pricingPageComparisonCategories2Features5Name;
+  /// No description provided for @pricingPageComparisonCategories3Name.
+  String get pricingPageComparisonCategories3Name;
+  /// No description provided for @pricingPageComparisonCategories3Features0Name.
+  String get pricingPageComparisonCategories3Features0Name;
+  /// No description provided for @pricingPageComparisonCategories3Features1Name.
+  String get pricingPageComparisonCategories3Features1Name;
+  /// No description provided for @pricingPageComparisonCategories3Features2Name.
+  String get pricingPageComparisonCategories3Features2Name;
+  /// No description provided for @pricingPageComparisonCategories3Features3Name.
+  String get pricingPageComparisonCategories3Features3Name;
+  /// No description provided for @pricingPageComparisonCategories3Features4Name.
+  String get pricingPageComparisonCategories3Features4Name;
+  /// No description provided for @pricingPageComparisonCategories3Features5Name.
+  String get pricingPageComparisonCategories3Features5Name;
+  /// No description provided for @pricingPageFaqBadge.
+  String get pricingPageFaqBadge;
+  /// No description provided for @pricingPageFaqTitle.
+  String get pricingPageFaqTitle;
+  /// No description provided for @pricingPageFaqSubtitle.
+  String get pricingPageFaqSubtitle;
+  /// No description provided for @pricingPageFaqAll.
+  String get pricingPageFaqAll;
+  /// No description provided for @pricingPageFaqCategories0.
+  String get pricingPageFaqCategories0;
+  /// No description provided for @pricingPageFaqCategories1.
+  String get pricingPageFaqCategories1;
+  /// No description provided for @pricingPageFaqCategories2.
+  String get pricingPageFaqCategories2;
+  /// No description provided for @pricingPageFaqCategories3.
+  String get pricingPageFaqCategories3;
+  /// No description provided for @pricingPageFaqCategories4.
+  String get pricingPageFaqCategories4;
+  /// No description provided for @pricingPageFaqItems0Question.
+  String get pricingPageFaqItems0Question;
+  /// No description provided for @pricingPageFaqItems0Answer.
+  String get pricingPageFaqItems0Answer;
+  /// No description provided for @pricingPageFaqItems0Category.
+  String get pricingPageFaqItems0Category;
+  /// No description provided for @pricingPageFaqItems1Question.
+  String get pricingPageFaqItems1Question;
+  /// No description provided for @pricingPageFaqItems1Answer.
+  String get pricingPageFaqItems1Answer;
+  /// No description provided for @pricingPageFaqItems1Category.
+  String get pricingPageFaqItems1Category;
+  /// No description provided for @pricingPageFaqItems2Question.
+  String get pricingPageFaqItems2Question;
+  /// No description provided for @pricingPageFaqItems2Answer.
+  String get pricingPageFaqItems2Answer;
+  /// No description provided for @pricingPageFaqItems2Category.
+  String get pricingPageFaqItems2Category;
+  /// No description provided for @pricingPageFaqItems3Question.
+  String get pricingPageFaqItems3Question;
+  /// No description provided for @pricingPageFaqItems3Answer.
+  String get pricingPageFaqItems3Answer;
+  /// No description provided for @pricingPageFaqItems3Category.
+  String get pricingPageFaqItems3Category;
+  /// No description provided for @pricingPageFaqItems4Question.
+  String get pricingPageFaqItems4Question;
+  /// No description provided for @pricingPageFaqItems4Answer.
+  String get pricingPageFaqItems4Answer;
+  /// No description provided for @pricingPageFaqItems4Category.
+  String get pricingPageFaqItems4Category;
+  /// No description provided for @pricingPageFaqItems5Question.
+  String get pricingPageFaqItems5Question;
+  /// No description provided for @pricingPageFaqItems5Answer.
+  String get pricingPageFaqItems5Answer;
+  /// No description provided for @pricingPageFaqItems5Category.
+  String get pricingPageFaqItems5Category;
+  /// No description provided for @pricingPageFaqItems6Question.
+  String get pricingPageFaqItems6Question;
+  /// No description provided for @pricingPageFaqItems6Answer.
+  String get pricingPageFaqItems6Answer;
+  /// No description provided for @pricingPageFaqItems6Category.
+  String get pricingPageFaqItems6Category;
+  /// No description provided for @pricingPageFaqItems7Question.
+  String get pricingPageFaqItems7Question;
+  /// No description provided for @pricingPageFaqItems7Answer.
+  String get pricingPageFaqItems7Answer;
+  /// No description provided for @pricingPageFaqItems7Category.
+  String get pricingPageFaqItems7Category;
+  /// No description provided for @pricingPageFaqItems8Question.
+  String get pricingPageFaqItems8Question;
+  /// No description provided for @pricingPageFaqItems8Answer.
+  String get pricingPageFaqItems8Answer;
+  /// No description provided for @pricingPageFaqItems8Category.
+  String get pricingPageFaqItems8Category;
+  /// No description provided for @pricingPageFaqMoretitle.
+  String get pricingPageFaqMoretitle;
+  /// No description provided for @pricingPageFaqContactsupport.
+  String get pricingPageFaqContactsupport;
+  /// No description provided for @pricingPageCtaBadge.
+  String get pricingPageCtaBadge;
+  /// No description provided for @pricingPageCtaHeadline.
+  String get pricingPageCtaHeadline;
+  /// No description provided for @pricingPageCtaSubheadline.
+  String get pricingPageCtaSubheadline;
+  /// No description provided for @pricingPageCtaPrimary.
+  String get pricingPageCtaPrimary;
+  /// No description provided for @pricingPageCtaSecondary.
+  String get pricingPageCtaSecondary;
+  /// No description provided for @pricingPageBadgesPopular.
+  String get pricingPageBadgesPopular;
+  /// No description provided for @pricingPageBadgesFree.
+  String get pricingPageBadgesFree;
+  /// No description provided for @pricingPageBadgesFreeprice.
+  String get pricingPageBadgesFreeprice;
+  /// No description provided for @pricingPageBadgesFreenote.
+  String get pricingPageBadgesFreenote;
+  /// No description provided for @pricingPageBadgesFreetag.
+  String get pricingPageBadgesFreetag;
+  /// No description provided for @pricingPlansCustomprice.
+  String get pricingPlansCustomprice;
+  /// No description provided for @pricingPlansFreeDescription.
+  String get pricingPlansFreeDescription;
+  /// No description provided for @pricingPlansFreePricenote.
+  String get pricingPlansFreePricenote;
+  /// No description provided for @pricingPlansFreeEmployeelimit.
+  String get pricingPlansFreeEmployeelimit;
+  /// No description provided for @pricingPlansFreeCta.
+  String get pricingPlansFreeCta;
+  /// No description provided for @pricingPlansFreeFeatures0.
+  String get pricingPlansFreeFeatures0;
+  /// No description provided for @pricingPlansFreeFeatures1.
+  String get pricingPlansFreeFeatures1;
+  /// No description provided for @pricingPlansFreeFeatures2.
+  String get pricingPlansFreeFeatures2;
+  /// No description provided for @pricingPlansFreeFeatures3.
+  String get pricingPlansFreeFeatures3;
+  /// No description provided for @pricingPlansFreeFeatures4.
+  String get pricingPlansFreeFeatures4;
+  /// No description provided for @pricingPlansFreeFeatures5.
+  String get pricingPlansFreeFeatures5;
+  /// No description provided for @pricingPlansFreePeriod.
+  String get pricingPlansFreePeriod;
+  /// No description provided for @pricingPlansFreeAnnualperiod.
+  String get pricingPlansFreeAnnualperiod;
+  /// No description provided for @pricingPlansPilotDescription.
+  String get pricingPlansPilotDescription;
+  /// No description provided for @pricingPlansPilotPricenote.
+  String get pricingPlansPilotPricenote;
+  /// No description provided for @pricingPlansPilotEmployeelimit.
+  String get pricingPlansPilotEmployeelimit;
+  /// No description provided for @pricingPlansPilotCta.
+  String get pricingPlansPilotCta;
+  /// No description provided for @pricingPlansPilotFeatures0.
+  String get pricingPlansPilotFeatures0;
+  /// No description provided for @pricingPlansPilotFeatures1.
+  String get pricingPlansPilotFeatures1;
+  /// No description provided for @pricingPlansPilotFeatures2.
+  String get pricingPlansPilotFeatures2;
+  /// No description provided for @pricingPlansPilotFeatures3.
+  String get pricingPlansPilotFeatures3;
+  /// No description provided for @pricingPlansPilotFeatures4.
+  String get pricingPlansPilotFeatures4;
+  /// No description provided for @pricingPlansPilotFeatures5.
+  String get pricingPlansPilotFeatures5;
+  /// No description provided for @pricingPlansPilotFeatures6.
+  String get pricingPlansPilotFeatures6;
+  /// No description provided for @pricingPlansPilotPeriod.
+  String get pricingPlansPilotPeriod;
+  /// No description provided for @pricingPlansPilotAnnualperiod.
+  String get pricingPlansPilotAnnualperiod;
+  /// No description provided for @pricingPlansOperationsDescription.
+  String get pricingPlansOperationsDescription;
+  /// No description provided for @pricingPlansOperationsPricenote.
+  String get pricingPlansOperationsPricenote;
+  /// No description provided for @pricingPlansOperationsEmployeelimit.
+  String get pricingPlansOperationsEmployeelimit;
+  /// No description provided for @pricingPlansOperationsCta.
+  String get pricingPlansOperationsCta;
+  /// No description provided for @pricingPlansOperationsFeatures0.
+  String get pricingPlansOperationsFeatures0;
+  /// No description provided for @pricingPlansOperationsFeatures1.
+  String get pricingPlansOperationsFeatures1;
+  /// No description provided for @pricingPlansOperationsFeatures2.
+  String get pricingPlansOperationsFeatures2;
+  /// No description provided for @pricingPlansOperationsFeatures3.
+  String get pricingPlansOperationsFeatures3;
+  /// No description provided for @pricingPlansOperationsFeatures4.
+  String get pricingPlansOperationsFeatures4;
+  /// No description provided for @pricingPlansOperationsFeatures5.
+  String get pricingPlansOperationsFeatures5;
+  /// No description provided for @pricingPlansOperationsFeatures6.
+  String get pricingPlansOperationsFeatures6;
+  /// No description provided for @pricingPlansOperationsPeriod.
+  String get pricingPlansOperationsPeriod;
+  /// No description provided for @pricingPlansOperationsAnnualperiod.
+  String get pricingPlansOperationsAnnualperiod;
+  /// No description provided for @pricingPlansEnterpriseDescription.
+  String get pricingPlansEnterpriseDescription;
+  /// No description provided for @pricingPlansEnterprisePricenote.
+  String get pricingPlansEnterprisePricenote;
+  /// No description provided for @pricingPlansEnterpriseEmployeelimit.
+  String get pricingPlansEnterpriseEmployeelimit;
+  /// No description provided for @pricingPlansEnterpriseCta.
+  String get pricingPlansEnterpriseCta;
+  /// No description provided for @pricingPlansEnterpriseFeatures0.
+  String get pricingPlansEnterpriseFeatures0;
+  /// No description provided for @pricingPlansEnterpriseFeatures1.
+  String get pricingPlansEnterpriseFeatures1;
+  /// No description provided for @pricingPlansEnterpriseFeatures2.
+  String get pricingPlansEnterpriseFeatures2;
+  /// No description provided for @pricingPlansEnterpriseFeatures3.
+  String get pricingPlansEnterpriseFeatures3;
+  /// No description provided for @pricingPlansEnterpriseFeatures4.
+  String get pricingPlansEnterpriseFeatures4;
+  /// No description provided for @pricingPlansEnterpriseFeatures5.
+  String get pricingPlansEnterpriseFeatures5;
+  /// No description provided for @pricingFaqItems0Question.
+  String get pricingFaqItems0Question;
+  /// No description provided for @pricingFaqItems0Answer.
+  String get pricingFaqItems0Answer;
+  /// No description provided for @pricingFaqItems0Category.
+  String get pricingFaqItems0Category;
+  /// No description provided for @pricingFaqItems1Question.
+  String get pricingFaqItems1Question;
+  /// No description provided for @pricingFaqItems1Answer.
+  String get pricingFaqItems1Answer;
+  /// No description provided for @pricingFaqItems1Category.
+  String get pricingFaqItems1Category;
+  /// No description provided for @pricingFaqItems2Question.
+  String get pricingFaqItems2Question;
+  /// No description provided for @pricingFaqItems2Answer.
+  String get pricingFaqItems2Answer;
+  /// No description provided for @pricingFaqItems2Category.
+  String get pricingFaqItems2Category;
+  /// No description provided for @pricingFaqItems3Question.
+  String get pricingFaqItems3Question;
+  /// No description provided for @pricingFaqItems3Answer.
+  String get pricingFaqItems3Answer;
+  /// No description provided for @pricingFaqItems3Category.
+  String get pricingFaqItems3Category;
+  /// No description provided for @pricingFaqItems4Question.
+  String get pricingFaqItems4Question;
+  /// No description provided for @pricingFaqItems4Answer.
+  String get pricingFaqItems4Answer;
+  /// No description provided for @pricingFaqItems4Category.
+  String get pricingFaqItems4Category;
+  /// No description provided for @pricingFaqItems5Question.
+  String get pricingFaqItems5Question;
+  /// No description provided for @pricingFaqItems5Answer.
+  String get pricingFaqItems5Answer;
+  /// No description provided for @pricingFaqItems5Category.
+  String get pricingFaqItems5Category;
+  /// No description provided for @pricingFaqItems6Question.
+  String get pricingFaqItems6Question;
+  /// No description provided for @pricingFaqItems6Answer.
+  String get pricingFaqItems6Answer;
+  /// No description provided for @pricingFaqItems6Category.
+  String get pricingFaqItems6Category;
+  /// No description provided for @pricingFaqItems7Question.
+  String get pricingFaqItems7Question;
+  /// No description provided for @pricingFaqItems7Answer.
+  String get pricingFaqItems7Answer;
+  /// No description provided for @pricingFaqItems7Category.
+  String get pricingFaqItems7Category;
+  /// No description provided for @pricingFaqItems8Question.
+  String get pricingFaqItems8Question;
+  /// No description provided for @pricingFaqItems8Answer.
+  String get pricingFaqItems8Answer;
+  /// No description provided for @pricingFaqItems8Category.
+  String get pricingFaqItems8Category;
+  /// No description provided for @pricingFaqItems9Question.
+  String get pricingFaqItems9Question;
+  /// No description provided for @pricingFaqItems9Answer.
+  String get pricingFaqItems9Answer;
+  /// No description provided for @pricingFaqItems9Category.
+  String get pricingFaqItems9Category;
+  /// No description provided for @pricingSectionFreelabel.
+  String get pricingSectionFreelabel;
+  /// No description provided for @pricingSectionTogglemonthly.
+  String get pricingSectionTogglemonthly;
+  /// No description provided for @pricingSectionToggleannual.
+  String get pricingSectionToggleannual;
+  /// No description provided for @pricingSectionTogglearia.
+  String get pricingSectionTogglearia;
+  /// No description provided for @pricingSectionFullcomparison.
+  String get pricingSectionFullcomparison;
+  /// No description provided for @pricingCardPerioddefault.
+  String get pricingCardPerioddefault;
+  /// No description provided for @pricingCardCustompricedefault.
+  String get pricingCardCustompricedefault;
+
   /// No description provided for @signupBadge.
   ///
   /// In fr, this message translates to:

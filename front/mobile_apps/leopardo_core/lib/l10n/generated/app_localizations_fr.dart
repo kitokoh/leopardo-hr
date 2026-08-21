@@ -1828,6 +1828,456 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  @override
+  String get pricingPageHeroBadge => 'Tarification transparente';
+  @override
+  String get pricingPageHeroHeadline =>
+      'Des tarifs pensés pour les équipes terrain';
+  @override
+  String get pricingPageHeroSubheadline =>
+      'Commencez gratuitement — sans carte bancaire — et passez à un plan payant quand vous êtes prêt.';
+  @override
+  String get pricingPageHeroPrimary => 'Commencer gratuitement';
+  @override
+  String get pricingPageHeroSecondary => 'Parler à un expert';
+  @override
+  String get pricingPagePlansBadge => 'Nos plans';
+  @override
+  String get pricingPagePlansTitle =>
+      'Un plan pour chaque étape de votre croissance';
+  @override
+  String get pricingPagePlansSubtitle =>
+      'Commencez petit, montez en puissance sans changer de plateforme.';
+  @override
+  String get pricingPagePlansMonthly => 'Mensuel';
+  @override
+  String get pricingPagePlansAnnual => 'Annuel';
+  @override
+  String get pricingPagePlansCustomprice => 'Sur devis';
+  @override
+  String get pricingPagePlansPeriodmonthly => '/mois';
+  @override
+  String get pricingPagePlansPeriodannual => '/mois facturé annuellement';
+  @override
+  String get pricingPagePlansTrialnote => 'Essai gratuit · Aucune CB requise';
+  @override
+  String get pricingPageCurrencyLabel => 'Afficher les prix en';
+  @override
+  String get pricingPageCurrencyApprox =>
+      'Conversion approximative depuis le prix de référence en EUR ; le tarif contractuel reste fixé en EUR.';
+  @override
+  String get pricingPageTrustItems0 => 'Plan gratuit sans CB';
+  @override
+  String get pricingPageTrustItems1 => 'Support inclus dès le premier jour';
+  @override
+  String get pricingPageTrustItems2 => 'Données hébergées en Europe';
+  @override
+  String get pricingPageTrustItems3 => 'Résiliation à tout moment';
+  @override
+  String get pricingPageComparisonBadge => 'Comparaison complète';
+  @override
+  String get pricingPageComparisonTitle => 'Tout ce qui est inclus';
+  @override
+  String get pricingPageComparisonSubtitle => 'par plan';
+  @override
+  String get pricingPageComparisonFeaturecolumn => 'Fonctionnalité';
+  @override
+  String get pricingPageComparisonCategories0Name => 'Gestion RH';
+  @override
+  String get pricingPageComparisonCategories0Features0Name =>
+      'Pointage web & mobile';
+  @override
+  String get pricingPageComparisonCategories0Features0Free => 'Web seulement';
+  @override
+  String get pricingPageComparisonCategories0Features1Name =>
+      'Absences & congés';
+  @override
+  String get pricingPageComparisonCategories0Features2Name =>
+      'Calendrier partagé';
+  @override
+  String get pricingPageComparisonCategories0Features3Name =>
+      'Onboarding guidé';
+  @override
+  String get pricingPageComparisonCategories0Features4Name =>
+      'Évaluations & performance';
+  @override
+  String get pricingPageComparisonCategories0Features5Name =>
+      'Organigramme dynamique';
+  @override
+  String get pricingPageComparisonCategories1Name => 'Paie & finance';
+  @override
+  String get pricingPageComparisonCategories1Features0Name =>
+      'Calcul automatisé de la paie';
+  @override
+  String get pricingPageComparisonCategories1Features1Name =>
+      'Bulletins de paie PDF';
+  @override
+  String get pricingPageComparisonCategories1Features2Name =>
+      'Exports comptables';
+  @override
+  String get pricingPageComparisonCategories1Features3Name =>
+      'Avances sur salaire';
+  @override
+  String get pricingPageComparisonCategories1Features4Name =>
+      'Multi-pays & multi-devises';
+  @override
+  String get pricingPageComparisonCategories1Features5Name =>
+      'Conformité légale avancée';
+  @override
+  String get pricingPageComparisonCategories2Name => 'Terrain & mobile';
+  @override
+  String get pricingPageComparisonCategories2Features0Name =>
+      'App mobile Employee';
+  @override
+  String get pricingPageComparisonCategories2Features1Name =>
+      'App mobile Manager';
+  @override
+  String get pricingPageComparisonCategories2Features2Name => 'Mode hors-ligne';
+  @override
+  String get pricingPageComparisonCategories2Features3Name =>
+      'Intégration ZKTeco biométrie';
+  @override
+  String get pricingPageComparisonCategories2Features4Name =>
+      'Kiosque RH dédié';
+  @override
+  String get pricingPageComparisonCategories2Features5Name =>
+      'GPS & géofencing';
+  @override
+  String get pricingPageComparisonCategories3Name => 'Sécurité & intégrations';
+  @override
+  String get pricingPageComparisonCategories3Features0Name =>
+      'Coffre-fort documentaire';
+  @override
+  String get pricingPageComparisonCategories3Features1Name =>
+      'API REST & Webhooks';
+  @override
+  String get pricingPageComparisonCategories3Features2Name => 'SSO SAML / OIDC';
+  @override
+  String get pricingPageComparisonCategories3Features3Name =>
+      'Audit trail immuable';
+  @override
+  String get pricingPageComparisonCategories3Features4Name =>
+      'Schéma PostgreSQL isolé';
+  @override
+  String get pricingPageComparisonCategories3Features5Name =>
+      'SLA dédié & support prioritaire';
+  @override
+  String get pricingPageFaqBadge => 'FAQ tarifs';
+  @override
+  String get pricingPageFaqTitle => 'Questions fréquentes';
+  @override
+  String get pricingPageFaqSubtitle =>
+      'Les points à vérifier avant de démarrer';
+  @override
+  String get pricingPageFaqAll => 'Tous';
+  @override
+  String get pricingPageFaqCategories0 => 'Facturation';
+  @override
+  String get pricingPageFaqCategories1 => 'Essai';
+  @override
+  String get pricingPageFaqCategories2 => 'Support';
+  @override
+  String get pricingPageFaqCategories3 => 'Sécurité';
+  @override
+  String get pricingPageFaqCategories4 => 'Technique';
+  @override
+  String get pricingPageFaqItems0Question => 'Que comprend le plan Pilot ?';
+  @override
+  String get pricingPageFaqItems0Answer =>
+      'Le plan Pilot à 29 €/mois inclut jusqu\'à 30 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.';
+  @override
+  String get pricingPageFaqItems0Category => 'Essai';
+  @override
+  String get pricingPageFaqItems1Question => 'Puis-je changer de plan ?';
+  @override
+  String get pricingPageFaqItems1Answer =>
+      'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.';
+  @override
+  String get pricingPageFaqItems1Category => 'Facturation';
+  @override
+  String get pricingPageFaqItems2Question =>
+      'Comment fonctionne la facturation ?';
+  @override
+  String get pricingPageFaqItems2Answer =>
+      'Chaque plan inclut un prix fixe par mois avec un plafond d\'employés inclus (30 pour Pilot, 200 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.';
+  @override
+  String get pricingPageFaqItems2Category => 'Facturation';
+  @override
+  String get pricingPageFaqItems3Question =>
+      'L\'essai est-il vraiment gratuit ?';
+  @override
+  String get pricingPageFaqItems3Answer =>
+      'Oui. Essai gratuit complet — 30 jours sur le plan Free, 14 jours sur les plans payants. Aucune carte bancaire requise pour s\'inscrire.';
+  @override
+  String get pricingPageFaqItems3Category => 'Essai';
+  @override
+  String get pricingPageFaqItems4Question =>
+      'Que se passe-t-il à la fin de l\'essai ?';
+  @override
+  String get pricingPageFaqItems4Answer =>
+      'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.';
+  @override
+  String get pricingPageFaqItems4Category => 'Essai';
+  @override
+  String get pricingPageFaqItems5Question => 'Quel support est disponible ?';
+  @override
+  String get pricingPageFaqItems5Answer =>
+      'Pilot : support email sous 48h. Operations : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.';
+  @override
+  String get pricingPageFaqItems5Category => 'Support';
+  @override
+  String get pricingPageFaqItems6Question => 'Où sont hébergées mes données ?';
+  @override
+  String get pricingPageFaqItems6Answer =>
+      'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.';
+  @override
+  String get pricingPageFaqItems6Category => 'Sécurité';
+  @override
+  String get pricingPageFaqItems7Question => 'Êtes-vous conformes RGPD ?';
+  @override
+  String get pricingPageFaqItems7Answer =>
+      'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.';
+  @override
+  String get pricingPageFaqItems7Category => 'Sécurité';
+  @override
+  String get pricingPageFaqItems8Question => 'L\'API est-elle disponible ?';
+  @override
+  String get pricingPageFaqItems8Answer =>
+      'L\'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Pilot, vous pouvez exporter vos données en CSV/Excel.';
+  @override
+  String get pricingPageFaqItems8Category => 'Technique';
+  @override
+  String get pricingPageCtaBadge => 'Prêt à démarrer';
+  @override
+  String get pricingPageCtaHeadline => 'Lancez vos RH terrain dès aujourd\'hui';
+  @override
+  String get pricingPageCtaSubheadline =>
+      'Rejoignez les équipes qui ont réduit leur temps de paie de 2h à 8 minutes.';
+  @override
+  String get pricingPageCtaPrimary => 'Démarrer gratuitement';
+  @override
+  String get pricingPageCtaSecondary => 'Contacter les ventes';
+  @override
+  String get pricingPageBadgesPopular => 'Le plus populaire';
+  @override
+  String get pricingPageBadgesFree => '100% Gratuit';
+  @override
+  String get pricingPageBadgesFreeprice => 'Gratuit';
+  @override
+  String get pricingPageBadgesFreenote => 'Sans carte bancaire · Pour toujours';
+  @override
+  String get pricingPageBadgesFreetag => 'gratuit';
+  @override
+  String get pricingPlansCustomprice => 'Sur devis';
+  @override
+  String get pricingPlansFreeDescription =>
+      'Pour démarrer sans engagement — idéal pour les équipes de 5 personnes';
+  @override
+  String get pricingPlansFreePricenote =>
+      '14 jours d\'essai gratuits. Jusqu\'à 5 employés.';
+  @override
+  String get pricingPlansFreeEmployeelimit => 'Jusqu\'à 5 employés';
+  @override
+  String get pricingPlansFreeCta => 'Commencer gratuitement';
+  @override
+  String get pricingPlansFreeFeatures0 => 'Pointage web et mobile basique';
+  @override
+  String get pricingPlansFreeFeatures1 => 'Absences et congés (consultation)';
+  @override
+  String get pricingPlansFreeFeatures2 => 'Dossiers employés essentiels';
+  @override
+  String get pricingPlansFreeFeatures3 => 'Bulletins de paie PDF';
+  @override
+  String get pricingPlansFreeFeatures4 => 'App Employee incluse';
+  @override
+  String get pricingPlansFreeFeatures5 => 'Support communautaire';
+  @override
+  String get pricingPlansFreePeriod => '/mois';
+  @override
+  String get pricingPlansFreeAnnualperiod => '/mois';
+  @override
+  String get pricingPlansPilotDescription =>
+      'Pour piloter Leopardo sur un site, une équipe ou une agence';
+  @override
+  String get pricingPlansPilotPricenote =>
+      '14 jours offerts. Jusqu\'à 30 employés.';
+  @override
+  String get pricingPlansPilotEmployeelimit => 'Jusqu\'à 30 employés';
+  @override
+  String get pricingPlansPilotCta => 'Lancer un essai gratuit';
+  @override
+  String get pricingPlansPilotFeatures0 => 'Pointage web et mobile';
+  @override
+  String get pricingPlansPilotFeatures1 => 'Absences, congés et soldes';
+  @override
+  String get pricingPlansPilotFeatures2 => 'Dossiers employés et documents RH';
+  @override
+  String get pricingPlansPilotFeatures3 =>
+      'Bulletins de paie PDF et exports essentiels';
+  @override
+  String get pricingPlansPilotFeatures4 => 'Portail client et espace manager';
+  @override
+  String get pricingPlansPilotFeatures5 => 'Apps Employee et Manager incluses';
+  @override
+  String get pricingPlansPilotFeatures6 => 'Support email sous 48h';
+  @override
+  String get pricingPlansPilotPeriod => '/mois';
+  @override
+  String get pricingPlansPilotAnnualperiod =>
+      '/mois · 290 €/an facturé annuellement';
+  @override
+  String get pricingPlansOperationsDescription =>
+      'Pour les PME multi-équipes qui pilotent terrain, RH et paie';
+  @override
+  String get pricingPlansOperationsPricenote =>
+      '14 jours offerts. Jusqu\'à 200 employés.';
+  @override
+  String get pricingPlansOperationsEmployeelimit => 'Jusqu\'à 200 employés';
+  @override
+  String get pricingPlansOperationsCta => 'Essayer Operations';
+  @override
+  String get pricingPlansOperationsFeatures0 => 'Tout Pilot, plus :';
+  @override
+  String get pricingPlansOperationsFeatures1 =>
+      'Paie multi-pays et validations RH';
+  @override
+  String get pricingPlansOperationsFeatures2 =>
+      'Managers, équipes et workflows d\'approbation';
+  @override
+  String get pricingPlansOperationsFeatures3 =>
+      'Pointage ZKTeco, kiosque et mobile';
+  @override
+  String get pricingPlansOperationsFeatures4 =>
+      'Analytics RH, readiness et exports avancés';
+  @override
+  String get pricingPlansOperationsFeatures5 => 'API, webhooks et intégrations';
+  @override
+  String get pricingPlansOperationsFeatures6 => 'Support prioritaire sous 24h';
+  @override
+  String get pricingPlansOperationsPeriod => '/mois';
+  @override
+  String get pricingPlansOperationsAnnualperiod =>
+      '/mois · 790 €/an facturé annuellement';
+  @override
+  String get pricingPlansEnterpriseDescription =>
+      'Pour groupes multi-pays, franchises, réseaux de sites et exigences fortes';
+  @override
+  String get pricingPlansEnterprisePricenote =>
+      '14 jours offerts. Employés illimités.';
+  @override
+  String get pricingPlansEnterpriseEmployeelimit => 'Employés illimités';
+  @override
+  String get pricingPlansEnterpriseCta => 'Contacter les ventes';
+  @override
+  String get pricingPlansEnterpriseFeatures0 => 'Tout Operations, plus :';
+  @override
+  String get pricingPlansEnterpriseFeatures1 =>
+      'SSO SAML/OIDC et politiques avancées';
+  @override
+  String get pricingPlansEnterpriseFeatures2 =>
+      'SLA, accompagnement migration et formation';
+  @override
+  String get pricingPlansEnterpriseFeatures3 =>
+      'Environnements dédiés ou région cloud choisie';
+  @override
+  String get pricingPlansEnterpriseFeatures4 =>
+      'Audit trail, exports compliance et support prioritaire';
+  @override
+  String get pricingPlansEnterpriseFeatures5 =>
+      'Options IA, connecteurs et gouvernance sur mesure';
+  @override
+  String get pricingFaqItems0Question => 'Que comprend le plan Pilot ?';
+  @override
+  String get pricingFaqItems0Answer =>
+      'Le plan Pilot à 29 €/mois inclut jusqu\'à 30 employés, le pointage web et mobile, les absences et congés, les dossiers employés et les bulletins de paie PDF. Essai gratuit de 14 jours, sans carte bancaire.';
+  @override
+  String get pricingFaqItems0Category => 'Essai';
+  @override
+  String get pricingFaqItems1Question => 'Puis-je changer de plan ?';
+  @override
+  String get pricingFaqItems1Answer =>
+      'Oui, à tout moment. Upgrade immédiat, downgrade au prochain cycle. Aucun frais caché.';
+  @override
+  String get pricingFaqItems1Category => 'Facturation';
+  @override
+  String get pricingFaqItems2Question => 'Comment fonctionne la facturation ?';
+  @override
+  String get pricingFaqItems2Answer =>
+      'Chaque plan inclut un prix fixe par mois avec un plafond d\'employés inclus (5 pour Free, 30 pour Pilot, 200 pour Operations, illimité pour Enterprise). Pas de supplément par employé actif.';
+  @override
+  String get pricingFaqItems2Category => 'Facturation';
+  @override
+  String get pricingFaqItems3Question => 'L\'essai est-il vraiment gratuit ?';
+  @override
+  String get pricingFaqItems3Answer =>
+      'Oui. 14 jours complets avec toutes les fonctionnalités payantes. Aucune carte bancaire requise pour s\'inscrire.';
+  @override
+  String get pricingFaqItems3Category => 'Essai';
+  @override
+  String get pricingFaqItems4Question =>
+      'Le plan Free est-il vraiment gratuit ?';
+  @override
+  String get pricingFaqItems4Answer =>
+      'Oui. Le plan Free (0 €/mois) inclut jusqu\'à 5 employés : pointage web, absences et congés, dossiers employés et l\'app mobile Employee. Aucune carte bancaire.';
+  @override
+  String get pricingFaqItems4Category => 'Essai';
+  @override
+  String get pricingFaqItems5Question =>
+      'Que se passe-t-il à la fin de l\'essai ?';
+  @override
+  String get pricingFaqItems5Answer =>
+      'Vous choisissez un plan ou vos données restent archivées 14 jours supplémentaires. Aucune facturation automatique sans votre accord.';
+  @override
+  String get pricingFaqItems5Category => 'Essai';
+  @override
+  String get pricingFaqItems6Question => 'Quel support est disponible ?';
+  @override
+  String get pricingFaqItems6Answer =>
+      'Pilot : support email sous 48h. Operations : support prioritaire sous 24h. Enterprise : account manager dédié + SLA contractuel.';
+  @override
+  String get pricingFaqItems6Category => 'Support';
+  @override
+  String get pricingFaqItems7Question => 'Où sont hébergées mes données ?';
+  @override
+  String get pricingFaqItems7Answer =>
+      'En Europe (Render EU / Supabase EU). Chiffrement AES-256 au repos, TLS 1.3 en transit. Isolation par tenant garantie.';
+  @override
+  String get pricingFaqItems7Category => 'Sécurité';
+  @override
+  String get pricingFaqItems8Question => 'Êtes-vous conformes RGPD ?';
+  @override
+  String get pricingFaqItems8Answer =>
+      'Oui. DPA disponible, données exclusivement en Europe, droit à l\'effacement implémenté, exports de données sur demande.';
+  @override
+  String get pricingFaqItems8Category => 'Sécurité';
+  @override
+  String get pricingFaqItems9Question => 'L\'API est-elle disponible ?';
+  @override
+  String get pricingFaqItems9Answer =>
+      'L\'API REST et les webhooks sont disponibles à partir du plan Operations. Sur Pilot, vous pouvez exporter vos données en CSV/Excel.';
+  @override
+  String get pricingFaqItems9Category => 'Technique';
+  @override
+  String get pricingSectionFreelabel => 'Gratuit';
+  @override
+  String get pricingSectionTogglemonthly => 'Mensuel';
+  @override
+  String get pricingSectionToggleannual => 'Annuel';
+  @override
+  String get pricingSectionTogglearia => 'Changer la période de facturation';
+  @override
+  String get pricingSectionFullcomparison => 'Voir la comparaison complete';
+  @override
+  String get pricingCardPerioddefault => '/mois';
+  @override
+  String get pricingCardCustompricedefault => 'Sur devis';
+
+  @override
+  String get pricingPageFaqMoretitle => 'Une autre question ?';
+  @override
+  String get pricingPageFaqContactsupport => 'Contacter le support';
+
+
   String get signupBadge => 'Essai gratuit 14 jours';
 
   @override
