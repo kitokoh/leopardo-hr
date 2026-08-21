@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Payroll\Interfaces\Api\V1;
 
 use App\Core\Auth\Domain\Models\Employee;
-use Illuminate\Support\Facades\DB;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Payroll\Domain\Models\PublicHoliday;
@@ -15,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;

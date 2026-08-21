@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Billing\Interfaces\Api\V1;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use App\Core\Tenant\Domain\Models\CompanyRequest;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Domain\Models\User;
+use App\Core\Tenant\Domain\Models\CompanyRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -166,4 +166,3 @@ class CompanyRequestController extends Controller
         abort(401);
     }
 }
-

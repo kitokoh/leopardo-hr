@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Payroll\Infrastructure\Services;
 
-use App\Modules\Payroll\Domain\Models\Commission;
-use Illuminate\Support\Facades\DB;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Billing\Domain\Models\Partner;
 use App\Modules\Billing\Domain\Models\PartnerReferral;
+use App\Modules\Payroll\Domain\Models\Commission;
 use App\Modules\Payroll\Domain\Models\Payment;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CommissionService
@@ -30,12 +30,12 @@ class CommissionService
         }
 
         $company = Company::find($payment->company_id);
-        if (!$company || !$company->referrer_partner_id) {
+        if (! $company || ! $company->referrer_partner_id) {
             return null;
         }
 
         $partner = Partner::query()->find($company->referrer_partner_id);
-        if (!$partner || $partner->status !== 'active') {
+        if (! $partner || $partner->status !== 'active') {
             return null;
         }
 
@@ -43,6 +43,7 @@ class CommissionService
         $referral = PartnerReferral::where('company_id', $company->id)->first();
         if ($referral && $referral->referred_at->diffInMonths(now()) >= 12) {
             Log::info("Commission period (12 months) expired for company {$company->id}");
+
             return null;
         }
 
@@ -101,4 +102,3 @@ class CommissionService
         return $commission;
     }
 }
-

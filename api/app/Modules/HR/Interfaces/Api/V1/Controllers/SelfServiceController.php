@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
 use App\Modules\HR\Domain\Models\Contract;
-use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
 use App\Modules\Payroll\Domain\Models\LoanRepayment;
-use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class SelfServiceController extends Controller
@@ -154,4 +154,3 @@ class SelfServiceController extends Controller
         return response()->json(['data' => $repayments]); // LoanRepayment — no dedicated Resource yet
     }
 }
-

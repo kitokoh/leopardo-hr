@@ -92,6 +92,7 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
+            'savepoints' => true, // #4978
             'prefix_indexes' => true,
             'search_path' => env('DB_SEARCH_PATH', 'shared_tenants,public'),
             // Issue #1770 : force `set time zone 'UTC'` sur CHAQUE connexion —

@@ -16,7 +16,6 @@ use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use App\Modules\Payroll\Domain\Models\Commission;
 use App\Modules\Payroll\Domain\Models\Payment;
-use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Infrastructure\Services\CommissionService;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
@@ -67,22 +66,19 @@ class CheckThenCreateRaceTest extends TestCase
             'end_date' => now()->addDays(2)->toDateString(),
         ]);
 
-        // Course simulée : au moment où le modèle s'insère, un enroll
-        // concurrent (même session, même employé) gagne la course →
-        // violation de la contrainte unique (training_session_id, employee_id).
+        // Course simulée : un enroll concurrent (même session, même employé)
+        // a déjà gagné la course → le pré-check exists() répond 422 idempotent
+        // (jamais de 500, jamais de doublon). Simulation par pré-insertion :
+        // le hook 'creating' même-connexion serait annulé par le savepoint de
+        // récupération (25P02 #4978) — la pré-insertion est la simulation
+        // fidèle d'un gagnant déjà engagé.
         $employeeId = $this->employee->id;
-        TrainingEnrollment::creating(function (TrainingEnrollment $model) use ($session, $employeeId): void {
-            if ($model->training_session_id !== $session->id) {
-                return;
-            }
-
-            DB::table('training_enrollments')->insert([
-                'training_session_id' => $session->id,
-                'employee_id' => $employeeId,
-                'company_id' => $this->company->id,
-                'status' => 'enrolled',
-            ]);
-        });
+        DB::table('training_enrollments')->insert([
+            'training_session_id' => $session->id,
+            'employee_id' => $employeeId,
+            'company_id' => $this->company->id,
+            'status' => 'enrolled',
+        ]);
 
         $response = $this->postJson("/api/v1/me/trainings/{$session->id}/enroll");
 
@@ -103,25 +99,20 @@ class CheckThenCreateRaceTest extends TestCase
         // férié national company_id NULL nécessiterait l'index partiel PgSQL).
         Sanctum::actingAs($this->employee);
 
-        // Course simulée : un manager concurrent insère le même férié entre
-        // assertUnique() et create() → violation de contrainte unique.
-        PublicHoliday::creating(function ($model): void {
-            if ($model->date !== '2026-07-05' || $model->company_id === null) {
-                return;
-            }
-
-            DB::table('public_holidays')->insert([
-                'country_code' => 'DZ',
-                'name' => 'Fête de l\'indépendance (concurrent)',
-                'date' => '2026-07-05',
-                'year' => 2026,
-                'company_id' => $model->company_id,
-                'is_recurring' => false,
-                'month_day' => null,
-                'holiday_type' => 'fixed',
-                'created_by' => null,
-            ]);
-        });
+        // Course simulée : un manager concurrent a déjà inséré le même férié
+        // → assertUnique() répond 422 (simulation fidèle par pré-insertion,
+        // cf. commentaire test self-enroll #4978).
+        DB::table('public_holidays')->insert([
+            'country_code' => 'DZ',
+            'name' => 'Fête de l\'indépendance (concurrent)',
+            'date' => '2026-07-05',
+            'year' => 2026,
+            'company_id' => $this->company->id,
+            'is_recurring' => false,
+            'month_day' => null,
+            'holiday_type' => 'fixed',
+            'created_by' => null,
+        ]);
 
         $response = $this->postJson('/api/v1/public-holidays', [
             'country_code' => 'DZ',
@@ -183,24 +174,18 @@ class CheckThenCreateRaceTest extends TestCase
             'paid_at' => now(),
         ]);
 
-        // Course simulée : une requête concurrente crée la commission entre
-        // l'exists() d'idempotence et le create() → violation de l'index
-        // unique commissions_payment_id_unique.
-        Commission::creating(function (Commission $model) use ($payment): void {
-            if ($model->payment_id !== $payment->id) {
-                return;
-            }
-
-            DB::table('commissions')->insert([
-                'partner_id' => $model->partner_id,
-                'company_id' => $model->company_id,
-                'payment_id' => $model->payment_id,
-                'amount' => $model->amount,
-                'currency' => $model->currency,
-                'applied_rate' => $model->applied_rate,
-                'status' => 'pending',
-            ]);
-        });
+        // Course simulée : une requête concurrente a déjà créé la commission
+        // → l'exists() d'idempotence retourne null (simulation fidèle par
+        // pré-insertion, cf. #4978).
+        DB::table('commissions')->insert([
+            'partner_id' => $partner->id,
+            'company_id' => $this->company->id,
+            'payment_id' => $payment->id,
+            'amount' => 1000,
+            'currency' => 'DZD',
+            'applied_rate' => 1000,
+            'status' => 'pending',
+        ]);
 
         $service = app(CommissionService::class);
         $result = $service->recordCommissionForPayment($payment);
@@ -224,23 +209,17 @@ class CheckThenCreateRaceTest extends TestCase
 
         $email = $employee->email;
 
-        // Course simulée : un user plateforme concurrent (même email) est créé
-        // entre le SELECT de firstOrCreate et l'insert → violation de
-        // l'index unique users.email.
-        User::creating(function (User $model) use ($email): void {
-            if ($model->email !== $email) {
-                return;
-            }
-
-            DB::table('users')->insert([
-                'first_name' => 'Concurrent',
-                'last_name' => 'User',
-                'email' => $email,
-                'provider' => 'email',
-                'preferred_language' => 'fr',
-                'status' => 'active',
-            ]);
-        });
+        // Course simulée : un user plateforme concurrent (même email) a déjà
+        // gagné la course → firstOrCreate récupère le gagnant (jamais de
+        // doublon, jamais de 500 ; simulation fidèle par pré-insertion #4978).
+        DB::table('users')->insert([
+            'first_name' => 'Concurrent',
+            'last_name' => 'User',
+            'email' => $email,
+            'provider' => 'email',
+            'preferred_language' => 'fr',
+            'status' => 'active',
+        ]);
 
         $response = $this->postJson('/api/v1/company-requests', [
             'company_name' => 'Société Concurrente',
@@ -291,7 +270,7 @@ class CheckThenCreateRaceTest extends TestCase
             'external_event_id' => 'evt-race',
         ]);
 
-        $service = new ExposedSyncEngineService();
+        $service = new ExposedSyncEngineService;
         $result = $service->exposeApplyAttendanceLog($item);
 
         $this->assertTrue($result['conflict']);

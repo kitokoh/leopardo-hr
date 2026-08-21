@@ -150,7 +150,15 @@ trait RefreshTenantDatabase
         ]);
 
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('SET search_path TO shared_tenants,public');
+            // Restaurer le search_path CONFIGURÉ (CI/phpunit : public,shared_tenants)
+            // au lieu de laisser la session sur shared_tenants,public : des tables
+            // « ombres » du schéma tenant (training_enrollments, payments,
+            // attendance_logs...) masqueraient les vraies tables public et
+            // casseraient les requêtes Eloquent non qualifiées des modules public
+            // (partners, commissions, public_holidays...) — régression 25P02/0 row
+            // observée sur les tests de course (GrowthPartnerRaceTest #2999).
+            $defaultPath = (string) config('database.connections.'.DB::connection()->getName().'.search_path', 'shared_tenants,public');
+            DB::statement('SET search_path TO '.$defaultPath);
         }
     }
 }

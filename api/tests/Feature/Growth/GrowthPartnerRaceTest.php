@@ -58,7 +58,10 @@ class GrowthPartnerRaceTest extends TestCase
         $second->assertStatus(400)
             ->assertJsonPath('error', 'ALREADY_EXISTS');
 
-        $this->assertSame(1, Partner::where('user_id', $this->employee->id)->count());
+        // L'API lie le partenaire au USER GLOBAL (public.users) résolu par
+        // email (resolveGlobalUser) — jamais à l'id de l'Employee tenant.
+        $globalUser = User::where('email', $this->employee->email)->firstOrFail();
+        $this->assertSame(1, Partner::where('user_id', $globalUser->id)->count());
     }
 
     public function test_payout_does_not_expose_raw_exception_message(): void
@@ -155,10 +158,13 @@ class GrowthPartnerRaceTest extends TestCase
         // #PR : partners.user_id → users.id (FK publique) — les employees
         // vivent dans la table employees (tenant), leurs ids ne sont PAS des
         // users.id : créer un vrai User pour satisfaire la FK (23503).
+        // Le controller résout l'utilisateur global PAR EMAIL (resolveGlobalUser
+        // sur l'Employee authentifié) : le user du partenaire doit donc porter
+        // l'email de l'employé, sinon 403 NOT_A_PARTNER.
         $user = User::query()->forceCreate([
             'first_name' => 'Partner',
             'last_name' => 'QA',
-            'email' => 'partner-'.uniqid().'@test.hr',
+            'email' => $this->employee->email,
             'password_hash' => Hash::make('password123'),
         ]);
         $this->adminUser = $user;
