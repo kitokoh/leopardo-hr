@@ -36,6 +36,7 @@ class GoldenDzIrgBracketsTest extends TestCase
             'borne 320 000'  => [320000.0, 90700.0],
             'borne 320 001'  => [320001.0, 90700.35],
             'haut 350 000'   => [350000.0, 101200.0],
+            'tranche 35 % max (500 000)' => [500000.0, 153700.0],
         ];
     }
 
@@ -52,6 +53,12 @@ class GoldenDzIrgBracketsTest extends TestCase
             'SMIG 20 000'  => [20000.0, [1800.0, 5200.0]],
             'moyen 60 000' => [60000.0, [5400.0, 15600.0]],
             'décimal'      => [123456.78, [11111.11, 32098.76]],
+            // #5149 — aucun plafond légal CNAS en DZ (DZ_COMPLIANCE.md §2) :
+            // un million de dinars reste cotisé à 9 % / 26 % intégralement.
+            'sans plafond 1 000 000' => [1000000.0, [90000.0, 260000.0]],
+            // #5149 — arrondi aux centimes : 33 333,33 × 9 % = 2 999,9997 → 3 000,00
+            // et × 26 % = 8 666,6658 → 8 666,67 (computeContribution round(…, 2)).
+            'arrondi centime 33 333,33' => [33333.33, [3000.0, 8666.67]],
         ];
     }
 

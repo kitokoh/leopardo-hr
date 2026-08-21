@@ -34,6 +34,9 @@ class GoldenDzProrataOvertimeTest extends TestCase
             'absence 1 jour (21/22)' => [60000.0, 22.0, 21.0, 57272.73],   // retenue 2 727,27
             'congés sans solde 5 j' => [60000.0, 22.0, 17.0, 46363.64],   // retenue 13 636,36
             'entrée 15/07 (12,06/22)' => [60000.0, 22.0, 12.06, 32890.91],
+            // #5149 — sortie 10/07 : 22 × 10/31 = 7,10 j → 60 000 × 7,10/22
+            // (DZ_COMPLIANCE.md §5, tableau « sortie 10/07 ») — retenue 40 636,36.
+            'sortie 10/07 (7,10/22)' => [60000.0, 22.0, 7.1, 19363.64],
             'zéro jour' => [60000.0, 22.0, 0.0, 0.0],
         ];
     }
