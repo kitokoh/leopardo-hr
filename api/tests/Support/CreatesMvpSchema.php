@@ -1991,16 +1991,46 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->uuid('company_id')->index();
                 $table->string('serial_number', 100)->unique();
-                $table->string('name', 100);
+                $table->string('sync_token_hash', 255)->nullable();
+                $table->string('name', 120);
                 $table->string('ip_address', 45)->nullable();
                 $table->unsignedSmallInteger('port')->default(4370);
                 $table->string('protocol', 20)->default('tcp');
+                $table->string('location_label', 120)->nullable();
                 $table->string('status', 20)->default('offline');
+                $table->string('model', 60)->nullable();
+                $table->string('firmware_version', 60)->nullable();
+                $table->unsignedInteger('employee_capacity')->default(1000);
+                $table->unsignedInteger('fingerprint_capacity')->default(3000);
+                $table->unsignedInteger('face_capacity')->default(500);
+                $table->json('capabilities')->nullable();
+                $table->json('punch_methods')->nullable();
                 $table->timestampTz('last_heartbeat_at')->nullable();
                 $table->timestampTz('last_sync_at')->nullable();
                 $table->json('punch_methods')->nullable();
                 $table->timestamps();
             });
+        }
+
+        // #5175 : migrations additifs idempotents — les bases de test CLONÉES
+        // (parallélisation CI, `leopardo_test_test_N`) conservent l'ancien
+        // schéma : hasTable est true mais les colonnes récentes manquent.
+        // Même garde `hasColumn` que les migrations tenant.
+        $zktecoAdditive = [
+            ['sync_token_hash', function (Blueprint $t): void { $t->string('sync_token_hash', 255)->nullable(); }],
+            ['location_label', function (Blueprint $t): void { $t->string('location_label', 120)->nullable(); }],
+            ['model', function (Blueprint $t): void { $t->string('model', 60)->nullable(); }],
+            ['firmware_version', function (Blueprint $t): void { $t->string('firmware_version', 60)->nullable(); }],
+            ['employee_capacity', function (Blueprint $t): void { $t->unsignedInteger('employee_capacity')->default(1000); }],
+            ['fingerprint_capacity', function (Blueprint $t): void { $t->unsignedInteger('fingerprint_capacity')->default(3000); }],
+            ['face_capacity', function (Blueprint $t): void { $t->unsignedInteger('face_capacity')->default(500); }],
+            ['capabilities', function (Blueprint $t): void { $t->json('capabilities')->nullable(); }],
+            ['punch_methods', function (Blueprint $t): void { $t->json('punch_methods')->nullable(); }],
+        ];
+        foreach ($zktecoAdditive as [$column, $columnDef]) {
+            if (! Schema::hasColumn($this->moduleTable('zkteco_devices'), $column)) {
+                Schema::table($this->moduleTable('zkteco_devices'), fn (Blueprint $table) => $columnDef($table));
+            }
         }
 
         // ── EdgeSync module tables ──────────────────────────────────
