@@ -39,6 +39,10 @@ class LeaveCarryForward extends Command
             ->where('carry_forward', true)
             ->get();
 
+        if (app()->environment('testing') && $policies->isEmpty()) {
+            throw new \RuntimeException('LeaveCarryForward found no active carry-forward policies on search_path '.DB::selectOne('select current_schema()')->current_schema.'.');
+        }
+
         $carried = 0;
         $expired = 0;
 
