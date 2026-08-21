@@ -129,7 +129,7 @@ class LeavePendingReservationTest extends TestCase
             'company_id' => $company->id,
             'employee_id' => $employee->id,
             'absence_type_id' => $type->id,
-            'balance' => 20,
+            'balance' => 1,
             'used' => 0,
             'pending' => 0,
             'year' => now()->year,
@@ -137,18 +137,21 @@ class LeavePendingReservationTest extends TestCase
 
         \Laravel\Sanctum\Sanctum::actingAs($employee);
 
-        // Première demande : 15 j → pending = 15.
+        $firstDate = now()->addMonths(2)->nextWeekday();
+        $secondDate = $firstDate->copy()->addWeekday();
+
+        // Première demande : 1 jour ouvré → pending = 1.
         $this->postJson('/api/v1/absences', [
             'absence_type_id' => $type->id,
-            'start_date' => now()->addDays(1)->format('Y-m-d'),
-            'end_date' => now()->addDays(15)->format('Y-m-d'),
+            'start_date' => $firstDate->format('Y-m-d'),
+            'end_date' => $firstDate->format('Y-m-d'),
         ])->assertCreated();
 
-        // Seconde demande : 15 j → disponible = 20 − 0 − 15 = 5 → bloquée.
+        // Seconde demande : 1 jour ouvré → disponible = 1 − 0 − 1 = 0 → bloquée.
         $this->postJson('/api/v1/absences', [
             'absence_type_id' => $type->id,
-            'start_date' => now()->addDays(30)->format('Y-m-d'),
-            'end_date' => now()->addDays(44)->format('Y-m-d'),
+            'start_date' => $secondDate->format('Y-m-d'),
+            'end_date' => $secondDate->format('Y-m-d'),
         ])->assertStatus(422);
     }
 }
