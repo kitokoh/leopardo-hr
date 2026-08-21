@@ -58,7 +58,7 @@ class LeaveCarryForward extends Command
                         $maxCarry = $policy->carry_forward_max ?? $unused;
                         $carryAmount = min($unused, $maxCarry);
 
-                        $newBalance = LeaveBalance::firstOrCreate(
+                        $newBalance = LeaveBalance::withoutGlobalScopes()->firstOrCreate(
                             [
                                 'company_id' => $policy->company_id,
                                 'employee_id' => $oldBalance->employee_id,
@@ -70,7 +70,7 @@ class LeaveCarryForward extends Command
 
                         $newBalance->increment('balance', $carryAmount);
 
-                        LeaveAccrual::create([
+                        LeaveAccrual::withoutGlobalScopes()->create([
                             'company_id' => $policy->company_id,
                             'employee_id' => $oldBalance->employee_id,
                             'leave_policy_id' => $policy->id,
