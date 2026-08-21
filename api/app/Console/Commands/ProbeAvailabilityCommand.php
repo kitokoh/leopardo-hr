@@ -26,12 +26,22 @@ use Illuminate\Support\Facades\Redis;
  */
 class ProbeAvailabilityCommand extends Command
 {
-    protected $signature = 'infra:probe-availability {--format=json|env : Format de sortie (json | env)}';
+    // {--format=json|env} (syntaxe invalide) créait un ALIAS 'env' en
+    // collision avec l'option globale --env → PHPStan « option env already
+    // exists » (erreur interne). Syntaxe corrigée : défaut 'json', valeur
+    // validée en début de handle().
+    protected $signature = 'infra:probe-availability {--format=json : Format de sortie (json | env)}';
 
     protected $description = 'Probe Redis (Upstash) et recommande les drivers cache/session (redis → file), queue = database';
 
     public function handle(): int
     {
+        if (! in_array($this->option('format'), ['json', 'env'], true)) {
+            $this->error('Format invalide : attendez json ou env.');
+
+            return self::INVALID;
+        }
+
         $redisUp = $this->redisIsReachable();
 
         $result = [
