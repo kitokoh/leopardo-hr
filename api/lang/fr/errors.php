@@ -111,6 +111,7 @@ return [
     'GOOGLE_AUTH_FAILED' => 'Authentification Google indisponible.',
     'GOOGLE_TOKEN_INVALID' => 'Le jeton Google est invalide ou expiré.',
     'GOOGLE_ACCOUNT_NOT_FOUND' => 'Aucun compte associé à ce compte Google.',
+    'GOOGLE_OAUTH_NOT_CONFIGURED' => 'La connexion Google est temporairement indisponible (configuration manquante). Contactez votre administrateur.',
     'GOOGLE_INVITATION_REQUIRED' => 'Aucun compte n\'existe pour cet email Google. Demandez une invitation à votre administrateur.',
     'NO_ACTIVE_SUBSCRIPTION' => 'Aucun abonnement actif.',
     'STRIPE_NOT_CONFIGURED' => 'Le paiement en ligne n\'est pas encore configuré.',

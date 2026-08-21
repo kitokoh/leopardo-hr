@@ -116,4 +116,39 @@ class AuthGoogleSignInTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_google_redirect_returns_503_when_oauth_not_configured(): void
+    {
+        // Issue #5170 : en prod, GOOGLE_CLIENT_ID/SECRET/REDIRECT_URL absents
+        // de l'env Render → Socialite ne peut pas construire l'URL →
+        // 500 INTERNAL_ERROR (page JSON brute, dead end pour l'utilisateur).
+        // Depuis le fix : échec rapide 503 GOOGLE_OAUTH_NOT_CONFIGURED.
+        config([
+            'services.google.client_id' => null,
+            'services.google.client_secret' => null,
+            'services.google.redirect' => null,
+        ]);
+
+        $response = $this->getJson('/api/v1/auth/google');
+
+        $response->assertStatus(503)
+            ->assertJson(['error' => 'GOOGLE_OAUTH_NOT_CONFIGURED']);
+    }
+
+    public function test_google_redirect_passes_when_oauth_configured(): void
+    {
+        // Credentials présents → la garde de configuration passe et la
+        // redirection Socialite est tentée (sans réseau en test, l'échec
+        // éventuel ne doit PAS être GOOGLE_OAUTH_NOT_CONFIGURED).
+        config([
+            'services.google.client_id' => 'test-client-id',
+            'services.google.client_secret' => 'test-client-secret',
+            'services.google.redirect' => 'https://example.com/api/v1/auth/google/callback',
+        ]);
+
+        $response = $this->getJson('/api/v1/auth/google');
+
+        $this->assertNotEquals(503, $response->getStatusCode());
+        $this->assertNotEquals('GOOGLE_OAUTH_NOT_CONFIGURED', $response->json('error'));
+    }
 }
