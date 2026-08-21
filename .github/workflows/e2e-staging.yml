@@ -307,12 +307,64 @@ jobs:
         run: |
                     npx playwright install --with-deps chromium
 
+      # Issue #5146 : la suite funnel prospect (e2e/funnel.spec.ts) poll la
+      # VRAIE API trial (provisioning) — l'instance Render free tier s'endort
+      # après ~15 min d'inactivité (#1725) et le cold start prend 30-60 s.
+      # Même pattern de warm-up que les jobs e2e-admin-dashboard /
+      # e2e-blade-portal : API + vitrine, puis stabilisation.
+      - name: Warm up staging instances (cold-start Render, issue #1725)
+        working-directory: front/web
+        env:
+          API_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+          WEB_URL: ${{ github.event.inputs.web_staging_url || env.DEFAULT_WEB_STAGING_URL }}
+        run: |
+          set -euo pipefail
+          API="${API_URL%/}"
+          [[ "${API}" == */api/v1 ]] || API="${API}/api/v1"
+          warm() {
+            local target="$1"
+            echo "Warming up ${target} (instance free tier s'endort apres ~15 min d'inactivite)..."
+            for attempt in {1..30}; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${target}" || echo 000)
+              if [[ "${code}" != "000" ]]; then
+                echo "Warm-up OK (HTTP ${code}) apres ${attempt} tentative(s)"
+                return 0
+              fi
+              echo "Tentative ${attempt}/30 : HTTP ${code} — nouvel essai dans 5s"
+              sleep 5
+            done
+            echo "Warm-up KO apres 30 tentatives (${target} injoignable)"
+            exit 1
+          }
+          warm "${API}/health"
+          warm "${WEB_URL}/signup"
+          echo "Stabilisation 20s avant la suite Playwright"
+          sleep 20
+
       - name: Run Playwright E2E tests
         working-directory: front/web
         env:
           CI: true
           BASE_URL: ${{ github.event.inputs.web_staging_url || env.DEFAULT_WEB_STAGING_URL }}
         run: npx playwright test e2e/staging-smoke.spec.ts --project=chromium
+
+      # Issue #5146 : E2E funnel prospect (vitrine → signup → trial →
+      # dashboard) contre staging/prod. Config dédiée
+      # playwright.staging-funnel.config.ts (expect.timeout 15 s, poll
+      # /trial/status jusqu'à 180 s, retries 0 à cause du throttle
+      # `throttle:5,15` sur /trial/signup). E2E_API_URL = API Laravel
+      # (défaut : prod Render) ; E2E_MAILCATCHER_URL = boîte de test
+      # Mailpit/MailHog (optionnelle : sans elle, US1.2/US3 sont skippés).
+      # Fail-closed conservé : pas de continue-on-error — un échec de test
+      # rend le run rouge (garde #1833, aucun faux vert).
+      - name: Run Playwright funnel prospect E2E (issue #5146)
+        working-directory: front/web
+        env:
+          CI: true
+          BASE_URL: ${{ github.event.inputs.web_staging_url || env.DEFAULT_WEB_STAGING_URL }}
+          E2E_API_URL: ${{ github.event.inputs.staging_url || env.DEFAULT_STAGING_URL }}
+          E2E_MAILCATCHER_URL: ${{ vars.E2E_MAILCATCHER_URL }}
+        run: npx playwright test e2e/funnel.spec.ts --project=chromium --config=playwright.staging-funnel.config.ts
 
       - name: Upload Playwright report
         if: always()
