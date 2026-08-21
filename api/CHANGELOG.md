@@ -6,7 +6,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
-- **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` context.
+- **LeaveCarryForward processes all tenants explicitly.** The annual carry-forward command now disables tenant global scopes for policies, balances, accrual expiration queries, and write builders while retaining explicit company filters, so console execution cannot inherit a stale `current_company` context; per-employee failures are also surfaced in console output instead of being silent.
+
 - **Leave pending reservation fixture aligned with working-day semantics.** The regression test now reserves two distinct one-day working-day absences against a one-day balance, verifying pending-day reservation without relying on the legacy calendar-day calculation.
 
 ### Security
