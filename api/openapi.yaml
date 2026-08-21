@@ -1183,8 +1183,8 @@ paths:
       responses:
         "302":
           description: "Redirection vers la page de consentement Google"
-        "500":
-          description: "Erreur de configuration OAuth"
+        "503":
+          description: "Configuration Google OAuth absente (GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET/GOOGLE_REDIRECT_URL non renseignées sur Render) — erreur GOOGLE_OAUTH_NOT_CONFIGURED (#5170)"
 
   /auth/google/callback:
     get:
