@@ -53,6 +53,10 @@ class LeaveCarryForward extends Command
                 ->where('year', $fromYear)
                 ->get();
 
+            if (app()->environment('testing') && $balances->isEmpty()) {
+                throw new \RuntimeException("LeaveCarryForward found no balance for policy {$policy->id}, company {$policy->company_id}, year {$fromYear}.");
+            }
+
             foreach ($balances as $oldBalance) {
                 try {
                     DB::transaction(function () use ($policy, $oldBalance, $toYear, &$carried): void {
