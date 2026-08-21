@@ -85,6 +85,10 @@ class LeaveCarryForward extends Command
                 } catch (\Throwable $e) {
                     Log::warning("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
                     $this->warn("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
+
+                    if (app()->environment('testing')) {
+                        throw $e;
+                    }
                 }
             }
         }
