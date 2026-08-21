@@ -147,6 +147,47 @@ class OnboardingStepControllerTest extends TestCase
         $this->assertSame('pending', $otherStep->fresh()->status);
     }
 
+    public function test_checklist_exposes_timing_fields_for_pilot_onboarding(): void
+    {
+        // #5151 — instrumentation légère (pas d'outil externe) : la checklist
+        // expose l'horodatage du parcours pilote (création société + minutes
+        // écoulées) pour mesurer l'objectif « onboarding < 30 min ».
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+
+        Sanctum::actingAs($manager);
+
+        $response = $this->getJson('/api/v1/onboarding-setup/checklist');
+
+        $response->assertOk();
+        $response->assertJsonPath('data.company_created_at', $company->created_at->toIso8601String());
+        $this->assertIsInt($response->json('data.elapsed_since_company_creation_minutes'));
+        $this->assertGreaterThanOrEqual(0, $response->json('data.elapsed_since_company_creation_minutes'));
+    }
+
+    public function test_completing_step_logs_timing_for_pilot_onboarding(): void
+    {
+        // #5151 — chaque étape complétée produit un log structuré
+        // onboarding.step_completed avec horodatage + minutes écoulées depuis
+        // la création de la société (preuve « < 30 min » sans télémétrie).
+        $company = Company::factory()->create();
+        $manager = Employee::factory()->manager()->create(['company_id' => $company->id]);
+        $this->step($company, 'company_info', 'pending', required: true);
+
+        \Illuminate\Support\Facades\Log::spy();
+
+        Sanctum::actingAs($manager);
+
+        $this->patchJson('/api/v1/onboarding-setup/company_info/complete')->assertOk();
+
+        \Illuminate\Support\Facades\Log::shouldHaveReceived('info')
+            ->once()
+            ->withArgs(fn (string $channel, array $context): bool => $channel === 'onboarding.step_completed'
+                && ($context['step_key'] ?? null) === 'company_info'
+                && ($context['company_id'] ?? null) === $company->id
+                && isset($context['elapsed_minutes_since_company_creation']));
+    }
+
     private function step(
         Company $company,
         string $key,
