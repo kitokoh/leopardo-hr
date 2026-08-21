@@ -2,6 +2,19 @@
 set -e
 
 echo "Optimizing Laravel at startup..."
+
+# Probe availability (meilleur -> pire, decision 2026-08-21) : Redis (Upstash)
+# si joignable, sinon file. La queue reste sur database (pas de quota,
+# drainable par GitHub Actions #5204/#5205). On fige les drivers AVANT
+# config:cache pour que le cache de config soit coherent avec la realite.
+PROBE_ENV=/tmp/leopardo-availability.env
+php artisan infra:probe-availability --format=env > "$PROBE_ENV" 2>/dev/null || true
+if [ -s "$PROBE_ENV" ]; then
+    set -a
+    . "$PROBE_ENV"
+    set +a
+fi
+
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
