@@ -41,8 +41,26 @@ class RequestTrialSignup
                 new TrialVerificationMail($managerName, $otp, strtolower($countryDefaults['language']))
             );
         } catch (\Throwable $e) {
+            // Issue #5162 : sans visibilité sur le mailer résolu, un échec
+            // d'envoi OTP (503 TRIAL_OTP_SEND_FAILED) est indiagnosticable en
+            // prod. On logge transport + présence des variables requises
+            // (jamais les secrets) pour un triage immédiat (même famille que
+            // #5139/#5141 — egress Mailgun).
+            $mailer = (string) config('mail.default', 'log');
+            $mailerConfig = (array) config("mail.mailers.{$mailer}", []);
+            $transport = (string) ($mailerConfig['transport'] ?? $mailer);
+
             Log::error('SelfServiceTrial: Failed to send OTP email', [
                 'email' => $email,
+                'mailer' => $mailer,
+                'transport' => $transport,
+                'mailgun_domain_configured' => $transport === 'mailgun'
+                    ? filled($mailerConfig['domain'] ?? null)
+                    : null,
+                'mailgun_secret_configured' => $transport === 'mailgun'
+                    ? filled($mailerConfig['secret'] ?? null)
+                    : null,
+                'from_address' => (string) config('mail.from.address', ''),
                 'error' => $e->getMessage(),
             ]);
             // Issue #3057 : ne jamais répondre « code envoyé » si le mail a
