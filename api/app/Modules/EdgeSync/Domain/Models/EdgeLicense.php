@@ -56,10 +56,6 @@ class EdgeLicense extends Model
         'signed_payload',
     ];
 
-    protected $hidden = [
-        'license_key',
-        'signed_payload',
-    ];
 
     protected $fillable = [
         'company_id', 'edge_node_id', 'license_key', 'signed_payload',

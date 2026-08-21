@@ -16,6 +16,7 @@ use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
 use App\Modules\Payroll\Domain\Models\Commission;
 use App\Modules\Payroll\Domain\Models\Payment;
+use App\Modules\Payroll\Domain\Models\PublicHoliday;
 use App\Modules\Payroll\Infrastructure\Services\CommissionService;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
@@ -128,7 +129,7 @@ class CheckThenCreateRaceTest extends TestCase
         $response->assertStatus(422);
         $this->assertStringContainsString('already exists', $response->json('errors.date.0'));
 
-        $this->assertSame(1, \App\Modules\Payroll\Domain\Models\PublicHoliday::query()
+        $this->assertSame(1, PublicHoliday::query()
             ->where('date', '2026-07-05')
             ->where('company_id', $this->company->id)
             ->count());

@@ -7,6 +7,9 @@ namespace App\Modules\EdgeSync\Application\Services;
 use App\Modules\EdgeSync\Domain\Models\EdgeNode;
 use App\Modules\EdgeSync\Domain\Models\SyncLog;
 use App\Modules\EdgeSync\Domain\Models\SyncQueue;
+use App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob;
+use App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient;
+use App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -17,13 +20,13 @@ use Illuminate\Support\Facades\Log;
  * and resolves conflicts against the Cloud database.
  *
  * IMPORTANT: this service only ever runs on Cloud, invoked by
- * {@see \App\Modules\EdgeSync\Interfaces\Api\V1\EdgeNodeController::forceSync()}
+ * {@see EdgeNodeController::forceSync()}
  * (manual admin-triggered sync) and
- * {@see \App\Modules\EdgeSync\Infrastructure\Jobs\ProcessSyncQueueJob}
+ * {@see ProcessSyncQueueJob}
  * (async processing after a real Edge push landed in sync_queue via
  * EdgeNodeController::pushFromEdge()). It must never be invoked from the
  * `edge:sync-daemon` command running on an Edge deployment — that daemon
- * uses {@see \App\Modules\EdgeSync\Infrastructure\Services\EdgeDaemonSyncClient}
+ * uses {@see EdgeDaemonSyncClient}
  * instead, which performs the actual over-the-wire HTTP push/pull against
  * this Cloud API rather than writing to whatever local database connection
  * happens to be configured.
