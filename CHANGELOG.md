@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(ci/security): CORS du preview E2E admin isolé.** L’origine loopback `http://127.0.0.1:4173` est désormais explicitement autorisée pour les appels vers l’API Laravel isolée ; l’allow-list reste stricte et le job ne dépend plus d’un échec silencieux de `/platform/auth/login` ou `/platform/auth/me`.
 - **test(web/e2e): fixture authentifiée commune pour les smoke tests protégés.** Les scénarios feature-gates, manager workday et payroll réutilisent désormais une session déterministe avec cookie `leopardo_token`, `auth/me`, notifications et annonces mockées ; l’assertion Absences obsolète a été alignée sur le rendu actuel.
 - **test(web/e2e): scénario `/signup` complété avec le pays obligatoire.** Le test attend désormais le chargement des pays puis sélectionne `DZ`, ce qui permet d’atteindre le mock `/api/forms/signup` au lieu de rester bloqué par la validation client.
 - **fix(mobile/l10n): fichiers `AppLocalizations` régénérés avec Flutter 3.47.1.** Les sorties générées désynchronisées des ARB contenaient des fragments Dart invalides et bloquaient les builds debug ; les six applications passent désormais `flutter analyze` sans erreur.

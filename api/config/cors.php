@@ -26,6 +26,8 @@ return [
         //  - localhost:3001 : admin dashboard (ajouté dans #1785)
         'http://localhost:3000',
         'http://localhost:3001',
+        // Isolated admin E2E preview (Vite preview on loopback).
+        'http://127.0.0.1:4173',
         env('FRONTEND_URL', 'http://localhost:3000'),
         env('APP_URL', 'http://localhost'),
         // Production origins
