@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Schema\Blueprint;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -183,6 +184,7 @@ abstract class TestCase extends BaseTestCase
                 '--force' => true,
             ]);
 
+            $this->ensurePersonalOnboardingColumns();
             self::$parallelPublicMigrated[$database] = true;
         } finally {
             DB::select('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
@@ -190,6 +192,44 @@ abstract class TestCase extends BaseTestCase
             DB::purge($connection);
             DB::reconnect($connection);
         }
+    }
+
+    private function ensurePersonalOnboardingColumns(): void
+    {
+        if (! Schema::hasTable('users')) {
+            return;
+        }
+
+        $missing = [];
+
+        foreach ([
+            'personal_statuses' => static function (Blueprint $table): void {
+                $table->json('personal_statuses')->nullable();
+            },
+            'personal_onboarding_completed_at' => static function (Blueprint $table): void {
+                $table->timestamp('personal_onboarding_completed_at')->nullable();
+            },
+            'job_search_preferences' => static function (Blueprint $table): void {
+                $table->json('job_search_preferences')->nullable();
+            },
+            'job_search_profile_updated_at' => static function (Blueprint $table): void {
+                $table->timestamp('job_search_profile_updated_at')->nullable();
+            },
+        ] as $column => $definition) {
+            if (! Schema::hasColumn('users', $column)) {
+                $missing[$column] = $definition;
+            }
+        }
+
+        if ($missing === []) {
+            return;
+        }
+
+        Schema::table('users', function (Blueprint $table) use ($missing): void {
+            foreach ($missing as $definition) {
+                $definition($table);
+            }
+        });
     }
 
     private function envValueForTesting(string $key, string $fallback): string

@@ -12,4 +12,8 @@ return [
     'too_many_requests' => 'Zaten 3 bekleyen talebiniz var.',
     'user_not_found' => 'Bu e-posta ile normal hesap bulunamadi.',
     'already_linked' => 'Bu kullanici zaten sirketinize bagli.',
+    'job_seeker_required' => 'Onerileri almak icin is arayan durumunu etkinlestirin.',
+    'application_status_updated' => 'Basvurunuzun durumu guncellendi: :status.',
+    'already_applied' => 'Bu pozisyona zaten basvurdunuz.',
+    'resume_not_found' => 'Secilen ozgecmis surumu bulunamadi.',
 ];
