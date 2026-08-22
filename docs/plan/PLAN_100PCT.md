@@ -63,10 +63,14 @@ Cycle de vie employé complet, organisation (départements/positions/évaluation
 ### Pointage — issues [#5264→#5269]
 ADR fusion Attendance/SmartAttendance, modes unifiés (kiosque/géo/ZKTeco/mobile), heures sup DZ + intégration paie, workflow corrections/validations, rapports exportables, tests/i18n/docs.
 
-### Comptabilité/Finance — issues [#5219→#5239] (existantes) + [#5270→#5276]
+### Comptabilité/Finance — issues [#5219→#5239] (existantes) + [#5270→#5276] + [#5288]
+Activation guidée du module (wizard) : #5288.
 Compléments : multi-devises, TVA multi-pays + déclaration simplifiée, paiement en ligne (portail client), audit log + rétention RGPD, démo/seed + E2E, perf/scale, docs/formation comptables.
 
 ### Cross-cutting — issues [#5277→#5286]
+
+### Absence/HR — congés légaux par pays — issue [#5289]
+Soldes, acquisition, jours fériés par pays (DZ/MA/TN/SN d'abord) + pont vers la paie (waves W3/W4).
 CI verte (#5201), i18n mobile (#2755 suite), dedup mobile (#2601 suite), RTMX (Phase 1), OpenAPI complet, audit sécurité OWASP, monitoring/alerting + runbook, backup/DR testé, perf/load, E2E critiques CI.
 
 ## 5. Garde-fous
