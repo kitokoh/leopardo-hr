@@ -34,10 +34,13 @@ class QueueSupervisionDatabaseTest extends TestCase
     {
         $exitCode = Artisan::call('queue:health-check');
 
+        // Artisan::output() vide le buffer (BufferedOutput::fetch) — capturer une seule fois.
+        $output = Artisan::output();
+
         $this->assertSame(0, $exitCode);
-        $this->assertStringContainsString('"queue_connection": "database"', Artisan::output());
-        $this->assertStringContainsString('"pending_jobs": 0', Artisan::output());
-        $this->assertStringContainsString('"stale_reserved_jobs": 0', Artisan::output());
+        $this->assertStringContainsString('"queue_connection": "database"', $output);
+        $this->assertStringContainsString('"pending_jobs": 0', $output);
+        $this->assertStringContainsString('"stale_reserved_jobs": 0', $output);
     }
 
     public function test_pending_backlog_over_threshold_returns_failure(): void
