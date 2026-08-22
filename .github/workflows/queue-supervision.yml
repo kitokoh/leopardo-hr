@@ -1,0 +1,85 @@
+name: Queue Supervision — prod
+
+# Issue #5282 — DoD : une panne queue est détectée en < 15 min.
+# Le drain `queue-worker-fallback.yml` tourne à */5 ; cette supervision passe
+# 2 min après chaque drain (cron explicite, offset +2 min) et exécute
+# `queue:health-check` avec des seuils : si le drain échoue, que le backlog
+# grossit (pending) ou qu'un job reste réservé trop longtemps (worker mort),
+# le run passe en ÉCHEC visible (onglet Actions + notifications GitHub) et une
+# alerte Slack opt-in part si SLACK_MONITORING_WEBHOOK_URL est configuré.
+# Détection au pire : intervalle 5 min + seuil stale 10 min = 15 min.
+
+on:
+  schedule:
+    # Offset +2 min par rapport au drain (*/5) pour ne pas doubler la charge
+    # exactement au même instant.
+    - cron: '2,7,12,17,22,27,32,37,42,47,52,57 * * * *'
+  workflow_dispatch:
+
+# Un seul run de supervision à la fois ; un run en retard REMPLACE le
+# précédent (comme launch-observability-smoke, leçon #3968).
+concurrency:
+  group: queue-supervision
+  cancel-in-progress: true
+
+jobs:
+  supervise:
+    name: Supervise queue (database)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.repository == 'kitokoh/leopardo-hr'
+    permissions:
+      contents: read
+    env:
+      APP_ENV: production
+      APP_KEY: ${{ secrets.APP_KEY }}
+      APP_URL: ${{ secrets.APP_URL }}
+      DB_CONNECTION: pgsql
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_SEARCH_PATH: shared_tenants,public
+      QUEUE_CONNECTION: database
+      LOG_CHANNEL: stderr
+      # Alerte Slack opt-in (vide = silencieux, comme queue:health-check).
+      SLACK_MONITORING_WEBHOOK_URL: ${{ secrets.SLACK_MONITORING_WEBHOOK_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
+        with:
+          php-version: "8.4"
+          extensions: pdo, pdo_pgsql, bcmath, mbstring, xml, zip, gd
+          tools: composer:v2
+          coverage: none
+
+      - name: Resolve Composer cache directory
+        id: composer-cache
+        working-directory: ./api
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php84-${{ hashFiles('api/composer.lock') }}
+
+      - name: Install Composer dependencies
+        working-directory: ./api
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Supervise queue (seuils DoD #5282)
+        working-directory: ./api
+        env:
+          QUEUE_MAX_PENDING: ${{ vars.QUEUE_MAX_PENDING || '50' }}
+          QUEUE_MAX_FAILED: ${{ vars.QUEUE_MAX_FAILED || '10' }}
+          QUEUE_MAX_STALE_MINUTES: ${{ vars.QUEUE_MAX_STALE_MINUTES || '10' }}
+        run: |
+          php artisan queue:health-check \
+            --max-pending="$QUEUE_MAX_PENDING" \
+            --max-failed="$QUEUE_MAX_FAILED" \
+            --max-stale-minutes="$QUEUE_MAX_STALE_MINUTES"
