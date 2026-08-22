@@ -2885,6 +2885,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("PATCH", "/positions/{position}", options);
     },
 
+    /** Mettre à jour un poste (manager) */
+    patchPositionsByPosition2(options = {}) {
+      return request("PATCH", "/positions/{position}", options);
+    },
+
     /** Modifier un poste */
     putPositionsByPosition(options = {}) {
       return request("PUT", "/positions/{position}", options);
@@ -3000,8 +3005,18 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/recruitment/applicants/{applicant}", options);
     },
 
+    /** Supprimer une candidature (manager) */
+    deleteRecruitmentApplicantsByApplicant2(options = {}) {
+      return request("DELETE", "/recruitment/applicants/{applicant}", options);
+    },
+
     /** Détail d'une candidature (manager) */
     getRecruitmentApplicantsByApplicant(options = {}) {
+      return request("GET", "/recruitment/applicants/{applicant}", options);
+    },
+
+    /** Détail d'une candidature (manager) */
+    getRecruitmentApplicantsByApplicant2(options = {}) {
       return request("GET", "/recruitment/applicants/{applicant}", options);
     },
 
@@ -3016,13 +3031,8 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
     },
 
     /** Changer le statut d'une candidature (principal/rh) */
-    patchRecruitmentApplicantsByIdStatus(options = {}) {
-      return request("PATCH", "/recruitment/applicants/{id}/status", options);
-    },
-
-    /** Saisir le feedback d'un entretien (le clôture) */
-    patchRecruitmentInterviewsByIdFeedback(options = {}) {
-      return request("PATCH", "/recruitment/interviews/{id}/feedback", options);
+    patchRecruitmentApplicantsByApplicantStatus(options = {}) {
+      return request("PATCH", "/recruitment/applicants/{applicant}/status", options);
     },
 
     /** Supprimer un entretien (manager) */
@@ -3030,9 +3040,19 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("DELETE", "/recruitment/interviews/{interview}", options);
     },
 
+    /** Supprimer un entretien (manager) */
+    deleteRecruitmentInterviewsByInterview2(options = {}) {
+      return request("DELETE", "/recruitment/interviews/{interview}", options);
+    },
+
     /** Modifier un entretien */
     putRecruitmentInterviewsByInterview(options = {}) {
       return request("PUT", "/recruitment/interviews/{interview}", options);
+    },
+
+    /** Saisir le feedback d'un entretien (le clôture) */
+    patchRecruitmentInterviewsByInterviewFeedback(options = {}) {
+      return request("PATCH", "/recruitment/interviews/{interview}/feedback", options);
     },
 
     /** Lister les offres d'emploi */
@@ -3047,6 +3067,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
     /** Supprimer une offre d'emploi (manager) */
     deleteRecruitmentJobsByJobPosting(options = {}) {
+      return request("DELETE", "/recruitment/jobs/{jobPosting}", options);
+    },
+
+    /** Supprimer une offre d'emploi (manager) */
+    deleteRecruitmentJobsByJobPosting2(options = {}) {
       return request("DELETE", "/recruitment/jobs/{jobPosting}", options);
     },
 
@@ -3275,8 +3300,18 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
       return request("GET", "/schedules/{schedule}", options);
     },
 
+    /** Détail d'un planning */
+    getSchedulesBySchedule2(options = {}) {
+      return request("GET", "/schedules/{schedule}", options);
+    },
+
     /** Mettre à jour un planning (manager — sécurité #2217) */
     patchSchedulesBySchedule(options = {}) {
+      return request("PATCH", "/schedules/{schedule}", options);
+    },
+
+    /** Mettre à jour un planning (manager — sécurité #2217) */
+    patchSchedulesBySchedule2(options = {}) {
       return request("PATCH", "/schedules/{schedule}", options);
     },
 
@@ -3312,6 +3347,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
     /** Mettre à jour un site (manager) */
     patchSitesBySite(options = {}) {
+      return request("PATCH", "/sites/{site}", options);
+    },
+
+    /** Mettre à jour un site (manager) */
+    patchSitesBySite2(options = {}) {
       return request("PATCH", "/sites/{site}", options);
     },
 
@@ -3527,6 +3567,11 @@ export function createLeopardoClient({ baseUrl, token, fetchImpl = globalThis.fe
 
     /** Commentaires d'une tâche (auteur + employés liés) */
     getTasksByTaskComments(options = {}) {
+      return request("GET", "/tasks/{task}/comments", options);
+    },
+
+    /** Commentaires d'une tâche (auteur + employés liés) */
+    getTasksByTaskComments2(options = {}) {
       return request("GET", "/tasks/{task}/comments", options);
     },
 

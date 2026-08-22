@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Notifications\SlackAlertNotification;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use App\Notifications\SlackAlertNotification;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Redis;
 use Throwable;
@@ -81,7 +81,7 @@ class QueueHealthCheck extends Command
     /**
      * Driver `redis` (Upstash) — latence ping + profondeur par queue.
      *
-     * @param list<string> $queues
+     * @param  list<string>  $queues
      * @return array<string, mixed>
      */
     private function inspectRedisDriver(array $queues): array
@@ -141,7 +141,7 @@ class QueueHealthCheck extends Command
      * Driver `database` (Postgres, prod 0 €) — profondeur par queue via la
      * table `jobs`, jobs réservés trop longtemps (worker mort) et failed_jobs.
      *
-     * @param list<string> $queues
+     * @param  list<string>  $queues
      * @return array<string, mixed>
      */
     private function inspectDatabaseDriver(array $queues, int $maxStaleMinutes): array
@@ -184,7 +184,7 @@ class QueueHealthCheck extends Command
      * Profondeur par queue : jobs prêts ou en attente (non réservés, échéance
      * atteinte). Un worker mort laisse cette profondeur croître → détection.
      *
-     * @param list<string> $queues
+     * @param  list<string>  $queues
      * @return array<string, int>
      */
     private function databaseQueueDepths(string $table, array $queues): array
@@ -238,7 +238,7 @@ class QueueHealthCheck extends Command
      * stale au-dessus des seuils, failed_jobs au-dessus du seuil). Ne fait
      * rien tant que SLACK_MONITORING_WEBHOOK_URL n'est pas configuré.
      *
-     * @param array<string, mixed> $result
+     * @param  array<string, mixed>  $result
      */
     private function notifyIfDegraded(array $result): void
     {
