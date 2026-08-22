@@ -242,6 +242,13 @@ class VerifyTrialSignup
         $attempts = 0;
 
         do {
+            $savepoint = 'trial_signup_slug_retry';
+            $hasOuterTransaction = DB::getDriverName() === 'pgsql' && DB::transactionLevel() > 0;
+
+            if ($hasOuterTransaction) {
+                DB::statement("SAVEPOINT {$savepoint}");
+            }
+
             try {
                 return DB::transaction(function () use ($payload): array {
                     $slug = $this->resolveUniqueSlug($payload['slug']);
@@ -314,6 +321,10 @@ class VerifyTrialSignup
                     ];
                 });
             } catch (QueryException $e) {
+                if ($hasOuterTransaction) {
+                    DB::statement("ROLLBACK TO SAVEPOINT {$savepoint}");
+                }
+
                 if ($e->getCode() !== '23505' || ++$attempts >= 5) {
                     throw $e;
                 }
