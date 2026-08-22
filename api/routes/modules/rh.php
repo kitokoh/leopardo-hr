@@ -83,7 +83,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
     Route::get('/attendance/today', [AttendanceController::class, 'today']);
     Route::get('/attendance/anomalies', [AttendanceController::class, 'anomalies']);
     Route::get('/attendance/regularity', [AttendanceController::class, 'regularity']);
-    Route::get('/attendance/monthly-report', [AttendanceController::class, 'monthlyReport']);
+    Route::get('/attendance/monthly-report', [AttendanceController::class, 'report']);
     Route::get('/attendance', [AttendanceController::class, 'index']);
     Route::post('/attendance/corrections', [AttendanceController::class, 'requestCorrection']);
     Route::get('/attendance/corrections', [AttendanceController::class, 'corrections']);

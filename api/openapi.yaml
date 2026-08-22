@@ -9701,20 +9701,40 @@ paths:
   /attendance/monthly-report:
     get:
       tags: ["Attendance"]
-      summary: "Rapport mensuel de pointage"
+      summary: "Rapport de pointage (journalier, hebdomadaire ou mensuel)"
+      description: "Rapport de presence par periode (issue #5268) : period=day|week|month (defaut month), ancres date/week/month, filtres department_id/employee_id, export json/csv/pdf."
       parameters:
+        - name: period
+          in: query
+          description: "Periode du rapport : day, week ou month (defaut month)."
+          schema: { type: string, enum: [day, week, month] }
+        - name: date
+          in: query
+          description: "Jour cible (Y-m-d) pour period=day."
+          schema: { type: string, format: date }
+        - name: week
+          in: query
+          description: "N'importe quel jour (Y-m-d) de la semaine ISO ciblee (lundi -> dimanche)."
+          schema: { type: string, format: date }
         - name: month
           in: query
-          schema: { type: integer }
-        - name: year
+          description: "Mois cible (Y-m)."
+          schema: { type: string, pattern: "^\\d{4}-\\d{2}$" }
+        - name: department_id
           in: query
+          description: "Filtre equipe (departement)."
           schema: { type: integer }
         - name: employee_id
           in: query
+          description: "Filtre fiche de pointage individuelle."
           schema: { type: integer }
+        - name: format
+          in: query
+          description: "Format de sortie : json, csv ou pdf (defaut json)."
+          schema: { type: string, enum: [json, csv, pdf] }
       responses:
         "200":
-          description: "Rapport mensuel"
+          description: "Rapport de pointage"
         "401":
           $ref: "#/components/responses/Error401"
 

@@ -537,7 +537,7 @@ class PayrollCycleService
     /**
      * PA2-PAY-010 — Estimated overtime pay for the current cycle, at 1.5x the
      * employee's estimated hourly rate (same +50% placeholder majoration used
-     * by AttendanceMonthlyReportService::estimatedOvertimeAmount(); this is a
+     * by AttendanceReportService::estimatedOvertimeAmount(); this is a
      * dashboard estimate for the manager, not the legally-validated overtime
      * premium tiers a country's CountryRulesInterface::overtimeRateTiers()
      * applies when a payroll run is actually calculated).
