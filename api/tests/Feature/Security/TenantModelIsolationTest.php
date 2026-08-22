@@ -488,4 +488,3 @@ class TenantModelIsolationTest extends TestCase
         ]);
     }
 }
-

@@ -9,10 +9,14 @@ use App\Modules\Billing\Domain\Enums\PlanCode;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Billing\Domain\Models\Subscription;
+use App\Modules\Billing\Infrastructure\Services\PartnerService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
+use RuntimeException;
+use Throwable;
 
 /**
  * Stripe integration service for subscription management.
@@ -49,7 +53,7 @@ class StripeService
     {
         $priceId = $this->priceIds[$plan] ?? null;
         if (!$priceId) {
-            throw new \InvalidArgumentException("Unknown plan: {$plan}");
+            throw new InvalidArgumentException("Unknown plan: {$plan}");
         }
 
         $response = Http::withToken($this->secretKey, 'Bearer')
@@ -77,7 +81,7 @@ class StripeService
                 'body' => $response->json(),
                 'company_id' => $company->id,
             ]);
-            throw new \RuntimeException('Failed to create Stripe checkout session.');
+            throw new RuntimeException('Failed to create Stripe checkout session.');
         }
 
         $data = $response->json();
@@ -105,7 +109,7 @@ class StripeService
                 'status' => $response->status(),
                 'customer' => $stripeCustomerId,
             ]);
-            throw new \RuntimeException('Failed to create portal session.');
+            throw new RuntimeException('Failed to create portal session.');
         }
 
         return $response->json('url');
@@ -382,9 +386,9 @@ class StripeService
 
             // GROWTH MODULE: Cancel pending commissions
             try {
-                $partnerService = app(\App\Modules\Billing\Infrastructure\Services\PartnerService::class);
+                $partnerService = app(PartnerService::class);
                 $partnerService->handlePaymentRefunded($payment);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('PartnerService: Failed to handle refund', [
                     'payment_id' => $payment->id,
                     'error' => $e->getMessage(),
