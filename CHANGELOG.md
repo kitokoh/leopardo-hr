@@ -4,6 +4,7 @@
 # Versioning : Semantic Versioning (semver.org) 
 
 ## [Unreleased]
+- **fix(mobile/l10n): fichiers `AppLocalizations` régénérés avec Flutter 3.47.1.** Les sorties générées désynchronisées des ARB contenaient des fragments Dart invalides et bloquaient les builds debug ; les six applications passent désormais `flutter analyze` sans erreur.
 - **fix(tests/mobile): assertions l10n alignées sur les libellés français générés.** Les suites Core, HR et Manager attendaient d’anciens textes non accentués ou une casse obsolète (`Votre journee…`, `Mes Absences`) ; elles vérifient désormais les chaînes réellement servies par `AppLocalizations`.
 - **fix(ci/mobile): régénération déterministe de `AppLocalizations` avant chaque analyse Flutter.** Le job mobile exécute `flutter gen-l10n` dans `leopardo_core` après `pub get`, afin que les applications consommatrices n’analysent jamais une interface l10n obsolète malgré des ARB et fichiers générés suivis (réf. #4762).
 - **security(stabilization): premier lot de durcissement Laravel/Next.js.** Isolation tenant fail-closed couverte par tests, révocation logout explicitement signalée, CSP Next.js configurable en enforcement, SVG distants désactivés par défaut, en-têtes IP client non relayés par les proxies d’authentification, signature Stripe malformée rejetée proprement, permissions CI réduites et plan de stabilisation documenté dans `docs/security/STABILIZATION_PLAN.md` (Closes #5292).
