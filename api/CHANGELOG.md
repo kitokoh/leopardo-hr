@@ -6,6 +6,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
+- **Pint formatting is clean on the targeted PHP files.** `PilotReportCommand`, `ProbeAvailabilityCommandTest`, and `OnboardingStepControllerTest` now satisfy the strict-type and class-attribute formatting rules without a global reformat.
+
 - **OIDC public endpoints use the explicit `throttle:10,1` limiter.** The authorize and callback routes now match the anti-abuse contract asserted by `SsoCallbackThrottleTest` instead of inheriting the generic `throttle:api` limiter.
 
 - **OpenAPI contract is Redocly-parseable.** Duplicate path definitions for positions, sites, schedules, task comments, and recruitment were merged; nullable schemas and recruitment path parameters now follow the OpenAPI 3.0 contract. Redocly reports validation success with historical completeness warnings only.
