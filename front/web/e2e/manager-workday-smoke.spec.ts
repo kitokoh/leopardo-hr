@@ -195,7 +195,7 @@ test.describe('Client web manager workday smoke', () => {
     await expect(page).toHaveURL(/\/absences$/);
     await expect(page.locator('body')).toContainText('Absences');
     await expect(page.locator('body')).toContainText('Conges payes');
-    await expect(page.locator('body')).toContainText('pending');
+    await expect(page.locator('body')).toContainText('En attente');
 
     await page.getByRole('button', { name: /Déconnexion|Deconnexion|Logout/i }).click();
     await expect(page).toHaveURL(/\/auth\/login$/, { timeout: 10000 });
