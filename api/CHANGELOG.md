@@ -6,6 +6,8 @@ Format basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
+- **RefreshTenantDatabase detects missing `shared_tenants.employees`.** The canonical-schema probe now forces tenant migrations after MVP fixtures remove the employees table, preventing cascading `42P01` failures in `TrackingSyncTripsDateRangeTest`.
+
 - **Pint formatting is clean on the targeted PHP files.** `PilotReportCommand`, `ProbeAvailabilityCommandTest`, and `OnboardingStepControllerTest` now satisfy the strict-type and class-attribute formatting rules without a global reformat.
 
 - **SAML and OIDC public endpoints use the explicit `throttle:10,1` limiter.** The SAML callback, OIDC authorize, and OIDC callback routes now match the anti-abuse contract asserted by `SsoCallbackThrottleTest` instead of inheriting the generic `throttle:api` limiter.
