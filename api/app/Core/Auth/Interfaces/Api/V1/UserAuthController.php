@@ -160,21 +160,29 @@ class UserAuthController extends Controller
         /** @var User $user */
         $user = $request->user('user_api');
         $preferences = is_array($user->job_search_preferences) ? $user->job_search_preferences : [];
-        if (! empty($preferences['resume_path'])) {
-            Storage::disk('local')->delete($preferences['resume_path']);
-        }
         $path = $validated['resume']->store('user-resumes/'.$user->id, 'local');
+        $resume = [
+            'id' => (string) str()->uuid(),
+            'path' => $path,
+            'name' => $validated['resume']->getClientOriginalName(),
+            'uploaded_at' => now()->toIso8601String(),
+        ];
+        $resumes = is_array($preferences['resumes'] ?? null) ? $preferences['resumes'] : [];
+        $resumes[] = $resume;
+        $preferences['resumes'] = array_slice($resumes, -10);
+        $preferences['resume_id'] = $resume['id'];
         $preferences['resume_path'] = $path;
         $preferences['resume_url'] = $path;
-        $preferences['resume_name'] = $validated['resume']->getClientOriginalName();
-        $preferences['resume_uploaded_at'] = now()->toIso8601String();
+        $preferences['resume_name'] = $resume['name'];
+        $preferences['resume_uploaded_at'] = $resume['uploaded_at'];
         $user->forceFill([
             'job_search_preferences' => $preferences,
             'job_search_profile_updated_at' => now(),
         ])->save();
         return new JsonResponse(['data' => [
-            'resume_name' => $preferences['resume_name'],
-            'uploaded_at' => $preferences['resume_uploaded_at'],
+            'resume' => $resume,
+            'resumes' => $preferences['resumes'],
+            'selected_resume_id' => $preferences['resume_id'],
         ]], 201);
     }
 
@@ -192,6 +200,7 @@ class UserAuthController extends Controller
             'remote_only' => ['sometimes', 'boolean'],
             'min_salary' => ['nullable', 'numeric', 'min:0'],
             'resume_url' => ['nullable', 'url', 'max:500'],
+            'resume_id' => ['nullable', 'string', 'max:80'],
         ]);
 
         /** @var User $user */

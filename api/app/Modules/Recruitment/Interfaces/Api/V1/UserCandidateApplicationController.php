@@ -32,6 +32,7 @@ final class UserCandidateApplicationController extends Controller
         $validated = $request->validate([
             'cover_letter' => ['nullable', 'string', 'max:5000'],
             'resume_url' => ['nullable', 'url', 'max:500'],
+            'resume_id' => ['nullable', 'string', 'max:80'],
         ]);
         $company = Company::query()->where('slug', $companySlug)->where('status', 'active')->firstOrFail();
 
@@ -59,6 +60,14 @@ final class UserCandidateApplicationController extends Controller
 
             $preferences = is_array($user->job_search_preferences) ? $user->job_search_preferences : [];
             $resumeUrl = $validated['resume_url'] ?? ($preferences['resume_url'] ?? null);
+            if (! empty($validated['resume_id'])) {
+                $selectedResume = collect(is_array($preferences['resumes'] ?? null) ? $preferences['resumes'] : [])
+                    ->firstWhere('id', $validated['resume_id']);
+                if (! is_array($selectedResume) || empty($selectedResume['path'])) {
+                    return new JsonResponse(['error' => 'RESUME_NOT_FOUND', 'message' => 'La version de CV sélectionnée est introuvable.'], 422);
+                }
+                $resumeUrl = $selectedResume['path'];
+            }
             $applicant = Applicant::create([
                 'company_id' => $company->id,
                 'user_id' => $user->id,

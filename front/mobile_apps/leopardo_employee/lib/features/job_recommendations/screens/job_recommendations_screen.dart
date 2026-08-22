@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,6 +16,8 @@ class JobRecommendationsScreen extends ConsumerStatefulWidget {
 
 class _JobRecommendationsScreenState extends ConsumerState<JobRecommendationsScreen> {
   late Future<List<Map<String, dynamic>>> _future;
+  String? _resumeName;
+  bool _uploadingResume = false;
 
   @override
   void initState() {
@@ -24,6 +27,25 @@ class _JobRecommendationsScreenState extends ConsumerState<JobRecommendationsScr
 
   Future<List<Map<String, dynamic>>> _load() {
     return ref.read(userAuthRepositoryProvider).getJobRecommendations();
+  }
+
+  Future<void> _pickResume() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx'],
+      withData: false,
+    );
+    final path = result?.files.single.path;
+    if (path == null || !mounted) return;
+    setState(() => _uploadingResume = true);
+    try {
+      final payload = await ref.read(userAuthRepositoryProvider).uploadResume(path);
+      if (mounted) setState(() => _resumeName = payload['resume']?['name']?.toString() ?? result.files.single.name);
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Impossible de téléverser le CV.')));
+    } finally {
+      if (mounted) setState(() => _uploadingResume = false);
+    }
   }
 
   @override
@@ -59,10 +81,21 @@ class _JobRecommendationsScreenState extends ConsumerState<JobRecommendationsScr
             }
             return ListView.separated(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
-              itemCount: jobs.length,
+              itemCount: jobs.length + 1,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final job = jobs[index];
+                if (index == 0) {
+                  return Card(
+                    color: AppColors.cabinet.withValues(alpha: 0.08),
+                    child: ListTile(
+                      leading: const Icon(Icons.description_outlined, color: AppColors.cabinet),
+                      title: Text(_resumeName == null ? 'Ajouter mon CV' : 'CV actif : $_resumeName', style: TextStyle(color: text, fontWeight: FontWeight.w700)),
+                      subtitle: Text('PDF, DOC ou DOCX · 5 Mo maximum', style: TextStyle(color: muted)),
+                      trailing: _uploadingResume ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2)) : IconButton(onPressed: _pickResume, icon: const Icon(Icons.upload_file_outlined)),
+                    ),
+                  );
+                }
+                final job = jobs[index - 1];
                 final company = (job['company'] as Map?)?.cast<String, dynamic>();
                 final reasons = (job['match_reasons'] as List?)?.whereType<String>().toList() ?? const [];
                 return Card(
