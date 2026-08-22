@@ -53,4 +53,11 @@ return [
     'evaluation_not_draft_submit' => 'Seule une évaluation en brouillon peut être soumise.',
     'evaluation_not_draft_delete' => 'Seule une évaluation en brouillon peut être supprimée.',
     'evaluation_not_submitted' => 'Seule une évaluation soumise peut être accusée de réception.',
+    'career_event_employee_not_found' => 'Employé introuvable dans votre entreprise.',
+    'career_event_position_not_found' => 'Poste introuvable dans votre entreprise.',
+    'career_event_department_not_found' => 'Département introuvable dans votre entreprise.',
+    'career_event_effective_date_required' => 'La date d\u{2019}effet est requise.',
+    'career_event_reason_required' => 'Le motif est requis.',
+    'career_event_nothing_to_apply' => 'Rien à appliquer : l\u{2019}événement n\u{2019}a ni poste, ni département, ni salaire cible.',
+    'career_event_deleted' => 'Événement de carrière supprimé.',
 ];

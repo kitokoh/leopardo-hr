@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\LoanResource;
 use App\Http\Resources\Api\V1\TrainingEnrollmentResource;
+use App\Modules\HR\Domain\Models\CareerEvent;
 use App\Modules\HR\Domain\Models\Contract;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\Payroll\Domain\Models\EmployeeLoan;
@@ -55,12 +56,36 @@ class SelfServiceController extends Controller
             ]);
         }
 
+        // Plans de carrière (issue #5259) : événements de l'employé — le
+        // parcours est complet de bout en bout (contrats + événements).
+        $careerEvents = CareerEvent::query()
+            ->where('employee_id', $user->id)
+            ->where('company_id', $user->company_id)
+            ->with(['fromPosition:id,name', 'toPosition:id,name', 'fromDepartment:id,name', 'toDepartment:id,name'])
+            ->orderByDesc('effective_date')
+            ->get()
+            ->map(fn (CareerEvent $event): array => [
+                'id' => $event->id,
+                'type' => $event->type,
+                'status' => $event->status,
+                'from_position' => $event->fromPosition?->name,
+                'to_position' => $event->toPosition?->name,
+                'from_department' => $event->fromDepartment?->name,
+                'to_department' => $event->toDepartment?->name,
+                'from_salary' => $event->from_salary !== null ? (float) $event->from_salary : null,
+                'to_salary' => $event->to_salary !== null ? (float) $event->to_salary : null,
+                'effective_date' => $event->effective_date?->toDateString(),
+                'reason' => $event->reason,
+            ])
+            ->values();
+
         return response()->json([
             'data' => [
                 'available_for_new_company' => $user->status !== 'active' || $user->company_id === null,
                 'current_company_id' => $user->company_id,
                 'current_company_name' => $user->company?->name,
                 'timeline' => $contracts,
+                'career_events' => $careerEvents,
             ],
         ]);
     }
