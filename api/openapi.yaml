@@ -2202,7 +2202,6 @@ paths:
         "403":
           description: "Non-manager"
 
-
   /schedules/{schedule}/assign-employees:
     parameters:
       - name: schedule
@@ -6709,6 +6708,7 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           $ref: "#/components/responses/Validation422"
+
     get:
       tags: ["Tasks"]
       summary: "Commentaires d'une tâche (auteur + employés liés)"
@@ -6968,6 +6968,256 @@ paths:
           $ref: "#/components/responses/Error404"
         "422":
           description: "Seule une evaluation submitted peut etre accusee de reception"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /career-events:
+    get:
+      tags: ["HR Career"]
+      summary: "Lister les evenements de carriere (plans de carriere, issue #5259)"
+      parameters:
+        - name: employee_id
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["promotion", "raise", "transfer", "title_change"]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: ["pending", "approved", "rejected", "applied"]
+        - $ref: "#/components/parameters/PerPage"
+      responses:
+        "200":
+          description: "Liste paginee des evenements de carriere"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CareerEventIndexResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    post:
+      tags: ["HR Career"]
+      summary: "Creer un evenement de carriere (manager)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreCareerEventRequest"
+      responses:
+        "201":
+          description: "Evenement cree au statut pending (snapshot from_* pris sur l'employe)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "422":
+          description: "Validation ou conflit metier"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/ErrorResponse"
+                  - $ref: "#/components/schemas/ValidationErrorResponse"
+
+  /career-events/{careerEvent}:
+    get:
+      tags: ["HR Career"]
+      summary: "Voir un evenement de carriere"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Detail de l'evenement de carriere"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+    put:
+      tags: ["HR Career"]
+      summary: "Modifier un evenement de carriere (pending uniquement)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCareerEventRequest"
+      responses:
+        "200":
+          description: "Evenement modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    patch:
+      tags: ["HR Career"]
+      summary: "Modifier partiellement un evenement de carriere (pending uniquement)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCareerEventRequest"
+      responses:
+        "200":
+          description: "Evenement modifie"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          $ref: "#/components/responses/Validation422"
+    delete:
+      tags: ["HR Career"]
+      summary: "Supprimer un evenement de carriere (pending uniquement)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Evenement supprime"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /career-events/{careerEvent}/approve:
+    put:
+      tags: ["HR Career"]
+      summary: "Approuver un evenement de carriere (pending → approved)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Evenement approuve"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /career-events/{careerEvent}/reject:
+    put:
+      tags: ["HR Career"]
+      summary: "Rejeter un evenement de carriere (pending → rejected)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        "200":
+          description: "Evenement rejete (motif conserve dans notes)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+
+  /career-events/{careerEvent}/apply:
+    put:
+      tags: ["HR Career"]
+      summary: "Appliquer un evenement approuve (approved → applied) — met a jour l'employe (poste/departement/salaire de base, impact paie)"
+      parameters:
+        - $ref: "#/components/parameters/CareerEventId"
+      responses:
+        "200":
+          description: "Evenement applique — l'employe porte son nouveau poste/departement/salaire"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/CareerEvent"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "422":
+          description: "Rien a appliquer (aucune cible poste/departement/salaire)"
           content:
             application/json:
               schema:
@@ -10437,6 +10687,7 @@ paths:
           $ref: "#/components/responses/Error401"
         "403":
           $ref: "#/components/responses/Error403"
+
     patch:
       tags: ["Payroll Engine"]
       summary: "Mettre à jour un poste (manager)"
@@ -10606,6 +10857,7 @@ paths:
           description: "Site supprime"
         "401":
           $ref: "#/components/responses/Error401"
+
     patch:
       tags: ["Payroll Engine"]
       summary: "Mettre à jour un site (manager)"
@@ -13770,6 +14022,7 @@ paths:
                     $ref: "#/components/schemas/JobPosting"
         "401":
           $ref: "#/components/responses/Error401"
+
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer une offre d'emploi (manager)"
@@ -13909,6 +14162,7 @@ paths:
                     $ref: "#/components/schemas/Applicant"
         "401":
           $ref: "#/components/responses/Error401"
+
     get:
       tags: ["Recruitment"]
       summary: "Détail d'une candidature (manager)"
@@ -14008,6 +14262,8 @@ paths:
           description: "Entretien modifie"
         "401":
           $ref: "#/components/responses/Error401"
+
+  # --- Training ---
     delete:
       tags: ["Recruitment"]
       summary: "Supprimer un entretien (manager)"
@@ -14022,7 +14278,6 @@ paths:
         "401":
           $ref: "#/components/responses/Error401"
 
-  # --- Training ---
   /training/courses:
     get:
       tags: ["Training"]
@@ -17677,6 +17932,7 @@ paths:
           description: "Introuvable"
 
 
+
   /notifications/stream:
     get:
       tags: ["Notifications"]
@@ -17702,6 +17958,7 @@ paths:
           $ref: "#/components/responses/Error401"
 
 
+
   /me/contract:
     get:
       tags: ["Me"]
@@ -17713,6 +17970,7 @@ paths:
           $ref: "#/components/responses/Error401"
         "404":
           description: "Aucun contrat actif"
+
 
 
   /recruitment/applicants/{id}/status:
@@ -17772,6 +18030,7 @@ paths:
           description: "Entretien clôturé (status=completed)"
         "401":
           $ref: "#/components/responses/Error401"
+
 
 
   /smart-attendance/config:
@@ -19239,6 +19498,12 @@ components:
         type: integer
     EvaluationId:
       name: evaluation
+      in: path
+      required: true
+      schema:
+        type: integer
+    CareerEventId:
+      name: careerEvent
       in: path
       required: true
       schema:
@@ -21776,6 +22041,192 @@ components:
         updated_at:
           type: string
           format: date-time
+          nullable: true
+
+    CareerEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        employee_id:
+          type: integer
+        employee:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventEmployeeMini"
+          nullable: true
+        type:
+          type: string
+          enum: ["promotion", "raise", "transfer", "title_change"]
+        status:
+          type: string
+          enum: ["pending", "approved", "rejected", "applied"]
+        from_position_id:
+          type: integer
+          nullable: true
+        to_position_id:
+          type: integer
+          nullable: true
+        from_department_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        from_position:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventPositionMini"
+          nullable: true
+        to_position:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventPositionMini"
+          nullable: true
+        from_department:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventDepartmentMini"
+          nullable: true
+        to_department:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/CareerEventDepartmentMini"
+          nullable: true
+        from_salary:
+          type: number
+          format: float
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        approved_by:
+          type: integer
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        applied_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    CareerEventEmployeeMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+
+    CareerEventPositionMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    CareerEventDepartmentMini:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    CareerEventIndexResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerEvent"
+        meta:
+          $ref: "#/components/schemas/PaginationMeta"
+
+    StoreCareerEventRequest:
+      type: object
+      required:
+        - employee_id
+        - type
+        - effective_date
+        - reason
+      properties:
+        employee_id:
+          type: integer
+          minimum: 1
+        type:
+          type: string
+          enum: ["promotion", "raise", "transfer", "title_change"]
+        to_position_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+          maxLength: 2000
+          nullable: true
+
+    UpdateCareerEventRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["promotion", "raise", "transfer", "title_change"]
+        to_position_id:
+          type: integer
+          nullable: true
+        to_department_id:
+          type: integer
+          nullable: true
+        to_salary:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+        effective_date:
+          type: string
+          format: date
+        reason:
+          type: string
+          maxLength: 500
+        notes:
+          type: string
+          maxLength: 2000
           nullable: true
 
     EvaluationIndexResponse:

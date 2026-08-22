@@ -908,6 +908,42 @@ class LeopardoClient:
         """Tester une URL RTSP"""
         return self.request("POST", "/cameras/test-rtsp", **kwargs)
 
+    def get_career_events(self, **kwargs):
+        """Lister les evenements de carriere (plans de carriere, issue #5259)"""
+        return self.request("GET", "/career-events", **kwargs)
+
+    def post_career_events(self, **kwargs):
+        """Creer un evenement de carriere (manager)"""
+        return self.request("POST", "/career-events", **kwargs)
+
+    def delete_career_events_by_careerevent(self, **kwargs):
+        """Supprimer un evenement de carriere (pending uniquement)"""
+        return self.request("DELETE", "/career-events/{careerEvent}", **kwargs)
+
+    def get_career_events_by_careerevent(self, **kwargs):
+        """Voir un evenement de carriere"""
+        return self.request("GET", "/career-events/{careerEvent}", **kwargs)
+
+    def patch_career_events_by_careerevent(self, **kwargs):
+        """Modifier partiellement un evenement de carriere (pending uniquement)"""
+        return self.request("PATCH", "/career-events/{careerEvent}", **kwargs)
+
+    def put_career_events_by_careerevent(self, **kwargs):
+        """Modifier un evenement de carriere (pending uniquement)"""
+        return self.request("PUT", "/career-events/{careerEvent}", **kwargs)
+
+    def put_career_events_by_careerevent_apply(self, **kwargs):
+        """Appliquer un evenement approuve (approved → applied) — met a jour l'employe (poste/departement/salaire de base, impact paie)"""
+        return self.request("PUT", "/career-events/{careerEvent}/apply", **kwargs)
+
+    def put_career_events_by_careerevent_approve(self, **kwargs):
+        """Approuver un evenement de carriere (pending → approved)"""
+        return self.request("PUT", "/career-events/{careerEvent}/approve", **kwargs)
+
+    def put_career_events_by_careerevent_reject(self, **kwargs):
+        """Rejeter un evenement de carriere (pending → rejected)"""
+        return self.request("PUT", "/career-events/{careerEvent}/reject", **kwargs)
+
     def post_client_events(self, **kwargs):
         """Persister un evenement UX client tenant-scope"""
         return self.request("POST", "/client-events", **kwargs)

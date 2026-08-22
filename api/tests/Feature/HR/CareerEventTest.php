@@ -87,7 +87,7 @@ class CareerEventTest extends TestCase
     public function test_employee_sees_only_own_career_events(): void
     {
         [$company, $manager, $employee] = $this->createCompanyActors();
-        $other = $this->createEmployee($company, 'other@a.test');
+        $other = $this->createEmployee($company, 'other@a.test', 'employee', null);
 
         CareerEvent::query()->create([
             'company_id' => $company->id,
@@ -441,8 +441,8 @@ class CareerEventTest extends TestCase
     private function createEmployee(
         Company $company,
         string $email,
-        ?string $role,
-        ?string $managerRole,
+        ?string $role = 'employee',
+        ?string $managerRole = null,
     ): Employee {
         $employee = new Employee(['email' => $email]);
         $employee->forceFill(['password_hash' => Hash::make('password123')])->save();
