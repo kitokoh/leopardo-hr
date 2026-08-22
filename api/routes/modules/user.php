@@ -10,6 +10,7 @@
 use App\Modules\Billing\Interfaces\Api\V1\CompanyRequestController;
 use App\Core\Auth\Interfaces\Api\V1\UserAuthController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\UserEmployeeLinkController;
+use App\Modules\Recruitment\Interfaces\Api\V1\UserCandidateApplicationController;
 use Illuminate\Support\Facades\Route;
 
 // Public (sans auth, throttle strict)
@@ -27,6 +28,9 @@ Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(func
     Route::put('/personal-onboarding', [UserAuthController::class, 'updatePersonalOnboarding']);
     Route::put('/job-search-profile', [UserAuthController::class, 'updateJobSearchProfile']);
     Route::get('/job-recommendations', [UserAuthController::class, 'jobRecommendations']);
+    Route::get('/job-applications', [UserCandidateApplicationController::class, 'index']);
+    Route::post('/job-applications/{companySlug}/{jobPosting}', [UserCandidateApplicationController::class, 'store'])
+        ->whereNumber('jobPosting');
     Route::post('/change-password', [UserAuthController::class, 'changePassword']);
     Route::post('/logout', [UserAuthController::class, 'logout']);
 

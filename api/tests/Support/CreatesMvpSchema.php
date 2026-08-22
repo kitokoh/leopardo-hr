@@ -1683,9 +1683,11 @@ trait CreatesMvpSchema
 
         if (! Schema::hasTable($this->moduleTable('applicants'))) {
             Schema::create($this->moduleTable('applicants'), function (Blueprint $table): void {
-                $table->id();
-                $table->uuid('company_id')->index();
-                $table->unsignedBigInteger('job_posting_id');
+                            $table->id();
+            $table->unsignedBigInteger('user_id')->nullable()->index();
+            $table->uuid('company_id')->index();
+            $table->unsignedBigInteger('job_posting_id');
+
                 $table->string('first_name', 100);
                 $table->string('last_name', 100);
                 $table->string('email');

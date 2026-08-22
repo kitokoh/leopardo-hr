@@ -23,6 +23,9 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   const [items, setItems] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [applying, setApplying] = useState<number | null>(null);
+  const [applied, setApplied] = useState<number[]>([]);
+  const [coverLetters, setCoverLetters] = useState<Record<number, string>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -43,6 +46,26 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
   }, []);
 
   if (!user.personal_statuses?.includes('job_seeker')) return null;
+
+  const apply = async (job: Recommendation) => {
+    const companySlug = job.company?.slug;
+    if (!companySlug) return;
+    setApplying(job.id);
+    try {
+      const response = await apiFetch(`/user/job-applications/${encodeURIComponent(companySlug)}/${job.id}`, {
+        method: 'POST',
+        body: JSON.stringify({ cover_letter: coverLetters[job.id] ?? '' }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const payload = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(payload.error === 'ALREADY_APPLIED' ? 'Vous avez déjà postulé à cette offre.' : 'Candidature impossible.');
+      setApplied((current) => [...current, job.id]);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Candidature impossible.');
+    } finally {
+      setApplying(null);
+    }
+  };
 
   return (
     <section className="mb-8 rounded-3xl border border-indigo-100 bg-gradient-to-br from-indigo-50 via-white to-emerald-50 p-6 shadow-sm" aria-labelledby="job-recommendations-title">
@@ -68,9 +91,21 @@ export function JobRecommendationsPanel({ user }: { user: StoredAuthUser }) {
               <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-black text-emerald-800">{job.match_score ?? 0}%</span>
             </div>
             <p className="mt-3 line-clamp-2 text-sm leading-5 text-slate-600">{job.ai_reason ?? job.match_reasons?.[0] ?? job.description}</p>
-            <div className="mt-4 flex items-center justify-between gap-3">
+            <textarea
+              value={coverLetters[job.id] ?? ''}
+              onChange={(event) => setCoverLetters((current) => ({ ...current, [job.id]: event.target.value }))}
+              placeholder="Ajouter un message (facultatif)"
+              className="mt-4 min-h-16 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+              maxLength={5000}
+            />
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{job.contract_type ?? 'Contrat'}{job.remote_policy ? ` · ${job.remote_policy}` : ''}</span>
-              {job.public_url && <a href={job.public_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-indigo-700 hover:text-indigo-900">Voir l’offre <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>}
+              <div className="flex items-center gap-3">
+                {job.public_url && <a href={job.public_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sm font-bold text-indigo-700 hover:text-indigo-900">Voir l’offre <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>}
+                <button type="button" onClick={() => void apply(job)} disabled={applying === job.id || applied.includes(job.id)} className="rounded-lg bg-slate-950 px-3 py-2 text-xs font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50">
+                  {applied.includes(job.id) ? 'Candidature envoyée' : applying === job.id ? 'Envoi…' : 'Postuler'}
+                </button>
+              </div>
             </div>
           </article>
         ))}

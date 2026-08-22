@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int|null $user_id
  * @property int|null $company_id
  * @property int|null $job_posting_id
  * @property string $first_name
@@ -38,6 +39,7 @@ class Applicant extends Model
 
     protected $fillable = [
         'company_id',
+        'user_id',
         'job_posting_id',
         'first_name',
         'last_name',
