@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use Closure;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
@@ -72,13 +71,9 @@ class NotPrivateUrl implements ValidationRule
         // IP privée/réservée (zéro risque SSRF) et les fixtures utilisent ces
         // hôtes fictifs (ex. `idp.example.com`, `app.leopardo.test`). En
         // production, ils restent refusés (fail-closed, inchangé).
-        // `function_exists('app')` : les tests unitaires purs (sans bootstrap
-        // Laravel) doivent conserver le comportement historique (fail-closed).
-        // app() en contexte de test UNITAIRE pur renvoie le Container brut
-        // (pas l'Application) : n'appeler environment() que sur une vraie
-        // Application Laravel (fail-closed sinon, comportement historique).
+        // Sans bootstrap Laravel, le helper `app` est absent : le comportement
+        // reste donc fail-closed pour les tests unitaires purs.
         $isTesting = \function_exists('app')
-            && app() instanceof Application
             && app()->environment('testing');
         if ($isTesting
             && (str_ends_with($host, '.test')

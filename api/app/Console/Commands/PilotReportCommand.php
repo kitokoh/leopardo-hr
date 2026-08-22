@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Attendance\Domain\Models\AttendanceLog;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -67,7 +68,7 @@ class PilotReportCommand extends Command
         }
 
         if ($this->option('json')) {
-            $this->line(json_encode(['generated_at' => Carbon::now()->toIso8601String(), 'window_days' => $days, 'companies' => $rows], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->line(json_encode(['generated_at' => Carbon::now()->toIso8601String(), 'window_days' => $days, 'companies' => $rows], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
         } else {
             $this->renderMarkdown($rows, $days);
         }
@@ -75,8 +76,8 @@ class PilotReportCommand extends Command
         return self::SUCCESS;
     }
 
-    /** @return \Illuminate\Database\Eloquent\Collection<int, Company> */
-    private function resolveCompanies(): \Illuminate\Database\Eloquent\Collection
+    /** @return Collection<int, Company> */
+    private function resolveCompanies(): Collection
     {
         $slugs = (array) $this->option('company');
 
