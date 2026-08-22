@@ -184,11 +184,11 @@ class AccountingDataModelTest extends TestCase
             'reference' => 'CHQ-00001234',
         ]);
 
-        $rawContact = DB::table('accounting_contacts')->whereKey($contact->id)->first();
-        $rawPayment = DB::table('accounting_payments')->whereKey($payment->id)->first();
+        $rawContact = DB::table('accounting_contacts')->where('id', $contact->id)->first();
+        $rawPayment = DB::table('accounting_payments')->where('id', $payment->id)->first();
 
-        $this->assertNotNull($rawContact);
-        $this->assertNotNull($rawPayment);
+        $this->assertInstanceOf(\stdClass::class, $rawContact);
+        $this->assertInstanceOf(\stdClass::class, $rawPayment);
         $this->assertIsString($rawContact->tax_id);
         $this->assertNotSame('NIF-SENSIBLE-777', $rawContact->tax_id, 'Le NIF ne doit pas être stocké en clair.');
         $this->assertStringContainsString('eyJpdiI6', $rawContact->tax_id, 'Valeur chiffrée attendue (enveloppe Laravel).');
