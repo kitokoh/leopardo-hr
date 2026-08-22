@@ -17,6 +17,8 @@ class PlanningControllerTest extends TestCase
 
     private Employee $manager;
 
+    private Employee $employee;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -30,6 +32,10 @@ class PlanningControllerTest extends TestCase
             'manager_role' => 'principal',
         ]);
 
+        $this->employee = Employee::factory()->create([
+            'company_id' => $this->company->id,
+            'role' => 'employee',
+        ]);
     }
 
     protected function tearDown(): void
