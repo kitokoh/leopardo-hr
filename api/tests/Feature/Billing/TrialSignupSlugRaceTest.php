@@ -108,6 +108,7 @@ class TrialSignupSlugRaceTest extends TestCase
 class CollidingVerifyTrialSignup extends VerifyTrialSignup
 {
     public int $calls = 0;
+
     public string $collisionSlug = 'collision-co';
 
     protected function resolveUniqueSlug(string $baseSlug): string
