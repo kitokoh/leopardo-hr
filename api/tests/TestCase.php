@@ -169,20 +169,27 @@ abstract class TestCase extends BaseTestCase
         DB::purge($connection);
         DB::reconnect($connection);
 
-        DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+        // Plusieurs processus d’un même worker peuvent entrer ici en même temps.
+        // Le tableau statique ne protège que le processus courant ; le verrou
+        // advisory protège donc la création du schéma entre processus.
+        $lockKey = 'leopardo_test_public_schema_'.$database;
+        DB::select('SELECT pg_advisory_lock(hashtext(?))', [$lockKey]);
 
         try {
+            DB::statement('CREATE SCHEMA IF NOT EXISTS shared_tenants');
+
             $this->artisan('migrate', [
                 '--path' => 'database/migrations/public',
                 '--force' => true,
             ]);
+
+            self::$parallelPublicMigrated[$database] = true;
         } finally {
+            DB::select('SELECT pg_advisory_unlock(hashtext(?))', [$lockKey]);
             config(["database.connections.{$connection}.search_path" => $originalSearchPath]);
             DB::purge($connection);
             DB::reconnect($connection);
         }
-
-        self::$parallelPublicMigrated[$database] = true;
     }
 
     private function envValueForTesting(string $key, string $fallback): string
