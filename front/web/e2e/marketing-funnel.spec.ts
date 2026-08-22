@@ -9,6 +9,19 @@ test.describe('Marketing funnel preview', () => {
   test.setTimeout(90_000);
 
   test.beforeEach(async ({ page }) => {
+    await page.route('**/api/v1/supported-countries', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          data: [
+            { country: 'DZ', label: 'Algérie', available: true },
+            { country: 'FR', label: 'France', available: true },
+          ],
+        }),
+      });
+    });
+
     // Mock marketing form APIs to avoid dependency on live backend and provisioning delays
     await page.route('**/api/forms/signup', async (route) => {
       await route.fulfill({
