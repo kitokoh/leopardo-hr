@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console;
 
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 /**
@@ -32,8 +33,17 @@ class ProbeAvailabilityCommandTest extends TestCase
     {
         // Déterministe : la valeur dépend de la disponibilité réelle de Redis,
         // mais elle doit être l'une des deux seules options du failover.
-        $this->artisan('infra:probe-availability', ['--format' => 'env'])
-            ->expectsOutputToMatch('/^CACHE_STORE=(redis|file)$/m')
-            ->assertExitCode(0);
+        // `expectsOutputToMatch` n'existe pas sur PendingCommand (assertion
+        // Pest), et `Artisan::output()` est VIDE quand la commande tourne via
+        // le mock de sortie de `$this->artisan()` → on passe par Artisan::call
+        // pour récupérer la sortie réelle (issue #5201).
+        $exit = Artisan::call('infra:probe-availability', ['--format' => 'env']);
+
+        $this->assertSame(0, $exit);
+        $this->assertMatchesRegularExpression(
+            '/^CACHE_STORE=(redis|file)$/m',
+            Artisan::output(),
+            'CACHE_STORE doit être redis ou file (failover binaire).'
+        );
     }
 }

@@ -92,7 +92,10 @@ class DepartmentController extends Controller
         }
 
         // Garde cross-tenant explicite (le scope global BelongsToCompany protège déjà).
-        if ((int) $department->company_id !== (int) $user->company_id) {
+        // Comparaison en STRING : `(int)` sur des UUID (company_id) vaut 0 des deux
+        // côtés → la garde ne déclenchait JAMAIS 404 pour un département d'un autre
+        // tenant quand le scope global était contourné (issue #5201).
+        if ((string) $department->company_id !== (string) $user->company_id) {
             abort(404);
         }
 

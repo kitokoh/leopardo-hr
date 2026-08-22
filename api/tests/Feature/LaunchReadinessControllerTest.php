@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
-use App\Modules\Planning\Domain\Models\ClientEvent;
-use App\Modules\Notification\Domain\Models\CommunicationEvent;
-use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
+use App\Modules\Notification\Domain\Models\CommunicationEvent;
 use App\Modules\Notification\Domain\Models\NotificationPreference;
+use App\Modules\Planning\Domain\Models\ClientEvent;
 use Laravel\Sanctum\Sanctum;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
@@ -133,16 +133,19 @@ class LaunchReadinessControllerTest extends TestCase
 
     /**
      * QA expert5 #3306 — communication_governance ne doit pas passer à vide
-     * (0 employé actif = 0 >= 0) : un tenant sans employé actif n'est pas
-     * « prêt comm ». L'acteur est un manager archivé (le seul employé du
-     * tenant) → activeEmployees = 0.
+     * (0 >= 0) : un tenant avec trop peu d'employés actifs n'est pas
+     * « prêt comm ». L'acteur est un manager ACTIF (le seul employé du
+     * tenant) : activeEmployees = 1 mais preferencesConfigured = 0 → le
+     * check `activeEmployees > 0 && preferencesConfigured >= activeEmployees`
+     * reste NON vert. (Un acteur archivé ne peut plus s'authentifier —
+     * TenantMiddleware → 403, issue #5201.)
      */
     public function test_communication_governance_is_not_green_on_empty_tenant(): void
     {
         $company = Company::factory()->create();
         $manager = Employee::factory()->manager()->create([
             'company_id' => $company->id,
-            'status' => 'archived',
+            'status' => 'active',
         ]);
 
         Sanctum::actingAs($manager);
@@ -155,4 +158,3 @@ class LaunchReadinessControllerTest extends TestCase
             ]);
     }
 }
-
