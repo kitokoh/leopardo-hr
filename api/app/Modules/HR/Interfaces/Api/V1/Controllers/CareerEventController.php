@@ -197,7 +197,7 @@ class CareerEventController extends Controller
         ));
     }
 
-    public function apply(Request $request, CareerEvent $event): CareerEventResource
+    public function apply(Request $request, CareerEvent $event): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -237,13 +237,13 @@ class CareerEventController extends Controller
             return $fresh;
         });
 
-        return new CareerEventResource($event->load(
+        return (new CareerEventResource($event->load(
             'employee:id,first_name,last_name',
             'fromPosition:id,name',
             'toPosition:id,name',
             'fromDepartment:id,name',
             'toDepartment:id,name',
-        ));
+        )))->response();
     }
 
     public function destroy(Request $request, CareerEvent $event): JsonResponse
