@@ -1,177 +1,153 @@
 # 🚨 INCIDENTS — Runbook opérations (issue #5282)
 
-**Version** : 1.0 · **Date** : 2026-08-22 · **Objectif** : détecter une panne
-de la queue (< 15 min — DoD #5282), trier, escalader et réparer sans
-improvisation. Complète `docs/ops/SLA_PILOTES.md` (#5155) pour les bugs
-pilotes et `docs/ops/DR.md` (#5283) pour la reprise après sinistre.
+**Version** : 2.0 · **Date** : 2026-08-22 · **Périmètre** : prod 0 € (Render free
+tier + Vercel free + GitHub Actions illimité) — voir `docs/ops/DEPLOYMENT_URLS.md`,
+`docs/ALERTS_CONFIGURATION.md`, `docs/ops/SLA_PILOTES.md` (#5155).
+
+**Objectif** : détecter une panne (< 15 min pour la queue — DoD #5282), trier,
+escalader et réparer sans improvisation. Document fusionné (2026-08-22) des
+travaux #5282 : runbook structurel (niveaux P0-P3, runbooks I1-I6, post-mortem)
++ supervision queue implémentée (`queue-supervision.yml`).
 
 ---
 
-## 1. Détection — canaux actifs (dans l'ordre de fiabilité)
+## 1. Surfaces de détection (état réel, vérifié 2026-08-22)
 
-| Canal | Mécanisme | Détecte | Latence |
+| Détection | Mécanisme | Fréquence | Signal |
 |---|---|---|---|
-| **`queue-supervision.yml`** (cron 5 min, offset +2 min) | `php artisan queue:health-check` avec seuils (`--max-pending=50`, `--max-failed=10`, `--max-stale-minutes=10`) contre la prod (DB) ; run rouge si seuil dépassé | Queue bloquée, worker mort (jobs réservés > 10 min), backlog croissant, `failed_jobs` > 10, DB injoignable | **≤ 15 min** (5 min d'intervalle + 10 min de stale) |
-| **`launch-observability-smoke.yml`** (cron 30 min) | Probes HTTP des 3 surfaces (API, web, admin) | Surfaces inaccessibles, latence > budget, cold start anormal | ≤ 30 min |
-| **Uptime checker externe gratuit** (UptimeRobot / BetterStack / Hetzner) | `GET https://gestionemployerbackend.onrender.com/api/v1/health/live` (et `/ready`) toutes les 5 min | API down (HTTP non-200, timeout) | ≤ 5 min |
-| **Sentry** | DSN `SENTRY_LARAVEL_DSN`/`SENTRY_DSN` ; `traces_sample_rate=0.2` ; alertes seuils : taux d'erreur > 5 % / 5 min, spikes 5xx | Erreurs applicatives non levées en HTTP | temps réel |
-| **Pilotes** (canal humain) | Issue `PILOT_BLOCKER` + label `pilot-blocker` (#5155) | Bugs fonctionnels que la télémétrie ne voit pas | < 24 h (SLA) |
+| **Queue bloquée / worker mort** | `.github/workflows/queue-supervision.yml` : `php artisan queue:health-check` avec seuils (`--max-pending=50`, `--max-failed=10`, `--max-stale-minutes=10`) contre la prod (DB) | **cron 5 min** (offset +2 min du drain) | Run rouge + Slack opt-in (`SLACK_MONITORING_WEBHOOK_URL`) — **détection ≤ 15 min (DoD #5282, exercice §7)** |
+| **Surfaces API/web/admin** | `launch-observability-smoke.yml` (probes HTTP, latence max 10 s, fail-closed #4720) | toutes les 30 min | Run rouge = surface KO / cold start anormal |
+| **Uptime API (externe, optionnel)** | UptimeRobot/BetterStack free → `GET https://gestionemployerbackend.onrender.com/api/v1/health/live` (+ `/ready`) | 5 min, 2 échecs → notif | À activer (voir `docs/ALERTS_CONFIGURATION.md` §2) |
+| **E2E prod** | `e2e-isolated.yml` / `e2e-staging.yml` (Playwright) | par PR + smoke | Scénario critique rouge en prod |
+| **Erreurs applicatives** | Sentry (`sentry-laravel ^4.0`, `SENTRY_LARAVEL_DSN`) + StructuredLogging + handler jobs failed | temps réel | Pic d'erreurs / 5xx, job en `failed` |
+| **Sécurité** | TruffleHog + secret-history scan, OWASP ZAP, Semgrep, CodeQL, Dependabot | par PR + cron | Scan rouge, alerte Dependabot |
+| **Backup/DR** | `database-backup.yml` (daily 02:15 + drill mensuel) + `docs/ops/DR.md` (#5283) | jour / mois | Workflow rouge, drill échoué |
+| **CI** | gates (coverage ≥ 65 %, PHPStan Strict, gouvernance) | par PR / merge | Run rouge bloquant |
 
-**DoD #5282 — preuve de la détection < 15 min** : le workflow de supervision
-tourne toutes les 5 min ; un job resté réservé plus de 10 min (worker mort)
-ou un backlog > 50 jobs rend le run rouge. Pire cas : 5 min (attente du
-prochain run) + 10 min (seuil stale) = **15 min**. Exercice de validation :
-§6.
+**Canaux humains** : GitHub Issues (template `PILOT_BLOCKER` si impact pilote,
+label `pilot-blocker`) + SLA pilotes (#5155, hotfix < 24 h).
 
 ---
 
-## 2. Matrice de sévérité
+## 2. Niveaux d'incident
 
-| Sévérité | Définition | Exemples | Délai de réaction |
+| Niveau | Définition | Exemples | Cible |
 |---|---|---|---|
-| **SEV1 — Critique** | Paie, pointage ou login impossibles en prod ; données perdues ou corrompues | Queue bloquée (worker mort), DB inaccessible, déploiement cassé, erreurs 5xx massives | Immédiat, hotfix < 24 h (#5155) |
-| **SEV2 — Dégradé** | Fonctionnalité accessible mais cassée partiellement ; perf dégradée | Backlog intermittent, emails en retard, erreurs Sentry ciblées | Jour ouvré, fix normal P1 |
-| **SEV3 — Mineur** | Aucun impact pilote mesurable | Job de supervision rouge transitoire, alerte sans suite | Semaine, analyse |
+| **P0** | Perte de données, prod inutilisable, violation sécurité | data-loss, 500 onboarding/création employé, secret exposé | < 4 h |
+| **P1** | Parcours prospect/RH bloqué pour une partie | queue non drainée (worker mort), trial KO (#4948/#5162), Google OAuth KO (#5171) | < 24 h |
+| **P2** | Dégradation sans blocage | 429 non localisés, latence élevée, backlog intermittent | < 1 semaine |
+| **P3** | Cosmétique / dette | i18n partiel, doc périmée | backlog |
+
+Règle de triage (alignée #5155) : **« la paie est-elle bloquée ? le pointage ?
+le login ? »** — si oui en prod → P1 minimum.
 
 ---
 
-## 3. Rôles et canaux
+## 3. Détection → diagnostic → résolution
 
-- **Détection → constat** : tout agent/contributeur qui voit un run rouge de
-  `queue-supervision` ou `launch-observability-smoke` ouvre une issue avec le
-  template incident (`PILOT_BLOCKER` si pilote impacté), sinon une issue
-  standard avec le lien du run.
-- **Escalade** : SEV1 → notification immédiate (Slack `SLACK_MONITORING_WEBHOOK_URL`
-  si configuré, sinon issue GitHub + mention d'un agent ops) ; SEV2/3 → issue.
-- **Un seul hotfix à la fois** (règle #5155) : le premier agent qui
-  self-assigne l'issue incident verrouille la fenêtre de correction.
-- **Traçabilité** : chaque incident → issue GitHub fermée avec `Closes #N`
-  + entrée au CHANGELOG (une ligne en tête d'`[Unreleased]`) + relecture du
-  runbook si un playbook manque.
+1. **Constater** : run rouge (queue-supervision / smoke / E2E / ZAP / backup), alerte Sentry, issue `pilot-blocker`, ou signal pilote.
+2. **Confirmer** : re-run le workflow (`workflow_dispatch`) pour exclure un flake/cold start ; vérifier l'état live (`/api/v1/health`, `/health/live`, `/health/ready`).
+3. **Trier** : niveau P0-P3 (§2) + issue dédiée (1 incident = 1 issue ; le premier agent qui self-assigne verrouille la fenêtre de correction, un seul hotfix à la fois — règle #5155).
+4. **Réparer** : appliquer le runbook du type (§4), puis PR avec test de non-régression + CHANGELOG + `Closes #N`.
+5. **Clôturer** : post-mortem (§5) pour P0/P1, mise à jour du tracker (`docs/plan/PLAN_100PCT.md` §6 si wave impactée).
 
 ---
 
-## 4. Playbooks
+## 4. Runbooks par type d'incident
 
-### 4.1 Queue bloquée / worker mort (SEV1)
+### I1 — API vitrine/admin KO (NXDOMAIN, 5xx, cold start)
+- **Symptômes** : smoke rouge, E2E prod rouge, « site inaccessible ».
+- **Causes connues** : DNS non possédé (#3452 — wontfix assumé), quota Vercel (#4868 non-bloquant), cold start Render > 10 s (veille 15 min), env manquante (ex. #5170).
+- **Actions** : 1) re-run le smoke ; 2) `/health/ready` + logs Render ; 3) cold start → rien (documenté) ; env → appliquer `docs/ops/DEPLOYMENT_URLS.md` ; 5xx applicatif → Sentry pour la stack ; 4) rollback via `RENDER_ROLLBACK_HOOK_URL` si déploiement récent.
+- **Escalade** : accès Render/Vercel = fondateur (tickets ops avec instructions exactes).
 
-**Symptômes** : run `queue-supervision` rouge avec `stale_reserved_jobs > 0`
-ou `pending_jobs` en croissance ; les drains `queue-worker-fallback` finissent
-en timeout ou échouent ; emails/PDF/paiements en retard.
+### I2 — Queue non drainée / worker mort (P1, DoD #5282)
+- **Symptômes** : run `queue-supervision` rouge (`stale_reserved_jobs > 0` ou `pending_jobs` en croissance), trials bloqués, emails/PDF/paiements en retard.
+- **Causes** : worker Render éteint (veille/quota 750 h), drain GH Actions KO, jobs qui plantent en boucle.
+- **Actions** : 1) lire le JSON du run rouge (queues, stale, failed) ; 2) vérifier le dernier run `queue-worker-fallback` ; 3) re-déclencher le drain (`workflow_dispatch`) ; 4) libérer les réservations orphelines (worker mort) :
+  ```bash
+  UPDATE jobs SET reserved_at = NULL
+  WHERE reserved_at IS NOT NULL AND reserved_at < extract(epoch from now() - interval '10 minutes');
+  ```
+  5) `php artisan queue:retry all` UNIQUEMENT après correction de la cause racine ; 6) confirmer : 2 runs `queue-supervision` verts consécutifs.
+- **Diagnostic SQL** : `SELECT queue, COUNT(*) FROM jobs WHERE reserved_at IS NULL AND available_at <= extract(epoch from now()) GROUP BY queue ORDER BY 2 DESC;`
 
-1. Ouvrir le run rouge, relever le JSON : `queues`, `stale_reserved_jobs`,
-   `failed_jobs`.
-2. **Cause la plus probable** : le conteneur web Render a dépassé son quota
-   (750 h/mois free tier) ou est endormi (> 15 min d'inactivité) — le drain
-   GH Actions est la béquille prévue (#5204).
-3. Vérifier l'état du drain : `Actions → Queue Worker — Fallback GH Actions` —
-   s'il échoue avec une erreur DB, c'est la DB (→ 4.3) ; s'il tourne mais que
-   le backlog grossit, les jobs plantent (→ 4.4).
-4. **Réparation immédiate** : relancer le drain manuellement
-   (`workflow_dispatch`) ; si des jobs sont réservés par un worker mort,
-   les libérer :
-   ```bash
-   # En prod (contexte DB_SEARCH_PATH=shared_tenants,public) — ne PAS purger
-   # les jobs pending, seulement les réservations orphelines :
-   UPDATE jobs SET reserved_at = NULL
-   WHERE reserved_at IS NOT NULL AND reserved_at < extract(epoch from now() - interval '10 minutes');
-   ```
-5. Vérifier `failed_jobs` : `php artisan queue:retry all` après correction de
-   la cause racine (jamais avant).
-6. Confirmer : 2 runs `queue-supervision` verts consécutifs (< 15 min).
+### I3 — Erreurs en masse (Sentry)
+- **Actions** : 1) trier par fréquence + endpoints ; 2) isoler tenant/route (erreur cross-tenant ? garde #3597) ; 3) corriger + test de non-régression ; 4) si `failed_jobs` > 10 → rejouer après fix (`queue:retry`).
 
-### 4.2 Backlog croissant sans worker mort (SEV2)
+### I4 — Backup ou drill échoué
+- **Actions** : 1) consulter le log `database-restore-drill-log` (artifact 90 j) ; 2) vérifier secrets (`DATABASE_URL`, `BACKUP_S3_BUCKET`, clés age) — absence = skip silencieux (notice) ; 3) re-run `workflow_dispatch mode=backup|drill` ; 4) documenter dans `docs/ops/DR.md` (DoD #5283).
+- **Règle** : un drill échoué = incident P1 (restauration non prouvée).
 
-**Symptôme** : `pending_jobs` > seuil mais `stale_reserved_jobs = 0`.
+### I5 — Régression CI / merge qui casse main
+- **Actions** : 1) identifier le merge fautif (`git log origin/main` + checks) ; 2) reverter ou hotfix `hotfix/<issue>-<slug>` ; 3) garde anti-régression ajoutée (test + CHANGELOG).
 
-- Le drain tourne mais ne vide pas (jobs lents, `--max-time=280` atteint).
-- Regarder les jobs les plus anciens : `SELECT queue, COUNT(*) FROM jobs
-  WHERE reserved_at IS NULL AND available_at <= extract(epoch from now())
-  GROUP BY queue ORDER BY 2 DESC;`
-- Cause typique : un job qui re-tente (`--tries=3`) et échoue → il finit en
-  `failed_jobs` ; sinon débit trop faible → augmenter la fenêtre du drain ou
-  réveiller le worker Render.
+### I6 — Sécurité (secret exposé, scan rouge)
+- **Actions** : 1) révoquer/rotater immédiatement (procédure purge #1472/#1601) ; 2) purger l'historique git (force-push) ; 3) issue sécurité + PR ; 4) post-mortem.
 
-### 4.3 DB inaccessible (SEV1)
+### I7 — DB inaccessible (P0)
+- **Symptômes** : `queue-supervision` rouge (`status: error`), `/health` → 503, login/paie impossibles.
+- **Actions** : 1) `curl -s https://gestionemployerbackend.onrender.com/api/v1/health` → `"status":"fail"` = DB down ; 2) console du provider DB (quota ?) ; 3) redémarrer/provisionner + vérifier `DB_SEARCH_PATH=shared_tenants,public` ; 4) redéployer via `RENDER_DEPLOY_HOOK_URL` ; les jobs en retard repartent en FIFO (par `available_at`).
 
-**Symptômes** : `queue-supervision` rouge (`status: error`), smoke 30 min
-rouge (API 503 — le `/health` renvoie 503 si DB down), login paie impossibles.
-
-1. Vérifier le run `launch-observability-smoke` le plus récent (HTTP code).
-2. `curl -s https://gestionemployerbackend.onrender.com/api/v1/health` → si
-   `"status":"fail"`, la DB ne répond pas.
-3. Cause probable : quota Render/Neon/Postgres dépassé, ou config
-   `DB_*` modifiée. Vérifier la console du provider DB.
-4. Réparation : provisionner/redémarrer la DB, vérifier le search_path
-   (`DB_SEARCH_PATH=shared_tenants,public`), puis redéployer via
-   `RENDER_DEPLOY_HOOK_URL` (workflow `deploy-main.yml`).
-5. Si la DB était down plus de 15 min : les jobs `available_at` sont en
-   retard — un drain normal les reprendra (ordre FIFO par `available_at`).
-
-### 4.4 Erreurs applicatives / Sentry (SEV2 → SEV1)
-
-**Symptômes** : alertes Sentry (taux d'erreur > 5 % / 5 min), `failed_jobs`
-> 10, 5xx en pic.
-
-1. Sentry → trier par volume ; ouvrir l'issue correspondante ou l'exception
-   récurrente.
-2. Si un job échoue en boucle : le mettre en `failed` est normal après
-   `--tries=3` ; corriger la cause avant `queue:retry all`.
-3. Pour un endpoint 5xx massif : garde `fail-closed` (#2614/#2615) + vérifier
-   les secrets (Stripe/Chargily/Mailgun) côté Render.
-
-### 4.5 Déploiement cassé (SEV1)
-
-**Symptômes** : `deploy-main.yml` rouge, hook Render en échec, `/health`
-anormal après déploiement.
-
-1. Rollback immédiat via `RENDER_ROLLBACK_HOOK_URL` (documenté dans
-   `docs/ops/DEPLOYMENT_URLS.md`).
-2. Diagnostiquer sur la branche fautive (tests, migrations, secrets).
-3. Redéployer après correction ; vérifier `/health` (200 + `"status":"ok"`)
-   puis `launch-observability-smoke` vert.
+### I8 — Déploiement cassé (P0)
+- **Actions** : 1) rollback immédiat via `RENDER_ROLLBACK_HOOK_URL` (cf. `docs/ops/DEPLOYMENT_URLS.md`) ; 2) diagnostiquer (tests, migrations, secrets) ; 3) redéployer + vérifier `/health` 200 `"status":"ok"` puis `launch-observability-smoke` vert.
 
 ---
 
-## 5. Alerting — configuration réelle
+## 5. Post-mortem (P0/P1 obligatoire)
+
+Fichier : `docs/qa/POST_MORTEM_<date>.md` — sections : **Symptôme** → **Cause racine** → **Détection (comment on l'a vu, délai)** → **Correction** → **Anti-régression (test/garde)** → **Leçons pour les runbooks**.
+
+---
+
+## 6. Alerting — configuration réelle
 
 | Alerte | Canal | Seuils | Config |
 |---|---|---|---|
-| Queue dégradée | Run rouge GH Actions + Slack opt-in | pending > 50 / failed > 10 / stale > 0 min (10 min) | `queue-supervision.yml` ; `SLACK_MONITORING_WEBHOOK_URL` (secret, vide = silencieux) |
+| Queue dégradée | Run rouge GH Actions + Slack opt-in | pending > 50 / failed > 10 / stale > 0 (10 min) | `queue-supervision.yml` ; `SLACK_MONITORING_WEBHOOK_URL` |
 | Surface down | Run rouge GH Actions | HTTP ≠ 200 / latence > 10 s | `launch-observability-smoke.yml` |
-| Uptime API | UptimeRobot/BetterStack (gratuit) | 5 min, 2 échecs consécutifs → notif email | URL : `https://gestionemployerbackend.onrender.com/api/v1/health/live` |
-| Erreurs app | Sentry | taux > 5 % / 5 min, spikes 5xx | `SENTRY_LARAVEL_DSN` (ou `SENTRY_DSN`), `SENTRY_TRACES_SAMPLE_RATE=0.2` |
+| Uptime API | UptimeRobot/BetterStack (gratuit) | 5 min, 2 échecs → notif email | `https://gestionemployerbackend.onrender.com/api/v1/health/live` |
+| Erreurs app | Sentry | taux > 5 % / 5 min, spikes 5xx | `SENTRY_LARAVEL_DSN`, `SENTRY_TRACES_SAMPLE_RATE=0.2` |
 
-Détails et marche à suivre de mise en place : `docs/ALERTS_CONFIGURATION.md`.
+Détails : `docs/ALERTS_CONFIGURATION.md` (v2.0, config réelle).
 
 ---
 
-## 6. Exercice de détection — consigné
+## 7. Exercice de détection — consigné
 
-**Exercice #1 — « Queue bloquée » (dry-run réel, 2026-08-22)** — dans le cadre
-de l'issue #5282 (DoD : panne détectée en < 15 min).
+**Exercice #1 — « Queue bloquée » (dry-run réel, 2026-08-22)** — DoD #5282 : panne détectée en < 15 min.
 
 | Étape | Réalisation | Résultat |
 |---|---|---|
-| 1. Scénario | Worker « mort » simulé : jobs insérés en base avec `reserved_at` > 10 min (équivalent d'un worker tué en plein traitement) | — |
-| 2. Supervision | `php artisan queue:health-check --max-pending=50 --max-failed=10 --max-stale-minutes=10` (driver `database`) | **FAILURE** — `stale_reserved_jobs: N` détecté, sortie JSON exploitable |
-| 3. Test sans panne | Même commande sur une queue vide | **SUCCESS** — pas de faux positif |
-| 4. Couverture automate | `queue-supervision.yml` (cron 5 min) : testé en `workflow_dispatch` | Run exécuté, log JSON visible |
-| 5. Mesure du délai | Intervalle cron (5 min) + seuil stale (10 min) | **Pire cas : 15 min** ✓ DoD |
-| 6. Enseignements | La détection repose sur le run GH Actions (repo public = minutes illimitées) ; Slack opt-in documenté ; aucun faux positif constaté | Acté |
+| 1. Scénario | Worker « mort » simulé : jobs insérés avec `reserved_at` > 10 min | — |
+| 2. Supervision | `php artisan queue:health-check --max-pending=50 --max-failed=10 --max-stale-minutes=10` (driver `database`) | **FAILURE** — `stale_reserved_jobs` détecté, JSON exploitable |
+| 3. Contrôle | Même commande sur queue vide / job récemment réservé | **SUCCESS** — pas de faux positif |
+| 4. Automate | `queue-supervision.yml` (cron 5 min) testé en `workflow_dispatch` | Run exécuté, log JSON visible |
+| 5. Délai | Intervalle cron (5 min) + seuil stale (10 min) | **Pire cas : 15 min ✓ DoD** |
+| 6. Enseignements | Détection portée par GH Actions (repo public = minutes illimitées) ; Slack opt-in documenté ; 0 faux positif | Acté |
 
-**Prochain exercice suggéré** : exercice réel sur la prod (via
-`workflow_dispatch` pendant une fenêtre calme) + exercice de restauration DR
-(consigné dans `docs/ops/DR.md`, #5283).
+**Prochain exercice** : tabletop P0 (avant premier beta) + exercice réel prod (`workflow_dispatch` en fenêtre calme) + exercice DR (consigné `docs/ops/DR.md`, #5283).
 
 ---
 
-## 7. Références
+## 8. Gaps assumés (au 2026-08-22)
 
-- Supervision queue : `.github/workflows/queue-supervision.yml` (#5282),
-  commande `php artisan queue:health-check` (`api/app/Console/Commands/QueueHealthCheck.php`)
+| Gap | Statut | Action |
+|---|---|---|
+| Alerte queue non vidée en < 15 min (DoD #5282) | ✅ **implémenté** (2026-08-22, PR #5306) | `queue-supervision.yml` + `queue:health-check` driver database |
+| Uptime checker externe | 🟡 non activé (assumé 0 €) | Smoke GH Actions = détection ≤ 30 min ; activer UptimeRobot si besoin (§6) |
+| Canal d'alerte humain | 🟡 GitHub Issues + labels | SLA pilotes #5155 à maintenir |
+| Exercice de runbook (tabletop P0) | ❌ TODO | avant premier beta |
+
+---
+
+## 9. Références
+
+- Supervision queue : `.github/workflows/queue-supervision.yml` + `php artisan queue:health-check` (`api/app/Console/Commands/QueueHealthCheck.php`) — #5282
 - Drain de secours : `.github/workflows/queue-worker-fallback.yml` (#5204/#5205)
 - Smoke surfaces : `.github/workflows/launch-observability-smoke.yml` (#3968/#4720)
-- Santé API : `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php`
-- SLA pilotes : `docs/ops/SLA_PILOTES.md` (#5155) · DR : `docs/ops/DR.md` (#5283)
-- Alerting : `docs/ALERTS_CONFIGURATION.md`
+- Santé API : `HealthController` (`/api/v1/health`, `/live`, `/ready`) — expose `failed_jobs` (#5282)
+- SLA pilotes : `docs/ops/SLA_PILOTES.md` (#5155) · DR : `docs/ops/DR.md` (#5283) · Alerting : `docs/ALERTS_CONFIGURATION.md`
+- Backup : `docs/GESTION_PROJET/RUNBOOK_BACKUP_RESTORE.md` · Sécurité : purge #1472/#1601
+
+*À mettre à jour à chaque incident P0/P1.*
