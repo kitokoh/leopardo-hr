@@ -4050,6 +4050,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get billingCheckoutFailed => 'Impossible de créer la session de paiement.';
   @override
+  String get billingRedirectUrlInvalid => 'Les URLs de redirection doivent appartenir au site autorisé.';
+  @override
   String get billingCheckoutSandboxMessage => 'Paiement simulé (mode sandbox). Aucune carte débitée.';
   @override
   String get billingCheckoutUnavailable => 'Le paiement en ligne est temporairement indisponible. Contactez le support à support@leopardo-rh.com.';

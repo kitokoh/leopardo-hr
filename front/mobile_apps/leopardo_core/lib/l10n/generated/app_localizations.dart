@@ -6992,6 +6992,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
 
   String get billingCheckoutFailed;
 
+  String get billingRedirectUrlInvalid;
+
   String get billingCheckoutSandboxMessage;
 
   String get billingCheckoutUnavailable;

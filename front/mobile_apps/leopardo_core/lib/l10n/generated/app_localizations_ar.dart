@@ -3953,6 +3953,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get billingCheckoutFailed => 'تعذر إنشاء جلسة الدفع.';
   @override
+  String get billingRedirectUrlInvalid => 'يجب أن تنتمي عناوين إعادة التوجيه إلى الموقع المسموح به.';
+  @override
   String get billingCheckoutSandboxMessage => 'دفع محاكى (وضع الاختبار). لن يتم خصم أي بطاقة.';
   @override
   String get billingCheckoutUnavailable => 'الدفع عبر الإنترنت غير متاح مؤقتاً. تواصل مع الدعم على support@leopardo-rh.com.';

@@ -3997,6 +3997,8 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get billingCheckoutFailed => 'Ödeme oturumu oluşturulamadı.';
   @override
+  String get billingRedirectUrlInvalid => 'Yönlendirme URL\'leri yetkili siteye ait olmalıdır.';
+  @override
   String get billingCheckoutSandboxMessage => 'Simüle edilmiş ödeme (sandbox modu). Karttan ücret alınmaz.';
   @override
   String get billingCheckoutUnavailable => 'Çevrimiçi ödeme geçici olarak kullanılamıyor. support@leopardo-rh.com adresinden destek ile iletişime geçin.';
