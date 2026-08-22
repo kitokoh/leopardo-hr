@@ -88,6 +88,7 @@ class CareerEventController extends Controller
 
         $data = $request->validated();
 
+        /** @var Employee $target */
         $target = Employee::query()
             ->where('company_id', $actor->company_id)
             ->findOrFail($data['employee_id']);
@@ -151,7 +152,7 @@ class CareerEventController extends Controller
             'to_salary', 'effective_date', 'reason', 'notes',
         ])->all());
 
-        return new CareerEventResource($event->fresh()->load(
+        return new CareerEventResource($event->refresh()->load(
             'employee:id,first_name,last_name',
             'fromPosition:id,name',
             'toPosition:id,name',
@@ -173,7 +174,7 @@ class CareerEventController extends Controller
             'approved_at' => Carbon::now(),
         ]);
 
-        return new CareerEventResource($event->fresh()->load(
+        return new CareerEventResource($event->refresh()->load(
             'employee:id,first_name,last_name',
             'approver:id,first_name,last_name',
         ));
@@ -192,7 +193,7 @@ class CareerEventController extends Controller
 
         $event->update(['status' => 'rejected', 'notes' => $notes]);
 
-        return new CareerEventResource($event->fresh()->load(
+        return new CareerEventResource($event->refresh()->load(
             'employee:id,first_name,last_name',
         ));
     }
@@ -208,6 +209,7 @@ class CareerEventController extends Controller
             return response()->json(['error' => ['code' => 'CAREER_EVENT_NOTHING_TO_APPLY', 'message' => __('employees.career_event_nothing_to_apply')]], 422);
         }
 
+        /** @var Employee $target */
         $target = Employee::query()
             ->where('company_id', $actor->company_id)
             ->findOrFail($event->employee_id);
@@ -215,6 +217,7 @@ class CareerEventController extends Controller
         // #4978 : transaction imbriquée/savepoint — la mise à jour employé et
         // le passage à `applied` sont atomiques (jamais d'état à moitié).
         $event = DB::transaction(function () use ($event, $target): CareerEvent {
+            /** @var Employee $target */
             $changes = [];
             if ($event->to_position_id !== null) {
                 $changes['position_id'] = $event->to_position_id;
